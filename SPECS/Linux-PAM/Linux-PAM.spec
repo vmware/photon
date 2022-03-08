@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
@@ -10,6 +10,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha1    %{name}=e26c6594c14680da42ea2875b60664ec159670bf
+Source1:        pamtmp.conf
+
+Patch0:         faillock-add-support-to-print-login-failures.patch
 
 BuildRequires:  libselinux-devel
 
@@ -73,13 +76,19 @@ ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_acct.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_passwd.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_session.so
+
+install -d -m 755 %{buildroot}/var/run/faillock
+install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
+
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/usr/lib/ -name '*.la' -delete
-%{find_lang} Linux-PAM
+
+%{find_lang} %{name}
 
 %{_fixperms} %{buildroot}/*
 
 %check
+%if 0%{?with_check}
 install -v -m755 -d /etc/pam.d
 cat > /etc/pam.d/other << "EOF"
 auth     required       pam_deny.so
@@ -88,8 +97,9 @@ password required       pam_deny.so
 session  required       pam_deny.so
 EOF
 make %{?_smp_mflags} check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %clean
@@ -97,13 +107,17 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/security/*.conf
+%{_sysconfdir}/environment
+%{_sysconfdir}/security
 /sbin/*
 %{_lib}/security/*
 %{_libdir}/*.so*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_lib}/systemd/system/pam_namespace.service
+%dir /var/run/faillock
+%{_libdir}/tmpfiles.d/pam.conf
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -115,6 +129,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-3
+- create /var/run/faillock during install
 * Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
 - pam_cracklib has been deprecated.
 * Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
