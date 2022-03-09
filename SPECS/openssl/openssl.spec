@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source2:        sample-fips-enable-openssl.cnf
 %endif
 
 Patch0:         openssl-CVE-2021-4044.patch
+Patch1:         openssl-CVE-2022-0778.patch
 
 %if 0%{?with_check:1}
 BuildRequires: zlib-devel
@@ -200,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed Mar 09 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-5
+- Fix CVE-2022-0778
 * Tue Jan 11 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.0-4
 - Bump up openssl to build openssl-fips-provider.
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-3
