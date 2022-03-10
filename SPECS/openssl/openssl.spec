@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2za
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -18,6 +18,7 @@ Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
 Patch4:         fips-2.20-vmw.patch
 Patch5:         openssl-optimized-curves.patch
+Patch6:         openssl-CVE-2022-0778.patch
 
 %if %{with_check}
 BuildRequires: zlib-devel
@@ -71,6 +72,7 @@ Perl scripts that convert certificates and keys to various formats.
 %patch4 -p1
 %endif
 %patch5 -p1
+%patch6 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -136,6 +138,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Thu Mar 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2za-2
+- Fix CVE-2022-0778
 * Tue Aug 24 2021 Srinidhi Rao <srinidhir@vmware.com> 1.0.2za-1
 - Update to openssl 1.0.2za
 * Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2y-1
