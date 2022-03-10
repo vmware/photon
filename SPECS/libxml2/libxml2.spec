@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -11,6 +11,8 @@ Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 %define sha1    libxml2=339fe5bb2a7d0c13f068c26d8f7cd194c13f9a2a
 
 Patch0:         0001-Work-around-lxml-API.patch
+Patch1:         libxml2-CVE-2022-23308.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  zlib
@@ -79,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu Mar 10 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.12-3
+- Fix CVE-2022-23308
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.12-2
 -   Bump up to compile with python 3.10
 *   Fri Oct 29 2021 Nitesh Kumar <kunitesh@vmware.com> 2.9.12-1
