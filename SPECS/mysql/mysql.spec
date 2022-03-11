@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -93,6 +93,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+*   Mon Mar 28 2022 Harinadh D<hdommaraju@vmware.com> 8.0.28-2
+-   Version bump up to build with protobuf 3.19.4
 *   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.28-1
 -   Upgrade version to 8.0.28 to fix bunch of CVE's
 *   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.27-2

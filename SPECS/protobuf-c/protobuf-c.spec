@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -41,7 +41,7 @@ Requires:       protobuf-c = %{version}-%{release}
 The protobuf-c-static package contains static protobuf-c libraries.
 
 %prep
-%setup
+%autosetup -p1
 autoreconf -iv
 
 %build
@@ -49,7 +49,7 @@ autoreconf -iv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -72,6 +72,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+*   Mon Mar 21 2022 Harinadh D <hdommaraju@vmware.com> 1.3.3-3
+-   Version bump up to build with protobuf 3.19.4
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.3.3-2
 -   Version bump up to build with latest protobuf
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1

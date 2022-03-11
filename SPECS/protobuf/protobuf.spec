@@ -1,14 +1,14 @@
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.14.0
-Release:        2%{?dist}
+Version:        3.19.4
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=b613ab3057c8a7400e7b7d3004824274d964a196
+%define         sha1 protobuf=2a69db42342fab77bb1e105dd19fb12d9f9236cf
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -66,7 +66,7 @@ Requires:       openjre8 >= 1.8.0.45
 This contains protobuf java package.
 
 %prep
-%autosetup
+%autosetup -p1
 
 # This test is incredibly slow on arm
 # https://github.com/google/protobuf/issues/2389
@@ -133,6 +133,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Mar 02 2022 Harinadh D <hdommaraju@vmware.com> 3.19.4-1
+-   Version update
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-2
 -   Bump up to compile with python 3.10
 *   Wed Feb 10 2021 Harinadh D <hdommaraju@vmware.com> 3.14.0-1

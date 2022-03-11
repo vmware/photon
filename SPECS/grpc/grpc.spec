@@ -1,7 +1,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.32.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/usr/lib64
 %{_libdir}/*.so
 
 %changelog
+*   Mon Mar 28 2022 Harinadh D <hdommaraju@vmware.com> 1.32.0-5
+-   Bump up version to build with protobuf 3.19.4
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-4
 -   Bump up release for openssl
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.32.0-3
