@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -11,6 +11,7 @@ Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff
 Patch0:         libtiff-CVE-2020-35523.patch
 Patch1:         libtiff-CVE-2020-35524.patch
 Patch2:         libtiff-CVE-2020-35521.patch
+Patch3:         libtiff-CVE-2022-0561.patch
 %define sha1    libtiff-v=8fc266cdb1ecbf6d5d13c7f0ce73161f59ac0996
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
@@ -62,6 +63,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Fri Mar 11 2022 Harinadh D <hdommaraju@vmware.com> 4.1.0-4
+-   Fix CVE-2022-0561
 *   Mon Sep 20 2021 Harinadh D <hdommaraju@vmware.com> 4.1.0-3
 -   Fix CVE-2020-35521
 *   Mon Mar 22 2021 Harinadh D <hdommaraju@vmware.com> 4.1.0-2
