@@ -1,6 +1,6 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
-Version:        3.6.3
+Version:        3.8.0
 Release:        1%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://apache.claz.org/zookeeper/zookeeper/zookeeper-%{version}/%{name}-%{version}.tar.gz
-%define sha1 zookeeper=c8dea35165f276cb8e23372b74c3f3149809202f
+%define sha1    zookeeper=45b46fe24504ce5c6c00da81bac68947acac21fc
 Source1:        zookeeper.service
 Source2:        zkEnv.sh
 Patch0:	        zookeeper-3.4.8-server.patch
@@ -21,8 +21,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%setup -q -n apache-zookeeper-%{version}-bin
-%patch0 -p1
+%autosetup -p1 -n apache-%{name}-%{version}-bin
 
 %install
 mkdir -p %{buildroot}%{_prefix}
@@ -82,6 +81,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Sat Mar 12 2022 Piyush Gupta <gpiyush@vmware.com> 3.8.0-1
+-   Update to 3.8.0.
 *   Thu May 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.3-1
 -   Update to 3.6.3.
 *   Fri May 31 2019 Tapas Kundu <tkundu@vmware.com> 3.4.14-1
