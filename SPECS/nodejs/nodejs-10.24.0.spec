@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        12.22.9
+Version:        10.24.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,9 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=c8aea4775ce4736e274f5c2045af374858e8ea1c
-BuildRequires:  coreutils >= 8.22
-BuildRequires:  zlib
+%define         sha1 node=01f110a36a890ed5a527646a2bb85b7fe8eb9847
+BuildRequires:  coreutils >= 8.22, zlib
 Requires:       (coreutils >= 8.22 or toybox)
 # To fix upgrade from photon-1.0 to photon-2.0
 Obsoletes:      nodejs10
@@ -28,7 +27,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -n node-v%{version}
+%setup -q -n node-v%{version}
 
 %build
 sh configure --prefix=%{_prefix}
@@ -64,12 +63,11 @@ make cctest
 %defattr(-,root,root)
 %{_includedir}/*
 %{_docdir}/node/lldb_commands.py
+%{_docdir}/node/lldbinit
 %{_docdir}/node/gdbinit
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
-*   Mon Mar 14 2022 Piyush Gupta <gpiyush@vmware.com> 12.22.9-1
--   Update to 12.22.9.
 *   Tue Mar 16 2021 Piyush Gupta <gpiyush@vmware.com> 10.24.0-1
 -   Update to 10.24.0, Fixes CVE-2021-22883, CVE-2021-22884
 *   Fri Jan 15 2021 Ankit Jain <ankitja@vmware.com> 10.22.1-2

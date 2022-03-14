@@ -67,7 +67,7 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %setup -n %{name}-%{version}
-(git clone git://github.com/GNOME/libglnx libglnx && cd libglnx && git checkout 602fdd9)
+(git clone https://github.com/GNOME/libglnx libglnx && cd libglnx && git checkout 602fdd9)
 (git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
 %patch0 -p1
 
