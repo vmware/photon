@@ -71,7 +71,7 @@ rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
 pushd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
-rm -rf usr/src/ home/* var/log/*
+rm -rf usr/src/ home/* var/log/* var/cache/tdnf/*
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
