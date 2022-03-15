@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.103
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -398,6 +398,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
+-   Fix SEV and Hypercall alternative inst. patches
 *   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1
 -   Update to version 5.10.103
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-5

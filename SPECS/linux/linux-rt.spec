@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.103
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt62
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1121,6 +1121,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
+-   Fix SEV and Hypercall alternative inst. patches
 *   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1
 -   Update to version 5.10.103
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-5
