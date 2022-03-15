@@ -11,7 +11,7 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        2.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
@@ -28,7 +28,7 @@ HAProxy Data Plane API is a sidecar process that runs next to HAProxy
 and provides API endpoints for managing HAProxy.
 
 %prep
-%setup -n %{repo}-%{version}
+%autosetup -n %{repo}-%{version}
 
 %build
 %define gcflags -N -l
@@ -54,5 +54,7 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
+*   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.2.0-2
+-   Version bump up to use haproxy-2.5.5
 *   Fri Feb 19 2021 HarinadhD <hdommaraju@vmware.com> 2.2.0-1
 -   Initial release
