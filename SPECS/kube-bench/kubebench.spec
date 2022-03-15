@@ -1,14 +1,14 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.3.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
 URL:            https://github.com/aquasecurity/kube-bench
 Group:          Development/Tools
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kube-bench=239bdff14467764c38211615e09b41b0e8a047ad
+%define sha512  kube-bench=54e46221040ac45a787ff9078de2af7b638b5f67ef5616fed532c09607aae049d4bd7496065ade72a5df07b99d7ff6f70683731783f5c651aff56dfc06d61d97
 BuildRequires:  git
 BuildRequires:  go
 
@@ -33,6 +33,8 @@ make tests %{?_smp_mflags}
 %{_bindir}/kube-bench
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 0.3.1-10
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.3.1-9
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.3.1-8

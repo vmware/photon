@@ -1,13 +1,13 @@
 Summary:        confd is a lightweight configuration management tool
 Name:           confd
 Version:        3.16
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/confd
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 confd=2df9721bb22364ce2f8c565a10780865c4f70221
+%define sha512  confd=d276f896f143daac441a73234550004c43778f3faa6ec9ec38b1606423afc0e732c3f0a15e890ad451321acc7df7e7fcee1e519b61c396c4d6aaa55249effe9a
 Source1:        vendor-%{name}-%{version}.tar.gz
-%define sha1 vendor-%{name}-%{version}.tar.gz=070ee0bac01696cd342cd12e099f88f9dab8bbd4
+%define sha512  vendor-%{name}-%{version}.tar.gz=5b137364931cbdd2a25f712bbebd53dbbd879225c4f5954a7da3b0681de56b903201fe81122a84f68f80fbd273bec6ec3740b9c0d9392f386b6ac237257f1a03
 Obsoletes:       calico-confd
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ cp -r etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 3.16-10
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.16-9
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.16-8

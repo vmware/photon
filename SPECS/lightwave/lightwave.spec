@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       26%{?dist}
+Release:       27%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ URL:           https://github.com/vmware/lightwave
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.gz
-%define        sha1 %{name}=93cc2c0518753a7ec7efd250bb0988de727067ff
+%define        sha512  %{name}=8afe786efea02333d7045779584038cbf627d5a7f3d49aed4f0b850df4ce564e40f3ac27722b84ea835a24ac2b9fbebb071326804b4bca11d3272ea438935b4b
 
 Patch0:     fix-python-include-path.patch
 Patch1:     lightwave-openssl-1.1.1.patch
@@ -1178,6 +1178,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-27
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-26
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-25

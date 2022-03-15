@@ -7,11 +7,11 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.7.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
-%define sha1 coredns=8a61f2346ced4f16eaeb80c2748a3e3022de4cfe
+%define sha512  coredns=4ac92d040afb145d0b721ba381704741d2e0eb32f0f7e53788195fb72c06bcd7c915ac698396d5f7c27df899c7f526045e39d08cb37ae04d2ca871930d299ac0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.7.1-10
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.7.1-9
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.7.1-8

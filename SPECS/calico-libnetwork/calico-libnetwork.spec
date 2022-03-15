@@ -1,15 +1,15 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       10%{?dist}
+Release:       11%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/libnetwork-plugin
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-libnetwork=84acf59e8480e5e7fcefa7581fb156b76822ab36
+%define sha512  calico-libnetwork=40b7b0962e58fced7a02fa743b0f92aae2c6d1e43046cd0d59153f4022ad22ca0b29ac3a9cbc6e67218a35dce3306a1a88194d22248a2f589ee385d0c1ce3852
 Source1:        glide-cache-for-calico-libnetwork-%{version}.tar.xz
-%define sha1 glide-cache-for-%{name}=67faf9f5502eb97dd51c2c36d31bbf3fdb465cf7
+%define sha512  glide-cache-for-%{name}=6e852994910b3ab31dd453f641b939a10a9bdee4f7122445322a4ce4e6673d4a959b9e6a8fad050abe644e993d510a09e26975b47349521a4247f6d2f3dc274a
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
@@ -50,6 +50,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico/docker/ dist/libnetwork-plugi
 /usr/share/calico/docker/libnetwork-plugin
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-11
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-10
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-9

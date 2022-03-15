@@ -1,13 +1,13 @@
 Name:           influxdb
 Version:        1.8.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=01865861b3a4865fc5a38c04a38356dbbc7ecd68
+%define sha512  %{name}=d45d96a1efa39f4896724c21be7992a4cd47b5e5eac97fe8b8fde87f4d9c6ed4d89e4a92e5c6957728f73fb58fbf01dbaf28a33b1f179535976aad83239c1f1c
 Source1:        golang-dep-0.3.0.tar.gz
-%define sha1    golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
+%define sha512  golang-dep-0.3.0=377869d69838a826499b9bc063eacc4b9db0d130d785901ae7fcbf28645276ba6bead33d251837646ded5f0a078e56b4a378c5227054b738cd6d581224977dc2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
@@ -108,6 +108,8 @@ fi
 %{_mandir}/man1/*
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.2-10
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.2-9
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.2-8

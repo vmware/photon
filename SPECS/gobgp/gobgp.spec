@@ -1,13 +1,13 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       2.20.0
-Release:       9%{?dist}
+Release:       10%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/osrg/gobgp
 Source0:       %{name}-%{version}.tar.gz
-%define sha1   gobgp=347e95a447fe1014a4ab34f34997ded6e6492244
+%define sha512  gobgp=a344be35f70bbbfde696677a89728b3861081407b69a01e592f4b46ebd9e1e04a565837ff65a1adf762c9ad80e145451759b8248e5e15f05d419791679a118f7
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go
@@ -47,6 +47,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 2.20.0-10
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.20.0-9
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 2.20.0-8

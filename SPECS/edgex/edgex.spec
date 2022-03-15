@@ -4,14 +4,14 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        1.2.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:	edgex-%{version}.tar.gz
-%define sha1 edgex=7e530e3665a44b284fdd6b90fa409291e26cd451
+%define sha512  edgex=7b97edbbad6c4786d70d7adc232d1d3b3ba20e14c23cfdc03beda2713a602454b9677ee24e481150a9a6abb95478e5ade56ab0a7ac1f4ae716b5e7cbbd556921
 Source1:	edgex-template.service
 
 BuildRequires:  go
@@ -82,6 +82,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_libdir}/systemd/system/edgex-core-data
 %{_var}/log/*
 
 %changelog
+*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.1-14
+-   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.1-13
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.1-12

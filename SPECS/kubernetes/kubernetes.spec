@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.22.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -18,9 +18,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=3bf63bafe307f0d715842cf69f0afd5807b6b5fe
+%define sha512  kubernetes-%{version}.tar.gz=b2b8060d031dac83c65e634ad14b804010036a7d74161dd37349f39974d862b10b48423c2dcb4e9ca9e775c94dbe9595d49e57c98a2e6a8d8335cb235ba342e0
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
-%define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+%define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 
@@ -234,6 +234,8 @@ fi
 %endif
 
 %changelog
+* Wed Mar 23 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-5
+- Bump up version to compile with new go
 * Mon Mar 07 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-4
 - Remove smp_flags to fix build failure with "out of memory" message
 * Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-3
