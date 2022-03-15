@@ -3,7 +3,7 @@
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
 Version:        0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -26,26 +26,14 @@ BuildArch:      noarch
 %description
 Docutils is a modular system for processing documentation into useful formats, such as HTML, XML, and LaTeX. For input Docutils supports reStructuredText, an easy-to-read, what-you-see-is-what-you-get plaintext markup syntax.
 
-
 %prep
-%setup -q -n docutils-%{version}
+%autosetup -n docutils-%{version}
 
 %build
 python3 setup.py build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/rstpep2html.py %{buildroot}/%{_bindir}/rstpep2html3.py
-mv %{buildroot}/%{_bindir}/rst2xml.py %{buildroot}/%{_bindir}/rst2xml3.py
-mv %{buildroot}/%{_bindir}/rst2xetex.py %{buildroot}/%{_bindir}/rst2xetex3.py
-mv %{buildroot}/%{_bindir}/rst2s5.py %{buildroot}/%{_bindir}/rst2s53.py
-mv %{buildroot}/%{_bindir}/rst2pseudoxml.py %{buildroot}/%{_bindir}/rst2pseudoxml3.py
-mv %{buildroot}/%{_bindir}/rst2odt_prepstyles.py %{buildroot}/%{_bindir}/rst2odt_prepstyles3.py
-mv %{buildroot}/%{_bindir}/rst2odt.py %{buildroot}/%{_bindir}/rst2odt3.py
-mv %{buildroot}/%{_bindir}/rst2man.py %{buildroot}/%{_bindir}/rst2man3.py
-mv %{buildroot}/%{_bindir}/rst2latex.py %{buildroot}/%{_bindir}/rst2latex3.py
-mv %{buildroot}/%{_bindir}/rst2html5.py %{buildroot}/%{_bindir}/rst2html53.py
-mv %{buildroot}/%{_bindir}/rst2html.py %{buildroot}/%{_bindir}/rst2html3.py
 
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
@@ -55,19 +43,22 @@ python3 test3/alltests.py
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_bindir}/rstpep2html3.py
-%{_bindir}/rst2xml3.py
-%{_bindir}/rst2xetex3.py
-%{_bindir}/rst2s53.py
-%{_bindir}/rst2pseudoxml3.py
-%{_bindir}/rst2odt_prepstyles3.py
-%{_bindir}/rst2odt3.py
-%{_bindir}/rst2man3.py
-%{_bindir}/rst2latex3.py
-%{_bindir}/rst2html53.py
-%{_bindir}/rst2html3.py
+%{_bindir}/rstpep2html.py
+%{_bindir}/rst2xml.py
+%{_bindir}/rst2xetex.py
+%{_bindir}/rst2s5.py
+%{_bindir}/rst2pseudoxml.py
+%{_bindir}/rst2odt_prepstyles.py
+%{_bindir}/rst2odt.py
+%{_bindir}/rst2man.py
+%{_bindir}/rst2latex.py
+%{_bindir}/rst2html5.py
+%{_bindir}/rst2html.py
 %{_bindir}/rst2html4.py
+
 %changelog
+*   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 0.16-2
+-   Version bump up, required by bluez 5.63
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2

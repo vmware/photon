@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        7.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -80,7 +80,6 @@ The contains libvirt package doc files.
 %prep
 %autosetup -p1
 
-sed -i -e 's/rst2html5.py/rst2html53.py/g' meson.build
 sed -i  '/rst2man/d' meson.build
 
 %build
@@ -194,6 +193,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
+* Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 7.10.0-2
+- Version Bump up to consume original python files from python-docutils
 * Thu Dec 02 2021 Susant Sahani <ssahani@vmware.com> 7.10.0-1
 - Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 7.5.0-2
