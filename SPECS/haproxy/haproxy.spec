@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.2.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -12,6 +12,8 @@ Source0:        http://www.haproxy.org/download/2.2/src/%{name}-%{version}.tar.g
 Patch0:         haproxy-CVE-2021-39242.patch
 Patch1:         haproxy-CVE-2021-39240.patch
 Patch2:         haproxy-CVE-2021-40346.patch
+Patch3:         haproxy-CVE-2022-0711.patch
+
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -63,6 +65,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.2.6-4
+-   Fix CVE-2022-0711
 *   Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.2.6-3
 -   Fix CVE-2021-40346
 *   Tue Aug 31 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.6-2
