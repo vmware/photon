@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.3.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -15,6 +15,7 @@ Patch0:         haproxy-CVE-2021-39242.patch
 Patch1:         haproxy-CVE-2021-39240.patch
 Patch2:         haproxy-CVE-2021-40346.patch
 Patch3:         0001-openssl-3.0.0-support.patch
+Patch4:         haproxy-CVE-2022-0711.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -67,6 +68,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.3.4-6
+- Fix CVE-2022-0711
 * Mon Sep 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.4-5
 - openssl 3.0.0
 * Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.4-4
