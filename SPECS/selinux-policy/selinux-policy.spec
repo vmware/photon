@@ -1,18 +1,20 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
+Url:            https://github.com/SELinuxProject/selinux/wiki
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://github.com/fedora-selinux/%{name}/archive/db2614cce37245ba4fc5de73b1f6f33cc46686e4/%{name}-db2614cc.tar.gz
 %define sha1 selinux-policy-db=ffba5a771c95d3b6837f8b1d66f2d9ea52661e1c
 Source1:        https://github.com/containers/container-selinux/archive/container-selinux-2.145.0.tar.gz
 %define sha1 container-selinux=93676d051407d4e57ae517dd4dc45239d1369e3d
 Source2:        build.conf
 Source3:        modules.conf
-Url:            https://github.com/SELinuxProject/selinux/wiki
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 Patch1:         contrib-container.patch
 Patch2:         contrib-cron.patch
 Patch3:         contrib-dbus.patch
@@ -32,10 +34,13 @@ Patch16:        system-userdomain.patch
 Patch17:        admin_usermanage.patch
 Patch18:        system-fstool.patch
 Patch19:        iptables-allow-kernel_t-fifo_files.patch
+Patch20:        authlogin.if-add-transition-rules-for-shadow.patch
 
 BuildArch:      noarch
+
 BuildRequires:  checkpolicy python3 semodule-utils libselinux-utils
 BuildRequires:  policycoreutils
+
 Requires:       policycoreutils
 Requires:       coreutils-selinux
 
@@ -75,6 +80,7 @@ cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 %build
 cp %{SOURCE2} .
@@ -120,6 +126,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Wed Mar 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-3
+- Fix passwd, shadow transitions
 * Mon Mar 07 2022 Alexey Makhalov <amakhalov@vmware.com> 3.14.8-2
 - Fix iptables and sshd issues
 * Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.8-1
