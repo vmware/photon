@@ -1,15 +1,15 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2za
-Release:        2%{?dist}
+Version:        1.0.2zc
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2za.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2za=9f29e5179926c25ea03068b8c5e17752d6d903d1
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2zc.tar.gz
+%define sha1    vmware-OpenSSL_1_0_2zc=71c457ae5e961b8b0ce3606d461d6ef70ca7a09f
 Source1:        rehash_ca_certificates.sh
 
 Patch0:         c_rehash.patch
@@ -63,7 +63,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2za
+%setup -q -n vmware-OpenSSL_1_0_2zc
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -138,6 +138,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Wed Mar 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2zc-1
+- Update to openssl 1.0.2zc
 * Thu Mar 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2za-2
 - Fix CVE-2022-0778
 * Tue Aug 24 2021 Srinidhi Rao <srinidhir@vmware.com> 1.0.2za-1
