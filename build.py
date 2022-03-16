@@ -1132,7 +1132,7 @@ def main():
 
 
     if 'INPUT_PHOTON_BUILD_NUMBER' in os.environ:
-        configdict["photon-build-param"]["input-photon-build-number"] = os.environ['IMPUT_PHOTON_BUILD_NUMBER']
+        configdict["photon-build-param"]["input-photon-build-number"] = os.environ['INPUT_PHOTON_BUILD_NUMBER']
 
     if 'BASE_COMMIT' in os.environ:
         configdict["photon-build-param"]["base-commit"] = os.environ['BASE_COMMIT']
