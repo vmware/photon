@@ -1,6 +1,6 @@
 Name:           consul
-Version:        1.8.17
-Release:        3%{?dist}
+Version:        1.9.15
+Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=b49ef24ae921289aa346c1cc9f4bdda4041e3131
+%define sha1    %{name}-%{version}.tar.gz=293c54afcd54427821f67e60775e86d1d9cf8081
 Source1:        %{name}.service
 BuildRequires:  unzip
 BuildRequires:  systemd
@@ -90,18 +90,20 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-3
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-2
--   Bump up version to compile with new go
+*  Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 1.9.15-1
+-  Version upgrade 1.9.15 to fix CVE-2022-24687
+*  Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-3
+-  Bump up version to compile with new go
+*  Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-2
+-  Bump up version to compile with new go
 *  Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.17-1
--  Version upgrade 1.8.17 to fix CVE-2021-41805.
+-  Version upgrade 1.8.17 to fix CVE-2021-41805
 *  Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-5
 -  Bump up version to compile with new go
 *  Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-4
 -  Bump up version to compile with new go
 *  Mon Sep 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-3
--  Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698.
+-  Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698
 *  Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.14-2
 -  Bump up version to compile with new go
 *  Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.14-1
