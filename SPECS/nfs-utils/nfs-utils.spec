@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.3.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -39,7 +39,7 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 The nfs-utils package contains simple nfs client service.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
@@ -51,6 +51,7 @@ sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 %configure --enable-libmount-mount     \
            --without-tcp-wrappers      \
            --enable-gss                \
+	   --enable-svcgss             \
            --enable-nfsv4              \
            --with-rpcgen=internal      \
            --disable-static
@@ -59,7 +60,7 @@ sed -i -E 's/^(CFLAGS = .*)$/\1 -Wno-error=strict-prototypes/' support/nsm/Makef
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
 mkdir -p %{buildroot}/lib/systemd/system/
 mkdir -p %{buildroot}/etc/default
@@ -86,7 +87,7 @@ echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/5
 #ignore test that might require additional setup
 sed -i '/check_root/i \
 exit 77' tests/t0001-statd-basic-mon-unmon.sh
-make check
+make %{?_smp_mflags} check
 
 %pre
 if ! getent group nobody >/dev/null; then
@@ -125,6 +126,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Fri Mar 18 2022 Harinadh D <hdommaraju@vmware.com> 2.3.3-5
+-   enable svcgss
 *   Tue Nov 17 2020 Tapas Kundu <tkundu@vmware.com> 2.3.3-4
 -   Restrict nfs-mountd to start after rpcbind.socket
 *   Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 2.3.3-3
