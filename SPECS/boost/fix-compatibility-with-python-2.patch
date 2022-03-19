@@ -1,0 +1,25 @@
+From cbd2d9f033c61d29d0a1df14951f4ec91e7d05cd Mon Sep 17 00:00:00 2001
+From: Victor Stinner <vstinner@python.org>
+Date: Wed, 6 Jan 2021 10:07:29 +0100
+Subject: [PATCH] Fix compatibility with Python 3.10.0a4: fopen
+
+Replace private _Py_fopen() with public fopen(): private _Py_fopen()
+function was removed in 3.10.0a4:
+https://bugs.python.org/issue32381
+---
+ src/exec.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/python/src/exec.cpp b/libs/python/src/exec.cpp
+index b2eabe59f6..dd0c33103f 100644
+--- a/libs/python/src/exec.cpp
++++ b/libs/python/src/exec.cpp
+@@ -116,7 +116,7 @@ object BOOST_PYTHON_DECL exec_file(char const *filename, object global, object l
+ #elif PY_VERSION_HEX >= 0x03000000
+   // Let python open the file to avoid potential binary incompatibilities.
+   PyObject *fo = Py_BuildValue("s", f);
+-  FILE *fs = _Py_fopen(fo, "r"); // Private CPython API
++  FILE *fs = fopen(fo, "r");
+   Py_DECREF(fo);
+ #else
+   // Let python open the file to avoid potential binary incompatibilities.
