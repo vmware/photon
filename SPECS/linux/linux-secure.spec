@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.103
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -82,6 +82,9 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-1016
+Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -196,6 +199,7 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
+%patch108 -p1
 
 # crypto
 %patch500 -p1
@@ -325,6 +329,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 5.10.103-3
+-   Fix for CVE-2022-1016
 *   Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
 -   Fix SEV and Hypercall alternative inst. patches
 *   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1

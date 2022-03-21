@@ -23,7 +23,7 @@ Summary:        Kernel
 Name:           linux
 
 Version:        5.10.103
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -108,6 +108,9 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-1016
+Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -322,6 +325,7 @@ Python programming language to use the interface to manipulate perf events.
 
 %patch103 -p1
 %patch107 -p1
+%patch108 -p1
 
 # Allow PCI resets to be disabled from vfio_pci module
 %patch120 -p1
@@ -698,6 +702,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 5.10.103-3
+-   Fix for CVE-2022-1016
 *   Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
 -   Fix SEV and Hypercall alternative inst. patches
 *   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1

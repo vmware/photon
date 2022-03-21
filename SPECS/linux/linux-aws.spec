@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.103
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -60,6 +60,9 @@ Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-1016
+Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -197,6 +200,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch101 -p1
 %patch102 -p1
 %patch105 -p1
+%patch108 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -398,6 +402,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 5.10.103-3
+-   Fix for CVE-2022-1016
 *   Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
 -   Fix SEV and Hypercall alternative inst. patches
 *   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1
