@@ -1,6 +1,6 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.37.2
+Version:        2.37.4
 Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
@@ -8,9 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-Patch0:         0001-libmount-fix-UID-check-for-FUSE-umount-CVE-2021-3995.patch
-Patch1:         0002-libmount-fix-deleted-suffix-issue-CVE-2021-3996.patch
-%define sha1    util-linux=4e85e2f533ef0fe79a4505695453a91f25e87605
+%define sha512  %{name}=ada2629b0a8e83ea83513e04f7b1ccceb3b8ab82acd119c5d8389d1abc48c92d0b591f39fb34b1fd65db3ab630f03a672a9f3dacf1a6e4f124bdb083fc1be6d7
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
 
@@ -101,6 +99,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Mar 21 2022 Ankit Jain <ankitja@vmware.com> 2.37.4-1
+-   Fixes CVE-2022-0563
 *   Mon Jan 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.37.2-1
 -   Fixes CVE-2021-3995/CVE-2021-3996
 *   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.36-3
