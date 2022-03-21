@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.52
+Version:        2.4.53
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=6df2f9b30e89526f73449e4e1aa22450ff088408
+%define sha1    %{name}=cc064ed39f3845f2d35183b9b7cb638aa4cabfc9
 
-Patch0:         httpd-%{version}-blfs_layout.patch
-Patch1:         httpd-uncomment-ServerName.patch
+Patch0:         %{name}-%{version}-blfs_layout.patch
+Patch1:         %{name}-uncomment-ServerName.patch
 
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -23,6 +23,7 @@ BuildRequires:  apr-util-devel
 BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
+BuildRequires:  systemd-devel
 
 Requires:       pcre
 Requires:       apr-util
@@ -40,14 +41,14 @@ The Apache HTTP Server.
 %package devel
 Summary: Header files for httpd
 Group: Applications/System
-Requires: httpd
+Requires: %{name}
 %description devel
 These are the header files of httpd.
 
 %package docs
 Summary: Help files for httpd
 Group: Applications/System
-Requires: httpd
+Requires: %{name}
 %description docs
 These are the help files of httpd.
 
@@ -62,15 +63,15 @@ The httpd-tools of httpd.
 %autosetup -p1
 
 %build
-sh ./configure --prefix=%{_sysconfdir}/httpd \
+sh ./configure --prefix=%{_sysconfdir}/%{name} \
             --exec-prefix=%{_prefix} \
             --bindir=%{_bindir}                             \
             --sbindir=%{_sbindir}                           \
             --mandir=%{_mandir}                             \
             --libdir=%{_libdir}                             \
-            --sysconfdir=%{_sysconfdir}/httpd/conf          \
-            --includedir=%{_includedir}/httpd               \
-            --libexecdir=%{_libdir}/httpd/modules           \
+            --sysconfdir=%{_sysconfdir}/%{name}/conf          \
+            --includedir=%{_includedir}/%{name}               \
+            --libexecdir=%{_libdir}/%{name}/modules           \
             --enable-authnz-fcgi                            \
             --enable-mods-shared="all cgi"                  \
             --enable-mpms-shared=all                        \
@@ -80,74 +81,72 @@ sh ./configure --prefix=%{_sysconfdir}/httpd \
 make %{?_smp_mflags}
 
 %install
-# make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install
-install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}/etc/httpd/logs
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
-cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
+install -vdm755 %{buildroot}%{_unitdir}
+install -vdm755 %{buildroot}/etc/%{name}/logs
+
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=The Apache HTTP Server
 After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/httpd/httpd.pid
-ExecStart=/usr/sbin/httpd -k start
-ExecStop=/usr/sbin/httpd -k stop
-ExecReload=/usr/sbin/httpd -k graceful
+PIDFile=/var/run/%{name}/%{name}.pid
+ExecStart=%{_sbindir}/%{name} -k start
+ExecStop=%{_sbindir}/%{name} -k stop
+ExecReload=%{_sbindir}/%{name} -k graceful
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
-install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
-echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-httpd.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
-ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
-ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
+ln -sfv %{_sbindir}/%{name} %{buildroot}%{_sbindir}/apache2
+ln -sfv /etc/%{name}/conf/%{name}.conf %{buildroot}/etc/%{name}/%{name}.conf
 
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    # this is initial installation
-    if ! getent group apache >/dev/null; then
-        groupadd -g 25 apache
-    fi
-    if ! getent passwd apache >/dev/null; then
-        useradd -c "Apache Server" -d /srv/www -g apache \
-            -s /bin/false -u 25 apache
-    fi
+  # this is initial installation
+  if ! getent group apache >/dev/null; then
+    groupadd -g 25 apache
+  fi
+  if ! getent passwd apache >/dev/null; then
+    useradd -c "Apache Server" -d /srv/www -g apache -s /bin/false -u 25 apache
+  fi
 
-    if [ -h /etc/mime.types ]; then
-        mv /etc/mime.types /etc/mime.types.orig
-    fi
+  if [ -h /etc/mime.types ]; then
+    mv /etc/mime.types /etc/mime.types.orig
+  fi
 fi
 
-ln -sf /etc/httpd/conf/mime.types /etc/mime.types
-mkdir -p /var/run/httpd
-%systemd_post httpd.service
+ln -sf /etc/%{name}/conf/mime.types /etc/mime.types
+mkdir -p /var/run/%{name}
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun httpd.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
-    # this is delete operation
-    if getent passwd apache >/dev/null; then
-        userdel apache
-    fi
-    if getent group apache >/dev/null; then
-        groupdel apache
-    fi
+  # this is delete operation
+  if getent passwd apache >/dev/null; then
+    userdel apache
+  fi
+  if getent group apache >/dev/null; then
+    groupdel apache
+  fi
 
-    if [ -f /etc/mime.types.orig ]; then
-        mv /etc/mime.types.orig /etc/mime.types
-    fi
+  if [ -f /etc/mime.types.orig ]; then
+    mv /etc/mime.types.orig /etc/mime.types
+  fi
 fi
-%systemd_postun_with_restart httpd.service
+%systemd_postun_with_restart %{name}.service
 
 %files devel
 %defattr(-,root,root)
@@ -155,31 +154,31 @@ fi
 
 %files docs
 %defattr(-,root,root)
-%{_sysconfdir}/httpd/manual/*
+%{_sysconfdir}/%{name}/manual/*
 
 %files
 %defattr(-,root,root)
-%{_libdir}/httpd/*
+%{_libdir}/%{name}/*
 %{_bindir}/*
 %exclude %{_bindir}/apxs
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysconfdir}/httpd/build/*
-%{_sysconfdir}/httpd/cgi-bin/*
-%{_sysconfdir}/httpd/conf/extra
-%{_sysconfdir}/httpd/conf/original
-%config(noreplace) %{_sysconfdir}/httpd/conf/magic
-%{_sysconfdir}/httpd/conf/envvars
-%config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
-%{_sysconfdir}/httpd/conf/mime.types
-%{_sysconfdir}/httpd/error/*
-%{_sysconfdir}/httpd/htdocs/*
-%{_sysconfdir}/httpd/icons/*
-%{_sysconfdir}/httpd/httpd.conf
-%dir %{_sysconfdir}/httpd/logs
-%{_libdir}/systemd/system/httpd.service
-%{_libdir}/systemd/system-preset/50-httpd.preset
+%{_sysconfdir}/%{name}/build/*
+%{_sysconfdir}/%{name}/cgi-bin/*
+%{_sysconfdir}/%{name}/conf/extra
+%{_sysconfdir}/%{name}/conf/original
+%config(noreplace) %{_sysconfdir}/%{name}/conf/magic
+%{_sysconfdir}/%{name}/conf/envvars
+%config(noreplace) %{_sysconfdir}/%{name}/conf/%{name}.conf
+%{_sysconfdir}/%{name}/conf/mime.types
+%{_sysconfdir}/%{name}/error/*
+%{_sysconfdir}/%{name}/htdocs/*
+%{_sysconfdir}/%{name}/icons/*
+%{_sysconfdir}/%{name}/%{name}.conf
+%dir %{_sysconfdir}/%{name}/logs
+%{_unitdir}/%{name}.service
+%{_presetdir}/50-%{name}.preset
 
 %files tools
 %defattr(-,root,root)
@@ -187,6 +186,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Mar 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.53-1
+- Upgrade to v2.4.53 to fix bunch of CVEs
 * Thu Dec 23 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.52-1
 - Upgrade to v2.4.52 to fix CVE-2021-44790
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-1
