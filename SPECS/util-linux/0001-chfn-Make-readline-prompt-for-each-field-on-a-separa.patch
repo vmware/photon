@@ -1,0 +1,80 @@
+From bd096e5035c417c5adfca44a35a17c26643bd59b Mon Sep 17 00:00:00 2001
+From: Damien Goutte-Gattat <dgouttegattat@incenp.org>
+Date: Sat, 27 Jun 2020 19:58:13 +0100
+Subject: [PATCH 1/2] chfn: Make readline prompt for each field on a separate
+ line
+
+When readline is called to get user input, it is called without
+a prompt argument. As a result, if the user does not enter anything
+for a given field, then the next field is displayed on the same
+line, yielding the following output:
+
+  $ chfn
+  Changing finger information for user.
+  Password:
+  Name []: Office []: Office Phone []: Home Phone []:
+
+instead of the expected:
+
+  $ chfn
+  Changing finger information for user.
+  Password:
+  Full Name []:
+  Room Number []:
+  Work Phone []:
+  Home Phone []:
+
+This patch restores the expected behavior by feeding readline with
+a character to display as "prompt".
+
+[kzak@redhat.com: - do the same change in chsh
+                  - use ' ' rather than '\n' for non-readline code]
+
+Signed-off-by: Damien Goutte-Gattat <dgouttegattat@incenp.org>
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ login-utils/chfn.c | 5 +++--
+ login-utils/chsh.c | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/login-utils/chfn.c b/login-utils/chfn.c
+index c5312fa..69b2aaa 100644
+--- a/login-utils/chfn.c
++++ b/login-utils/chfn.c
+@@ -237,12 +237,13 @@ static char *ask_new_field(struct chfn_control *ctl, const char *question,
+ 	if (!def_val)
+ 		def_val = "";
+ 	while (true) {
+-		printf("%s [%s]: ", question, def_val);
++		printf("%s [%s]:", question, def_val);
+ 		__fpurge(stdin);
+ #ifdef HAVE_LIBREADLINE
+ 		rl_bind_key('\t', rl_insert);
+-		if ((buf = readline(NULL)) == NULL)
++		if ((buf = readline(" ")) == NULL)
+ #else
++		putchar(' ');
+ 		if (getline(&buf, &dummy, stdin) < 0)
+ #endif
+ 			errx(EXIT_FAILURE, _("Aborted."));
+diff --git a/login-utils/chsh.c b/login-utils/chsh.c
+index c267c72..2b3127b 100644
+--- a/login-utils/chsh.c
++++ b/login-utils/chsh.c
+@@ -205,10 +205,11 @@ static char *ask_new_shell(char *question, char *oldshell)
+ #endif
+ 	if (!oldshell)
+ 		oldshell = "";
+-	printf("%s [%s]\n", question, oldshell);
++	printf("%s [%s]:", question, oldshell);
+ #ifdef HAVE_LIBREADLINE
+-	if ((ans = readline("> ")) == NULL)
++	if ((ans = readline(" ")) == NULL)
+ #else
++	putchar(' ');
+ 	if (getline(&ans, &dummy, stdin) < 0)
+ #endif
+ 		return NULL;
+-- 
+2.23.1
+

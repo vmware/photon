@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.32.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=de9271fb93fb651d21c027e2efb0cf0ac80f2e9a
 Patch0:         CVE-2021-37600.patch
+Patch1:         0001-chfn-Make-readline-prompt-for-each-field-on-a-separa.patch
+Patch2:         0002-chsh-chfn-remove-readline-support-CVE-2022-0563.patch
 BuildRequires:  ncurses-devel
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
@@ -44,6 +46,8 @@ These are library files of util-linux.
 # Using autosetup is not feasible
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 
 %build
@@ -100,6 +104,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Mar 21 2022 Ankit Jain <ankitja@vmware.com> 2.32.1-5
+-   Fixes CVE-2022-0563
 *   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.32.1-4
 -   Fixes CVE-2021-37600
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.32.1-3
