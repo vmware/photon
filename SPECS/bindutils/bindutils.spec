@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.22
-Release:        2%{?dist}
+Version:        9.16.27
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=0d56f6a88532363757534566598c48a9f7072bfa
+%define sha1    bind=29cfd63b5229bc95022d0e13f551d6bce4ef4dd1
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,23 +47,29 @@ zone "." in {
 EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
 
-%pre
-if ! getent group named >/dev/null; then
-    groupadd -r named
+%posttrans
+if [ $1 -eq 1 ] ; then
+    if ! getent group named >/dev/null; then
+        groupadd -r named
+    fi
+    if ! getent passwd named >/dev/null; then
+        useradd -g named -d /var/lib/bind\
+            -s /bin/false -M -r named
+    fi
 fi
-if ! getent passwd named >/dev/null; then
-    useradd -g named -d /var/lib/bind\
-        -s /bin/false -M -r named
-fi
-%post -p /sbin/ldconfig
+
+%post
+/sbin/ldconfig
 
 %postun
 /sbin/ldconfig
-if getent passwd named >/dev/null; then
-    userdel named
-fi
-if getent group named >/dev/null; then
-    groupdel named
+if [ $1 -eq 0 ] ; then
+    if getent passwd named >/dev/null; then
+        userdel named
+    fi
+    if getent group named >/dev/null; then
+        groupdel named
+    fi
 fi
 
 %files
@@ -73,6 +79,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Sun Mar 20 2022 Dweep Advani <dadvani@vmware.com> 9.16.27-1
+-   Version upgraded to 9.16.27 to address CVE-2021-25220 and CVE-2022-0396
 *   Fri Nov 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 9.16.22-2
 -   Bump up release for openssl
 *   Mon Nov 08 2021 Sujay G <gsujay@vmware.com> 9.16.22-1
