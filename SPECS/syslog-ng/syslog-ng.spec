@@ -1,15 +1,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.29.1
-Release:        4%{?dist}
+Version:        3.36.1
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=96165d2acdb5d166ba8fe43531c8927f2053f58d
+%define sha1    %{name}=5a49d1b27a783bcf66bf4ef183d75a5a809e6997
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         fix_autogen_issue.patch
@@ -20,11 +20,13 @@ Requires:       json-glib
 Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
+Requires:       paho-c
 BuildRequires:  which
 BuildRequires:  git
 BuildRequires:  autoconf
 BuildRequires:  autoconf-archive
 BuildRequires:  automake
+BuildRequires:  libtool
 BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
@@ -36,6 +38,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
+BuildRequires:  paho-c-devel
 Obsoletes:	eventlog
 
 %description
@@ -94,6 +97,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-python \
     --with-python=3 \
     --with-ivykis=system \
+    --enable-mqtt \
     --disable-static \
     --enable-dynamic-linking \
     PYTHON=/bin/python3 \
@@ -118,12 +122,14 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 
 %check
+%if 0%{?with_check}
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 unittest2
 $easy_install_3 nose
 $easy_install_3 ply
 $easy_install_3 pep8
 make %{?_smp_mflags} check
+%endif
 
 %post
 /sbin/ldconfig
@@ -153,14 +159,15 @@ rm -rf %{buildroot}/*
 %{_sbindir}/syslog-ng
 %{_sbindir}/syslog-ng-ctl
 %{_sbindir}/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.29.so.*
-%{_libdir}/libevtlog-3.29.so.*
+%{_libdir}/libsyslog-ng-*.so.*
+%{_libdir}/libevtlog-*.so.*
 %{_libdir}/libloggen_helper*
 %{_libdir}/libloggen_plugin*
 %{_libdir}/libsecret-storage*
 %{_libdir}/%{name}/loggen/*
 %{_libdir}/syslog-ng/lib*.so
 %{_datadir}/syslog-ng/*
+%{_mandir}/*
 
 %files -n python3-syslog-ng
 %defattr(-,root,root,-)
@@ -176,6 +183,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
+-   Bump version, add MQTT support
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.29.1-4
 -   Bump up release for openssl
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.29.1-3
