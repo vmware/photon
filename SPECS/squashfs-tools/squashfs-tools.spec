@@ -1,6 +1,6 @@
 Summary:        Utilities for managing the SQUASHFS filesystem
 Name:           squashfs-tools
-Version:        4.5
+Version:        4.5.1
 Release:        1%{?dist}
 License:        GNU GPLv2
 URL:            https://github.com/plougher/squashfs-tools/
@@ -8,7 +8,10 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/plougher/squashfs-tools/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1    squashfs-tools=19d10fcb77f09c4615ecb2fcf6b005c2d6b8469d
+%define sha512    squashfs-tools=b3934ea1e26c7508110312711465644a6d9674b6b5332a7d011e191fa3c1d4b8be694214794a0f6005263d0f4e18bab96af2f7ed66a178f8e3bb3a781cd44896
+BuildRequires:  which
+BuildRequires:  autoconf-archive
+BuildRequires:  gzip
 BuildRequires:  zlib-devel zstd-devel
 Requires:       zlib zstd-libs
 
@@ -39,5 +42,7 @@ make INSTALL_DIR=%{buildroot}%{_bindir} %{?_smp_mflags} install
 %{_bindir}/unsquashfs
 
 %changelog
+* Tue Mar 22 2022 Shivani Agarwal <shivania2@vmware.com> 4.5.1-1
+- Fix CVE-2021-41072 CVE-2021-40153
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 4.5-1
 - Initial build. First version
