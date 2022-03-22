@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -16,6 +16,7 @@ Patch1:         CVE-2019-11365.patch
 Patch2:         CVE-2019-11366.patch
 Patch3:         CVE-2020-6097.patch
 Patch4:         CVE-2021-41054.patch
+Patch5:         CVE-2021-46671.patch
 
 BuildRequires:  systemd
 
@@ -138,6 +139,8 @@ fi
 %{_mandir}/man1/atftp.1.gz
 
 %changelog
+* Tue Mar 22 2022 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-12
+- Fix CVE-2021-46671
 * Mon Sep 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.1-11
 - Fix CVE-2021-41054
 * Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.1-10
