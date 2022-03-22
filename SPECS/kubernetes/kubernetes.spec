@@ -78,8 +78,10 @@ sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 cd %{name}-%{version}
 
 %build
-make %{?_smp_mflags}
-make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8
+# make doesn't support _smp_mflags
+make -j8 WHAT="cmd/cloud-controller-manager"
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
@@ -87,7 +89,8 @@ strip bin/pause-%{archname}
 popd
 
 %ifarch x86_64
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8 WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
 %endif
 
 %install
@@ -153,7 +156,8 @@ EOF
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-make %{?_smp_mflags} check
+# make doesn't support _smp_mflags
+make -j8 check
 
 %clean
 rm -rf %{buildroot}/*
@@ -241,6 +245,8 @@ fi
 %endif
 
 %changelog
+* Mon Mar 21 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-13
+- Remove smp_flags to fix build failure with "out of memory" message
 * Fri Mar 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.19-13
 - Bump up version to compile with new go
 * Fri Mar 11 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-12
