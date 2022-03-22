@@ -1,6 +1,6 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.2.0
+Version:        4.3.0
 Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
@@ -8,9 +8,14 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha1    libtiff-v=7bca8ec2aaf6fc8d4d93d3dadc8175f4374e25cb
+%define sha1    libtiff-v=3e4f5c772c564cb03e2eba0ab331c6ff95a58125
 Patch0:         CVE-2018-12900.patch
+Patch1:         libtiff-CVE-2022-0561.patch
+Patch2:         libtiff-CVE-2022-0562.patch
+Patch3:         libtiff-CVE-2022-0891.patch
 BuildRequires:  libjpeg-turbo-devel
+BuildRequires:  wget
+BuildRequires:  ca-certificates
 Requires:       libjpeg-turbo
 %description
 The LibTIFF package contains the TIFF libraries and associated utilities. The libraries are used by many programs for reading and writing TIFF files and the utilities are used for general work with TIFF files.
@@ -23,8 +28,8 @@ Requires:       libjpeg-turbo-devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n libtiff-v%{version}
-%patch0 -p1
+%autosetup -n libtiff-v%{version} -p1
+
 %build
 sh autogen.sh
 %configure \
@@ -32,7 +37,7 @@ sh autogen.sh
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -59,6 +64,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Tue Mar 23 2021 Harinadh D <hdommaraju@vmware.com> 4.3.0-1
+-   Fix CVE-2022-0561,CVE-2022-0562,CVE-2022-0891
 *   Tue Mar 23 2021 Harinadh D <hdommaraju@vmware.com> 4.2.0-1
 -   Fix CVE-2020-35523,CVE-2020-35524
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1
