@@ -1,7 +1,9 @@
+%define container_selinux_ver 2.145.0
+
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -10,77 +12,65 @@ Distribution:   Photon
 
 Source0:        https://github.com/fedora-selinux/%{name}/archive/db2614cce37245ba4fc5de73b1f6f33cc46686e4/%{name}-db2614cc.tar.gz
 %define sha1 selinux-policy-db=ffba5a771c95d3b6837f8b1d66f2d9ea52661e1c
-Source1:        https://github.com/containers/container-selinux/archive/container-selinux-2.145.0.tar.gz
+Source1:        https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
 %define sha1 container-selinux=93676d051407d4e57ae517dd4dc45239d1369e3d
 Source2:        build.conf
 Source3:        modules.conf
 
-Patch1:         contrib-container.patch
-Patch2:         contrib-cron.patch
-Patch3:         contrib-dbus.patch
-Patch4:         contrib-virt.patch
-Patch5:         kernel-storage.patch
-Patch6:         roles-staff.patch
-Patch7:         roles-unprivuser.patch
-Patch8:         motd_t-new-domain-for-motdgen.patch
-Patch9:         system-getty.patch
-Patch10:        system-init.patch
-Patch11:        system-logging.patch
-Patch12:        system-modutils.patch
-Patch13:        system-systemd.patch
-Patch14:        system-sysnetwork.patch
-Patch15:        system-udev.patch
-Patch16:        system-userdomain.patch
-Patch17:        admin_usermanage.patch
-Patch18:        system-fstool.patch
-Patch19:        iptables-allow-kernel_t-fifo_files.patch
-Patch20:        authlogin.if-add-transition-rules-for-shadow.patch
+Patch0: contrib-container.patch
+Patch1: contrib-cron.patch
+Patch2: contrib-dbus.patch
+Patch3: contrib-virt.patch
+Patch4: kernel-storage.patch
+Patch5: roles-staff.patch
+Patch6: roles-unprivuser.patch
+Patch7: motd_t-new-domain-for-motdgen.patch
+Patch8: system-getty.patch
+Patch9: system-init.patch
+Patch10: system-logging.patch
+Patch11: system-modutils.patch
+Patch12: system-systemd.patch
+Patch13: system-sysnetwork.patch
+Patch14: system-udev.patch
+Patch15: system-userdomain.patch
+Patch16: admin_usermanage.patch
+Patch17: system-fstool.patch
+Patch18: iptables-allow-kernel_t-fifo_files.patch
+Patch19: authlogin.if-add-transition-rules-for-shadow.patch
+Patch20: allow-lvm_t-to-transit-to-unconfined_t.patch
+Patch21: allow-proc_security_t-read-permission-to-systemd_sys.patch
+Patch22: give-watch-permission-to-agetty.patch
 
 BuildArch:      noarch
 
-BuildRequires:  checkpolicy python3 semodule-utils libselinux-utils
-BuildRequires:  policycoreutils
+BuildRequires: checkpolicy
+BuildRequires: python3
+BuildRequires: semodule-utils
+BuildRequires: libselinux-utils
+BuildRequires: policycoreutils
 
-Requires:       policycoreutils
-Requires:       coreutils-selinux
+Requires: policycoreutils
+Requires: coreutils-selinux
 
 %description
 Provides default Photon OS SELinux policy.
 
 %package devel
 Summary: SELinux policy devel
-Requires: selinux-policy = %{version}-%{release}
-Requires: m4 checkpolicy
+Requires: %{name} = %{version}-%{release}
+Requires: m4
+Requires: checkpolicy
 
 %description devel
 SELinux policy development
 
 %prep
 # Using autosetup is not feasible
-%setup -q -b 1 -n container-selinux-2.145.0
+%setup -q -b 1 -n container-selinux-%{container_selinux_ver}
 # Using autosetup is not feasible
 %setup -qn %{name}-db2614cce37245ba4fc5de73b1f6f33cc46686e4
-cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
+cp -r ../container-selinux-%{container_selinux_ver}/container.* policy/modules/contrib/
+%autopatch -p1
 
 %build
 cp %{SOURCE2} .
@@ -126,6 +116,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Tue Mar 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-4
+- Fix some more AVC denials
 * Wed Mar 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-3
 - Fix passwd, shadow transitions
 * Mon Mar 07 2022 Alexey Makhalov <amakhalov@vmware.com> 3.14.8-2
