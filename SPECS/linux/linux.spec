@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.232
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -115,9 +115,12 @@ Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch68:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch69:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
+# Fix for CVE-2022-1016
+Patch70:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
+
 #Fix for 9p
-Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
-Patch71:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
+Patch71:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch72:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -614,9 +617,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
-
 %patch70 -p1
+
 %patch71 -p1
+%patch72 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1257,6 +1261,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-3
+- Fix for CVE-2022-1016
 * Thu Mar 10 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.232-2
 - Enable function and function_graph tracing on linux
 * Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1

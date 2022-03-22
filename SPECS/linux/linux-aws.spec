@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.232
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -82,6 +82,9 @@ Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 #Fix for CVE-2020-36385
 Patch64:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch65:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
+# Fix for CVE-2022-1016
+Patch71:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -252,6 +255,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -488,6 +492,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
+-   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
 -   Update to version 4.19.232
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1

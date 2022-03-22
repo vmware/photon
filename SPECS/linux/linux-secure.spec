@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.232
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -85,6 +85,9 @@ Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 #Fix for CVE-2020-36385
 Patch66:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch67:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
+# Fix for CVE-2022-1016
+Patch71:        0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -266,6 +269,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -486,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
+-   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
 -   Update to version 4.19.232
 *   Tue Feb 15 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-2
