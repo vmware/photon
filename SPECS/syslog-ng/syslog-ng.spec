@@ -1,52 +1,47 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.17.2
-Release:        2%{?dist}
+Version:        3.36.1
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=75d7881d2cf258017c3b98fd37ceb3322c1855ad
+%define sha1    %{name}=5a49d1b27a783bcf66bf4ef183d75a5a809e6997
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
-Patch0:         disable-pylint-test.patch
+Patch0:         fix_autogen_issue.patch
 Requires:       glib
+Requires:       openssl
+Requires:       glibc
 Requires:       json-glib
 Requires:       json-c
 Requires:       systemd
-BuildRequires:  eventlog
+Requires:       paho-c
+BuildRequires:  which
+BuildRequires:  git
+BuildRequires:  autoconf
+BuildRequires:  autoconf-archive
+BuildRequires:  automake
+BuildRequires:  libtool
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
+BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
-BuildRequires:  python2-devel
-BuildRequires:  python2
-BuildRequires:  python2-libs
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-%if %{with_check}
 BuildRequires:  curl-devel
-%endif
+BuildRequires:  paho-c-devel
 Obsoletes:	eventlog
 
 %description
- The syslog-ng application is a flexible and highly scalable
- system logging tool. It is often used to manage log messages and implement
- centralized logging, where the aim is to collect the log messages of several
- devices to a single, central log server.
-
-%package -n     python2-syslog-ng
-Summary:        python2-syslog-ng
-Requires:       python2
-Requires:       python2-libs
-
-%description -n python2-syslog-ng
-Python 2 version.
+The syslog-ng application is a flexible and highly scalable
+system logging tool. It is often used to manage log messages and implement
+centralized logging, where the aim is to collect the log messages of several
+devices to a single, central log server.
 
 %package -n     python3-syslog-ng
 Summary:        python3-syslog-ng
@@ -60,59 +55,53 @@ Python 3 version.
 Summary:        Header and development files for syslog-ng
 Requires:       %{name} = %{version}-%{release}
 %description    devel
- syslog-ng-devel package contains header files, pkfconfig files, and libraries
- needed to build applications using syslog-ng APIs.
+syslog-ng-devel package contains header files, pkgconfig files, and libraries
+needed to build applications using syslog-ng APIs.
 
 %prep
-%autosetup -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
+%autosetup -p1 -n %{name}-%{version}
+
 %build
-sh ./configure \
+autoreconf -i
+sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+	--disable-dependency-tracking \
+	--prefix=%{_prefix} \
+	--exec-prefix=%{_prefix} \
+	--bindir=%{_bindir} \
+	--sbindir=%{_sbindir} \
+	--sysconfdir=%{_sysconfdir}/%{name} \
+	--datadir=%{_datadir} \
+	--includedir=%{_includedir} \
+	--libdir=%{_libdir} \
+	--libexecdir=%{_libexecdir} \
+	--localstatedir=%{_localstatedir} \
+	--sharedstatedir=%{_sharedstatedir} \
+	--mandir=%{_mandir} \
+	--infodir=%{_infodir} \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
     --enable-json=yes \
     --with-jsonc=system \
     --disable-java \
     --disable-redis \
-    --with-python=2 \
-    PYTHON=/bin/python2 \
-    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-make %{?_smp_mflags}
-pushd ../p3dir
-sh ./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc/syslog-ng \
-    --enable-systemd \
-    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
-    --enable-json=yes \
-    --with-jsonc=system \
-    --disable-java \
-    --disable-redis \
+    --enable-python \
     --with-python=3 \
+    --enable-mqtt \
+    --disable-static \
+    --enable-dynamic-linking \
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+$(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 make %{?_smp_mflags}
-
-popd
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
@@ -120,34 +109,23 @@ install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
-pushd ../p3dir
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
-rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
-rm -rf %{buildroot}/%{_infodir}
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
-find %{buildroot} -name "*.la" -exec rm -f {} \;
-popd
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 unittest2
-$easy_install_2 nose
-$easy_install_2 ply
-$easy_install_2 pep8
-make %{?_smp_mflags} check
-pushd ../p3dir
+%if 0%{?with_check}
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 unittest2
 $easy_install_3 nose
 $easy_install_3 ply
 $easy_install_3 pep8
 make %{?_smp_mflags} check
-popd
+%endif
 
 %post
+/sbin/ldconfig
 if [ $1 -eq 1 ] ; then
   mkdir -p /usr/var/
 fi
@@ -157,6 +135,7 @@ fi
 %systemd_preun syslog-ng.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart syslog-ng.service
 
 %clean
@@ -169,26 +148,24 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_libdir}/systemd/system/syslog-ng.service
 %{_libdir}/systemd/system-preset/50-syslog-ng.preset
-/usr/bin/*
-/usr/sbin/syslog-ng
-/usr/sbin/syslog-ng-ctl
-/usr/sbin/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.17.so.*
-%{_libdir}/libevtlog-3.17.so.*
+%{_bindir}/*
+%{_sbindir}/syslog-ng
+%{_sbindir}/syslog-ng-ctl
+%{_sbindir}/syslog-ng-debun
+%{_libdir}/libsyslog-ng-*.so.*
+%{_libdir}/libevtlog-*.so.*
 %{_libdir}/libloggen_helper*
 %{_libdir}/libloggen_plugin*
 %{_libdir}/libsecret-storage*
 %{_libdir}/%{name}/loggen/*
 %{_libdir}/syslog-ng/lib*.so
-/usr/share/syslog-ng/*
-
-%files -n python2-syslog-ng
-%defattr(-,root,root)
-%{python2_sitelib}/*
+%{_datadir}/syslog-ng/*
+%{_mandir}/*
 
 %files -n python3-syslog-ng
 %defattr(-,root,root,-)
-%{python3_sitelib}/*
+%{_libdir}/syslog-ng/libmod-python.so
+%{_libdir}/syslog-ng/python
 
 %files devel
 %defattr(-,root,root)
@@ -199,6 +176,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Mar 24 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
+-   Bump version, add MQTT support
 *   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
 -   Fix build with updated python symlink changes
 *   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
