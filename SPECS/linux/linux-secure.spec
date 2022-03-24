@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.103
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -295,6 +295,11 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+%ifarch x86_64
+# CONFIG_STACK_VALIDATION=y requires objtool to build external modules
+install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+%endif
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
@@ -329,6 +334,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-5
+- Add objtool to the -devel package.
 * Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4
 - .config: enable zstd compression for squashfs.
 - .config: enable crypto user api rng.
