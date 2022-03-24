@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.78
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
+%define sha512 linux=3ec352e6d50480dddfa3fa903c37f72b1b027c541862182e910013c5d461431d4782fb4908c74513d20a4c093abf0318ca9a76bac6c1b56145d0fb21ad194169
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -30,7 +30,7 @@ Source4:        check_for_config_applicability.inc
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 
 # common
@@ -276,6 +276,11 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+%ifarch x86_64
+# CONFIG_STACK_VALIDATION=y requires objtool to build external modules
+install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+%endif
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
@@ -310,6 +315,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-6
+- Add objtool to the -devel package.
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-5
 - Enable CONFIG_EXT2_FS_XATTR & related parameters
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4

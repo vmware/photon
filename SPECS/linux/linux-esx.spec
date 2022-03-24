@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -31,7 +31,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
+%define sha512 linux=3ec352e6d50480dddfa3fa903c37f72b1b027c541862182e910013c5d461431d4782fb4908c74513d20a4c093abf0318ca9a76bac6c1b56145d0fb21ad194169
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -39,18 +39,18 @@ Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %define i40e_version 2.15.9
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
 %define iavf_version 4.2.7
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define sha512 iavf=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
 %define ice_version 1.6.4
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
+%define sha512 ice=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -462,6 +462,11 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+%ifarch x86_64
+# CONFIG_STACK_VALIDATION=y requires objtool to build external modules
+install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+%endif
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
@@ -504,6 +509,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-12
+- Add objtool to the -devel package.
+- Reduce kernel .data section by configuring smaller kernel log buffer
+- .config(x86_64): enable amdgpu driver as a module
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-11
 - Enable CONFIG_EXT2_FS_XATTR & related parameters
 * Mon Feb 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.78-10
