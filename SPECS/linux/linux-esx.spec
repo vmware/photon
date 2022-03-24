@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.241
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -895,6 +895,10 @@ find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" 
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 
+# CONFIG_STACK_VALIDATION=y requires objtool to build external modules
+install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 # symling to the build folder
@@ -945,6 +949,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 13 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.241-2
+-   Add objtool to the -devel package.
 *   Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
 -   Update to version 4.19.241
 *   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
