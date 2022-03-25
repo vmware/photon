@@ -1,18 +1,20 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD
-URL:        https://sourceforge.net/projects/trousers/
+URL:        https://sourceforge.net/projects/trousers
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
+
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 trousers=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
+%define sha1 %{name}=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
 
 Patch0:     tcsd_fixes.patch
 
 Requires:   libtspi = %{version}-%{release}
+
 %description
 Trousers is an open-source TCG Software Stack (TSS), released under
 the BSD License. Trousers aims to be compliant with the
@@ -30,44 +32,40 @@ Summary:    TSPI library
 TSPI library
 
 %prep
-%setup -q -c %{name}-%{version}
-%patch0 -p1
+%autosetup -p1 -c %{name}-%{version}
 
 %build
-%configure \
-    --disable-static
-
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post
-mkdir -p /var/lib/tpm
+mkdir -p %{_sharedstatedir}/tpm
 if [ $1 -eq 1 ]; then
-    # this is initial installation
-    if ! getent group tss >/dev/null; then
-        groupadd tss
-    fi
-    if ! getent passwd tss >/dev/null; then
-        useradd -c "TCG Software Stack" -d /var/lib/tpm -g tss \
-            -s /bin/false tss
-    fi
+  # this is initial installation
+  if ! getent group tss >/dev/null; then
+    groupadd tss
+  fi
+  if ! getent passwd tss >/dev/null; then
+    useradd -c "TCG Software Stack" -d /var/lib/tpm -g tss -s /bin/false tss
+  fi
 fi
 
 %postun
 if [ $1 -eq 0 ]; then
-    # this is delete operation
-    if getent passwd tss >/dev/null; then
-        userdel tss
-    fi
-    if getent group tss >/dev/null; then
-        groupdel tss
-    fi
+  # this is delete operation
+  if getent passwd tss >/dev/null; then
+    userdel tss
+  fi
+  if getent group tss >/dev/null; then
+    groupdel tss
+  fi
 fi
 
 %post -n libtspi -p /sbin/ldconfig
-%postun	-n libtspi -p /sbin/ldconfig
+%postun -n libtspi -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -75,7 +73,7 @@ fi
 %{_sbindir}/*
 %{_mandir}/man5
 %{_mandir}/man8
-%exclude /var
+%exclude %{_var}
 
 %files devel
 %defattr(-,root,root)
@@ -88,13 +86,15 @@ fi
 %files -n libtspi
 %defattr(-,root,root)
 %{_libdir}/libtspi.so.1.2.0
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %exclude %{_libdir}/libtddl.a
 
 %changelog
-*   Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3
--   Fix for CVE-2020-24330, CVE-2020-24331 & CVE-2020-24332
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2
--   Use standard configure macros
-*   Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-1
--   Initial build. First version
+* Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.14-4
+- Exclude debug symbols properly
+* Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3
+- Fix for CVE-2020-24330, CVE-2020-24331 & CVE-2020-24332
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2
+- Use standard configure macros
+* Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-1
+- Initial build. First version

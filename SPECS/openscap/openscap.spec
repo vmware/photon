@@ -1,16 +1,15 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
-
-Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    %{name}=588676a56b6adf389140d6fdbc6a6685ef06e7b3
-
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
+%define sha1    %{name}=588676a56b6adf389140d6fdbc6a6685ef06e7b3
 
 BuildRequires:  swig
 BuildRequires:  libxml2-devel
@@ -20,7 +19,8 @@ BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  pcre-devel
 BuildRequires:  libacl-devel
-BuildRequires:  libselinux-devel libcap-devel
+BuildRequires:  libselinux-devel
+BuildRequires:  libcap-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
@@ -73,14 +73,14 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-%exclude /usr/src/debug
-%exclude %{_libdir}/debug
 %{_bindir}/*
 %{_libexecdir}/*
 %{_mandir}/man8/*
-/usr/share/openscap/*
+%{_datadir}/openscap/*
 %{_libdir}/libopenscap_sce.so.*
 %{_libdir}/libopenscap.so.*
+%exclude %dir %{_usrsrc}/debug
+%exclude %dir %{_libdir}/debug
 
 %files devel
 %defattr(-,root,root)
@@ -98,19 +98,21 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python2.7/*
 
 %changelog
-*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.17-3
--   Version bump up to use libxml2 2.9.11-4.
-*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-2
--   Bump version as a part of rpm upgrade
-*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
--   Update to 1.2.17
-*   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
--   Disable make check which need per-XML-XPATH for bug 1900358
-*   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
--   Remove BuildRequires XML-XPath.
-*   Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
--   Update to latest version.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
--   BuildRequires curl-devel.
-*   Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-1
--   Initial build. First version
+* Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-4
+- Exclude debug symbols properly
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.17-3
+- Version bump up to use libxml2 2.9.11-4.
+* Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-2
+- Bump version as a part of rpm upgrade
+* Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
+- Update to 1.2.17
+* Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
+- Disable make check which need per-XML-XPATH for bug 1900358
+* Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
+- Remove BuildRequires XML-XPath.
+* Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
+- Update to latest version.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
+- BuildRequires curl-devel.
+* Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-1
+- Initial build. First version

@@ -1,17 +1,19 @@
 Name:         erlang
 Summary:      erlang
 Version:      23.1
-Release:      3%{?dist}
+Release:      4%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
 License:      ASL2.0
 URL:          http://erlang.com
+
 Source0:      OTP-%{version}.tar.gz
 %define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
+
 Patch0:       erlang-CVE-2021-29221.patch
 
-Requires:	ncurses-libs
+Requires:   ncurses-libs
 
 BuildRequires: unzip
 %description
@@ -21,26 +23,25 @@ erlang programming language
 %autosetup -p1 -n otp-OTP-%{version}
 
 %build
-export ERL_TOP=`pwd`
+export ERL_TOP=${PWD}
 ./otp_build autoconf
-sh configure --disable-hipe --prefix=%{_prefix} --enable-fips
+sh ./configure --disable-hipe --prefix=%{_prefix} --enable-fips
 
-make
+make %{?_smp_mflags}
 
 %install
-
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
-
-%post
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*
-%exclude /usr/src
-%exclude %{_libdir}/debug
+%{_libdir}/%{name}/*
+%exclude %dir %{_usrsrc}
+%exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.1-4
+- Exclude debug symbols properly
 * Thu Dec 16 2021 Nitesh Kumar <kunitesh@vmware.com> 23.1-3
 - Enable FIPS, Adding ncurses-libs as Requires.
 * Thu May 06 2021 Harinadh D <hdommaraju@vmware.com> 23.1-2

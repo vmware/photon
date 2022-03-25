@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.232
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1220,7 +1220,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files tools
 %defattr(-,root,root)
 /usr/libexec
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %ifarch x86_64
 %exclude /usr/lib64/traceevent
 %endif
@@ -1261,6 +1261,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.232-4
+- Exclude debug symbols properly
 * Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-3
 - Fix for CVE-2022-1016
 * Thu Mar 10 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.232-2

@@ -3,7 +3,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -31,7 +31,7 @@ BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
@@ -202,7 +202,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_includedir}/tdnf/*.h
 %{_libdir}/libtdnf.so
 %{_libdir}/libtdnfcli.so
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_libdir}/pkgconfig/tdnf.pc
 %{_libdir}/pkgconfig/tdnf-cli-libs.pc
 
@@ -232,6 +232,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.8-2
+- Exclude debug symbols properly
 * Wed Feb 23 2022 Oliver Kurth <okurth@vmware.com> 3.1.8-1
 - update to 3.1.8 (optionally disable metadata download, and locking changes)
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 3.1.7-2
