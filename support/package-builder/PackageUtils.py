@@ -130,15 +130,60 @@ class PackageUtils(object):
         try:
             listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, specPath + specName,
                                                          logFilePath, package, version, macros)
-            logmsg = package + " build done - RPMs : [ "
+
+            logmsg = ""
+            RpmsToCheck = []
+            self.logger.debug("Checking for debug symbols in built rpms of: " + package)
             for f in listRPMFiles:
-                logmsg += (os.path.basename(f) + " ")
-            logmsg += "]\n"
+                f = os.path.basename(f)
+                logmsg += f + " "
+                if f.find("-debuginfo-") < 0:
+                    RpmsToCheck.append(f)
+
+            if self.CheckForDbgSymbols(RpmsToCheck):
+                raise Exception("Rpm sanity check error")
+
+            logmsg = package + " build done - RPMs : [ " + logmsg + " ]\n"
             self.logger.info(logmsg)
         except Exception as e:
             self.logger.error("Failed while building rpm:" + package)
             raise e
         self.logger.debug("RPM build is successful")
+
+    """
+    Check for unintended debug symbols in rpm. If present, stop the build.
+    Upon rerun rpm won't be rebuilt but devs should carefully examine the faulty rpms.
+    """
+    def CheckForDbgSymbols(self, RpmsToCheck):
+        logs = ""
+        result_logs = ""
+        faulty_rpms = []
+        dbg_symbols_found = False
+        look_for = "/usr/lib/debug/.build-id"
+
+        def HandleLogs(log):
+            nonlocal logs
+            logs += log
+
+        for fn in RpmsToCheck:
+            logs = ""
+            rpm_full_path = constants.rpmPath + "/" + fn.split(".")[-2] + "/" + fn
+            cmd = self.rpmBinary + " -qlp " + rpm_full_path
+            CommandUtils.runCommandInShell(cmd, logfn=HandleLogs)
+            if look_for in logs:
+                result_logs += logs
+                faulty_rpms.append(rpm_full_path)
+                if not dbg_symbols_found:
+                    dbg_symbols_found = True
+
+        if dbg_symbols_found:
+            self.logger.error("Debug symbols found in following rpms:")
+            self.logger.error("\n".join(faulty_rpms))
+            self.logger.error(result_logs)
+            self.logger.error("Use 'rpm -qlp <rpm>' to know more on the issue\n")
+            return True
+
+        return False
 
     def findRPMFile(self, package,version="*",arch=None, throw=False):
         if not arch:
