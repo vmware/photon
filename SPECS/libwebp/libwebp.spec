@@ -1,7 +1,7 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
 Version:	1.0.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
 Group:		System Environment/Libraries
@@ -25,7 +25,7 @@ Requires:	%{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./autogen.sh
@@ -40,7 +40,7 @@ It contains the libraries and header files to create applications
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %post
@@ -62,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed May 26 2021 Sujay G <gsujay@vmware.com> 1.0.3-2
+- version bump up to build with libtiff 4.3.0
 * Wed May 26 2021 Sujay G <gsujay@vmware.com> 1.0.3-1
 - Bump version to 1.0.3 to fix following CVE's:
 - CVE-2018-25009, CVE-2018-25010, CVE-2018-25011, CVE-2018-25012,
