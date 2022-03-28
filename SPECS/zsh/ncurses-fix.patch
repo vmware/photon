@@ -1,0 +1,55 @@
+From c6a85163619ed1cee89ab047a0d98108ed46828d Mon Sep 17 00:00:00 2001
+From: Daniel Shahaf <d.s@daniel.shahaf.name>
+Date: Fri, 28 Aug 2020 02:36:35 +0000
+Subject: [PATCH] github #64: Fix a build-time error when building against
+ ncurses that hadn't been built with --enable-wgetch-events.
+
+source: https://build.opensuse.org/package/view_file/shells/zsh/ncurses-fix.patch
+
+The --enable-wgetch-events codepath is experimental (according to
+ncurses-6.2/INSTALL) and off by default (according to
+ncurses-6.2/configure.in).  With that codepath disabled, the macro
+KEY_EVENT is not provided, which (before this commit) manifested as a
+build-time error:
+
+    [  245s] gcc -c -I. -I../../Src -I../../Src -I../../Src/Zle -I.  -DHAVE_CONFIG_H -DMODULE -O2 -Wall -D_FORTIFY_SOURCE=2 -fstack-protector-strong -funwind-tables -fasynchronous-unwind-tables -fstack-clash-protection -Werror=return-type -flto=auto -g -fPIE -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -I/usr/include/ncursesw -fPIC -o curses..o curses.c
+    [  246s] In file included from curses.c:210:
+    [  246s] curses_keys.h:93:15: error: 'KEY_EVENT' undeclared here (not in a function); did you mean 'KEY_RESET'?
+    [  246s]    93 |     {"EVENT", KEY_EVENT},
+    [  246s]       |               ^~~~~~~~~
+    [  246s]       |               KEY_RESET
+
+curses_keys.h is only used for setting the "kevent" output parameter of
+'zcurses input' (and the associated $zcurses_keycodes special variable),
+so there's no harm in just leaving KEY_EVENT out of it.  (That codepath
+deals gracefully with numeric values that don't correspond to any of the
+known compile-time values, as that can happen whenever the build- and
+run-time versions of ncurses don't provide the same set of KEY_* macros,
+with or without relation to that configure flag.)
+
+Reported by Martin Liska.
+---
+ ChangeLog                   | 6 ++++++
+ Src/Modules/curses_keys.awk | 7 ++++++-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/Src/Modules/curses_keys.awk b/Src/Modules/curses_keys.awk
+index ffb182c35..25bd63c7e 100644
+--- a/Src/Modules/curses_keys.awk
++++ b/Src/Modules/curses_keys.awk
+@@ -12,8 +12,13 @@ BEGIN {nkeydefs = 0}
+ 
+ END {
+     printf("static const struct zcurses_namenumberpair keypad_names[] = {\n")
+-    for (i = 0; i < 0 + nkeydefs; i++)
++    for (i = 0; i < 0 + nkeydefs; i++) {
++        if (name[i] == "EVENT")
++            printf("#ifdef KEY_EVENT\n")
+         printf("    {\"%s\", KEY_%s},\n", name[i], name[i])
++        if (name[i] == "EVENT")
++            printf("#endif\n")
++    }
+     printf("    {NULL, 0}\n")
+     printf("};\n")
+ }
+
