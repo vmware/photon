@@ -42,7 +42,7 @@ Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  iana-etc
 BuildRequires:  tzdata
 BuildRequires:  curl-devel
@@ -202,7 +202,7 @@ install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
 %endif # with gdb_hooks
 
 %check
-%if 0%{with_check:1}
+%if 0%{?with_check}
 make %{?_smp_mflags} test
 %endif
 

@@ -18,7 +18,7 @@ BuildRequires:  curl-devel
 BuildRequires:  python3-pyparsing
 BuildRequires:  python3-pip
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-attrs
@@ -45,7 +45,7 @@ A tools to handle merging of nested data structures in python.
 %py3_install
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 pushd deepmerge/tests/
 pip3 install pluggy more-itertools funcsigs
 pytest3

@@ -11,7 +11,7 @@ Url:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha1    requests=8c7a89d183d3e9b70bf91ba5b75eccf7111b9d8d
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 Patch0:         fix_makecheck.patch
 %endif
 
@@ -21,7 +21,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-charset-normalizer
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  ca-certificates
 BuildRequires:  curl-devel
 BuildRequires:  python3-atomicwrites
@@ -79,7 +79,7 @@ Features:
 %py3_install
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 pip3 install pathlib2 funcsigs pluggy more_itertools \
              pysocks pytest-mock pytest-httpbin trustme
 pytest3 -v -k "not test_https_warnings"

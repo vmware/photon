@@ -28,7 +28,7 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 make %{?_smp_mflags}
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 sed -iE '/file map_projection.dem/,+2d' demo/all.dem
 GNUTERM=dumb make check %{?_smp_mflags}
 %endif

@@ -36,7 +36,7 @@ find %{buildroot} -type f \( -name .packlist -o \
 find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make test %{?_smp_mflags}
 %endif
 

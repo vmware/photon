@@ -10,7 +10,7 @@ Distribution:    Photon
 Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
 %define sha1     libsoup=6aaed6b49b13e287b7c3bba546ba49fec4ea72a5
 Patch0:          libsoup-fix-make-check.patch
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 Patch1:          libsoup-issue-120.patch
 %endif
 BuildRequires:   glib-devel
@@ -83,7 +83,7 @@ popd
 %find_lang %{name}
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 cd build
 ninja test
 %endif

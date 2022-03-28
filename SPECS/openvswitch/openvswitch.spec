@@ -26,7 +26,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-six
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-sortedcontainers
 %endif
 
@@ -98,7 +98,7 @@ install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfd
 sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 

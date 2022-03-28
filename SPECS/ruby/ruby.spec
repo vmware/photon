@@ -51,7 +51,7 @@ make %{?_smp_mflags} COPY="cp -p"
 %make_install %{?_smp_mflags}
 
 %check
-%if %{?with_check}
+%if 0%{?with_check}
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test make check TESTS="-v" %{?_smp_mflags}

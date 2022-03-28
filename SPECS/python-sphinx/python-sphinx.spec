@@ -35,7 +35,7 @@ BuildRequires: python3-sphinxcontrib-jsmath
 BuildRequires: python3-sphinxcontrib-serializinghtml
 BuildRequires: python3-packaging
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires: python3-pytest
 %endif
 
@@ -83,7 +83,7 @@ mv %{buildroot}%{_bindir}/sphinx-autogen %{buildroot}%{_bindir}/sphinx-autogen3
 mv %{buildroot}%{_bindir}/sphinx-apidoc %{buildroot}%{_bindir}/sphinx-apidoc3
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 

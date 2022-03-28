@@ -102,7 +102,7 @@ ln -sfv pg_waldump %{buildroot}%{pgbaseinstdir}/bin/pg_xlogdump
 %{_fixperms} %{buildroot}/*
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"

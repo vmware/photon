@@ -54,7 +54,7 @@ mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test%{python3_versio
 ln -snf py.test%{python3_version} %{buildroot}%{_bindir}/py.test3
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 

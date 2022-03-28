@@ -112,7 +112,7 @@ install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 cd build
 make test %{?_smp_mflags}
 %endif

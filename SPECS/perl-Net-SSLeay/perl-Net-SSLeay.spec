@@ -40,7 +40,7 @@ find %{buildroot} -type f -name .packlist -delete
 find %{buildroot} -type f -name '*.bs' -empty -delete
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 # Install required modules for test - Test::Pod, Test::Exception, Test::Warn and Test::NoWarnings
 export PERL_MM_USE_DEFAULT=1
 echo "yes" | cpan -a

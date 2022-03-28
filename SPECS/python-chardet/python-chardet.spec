@@ -17,7 +17,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
 
@@ -40,7 +40,7 @@ chardet is a universal character encoding detector in Python.
 %py3_install
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 %pytest -v
 %endif
 

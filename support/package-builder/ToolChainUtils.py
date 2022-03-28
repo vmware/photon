@@ -128,7 +128,7 @@ class ToolChainUtils(object):
             rpmFiles += " " + rpmFile
             packages += " " + package+"-"+version
 
-        # We need libdd, libgcrypt, libgpg-error in sandbox while building core toolchain
+        # We need libdb, libgcrypt, libgpg-error in sandbox while building core toolchain
         # XXX: once we publish latest rpms we can remove this code
         if not constants.toolChainBuilt:
             for package in constants.listExtraPkgsForCorePkgs:

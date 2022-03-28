@@ -16,7 +16,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 Patch0:         makecheck.patch
 BuildRequires:  python3-requests
 BuildRequires:  python3-pip
@@ -45,7 +45,7 @@ for item in %{buildroot}%{_bindir}/*
 done
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 # nose is not maintained anymore
 #pip3 install nose httpretty mock
 #python3 ./tests/test.py unit

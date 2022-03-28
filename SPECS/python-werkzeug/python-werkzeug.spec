@@ -16,7 +16,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-requests
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -41,7 +41,7 @@ Werkzeug started as simple collection of various utilities for WSGI applications
 %py3_install
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 pip3 install pytest hypothesis
 LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %endif

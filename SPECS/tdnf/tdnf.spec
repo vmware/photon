@@ -33,7 +33,7 @@ BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
@@ -110,7 +110,7 @@ cmake \
 make %{?_smp_mflags} && make python %{?_smp_mflags}
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 cd build && make %{?_smp_mflags} check
 %endif
 

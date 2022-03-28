@@ -19,7 +19,7 @@ Patch0:         openssl-CVE-2021-4044.patch
 Patch1:         openssl-CVE-2022-0778.patch
 Patch2:         openssl-CVE-2021-4160.patch
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 
@@ -111,7 +111,7 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} MANSUFFIX=ssl install %{?_smp_mflags
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make tests %{?_smp_mflags}
 %endif
 

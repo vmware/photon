@@ -36,7 +36,7 @@ sed -i "/addopts = --cov/d" setup.cfg
 %py3_install
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 %pytest
 %endif
 

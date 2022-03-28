@@ -36,7 +36,7 @@ The same is true of requests in terms of caching.
 mv %{buildroot}%{_bindir}/doesitcache %{buildroot}%{_bindir}/doesitcache3
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 python3 setup.py test
 %endif
 
