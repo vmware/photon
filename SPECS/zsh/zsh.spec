@@ -2,7 +2,7 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.8
+Version:      5.8.1
 Release:      1%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
@@ -10,9 +10,11 @@ Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
+%define sha1  zsh=82ac4a80c527bfe01c0bdd109f65edc403176fb8
 Source1:      zprofile.rhs
 Source2:      zshrc
+
+Patch0:       ncurses-fix.patch
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -26,6 +28,7 @@ BuildRequires: sed
 BuildRequires: ncurses-devel
 BuildRequires: libcap-devel
 BuildRequires: texinfo
+BuildRequires: pcre-devel
 BuildRequires: gawk
 BuildRequires: elfutils
 Requires(post): /bin/grep
@@ -57,7 +60,8 @@ This package contains the Zsh manual in html format.
 
 %prep
 
-%setup -q
+%autosetup -p1
+autoreconf -fiv
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -65,47 +69,46 @@ export LIBLDFLAGS='-z lazy'
 
 %configure --enable-etcdir=%{_sysconfdir} --with-tcsetpgrp --enable-maildir-support
 
-make all html
+make %{?_smp_mflags} all html
 
 %check
 rm -f Test/C02cond.ztst
-make check
+make %{?_smp_mflags} check
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %makeinstall install.info \
-  fndir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/functions \
-  sitefndir=$RPM_BUILD_ROOT%{_datadir}/%{name}/site-functions \
-  scriptdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/scripts \
-  sitescriptdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/scripts \
-  runhelpdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/help
+  fndir=%{buildroot}%{_datadir}/%{name}/%{version}/functions \
+  sitefndir=%{buildroot}%{_datadir}/%{name}/site-functions \
+  scriptdir=%{buildroot}%{_datadir}/%{name}/%{version}/scripts \
+  sitescriptdir=%{buildroot}%{_datadir}/%{name}/scripts \
+  runhelpdir=%{buildroot}%{_datadir}/%{name}/%{version}/help
 
-rm -f ${RPM_BUILD_ROOT}%{_bindir}/zsh-%{version}
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+rm -f %{buildroot}%{_bindir}/zsh-%{version}
+rm -f %{buildroot}%{_infodir}/dir
 
-mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}
+mkdir -p %{buildroot}%{_sysconfdir}
 for i in %{SOURCE1}; do
-    install -m 644 $i $RPM_BUILD_ROOT%{_sysconfdir}/"$(basename $i .rhs)"
+    install -m 644 $i %{buildroot}%{_sysconfdir}/"$(basename $i .rhs)"
 done
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/skel
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/skel/.zshrc
+mkdir -p %{buildroot}%{_sysconfdir}/skel
+install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.zshrc
 
 # This is just here to shut up rpmlint, and is very annoying.
 # Note that we can't chmod everything as then rpmlint will complain about
 # those without a she-bang line.
 for i in checkmail harden run-help zcalc zkbd; do
     sed -i -e 's!/usr/local/bin/zsh!%{_bindir}/zsh!' \
-    $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/$i
-    chmod +x $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/$i
+    %{buildroot}%{_datadir}/zsh/%{version}/functions/$i
+    chmod +x %{buildroot}%{_datadir}/zsh/%{version}/functions/$i
 done
 
-sed -i "s!$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/help!%{_datadir}/%{name}/%{version}/help!" \
-    $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/{run-help,_run-help}
-
+sed -i "s!%{buildroot}%{_datadir}/%{name}/%{version}/help!%{_datadir}/%{name}/%{version}/help!" \
+    %{buildroot}%{_datadir}/zsh/%{version}/functions/{run-help,_run-help}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
 if [ "$1" = 1 ]; then
@@ -126,7 +129,6 @@ if [ "$1" = 0 ] && [ -f %{_sysconfdir}/shells ] ; then
   sed -i '\!^/bin/%{name}$!d' %{_sysconfdir}/shells
 fi
 
-
 %files
 %defattr(-,root,root)
 %doc README LICENCE Etc/BUGS Etc/CONTRIBUTORS Etc/FAQ FEATURES MACHINES
@@ -144,6 +146,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon Mar 21 2022 Harinadh D <hdommaraju@vmware.com> 5.8.1-1
+-   fix CVE-2021-45444
 *   Mon Mar 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 5.8-1
 -   Upgrade to 5.8 to mitigate CVE-2019-20044
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
