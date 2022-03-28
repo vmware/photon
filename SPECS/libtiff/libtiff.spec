@@ -1,18 +1,21 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.1.0
-Release:        3%{?dist}
+Version:        4.3.0
+Release:        1%{?dist}
 License:        libtiff
 URL:            http://www.simplesystems.org/libtiff/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-Patch0:         libtiff-CVE-2020-35523.patch
-Patch1:         libtiff-CVE-2020-35524.patch
-Patch2:         libtiff-CVE-2020-35521.patch
-%define sha1    libtiff-v=8fc266cdb1ecbf6d5d13c7f0ce73161f59ac0996
+%define sha1    libtiff-v=3e4f5c772c564cb03e2eba0ab331c6ff95a58125
+Patch0:         CVE-2018-12900.patch
+Patch1:         libtiff-CVE-2022-0561.patch
+Patch2:         libtiff-CVE-2022-0562.patch
+Patch3:         libtiff-CVE-2022-0891.patch
 BuildRequires:  libjpeg-turbo-devel
+BuildRequires:  wget
+BuildRequires:  ca-certificates
 Requires:       libjpeg-turbo
 %description
 The LibTIFF package contains the TIFF libraries and associated utilities. The libraries are used by many programs for reading and writing TIFF files and the utilities are used for general work with TIFF files.
@@ -29,6 +32,7 @@ It contains the libraries and header files to create applications
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 sh autogen.sh
@@ -64,6 +68,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Mon Mar 21 2022 Harinadh D <hdommaraju@vmware.com> 4.3.0-1
+-   Fix CVE-2022-0562,CVE-2022-0552,CVE-2022-0891
 *   Mon Sep 20 2021 Harinadh D <hdommaraju@vmware.com> 4.1.0-3
 -   Fix CVE-2020-35521
 *   Mon Mar 22 2021 Harinadh D <hdommaraju@vmware.com> 4.1.0-2
