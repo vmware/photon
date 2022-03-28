@@ -55,7 +55,7 @@ Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  iana-etc
 BuildRequires:  tzdata
 BuildRequires:  curl-devel
@@ -185,7 +185,7 @@ rm %{buildroot}%{_bindir}/2to3
 %endif # with gdb_hooks
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make %{?_smp_mflags} test
 %endif
 

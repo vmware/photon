@@ -109,7 +109,7 @@ cmake \
 make %{?_smp_mflags} && make python %{?_smp_mflags}
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 ln -sfv %{_bindir}/pytest3 %{_bindir}/pytest
 pip3 install importlib-metadata pluggy atomicwrites more_itertools
 cd build && make %{?_smp_mflags} check

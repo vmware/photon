@@ -470,10 +470,9 @@ class SpecParser(object):
     def _isConditionalCheckMacro(self, line):
         data = line.strip()
         words = data.split()
-        nrWords = len(words)
-        if nrWords != 2:
+        if len(words) != 2:
             return False
-        if words[0] != "%if" or words[1] != "%{with_check}":
+        if words[0] != "%if" or "with_check" not in words[1]:
             return False
         return True
 
@@ -484,13 +483,10 @@ class SpecParser(object):
     def _isConditionTrue(self, line):
         data = line.strip()
         words = data.split()
-        nrWords = len(words)
         # condition like %if a > b is not supported
-        if nrWords != 2:
+        if len(words) != 2:
             return True
-        if self._replaceMacros(words[1]) == "0":
-            return False
-        return True
+        return int(self._replaceMacros(words[1]))
 
     def _isConditionalMacroStart(self, line):
         return line.startswith("%if")
