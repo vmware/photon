@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3408
-Release:        6%{?dist}
+Version:        8.2.4646
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,50 +12,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=f53626d97b6d57b2579493f2527fdcf275244017
+%define sha1    %{name}=6d9dc0ab5e3e77d26aa762e86541ea0e13db12bd
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
 
 Conflicts:      toybox < 0.7.3-7
-
-Patch0:         vim-CVE-2021-3778.patch
-Patch1:         vim-CVE-2021-3796.patch
-Patch2:         vim-CVE-2021-3872.patch
-Patch3:         vim-CVE-2021-3875.patch
-Patch4:         vim-CVE-2021-3973.patch
-Patch5:         vim-CVE-2021-3974.patch
-Patch6:         vim-CVE-2021-3903.patch
-Patch7:         vim-CVE-2021-3927.patch
-Patch8:         vim-CVE-2021-3928.patch
-Patch9:         vim-CVE-2021-3984.patch
-Patch10:        vim-CVE-2021-4019.patch
-Patch11:        vim-CVE-2021-4069.patch
-Patch12:        vim-CVE-2021-4136.patch
-Patch13:        vim-CVE-2022-0261.patch
-Patch14:        vim-CVE-2022-0318.patch
-Patch15:        vim-CVE-2021-4166.patch
-Patch16:        vim-CVE-2021-4187.patch
-Patch17:        vim-CVE-2021-4192.patch
-Patch18:        vim-CVE-2022-0128.patch
-Patch19:        vim-CVE-2021-4173.patch
-Patch20:        vim-CVE-2022-0359.patch
-Patch21:        vim-CVE-2022-0361.patch
-Patch22:        vim-CVE-2022-0408.patch
-Patch23:        vim-CVE-2022-0443.patch
-Patch24:        vim-CVE-2022-0413.patch
-Patch25:        vim-CVE-2022-0392.patch
-Patch26:        vim-CVE-2022-0407.patch
-Patch27:        vim-CVE-2022-0368.patch
-Patch28:        vim-CVE-2022-0629.patch
-Patch29:        vim-CVE-2022-0685.patch
-Patch30:        vim-CVE-2022-0729.patch
-Patch31:        vim-CVE-2022-0554.patch
-Patch32:        vim-CVE-2022-0572.patch
-Patch33:        vim-CVE-2022-0714.patch
-Patch34:        vim-CVE-2022-0319.patch
-Patch35:        vim-CVE-2021-4193.patch
-Patch36:        vim-CVE-2022-0417.patch
 
 %description
 The VIM package contains a powerful text editor.
@@ -110,6 +72,7 @@ fi
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/%{maj_ver}/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
+%exclude %{_datarootdir}/vim/%{maj_ver}/colors/lists/default.vim
 %{_datarootdir}/vim/%{maj_ver}/compiler/*
 %{_datarootdir}/vim/%{maj_ver}/delmenu.vim
 %{_datarootdir}/vim/%{maj_ver}/evim.vim
@@ -187,8 +150,8 @@ fi
 %config(noreplace) /etc/vimrc
 %{_datarootdir}/vim/%{maj_ver}/defaults.vim
 %{_datarootdir}/vim/%{maj_ver}/filetype.vim
-%{_datarootdir}/vim/%{maj_ver}/rgb.txt
 %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
+%{_datarootdir}/vim/%{maj_ver}/colors/lists/default.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
 %{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
@@ -201,6 +164,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Apr 05 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4646-1
+- Update to 8.2.4646 to fix several CVEs
 * Wed Mar 23 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-6
 - Fix CVE-2022-0417
 * Wed Mar 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-5
