@@ -3,7 +3,7 @@
 		"grub2-theme", "grub2-efi-image",
                 "pkg-config", "bash", "bzip2", "shadow", "procps-ng",
 		"coreutils", "bc", "libtool", "net-tools", "findutils", "xz",
-		"iproute2", "util-linux", "kmod", "linux", "linux-dtb-ls1012afrwy",
+		"iproute2", "util-linux", "kmod", "linux",
 		"ca-certificates", "curl", "iptables", "Linux-PAM", "systemd",
 		"dbus", "file", "e2fsprogs", "rpm","gawk","gptfdisk",
                 "openssh", "gdbm", "parted", "linux-firmware",
