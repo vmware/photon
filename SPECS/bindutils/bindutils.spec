@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
@@ -48,22 +48,29 @@ zone "." in {
 EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
 
-%pre
-if ! getent group named >/dev/null; then
-    groupadd -r named
+%posttrans
+if [ $1 -eq 1 ] ; then
+    if ! getent group named >/dev/null; then
+        groupadd -r named
+    fi
+    if ! getent passwd named >/dev/null; then
+        useradd -g named -d /var/lib/bind\
+            -s /bin/false -M -r named
+    fi
 fi
-if ! getent passwd named >/dev/null; then
-    useradd -g named -d /var/lib/bind -s /bin/false -M -r named
-fi
-%post -p /sbin/ldconfig
+
+%post
+/sbin/ldconfig
 
 %postun
 /sbin/ldconfig
-if getent passwd named >/dev/null; then
-    userdel named
-fi
-if getent group named >/dev/null; then
-    groupdel named
+if [ $1 -eq 0 ] ; then
+    if getent passwd named >/dev/null; then
+        userdel named
+    fi
+    if getent group named >/dev/null; then
+        groupdel named
+    fi
 fi
 
 %files
@@ -73,6 +80,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Tue Mar 29 2022 Tapas Kundu <tkundu@vmware.com> 9.16.15-3
+-   Do not remove user and group in postun unless uninstalled
 *   Fri Nov 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 9.16.15-2
 -   Bump up release for openssl
 *   Mon Jun 07 2021 Sujay G <gsujay@vmware.com> 9.16.15-1
