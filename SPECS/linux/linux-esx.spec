@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.304
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -138,6 +138,9 @@ Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 # Fix for CVE-2021-4204
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix for CVE-2022-1016
+Patch124:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -263,6 +266,7 @@ The Linux package contains the Linux kernel doc files
 %patch119 -p1
 %patch120 -p1
 %patch123 -p1
+%patch124 -p1
 
 %build
 
@@ -358,6 +362,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.9.304-2
+-   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1
 -   Update to version 4.9.304
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
