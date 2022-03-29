@@ -1,7 +1,19 @@
-diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/sysnetwork.fc selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/sysnetwork.fc
---- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/sysnetwork.fc	2021-09-02 11:10:24.508147768 +0530
-+++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/sysnetwork.fc	2021-09-02 11:14:20.432141597 +0530
-@@ -40,6 +40,14 @@
+From 5b55fac6f6650410607ebe20e01e4436222dea65 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:44:04 +0530
+Subject: [PATCH 17/20] system sysnetwork
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/sysnetwork.fc | 8 ++++++++
+ policy/modules/system/sysnetwork.if | 6 ++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/policy/modules/system/sysnetwork.fc b/policy/modules/system/sysnetwork.fc
+index 66c6118..3344488 100644
+--- a/policy/modules/system/sysnetwork.fc
++++ b/policy/modules/system/sysnetwork.fc
+@@ -40,6 +40,14 @@ ifdef(`distro_redhat',`
  /var/run/systemd/resolve/resolv\.conf   --  gen_context(system_u:object_r:net_conf_t,s0)
  /var/run/systemd/resolve/stub-resolv\.conf  gen_context(system_u:object_r:net_conf_t,s0)
  ')
@@ -16,10 +28,11 @@ diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules
  /var/run/NetworkManager/resolv\.conf.*   --  gen_context(system_u:object_r:net_conf_t,s0)
  
  /var/run/cloud-init(/.*)?     gen_context(system_u:object_r:net_conf_t,s0)
-diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/sysnetwork.if selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/sysnetwork.if
---- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/sysnetwork.if	2021-09-02 11:10:24.508147768 +0530
-+++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/sysnetwork.if	2021-09-02 11:11:35.976145899 +0530
-@@ -450,6 +450,12 @@
+diff --git a/policy/modules/system/sysnetwork.if b/policy/modules/system/sysnetwork.if
+index f3ea50a..8edff46 100644
+--- a/policy/modules/system/sysnetwork.if
++++ b/policy/modules/system/sysnetwork.if
+@@ -450,6 +450,12 @@ interface(`sysnet_read_config',`
  		list_dirs_pattern($1, net_conf_t, net_conf_t)
  	')
  
@@ -32,3 +45,6 @@ diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules
  	ifdef(`distro_redhat',`
  		files_search_all_pids($1)
  		init_search_pid_dirs($1)
+-- 
+2.35.1
+

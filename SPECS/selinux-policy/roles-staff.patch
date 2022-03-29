@@ -1,7 +1,18 @@
-diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/staff.te selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/staff.te
---- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/staff.te	2021-08-30 19:31:53.000000000 +0530
-+++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/staff.te	2021-09-01 21:07:09.345471181 +0530
-@@ -353,100 +353,6 @@
+From 550e58085ae0d9792bdea52552cccc40a5a59fb3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:38:58 +0530
+Subject: [PATCH 10/20] roles staff
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/roles/staff.te | 94 -----------------------------------
+ 1 file changed, 94 deletions(-)
+
+diff --git a/policy/modules/roles/staff.te b/policy/modules/roles/staff.te
+index e819516..e9b5405 100644
+--- a/policy/modules/roles/staff.te
++++ b/policy/modules/roles/staff.te
+@@ -357,100 +357,6 @@ optional_policy(`
  	xserver_run(staff_t, staff_r)
  ')
  
@@ -102,3 +113,6 @@ diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules
  tunable_policy(`selinuxuser_execmod',`
  	userdom_execmod_user_home_files(staff_t)
  ')
+-- 
+2.35.1
+

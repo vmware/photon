@@ -1,19 +1,19 @@
-%define container_selinux_ver 2.145.0
+%define container_selinux_ver 2.181.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
-Version:        3.14.8
-Release:        4%{?dist}
+Version:        36.5
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/fedora-selinux/%{name}/archive/db2614cce37245ba4fc5de73b1f6f33cc46686e4/%{name}-db2614cc.tar.gz
-%define sha1 selinux-policy-db=ffba5a771c95d3b6837f8b1d66f2d9ea52661e1c
+Source0:        https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha1 %{name}=ae8c52df28577b2c15cddee428e9773fbfeafa6e
 Source1:        https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
-%define sha1 container-selinux=93676d051407d4e57ae517dd4dc45239d1369e3d
+%define sha1 container-selinux=30bd378d8bc8075642442a88d0447a937c074159
 Source2:        build.conf
 Source3:        modules.conf
 
@@ -38,8 +38,8 @@ Patch17: system-fstool.patch
 Patch18: iptables-allow-kernel_t-fifo_files.patch
 Patch19: authlogin.if-add-transition-rules-for-shadow.patch
 Patch20: allow-lvm_t-to-transit-to-unconfined_t.patch
-Patch21: allow-proc_security_t-read-permission-to-systemd_sys.patch
-Patch22: give-watch-permission-to-agetty.patch
+Patch21: fix-fc-conflicts.patch
+Patch22: fix-AVC-denials-based-on-package-test-results.patch
 
 BuildArch:      noarch
 
@@ -68,7 +68,7 @@ SELinux policy development
 # Using autosetup is not feasible
 %setup -q -b 1 -n container-selinux-%{container_selinux_ver}
 # Using autosetup is not feasible
-%setup -qn %{name}-db2614cce37245ba4fc5de73b1f6f33cc46686e4
+%setup -q
 cp -r ../container-selinux-%{container_selinux_ver}/container.* policy/modules/contrib/
 %autopatch -p1
 
@@ -99,8 +99,8 @@ SELINUXTYPE=default
 EOF
 
 %posttrans
-if [ $1 -ge 0 ] ; then
-    /sbin/setfiles /etc/selinux/default/contexts/files/file_contexts /
+if [ $1 -ge 0 ]; then
+  /sbin/setfiles /etc/selinux/default/contexts/files/file_contexts /
 fi
 
 %files
@@ -108,14 +108,16 @@ fi
 %dir %{_sysconfdir}/selinux/
 %config(noreplace) %{_sysconfdir}/selinux/config
 %{_sysconfdir}/selinux/default
+%{_sharedstatedir}/selinux/default
 %{_sysconfdir}/selinux/default/contexts/files/file_contexts.subs_dist
 
 %files devel
 %defattr(-,root,root,-)
 %{_datadir}/selinux
-%{_sharedstatedir}/selinux/default
 
 %changelog
+* Mon Mar 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-1
+- Upgrade to v36.5
 * Tue Mar 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-4
 - Fix some more AVC denials
 * Wed Mar 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-3
