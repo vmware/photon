@@ -1,16 +1,16 @@
-From 5f8ee6abac143fb4ee97ce966f1116bb6853774a Mon Sep 17 00:00:00 2001
+From d82e154e0a633b2510e15e3e277d1cec2c811a3d Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Mar 2022 01:03:35 +0000
-Subject: [PATCH] motd_t: new domain for motdgen
+Subject: [PATCH 09/20] motd_t: new domain for motdgen
 
 ---
  policy/modules/contrib/motd.fc     |  5 +++++
  policy/modules/contrib/motd.if     | 22 ++++++++++++++++++++++
- policy/modules/contrib/motd.te     | 17 +++++++++++++++++
+ policy/modules/contrib/motd.te     | 18 ++++++++++++++++++
  policy/modules/services/ssh.te     |  3 +++
  policy/modules/system/authlogin.fc |  2 --
  policy/modules/system/authlogin.te |  9 ---------
- 6 files changed, 47 insertions(+), 11 deletions(-)
+ 6 files changed, 48 insertions(+), 11 deletions(-)
  create mode 100644 policy/modules/contrib/motd.fc
  create mode 100644 policy/modules/contrib/motd.if
  create mode 100644 policy/modules/contrib/motd.te
@@ -56,7 +56,7 @@ index 0000000..1405d9b
 +
 diff --git a/policy/modules/contrib/motd.te b/policy/modules/contrib/motd.te
 new file mode 100644
-index 0000000..52e1804
+index 0000000..33d7a1b
 --- /dev/null
 +++ b/policy/modules/contrib/motd.te
 @@ -0,0 +1,18 @@
@@ -79,10 +79,10 @@ index 0000000..52e1804
 +manage_files_pattern(motd_t, motd_var_run_t, motd_var_run_t);
 +
 diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
-index 10126e7..555d111 100644
+index bf988b7..a09bffa 100644
 --- a/policy/modules/services/ssh.te
 +++ b/policy/modules/services/ssh.te
-@@ -317,6 +317,9 @@ term_setattr_all_ttys(sshd_t)
+@@ -318,6 +318,9 @@ term_setattr_all_ttys(sshd_t)
  term_relabelto_all_ptys(sshd_t)
  term_use_ptmx(sshd_t)
  
@@ -93,10 +93,10 @@ index 10126e7..555d111 100644
  corenet_tcp_bind_xserver_port(sshd_t)
  corenet_tcp_bind_vnc_port(sshd_t)
 diff --git a/policy/modules/system/authlogin.fc b/policy/modules/system/authlogin.fc
-index 41fb741..d3ee3cb 100644
+index bb63705..8161cc4 100644
 --- a/policy/modules/system/authlogin.fc
 +++ b/policy/modules/system/authlogin.fc
-@@ -76,8 +76,6 @@ ifdef(`distro_gentoo', `
+@@ -83,8 +83,6 @@ ifdef(`distro_gentoo', `
  
  /var/run/console(/.*)?	 	gen_context(system_u:object_r:pam_var_console_t,s0)
  /var/run/faillock(/.*)?		gen_context(system_u:object_r:faillog_t,s0)
@@ -133,5 +133,5 @@ index 1885fa6..8ba5900 100644
  
  logging_set_loginuid(login_pgm)
 -- 
-2.30.0
+2.35.1
 

@@ -1,7 +1,18 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/kernel/storage.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/kernel/storage.fc
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/kernel/storage.fc	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/kernel/storage.fc	2020-04-24 06:23:07.979181662 +0000
-@@ -49,6 +49,9 @@
+From e9853d315e415b3acd93aca82ad2282653c65123 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:35:50 +0530
+Subject: [PATCH 08/20] kernel storage
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/kernel/storage.fc | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/policy/modules/kernel/storage.fc b/policy/modules/kernel/storage.fc
+index cf2dcbd..6b4bde0 100644
+--- a/policy/modules/kernel/storage.fc
++++ b/policy/modules/kernel/storage.fc
+@@ -54,6 +54,9 @@
  ifdef(`distro_redhat', `
  /dev/root		-b	gen_context(system_u:object_r:fixed_disk_device_t,mls_systemhigh)
  ')
@@ -11,3 +22,6 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  /dev/s(cd|r)[^/]*	-b	gen_context(system_u:object_r:removable_device_t,s0)
  /dev/sbpcd.*		-b	gen_context(system_u:object_r:removable_device_t,s0)
  /dev/sg[0-9]+		-c	gen_context(system_u:object_r:scsi_generic_device_t,s0)
+-- 
+2.35.1
+

@@ -1,6 +1,17 @@
-diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/systemd.te selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/systemd.te
---- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/system/systemd.te	2021-09-01 22:43:30.597319961 +0530
-+++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/system/systemd.te	2021-09-01 22:43:45.549319570 +0530
+From c5ad5efb29f80b688a65f7f237860395b5aab5d6 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:44:31 +0530
+Subject: [PATCH 18/20] system systemd
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/systemd.te | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index 8d96c4b..3edef8f 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
 @@ -145,7 +145,6 @@ files_type(systemd_rfkill_var_lib_t)
  systemd_domain_template(systemd_timedated)
  init_nnp_daemon_domain(systemd_timedated_t)
@@ -9,7 +20,7 @@ diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modul
  
  type systemd_timedated_unit_file_t;
  systemd_unit_file(systemd_timedated_unit_file_t)
-@@ -918,12 +917,14 @@ allow systemd_timedated_t systemd_networ
+@@ -939,12 +938,14 @@ allow systemd_timedated_t systemd_networkd_var_run_t:dir watch_dir_perms;
  
  list_dirs_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
  read_files_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
@@ -24,7 +35,7 @@ diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modul
  
  dev_rw_realtime_clock(systemd_timedated_t)
  dev_write_kmsg(systemd_timedated_t)
-@@ -1123,6 +1124,7 @@ read_files_pattern(systemd_resolved_t, s
+@@ -1149,6 +1150,7 @@ read_files_pattern(systemd_resolved_t, systemd_networkd_var_run_t, systemd_netwo
  allow systemd_resolved_t systemd_networkd_var_run_t:dir watch_dir_perms;
  
  kernel_dgram_send(systemd_resolved_t)
@@ -32,7 +43,7 @@ diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modul
  kernel_read_net_sysctls(systemd_resolved_t)
  kernel_read_network_state(systemd_resolved_t)
  
-@@ -1134,6 +1136,11 @@ corenet_tcp_connect_llmnr_port(systemd_r
+@@ -1160,6 +1162,11 @@ corenet_tcp_connect_llmnr_port(systemd_resolved_t)
  corenet_udp_bind_dns_port(systemd_resolved_t)
  corenet_tcp_bind_dns_port(systemd_resolved_t)
  corenet_udp_bind_howl_port(systemd_resolved_t)
@@ -44,7 +55,7 @@ diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modul
  
  dev_write_kmsg(systemd_resolved_t)
  dev_read_sysfs(systemd_resolved_t)
-@@ -1228,6 +1235,7 @@ fs_rw_tracefs_files(systemd_modules_load
+@@ -1256,6 +1263,7 @@ fs_rw_tracefs_files(systemd_modules_load_t)
  modutils_exec_kmod(systemd_modules_load_t)
  modutils_read_module_config(systemd_modules_load_t)
  modutils_read_module_deps_files(systemd_modules_load_t)
@@ -52,3 +63,6 @@ diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modul
  
  systemd_read_efivarfs(systemd_modules_load_t)
  
+-- 
+2.35.1
+
