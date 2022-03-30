@@ -128,16 +128,6 @@ class ToolChainUtils(object):
             rpmFiles += " " + rpmFile
             packages += " " + package+"-"+version
 
-        # We need libdb, libgcrypt, libgpg-error in sandbox while building core toolchain
-        # XXX: once we publish latest rpms we can remove this code
-        if not constants.toolChainBuilt:
-            for package in constants.listExtraPkgsForCorePkgs:
-                rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
-                if not rpmFile:
-                    self.logger.error("Unable to find published rpm " + package)
-                    raise Exception("Input Error")
-                rpmFiles += " " + rpmFile
-
         self.logger.debug(rpmFiles)
         self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +

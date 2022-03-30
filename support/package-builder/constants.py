@@ -37,7 +37,6 @@ class constants(object):
     crossCompiling = False
     currentArch = buildArch
     hostRpmIsNotUsable = False
-    toolChainBuilt = False
 
     noDepsPackageList = [
         "texinfo",
@@ -50,12 +49,6 @@ class constants(object):
         "sqlite",
         "sqlite-devel",
         "sqlite-libs"]
-
-    listExtraPkgsForCorePkgs = [
-        "libdb", "libdb-devel",
-        "libgcrypt",
-        "libgpg-error",
-    ]
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
@@ -476,7 +469,3 @@ class constants(object):
                 k, v = m.split(' ', 1)
                 macros[k] = v
         return macros
-
-    @staticmethod
-    def isToolChainBuilt(val):
-        constants.toolChainBuilt = val
