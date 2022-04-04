@@ -1,10 +1,10 @@
 %global VER 7.1.0
-%global Patchlevel 1
+%global Patchlevel 19
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.0.1
-Release:        2%{?dist}
+Version:        7.1.0.19
+Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,8 +12,7 @@ Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org/
 Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha1 %{name}=c56851c400f23338a3d285a6f38a0ca23398064f
-Patch0:         CVE-2021-39212.patch
+%define sha1 %{name}=a396631af9021480c594b86635b9819f5abbc511
 Requires:       %{name}-libs%{?_isa}
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -98,7 +97,7 @@ want to develop/compile applications using the ImageMagick C interface,
 however.
 
 %prep
-%autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
+%autosetup -n %{name}-%{VER}-%{Patchlevel}
 
 # for %%doc
 mkdir Magick++/examples
@@ -173,6 +172,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Fri Apr 01 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
+-   Fix for CVE-2021-4219.
 *   Mon Jan 03 2022 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-2
 -   Fix for CVE-2021-39212.
 *   Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
