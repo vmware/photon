@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.zlib.net/
 License:        zlib
 Group:          Applications/System
@@ -9,22 +9,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.zlib.net/%{name}-%{version}.tar.xz
 %define sha1    zlib=e1cb0d5c92da8e9a8c2635dfa249c341dfd00322
+Patch0:         CVE-2018-25032-1.patch
+Patch1:         CVE-2018-25032-2.patch
 %description
 Compression and decompression routines
 %package    devel
 Summary:    Header and development files for zlib
 Requires:   %{name} = %{version}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
-%setup -q
+%autosetup -p1
 %build
-./configure \
-    --prefix=%{_prefix}
+sh configure --prefix=%{_prefix}
 make V=1 %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libz.so) %{buildroot}%{_libdir}/libz.so
 
@@ -46,6 +47,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+*   Mon Apr 04 2022 Shivani Agarwal <shivania2@vmware.com> 1.2.11-2
+-   Fix for CVE-2018-25032
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.11-1
 -   Updated to version 1.2.11.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.8-5
