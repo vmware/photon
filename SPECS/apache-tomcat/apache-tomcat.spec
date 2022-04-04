@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.72
-Release:        2%{?dist}
+Version:        8.5.78
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,12 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=9514320e5715d81a5b25833e7edbeaefec2078be
+%define sha1    apache-tomcat=bb5742af7d1d58f9080cd07d989ad01eda64a738
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=b6f6ebc3f598f0d82dece8d9a491db4a2ae7c908
+%define sha1    base=1445b56d5e4d34f37747931fc08c51a812aa5ce9
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1:         apache-tomcat-CVE-2022-23181.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -101,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Apr 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.78-1
+-   Update version to 8.5.78
 *   Thu Feb 10 2022 Nitesh Kumar <kunitesh@vmware.com> 8.5.72-2
 -   Fix CVE-2022-23181
 *   Fri Oct 29 2021 Dweep Advani <dadvani@vmware.com> 8.5.72-1
