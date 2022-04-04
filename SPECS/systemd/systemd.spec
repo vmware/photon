@@ -1,7 +1,7 @@
 Name:           systemd
-URL:            http://www.freedesktop.org/wiki/Software/systemd/
-Version:        250.2
-Release:        2%{?dist}
+URL:            http://www.freedesktop.org/wiki/Software/systemd
+Version:        250.4
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    %{name}=93c81bb3f51b8ec3fd6d1e2e6916f8037ca4770d
+%define sha1    %{name}=c662e22d628414c4c310c5f7cea38e4a1e60742a
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -348,6 +348,9 @@ rm -rf %{buildroot}/*
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
+if [ $1 -eq 1 ] || [ $1 -eq 2 ]; then
+  [ "$(bootctl is-installed)" = "no" ] && bootctl install || :
+fi
 
 %systemd_post %udev_services
 
@@ -661,6 +664,9 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Apr 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 250.4-1
+- Upgrade to v250.4
+- Fix systemd-boot-update.service failure
 * Wed Jan 12 2022 Nitesh Kumar <kunitesh@vmware.com> 250.2-2
 - Added postun for systemd-tests.
 * Tue Jan 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 250.2-1
