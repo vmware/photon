@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.78
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -310,352 +310,354 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
--   .config: enable zstd compression for squashfs.
--   .config: enable crypto user api rng.
-*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
--   Disable md5 algorithm for sctp if fips is enabled.
-*   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
--   compile with openssl 3.0.0
-*   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
--   Update to version 5.10.78
-*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
--   Update to version 5.10.75
-*   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
--   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
--   Enable sta by default
-*   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
--   Update to version 5.10.61
-*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
--   Update to version 5.10.52
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
--   Fix for CVE-2021-33909
-*   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
--   Update to version 5.10.46
-*   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.42-4
--   EMUTRAMP: use the prefix X86_ for error codes
-*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
--   Fix for CVE-2021-3609
-*   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
--   Update to version 5.10.42
--   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
-*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
--   Update to version 5.10.35
-*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-9
--   Fix for CVE-2021-23133
-*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8
--   Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
--   CVE-2020-26145, CVE-2020-26141
-*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
--   Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
-*   Thu Apr 29 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
--   Remove buf_info from device accessible structures in vmxnet3
-*   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
--   Update canister binary.
--   use jent by drbg and ecc.
--   Enable hmac(sha224) self test and broket KAT test.
-*   Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
--   Update 0001-Skip-rap-plugin-for-aesni-intel-modules.patch for 5.10.25 kernel.
--   Remove hmac(sha224) from broken kat test.
-*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
--   Fix for CVE-2021-23133
-*   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
--   Fix for CVE-2021-29154
-*   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
--   Update to version 5.10.25
-*   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
--   Do not execute some tests twice
--   Support future disablement of des3
--   Do verbose build
--   Canister update.
-*   Mon Mar 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
--   Use jitterentropy rng instead of urandom in rng module.
-*   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
--   Update to version 5.10.21
-*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-8
--   FIPS canister update
-*   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
--   Fix /boot/photon.cfg symlink when /boot is a separate partition.
-*   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6
--   Added crypto_self_test and kattest module.
--   These patches are applied when kat_build is enabled.
-*   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-5
--   Build with secure FIPS canister.
-*   Thu Jan 28 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-4
--   Enabled CONFIG_WIREGUARD
-*   Wed Jan 27 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3
--   Fix rap_plugin code to generate rap_hashes when abs-finish is enabled.
-*   Wed Jan 13 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-2
--   Fix build failure.
-*   Wed Jan 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-1
--   Update to 5.10.4.
-*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
--   Fix CVE-2020-8694
-*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
--   Fix CVE-2020-25704
-*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
--   Remove the support of fipsify and hmacgen
-*   Thu Oct 22 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-1
--   Update to 5.9.0
-*   Wed Oct 14 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-rc7.1
--   Update to 5.9.0-rc7
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-4
--   openssl 1.1.1
-*   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3
--   Fix CVE-2020-14331
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.19.127-2
--   Require python3
-*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
--   Update to version 4.19.127
-*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-8
--   Enabled CONFIG_BINFMT_MISC
-*   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-7
--   Add patch to fix CVE-2019-18885
-*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-6
--   Keep modules of running kernel till next boot
-*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.112-5
--   Add patch to fix CVE-2020-10711
-*   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-4
--   Updated pax_rap patch to support gcc-8.4.0
-*   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-3
--   Photon-checksum-generator version update to 1.1.
-*   Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2
--   HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
-*   Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
--   Update to version 4.19.112
-*   Tue Mar 31 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-2
--   hmac generation of crypto modules and initrd generation changes if fips=1
-*   Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
--   Update to version 4.19.104
-*   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-6
--   Adding Enhances depedency to hmacgen.
-*   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-5
--   Backporting of patch continuous testing of RNG from urandom
-*   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
--   Fix CVE-2019-16234
-*   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
--   Add photon-checksum-generator source tarball and remove hmacgen patch.
--   Exclude hmacgen.ko from base package.
-*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
--   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
--   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
-*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
--   Update to version 4.19.97
-*   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
--   Enable DRBG HASH and DRBG CTR support.
-*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
--   Modify tcrypt to remove tests for algorithms that are not supported in photon.
--   Added tests for DH, DRBG algorithms.
-*   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
--   Update fips Kat tests.
-*   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
--   Update to version 4.19.87
-*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
--   Adding hmac sha256/sha512 generator kernel module for fips.
-*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
--   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
--   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
-*   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
--   Update to version 4.19.84
--   Fix CVE-2019-18814
-*   Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
--   Update to version 4.19.82
-*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
--   Fix vsock QP detach with outgoing data
-*   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
--   Update to version 4.19.79
--   Fix CVE-2019-17133
-*   Thu Oct 10 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-2
--   Adding lvm and dm-mod modules to support root as lvm
-*   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
--   Update to version 4.19.76
-*   Mon Sep 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
--   Update to version 4.19.72
-*   Thu Sep 05 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-2
--   Avoid oldconfig which leads to potential build hang
-*   Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-1
--   Update to version 4.19.69
-*   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
--   Update to version 4.19.65
--   Fix CVE-2019-1125 (SWAPGS)
-*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-3
--   Fix postun script.
-*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-2
--   Fix 9p vsock 16bit port issue.
-*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
--   Update to version 4.19.52
--   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
--   CVE-2019-12382, CVE-2019-12378, CVE-2019-12455
-*   Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.40-3
--   Change default I/O scheduler to 'deadline' to fix performance issue.
-*   Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2
--   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
--   mulitple kernels are installed and current linux kernel is removed.
-*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
--   Update to version 4.19.40
-*   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
--   Fix CVE-2019-10125
-*   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
--   Update to version 4.19.32
-*   Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.29-1
--   Update to version 4.19.29
-*   Tue Mar 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-1
--   Update to version 4.19.26
-*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
--   Fix CVE-2019-8912
-*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
--   Update to version 4.19.15
-*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
--   cmdline: added audit=1 pti=on
--   config: PANIC_TIMEOUT=-1, DEBUG_RODATA_TEST=y
-*   Wed Jan 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-3
--   Additional security hardening options in the config.
-*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
--   Enable AppArmor by default.
-*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
--   Update to version 4.19.6
-*   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
--   Adding BuildArch
-*   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
--   Update to version 4.19.1
-*   Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
--   Fix PAX randkstack and RAP plugin patches to avoid boot panic.
-*   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-2
--   Use updated steal time accounting patch.
-*   Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
--   Update to version 4.18.9
-*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
--   Update to version 4.14.67
-*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
--   Add rdrand-based RNG driver to enhance kernel entropy.
-*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
--   Add full retpoline support by building with retpoline-enabled gcc.
-*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
--   Apply out-of-tree patches needed for AppArmor.
-*   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
--   Update to version 4.14.54
-*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
--   Extra hardening: slab_nomerge and some .config changes
-*   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
--   Version update to v4.14 LTS. Drop aufs support.
-*   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
--   Version update
-*   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
--   Version update
-*   Wed Nov 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.60-2
--   Update LKCM module
--   Add -lkcm subpackage
-*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
--   Version update
-*   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
--   Add patch "KVM: Don't accept obviously wrong gsi values via
+* Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-5
+- Enable CONFIG_EXT2_FS_XATTR & related parameters
+* Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
+- .config: enable zstd compression for squashfs.
+- .config: enable crypto user api rng.
+* Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
+- Disable md5 algorithm for sctp if fips is enabled.
+* Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
+- compile with openssl 3.0.0
+* Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
+- Update to version 5.10.78
+* Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
+- Update to version 5.10.75
+* Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
+- .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
+- Enable sta by default
+* Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
+- Update to version 5.10.61
+* Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+- Update to version 5.10.52
+* Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
+- Fix for CVE-2021-33909
+* Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
+- Update to version 5.10.46
+* Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.42-4
+- EMUTRAMP: use the prefix X86_ for error codes
+* Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
+- Fix for CVE-2021-3609
+* Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
+- Added script to check structure compatibility between fips_canister.o and vmlinux.
+* Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
+- Update to version 5.10.42
+- .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
+* Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
+- Update to version 5.10.35
+* Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-9
+- Fix for CVE-2021-23133
+* Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8
+- Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
+- CVE-2020-26145, CVE-2020-26141
+* Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
+- Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
+* Thu Apr 29 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
+- Remove buf_info from device accessible structures in vmxnet3
+* Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
+- Update canister binary.
+- use jent by drbg and ecc.
+- Enable hmac(sha224) self test and broket KAT test.
+* Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
+- Update 0001-Skip-rap-plugin-for-aesni-intel-modules.patch for 5.10.25 kernel.
+- Remove hmac(sha224) from broken kat test.
+* Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
+- Fix for CVE-2021-23133
+* Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
+- Fix for CVE-2021-29154
+* Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
+- Update to version 5.10.25
+* Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
+- Do not execute some tests twice
+- Support future disablement of des3
+- Do verbose build
+- Canister update.
+* Mon Mar 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
+- Use jitterentropy rng instead of urandom in rng module.
+* Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
+- Update to version 5.10.21
+* Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-8
+- FIPS canister update
+* Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
+- Fix /boot/photon.cfg symlink when /boot is a separate partition.
+* Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6
+- Added crypto_self_test and kattest module.
+- These patches are applied when kat_build is enabled.
+* Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-5
+- Build with secure FIPS canister.
+* Thu Jan 28 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-4
+- Enabled CONFIG_WIREGUARD
+* Wed Jan 27 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3
+- Fix rap_plugin code to generate rap_hashes when abs-finish is enabled.
+* Wed Jan 13 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-2
+- Fix build failure.
+* Wed Jan 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-1
+- Update to 5.10.4.
+* Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
+- Fix CVE-2020-8694
+* Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
+- Fix CVE-2020-25704
+* Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
+- Remove the support of fipsify and hmacgen
+* Thu Oct 22 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-1
+- Update to 5.9.0
+* Wed Oct 14 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-rc7.1
+- Update to 5.9.0-rc7
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-4
+- openssl 1.1.1
+* Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3
+- Fix CVE-2020-14331
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.19.127-2
+- Require python3
+* Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+- Update to version 4.19.127
+* Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-8
+- Enabled CONFIG_BINFMT_MISC
+* Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-7
+- Add patch to fix CVE-2019-18885
+* Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-6
+- Keep modules of running kernel till next boot
+* Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.112-5
+- Add patch to fix CVE-2020-10711
+* Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-4
+- Updated pax_rap patch to support gcc-8.4.0
+* Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-3
+- Photon-checksum-generator version update to 1.1.
+* Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2
+- HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
+* Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
+- Update to version 4.19.112
+* Tue Mar 31 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-2
+- hmac generation of crypto modules and initrd generation changes if fips=1
+* Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
+- Update to version 4.19.104
+* Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-6
+- Adding Enhances depedency to hmacgen.
+* Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-5
+- Backporting of patch continuous testing of RNG from urandom
+* Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
+- Fix CVE-2019-16234
+* Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
+- Add photon-checksum-generator source tarball and remove hmacgen patch.
+- Exclude hmacgen.ko from base package.
+* Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+- Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+- Update testmgr to add drbg_pr_ctr_aes256 test vectors.
+* Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
+- Update to version 4.19.97
+* Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
+- Enable DRBG HASH and DRBG CTR support.
+* Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+- Modify tcrypt to remove tests for algorithms that are not supported in photon.
+- Added tests for DH, DRBG algorithms.
+* Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
+- Update fips Kat tests.
+* Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
+- Update to version 4.19.87
+* Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
+- Adding hmac sha256/sha512 generator kernel module for fips.
+* Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
+- Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
+- CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
+* Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
+- Update to version 4.19.84
+- Fix CVE-2019-18814
+* Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
+- Update to version 4.19.82
+* Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
+- Fix vsock QP detach with outgoing data
+* Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
+- Update to version 4.19.79
+- Fix CVE-2019-17133
+* Thu Oct 10 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-2
+- Adding lvm and dm-mod modules to support root as lvm
+* Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
+- Update to version 4.19.76
+* Mon Sep 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
+- Update to version 4.19.72
+* Thu Sep 05 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-2
+- Avoid oldconfig which leads to potential build hang
+* Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-1
+- Update to version 4.19.69
+* Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
+- Update to version 4.19.65
+- Fix CVE-2019-1125 (SWAPGS)
+* Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-3
+- Fix postun script.
+* Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-2
+- Fix 9p vsock 16bit port issue.
+* Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
+- Update to version 4.19.52
+- Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
+- CVE-2019-12382, CVE-2019-12378, CVE-2019-12455
+* Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.40-3
+- Change default I/O scheduler to 'deadline' to fix performance issue.
+* Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2
+- Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+- mulitple kernels are installed and current linux kernel is removed.
+* Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+- Update to version 4.19.40
+* Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
+- Fix CVE-2019-10125
+* Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
+- Update to version 4.19.32
+* Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.29-1
+- Update to version 4.19.29
+* Tue Mar 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-1
+- Update to version 4.19.26
+* Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
+- Fix CVE-2019-8912
+* Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+- Update to version 4.19.15
+* Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+- cmdline: added audit=1 pti=on
+- config: PANIC_TIMEOUT=-1, DEBUG_RODATA_TEST=y
+* Wed Jan 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-3
+- Additional security hardening options in the config.
+* Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+- Enable AppArmor by default.
+* Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+- Update to version 4.19.6
+* Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+- Adding BuildArch
+* Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
+- Update to version 4.19.1
+* Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
+- Fix PAX randkstack and RAP plugin patches to avoid boot panic.
+* Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-2
+- Use updated steal time accounting patch.
+* Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+- Update to version 4.18.9
+* Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+- Update to version 4.14.67
+* Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+- Add rdrand-based RNG driver to enhance kernel entropy.
+* Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+- Add full retpoline support by building with retpoline-enabled gcc.
+* Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+- Apply out-of-tree patches needed for AppArmor.
+* Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
+- Update to version 4.14.54
+* Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
+- Extra hardening: slab_nomerge and some .config changes
+* Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
+- Version update to v4.14 LTS. Drop aufs support.
+* Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
+- Version update
+* Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
+- Version update
+* Wed Nov 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.60-2
+- Update LKCM module
+- Add -lkcm subpackage
+* Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
+- Version update
+* Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
+- Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
-*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-2
--   Build hang (at make oldconfig) fix.
-*   Thu Oct 05 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-1
--   Version update
-*   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-3
--   Allow privileged CLONE_NEWUSER from nested user namespaces.
-*   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-2
--   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
-*   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-1
--   Version update
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
--   Requires coreutils or toybox
-*   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
--   Fix CVE-2017-11600
-*   Tue Aug 22 2017 Anish Swaminathan <anishs@vmware.com> 4.9.43-2
--   Add missing xen block drivers
-*   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
--   Version update
--   [feature] new sysctl option unprivileged_userns_clone
-*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
--   Fix CVE-2017-7542
--   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
+* Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-2
+- Build hang (at make oldconfig) fix.
+* Thu Oct 05 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-1
+- Version update
+* Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-3
+- Allow privileged CLONE_NEWUSER from nested user namespaces.
+* Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-2
+- Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
+* Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-1
+- Version update
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
+- Requires coreutils or toybox
+* Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
+- Fix CVE-2017-11600
+* Tue Aug 22 2017 Anish Swaminathan <anishs@vmware.com> 4.9.43-2
+- Add missing xen block drivers
+* Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
+- Version update
+- [feature] new sysctl option unprivileged_userns_clone
+* Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+- Fix CVE-2017-7542
+- [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
     panic on modprobe tcrypt
-*   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
--   Version update
-*   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
--   Fix initramfs triggers
-*   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-5
--   Allow some algorithms in FIPS mode
--   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
--   bcf741cb779283081db47853264cc94854e7ad83 in the kernel tree
--   Enable additional NF features
-*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
--   Add patches in Hyperv codebase
-*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
--   Add missing hyperv drivers
-*   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
--   Disable scheduler beef up patch
-*   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
--   Fix CVE-2017-11176 and CVE-2017-10911
-*   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
--   Remove aufs source tarballs from git repo
-*   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
--   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
-*   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
--   [feature] 9P FS security support
--   [feature] DM Delay target support
--   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
-*   Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
--   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
+* Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
+- Version update
+* Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
+- Fix initramfs triggers
+* Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-5
+- Allow some algorithms in FIPS mode
+- Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
+- bcf741cb779283081db47853264cc94854e7ad83 in the kernel tree
+- Enable additional NF features
+* Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
+- Add patches in Hyperv codebase
+* Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
+- Add missing hyperv drivers
+* Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
+- Disable scheduler beef up patch
+* Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
+- Fix CVE-2017-11176 and CVE-2017-10911
+* Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
+- Remove aufs source tarballs from git repo
+* Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
+- Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
+* Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
+- [feature] 9P FS security support
+- [feature] DM Delay target support
+- Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
+* Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
+- Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
     CVE-2017-9077 and CVE-2017-9242
--   [feature] IPV6 netfilter NAT table support
-*   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
--   Fix CVE-2017-7487 and CVE-2017-9059
-*   Wed May 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.28-2
--   Enable IPVLAN module.
-*   Tue May 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.28-1
--   Version update
-*   Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1
--   Version update
-*   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
--   Version update
--   Removed version suffix from config file name
-*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
--   Support dynamic initrd generation
-*   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
--   Fix CVE-2017-6874 and CVE-2017-7618.
--   .config: build nvme and nvme-core in kernel.
-*   Tue Mar 21 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-3
--   Added LKCM module
-*   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-2
--   .config: NSX requirements for crypto and netfilter
-*   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-1
--   Update to linux-4.9.13 to fix CVE-2017-5986 and CVE-2017-6074
--   .config: disable XEN guest (needs rap_plugin verification)
-*   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
--   rap_plugin improvement: throw error on function type casting
+- [feature] IPV6 netfilter NAT table support
+* Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
+- Fix CVE-2017-7487 and CVE-2017-9059
+* Wed May 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.28-2
+- Enable IPVLAN module.
+* Tue May 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.28-1
+- Version update
+* Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1
+- Version update
+* Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
+- Version update
+- Removed version suffix from config file name
+* Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
+- Support dynamic initrd generation
+* Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
+- Fix CVE-2017-6874 and CVE-2017-7618.
+- .config: build nvme and nvme-core in kernel.
+* Tue Mar 21 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-3
+- Added LKCM module
+* Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-2
+- .config: NSX requirements for crypto and netfilter
+* Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-1
+- Update to linux-4.9.13 to fix CVE-2017-5986 and CVE-2017-6074
+- .config: disable XEN guest (needs rap_plugin verification)
+* Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
+- rap_plugin improvement: throw error on function type casting
     function signatures were cleaned up using this feature.
--   Added RAP_ENTRY for asm functions.
-*   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
--   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
+- Added RAP_ENTRY for asm functions.
+* Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
+- Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
--   Added aufs support.
--   Added PAX_RANDKSTACK feature.
--   Extra func signatures cleanup to fix 1809717 and 1809722.
--   .config: added CRYPTO_FIPS support.
-*   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
--   Update to linux-4.9.2 to fix CVE-2016-10088
--   Rename package to linux-secure.
--   Added KSPP cmdline params: slub_debug=P page_poison=1
-*   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
--   BuildRequires Linux-PAM-devel
-*   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
--   Update to linux-4.9.0
--   Add paravirt stolen time accounting feature (from linux-esx),
+- Added aufs support.
+- Added PAX_RANDKSTACK feature.
+- Extra func signatures cleanup to fix 1809717 and 1809722.
+- .config: added CRYPTO_FIPS support.
+* Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
+- Update to linux-4.9.2 to fix CVE-2016-10088
+- Rename package to linux-secure.
+- Added KSPP cmdline params: slub_debug=P page_poison=1
+* Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
+- BuildRequires Linux-PAM-devel
+* Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
+- Update to linux-4.9.0
+- Add paravirt stolen time accounting feature (from linux-esx),
     but disable it by default (no-vmw-sta cmdline parameter)
--   Use vmware_io_delay() to keep "void fn(void)" signature
-*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
--   Expand `uname -r` with release number
--   Resign and compress modules after stripping
--   .config: add syscalls tracing support
--   .config: add cgrup_hugetlb support
--   .config: add netfilter_xt_{set,target_ct} support
--   .config: add netfilter_xt_match_{cgroup,ipvs} support
--   .config: disable /dev/mem
-*   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
--   Initial commit.
+- Use vmware_io_delay() to keep "void fn(void)" signature
+* Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
+- Expand `uname -r` with release number
+- Resign and compress modules after stripping
+- .config: add syscalls tracing support
+- .config: add cgrup_hugetlb support
+- .config: add netfilter_xt_{set,target_ct} support
+- .config: add netfilter_xt_match_{cgroup,ipvs} support
+- .config: disable /dev/mem
+* Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
+- Initial commit.

@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.78
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt54
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -999,7 +999,7 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/*        %{buildroot}%{_docdir}/%{name}-%{uname_r}
+cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
 ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
@@ -1067,156 +1067,158 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
-*   Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
--   .config: enable zstd compression for squashfs.
--   .config: enable crypto user api rng.
-*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
--   Disable md5 algorithm for sctp if fips is enabled.
-*   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
--   compile with openssl 3.0.0
-*   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
--   Update to version 5.10.78
-*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
--   Update to version 5.10.75
-*   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
--   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
--   Enable sta by default
-*   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
--   Update to version 5.10.61
-*   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.52-2
--   Update ice driver to v1.6.4
--   Update i40e driver to v2.15.9
--   Update iavf driver to v4.2.7
-*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
--   Update to version 5.10.52
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
--   Fix for CVE-2021-33909
-*   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
--   Update to version 5.10.46
-*   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.42-4
--   Conditional tick_restart upon idle_exit
-*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
--   Fix for CVE-2021-3609
-*   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
--   Update to version 5.10.42
--   Remove XR usb driver support
--   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
-*   Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.35-3
--   Fix for CVE-2021-3573
-*   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-2
--   Fix for CVE-2021-3564
-*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
--   Update to version 5.10.35
-*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
--   Fix for CVE-2021-23133
-*   Tue May 11 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
--   .config: Enable INFINIBAND, MLX5_INFINIBAND
-*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8
--   Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
--   CVE-2020-26145, CVE-2020-26141
-*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
--   Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
-*   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
--   Remove buf_info from device accessible structures in vmxnet3
-*   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
--   Update canister binary.
--   use jent by drbg and ecc.
--   Enable hmac(sha224) self test and broket KAT test.
-*   Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
--   Remove hmac(sha224) from broken kat test.
-*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
--   Fix for CVE-2021-23133
-*   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
--   Fix for CVE-2021-29154
-*   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
--   Update to version 5.10.25
-*   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
--   Do not execute some tests twice
--   Support future disablement of des3
--   Do verbose build
--   Canister update.
-*   Wed Mar 17 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
--   Use jitterentropy rng instead of urandom in rng module.
-*   Tue Mar 16 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.21-1
--   Update to version 5.10.21
-*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
--   FIPS canister update
-*   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-9
--   Fix /boot/photon.cfg symlink when /boot is a separate partition.
-*   Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-8
--   Enable CONFIG_IFB
-*   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-7
--   Added latest out of tree version of Intel ice driver
-*   Wed Feb 17 2021 Vikash Bansal <bvikas@vmware.com> 5.10.4-6
--   Added support for RT RUNTIME GREED
-*   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
--   Added crypto_self_test and kattest module.
--   These patches are applied when kat_build is enabled.
-*   Wed Feb 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-4
--   Update i40e driver to v2.13.10
--   Add out of tree iavf driver
--   Enable CONFIG_NET_TEAM
-*   Wed Jan 27 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-3
--   Build kernel with FIPS canister.
-*   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2
--   Enabled CONFIG_WIREGUARD
-*   Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1
--   Update to version 5.10.4
-*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
--   Fix CVE-2020-8694
-*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
--   Fix CVE-2020-25704
-*   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-2
--   Revert d254087 (clockevents: Stop unused clockevent devices)
--   Solve cyclictest regression introduced in 4.1
-*   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-1
--   Update to version 5.9.0
-*   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
--   Update to version 5.9.0-rc7
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-2
--   openssl 1.1.1
-*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
--   Update to version 4.19.127
-*   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-10
--   Add latest out of tree version of i40e driver
-*   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-9
--   Enable CONFIG_VFIO_NOIOMMU
-*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-8
--   Enabled CONFIG_BINFMT_MISC
-*   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-7
--   Add patch to fix CVE-2019-18885
-*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
--   Keep modules of running kernel till next boot
-*   Fri May 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-5
--   Deprecate linux-rt-tools in favor of linux-tools.
--   Deprecate python3-perf in favor of linux-python3-perf.
-*   Thu May 21 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-4
--   Add ICE network driver support in config
-*   Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-3
--   Add uio_pic_generic driver support in config
-*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-2
--   Add patch to fix CVE-2020-10711
-*   Wed May 06 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-1
--   Upgrade to 4.19.115
-*   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-5
--   Enable additional config options.
-*   Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.98-4
--   Fix perf compilation issue with binutils >= 2.34.
-*   Sun Mar 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.98-3
--   Added python3-perf subpackage
-*   Tue Mar 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-2
--   Add tools subpackage to include perf, turbostat and cpupower.
--   Update the last few perf python scripts in Linux kernel to use
--   python3 syntax.
-*   Tue Jan 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.98-1
--   Upgrade to 4.19.98
-*   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.82-4
--   Enable DRBG HASH and DRBG CTR support.
-*   Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.82-3
--   Remove FIPS patch that enables fips for algorithms which are not fips allowed.
-*   Thu Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
--   Fix patch that wont apply on 4.19.82. Revert when upgraded to 4.19.87 or more
-*   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
--   Introduce a new kernel flavor 'linux-rt' supporting real-time (RT) features.
+* Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-5
+- Enable CONFIG_EXT2_FS_XATTR & related parameters
+* Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
+- .config: enable zstd compression for squashfs.
+- .config: enable crypto user api rng.
+* Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
+- Disable md5 algorithm for sctp if fips is enabled.
+* Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
+- compile with openssl 3.0.0
+* Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
+- Update to version 5.10.78
+* Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
+- Update to version 5.10.75
+* Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
+- .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
+- Enable sta by default
+* Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
+- Update to version 5.10.61
+* Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.52-2
+- Update ice driver to v1.6.4
+- Update i40e driver to v2.15.9
+- Update iavf driver to v4.2.7
+* Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+- Update to version 5.10.52
+* Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
+- Fix for CVE-2021-33909
+* Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
+- Update to version 5.10.46
+* Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.42-4
+- Conditional tick_restart upon idle_exit
+* Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
+- Fix for CVE-2021-3609
+* Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
+- Added script to check structure compatibility between fips_canister.o and vmlinux.
+* Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
+- Update to version 5.10.42
+- Remove XR usb driver support
+- .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
+* Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.35-3
+- Fix for CVE-2021-3573
+* Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-2
+- Fix for CVE-2021-3564
+* Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
+- Update to version 5.10.35
+* Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
+- Fix for CVE-2021-23133
+* Tue May 11 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
+- .config: Enable INFINIBAND, MLX5_INFINIBAND
+* Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8
+- Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
+- CVE-2020-26145, CVE-2020-26141
+* Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
+- Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
+* Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
+- Remove buf_info from device accessible structures in vmxnet3
+* Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
+- Update canister binary.
+- use jent by drbg and ecc.
+- Enable hmac(sha224) self test and broket KAT test.
+* Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
+- Remove hmac(sha224) from broken kat test.
+* Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
+- Fix for CVE-2021-23133
+* Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
+- Fix for CVE-2021-29154
+* Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
+- Update to version 5.10.25
+* Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
+- Do not execute some tests twice
+- Support future disablement of des3
+- Do verbose build
+- Canister update.
+* Wed Mar 17 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
+- Use jitterentropy rng instead of urandom in rng module.
+* Tue Mar 16 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.21-1
+- Update to version 5.10.21
+* Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
+- FIPS canister update
+* Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-9
+- Fix /boot/photon.cfg symlink when /boot is a separate partition.
+* Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-8
+- Enable CONFIG_IFB
+* Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-7
+- Added latest out of tree version of Intel ice driver
+* Wed Feb 17 2021 Vikash Bansal <bvikas@vmware.com> 5.10.4-6
+- Added support for RT RUNTIME GREED
+* Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
+- Added crypto_self_test and kattest module.
+- These patches are applied when kat_build is enabled.
+* Wed Feb 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-4
+- Update i40e driver to v2.13.10
+- Add out of tree iavf driver
+- Enable CONFIG_NET_TEAM
+* Wed Jan 27 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-3
+- Build kernel with FIPS canister.
+* Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2
+- Enabled CONFIG_WIREGUARD
+* Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1
+- Update to version 5.10.4
+* Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
+- Fix CVE-2020-8694
+* Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
+- Fix CVE-2020-25704
+* Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-2
+- Revert d254087 (clockevents: Stop unused clockevent devices)
+- Solve cyclictest regression introduced in 4.1
+* Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-1
+- Update to version 5.9.0
+* Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
+- Update to version 5.9.0-rc7
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-2
+- openssl 1.1.1
+* Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+- Update to version 4.19.127
+* Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-10
+- Add latest out of tree version of i40e driver
+* Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-9
+- Enable CONFIG_VFIO_NOIOMMU
+* Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-8
+- Enabled CONFIG_BINFMT_MISC
+* Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-7
+- Add patch to fix CVE-2019-18885
+* Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
+- Keep modules of running kernel till next boot
+* Fri May 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-5
+- Deprecate linux-rt-tools in favor of linux-tools.
+- Deprecate python3-perf in favor of linux-python3-perf.
+* Thu May 21 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-4
+- Add ICE network driver support in config
+* Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-3
+- Add uio_pic_generic driver support in config
+* Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-2
+- Add patch to fix CVE-2020-10711
+* Wed May 06 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-1
+- Upgrade to 4.19.115
+* Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-5
+- Enable additional config options.
+* Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.98-4
+- Fix perf compilation issue with binutils >= 2.34.
+* Sun Mar 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.98-3
+- Added python3-perf subpackage
+* Tue Mar 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-2
+- Add tools subpackage to include perf, turbostat and cpupower.
+- Update the last few perf python scripts in Linux kernel to use
+- python3 syntax.
+* Tue Jan 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.98-1
+- Upgrade to 4.19.98
+* Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.82-4
+- Enable DRBG HASH and DRBG CTR support.
+* Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.82-3
+- Remove FIPS patch that enables fips for algorithms which are not fips allowed.
+* Thu Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
+- Fix patch that wont apply on 4.19.82. Revert when upgraded to 4.19.87 or more
+* Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
+- Introduce a new kernel flavor 'linux-rt' supporting real-time (RT) features.
