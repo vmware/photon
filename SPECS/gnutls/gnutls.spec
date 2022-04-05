@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.15
-Release:        3%{?dist}
+Version:        3.6.16
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,10 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    %{name}=00ef7d93347df586c3d1a00f13c326706c0c59ba
+%define sha1    %{name}=6ba8fb898dcf4b4046b60662ba97df835593e687
 
 Patch0:         default-priority.patch
-Patch1:         CVE-2021-20232.patch
 
 BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
@@ -54,6 +53,7 @@ developing applications that use gnutls.
 %configure \
     --without-p11-kit \
     --disable-openssl-compatibility \
+    --enable-fips140-mode \
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
@@ -102,6 +102,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Tue Apr 05 2022 Susant Sahani <ssahani@vmware.com> 3.6.16-1
+- Version bump
 * Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
 - Fix CVE-2021-20232
 * Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-2
