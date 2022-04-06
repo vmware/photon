@@ -1,0 +1,86 @@
+From eb87c710b9b64a6b982cba16fe4cfd4fc27a5805 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 6 Apr 2022 16:16:02 +0530
+Subject: [PATCH] remove tls 1.3 related code
+
+Photon 3.0 & below doesn't support TLSv1.3
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ parseconf.c | 1 -
+ ssl.c       | 6 +-----
+ tunables.c  | 2 --
+ tunables.h  | 1 -
+ 4 files changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/parseconf.c b/parseconf.c
+index 19a1429..60ae3e7 100644
+--- a/parseconf.c
++++ b/parseconf.c
+@@ -87,7 +87,6 @@ parseconf_bool_array[] =
+   { "ssl_tlsv1", &tunable_tlsv1 },
+   { "ssl_tlsv11", &tunable_tlsv1_1 },
+   { "ssl_tlsv12", &tunable_tlsv1_2 },
+-  { "ssl_tlsv13", &tunable_tlsv1_3 },
+   { "tilde_user_enable", &tunable_tilde_user_enable },
+   { "force_anon_logins_ssl", &tunable_force_anon_logins_ssl },
+   { "force_anon_data_ssl", &tunable_force_anon_data_ssl },
+diff --git a/ssl.c b/ssl.c
+index 9b6e323..140ae7e 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -93,10 +93,6 @@ ssl_init(struct vsf_session* p_sess)
+     {
+       options |= SSL_OP_NO_TLSv1_2;
+     }
+-    if (!tunable_tlsv1_3)
+-    {
+-      options |= SSL_OP_NO_TLSv1_3;
+-    }
+     SSL_CTX_set_options(p_ctx, options);
+     if (tunable_rsa_cert_file)
+     {
+@@ -671,7 +667,7 @@ ssl_cert_digest(SSL* p_ssl, struct vsf_session* p_sess, struct mystr* p_str)
+     unsigned int i;
+     str_alloc_text(&debug_str, "Cert digest:");
+     for (i = 0; i < num_bytes; ++i)
+-    { 
++    {
+       str_append_char(&debug_str, ' ');
+       str_append_ulong(
+         &debug_str, (unsigned long) (unsigned char) str_get_char_at(p_str, i));
+diff --git a/tunables.c b/tunables.c
+index 069160a..2bd4a6e 100644
+--- a/tunables.c
++++ b/tunables.c
+@@ -68,7 +68,6 @@ int tunable_sslv3;
+ int tunable_tlsv1;
+ int tunable_tlsv1_1;
+ int tunable_tlsv1_2;
+-int tunable_tlsv1_3;
+ int tunable_tilde_user_enable;
+ int tunable_force_anon_logins_ssl;
+ int tunable_force_anon_data_ssl;
+@@ -212,7 +211,6 @@ tunables_load_defaults()
+   tunable_tlsv1 = 0;
+   tunable_tlsv1_1 = 0;
+   tunable_tlsv1_2 = 1;
+-  tunable_tlsv1_3 = 1;
+   tunable_tilde_user_enable = 0;
+   tunable_force_anon_logins_ssl = 0;
+   tunable_force_anon_data_ssl = 0;
+diff --git a/tunables.h b/tunables.h
+index 0b377d9..9bca5ad 100644
+--- a/tunables.h
++++ b/tunables.h
+@@ -69,7 +69,6 @@ extern int tunable_sslv3;                     /* Allow SSLv3 */
+ extern int tunable_tlsv1;                     /* Allow TLSv1.0 */
+ extern int tunable_tlsv1_1;                   /* Allow TLSv1.1 */
+ extern int tunable_tlsv1_2;                   /* Allow TLSv1.2 */
+-extern int tunable_tlsv1_3;                   /* Allow TLSv1.3 */
+ extern int tunable_tilde_user_enable;         /* Support e.g. ~chris */
+ extern int tunable_force_anon_logins_ssl;     /* Require anon logins use SSL */
+ extern int tunable_force_anon_data_ssl;       /* Require anon data uses SSL */
+-- 
+2.25.1
+
