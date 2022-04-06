@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -52,6 +52,7 @@ developing applications that use gnutls.
 %configure \
     --without-p11-kit \
     --disable-static \
+    --enable-fips140-mode \
     --disable-openssl-compatibility \
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
@@ -96,6 +97,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Apr 06 2022 Susant Sahani <ssahani@vmware.com> 3.7.2-2
+- Enable fips140 mode
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 3.7.2-1
 - Bump version
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-3
