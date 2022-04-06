@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    %{name}=0159531cc9f9fc6dd64cd734e2fd42601e44b5d9
 
-Patch0: vsftpd-gen-debuginfo.patch
+Patch0: add-debug-symbols-to-build.patch
 Patch1: fix-libssl-link.patch
 
 BuildRequires: libcap-devel
@@ -39,15 +39,15 @@ make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS=""
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/{man5,man8}
 install -vdm 755 %{buildroot}%{_sysconfdir}
-install -vm 755 vsftpd %{buildroot}%{_sbindir}/vsftpd
-install -vm 644 vsftpd.8 %{buildroot}%{_mandir}/man8/
-install -vm 644 vsftpd.conf.5 %{buildroot}%{_mandir}/man5/
+install -vm 755 %{name} %{buildroot}%{_sbindir}/%{name}
+install -vm 644 %{name}.8 %{buildroot}%{_mandir}/man8/
+install -vm 644 %{name}.conf.5 %{buildroot}%{_mandir}/man5/
 
-cat >> %{buildroot}/etc/vsftpd.conf << "EOF"
+cat >> %{buildroot}%{_sysconfdir}/%{name}.conf << "EOF"
 background=YES
 listen=YES
-nopriv_user=vsftpd
-secure_chroot_dir=/usr/share/vsftpd/empty
+nopriv_user=%{name}
+secure_chroot_dir=%{_datadir}/%{name}/empty
 pasv_enable=Yes
 pasv_min_port=40000
 pasv_max_port=40100
@@ -59,43 +59,49 @@ pasv_max_port=40100
 EOF
 
 %post
-if [ $1 -eq 1 ] ; then
-  install -vdm 0755 %{_datadir}/vsftpd/empty
+if [ $1 -ge 1 ]; then
+  install -vdm 0755 %{_datadir}/%{name}/empty
   install -vdm 0755 /home/ftp
-  if ! getent group vsftpd >/dev/null; then
-    groupadd -g 47 vsftpd
+  if ! getent group %{name} >/dev/null; then
+    groupadd -g 47 %{name}
   fi
   if ! getent group ftp >/dev/null; then
     groupadd -g 45 ftp
   fi
-  if ! getent passwd vsftpd >/dev/null; then
-    useradd -c "vsftpd User"  -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd
+  if ! getent passwd %{name} >/dev/null; then
+    useradd -c "%{name} User"  -d /dev/null -g %{name} -s /bin/false -u 47 %{name}
   fi
   if ! getent passwd ftp >/dev/null; then
-    useradd -c anonymous_user -d /home/ftp -g ftp    -s /bin/false -u 45 ftp
+    useradd -c anonymous_user -d /home/ftp -g ftp -s /bin/false -u 45 ftp
   fi
 fi
 
 %postun
-if [ $1 -eq 0 ] ; then
-  if getent passwd vsftpd >/dev/null; then
-    userdel vsftpd
+if [ $1 -eq 0 ]; then
+  if getent passwd %{name} >/dev/null; then
+    userdel %{name}
   fi
   if getent passwd ftp >/dev/null; then
     userdel ftp
   fi
-  if getent group vsftpd >/dev/null; then
-    groupdel vsftpd
+  if getent group %{name} >/dev/null; then
+    groupdel %{name}
+  fi
+  if getent group ftp >/dev/null; then
+    groupdel ftp
   fi
 fi
 
 %files
 %defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/%{name}.conf
 %{_sysconfdir}/*
 %{_sbindir}/*
 %{_datadir}/*
 
 %changelog
+* Wed Apr 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-2
+- Fix spec issues
 * Fri Feb 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-1
 - Upgrade to v3.0.5
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-7
