@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
 %define sha1    xz=1d3a6910c28d40df0134f4a49e5570e8249120c5
+Patch0:		CVE-2022-1271.patch
 Requires:       xz-libs = %{version}-%{release}
 %description
 The Xz package contains programs for compressing and
@@ -34,16 +35,15 @@ Group:      System Environment/Libraries
 This package contains minimal set of shared xz libraries.
 
 %prep
-%setup -q
+%autosetup -p1
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
+make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/{bin,%_lib}
 mv -v   %{buildroot}%{_bindir}/{lzma,unlzma,lzcat,xz,unxz,xzcat} %{buildroot}/bin
 ln -svf "../..%{_lib}/$(readlink %{buildroot}%{_libdir}/liblzma.so)" %{buildroot}%{_libdir}/liblzma.so
@@ -96,6 +96,8 @@ make  %{?_smp_mflags}  check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Apr 07 2022 Siju Maliakkal <smaliakkal@vmware.com> 5.2.4-2
+-   Apply patch for CVE-2022-1271
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.2.4-1
 -   Updated to latest version
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 5.2.3-2

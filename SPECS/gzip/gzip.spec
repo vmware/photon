@@ -1,14 +1,14 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
-Version:	1.9
-Release:	2%{?dist}
+Version:	1.12
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
-%define sha1 gzip=0249ad4c4ca1f144714e8e21b6d0db24651fc122
+%define sha1 gzip=318107297587818c8f1e1fbb55962f4b2897bc0b
 %if %{with_check}
 BuildRequires:	less
 %endif
@@ -16,7 +16,7 @@ BuildRequires:	less
 The Gzip package contains programs for compressing and
 decompressing files.
 %prep
-%setup -q
+%autosetup -p1
 %build
 #make some fixes required by glibc-2.28:
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -24,8 +24,9 @@ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
 %configure --disable-silent-rules
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_bindir}
 rm -rf %{buildroot}%{_infodir}
 
@@ -37,6 +38,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+* Thu Apr 07 2022 Siju Maliakkal <smaliakkal@vmware.com> 1.12-1
+- Upgrade to l.12 to mitigate CVE-2022-1271
 * Thu Aug 22 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 1.9-2
 - Fix for make check failure
 * Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.9-1
