@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.4646
+Version:        8.2.4647
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=6d9dc0ab5e3e77d26aa762e86541ea0e13db12bd
+%define sha1    %{name}=b3b5545d6783f0c936cb32314b32014ea9206feb
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel >= 6.1-4
@@ -78,7 +78,7 @@ fi
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/%{maj_ver}/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
-%exclude %{_datarootdir}/vim/vim*/colors/lists/default.vim
+%exclude %{_datarootdir}/vim/%{maj_ver}/colors/lists/default.vim
 %{_datarootdir}/vim/%{maj_ver}/compiler/*
 %{_datarootdir}/vim/%{maj_ver}/delmenu.vim
 %{_datarootdir}/vim/%{maj_ver}/evim.vim
@@ -157,7 +157,7 @@ fi
 %{_datarootdir}/vim/%{maj_ver}/defaults.vim
 %{_datarootdir}/vim/%{maj_ver}/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
-%{_datarootdir}/vim/vim*/colors/lists/default.vim
+%{_datarootdir}/vim/%{maj_ver}/colors/lists/default.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
 %{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
@@ -170,6 +170,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Apr 07 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4647-1
+- Update to 8.2.4647 to fix CVE-2022-1160
 * Tue Apr 05 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4646-1
 - Update to 8.2.4646 to fix several CVEs
 * Thu Mar 17 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-25
