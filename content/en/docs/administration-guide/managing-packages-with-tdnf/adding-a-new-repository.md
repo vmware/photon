@@ -15,7 +15,7 @@ On Photon OS, the existing repositories appear in the `/etc/yum.repos.d` directo
 	photon-updates.repo
 	photon.repo 
 
-To view the the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
+To view the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
 
 
 	baseurl=https://https://packages.vmware.com/photon/
@@ -84,7 +84,7 @@ The repository settings details are as follows:
 - The `gpgcheck` setting specifies whether to check the GPG signature.
 
 - The `repo_gpgcheck` setting allows `tdnf` to verify the signature of a repository metadata before downloading the repository artifacts. When `repo_gpgcheck` is set to `1` in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is `0`.
-  If a repository has `repo_gpgcheck` enabled,a `repomd.xml.asc` file is downloaded and the API equivalent of `gpg --verify repomd.xml.asc repomd.xml` is done. If `repomd.xml.asc` is missing, repository is disabled. If `repomd.xml.asc` fails to verify, the repository is disabled. The public key for verification must be manually installed for the initial implementation.
+  If a repository has `repo_gpgcheck` enabled,a `repomd.xml.asc` file is downloaded and the API equivalent of `gpg --verify repomd.xml.asc repomd.xml` is done. If `repomd.xml.asc` is missing, repository is deactivated. If `repomd.xml.asc` fails to verify, the repository is deactivated. The public key for verification must be manually installed for the initial implementation.
 
   Note: Ensure that you have installed `libgcrypt` for this implementation.
 
@@ -109,7 +109,15 @@ The repository settings details are as follows:
 
 - The `maxrate` setting specifies the maximum download rate (throttle). The default value is `0 `(`no limit`).
 
+- You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache.
 
+    The following list describes the benefits and drawbacks of the skip metadata settings: 
+
+	- `skip_md_filelists`: The `skip_md_filelists=1` setting deactivates the download of the complete list of files in all packages. The setting improves the download and processing time but affects the `repoquery` queries for files. The default value is `0`.
+	
+	- `skip_md_other`: The `skip_md_other=1` setting deactivates the download of miscellaneous data like the changelog data of packages. The setting improves the download and processing time but affects the `repoquery` queries for changelogs. The default value is `0`.
+	
+	- `skip_md_updateinfo`: The `skip_md_updateinfo=1` setting deactivates the download of the update info data. The setting improves the download and processing time but affects the output of the `updateinfo` command. The default value is `0`.
 
 - Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for `yum.conf` on the full version of Photon OS: `man yum.conf`
 
