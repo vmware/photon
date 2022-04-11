@@ -4,15 +4,18 @@ Version:        4.4.0
 Release:        1%{?dist}
 License:        GPLv2, LGPLv2.1
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1    setools=5ee79d660076b5422f8cc4bfddb6f99edad944ca
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=2ec92d7a6e30261549b6a8d2f17175d4a7d8313ef0cd81f4a19a91c53fe0107bac9a89c19dd67a4c534ee51ec520590795b4312f9e03e69fdf1763b0c35291f8
+
 BuildRequires:  cython3
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  libselinux-devel
+
 Requires:       python3
 Requires:       libselinux
 Requires:       libsepol

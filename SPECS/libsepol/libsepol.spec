@@ -1,17 +1,15 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
-Version:        3.2
+Version:        3.3
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/3.2/%{name}-%{version}.tar.gz
-%define sha1    libsepol=9ce0e7c9772a17e5bad6479d80e6bf3b24db5f0c
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         0001-libsepol-cil-Destroy-classperms-list-when-resetting.patch
-Patch1:         0002-cil-Destroy-classperm-list-when-resetting-map-perms.patch
-Patch2:         0003-cil-cil_reset_classperms_set-should-not-reset.patch
+
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=fb6bb69f8e43a911a1a9cbd791593215386e93cb9292e003f5d8efe6e86e0ce5d0287e95d52fe2fbce518a618beaf9b1135aea0d04eaebcdbd8c6d07ee67b500
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -37,13 +35,13 @@ Requires:       libsepol = %{version}-%{release}
 %description    utils
 The libsepol-utils package contains the utilities
 
-%package	devel
-Summary:	Header files and libraries used to build policy manipulation tools
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-Provides:	pkgconfig(libsepol)
+%package    devel
+Summary:    Header files and libraries used to build policy manipulation tools
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Provides:   pkgconfig(libsepol)
 
-%description	devel
+%description    devel
 The libsepol-devel package contains the libraries and header files
 needed for developing applications that manipulate binary policies.
 
@@ -52,23 +50,23 @@ needed for developing applications that manipulate binary policies.
 
 %build
 # TODO: try to remove CFLAGS on next version update
-make %{?_smp_mflags} CFLAGS="-Werror -Wall -W -Wundef -Wshadow -Wmissing-format-attribute -O2 -fno-semantic-interposition -Wno-error=stringop-truncation"
+export CFLAGS="-Werror -Wall -W -Wundef -Wshadow -Wmissing-format-attribute -O2 -fno-semantic-interposition -Wno-error=stringop-truncation"
+make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}/%{_lib}
-mkdir -p %{buildroot}/%{_libdir}
-mkdir -p %{buildroot}%{_includedir}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_mandir}/man3
-mkdir -p %{buildroot}%{_mandir}/man8
-make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
+mkdir -p %{buildroot}%{_libdir} \
+         %{buildroot}%{_includedir} \
+         %{buildroot}%{_bindir} \
+         %{buildroot}%{_mandir}/man3 \
+         %{buildroot}%{_mandir}/man8
+
+make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" install
 # do not package ru man page and man pages for missing tools
-rm -rf %{buildroot}%{_mandir}/ru
-rm %{buildroot}%{_mandir}/man8/genpolbools.8
-rm %{buildroot}%{_mandir}/man8/genpolusers.8
+rm -rf %{buildroot}%{_mandir}/ru \
+       %{buildroot}%{_mandir}/man8/genpolbools.8 \
+       %{buildroot}%{_mandir}/man8/genpolusers.8
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files devel
@@ -90,9 +88,11 @@ rm %{buildroot}%{_mandir}/man8/genpolusers.8
 
 %files
 %defattr(-,root,root)
-%{_lib}/libsepol.so.2
+%{_libdir}/libsepol.so.*
 
 %changelog
+* Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
+- Upgrade v3.3
 * Fri Sep 03 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
 - Update to version 3.2 & Fix CVE-2021-36084, CVE-2021-36085, CVE-2021-36086
 * Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 3.1-2

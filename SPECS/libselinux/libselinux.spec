@@ -1,17 +1,23 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.2
+Version:        3.3
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libselinux=59d7e9a2db64ba994e2da976b4374871535cd196
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=9a89c05ea4b17453168a985ece93ba6d6c4127916e657c46d4135eb59a1f6408faa0802cc2e49187defbde5247d659037beee089877affbab3eab6af3433696c
+
 BuildRequires:  libsepol-devel = %{version}
-BuildRequires:  pcre-devel, swig
+BuildRequires:  pcre-devel
+BuildRequires:  swig
 BuildRequires:  python3-devel
+
+%define ExtraBuildRequires systemd-rpm-macros
+
 Requires:       pcre-libs
 # libselinux optionally uses libsepol by dlopen it.
 # libsepol really needed by highlevel SELinux packages
@@ -70,30 +76,29 @@ The libselinux-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
-make %{?_smp_mflags} LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
+make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=%{_bindir}/python3 pywrap
 
 %install
-make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bindir}" \
+     SBINDIR="%{_sbindir}" PYTHON=%{_bindir}/python3 install install-pywrap %{?_smp_mflags}
 
-mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
-mkdir -p %{buildroot}/var/run/setrans
-echo "d /var/run/setrans 0755 root root" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/libselinux.conf
+mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
+echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
 # do not package ru man pages
 rm -rf %{buildroot}%{_mandir}/ru
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
 %ghost /var/run/setrans
 %{_libdir}/libselinux.so.1
-%{_prefix}/lib/tmpfiles.d/libselinux.conf
+%{_tmpfilesdir}/libselinux.conf
 
 %files utils
 %defattr(-,root,root,-)
@@ -115,37 +120,37 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 14 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
--   Update to version 3.2
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1-2
--   Bump up to compile with python 3.10
-*   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
--   Automatic Version Bump
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3
--   Mass removal python2
-*   Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
--   Remove libsepol runtime dependency.
-*   Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
--   Version update.
-*   Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8-3
--   Fix compilation issue with glibc >= 2.30.
-*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8-2
--   Added BuildRequires python2-devel
-*   Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1
--   Update to version 2.8 to get it to build with gcc 7.3
-*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-4
--   Fix compilation issue for glibc-2.26
-*   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6-3
--   Include pytho3 packages.
-*   Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
--   Include python subpackage.
-*   Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
--   Upgraded to version 2.6
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
--   Remove pcre requires and add requires on pcre-libs
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
--   GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--   Updated to version 2.5
-*   Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
--   Initial build.  First version
+* Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
+- Upgrade v3.3
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
+- Automatic Version Bump
+* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3
+- Mass removal python2
+* Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
+- Remove libsepol runtime dependency.
+* Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
+- Version update.
+* Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8-3
+- Fix compilation issue with glibc >= 2.30.
+* Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8-2
+- Added BuildRequires python2-devel
+* Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1
+- Update to version 2.8 to get it to build with gcc 7.3
+* Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-4
+- Fix compilation issue for glibc-2.26
+* Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6-3
+- Include pytho3 packages.
+* Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
+- Include python subpackage.
+* Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
+- Upgraded to version 2.6
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
+- Remove pcre requires and add requires on pcre-libs
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
+- GA - Bump release of all rpms
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+- Updated to version 2.5
+* Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
+- Initial build.  First version

@@ -1,18 +1,22 @@
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.2
+Version:        3.3
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libsemanage=bc67f9118dcca5032919d25184899f9daf66b70b
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=6026d9773c0886436ad801bc0c8beac888b6fb62034edeb863192dea4b6ef34a88e080758820fe635a20e048ac666beee505a0f946258f18571709cca5228aad
+
 BuildRequires:  libselinux-devel = %{version}
 BuildRequires:  libsepol-devel = %{version}
+BuildRequires:  swig
 BuildRequires:  audit-devel
-BuildRequires:  python3-devel swig
+BuildRequires:  python3-devel
+
 Requires:       libselinux = %{version}
 Requires:       libsepol = %{version}
 Requires:       audit
@@ -52,26 +56,27 @@ The libsemanage-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
-make %{?_smp_mflags} LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
+make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=%{_bindir}/python3 pywrap
 
 %install
-make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
-make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" install %{_smp_mflags}
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" \
+     BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=%{_bindir}/python3 install install-pywrap \
+     %{_smp_mflags}
 
 # do not package ru man pages
 rm -rf %{buildroot}%{_mandir}/ru
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libsemanage.so.2
+%{_libdir}/libsemanage.so.*
 %{_sysconfdir}/selinux/semanage.conf
 %{_mandir}/man5/*
 
@@ -90,6 +95,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
+- Upgrade v3.3
 * Tue Dec 14 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
 - Update to version 3.2
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1-2
