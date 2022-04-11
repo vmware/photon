@@ -1,15 +1,56 @@
 Submitted by:            Xi Ruoyao <xry111@mengyan1223.wang>
-Date:                    2020-03-08
-Initial Package Version: 8.32
+Date:                    2021-09-24
+Initial Package Version: 9.0
 Upstream Status:         Rejected
 Origin:                  Based on Fedora's i18n patches at
-                         https://src.fedoraproject.org/rpms/coreutils/
+                         https://src.fedoraproject.org/rpms/coreutils/,
+                         Rebased for Coreutils-9.0.
 Description:             Fixes i18n issues with various Coreutils programs
+---
+ bootstrap.conf              |   1 +
+ configure.ac                |   2 +
+ lib/linebuffer.h            |   8 +
+ lib/mbfile.c                |   3 +
+ lib/mbfile.h                | 255 ++++++++++++
+ m4/mbfile.m4                |  14 +
+ src/cut.c                   | 441 +++++++++++++++++++-
+ src/expand-common.c         | 114 ++++++
+ src/expand-common.h         |  12 +
+ src/expand.c                |  90 ++++-
+ src/fold.c                  | 309 +++++++++++++--
+ src/join.c                  | 359 ++++++++++++++---
+ src/pr.c                    | 443 +++++++++++++++++++--
+ src/sort.c                  | 772 ++++++++++++++++++++++++++++++++++--
+ src/unexpand.c              | 101 ++++-
+ src/uniq.c                  | 235 ++++++++++-
+ tests/Coreutils.pm          |   2 +-
+ tests/expand/mb.sh          | 183 +++++++++
+ tests/i18n/sort.sh          |  29 ++
+ tests/local.mk              |   4 +
+ tests/misc/expand.pl        |  42 ++
+ tests/misc/fold.pl          |  50 ++-
+ tests/misc/join.pl          |  50 +++
+ tests/misc/sort-mb-tests.sh |  45 +++
+ tests/misc/sort-merge.pl    |  42 ++
+ tests/misc/sort.pl          |  40 +-
+ tests/misc/unexpand.pl      |  39 ++
+ tests/misc/uniq.pl          |  55 +++
+ tests/pr/pr-tests.pl        |  49 +++
+ tests/unexpand/mb.sh        | 172 ++++++++
+ 30 files changed, 3749 insertions(+), 212 deletions(-)
+ create mode 100644 lib/mbfile.c
+ create mode 100644 lib/mbfile.h
+ create mode 100644 m4/mbfile.m4
+ create mode 100644 tests/expand/mb.sh
+ create mode 100644 tests/i18n/sort.sh
+ create mode 100644 tests/misc/sort-mb-tests.sh
+ create mode 100644 tests/unexpand/mb.sh
 
-diff -Naurp coreutils-8.32.orig/bootstrap.conf coreutils-8.32/bootstrap.conf
---- coreutils-8.32.orig/bootstrap.conf	2020-02-25 22:25:43.000000000 +0800
-+++ coreutils-8.32/bootstrap.conf	2020-03-08 12:10:27.733236560 +0800
-@@ -154,6 +154,7 @@ gnulib_modules="
+diff --git a/bootstrap.conf b/bootstrap.conf
+index aef9ec7..9486e9d 100644
+--- a/bootstrap.conf
++++ b/bootstrap.conf
+@@ -156,6 +156,7 @@ gnulib_modules="
    maintainer-makefile
    malloc-gnu
    manywarnings
@@ -17,10 +58,11 @@ diff -Naurp coreutils-8.32.orig/bootstrap.conf coreutils-8.32/bootstrap.conf
    mbrlen
    mbrtowc
    mbsalign
-diff -Naurp coreutils-8.32.orig/configure.ac coreutils-8.32/configure.ac
---- coreutils-8.32.orig/configure.ac	2020-02-28 05:45:34.000000000 +0800
-+++ coreutils-8.32/configure.ac	2020-03-08 12:10:27.733236560 +0800
-@@ -446,6 +446,8 @@ fi
+diff --git a/configure.ac b/configure.ac
+index 6960b48..8ff85f8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -457,6 +457,8 @@ fi
  # I'm leaving it here for now.  This whole thing needs to be modernized...
  gl_WINSIZE_IN_PTEM
  
@@ -29,11 +71,12 @@ diff -Naurp coreutils-8.32.orig/configure.ac coreutils-8.32/configure.ac
  gl_HEADER_TIOCGWINSZ_IN_TERMIOS_H
  
  if test $gl_cv_sys_tiocgwinsz_needs_termios_h = no && \
-diff -Naurp coreutils-8.32.orig/lib/linebuffer.h coreutils-8.32/lib/linebuffer.h
---- coreutils-8.32.orig/lib/linebuffer.h	2020-01-01 22:14:23.000000000 +0800
-+++ coreutils-8.32/lib/linebuffer.h	2020-03-08 12:10:27.733236560 +0800
-@@ -21,6 +21,11 @@
- 
+diff --git a/lib/linebuffer.h b/lib/linebuffer.h
+index 5fa5ad2..2bdbcab 100644
+--- a/lib/linebuffer.h
++++ b/lib/linebuffer.h
+@@ -22,6 +22,11 @@
+ # include "idx.h"
  # include <stdio.h>
  
 +/* Get mbstate_t.  */
@@ -44,9 +87,9 @@ diff -Naurp coreutils-8.32.orig/lib/linebuffer.h coreutils-8.32/lib/linebuffer.h
  /* A 'struct linebuffer' holds a line of text. */
  
  struct linebuffer
-@@ -28,6 +33,9 @@ struct linebuffer
-   size_t size;                  /* Allocated. */
-   size_t length;                /* Used. */
+@@ -29,6 +34,9 @@ struct linebuffer
+   idx_t size;                  /* Allocated. */
+   idx_t length;                /* Used. */
    char *buffer;
 +# if HAVE_WCHAR_H
 +  mbstate_t state;
@@ -54,16 +97,20 @@ diff -Naurp coreutils-8.32.orig/lib/linebuffer.h coreutils-8.32/lib/linebuffer.h
  };
  
  /* Initialize linebuffer LINEBUFFER for use. */
-diff -Naurp coreutils-8.32.orig/lib/mbfile.c coreutils-8.32/lib/mbfile.c
---- coreutils-8.32.orig/lib/mbfile.c	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/lib/mbfile.c	2020-03-08 12:10:27.733236560 +0800
+diff --git a/lib/mbfile.c b/lib/mbfile.c
+new file mode 100644
+index 0000000..b0a468e
+--- /dev/null
++++ b/lib/mbfile.c
 @@ -0,0 +1,3 @@
 +#include <config.h>
 +#define MBFILE_INLINE _GL_EXTERN_INLINE
 +#include "mbfile.h"
-diff -Naurp coreutils-8.32.orig/lib/mbfile.h coreutils-8.32/lib/mbfile.h
---- coreutils-8.32.orig/lib/mbfile.h	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/lib/mbfile.h	2020-03-08 12:10:27.734236560 +0800
+diff --git a/lib/mbfile.h b/lib/mbfile.h
+new file mode 100644
+index 0000000..11f1b12
+--- /dev/null
++++ b/lib/mbfile.h
 @@ -0,0 +1,255 @@
 +/* Multibyte character I/O: macros for multi-byte encodings.
 +   Copyright (C) 2001, 2005, 2009-2015 Free Software Foundation, Inc.
@@ -320,9 +367,11 @@ diff -Naurp coreutils-8.32.orig/lib/mbfile.h coreutils-8.32/lib/mbfile.h
 +_GL_INLINE_HEADER_BEGIN
 +
 +#endif /* _MBFILE_H */
-diff -Naurp coreutils-8.32.orig/m4/mbfile.m4 coreutils-8.32/m4/mbfile.m4
---- coreutils-8.32.orig/m4/mbfile.m4	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/m4/mbfile.m4	2020-03-08 12:10:27.734236560 +0800
+diff --git a/m4/mbfile.m4 b/m4/mbfile.m4
+new file mode 100644
+index 0000000..8589902
+--- /dev/null
++++ b/m4/mbfile.m4
 @@ -0,0 +1,14 @@
 +# mbfile.m4 serial 7
 +dnl Copyright (C) 2005, 2008-2015 Free Software Foundation, Inc.
@@ -338,9 +387,10 @@ diff -Naurp coreutils-8.32.orig/m4/mbfile.m4 coreutils-8.32/m4/mbfile.m4
 +  AC_REQUIRE([AC_TYPE_MBSTATE_T])
 +  :
 +])
-diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
---- coreutils-8.32.orig/src/cut.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/cut.c	2020-03-08 12:10:27.734236560 +0800
+diff --git a/src/cut.c b/src/cut.c
+index cdf33d8..b8301d7 100644
+--- a/src/cut.c
++++ b/src/cut.c
 @@ -28,6 +28,11 @@
  #include <assert.h>
  #include <getopt.h>
@@ -353,7 +403,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  #include "system.h"
  
  #include "error.h"
-@@ -38,6 +43,18 @@
+@@ -37,6 +42,18 @@
  
  #include "set-fields.h"
  
@@ -372,7 +422,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  /* The official name of this program (e.g., no 'g' prefix).  */
  #define PROGRAM_NAME "cut"
  
-@@ -54,6 +71,52 @@
+@@ -53,6 +70,52 @@
      }									\
    while (0)
  
@@ -425,7 +475,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  
  /* Pointer inside RP.  When checking if a byte or field is selected
     by a finite range, we check if it is between CURRENT_RP.LO
-@@ -61,6 +124,9 @@
+@@ -60,6 +123,9 @@
     CURRENT_RP.HI then we make CURRENT_RP to point to the next range pair. */
  static struct field_range_pair *current_rp;
  
@@ -435,7 +485,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  /* This buffer is used to support the semantics of the -s option
     (or lack of same) when the specified field list includes (does
     not include) the first field.  In both of those cases, the entire
-@@ -77,15 +143,25 @@ enum operating_mode
+@@ -76,15 +142,25 @@ enum operating_mode
    {
      undefined_mode,
  
@@ -462,7 +512,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  /* If true do not output lines containing no delimiter characters.
     Otherwise, all such lines are printed.  This option is valid only
     with field mode.  */
-@@ -97,6 +173,9 @@ static bool complement;
+@@ -96,6 +172,9 @@ static bool complement;
  
  /* The delimiter character for field mode. */
  static unsigned char delim;
@@ -472,7 +522,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  
  /* The delimiter for each line/record. */
  static unsigned char line_delim = '\n';
-@@ -164,7 +243,7 @@ Print selected parts of lines from each
+@@ -163,7 +242,7 @@ Print selected parts of lines from each FILE to standard output.\n\
    -f, --fields=LIST       select only these fields;  also print any line\n\
                              that contains no delimiter character, unless\n\
                              the -s option is specified\n\
@@ -481,7 +531,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  "), stdout);
        fputs (_("\
        --complement        complement the set of selected bytes, characters\n\
-@@ -280,6 +359,82 @@ cut_bytes (FILE *stream)
+@@ -279,6 +358,82 @@ cut_bytes (FILE *stream)
      }
  }
  
@@ -564,7 +614,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  /* Read from stream STREAM, printing to standard output any selected fields.  */
  
  static void
-@@ -425,13 +580,211 @@ cut_fields (FILE *stream)
+@@ -424,13 +579,211 @@ cut_fields (FILE *stream)
      }
  }
  
@@ -779,7 +829,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  }
  
  /* Process file FILE to standard output.
-@@ -483,6 +836,7 @@ main (int argc, char **argv)
+@@ -482,6 +835,7 @@ main (int argc, char **argv)
    bool ok;
    bool delim_specified = false;
    char *spec_list_string IF_LINT ( = NULL);
@@ -787,7 +837,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
  
    initialize_main (&argc, &argv);
    set_program_name (argv[0]);
-@@ -505,7 +859,6 @@ main (int argc, char **argv)
+@@ -504,7 +858,6 @@ main (int argc, char **argv)
        switch (optc)
          {
          case 'b':
@@ -795,7 +845,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
            /* Build the byte list. */
            if (operating_mode != undefined_mode)
              FATAL_ERROR (_("only one type of list may be specified"));
-@@ -513,6 +866,14 @@ main (int argc, char **argv)
+@@ -512,6 +865,14 @@ main (int argc, char **argv)
            spec_list_string = optarg;
            break;
  
@@ -810,7 +860,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
          case 'f':
            /* Build the field list. */
            if (operating_mode != undefined_mode)
-@@ -524,10 +885,38 @@ main (int argc, char **argv)
+@@ -523,10 +884,38 @@ main (int argc, char **argv)
          case 'd':
            /* New delimiter. */
            /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
@@ -853,7 +903,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
            break;
  
          case OUTPUT_DELIMITER_OPTION:
-@@ -540,6 +929,7 @@ main (int argc, char **argv)
+@@ -539,6 +928,7 @@ main (int argc, char **argv)
            break;
  
          case 'n':
@@ -861,7 +911,7 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
            break;
  
          case 's':
-@@ -579,15 +969,34 @@ main (int argc, char **argv)
+@@ -578,15 +968,34 @@ main (int argc, char **argv)
                | (complement ? SETFLD_COMPLEMENT : 0) );
  
    if (!delim_specified)
@@ -902,164 +952,10 @@ diff -Naurp coreutils-8.32.orig/src/cut.c coreutils-8.32/src/cut.c
      }
  
    if (optind == argc)
-diff -Naurp coreutils-8.32.orig/src/expand.c coreutils-8.32/src/expand.c
---- coreutils-8.32.orig/src/expand.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/expand.c	2020-03-08 12:10:27.735236560 +0800
-@@ -37,6 +37,9 @@
- #include <stdio.h>
- #include <getopt.h>
- #include <sys/types.h>
-+
-+#include <mbfile.h>
-+
- #include "system.h"
- #include "die.h"
- #include "xstrndup.h"
-@@ -98,19 +101,41 @@ expand (void)
- {
-   /* Input stream.  */
-   FILE *fp = next_file (NULL);
-+  mb_file_t mbf;
-+  mbf_char_t c;
-+  /* True if the starting locale is utf8.  */
-+  bool using_utf_locale;
-+
-+  /* True if the first file contains BOM header.  */
-+  bool found_bom;
-+  using_utf_locale=check_utf_locale();
- 
-   if (!fp)
-     return;
-+  mbf_init (mbf, fp);
-+  found_bom=check_bom(fp,&mbf);
- 
--  while (true)
-+  if (using_utf_locale == false && found_bom == true)
-+  {
-+    /*try using some predefined locale */
-+
-+    if (set_utf_locale () != 0)
-     {
--      /* Input character, or EOF.  */
--      int c;
-+      error (EXIT_FAILURE, errno, _("cannot set UTF-8 locale"));
-+    }
-+  }
-+
- 
-+  if (found_bom == true)
-+  {
-+    print_bom();
-+  }
-+
-+  while (true)
-+    {
-       /* If true, perform translations.  */
-       bool convert = true;
- 
--
-       /* The following variables have valid values only when CONVERT
-          is true:  */
- 
-@@ -120,17 +145,48 @@ expand (void)
-       /* Index in TAB_LIST of next tab stop to examine.  */
-       size_t tab_index = 0;
- 
--
-       /* Convert a line of text.  */
- 
-       do
-         {
--          while ((c = getc (fp)) < 0 && (fp = next_file (fp)))
--            continue;
-+          while (true) {
-+            mbf_getc (c, mbf);
-+            if ((mb_iseof (c)) && (fp = next_file (fp)))
-+              {
-+                mbf_init (mbf, fp);
-+                if (fp!=NULL)
-+                {
-+                  if (check_bom(fp,&mbf)==true)
-+                  {
-+                    /*Not the first file - check BOM header*/
-+                    if (using_utf_locale==false && found_bom==false)
-+                    {
-+                      /*BOM header in subsequent file but not in the first one. */
-+                      error (EXIT_FAILURE, errno, _("combination of files with and without BOM header"));
-+                    }
-+                  }
-+                  else
-+                  {
-+                    if(using_utf_locale==false && found_bom==true)
-+                    {
-+                      /*First file conatined BOM header - locale was switched to UTF
-+                       *all subsequent files should contain BOM. */
-+                      error (EXIT_FAILURE, errno, _("combination of files with and without BOM header"));
-+                    }
-+                  }
-+                }
-+                continue;
-+              }
-+            else
-+              {
-+                break;
-+              }
-+            }
-+
- 
-           if (convert)
-             {
--              if (c == '\t')
-+              if (mb_iseq (c, '\t'))
-                 {
-                   /* Column the next input tab stop is on.  */
-                   uintmax_t next_tab_column;
-@@ -149,32 +205,34 @@ expand (void)
-                     if (putchar (' ') < 0)
-                       die (EXIT_FAILURE, errno, _("write error"));
- 
--                  c = ' ';
-+                  mb_setascii (&c, ' ');
-                 }
--              else if (c == '\b')
-+              else if (mb_iseq (c, '\b'))
-                 {
-                   /* Go back one column, and force recalculation of the
-                      next tab stop.  */
-                   column -= !!column;
-                   tab_index -= !!tab_index;
-                 }
--              else
-+              /* A leading control character could make us trip over.  */
-+              else if (!mb_iscntrl (c))
-                 {
--                  column++;
-+                  column += mb_width (c);
-                   if (!column)
-                     die (EXIT_FAILURE, 0, _("input line is too long"));
-                 }
- 
--              convert &= convert_entire_line || !! isblank (c);
-+              convert &= convert_entire_line || mb_isblank (c);
-             }
- 
--          if (c < 0)
-+          if (mb_iseof (c))
-             return;
- 
--          if (putchar (c) < 0)
-+          mb_putc (c, stdout);
-+          if (ferror (stdout))
-             die (EXIT_FAILURE, errno, _("write error"));
-         }
--      while (c != '\n');
-+      while (!mb_iseq (c, '\n'));
-     }
- }
- 
-diff -Naurp coreutils-8.32.orig/src/expand-common.c coreutils-8.32/src/expand-common.c
---- coreutils-8.32.orig/src/expand-common.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/expand-common.c	2020-03-08 12:10:27.735236560 +0800
+diff --git a/src/expand-common.c b/src/expand-common.c
+index 4deb7bd..8fd0524 100644
+--- a/src/expand-common.c
++++ b/src/expand-common.c
 @@ -19,6 +19,7 @@
  #include <assert.h>
  #include <stdio.h>
@@ -1068,7 +964,7 @@ diff -Naurp coreutils-8.32.orig/src/expand-common.c coreutils-8.32/src/expand-co
  #include "system.h"
  #include "die.h"
  #include "error.h"
-@@ -126,6 +127,119 @@ set_increment_size (uintmax_t tabval)
+@@ -125,6 +126,119 @@ set_increment_size (uintmax_t tabval)
    return ok;
  }
  
@@ -1188,10 +1084,11 @@ diff -Naurp coreutils-8.32.orig/src/expand-common.c coreutils-8.32/src/expand-co
  /* Add the comma or blank separated list of tab stops STOPS
     to the list of tab stops.  */
  extern void
-diff -Naurp coreutils-8.32.orig/src/expand-common.h coreutils-8.32/src/expand-common.h
---- coreutils-8.32.orig/src/expand-common.h	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/expand-common.h	2020-03-08 12:10:27.735236560 +0800
-@@ -34,6 +34,18 @@ extern size_t max_column_width;
+diff --git a/src/expand-common.h b/src/expand-common.h
+index ac812d0..16789ab 100644
+--- a/src/expand-common.h
++++ b/src/expand-common.h
+@@ -25,6 +25,18 @@ extern size_t max_column_width;
  /* The desired exit status.  */
  extern int exit_status;
  
@@ -1210,9 +1107,166 @@ diff -Naurp coreutils-8.32.orig/src/expand-common.h coreutils-8.32/src/expand-co
  /* Add tab stop TABVAL to the end of 'tab_list'.  */
  extern void
  add_tab_stop (uintmax_t tabval);
-diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
---- coreutils-8.32.orig/src/fold.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/fold.c	2020-03-08 12:10:27.736236560 +0800
+diff --git a/src/expand.c b/src/expand.c
+index 4e32bfc..902c6b4 100644
+--- a/src/expand.c
++++ b/src/expand.c
+@@ -37,6 +37,9 @@
+ #include <stdio.h>
+ #include <getopt.h>
+ #include <sys/types.h>
++
++#include <mbfile.h>
++
+ #include "system.h"
+ #include "die.h"
+ 
+@@ -97,19 +100,41 @@ expand (void)
+ {
+   /* Input stream.  */
+   FILE *fp = next_file (NULL);
++  mb_file_t mbf;
++  mbf_char_t c;
++  /* True if the starting locale is utf8.  */
++  bool using_utf_locale;
++
++  /* True if the first file contains BOM header.  */
++  bool found_bom;
++  using_utf_locale=check_utf_locale();
+ 
+   if (!fp)
+     return;
++  mbf_init (mbf, fp);
++  found_bom=check_bom(fp,&mbf);
+ 
+-  while (true)
++  if (using_utf_locale == false && found_bom == true)
++  {
++    /*try using some predefined locale */
++
++    if (set_utf_locale () != 0)
+     {
+-      /* Input character, or EOF.  */
+-      int c;
++      error (EXIT_FAILURE, errno, _("cannot set UTF-8 locale"));
++    }
++  }
++
++
++  if (found_bom == true)
++  {
++    print_bom();
++  }
+ 
++  while (true)
++    {
+       /* If true, perform translations.  */
+       bool convert = true;
+ 
+-
+       /* The following variables have valid values only when CONVERT
+          is true:  */
+ 
+@@ -119,17 +144,48 @@ expand (void)
+       /* Index in TAB_LIST of next tab stop to examine.  */
+       size_t tab_index = 0;
+ 
+-
+       /* Convert a line of text.  */
+ 
+       do
+         {
+-          while ((c = getc (fp)) < 0 && (fp = next_file (fp)))
+-            continue;
++          while (true) {
++            mbf_getc (c, mbf);
++            if ((mb_iseof (c)) && (fp = next_file (fp)))
++              {
++                mbf_init (mbf, fp);
++                if (fp!=NULL)
++                {
++                  if (check_bom(fp,&mbf)==true)
++                  {
++                    /*Not the first file - check BOM header*/
++                    if (using_utf_locale==false && found_bom==false)
++                    {
++                      /*BOM header in subsequent file but not in the first one. */
++                      error (EXIT_FAILURE, errno, _("combination of files with and without BOM header"));
++                    }
++                  }
++                  else
++                  {
++                    if(using_utf_locale==false && found_bom==true)
++                    {
++                      /*First file conatined BOM header - locale was switched to UTF
++                       *all subsequent files should contain BOM. */
++                      error (EXIT_FAILURE, errno, _("combination of files with and without BOM header"));
++                    }
++                  }
++                }
++                continue;
++              }
++            else
++              {
++                break;
++              }
++            }
++
+ 
+           if (convert)
+             {
+-              if (c == '\t')
++              if (mb_iseq (c, '\t'))
+                 {
+                   /* Column the next input tab stop is on.  */
+                   uintmax_t next_tab_column;
+@@ -148,32 +204,34 @@ expand (void)
+                     if (putchar (' ') < 0)
+                       die (EXIT_FAILURE, errno, _("write error"));
+ 
+-                  c = ' ';
++                  mb_setascii (&c, ' ');
+                 }
+-              else if (c == '\b')
++              else if (mb_iseq (c, '\b'))
+                 {
+                   /* Go back one column, and force recalculation of the
+                      next tab stop.  */
+                   column -= !!column;
+                   tab_index -= !!tab_index;
+                 }
+-              else
++              /* A leading control character could make us trip over.  */
++              else if (!mb_iscntrl (c))
+                 {
+-                  column++;
++                  column += mb_width (c);
+                   if (!column)
+                     die (EXIT_FAILURE, 0, _("input line is too long"));
+                 }
+ 
+-              convert &= convert_entire_line || !! isblank (c);
++              convert &= convert_entire_line || mb_isblank (c);
+             }
+ 
+-          if (c < 0)
++          if (mb_iseof (c))
+             return;
+ 
+-          if (putchar (c) < 0)
++          mb_putc (c, stdout);
++          if (ferror (stdout))
+             die (EXIT_FAILURE, errno, _("write error"));
+         }
+-      while (c != '\n');
++      while (!mb_iseq (c, '\n'));
+     }
+ }
+ 
+diff --git a/src/fold.c b/src/fold.c
+index 94a6d37..4e8c3d9 100644
+--- a/src/fold.c
++++ b/src/fold.c
 @@ -22,12 +22,34 @@
  #include <getopt.h>
  #include <sys/types.h>
@@ -1294,7 +1348,7 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
    {"spaces", no_argument, NULL, 's'},
    {"width", required_argument, NULL, 'w'},
    {GETOPT_HELP_OPTION_DECL},
-@@ -76,6 +119,7 @@ Wrap input lines in each FILE, writing t
+@@ -76,6 +119,7 @@ Wrap input lines in each FILE, writing to standard output.\n\
  
        fputs (_("\
    -b, --bytes         count bytes rather than columns\n\
@@ -1302,7 +1356,7 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
    -s, --spaces        break at spaces\n\
    -w, --width=WIDTH   use WIDTH columns instead of 80\n\
  "), stdout);
-@@ -93,7 +137,7 @@ Wrap input lines in each FILE, writing t
+@@ -93,7 +137,7 @@ Wrap input lines in each FILE, writing to standard output.\n\
  static size_t
  adjust_column (size_t column, char c)
  {
@@ -1344,7 +1398,7 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
  
    fadvise (istream, FADVISE_SEQUENTIAL);
  
-@@ -169,6 +197,15 @@ fold_file (char const *filename, size_t
+@@ -169,6 +197,15 @@ fold_file (char const *filename, size_t width)
                bool found_blank = false;
                size_t logical_end = offset_out;
  
@@ -1360,16 +1414,17 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
                /* Look for the last blank. */
                while (logical_end)
                  {
-@@ -215,11 +252,220 @@ fold_file (char const *filename, size_t
+@@ -215,12 +252,221 @@ fold_file (char const *filename, size_t width)
        line_out[offset_out++] = c;
      }
  
 -  saved_errno = errno;
 +  *saved_errno = errno;
++  if (!ferror (istream))
++    *saved_errno = 0;
 +
 +  if (offset_out)
 +    fwrite (line_out, sizeof (char), (size_t) offset_out, stdout);
-+
 +}
 +
 +#if HAVE_MBRTOWC
@@ -1540,10 +1595,12 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
 +    }
 +
 +  *saved_errno = errno;
+   if (!ferror (istream))
+-    saved_errno = 0;
++    *saved_errno = 0;
  
    if (offset_out)
      fwrite (line_out, sizeof (char), (size_t) offset_out, stdout);
- 
 +}
 +#endif
 +
@@ -1578,10 +1635,9 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
 +  else
 +#endif
 +    fold_text (istream, width, &saved_errno);
-+
-   if (ferror (istream))
-     {
-       error (0, saved_errno, "%s", quotef (filename));
+ 
+   if (STREQ (filename, "-"))
+     clearerr (istream);
 @@ -252,7 +498,8 @@ main (int argc, char **argv)
  
    atexit (close_stdout);
@@ -1609,9 +1665,10 @@ diff -Naurp coreutils-8.32.orig/src/fold.c coreutils-8.32/src/fold.c
            break;
  
          case 's':		/* Break at word boundaries. */
-diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
---- coreutils-8.32.orig/src/join.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/join.c	2020-03-08 12:10:27.736236560 +0800
+diff --git a/src/join.c b/src/join.c
+index f22ffda..ad5dc0d 100644
+--- a/src/join.c
++++ b/src/join.c
 @@ -22,19 +22,33 @@
  #include <sys/types.h>
  #include <getopt.h>
@@ -1830,7 +1887,7 @@ diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
  static void
  freeline (struct line *line)
  {
-@@ -327,56 +485,133 @@ keycmp (struct line const *line1, struct
+@@ -327,56 +485,133 @@ keycmp (struct line const *line1, struct line const *line2,
          size_t jf_1, size_t jf_2)
  {
    /* Start of field to compare in each file.  */
@@ -1987,7 +2044,7 @@ diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
  }
  
  /* Check that successive input lines PREV and CURRENT from input file
-@@ -468,6 +703,11 @@ get_line (FILE *fp, struct line **linep,
+@@ -468,6 +703,11 @@ get_line (FILE *fp, struct line **linep, int which)
      }
    ++line_no[which - 1];
  
@@ -1999,7 +2056,7 @@ diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
    xfields (line);
  
    if (prevline[which - 1])
-@@ -563,21 +803,28 @@ prfield (size_t n, struct line const *li
+@@ -563,21 +803,28 @@ prfield (size_t n, struct line const *line)
  
  /* Output all the fields in line, other than the join field.  */
  
@@ -2039,7 +2096,7 @@ diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
    size_t field;
    struct line const *line;
  
-@@ -622,7 +868,7 @@ prjoin (struct line const *line1, struct
+@@ -622,7 +868,7 @@ prjoin (struct line const *line1, struct line const *line2)
            o = o->next;
            if (o == NULL)
              break;
@@ -2101,9 +2158,10 @@ diff -Naurp coreutils-8.32.orig/src/join.c coreutils-8.32/src/join.c
            }
            break;
  
-diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
---- coreutils-8.32.orig/src/pr.c	2020-01-01 22:33:18.000000000 +0800
-+++ coreutils-8.32/src/pr.c	2020-03-08 12:10:27.737236560 +0800
+diff --git a/src/pr.c b/src/pr.c
+index 8f84d0f..4bb5195 100644
+--- a/src/pr.c
++++ b/src/pr.c
 @@ -311,6 +311,24 @@
  
  #include <getopt.h>
@@ -2171,8 +2229,8 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  static bool print_page (void);
  static bool print_stored (COLUMN *p);
 @@ -429,6 +472,7 @@ static void add_line_number (COLUMN *p);
- static void getoptnum (const char *n_str, int min, int *num,
-                        const char *errfmt);
+ static void getoptnum (char const *n_str, int min, int *num,
+                        char const *errfmt);
  static void getoptarg (char *arg, char switch_char, char *character,
 +                       int *character_length, int *character_width,
                         int *number);
@@ -2185,7 +2243,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
 -static void print_char (char c);
  static void cleanup (void);
  static void print_sep_string (void);
- static void separator_string (const char *optarg_S);
+ static void separator_string (char const *optarg_S);
 @@ -454,7 +497,7 @@ static COLUMN *column_vector;
     we store the leftmost columns contiguously in buff.
     To print a line from buff, get the index of the first character
@@ -2239,7 +2297,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  static char *column_separator = (char *) " ";
  static char *line_separator = (char *) "\t";
  
-@@ -852,6 +905,13 @@ separator_string (const char *optarg_S)
+@@ -852,6 +905,13 @@ separator_string (char const *optarg_S)
      integer_overflow ();
    col_sep_length = len;
    col_sep_string = optarg_S;
@@ -2324,7 +2382,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            use_col_separator = true;
            if (optarg)
              separator_string (optarg);
-@@ -1166,10 +1250,45 @@ getoptnum (const char *n_str, int min, i
+@@ -1166,10 +1250,45 @@ getoptnum (char const *n_str, int min, int *num, char const *err)
     a number. */
  
  static void
@@ -2393,7 +2451,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            use_col_separator = true;
          }
        /* It's rather pointless to define a TAB separator with column
-@@ -1258,11 +1382,11 @@ init_parameters (int number_of_files)
+@@ -1260,11 +1384,11 @@ init_parameters (int number_of_files)
               + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
  
        /* Estimate chars_per_text without any margin and keep it constant. */
@@ -2407,7 +2465,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  
        /* The number is part of the column width unless we are
           printing files in parallel. */
-@@ -1271,7 +1395,7 @@ init_parameters (int number_of_files)
+@@ -1273,7 +1397,7 @@ init_parameters (int number_of_files)
      }
  
    int sep_chars, useful_chars;
@@ -2416,7 +2474,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
      sep_chars = INT_MAX;
    if (INT_SUBTRACT_WRAPV (chars_per_line - chars_used_by_number, sep_chars,
                            &useful_chars))
-@@ -1294,7 +1418,7 @@ init_parameters (int number_of_files)
+@@ -1296,7 +1420,7 @@ init_parameters (int number_of_files)
       We've to use 8 as the lower limit, if we use chars_per_default_tab = 8
       to expand a tab which is not an input_tab-char. */
    free (clump_buff);
@@ -2425,7 +2483,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  }
  
  /* Open the necessary files,
-@@ -1400,7 +1524,7 @@ init_funcs (void)
+@@ -1402,7 +1526,7 @@ init_funcs (void)
  
    /* Enlarge p->start_position of first column to use the same form of
       padding_not_printed with all columns. */
@@ -2434,7 +2492,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  
    /* This loop takes care of all but the rightmost column. */
  
-@@ -1434,7 +1558,7 @@ init_funcs (void)
+@@ -1436,7 +1560,7 @@ init_funcs (void)
          }
        else
          {
@@ -2443,7 +2501,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            h_next = h + chars_per_column;
          }
      }
-@@ -1725,9 +1849,9 @@ static void
+@@ -1733,9 +1857,9 @@ static void
  align_column (COLUMN *p)
  {
    padding_not_printed = p->start_position;
@@ -2455,7 +2513,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
        padding_not_printed = ANYWHERE;
      }
  
-@@ -2002,13 +2126,13 @@ store_char (char c)
+@@ -2010,13 +2134,13 @@ store_char (char c)
        /* May be too generous. */
        buff = X2REALLOC (buff, &buff_allocated);
      }
@@ -2471,7 +2529,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
    char *s;
    int num_width;
  
-@@ -2025,22 +2149,24 @@ add_line_number (COLUMN *p)
+@@ -2033,22 +2157,24 @@ add_line_number (COLUMN *p)
        /* Tabification is assumed for multiple columns, also for n-separators,
           but 'default n-separator = TAB' hasn't been given priority over
           equal column_width also specified by POSIX. */
@@ -2500,7 +2558,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
          output_position = POS_AFTER_TAB (chars_per_output_tab,
                            output_position);
      }
-@@ -2199,7 +2325,7 @@ print_white_space (void)
+@@ -2207,7 +2333,7 @@ print_white_space (void)
    while (goal - h_old > 1
           && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
      {
@@ -2509,7 +2567,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
        h_old = h_new;
      }
    while (++h_old <= goal)
-@@ -2219,6 +2345,7 @@ print_sep_string (void)
+@@ -2227,6 +2353,7 @@ print_sep_string (void)
  {
    char const *s = col_sep_string;
    int l = col_sep_length;
@@ -2517,7 +2575,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  
    if (separators_not_printed <= 0)
      {
-@@ -2230,6 +2357,7 @@ print_sep_string (void)
+@@ -2238,6 +2365,7 @@ print_sep_string (void)
      {
        for (; separators_not_printed > 0; --separators_not_printed)
          {
@@ -2525,7 +2583,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            while (l-- > 0)
              {
                /* 3 types of sep_strings: spaces only, spaces and chars,
-@@ -2243,12 +2371,15 @@ print_sep_string (void)
+@@ -2251,12 +2379,15 @@ print_sep_string (void)
                  }
                else
                  {
@@ -2542,7 +2600,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            /* sep_string ends with some spaces */
            if (spaces_not_printed > 0)
              print_white_space ();
-@@ -2276,7 +2407,7 @@ print_clump (COLUMN *p, int n, char *clu
+@@ -2284,7 +2415,7 @@ print_clump (COLUMN *p, int n, char *clump)
     required number of tabs and spaces. */
  
  static void
@@ -2551,7 +2609,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  {
    if (tabify_output)
      {
-@@ -2300,6 +2431,74 @@ print_char (char c)
+@@ -2308,6 +2439,74 @@ print_char (char c)
    putchar (c);
  }
  
@@ -2626,7 +2684,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  /* Skip to page PAGE before printing.
     PAGE may be larger than total number of pages. */
  
-@@ -2477,9 +2676,9 @@ read_line (COLUMN *p)
+@@ -2485,9 +2684,9 @@ read_line (COLUMN *p)
            align_empty_cols = false;
          }
  
@@ -2638,7 +2696,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
            padding_not_printed = ANYWHERE;
          }
  
-@@ -2548,7 +2747,7 @@ print_stored (COLUMN *p)
+@@ -2556,7 +2755,7 @@ print_stored (COLUMN *p)
    COLUMN *q;
  
    int line = p->current_line++;
@@ -2647,7 +2705,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
    /* FIXME
       UMR: Uninitialized memory read:
       * This is occurring while in:
-@@ -2560,7 +2759,7 @@ print_stored (COLUMN *p)
+@@ -2568,7 +2767,7 @@ print_stored (COLUMN *p)
       xmalloc        [xmalloc.c:94]
       init_store_cols [pr.c:1648]
       */
@@ -2656,7 +2714,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  
    pad_vertically = true;
  
-@@ -2580,9 +2779,9 @@ print_stored (COLUMN *p)
+@@ -2588,9 +2787,9 @@ print_stored (COLUMN *p)
          }
      }
  
@@ -2668,7 +2726,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
        padding_not_printed = ANYWHERE;
      }
  
-@@ -2595,8 +2794,8 @@ print_stored (COLUMN *p)
+@@ -2603,8 +2802,8 @@ print_stored (COLUMN *p)
    if (spaces_not_printed == 0)
      {
        output_position = p->start_position + end_vector[line];
@@ -2679,7 +2737,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
      }
  
    return true;
-@@ -2615,7 +2814,7 @@ print_stored (COLUMN *p)
+@@ -2623,7 +2822,7 @@ print_stored (COLUMN *p)
     number of characters is 1.) */
  
  static int
@@ -2688,7 +2746,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  {
    unsigned char uc = c;
    char *s = clump_buff;
-@@ -2625,10 +2824,10 @@ char_to_clump (char c)
+@@ -2633,10 +2832,10 @@ char_to_clump (char c)
    int chars;
    int chars_per_c = 8;
  
@@ -2701,7 +2759,7 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
      {
        width = TAB_WIDTH (chars_per_c, input_position);
  
-@@ -2709,6 +2908,164 @@ char_to_clump (char c)
+@@ -2717,6 +2916,164 @@ char_to_clump (char c)
    return chars;
  }
  
@@ -2866,9 +2924,10 @@ diff -Naurp coreutils-8.32.orig/src/pr.c coreutils-8.32/src/pr.c
  /* We've just printed some files and need to clean up things before
     looking for more options and printing the next batch of files.
  
-diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
---- coreutils-8.32.orig/src/sort.c	2020-01-01 22:33:34.000000000 +0800
-+++ coreutils-8.32/src/sort.c	2020-03-08 12:10:27.738236560 +0800
+diff --git a/src/sort.c b/src/sort.c
+index 5f4c817..9a3e67b 100644
+--- a/src/sort.c
++++ b/src/sort.c
 @@ -29,6 +29,14 @@
  #include <sys/wait.h>
  #include <signal.h>
@@ -2989,7 +3048,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Clean up any remaining temporary files.  */
  
  static void
-@@ -1270,7 +1341,7 @@ zaptemp (char const *name)
+@@ -1269,7 +1340,7 @@ zaptemp (char const *name)
    free (node);
  }
  
@@ -2998,7 +3057,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  
  static int
  struct_month_cmp (void const *m1, void const *m2)
-@@ -1285,7 +1356,7 @@ struct_month_cmp (void const *m1, void c
+@@ -1284,7 +1355,7 @@ struct_month_cmp (void const *m1, void const *m2)
  /* Initialize the character class tables. */
  
  static void
@@ -3007,7 +3066,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  {
    size_t i;
  
-@@ -1297,7 +1368,7 @@ inittables (void)
+@@ -1296,7 +1367,7 @@ inittables (void)
        fold_toupper[i] = toupper (i);
      }
  
@@ -3016,7 +3075,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
    /* If we're not in the "C" locale, read different names for months.  */
    if (hard_LC_TIME)
      {
-@@ -1379,6 +1450,84 @@ specify_nmerge (int oi, char c, char con
+@@ -1378,6 +1449,84 @@ specify_nmerge (int oi, char c, char const *s)
      xstrtol_fatal (e, oi, c, long_options, s);
  }
  
@@ -3101,7 +3160,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Specify the amount of main memory to use when sorting.  */
  static void
  specify_sort_size (int oi, char c, char const *s)
-@@ -1610,7 +1759,7 @@ buffer_linelim (struct buffer const *buf
+@@ -1609,7 +1758,7 @@ buffer_linelim (struct buffer const *buf)
     by KEY in LINE. */
  
  static char *
@@ -3110,7 +3169,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  {
    char *ptr = line->text, *lim = ptr + line->length - 1;
    size_t sword = key->sword;
-@@ -1619,10 +1768,10 @@ begfield (struct line const *line, struc
+@@ -1618,10 +1767,10 @@ begfield (struct line const *line, struct keyfield const *key)
    /* The leading field separator itself is included in a field when -t
       is absent.  */
  
@@ -3123,7 +3182,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            ++ptr;
          if (ptr < lim)
            ++ptr;
-@@ -1648,11 +1797,70 @@ begfield (struct line const *line, struc
+@@ -1647,11 +1796,70 @@ begfield (struct line const *line, struct keyfield const *key)
    return ptr;
  }
  
@@ -3189,13 +3248,13 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Return the limit of (a pointer to the first character after) the field
     in LINE specified by KEY. */
  
- static char *
+ static char * _GL_ATTRIBUTE_PURE
 -limfield (struct line const *line, struct keyfield const *key)
-+limfield_uni (const struct line *line, const struct keyfield *key)
++limfield_uni (struct line const *line, struct keyfield const *key)
  {
    char *ptr = line->text, *lim = ptr + line->length - 1;
    size_t eword = key->eword, echar = key->echar;
-@@ -1667,10 +1875,10 @@ limfield (struct line const *line, struc
+@@ -1666,10 +1874,10 @@ limfield (struct line const *line, struct keyfield const *key)
       'beginning' is the first character following the delimiting TAB.
       Otherwise, leave PTR pointing at the first 'blank' character after
       the preceding field.  */
@@ -3208,7 +3267,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            ++ptr;
          if (ptr < lim && (eword || echar))
            ++ptr;
-@@ -1716,10 +1924,10 @@ limfield (struct line const *line, struc
+@@ -1715,10 +1923,10 @@ limfield (struct line const *line, struct keyfield const *key)
       */
  
    /* Make LIM point to the end of (one byte past) the current field.  */
@@ -3221,13 +3280,13 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
        if (newlim)
          lim = newlim;
      }
-@@ -1750,6 +1958,130 @@ limfield (struct line const *line, struc
+@@ -1749,6 +1957,130 @@ limfield (struct line const *line, struct keyfield const *key)
    return ptr;
  }
  
 +#if HAVE_MBRTOWC
-+static char *
-+limfield_mb (const struct line *line, const struct keyfield *key)
++static char * _GL_ATTRIBUTE_PURE
++limfield_mb (struct line const *line, struct keyfield const *key)
 +{
 +  char *ptr = line->text, *lim = ptr + line->length - 1;
 +  size_t eword = key->eword, echar = key->echar;
@@ -3352,7 +3411,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Fill BUF reading from FP, moving buf->left bytes from the end
     of buf->buf to the beginning first.  If EOF is reached and the
     file wasn't terminated by a newline, supply one.  Set up BUF's line
-@@ -1836,8 +2168,22 @@ fillbuf (struct buffer *buf, FILE *fp, c
+@@ -1835,8 +2167,22 @@ fillbuf (struct buffer *buf, FILE *fp, char const *file)
                    else
                      {
                        if (key->skipsblanks)
@@ -3377,7 +3436,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
                        line->keybeg = line_start;
                      }
                  }
-@@ -1971,12 +2317,10 @@ find_unit_order (char const *number)
+@@ -1970,12 +2316,10 @@ find_unit_order (char const *number)
         <none/unknown> < K/k < M < G < T < P < E < Z < Y  */
  
  static int
@@ -3393,7 +3452,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  
    int diff = find_unit_order (a) - find_unit_order (b);
    return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
-@@ -1987,7 +2331,7 @@ human_numcompare (char const *a, char co
+@@ -1986,7 +2330,7 @@ human_numcompare (char const *a, char const *b)
     hideously fast. */
  
  static int
@@ -3402,7 +3461,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  {
    while (blanks[to_uchar (*a)])
      a++;
-@@ -1997,6 +2341,25 @@ numcompare (char const *a, char const *b
+@@ -1996,6 +2340,25 @@ numcompare (char const *a, char const *b)
    return strnumcmp (a, b, decimal_point, thousands_sep);
  }
  
@@ -3428,7 +3487,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Work around a problem whereby the long double value returned by glibc's
     strtold ("NaN", ...) contains uninitialized bits: clear all bytes of
     A and B before calling strtold.  FIXME: remove this function if
-@@ -2047,7 +2410,7 @@ general_numcompare (char const *sa, char
+@@ -2046,7 +2409,7 @@ general_numcompare (char const *sa, char const *sb)
     Return 0 if the name in S is not recognized.  */
  
  static int
@@ -3437,7 +3496,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  {
    size_t lo = 0;
    size_t hi = MONTHS_PER_YEAR;
-@@ -2323,15 +2686,14 @@ debug_key (struct line const *line, stru
+@@ -2322,15 +2685,14 @@ debug_key (struct line const *line, struct keyfield const *key)
            char saved = *lim;
            *lim = '\0';
  
@@ -3455,7 +3514,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            else if (key->general_numeric)
              ignore_value (strtold (beg, &tighter_lim));
            else if (key->numeric || key->human_numeric)
-@@ -2465,7 +2827,7 @@ key_warnings (struct keyfield const *gke
+@@ -2464,7 +2826,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
        /* Warn about significant leading blanks.  */
        bool implicit_skip = key_numeric (key) || key->month;
        bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
@@ -3464,7 +3523,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            && ((!key->skipsblanks && !implicit_skip)
                || (!key->skipsblanks && key->schar)
                || (!key->skipeblanks && key->echar)))
-@@ -2523,11 +2885,87 @@ key_warnings (struct keyfield const *gke
+@@ -2522,11 +2884,87 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
      error (0, 0, _("option '-r' only applies to last-resort comparison"));
  }
  
@@ -3553,7 +3612,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  {
    struct keyfield *key = keylist;
  
-@@ -2612,7 +3050,7 @@ keycompare (struct line const *a, struct
+@@ -2611,7 +3049,7 @@ keycompare (struct line const *a, struct line const *b)
            else if (key->human_numeric)
              diff = human_numcompare (ta, tb);
            else if (key->month)
@@ -3562,7 +3621,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            else if (key->random)
              diff = compare_random (ta, tlena, tb, tlenb);
            else if (key->version)
-@@ -2728,6 +3166,211 @@ keycompare (struct line const *a, struct
+@@ -2727,6 +3165,211 @@ keycompare (struct line const *a, struct line const *b)
    return key->reverse ? -diff : diff;
  }
  
@@ -3774,7 +3833,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  /* Compare two lines A and B, returning negative, zero, or positive
     depending on whether A compares less than, equal to, or greater than B. */
  
-@@ -2755,7 +3398,7 @@ compare (struct line const *a, struct li
+@@ -2754,7 +3397,7 @@ compare (struct line const *a, struct line const *b)
      diff = - NONZERO (blen);
    else if (blen == 0)
      diff = 1;
@@ -3783,7 +3842,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
      {
        /* xmemcoll0 is a performance enhancement as
           it will not unconditionally write '\0' after the
-@@ -4145,6 +4788,7 @@ set_ordering (char const *s, struct keyf
+@@ -4144,6 +4787,7 @@ set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
            break;
          case 'f':
            key->translate = fold_toupper;
@@ -3791,7 +3850,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            break;
          case 'g':
            key->general_numeric = true;
-@@ -4224,7 +4868,7 @@ main (int argc, char **argv)
+@@ -4223,7 +4867,7 @@ main (int argc, char **argv)
    initialize_exit_failure (SORT_FAILURE);
  
    hard_LC_COLLATE = hard_locale (LC_COLLATE);
@@ -3800,7 +3859,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
    hard_LC_TIME = hard_locale (LC_TIME);
  #endif
  
-@@ -4245,6 +4889,29 @@ main (int argc, char **argv)
+@@ -4244,6 +4888,29 @@ main (int argc, char **argv)
        thousands_sep = -1;
    }
  
@@ -3830,7 +3889,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
    have_read_stdin = false;
    inittables ();
  
-@@ -4519,13 +5186,34 @@ main (int argc, char **argv)
+@@ -4518,13 +5185,34 @@ main (int argc, char **argv)
  
          case 't':
            {
@@ -3869,7 +3928,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
                  else
                    {
                      /* Provoke with 'sort -txx'.  Complain about
-@@ -4536,9 +5224,11 @@ main (int argc, char **argv)
+@@ -4535,9 +5223,11 @@ main (int argc, char **argv)
                           quote (optarg));
                    }
                }
@@ -3883,7 +3942,7 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
            }
            break;
  
-@@ -4767,12 +5457,10 @@ main (int argc, char **argv)
+@@ -4766,12 +5456,10 @@ main (int argc, char **argv)
        sort (files, nfiles, outfile, nthreads);
      }
  
@@ -3896,9 +3955,10 @@ diff -Naurp coreutils-8.32.orig/src/sort.c coreutils-8.32/src/sort.c
  
    if (have_read_stdin && fclose (stdin) == EOF)
      sort_die (_("close failed"), "-");
-diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
---- coreutils-8.32.orig/src/unexpand.c	2020-01-01 22:13:12.000000000 +0800
-+++ coreutils-8.32/src/unexpand.c	2020-03-08 12:10:27.738236560 +0800
+diff --git a/src/unexpand.c b/src/unexpand.c
+index cec392d..483f0ef 100644
+--- a/src/unexpand.c
++++ b/src/unexpand.c
 @@ -38,6 +38,9 @@
  #include <stdio.h>
  #include <getopt.h>
@@ -3908,8 +3968,8 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
 +
  #include "system.h"
  #include "die.h"
- #include "xstrndup.h"
-@@ -107,24 +110,47 @@ unexpand (void)
+ 
+@@ -106,24 +109,47 @@ unexpand (void)
  {
    /* Input stream.  */
    FILE *fp = next_file (NULL);
@@ -3931,11 +3991,11 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
      return;
 +  mbf_init (mbf, fp);
 +  found_bom=check_bom(fp,&mbf);
- 
++
 +  if (using_utf_locale == false && found_bom == true)
 +  {
 +    /*try using some predefined locale */
-+
+ 
 +    if (set_utf_locale () != 0)
 +    {
 +      error (EXIT_FAILURE, errno, _("cannot set UTF-8 locale"));
@@ -3960,7 +4020,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
  
        /* If true, perform translations.  */
        bool convert = true;
-@@ -158,12 +184,44 @@ unexpand (void)
+@@ -157,12 +183,44 @@ unexpand (void)
  
        do
          {
@@ -4008,7 +4068,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
  
                if (blank)
                  {
-@@ -180,16 +238,16 @@ unexpand (void)
+@@ -179,16 +237,16 @@ unexpand (void)
                        if (next_tab_column < column)
                          die (EXIT_FAILURE, 0, _("input line is too long"));
  
@@ -4028,7 +4088,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
  
                            if (! (prev_blank && column == next_tab_column))
                              {
-@@ -197,13 +255,14 @@ unexpand (void)
+@@ -196,13 +254,14 @@ unexpand (void)
                                   will be replaced by tabs.  */
                                if (column == next_tab_column)
                                  one_blank_before_tab_stop = true;
@@ -4045,7 +4105,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
                          }
  
                        /* Discard pending blanks, unless it was a single
-@@ -211,7 +270,7 @@ unexpand (void)
+@@ -210,7 +269,7 @@ unexpand (void)
                        pending = one_blank_before_tab_stop;
                      }
                  }
@@ -4054,7 +4114,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
                  {
                    /* Go back one column, and force recalculation of the
                       next tab stop.  */
-@@ -219,9 +278,9 @@ unexpand (void)
+@@ -218,9 +277,9 @@ unexpand (void)
                    next_tab_column = column;
                    tab_index -= !!tab_index;
                  }
@@ -4066,7 +4126,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
                    if (!column)
                      die (EXIT_FAILURE, 0, _("input line is too long"));
                  }
-@@ -229,8 +288,11 @@ unexpand (void)
+@@ -228,8 +287,11 @@ unexpand (void)
                if (pending)
                  {
                    if (pending > 1 && one_blank_before_tab_stop)
@@ -4080,7 +4140,7 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
                      die (EXIT_FAILURE, errno, _("write error"));
                    pending = 0;
                    one_blank_before_tab_stop = false;
-@@ -240,16 +302,17 @@ unexpand (void)
+@@ -239,16 +301,17 @@ unexpand (void)
                convert &= convert_entire_line || blank;
              }
  
@@ -4101,9 +4161,10 @@ diff -Naurp coreutils-8.32.orig/src/unexpand.c coreutils-8.32/src/unexpand.c
      }
  }
  
-diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
---- coreutils-8.32.orig/src/uniq.c	2020-02-25 07:18:16.000000000 +0800
-+++ coreutils-8.32/src/uniq.c	2020-03-08 12:10:35.436236531 +0800
+diff --git a/src/uniq.c b/src/uniq.c
+index 8f6e973..accce3d 100644
+--- a/src/uniq.c
++++ b/src/uniq.c
 @@ -21,6 +21,17 @@
  #include <getopt.h>
  #include <sys/types.h>
@@ -4152,7 +4213,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
  static struct option const longopts[] =
  {
    {"count", no_argument, NULL, 'c'},
-@@ -253,7 +280,7 @@ size_opt (char const *opt, char const *m
+@@ -253,7 +280,7 @@ size_opt (char const *opt, char const *msgid)
     return a pointer to the beginning of the line's field to be compared. */
  
  static char * _GL_ATTRIBUTE_PURE
@@ -4161,7 +4222,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
  {
    size_t count;
    char const *lp = line->buffer;
-@@ -273,6 +300,83 @@ find_field (struct linebuffer const *lin
+@@ -273,6 +300,83 @@ find_field (struct linebuffer const *line)
    return line->buffer + i;
  }
  
@@ -4245,7 +4306,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
  /* Return false if two strings OLD and NEW match, true if not.
     OLD and NEW point not to the beginnings of the lines
     but rather to the beginnings of the fields to compare.
-@@ -292,6 +396,79 @@ different (char *old, char *new, size_t
+@@ -292,6 +396,79 @@ different (char *old, char *new, size_t oldlen, size_t newlen)
      return oldlen != newlen || memcmp (old, new, oldlen);
  }
  
@@ -4325,8 +4386,8 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
  /* Output the line in linebuffer LINE to standard output
     provided that the switches say it should be output.
     MATCH is true if the line matches the previous line.
-@@ -355,19 +532,38 @@ check_file (const char *infile, const ch
-       char *prevfield IF_LINT ( = NULL);
+@@ -355,19 +532,38 @@ check_file (char const *infile, char const *outfile, char delimiter)
+       char *prevfield = NULL;
        size_t prevlen IF_LINT ( = 0);
        bool first_group_printed = false;
 +#if HAVE_MBRTOWC
@@ -4354,17 +4415,17 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
 +            {
 +              thisstate = thisline->state;
  
-+              new_group = (prevline->length == 0
++              new_group = (!prevfield
 +                           || different_multi (thisfield, prevfield,
 +                                               thislen, prevlen,
 +                                               thisstate, prevstate));
 +            }
 +          else
 +#endif
-           new_group = (prevline->length == 0
+           new_group = (!prevfield
                         || different (thisfield, prevfield, thislen, prevlen));
  
-@@ -385,6 +581,10 @@ check_file (const char *infile, const ch
+@@ -385,6 +581,10 @@ check_file (char const *infile, char const *outfile, char delimiter)
                SWAP_LINES (prevline, thisline);
                prevfield = thisfield;
                prevlen = thislen;
@@ -4375,7 +4436,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
                first_group_printed = true;
              }
          }
-@@ -397,17 +597,26 @@ check_file (const char *infile, const ch
+@@ -397,17 +597,26 @@ check_file (char const *infile, char const *outfile, char delimiter)
        size_t prevlen;
        uintmax_t match_count = 0;
        bool first_delimiter = true;
@@ -4402,7 +4463,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
            if (readlinebuffer_delim (thisline, stdin, delimiter) == 0)
              {
                if (ferror (stdin))
-@@ -416,6 +625,14 @@ check_file (const char *infile, const ch
+@@ -416,6 +625,14 @@ check_file (char const *infile, char const *outfile, char delimiter)
              }
            thisfield = find_field (thisline);
            thislen = thisline->length - 1 - (thisfield - thisline->buffer);
@@ -4417,7 +4478,7 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
            match = !different (thisfield, prevfield, thislen, prevlen);
            match_count += match;
  
-@@ -448,6 +665,9 @@ check_file (const char *infile, const ch
+@@ -448,6 +665,9 @@ check_file (char const *infile, char const *outfile, char delimiter)
                SWAP_LINES (prevline, thisline);
                prevfield = thisfield;
                prevlen = thislen;
@@ -4447,9 +4508,24 @@ diff -Naurp coreutils-8.32.orig/src/uniq.c coreutils-8.32/src/uniq.c
    skip_chars = 0;
    skip_fields = 0;
    check_chars = SIZE_MAX;
-diff -Naurp coreutils-8.32.orig/tests/expand/mb.sh coreutils-8.32/tests/expand/mb.sh
---- coreutils-8.32.orig/tests/expand/mb.sh	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/tests/expand/mb.sh	2020-03-08 12:10:27.738236560 +0800
+diff --git a/tests/Coreutils.pm b/tests/Coreutils.pm
+index dc6b132..5e49120 100644
+--- a/tests/Coreutils.pm
++++ b/tests/Coreutils.pm
+@@ -263,7 +263,7 @@ sub run_tests ($$$$$)
+       # The test name may be no longer than 30 bytes.
+       # Yes, this is an arbitrary limit.  If it causes trouble,
+       # consider removing it.
+-      my $max = 30;
++      my $max = 32;
+       if ($max < length $test_name)
+         {
+           warn "$program_name: $test_name: test name is too long (> $max)\n";
+diff --git a/tests/expand/mb.sh b/tests/expand/mb.sh
+new file mode 100644
+index 0000000..dd6007c
+--- /dev/null
++++ b/tests/expand/mb.sh
 @@ -0,0 +1,183 @@
 +#!/bin/sh
 +
@@ -4634,9 +4710,11 @@ diff -Naurp coreutils-8.32.orig/tests/expand/mb.sh coreutils-8.32/tests/expand/m
 +compare exp out > /dev/null 2>&1 || fail=1
 +
 +exit $fail
-diff -Naurp coreutils-8.32.orig/tests/i18n/sort.sh coreutils-8.32/tests/i18n/sort.sh
---- coreutils-8.32.orig/tests/i18n/sort.sh	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/tests/i18n/sort.sh	2020-03-08 12:10:27.738236560 +0800
+diff --git a/tests/i18n/sort.sh b/tests/i18n/sort.sh
+new file mode 100644
+index 0000000..26c95de
+--- /dev/null
++++ b/tests/i18n/sort.sh
 @@ -0,0 +1,29 @@
 +#!/bin/sh
 +# Verify sort's multi-byte support.
@@ -4667,10 +4745,11 @@ diff -Naurp coreutils-8.32.orig/tests/i18n/sort.sh coreutils-8.32/tests/i18n/sor
 +
 +
 +Exit $fail
-diff -Naurp coreutils-8.32.orig/tests/local.mk coreutils-8.32/tests/local.mk
---- coreutils-8.32.orig/tests/local.mk	2020-03-02 07:25:03.000000000 +0800
-+++ coreutils-8.32/tests/local.mk	2020-03-08 12:10:27.738236560 +0800
-@@ -369,6 +369,8 @@ all_tests =					\
+diff --git a/tests/local.mk b/tests/local.mk
+index 228d0e3..a76c808 100644
+--- a/tests/local.mk
++++ b/tests/local.mk
+@@ -375,6 +375,8 @@ all_tests =					\
    tests/misc/sort-discrim.sh			\
    tests/misc/sort-files0-from.pl		\
    tests/misc/sort-float.sh			\
@@ -4679,7 +4758,7 @@ diff -Naurp coreutils-8.32.orig/tests/local.mk coreutils-8.32/tests/local.mk
    tests/misc/sort-h-thousands-sep.sh		\
    tests/misc/sort-merge.pl			\
    tests/misc/sort-merge-fdlimit.sh		\
-@@ -567,6 +569,7 @@ all_tests =					\
+@@ -573,6 +575,7 @@ all_tests =					\
    tests/du/threshold.sh				\
    tests/du/trailing-slash.sh			\
    tests/du/two-args.sh				\
@@ -4687,7 +4766,7 @@ diff -Naurp coreutils-8.32.orig/tests/local.mk coreutils-8.32/tests/local.mk
    tests/id/gnu-zero-uids.sh			\
    tests/id/no-context.sh			\
    tests/id/context.sh				\
-@@ -714,6 +717,7 @@ all_tests =					\
+@@ -724,6 +727,7 @@ all_tests =					\
    tests/touch/read-only.sh			\
    tests/touch/relative.sh			\
    tests/touch/trailing-slash.sh			\
@@ -4695,9 +4774,10 @@ diff -Naurp coreutils-8.32.orig/tests/local.mk coreutils-8.32/tests/local.mk
    $(all_root_tests)
  
  # See tests/factor/create-test.sh.
-diff -Naurp coreutils-8.32.orig/tests/misc/expand.pl coreutils-8.32/tests/misc/expand.pl
---- coreutils-8.32.orig/tests/misc/expand.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/expand.pl	2020-03-08 12:10:27.738236560 +0800
+diff --git a/tests/misc/expand.pl b/tests/misc/expand.pl
+index a10ff19..e1706c1 100755
+--- a/tests/misc/expand.pl
++++ b/tests/misc/expand.pl
 @@ -27,6 +27,15 @@ my $prog = 'expand';
  # Turn off localization of executable's output.
  @ENV{qw(LANGUAGE LANG LC_ALL)} = ('C') x 3;
@@ -4761,9 +4841,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/expand.pl coreutils-8.32/tests/misc/e
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
  
-diff -Naurp coreutils-8.32.orig/tests/misc/fold.pl coreutils-8.32/tests/misc/fold.pl
---- coreutils-8.32.orig/tests/misc/fold.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/fold.pl	2020-03-08 12:10:27.738236560 +0800
+diff --git a/tests/misc/fold.pl b/tests/misc/fold.pl
+index beacec9..b56afca 100755
+--- a/tests/misc/fold.pl
++++ b/tests/misc/fold.pl
 @@ -20,9 +20,18 @@ use strict;
  
  (my $program_name = $0) =~ s|.*/||;
@@ -4833,9 +4914,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/fold.pl coreutils-8.32/tests/misc/fol
 -my $prog = 'fold';
  my $fail = run_tests ($program_name, $prog, \@Tests, $save_temps, $verbose);
  exit $fail;
-diff -Naurp coreutils-8.32.orig/tests/misc/join.pl coreutils-8.32/tests/misc/join.pl
---- coreutils-8.32.orig/tests/misc/join.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/join.pl	2020-03-08 12:10:27.738236560 +0800
+diff --git a/tests/misc/join.pl b/tests/misc/join.pl
+index bfd9e6f..75788c9 100755
+--- a/tests/misc/join.pl
++++ b/tests/misc/join.pl
 @@ -25,6 +25,15 @@ my $limits = getlimits ();
  
  my $prog = 'join';
@@ -4902,9 +4984,11 @@ diff -Naurp coreutils-8.32.orig/tests/misc/join.pl coreutils-8.32/tests/misc/joi
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
  
-diff -Naurp coreutils-8.32.orig/tests/misc/sort-mb-tests.sh coreutils-8.32/tests/misc/sort-mb-tests.sh
---- coreutils-8.32.orig/tests/misc/sort-mb-tests.sh	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/tests/misc/sort-mb-tests.sh	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/misc/sort-mb-tests.sh b/tests/misc/sort-mb-tests.sh
+new file mode 100644
+index 0000000..11836ba
+--- /dev/null
++++ b/tests/misc/sort-mb-tests.sh
 @@ -0,0 +1,45 @@
 +#!/bin/sh
 +# Verify sort's multi-byte support.
@@ -4951,9 +5035,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/sort-mb-tests.sh coreutils-8.32/tests
 +compare exp out || { fail=1; cat out; }
 +
 +Exit $fail
-diff -Naurp coreutils-8.32.orig/tests/misc/sort-merge.pl coreutils-8.32/tests/misc/sort-merge.pl
---- coreutils-8.32.orig/tests/misc/sort-merge.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/sort-merge.pl	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/misc/sort-merge.pl b/tests/misc/sort-merge.pl
+index 70d8af1..6b4840a 100755
+--- a/tests/misc/sort-merge.pl
++++ b/tests/misc/sort-merge.pl
 @@ -26,6 +26,15 @@ my $prog = 'sort';
  # Turn off localization of executable's output.
  @ENV{qw(LANGUAGE LANG LC_ALL)} = ('C') x 3;
@@ -5010,9 +5095,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/sort-merge.pl coreutils-8.32/tests/mi
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
  
-diff -Naurp coreutils-8.32.orig/tests/misc/sort.pl coreutils-8.32/tests/misc/sort.pl
---- coreutils-8.32.orig/tests/misc/sort.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/sort.pl	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/misc/sort.pl b/tests/misc/sort.pl
+index 86970ff..c016ff7 100755
+--- a/tests/misc/sort.pl
++++ b/tests/misc/sort.pl
 @@ -24,10 +24,15 @@ my $prog = 'sort';
  # Turn off localization of executable's output.
  @ENV{qw(LANGUAGE LANG LC_ALL)} = ('C') x 3;
@@ -5077,9 +5163,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/sort.pl coreutils-8.32/tests/misc/sor
  
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
-diff -Naurp coreutils-8.32.orig/tests/misc/unexpand.pl coreutils-8.32/tests/misc/unexpand.pl
---- coreutils-8.32.orig/tests/misc/unexpand.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/unexpand.pl	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/misc/unexpand.pl b/tests/misc/unexpand.pl
+index 1c8e308..9f8ab89 100755
+--- a/tests/misc/unexpand.pl
++++ b/tests/misc/unexpand.pl
 @@ -27,6 +27,14 @@ my $limits = getlimits ();
  
  my $prog = 'unexpand';
@@ -5133,9 +5220,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/unexpand.pl coreutils-8.32/tests/misc
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
  
-diff -Naurp coreutils-8.32.orig/tests/misc/uniq.pl coreutils-8.32/tests/misc/uniq.pl
---- coreutils-8.32.orig/tests/misc/uniq.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/misc/uniq.pl	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/misc/uniq.pl b/tests/misc/uniq.pl
+index 74d3815..aae4c7e 100755
+--- a/tests/misc/uniq.pl
++++ b/tests/misc/uniq.pl
 @@ -23,9 +23,17 @@ my $limits = getlimits ();
  my $prog = 'uniq';
  my $try = "Try '$prog --help' for more information.\n";
@@ -5208,9 +5296,10 @@ diff -Naurp coreutils-8.32.orig/tests/misc/uniq.pl coreutils-8.32/tests/misc/uni
  @Tests = add_z_variants \@Tests;
  @Tests = triple_test \@Tests;
  
-diff -Naurp coreutils-8.32.orig/tests/pr/pr-tests.pl coreutils-8.32/tests/pr/pr-tests.pl
---- coreutils-8.32.orig/tests/pr/pr-tests.pl	2020-01-01 22:13:13.000000000 +0800
-+++ coreutils-8.32/tests/pr/pr-tests.pl	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/pr/pr-tests.pl b/tests/pr/pr-tests.pl
+index d0ac405..ff7d472 100755
+--- a/tests/pr/pr-tests.pl
++++ b/tests/pr/pr-tests.pl
 @@ -24,6 +24,15 @@ use strict;
  my $prog = 'pr';
  my $normalize_strerror = "s/': .*/'/";
@@ -5227,9 +5316,9 @@ diff -Naurp coreutils-8.32.orig/tests/pr/pr-tests.pl coreutils-8.32/tests/pr/pr-
  my @tv = (
  
  # -b option is no longer an official option. But it's still working to
-@@ -474,8 +483,48 @@ push @Tests,
-     {IN=>{2=>"a\n"}},
-      {OUT=>"a\t\t\t\t  \t\t\ta\n"} ];
+@@ -512,8 +521,48 @@ push @Tests,
+     {IN=>"x\tx\tx\tx\tx\nx\tx\tx\tx\tx\n"},
+      {OUT=>"x\tx\tx\tx\tx\tx\tx\tx\tx\tx\n"} ];
  
 +# Add _POSIX2_VERSION=199209 to the environment of each test
 +# that uses an old-style option like +1.
@@ -5276,9 +5365,11 @@ diff -Naurp coreutils-8.32.orig/tests/pr/pr-tests.pl coreutils-8.32/tests/pr/pr-
  my $save_temps = $ENV{DEBUG};
  my $verbose = $ENV{VERBOSE};
  
-diff -Naurp coreutils-8.32.orig/tests/unexpand/mb.sh coreutils-8.32/tests/unexpand/mb.sh
---- coreutils-8.32.orig/tests/unexpand/mb.sh	1970-01-01 08:00:00.000000000 +0800
-+++ coreutils-8.32/tests/unexpand/mb.sh	2020-03-08 12:10:27.739236560 +0800
+diff --git a/tests/unexpand/mb.sh b/tests/unexpand/mb.sh
+new file mode 100644
+index 0000000..8a82d74
+--- /dev/null
++++ b/tests/unexpand/mb.sh
 @@ -0,0 +1,172 @@
 +#!/bin/sh
 +
@@ -5452,3 +5543,6 @@ diff -Naurp coreutils-8.32.orig/tests/unexpand/mb.sh coreutils-8.32/tests/unexpa
 +
 +LC_ALL=C unexpand in in > out || fail=1
 +compare exp out > /dev/null 2>&1 || fail=1
+-- 
+2.33.0
+

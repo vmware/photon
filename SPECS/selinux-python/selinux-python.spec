@@ -1,5 +1,5 @@
 Summary:        SELinux policy core utilities
-Name:           policycoreutils
+Name:           selinux-python
 Version:        3.3
 Release:        1%{?dist}
 License:        Public Domain
@@ -9,15 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=379cb6237cd96f0ad4cca73357d84e503b0d2a8e
+%define sha1    %{name}=45dd2f295a4188117469227211cd4a7774dd1ab9
 
-BuildRequires:  libsemanage-devel = %{version}
-
-Requires:       libsemanage = %{version}
+BuildRequires:  python3-devel
+BuildRequires:  libsepol-devel = %{version}
+BuildRequires:  libselinux-devel = %{version}
 
 %description
-policycoreutils contains the policy core utilities that are required for
-basic operation of a SELinux system.
+The %{name} package contains the management tools use to manage an SELinux environment.
 
 %prep
 %autosetup -p1
@@ -29,8 +28,7 @@ make %{?_smp_mflags}
 make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" \
      BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" %{?_smp_mflags} install
 
-rm -rf %{buildroot}%{_datadir}/locale \
-       %{buildroot}%{_mandir}/ru
+rm -rf %{buildroot}%{_mandir}/ru
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -39,19 +37,12 @@ rm -rf %{buildroot}%{_datadir}/locale \
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_sbindir}/*
-%{_libexecdir}/*
-%{_sysconfdir}/sestatus.conf
+%{python3_sitelib}/*
 %{_datadir}/bash-completion/*
 %{_mandir}/man1/*
-%{_mandir}/man5/*
 %{_mandir}/man8/*
+%exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
-- Upgrade v3.3
-* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
-- Automatic Version Bump
-* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
-- Automatic Version Bump
-* Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
-- Initial build.
+- Initial version.
