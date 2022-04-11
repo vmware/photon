@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
 %define sha1    xz=a2975d12e0905daec48ec87c0098602e0669d195
+Patch0:		CVE-2022-1271.patch
 Requires:       xz-libs = %{version}-%{release}
 %description
 The Xz package contains programs for compressing and
@@ -35,9 +36,9 @@ This package contains minimal set of shared xz libraries.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules
@@ -96,6 +97,8 @@ make  %{?_smp_mflags}  check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Apr 07 2022 Siju Maliakkal <smaliakkal@vmware.com> 5.2.3-3
+-   Apply patch for CVE-2022-1271
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 5.2.3-2
 -   Added -libs subpackage. Disable static.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.3-1
