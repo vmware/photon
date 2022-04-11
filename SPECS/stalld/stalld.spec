@@ -1,12 +1,12 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.3.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
 Source0:        https://git.kernel.org/pub/scm/utils/stalld/stalld.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 stalld=461f44e36ee4448324d05d1f2ec7cc054aedd62c
+%define sha512  %{name}=3f77809a645ab993d63b4d31efa639c58edc42b8793314b28205104c041fcbb32fc998dcb53ce3b279f12946f07cda5fd1312ac728aaa04106bff2da91fe8554
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source1:        stalld.conf
@@ -23,6 +23,7 @@ Patch2:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
 Patch3:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
 Patch4:         0001-stalld-Assign-name-to-stalld-thread.patch
 Patch5:         0001-utils-Add-HRTICK_DL-support.patch
+Patch6:         0001-utils.c-Add-error-handling-for-enabling-HRTICK.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -67,6 +68,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Apr 11 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-10
+- Exit early if enabling HRTICK fails when using SCHED_DEADLINE
 * Fri Mar 25 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-9
 - Add HRTICK_DL support for stalld
 * Mon Sep 20 2021 Ankit Jain <ankitja@vmware.com> 1.3.0-8
