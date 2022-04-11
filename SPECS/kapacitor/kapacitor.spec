@@ -1,6 +1,6 @@
 Name:           kapacitor
 Version:        1.5.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -12,6 +12,8 @@ Group:          System/Monitoring
 BuildRequires:  go
 BuildRequires:  systemd
 Requires:       systemd
+Requires(pre):      /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):   /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
@@ -89,6 +91,8 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+*   Fri Apr 08 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.0-16
+-   Add useradd,groupadd etc in requires to fix installation failure
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.0-15
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.0-14
