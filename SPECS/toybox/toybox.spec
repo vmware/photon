@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -302,6 +302,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %mktoy /usr/bin/fallocate
 %mktoy /usr/bin/flock
 %mktoy /usr/bin/ionice
+%mktoy /usr/bin/nsenter
 %mktoy /usr/bin/renice
 %mktoy /usr/bin/rev
 %mktoy /usr/bin/setsid
@@ -523,6 +524,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/fallocate
 %ghost %{_bindir}/flock
 %ghost %{_bindir}/ionice
+%ghost %{_bindir}/nsenter
 %ghost %{_bindir}/renice
 %ghost %{_bindir}/rev
 %ghost %{_bindir}/setsid
@@ -570,6 +572,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %doc README LICENSE
 
 %changelog
+* Sat Apr 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.6-2
+- Enable nsenter utility in toybox
 * Tue Dec 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-1
 - Upgrade to 0.8.6
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-3
