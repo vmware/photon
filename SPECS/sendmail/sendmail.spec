@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
-Version:        8.15.2
-Release:        16%{?dist}
+Version:        8.17.1
+Release:        1%{?dist}
 URL:            http://www.sendmail.org
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.sendmail.org/sendmail.%{version}.tar.gz
-%define sha1 %{name}=5801d4b06f4e38ef228a5954a44d17636eaa5a16
+%define sha1 %{name}=d4d2568fe48da0e0fe8209a9cbc6f842e9014e46
 
 BuildRequires:  systemd-devel
 BuildRequires:  openldap
@@ -37,7 +37,7 @@ of email from systems to network and is not just a mail client.
 
 %build
 cat >> devtools/Site/site.config.m4 << "EOF"
-APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6')
+APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6 -DHASFLOCK=1')
 APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -ldb')
 APPENDDEF(`confINCDIRS', `-I/usr/include/sasl')
 APPENDDEF(`confLIBS', `-lresolv')
@@ -191,6 +191,8 @@ fi
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Apr 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-1
+- Upgrade to v8.17.1 to address CVE-2021-3618
 * Fri Nov 29 2019 Tapas Kundu <tkundu@vmware.com> 8.15.2-16
 - Build with NETINET6 flag.
 * Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-15
