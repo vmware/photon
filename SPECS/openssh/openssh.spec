@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -32,6 +32,7 @@ Patch13:        openssh-expose-vasnmprintf.patch
 Patch14:        openssh-fix-ssh-keyscan.patch
 Patch15:        openssh-CVE-2021-41617.patch
 Patch16:        openssh-CVE-2020-14145.patch
+Patch17:        0001-sshd_config-Avoid-duplicate-entry.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -90,6 +91,7 @@ tar xf %{SOURCE1} --no-same-owner
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 sh ./configure \
@@ -109,15 +111,7 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_sharedstatedir}/sshd
-echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "MaxAuthTries 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-#echo "MaxSessions 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "TCPKeepAlive no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "AllowAgentForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+
 #   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd %{?_smp_mflags}
@@ -218,6 +212,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+* Tue Apr 12 2022 Ankit Jain <ankitja@vmware.comm> 7.8p1-13
+- Avoid duplicate entry in sshd_config
 * Fri Apr 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-12
 - Add systemd to Requires
 * Wed Jan 12 2022 Dweep Advani <dadvani@vmware.comm> 7.8p1-11
