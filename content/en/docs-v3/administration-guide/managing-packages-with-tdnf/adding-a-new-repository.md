@@ -39,6 +39,14 @@ The `enabled` setting tells `tdnf` whether to poll the repository. If `enabled` 
 
 The `skip_if_unavailable` setting instructs `tdnf` to continue running if the repository goes offline.
 
+You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache. 
+
+The following list describes the skip metadata settings:
+
+- `skip_md_filelists`: The `skip_md_filelists=1` setting deactivates the download of the complete list of files in all packages. The default value is `0`.
+	
+- `skip_md_updateinfo`: The `skip_md_updateinfo=1` setting deactivates the download of the update info data. The setting improves the download and processing time but affects the output of the `updateinfo` command. The default value is `0`.
+
 Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for `yum.conf` on the full version of Photon OS: `man yum.conf`
 
 The following is an example of how to add a new repository for a local server that `tdnf` polls for packages:
