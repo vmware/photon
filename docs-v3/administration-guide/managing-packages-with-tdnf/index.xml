@@ -82,6 +82,16 @@ skip_if_unavailable=True
 &lt;p>The &lt;code>gpgcheck&lt;/code> setting specifies whether to check the GPG signature. The &lt;code>gpgkey&lt;/code> setting furnishes the URL for the repository&amp;rsquo;s ASCII-armored GPG key file. Tdnf uses the GPG key to verify a package if its key has not been imported into the RPM database.&lt;/p>
 &lt;p>The &lt;code>enabled&lt;/code> setting tells &lt;code>tdnf&lt;/code> whether to poll the repository. If &lt;code>enabled&lt;/code> is set to &lt;code>1&lt;/code>, &lt;code>tdnf&lt;/code> polls it; if it is set to &lt;code>0&lt;/code>, &lt;code>tdnf&lt;/code> ignores it.&lt;/p>
 &lt;p>The &lt;code>skip_if_unavailable&lt;/code> setting instructs &lt;code>tdnf&lt;/code> to continue running if the repository goes offline.&lt;/p>
+&lt;p>You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache.&lt;/p>
+&lt;p>The following list describes the skip metadata settings:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>skip_md_filelists&lt;/code>: The &lt;code>skip_md_filelists=1&lt;/code> setting deactivates the download of the complete list of files in all packages. The default value is &lt;code>0&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>skip_md_updateinfo&lt;/code>: The &lt;code>skip_md_updateinfo=1&lt;/code> setting deactivates the download of the update info data. The setting improves the download and processing time but affects the output of the &lt;code>updateinfo&lt;/code> command. The default value is &lt;code>0&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ul>
 &lt;p>Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for &lt;code>yum.conf&lt;/code> on the full version of Photon OS: &lt;code>man yum.conf&lt;/code>&lt;/p>
 &lt;p>The following is an example of how to add a new repository for a local server that &lt;code>tdnf&lt;/code> polls for packages:&lt;/p>
 &lt;pre>&lt;code>cat &amp;gt; /etc/yum.repos.d/apps.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;

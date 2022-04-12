@@ -60,7 +60,7 @@ photon-iso.repo
 photon-updates.repo
 photon.repo
 &lt;/code>&lt;/pre>
-&lt;p>To view the the format and information that a new repository configuration file should contain, see one of the &lt;code>.repo&lt;/code> files. The following is an example:&lt;/p>
+&lt;p>To view the format and information that a new repository configuration file should contain, see one of the &lt;code>.repo&lt;/code> files. The following is an example:&lt;/p>
 &lt;pre>&lt;code>baseurl=https://https://packages.vmware.com/photon/
 metalink=http://example.com/*username*/metalink/metalink
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
@@ -103,7 +103,7 @@ skip_if_unavailable=True
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;code>repo_gpgcheck&lt;/code> setting allows &lt;code>tdnf&lt;/code> to verify the signature of a repository metadata before downloading the repository artifacts. When &lt;code>repo_gpgcheck&lt;/code> is set to &lt;code>1&lt;/code> in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is &lt;code>0&lt;/code>.
-If a repository has &lt;code>repo_gpgcheck&lt;/code> enabled,a &lt;code>repomd.xml.asc&lt;/code> file is downloaded and the API equivalent of &lt;code>gpg --verify repomd.xml.asc repomd.xml&lt;/code> is done. If &lt;code>repomd.xml.asc&lt;/code> is missing, repository is disabled. If &lt;code>repomd.xml.asc&lt;/code> fails to verify, the repository is disabled. The public key for verification must be manually installed for the initial implementation.&lt;/p>
+If a repository has &lt;code>repo_gpgcheck&lt;/code> enabled,a &lt;code>repomd.xml.asc&lt;/code> file is downloaded and the API equivalent of &lt;code>gpg --verify repomd.xml.asc repomd.xml&lt;/code> is done. If &lt;code>repomd.xml.asc&lt;/code> is missing, repository is deactivated. If &lt;code>repomd.xml.asc&lt;/code> fails to verify, the repository is deactivated. The public key for verification must be manually installed for the initial implementation.&lt;/p>
 &lt;p>Note: Ensure that you have installed &lt;code>libgcrypt&lt;/code> for this implementation.&lt;/p>
 &lt;/li>
 &lt;li>
@@ -129,6 +129,21 @@ gpgkey=http://build-squid.eng.vmware.com/build/mts/release/bora-16633979/publish
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;code>maxrate&lt;/code> setting specifies the maximum download rate (throttle). The default value is &lt;code>0 &lt;/code>(&lt;code>no limit&lt;/code>).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache.&lt;/p>
+&lt;p>The following list describes the benefits and drawbacks of the skip metadata settings:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>skip_md_filelists&lt;/code>: The &lt;code>skip_md_filelists=1&lt;/code> setting deactivates the download of the complete list of files in all packages. The setting improves the download and processing time but affects the &lt;code>repoquery&lt;/code> queries for files. The default value is &lt;code>0&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>skip_md_other&lt;/code>: The &lt;code>skip_md_other=1&lt;/code> setting deactivates the download of miscellaneous data like the changelog data of packages. The setting improves the download and processing time but affects the &lt;code>repoquery&lt;/code> queries for changelogs. The default value is &lt;code>0&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>skip_md_updateinfo&lt;/code>: The &lt;code>skip_md_updateinfo=1&lt;/code> setting deactivates the download of the update info data. The setting improves the download and processing time but affects the output of the &lt;code>updateinfo&lt;/code> command. The default value is &lt;code>0&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ul>
 &lt;/li>
 &lt;li>
 &lt;p>Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for &lt;code>yum.conf&lt;/code> on the full version of Photon OS: &lt;code>man yum.conf&lt;/code>&lt;/p>
