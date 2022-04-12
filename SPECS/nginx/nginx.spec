@@ -3,7 +3,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.19.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -17,6 +17,7 @@ Source2:        nginx-njs-%{njs_ver}.tar.gz
 %define sha1    nginx-njs=1927a613d0e5f3ef6fe3c0a6c8dbb06b39bb9c3c
 
 Patch0:         0001-nginx-DNS-Resolver-Off-by-One-Heap-Write-in-ngx_reso.patch
+Patch1:         nginx-CVE-2021-3618.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -95,6 +96,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %{_var}/log/nginx
 
 %changelog
+* Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.19.3-5
+- Fix for CVE-2021-3618
 * Thu Dec 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.19.3-4
 - Fix nginx service handling
 * Mon Nov 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.19.3-3
