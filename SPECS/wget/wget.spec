@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.20.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -10,11 +10,12 @@ Distribution:   Photon
 
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=2b886eab5b97267cc358ab35e42d14d33d6dfc95
+Patch0:         0001-src-ftp.c-ftp_loop_internal-Check-for-VERIFCERTERR-t.patch
 
 Requires:       openssl
 
 BuildRequires:  openssl-devel
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  perl
 %endif
 
@@ -44,10 +45,13 @@ EOF
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+
+%if 0%{?with_check}
 %check
 export PERL_MM_USE_DEFAULT=1
 cpan HTTP::Daemon
 make  %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -59,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Apr 12 2022 Oliver Kurth <okurth@vmware.com> 1.20.3-2
+- fix core dump on SIGABRT on certificate validation error
 * Thu May 23 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
 - Updated to latest version. Fix CVE-2019-5953, CVE-2018-20483
 * Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.19.5-1
