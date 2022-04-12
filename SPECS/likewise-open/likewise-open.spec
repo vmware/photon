@@ -1,13 +1,15 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0: 	%{name}-%{version}.tar.gz
 %define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+Patch0:         likewise-FIPS-support.patch
+Patch1:         likewise-Use-machine-account-as-the-Kerberos-salt-for-decrypt.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -298,6 +300,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Tue Apr 12 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3
+-   Add FIPS support
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-2
 -   Version bump up to use libxml2 2.9.11-4.
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 6.2.11.13-1

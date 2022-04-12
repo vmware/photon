@@ -1,0 +1,128 @@
+From e58f58d515cb00571ece3d9941b2103c0e8da657 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Tue, 12 Apr 2022 20:32:49 +0530
+Subject: [PATCH] Use machine account as the Kerberos salt for decrypting
+ ticket from TGS-REP
+
+---
+ .../auth-providers/ad-open-provider/online.c  | 32 +++++++++++++++++++
+ lwadvapi/include/public/lwkrb5.h              |  1 +
+ lwadvapi/threaded/lwkrb5.c                    | 11 +++----
+ 3 files changed, 37 insertions(+), 7 deletions(-)
+
+diff --git a/lsass/server/auth-providers/ad-open-provider/online.c b/lsass/server/auth-providers/ad-open-provider/online.c
+index 6e62317e..32e3d451 100644
+--- a/lsass/server/auth-providers/ad-open-provider/online.c
++++ b/lsass/server/auth-providers/ad-open-provider/online.c
+@@ -1695,6 +1695,9 @@ AD_OnlineCheckUserPassword(
+     NTSTATUS ntStatus = 0;
+     PLSA_MACHINE_PASSWORD_INFO_A pPasswordInfo = NULL;
+     LW_KRB5_LOGIN_FLAGS flags;
++    PSTR pszSaltPrincipal = NULL;
++    PSTR pszMachine = NULL;
++    PSTR pszDnsDomainName = NULL;
+ 
+     dwError = AD_DetermineTrustModeandDomainName(
+                         pContext->pState,
+@@ -1710,6 +1713,30 @@ AD_OnlineCheckUserPassword(
+                   &pPasswordInfo);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
++    /* Ensure host name lowercased */
++    dwError = LwAllocateString(pPasswordInfo->Account.SamAccountName,
++                               &pszMachine);
++    BAIL_ON_LSA_ERROR(dwError);
++
++    LwStrToLower(pszMachine);
++
++    /* Ensure domain name lowercased */
++    dwError = LwAllocateString(pPasswordInfo->Account.DnsDomainName,
++                               &pszDnsDomainName);
++    BAIL_ON_LSA_ERROR(dwError);
++
++    LwStrToLower(pszDnsDomainName);
++
++    /* Strip the trailing $ for a Salt */
++    if (pszMachine[strlen(pszMachine)-1] == '$')
++        pszMachine[strlen(pszMachine)-1] = '\0';
++
++    dwError = LwAllocateStringPrintf(&pszSaltPrincipal,
++                                     "host/%s.%s@%s",
++                                     pszMachine,
++                                     pszDnsDomainName,
++                                     pPasswordInfo->Account.DnsDomainName);
++
+     // Leave the realm empty so that kerberos referrals are turned on.
+     dwError = LwAllocateStringPrintf(
+                         &pszServicePrincipal,
+@@ -1775,6 +1802,7 @@ AD_OnlineCheckUserPassword(
+                     pUserInfo->userInfo.gid,
+                     flags,
+                     pszServicePrincipal,
++                    pszSaltPrincipal,
+                     pPasswordInfo->Account.DnsDomainName,
+                     pPasswordInfo->Password,
+                     &pNdrEncodedPac,
+@@ -1801,6 +1829,7 @@ AD_OnlineCheckUserPassword(
+                         pUserInfo->userInfo.gid,
+                         flags,
+                         pszServicePrincipal,
++                        pszSaltPrincipal,
+                         pPasswordInfo->Account.DnsDomainName,
+                         pPasswordInfo->Password,
+                         &pNdrEncodedPac,
+@@ -1862,6 +1891,9 @@ cleanup:
+     LW_SAFE_FREE_STRING(pszUserDnsDomainName);
+     LW_SAFE_FREE_STRING(pszFreeUpn);
+     LW_SAFE_FREE_MEMORY(pNdrEncodedPac);
++    LW_SAFE_FREE_STRING(pszDnsDomainName);
++    LW_SAFE_FREE_STRING(pszMachine);
++    LW_SAFE_FREE_STRING(pszSaltPrincipal);
+ 
+     LsaPcacheReleaseMachinePasswordInfoA(pPasswordInfo);
+ 
+diff --git a/lwadvapi/include/public/lwkrb5.h b/lwadvapi/include/public/lwkrb5.h
+index 20d59cda..ffae0ca8 100644
+--- a/lwadvapi/include/public/lwkrb5.h
++++ b/lwadvapi/include/public/lwkrb5.h
+@@ -147,6 +147,7 @@ LwKrb5InitializeUserLoginCredentials(
+     IN gid_t gid,
+     IN LW_KRB5_LOGIN_FLAGS Flags,
+     IN PCSTR pszServicePrincipal,
++    IN PCSTR pszSaltPrincipal,
+     IN PCSTR pszServiceRealm,
+     IN PCSTR pszServicePassword,
+     OUT PVOID* ppNdrPacInfo,
+diff --git a/lwadvapi/threaded/lwkrb5.c b/lwadvapi/threaded/lwkrb5.c
+index dc7e38e1..b5828099 100644
+--- a/lwadvapi/threaded/lwkrb5.c
++++ b/lwadvapi/threaded/lwkrb5.c
+@@ -1243,6 +1243,7 @@ LwKrb5InitializeUserLoginCredentials(
+     IN gid_t gid,
+     IN LW_KRB5_LOGIN_FLAGS Flags,
+     IN PCSTR pszServicePrincipal,
++    IN PCSTR pszSaltPrincipal,
+     IN PCSTR pszServiceRealm,
+     IN PCSTR pszServicePassword,
+     OUT PVOID* ppNdrPacInfo,
+@@ -1352,14 +1353,10 @@ LwKrb5InitializeUserLoginCredentials(
+      * which encryption type was used in it. */
+     ret = krb5_decode_ticket(&pTgsCreds->ticket, &pTgsTicket);
+ 
+-    /* The TGS ticket is encrypted with the machine password and salted with
+-     * the service principal. pszServicePrincipal could probably be used
+-     * directly, but it's safer to unparse pTgsCreds->server, because the KDC
+-     * sent that to us.
+-     * See Microsoft's document MS-KILE.pdf, section labeled
+-     * "3.1.1.2 Cryptographic Material" for details.
++    /* For a machine with a long hostname, the Service Principal name does not
++     * work for the Salt. Instead we need to use the Machine Account name.
+      */
+-    ret = krb5_copy_principal(ctx, pTgsCreds->server, &saltPrincipal);
++    ret = krb5_parse_name(ctx, pszSaltPrincipal, &saltPrincipal);
+     BAIL_ON_KRB_ERROR(ctx, ret);
+ 
+     ret = krb5_set_principal_realm(ctx, saltPrincipal, pszServiceRealm);
+-- 
+2.17.1
+

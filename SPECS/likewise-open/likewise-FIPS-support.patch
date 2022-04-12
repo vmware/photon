@@ -1,0 +1,638 @@
+From 9a252412ea622eec6daf77e32b990e9f011c613a Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Tue, 12 Apr 2022 18:35:15 +0530
+Subject: [PATCH] Likewise FIPS support
+
+---
+ lsass/MakeKitBuild                            |   4 -
+ .../ad-open-provider/adprovider.h             |   1 +
+ .../ad-open-provider/join/includes.h          |   1 +
+ .../ad-open-provider/join/join.c              | 191 +++++++++++++-----
+ .../auth-providers/ad-open-provider/lsaum_p.c |  14 +-
+ .../auth-providers/ad-open-provider/online.c  |  36 +++-
+ lsass/server/lsassd/libmain.c                 |  20 --
+ lwio/MakeKitBuild                             |   4 -
+ lwio/server/lwiod/includes.h                  |   2 -
+ lwio/server/lwiod/libmain.c                   |  19 --
+ lwsm/MakeKitBuild                             |   4 -
+ lwsm/server/includes.h                        |   2 -
+ lwsm/server/main.c                            |  19 --
+ 13 files changed, 177 insertions(+), 140 deletions(-)
+
+diff --git a/lsass/MakeKitBuild b/lsass/MakeKitBuild
+index d3ca4156..0bb229bf 100644
+--- a/lsass/MakeKitBuild
++++ b/lsass/MakeKitBuild
+@@ -314,8 +314,4 @@ configure()
+         mk_define MINIMAL_LSASS 1
+     fi
+ 
+-    if [ "$LW_BUILD_ESX" = "1" ]; then
+-        mk_define LW_BUILD_ESX
+-    fi
+-
+ }
+diff --git a/lsass/server/auth-providers/ad-open-provider/adprovider.h b/lsass/server/auth-providers/ad-open-provider/adprovider.h
+index 162df3a0..3e316b87 100644
+--- a/lsass/server/auth-providers/ad-open-provider/adprovider.h
++++ b/lsass/server/auth-providers/ad-open-provider/adprovider.h
+@@ -57,6 +57,7 @@
+ #include <openssl/md4.h>
+ #include <openssl/rand.h>
+ #include <openssl/des.h>
++#include <openssl/evp.h>
+ #include <sqlite3.h>
+ #include <uuid/uuid.h>
+ #include <lwnet.h>
+diff --git a/lsass/server/auth-providers/ad-open-provider/join/includes.h b/lsass/server/auth-providers/ad-open-provider/join/includes.h
+index d220d3f0..2bd7a8d8 100644
+--- a/lsass/server/auth-providers/ad-open-provider/join/includes.h
++++ b/lsass/server/auth-providers/ad-open-provider/join/includes.h
+@@ -41,6 +41,7 @@
+ #include <openssl/rc4.h>
+ #include <openssl/des.h>
+ #include <openssl/rand.h>
++#include <openssl/evp.h>
+ #include <openssl/err.h>
+ #include <dce/rpc.h>
+ #include <dce/smb.h>
+diff --git a/lsass/server/auth-providers/ad-open-provider/join/join.c b/lsass/server/auth-providers/ad-open-provider/join/join.c
+index 048a3dde..cf7efcc8 100644
+--- a/lsass/server/auth-providers/ad-open-provider/join/join.c
++++ b/lsass/server/auth-providers/ad-open-provider/join/join.c
+@@ -252,6 +252,14 @@ LsaEncryptNtHashVerifier(
+     );
+ 
+ 
++static
++DWORD
++LsaDoHalfNtVerifier(
++    IN  BYTE    newNtHash[7],
++    IN  BYTE    oldNtHash[8],
++    OUT BYTE    verifier[8]);
++
++
+ static
+ DWORD
+ LsaPrepareDesKey(
+@@ -1769,8 +1777,9 @@ LsaEncryptPasswordBufferEx(
+ {
+     NTSTATUS ntStatus = STATUS_SUCCESS;
+     DWORD dwError = ERROR_SUCCESS;
+-    MD5_CTX ctx;
+-    RC4_KEY rc4_key;
++    EVP_MD_CTX *ctx = NULL;
++    EVP_CIPHER_CTX *rc4_ctx = NULL;
++    int outlen;
+     BYTE InitValue[16] = {0};
+     BYTE DigestedSessKey[16] = {0};
+     BYTE PasswordBuffer[532] = {0};
+@@ -1785,9 +1794,6 @@ LsaEncryptPasswordBufferEx(
+         BAIL_ON_LSA_ERROR(dwError);
+     }
+ 
+-    memset(&ctx, 0, sizeof(ctx));
+-    memset(&rc4_key, 0, sizeof(rc4_key));
+-
+     ntStatus = LsaEncodePasswordBuffer(pwszPassword,
+                                        PasswordBuffer,
+                                        sizeof(PasswordBuffer));
+@@ -1799,13 +1805,43 @@ LsaEncryptPasswordBufferEx(
+     /* Session key should be 16 bytes according to Microsoft's MS-SAMR.pdf
+      * in section 3.2.2.2 MD5 Usage. RC4 happens to have a 16 byte session key.
+      */
+-    MD5_Init(&ctx);
+-    MD5_Update(&ctx, InitValue, 16);
+-    MD5_Update(&ctx, pSessionKey, dwSessionKeyLen > 16 ? 16 : dwSessionKeyLen);
+-    MD5_Final(DigestedSessKey, &ctx);
++    ctx = EVP_MD_CTX_create();
++    if (!ctx)
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
+ 
+-    RC4_set_key(&rc4_key, 16, (unsigned char*)DigestedSessKey);
+-    RC4(&rc4_key, 516, PasswordBuffer, PasswordBuffer);
++    EVP_MD_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++    if (!EVP_DigestInit_ex(ctx, EVP_md5(), NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_DigestUpdate(ctx, InitValue, 16);
++    EVP_DigestUpdate(
++        ctx,
++        pSessionKey,
++        dwSessionKeyLen > 16 ? 16 : dwSessionKeyLen);
++    EVP_DigestFinal_ex(ctx, DigestedSessKey, NULL);
++
++    rc4_ctx = EVP_CIPHER_CTX_new();
++    if (!rc4_ctx)
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_CIPHER_CTX_set_flags(rc4_ctx, EVP_CIPH_FLAG_NON_FIPS_ALLOW);
++    if(!EVP_EncryptInit_ex(rc4_ctx, EVP_rc4(), NULL, DigestedSessKey, NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_EncryptUpdate(rc4_ctx, PasswordBuffer, &outlen, PasswordBuffer, 516);
++    EVP_EncryptFinal(rc4_ctx, PasswordBuffer, &outlen);
+ 
+     memcpy((PVOID)&PasswordBuffer[516], InitValue, 16);
+ 
+@@ -1813,6 +1849,8 @@ LsaEncryptPasswordBufferEx(
+ 
+ cleanup:
+     memset(PasswordBuffer, 0, sizeof(PasswordBuffer));
++    EVP_MD_CTX_destroy(ctx);
++    EVP_CIPHER_CTX_free(rc4_ctx);
+ 
+     if (ntStatus == STATUS_SUCCESS &&
+         dwError != ERROR_SUCCESS)
+@@ -3110,7 +3148,8 @@ LsaUserChangePassword(
+     BYTE NewNtHash[16] = {0};
+     BYTE NtPasswordBuffer[516] = {0};
+     BYTE NtVerHash[16] = {0};
+-    RC4_KEY RC4Key;
++    EVP_CIPHER_CTX *rc4_ctx = NULL;
++    int outlen;
+     PIO_CREDS pCreds = NULL;
+ 
+     ntStatus = LwIoGetActiveCreds(NULL, &pCreds);
+@@ -3142,8 +3181,32 @@ LsaUserChangePassword(
+                                       sizeof(NtPasswordBuffer));
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    RC4_set_key(&RC4Key, 16, (unsigned char*)OldNtHash);
+-    RC4(&RC4Key, sizeof(NtPasswordBuffer), NtPasswordBuffer, NtPasswordBuffer);
++    rc4_ctx = EVP_CIPHER_CTX_new();
++    if (!rc4_ctx)
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_CIPHER_CTX_set_flags(rc4_ctx, EVP_CIPH_FLAG_NON_FIPS_ALLOW);
++    if(!EVP_EncryptInit_ex(
++            rc4_ctx,
++            EVP_rc4(),
++            NULL,
++            (unsigned char*)OldNtHash,
++            NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_EncryptUpdate(
++        rc4_ctx,
++        NtPasswordBuffer,
++        &outlen,
++        NtPasswordBuffer,
++        sizeof(NtPasswordBuffer));
++    EVP_EncryptFinal(rc4_ctx, NtPasswordBuffer, &outlen);
+ 
+     /* encode NT verifier */
+     dwError = LsaEncryptNtHashVerifier(NewNtHash, sizeof(NewNtHash),
+@@ -3167,6 +3230,7 @@ cleanup:
+         SamrFreeBinding(&hSamrBinding);
+     }
+ 
++    EVP_CIPHER_CTX_free(rc4_ctx);
+     memset(OldNtHash, 0, sizeof(OldNtHash));
+     memset(NewNtHash, 0, sizeof(NewNtHash));
+     memset(NtPasswordBuffer, 0, sizeof(NtPasswordBuffer));
+@@ -3201,6 +3265,7 @@ LsaGetNtPasswordHash(
+     size_t sPasswordLen = 0;
+     PWSTR pwszPasswordLE = NULL;
+     BYTE Hash[16] = {0};
++    EVP_MD_CTX *ctx = NULL;
+ 
+     BAIL_ON_INVALID_POINTER(pwszPassword);
+     BAIL_ON_INVALID_POINTER(pNtHash);
+@@ -3223,15 +3288,32 @@ LsaGetNtPasswordHash(
+ 
+     wc16stowc16les(pwszPasswordLE, pwszPassword, sPasswordLen);
+ 
+-    MD4((PBYTE)pwszPasswordLE,
+-        sPasswordLen * sizeof(pwszPasswordLE[0]),
+-        Hash);
++    ctx = EVP_MD_CTX_create();
++    if (!ctx)
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_MD_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++    if (!EVP_DigestInit_ex(ctx, EVP_md4(), NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_DigestUpdate(
++        ctx,
++        (PBYTE)pwszPasswordLE,
++        sPasswordLen * sizeof(pwszPasswordLE[0]));
++    EVP_DigestFinal_ex(ctx, Hash, NULL);
+ 
+     memcpy(pNtHash, Hash, sizeof(Hash));
+ 
+ cleanup:
+     LW_SECURE_FREE_WSTRING(pwszPasswordLE);
+ 
++    EVP_MD_CTX_destroy(ctx);
+     memset(Hash, 0, sizeof(Hash));
+ 
+     return dwError;
+@@ -3255,10 +3337,6 @@ LsaEncryptNtHashVerifier(
+     )
+ {
+     DWORD dwError = ERROR_SUCCESS;
+-    DES_cblock KeyBlockLo;
+-    DES_cblock KeyBlockHi;
+-    DES_key_schedule KeyLo;
+-    DES_key_schedule KeyHi;
+     BYTE Verifier[16] = {0};
+ 
+     BAIL_ON_INVALID_POINTER(pNewNtHash);
+@@ -3271,41 +3349,62 @@ LsaEncryptNtHashVerifier(
+         BAIL_ON_LSA_ERROR(dwError);
+     }
+ 
+-    memset(&KeyBlockLo, 0, sizeof(KeyBlockLo));
+-    memset(&KeyBlockHi, 0, sizeof(KeyBlockHi));
+-    memset(&KeyLo, 0, sizeof(KeyLo));
+-    memset(&KeyHi, 0, sizeof(KeyHi));
++    dwError = LsaDoHalfNtVerifier(pNewNtHash, pOldNtHash, &Verifier[0]);
++    BAIL_ON_LSA_ERROR(dwError);
+ 
+-    dwError = LsaPrepareDesKey(&pNewNtHash[0],
+-			       (PBYTE)KeyBlockLo);
++    dwError = LsaDoHalfNtVerifier(pNewNtHash + 7, pOldNtHash + 8, &Verifier[8]);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    DES_set_odd_parity(&KeyBlockLo);
+-    DES_set_key_unchecked(&KeyBlockLo, &KeyLo);
++    memcpy(pNtVerifier, Verifier, sizeof(Verifier));
++
++cleanup:
++    memset(Verifier, 0, sizeof(Verifier));
++
++    return dwError;
+ 
+-    dwError = LsaPrepareDesKey(&pNewNtHash[7],
+-			       (PBYTE)KeyBlockHi);
++error:
++    goto cleanup;
++}
++
++
++static
++DWORD
++LsaDoHalfNtVerifier(
++    IN  BYTE    newNtHash[7],
++    IN  BYTE    oldNtHash[8],
++    OUT BYTE    verifier[8])
++{
++    DWORD dwError = ERROR_SUCCESS;
++    EVP_CIPHER_CTX *ctx = NULL;
++    int outlen;
++    BYTE newNtExpanded[8] = {0};
++
++    ctx = EVP_CIPHER_CTX_new();
++    if (!ctx) {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    dwError = LsaPrepareDesKey(newNtHash, newNtExpanded);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    DES_set_odd_parity(&KeyBlockHi);
+-    DES_set_key_unchecked(&KeyBlockHi, &KeyHi);
++    DES_set_odd_parity((DES_cblock *)newNtExpanded);
+ 
+-    DES_ecb_encrypt((DES_cblock*)&pOldNtHash[0],
+-                    (DES_cblock*)&Verifier[0],
+-                    &KeyLo,
+-                    DES_ENCRYPT);
+-    DES_ecb_encrypt((DES_cblock*)&pOldNtHash[8],
+-                    (DES_cblock*)&Verifier[8],
+-                    &KeyHi,
+-                    DES_ENCRYPT);
++    EVP_CIPHER_CTX_set_flags(ctx, EVP_CIPH_FLAG_NON_FIPS_ALLOW);
+ 
+-    memcpy(pNtVerifier, Verifier, sizeof(Verifier));
++    if(!EVP_EncryptInit_ex(ctx, EVP_des_ecb(), NULL, newNtExpanded, NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_CIPHER_CTX_set_padding(ctx, 0);
++    EVP_EncryptUpdate(ctx, verifier, &outlen, oldNtHash, 8);
++    EVP_EncryptFinal(ctx, verifier, &outlen);
+ 
+ cleanup:
+-    memset(&KeyBlockLo, 0, sizeof(KeyBlockLo));
+-    memset(&KeyBlockHi, 0, sizeof(KeyBlockHi));
+-    memset(&KeyLo, 0, sizeof(KeyLo));
+-    memset(&KeyHi, 0, sizeof(KeyHi));
++    memset(newNtExpanded, 0, sizeof newNtExpanded);
++    EVP_CIPHER_CTX_free(ctx);
+ 
+     return dwError;
+ 
+diff --git a/lsass/server/auth-providers/ad-open-provider/lsaum_p.c b/lsass/server/auth-providers/ad-open-provider/lsaum_p.c
+index 7b1fc7d7..1c5fa1c0 100644
+--- a/lsass/server/auth-providers/ad-open-provider/lsaum_p.c
++++ b/lsass/server/auth-providers/ad-open-provider/lsaum_p.c
+@@ -154,13 +154,6 @@ LsaUmpCheckUsers(
+     PLSA_UM_THREAD_INFO pThreadInfo
+     );
+ 
+-static
+-DWORD
+-LsaUmpCreateKeys(
+-    PLSA_AD_PROVIDER_STATE pState,
+-    PLSA_UM_KSCHEDULES kSchedules
+-    );
+-
+ static
+ PVOID
+ LsaUmpThreadRoutine(
+@@ -465,11 +458,6 @@ LsaUmpStateCreate(
+                   (PVOID*)&pState->kSchedules);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    dwError = LsaUmpCreateKeys(
+-                  pProviderState,
+-                  pState->kSchedules);
+-    BAIL_ON_LSA_ERROR(dwError);
+-
+     // Now that everything is set up, we need to initialize the thread.
+ 
+     dwError = pthread_create(
+@@ -781,6 +769,7 @@ LsaUmpCheckUsers(
+     return dwError;
+ }
+ 
++#if 0
+ static
+ DWORD
+ LsaUmpCreateKeys(
+@@ -881,7 +870,6 @@ error:
+     goto cleanup;
+ }
+ 
+-#if 0
+ static
+ DWORD
+ LsaUmpEncryptString(
+diff --git a/lsass/server/auth-providers/ad-open-provider/online.c b/lsass/server/auth-providers/ad-open-provider/online.c
+index 46bfcf68..6e62317e 100644
+--- a/lsass/server/auth-providers/ad-open-provider/online.c
++++ b/lsass/server/auth-providers/ad-open-provider/online.c
+@@ -1482,6 +1482,7 @@ AD_GetCachedPasswordHash(
+     DWORD dwError = LW_ERROR_SUCCESS;
+     size_t sConvertedChars = 0;
+     size_t sSamAccountCch = mbstrlen(pszSamAccount);
++    EVP_MD_CTX *ctx = NULL;
+ 
+     // Allocate space to store the NT hash with the username appended
+     sPrehashedVerifierLen = 16 + sSamAccountCch * sizeof(wchar16_t);
+@@ -1498,10 +1499,26 @@ AD_GetCachedPasswordHash(
+             &pwszPassword);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    MD4(
++    ctx = EVP_MD_CTX_create();
++    if (!ctx)
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_MD_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++
++    if (!EVP_DigestInit_ex(ctx, EVP_md4(), NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_DigestUpdate(
++        ctx,
+         (UCHAR *)pwszPassword,
+-        wc16slen(pwszPassword) * sizeof(wchar16_t),
+-        pbPrehashedVerifier);
++        wc16slen(pwszPassword) * sizeof(wchar16_t));
++    EVP_DigestFinal_ex(ctx, pbPrehashedVerifier, NULL);
+ 
+     // Append the username in UCS-2 encoding to the NT hash
+     sConvertedChars = mbstowc16s(
+@@ -1520,15 +1537,20 @@ AD_GetCachedPasswordHash(
+                     (PVOID*)&pbHash);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    MD4(
+-        pbPrehashedVerifier,
+-        sPrehashedVerifierLen,
+-        pbHash);
++    if (!EVP_DigestInit_ex(ctx, EVP_md4(), NULL))
++    {
++        dwError = LW_STATUS_INTERNAL_ERROR;
++        BAIL_ON_LSA_ERROR(dwError);
++    }
++
++    EVP_DigestUpdate(ctx, pbPrehashedVerifier, sPrehashedVerifierLen);
++    EVP_DigestFinal_ex(ctx, pbHash, NULL);
+ 
+     *ppbHash = pbHash;
+ 
+ cleanup:
+ 
++    EVP_MD_CTX_destroy(ctx);
+     LW_SECURE_FREE_WSTRING(pwszPassword);
+     LW_SAFE_FREE_MEMORY(pbPrehashedVerifier);
+ 
+diff --git a/lsass/server/lsassd/libmain.c b/lsass/server/lsassd/libmain.c
+index 1fd7cd55..8f785e1a 100644
+--- a/lsass/server/lsassd/libmain.c
++++ b/lsass/server/lsassd/libmain.c
+@@ -51,7 +51,6 @@
+ #include "lw/base.h"
+ #include "lwdscache.h"
+ #include "lsasrvutils.h"
+-#include <openssl/crypto.h>
+ 
+ /* Needed for dcethread_fork() */
+ #include <dce/dcethread.h>
+@@ -97,11 +96,6 @@ LsaSrvRemovePidFile(
+ 
+ #endif
+ 
+-#ifdef LW_BUILD_ESX
+-int FIPS_mode(void);
+-int FIPS_mode_set(int ONOFF);
+-#endif
+-
+ int
+ lsassd_main(
+     int argc,
+@@ -114,20 +108,6 @@ lsassd_main(
+     char notifyCode = 0;
+     int ret = 0;
+ 
+-#ifdef LW_BUILD_ESX
+-    int mode = FIPS_mode(), r = 0;
+-    /* Turning of FIPS mode */
+-    if(mode == 1)
+-    {
+-      LSA_LOG_INFO("Turning FIPS off. Currently Mode is %d", mode); 
+-      r = FIPS_mode_set(0);
+-      if(r != 1)
+-       {
+-          LSA_LOG_ERROR("FIPS could not be turned off");
+-       }
+-    }
+-#endif
+-
+     // Register a signal handler for program crashes such that it prints out a
+     // backtrace.
+     dwError = LsaSrvRegisterCrashHandler();
+diff --git a/lwio/MakeKitBuild b/lwio/MakeKitBuild
+index f10a67ec..459fc683 100644
+--- a/lwio/MakeKitBuild
++++ b/lwio/MakeKitBuild
+@@ -183,10 +183,6 @@ configure()
+         mk_output_file "etc/lwiod.reg"
+     fi
+ 
+-    if [ "$LW_BUILD_ESX" = "1" ]; then
+-        mk_define LW_BUILD_ESX
+-    fi
+-
+     mk_output_file etc/rdr.reg
+     mk_output_file etc/npfs.reg
+     mk_output_file etc/srv.reg
+diff --git a/lwio/server/lwiod/includes.h b/lwio/server/lwiod/includes.h
+index 24865013..0a8531be 100644
+--- a/lwio/server/lwiod/includes.h
++++ b/lwio/server/lwiod/includes.h
+@@ -85,5 +85,3 @@
+ 
+ #include <sys/time.h>
+ #include <sys/resource.h>
+-
+-#include <openssl/crypto.h>
+diff --git a/lwio/server/lwiod/libmain.c b/lwio/server/lwiod/libmain.c
+index ac3150da..393d18a0 100644
+--- a/lwio/server/lwiod/libmain.c
++++ b/lwio/server/lwiod/libmain.c
+@@ -177,11 +177,6 @@ static IO_STATIC_DRIVER gStaticDrivers[] =
+ 
+ #endif
+ 
+-#ifdef LW_BUILD_ESX
+-int FIPS_mode(void);
+-int FIPS_mode_set(int ONOFF);
+-#endif
+-
+ static
+ VOID
+ LwIoInitRtlLogging(
+@@ -197,20 +192,6 @@ lwiod_main(
+     DWORD dwError = 0;
+     NTSTATUS ntStatus = STATUS_SUCCESS;
+ 
+-#ifdef LW_BUILD_ESX
+-    int mode = FIPS_mode(), ret = 0;
+-    /* Turning off FIPS mode */
+-    if(mode == 1)
+-    {
+-      LWIO_LOG_INFO("Turning FIPS off. Current Mode is %d", mode);
+-      ret = FIPS_mode_set(0);
+-      if(ret != 1)
+-       {
+-          LWIO_LOG_ERROR("Could not turn off FIPS successfully");
+-       }
+-    }
+-#endif
+-
+     ntStatus = LwioSrvInitializeConfig(&gLwioServerConfig);
+     dwError = LwNtStatusToWin32Error(ntStatus);
+     BAIL_ON_LWIO_ERROR(dwError);
+diff --git a/lwsm/MakeKitBuild b/lwsm/MakeKitBuild
+index 45fe1146..2169a95f 100644
+--- a/lwsm/MakeKitBuild
++++ b/lwsm/MakeKitBuild
+@@ -49,8 +49,4 @@ configure()
+     then
+         mk_output_file server/com.likewisesoftware.lwsmd.plist
+     fi
+-
+-    if [ "$LW_BUILD_ESX" = "1" ]; then
+-        mk_define LW_BUILD_ESX
+-    fi
+ }
+diff --git a/lwsm/server/includes.h b/lwsm/server/includes.h
+index 9cf5bb04..2527b87f 100644
+--- a/lwsm/server/includes.h
++++ b/lwsm/server/includes.h
+@@ -75,6 +75,4 @@
+ #endif
+ #include "server.h"
+ 
+-#include <openssl/crypto.h>
+-
+ #endif
+diff --git a/lwsm/server/main.c b/lwsm/server/main.c
+index 06ec561c..12a793aa 100644
+--- a/lwsm/server/main.c
++++ b/lwsm/server/main.c
+@@ -118,11 +118,6 @@ LwSmNotify(
+     int status
+     );
+ 
+-#ifdef LW_BUILD_ESX
+-int FIPS_mode(void);
+-int FIPS_mode_set(int ONOFF);
+-#endif
+-
+ int
+ main(
+     int argc,
+@@ -131,20 +126,6 @@ main(
+ {
+     DWORD dwError = 0;
+ 
+-#ifdef LW_BUILD_ESX
+-    int mode = FIPS_mode(), r = 0;
+-    /* Turning off FIPS mode */
+-    if(mode == 1)
+-    {
+-      SM_LOG_INFO("Turning FIPS off. Current Mode is %d", mode);
+-      r = FIPS_mode_set(0);
+-      if(r != 1)
+-       {
+-          SM_LOG_ERROR("Failed to turn off FIPS");
+-       }
+-    }
+-#endif
+-
+     /* Parse command line */
+     dwError = LwSmParseArguments(argc, ppszArgv);
+     BAIL_ON_ERROR(dwError);
+-- 
+2.17.1
+
