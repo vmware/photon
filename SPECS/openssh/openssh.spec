@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.8p1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -14,6 +14,7 @@ Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-syst
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
+Patch1:         0001-sshd_config-Avoid-duplicate-entry.patch
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -53,6 +54,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
+%patch1 -p1
 
 %build
 sh ./configure --host=%{_host} --build=%{_build} \
@@ -85,13 +87,7 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/var/lib/sshd
-echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "TCPKeepAlive no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "AllowAgentForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+
 #   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} UNITSDIR=%{buildroot}%{_unitdir} install-sshd %{?_smp_mflags}
@@ -190,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Tue Apr 12 2022 Ankit Jain <ankitja@vmware.comm> 8.8p1-3
+-   Avoid duplicate entry in sshd_config
 *   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.8p1-2
 -   Bump up for openssl
 *   Mon Oct 04 2021 Ankit Jain <ankitja@vmware.comm> 8.8p1-1

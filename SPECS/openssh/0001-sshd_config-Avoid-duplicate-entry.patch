@@ -1,0 +1,57 @@
+From 2b6a193c5f672846f41c454cc32be72dee645e5f Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Tue, 12 Apr 2022 14:58:12 +0000
+Subject: [PATCH] sshd_config: Avoid duplicate entry
+
+- Instead of appending the entry to the file,
+  overwrite the entry which is already present
+  in sshd_config
+---
+ sshd_config | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/sshd_config b/sshd_config
+index c423eba..937cc83 100644
+--- a/sshd_config
++++ b/sshd_config
+@@ -29,7 +29,7 @@
+ # Authentication:
+ 
+ #LoginGraceTime 2m
+-#PermitRootLogin prohibit-password
++PermitRootLogin no
+ #StrictModes yes
+ #MaxAuthTries 6
+ #MaxSessions 10
+@@ -79,10 +79,10 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ # If you just want the PAM account and session checks to run without
+ # PAM authentication, then enable this but set PasswordAuthentication
+ # and KbdInteractiveAuthentication to 'no'.
+-#UsePAM no
++UsePAM yes
+ 
+-#AllowAgentForwarding yes
+-#AllowTcpForwarding yes
++AllowAgentForwarding no
++AllowTcpForwarding no
+ #GatewayPorts no
+ #X11Forwarding no
+ #X11DisplayOffset 10
+@@ -90,11 +90,11 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ #PermitTTY yes
+ #PrintMotd yes
+ #PrintLastLog yes
+-#TCPKeepAlive yes
++TCPKeepAlive no
+ #PermitUserEnvironment no
+-#Compression delayed
++Compression no
+ #ClientAliveInterval 0
+-#ClientAliveCountMax 3
++ClientAliveCountMax 2
+ #UseDNS no
+ #PidFile /var/run/sshd.pid
+ #MaxStartups 10:30:100
+-- 
+2.23.1
+
