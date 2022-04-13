@@ -1,8 +1,8 @@
-%define njs_ver 0.7.0
+%define njs_ver 0.7.2
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.20.2
+Version:        1.21.0
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/
@@ -11,10 +11,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha1    %{name}=59888fdeb78eec4979a8df89a80b43ee84b73eb7
+%define sha512  %{name}=1f0c790e5ba104278ef5fc357e60ba2fddd2d8abda1363e26b418324b050f0e9f4901ce23949adede699e9f1340e8480ad8a6c811b7420a74c8f5c101be8a7ad
 Source1:        nginx.service
-Source2:        http://hg.nginx.org/njs/archive/nginx-njs-%{njs_ver}.tar.gz
-%define sha1    nginx-njs=d1547c72cdeaf084be9c652fd8eaeec4b75f6498
+Source2:        https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar.gz
+%define sha512  nginx-njs=7ff9c8f4e8cf1a3aeb0f2ed9f37e2b3f4966812966d1aca17dae8b454dd7fa725ccdc631b7dc1f3434f588e589f4cd419b9e087f3c745cd6ca092a683c92d82f
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -93,6 +93,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %{_var}/log/nginx
 
 %changelog
+* Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.21.0-1
+- Upgrade to v1.21.0, Address CVE-2021-3618
 * Thu Dec 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.20.2-1
 - Fix nginx service handling
 - Upgrade to v1.20.2
