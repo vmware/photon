@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -23,10 +23,12 @@ BuildRequires:  libcap-devel
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
+BuildRequires:  libevent-devel
 
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
+Requires:       libevent
 Requires:       libcap >= 2.24
 
 %description
@@ -60,6 +62,7 @@ state of the NTP daemon running on the local machine.
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
     --with-binsubdir=sbin \
+    --enable-system-libevent \
     --enable-linuxcaps
 
 make %{?_smp_mflags}
@@ -182,6 +185,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Thu Apr 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p15-6
+- Use system libevent instead of bundled libevent source
+- to fix CVE-2016-10195
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-5
 - Bump version as a part of perl-Net-SSLeay version upgrade
 - Make ntp work when openssl fips enabled
