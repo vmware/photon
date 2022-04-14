@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -22,10 +22,12 @@ BuildRequires:  libcap-devel
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
+BuildRequires:  libevent-devel
 
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
+Requires:       libevent
 Requires:       libcap >= 2.24
 
 %description
@@ -64,6 +66,7 @@ sh ./configure \
     --mandir=%{_mandir} \
     --sysconfdir=/etc \
     --with-binsubdir=sbin \
+    --enable-system-libevent \
     --enable-linuxcaps
 make %{?_smp_mflags}
 make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
@@ -181,6 +184,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Thu Apr 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p14-3
+- Use system libevent instead of bundled libevent source
+- to fix CVE-2016-10195
 * Wed Aug 26 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-2
 - Patched for CVE-2020-15025
 * Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
