@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -112,12 +112,16 @@ Patch66:        initramfs-large-files-support-for-newca-format.patch
 Patch67:        revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 # Hotplug support without firmware
-Patch68:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch69:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch70:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch69:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch70:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch71:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 #TARFS
 Patch80:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
+# initialize MMCONFIG
+Patch85:        0001-initialize-MMCONFIG-if-already-not-initialized.patch
+Patch86:        0001-MMIO_should_have_more_priority_then_IO.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch90:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -281,10 +285,17 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
+
 %patch69 -p1
 %patch70 -p1
+%patch71 -p1
 %patch80 -p1
+
+%ifarch x86_64
+%patch85 -p1
+%patch86 -p1
+%endif
+
 %patch90 -p1
 
 # CVE
@@ -509,6 +520,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue May 31 2022 Ajay Kaher <akaher@vmware.com> 5.10.78-13
+- initialize MMCONFIG, if already not initialized
 * Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-12
 - Add objtool to the -devel package.
 - Reduce kernel .data section by configuring smaller kernel log buffer
