@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.109
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -115,6 +115,9 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-29582
+Patch108:       0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 
 #Patches for ptp_vmw
 Patch201:      0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -275,6 +278,7 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
+%patch108 -p1
 
 #Patches for ptp_vmw
 %patch201 -p1
@@ -496,6 +500,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 12 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-2
+- Fix for CVE-2022-29582
 * Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-1
 - Update to version 5.10.109
 * Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-5

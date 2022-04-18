@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.109
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt65
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -86,6 +86,8 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-29582
+Patch108:       0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -561,6 +563,7 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
+%patch108 -p1
 
 %patch120 -p1
 %patch121 -p1
@@ -1121,6 +1124,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Thu May 12 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-2
+- Fix for CVE-2022-29582
 * Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-1
 - Update to version 5.10.109
 * Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4
