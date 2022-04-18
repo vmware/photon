@@ -9,7 +9,7 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
@@ -25,6 +25,7 @@ Source1:    http://www.lua.org/ftp/lua-%{bootstrap_version}.tar.gz
 %endif
 
 Patch0:     lua-%{version}-shared-library.patch
+Patch2:     CVE-2022-28805.patch
 
 %if 0%{?bootstrap}
 Patch1:     lua-%{bootstrap_version}-shared-library.patch
@@ -72,6 +73,7 @@ popd
 %endif
 
 prep_lua_src %{PATCH0}
+prep_lua_src %{PATCH2}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -150,6 +152,8 @@ make test %{?_smp_mflags}
 %{_libdir}/liblua.so
 
 %changelog
+* Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-2
+- Fix CVE-2022-28805
 * Thu Mar 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-1
 - Upgrade to v5.4.4
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-2
