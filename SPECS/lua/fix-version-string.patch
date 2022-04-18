@@ -1,0 +1,26 @@
+From 6bda93ad28200aeab73360032539ba6c401ad121 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 19 Apr 2022 13:52:57 +0530
+Subject: [PATCH] fix version string
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 119110d..22b1f31 100644
+--- a/Makefile
++++ b/Makefile
+@@ -46,7 +46,7 @@ TO_MAN= lua.1 luac.1
+ 
+ # Lua version and release.
+ V= 5.3
+-R= $V.4
++R= $V.5
+ 
+ # Targets start here.
+ all:	$(PLAT)
+-- 
+2.25.1
+
