@@ -1,11 +1,11 @@
 Summary:        Libcap
 Name:           libcap
-Version:        2.49
+Version:        2.64
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-%define sha1    libcap=3c4434053be9a2a81892f9afd5b60025da789ecf
+%define sha512  libcap=3c5cf478cef249585ee1a0dfd75c6b41b0daf4e1ecb59dce894eac5523841aa79ca499be4161f73193dd8e7363edcd51063f3e281930cee939ebd50983eecbaf
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,7 +23,7 @@ Requires:       %{name} = %{version}-%{release}
 The libcap-devel package contains libraries, header files and documentation for developing applications that use libcap.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -35,7 +35,13 @@ sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
 make %{?_smp_mflags} $MFLAGS
 
 %install
-make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
+make prefix=%{_prefix} \
+     SBINDIR=%{_sbindir} \
+     PAM_LIBDIR=%{_libdir} \
+     RAISE_SETFCAP=no \
+     DESTDIR=%{buildroot} \
+     %{?_smp_mflags} \
+     install
 %ifarch aarch64
 test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
 %endif
@@ -65,6 +71,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.64-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.49-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.43-1
@@ -93,4 +101,4 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24-2
 -   Moving static lib files to devel package.
 *   Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
--   Initial version
+-   Initial version.
