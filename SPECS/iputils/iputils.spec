@@ -1,6 +1,6 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20210722
+Version:          20200821
 Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
@@ -8,15 +8,13 @@ Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-s%{version}.tar.gz
-%define sha1      iputils=6e1fd3915d10bb5b3f0613e90ea156f3dd408623
-
+%define sha512    iputils=4a57c3637cdd9aab2600682774e27370716cbdf1c7ac8ae61bf86c21c08701a5b697792df4aa95309b196eaa74f3cb6b2836a40f04da0e602156e982ac99d8c9
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
 BuildRequires:    openssl-devel
 BuildRequires:    iproute2
-
 Requires:         libcap
 Requires:         libgcrypt
 Requires:         systemd
@@ -24,18 +22,17 @@ Requires:         systemd
 %description
 The Iputils package contains programs for basic networking.
 
-%package ninfod
-Summary: Node Information Query Daemon
+%package          ninfod
+Summary:          Node Information Query Daemon
+Requires:         %{name} = %{version}-%{release}
+Provides:         %{_sbindir}/ninfod
 
-Requires: %{name} = %{version}-%{release}
-Provides: %{_sbindir}/ninfod
-
-%description ninfod
+%description      ninfod
 Node Information Query (RFC4620) daemon. Responds to IPv6 Node Information
 Queries
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-s%{version}
 
 %build
 %meson -DBUILD_TRACEROUTE6=true -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
@@ -75,6 +72,8 @@ ln -sf ../bin/arping %{buildroot}%{_sbindir}/arping
 %{_sysconfdir}/init.d/ninfod.sh
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
+- Automatic Version Bump
 * Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 20210722-1
 - Update version, modernize spec file. Use ldconfig scriptlets and autosetup
 * Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
