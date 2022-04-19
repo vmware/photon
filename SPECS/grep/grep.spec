@@ -1,27 +1,29 @@
 Summary:	Programs for searching through files
 Name:		grep
-Version:	3.6
+Version:	3.7
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File
 Vendor:		VMware, Inc.
-Distribution: Photon
+Distribution:   Photon
 Source0:	http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
-%define sha1 grep=f7e03879b0348e7a00c28f2f50194792a8aace23
+%define sha512  grep=e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
 Conflicts:      toybox < 0.8.2-2
+
 %description
 The Grep package contains programs for searching through files.
 
-%package lang
-Summary: Additional language files for grep
-Group:   System Environment/Base
-Requires: %{name} = %{version}-%{release}
-%description lang
+%package        lang
+Summary:        Additional language files for grep
+Group:          System Environment/Base
+Requires:       %{name} = %{version}-%{release}
+
+%description    lang
 These are the additional language files of grep
 
 %prep
-%setup -q
+%autosetup
 %build
 %configure \
         --bindir=/bin \
@@ -30,12 +32,12 @@ These are the additional language files of grep
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 
 %check
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
@@ -46,6 +48,8 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.7-1
+- Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4-1
@@ -71,4 +75,4 @@ make  %{?_smp_mflags} check
 * Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.21-1
 - Upgrading grep to 2.21 version, and adding
 * Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.16-1
-- Initial build. First version
+- Initial build. First version.
