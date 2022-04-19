@@ -1,6 +1,6 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
-Version:        28
+Version:        29
 Release:        1%{?dist}
 License:        LGPLv2.1+ and GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
@@ -8,21 +8,24 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
-%define sha1    %{name}-%{version}=0acec2b6aea3e6eb71f0b549b0ff0abcac5da004
+%define sha512  %{name}-%{version}=557cdcaec75e5a1ceea2d10862c944e9a65ef54f6ee9da6dc98ce4582418fdc9958aab2e14a84807db61daf36ec4fcdc23a36376c39d5dc31d1823ca7cd47998
 BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
 Requires:       xz
+
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
 
 %package        devel
 Summary:        Header and development files for kmod
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
+%autosetup
+
 %build
 %configure \
     --bindir=/bin \
@@ -32,8 +35,9 @@ It contains the libraries and header files to create applications.
     --with-zlib \
     --disable-silent-rules
 make VERBOSE=1 %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
+make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig %{?_smp_mflags} install
 install -vdm 755 %{buildroot}/sbin
 for target in depmod insmod lsmod modinfo modprobe rmmod; do
     ln -sv /bin/kmod %{buildroot}/sbin/$target
@@ -42,6 +46,7 @@ find %{buildroot} -name '*.la' -delete
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 /bin/*
@@ -57,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/*.so
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 29-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 28-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 27-1
@@ -82,4 +89,4 @@ find %{buildroot} -name '*.la' -delete
 *   Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 21-1
 -   Updated to version 21
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 16-1
--   Initial build. First version
+-   Initial build. First version.
