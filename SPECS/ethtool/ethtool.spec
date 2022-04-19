@@ -1,6 +1,6 @@
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
-Version:        5.15
+Version:        5.17
 Release:        1%{?dist}
 License:        GPLv2
 URL:            https://www.kernel.org/pub/software/network/ethtool/
@@ -8,7 +8,7 @@ Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/network/%{name}/%{name}-%{version}.tar.xz
-%define sha1    ethtool=74c44acf7022dcdf3fc41e68c7c297e0d655f345
+%define sha512    ethtool=c9677829e3ed1f373bd993f72c710293a6e987bbd19829d437a436f42cf4e7995ee70a7db3590b1499ff6aa29c26815f4d0a3e4798ffb6992ae3f52b079cd3ff
 BuildRequires:  libmnl-devel
 Requires:       libmnl
 
@@ -43,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_mandir}
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.17-1
+- Automatic Version Bump
 * Tue Jan 11 2022 Susant Sahani <ssahani@vmware.com> 5.15-1
 - Version bump
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.12-1
