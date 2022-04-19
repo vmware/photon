@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.232
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -122,6 +122,7 @@ Patch109:       0008-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
 Patch110:       0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
 Patch111:       0010-RPS-flow-balance.patch
 Patch112:       0011-add-mss-clamp-support-to-gretap-baseimage.patch
+Patch113:       0012-set-max_mtu-as-IP_MAX_MTU.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -300,6 +301,7 @@ popd
 %patch110 -p1
 %patch111 -p1
 %patch112 -p1
+%patch113 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -490,6 +492,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 18 2022 Harinadh D <hdommaraju@vmware.com> 4.19.232-3
+-   Set max MTU as IP_MAX_MTU for type vxlantrunk
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
 -   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
