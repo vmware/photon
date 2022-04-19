@@ -1,14 +1,14 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.4.15
-Release:        3%{?dist}
+Version:        3.4.18
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=d98be4d7f2d4d998c149d96a991a40a938df3c2c
+%define sha512 etcd=363961a2e53b61b7fb43476afb1f6e03455508c193d510f6b4aec95e4a11535fdcc876384900cd1edb9df8b8a6ecf329d49d4b884c57ddf8aa438479118fa75e
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
@@ -22,7 +22,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 A highly-available key value store for shared configuration and service discovery.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 go mod vendor
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.18-1
+-   Automatic Version Bump
 *   Wed Jun 23 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.15-3
 -   Change etcd data directory ownership to etcd:etcd as per CIS benchmark
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 3.4.15-2
