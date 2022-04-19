@@ -1,30 +1,30 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
-Version:        6.5
-Release:        3%{?dist}
+Version:        6.8
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-Patch0:         texinfo-perl-fix.patch
-%define sha1    texinfo=72a06b48862911c638787cc3307871b990a59726
+%define sha512  texinfo=0ff9290b14e4d83e32b889cfa24e6d065f98b2a764daf6b92c6c895fddbb35258398da6257c113220d5a4d886f7b54b09c4b117ca5eacfee6797f9bffde0f909
 BuildRequires:  perl
 
 %description
 The Texinfo package contains programs for reading, writing,
 and converting info pages.
+
 %prep
-%setup -q
-%patch0 -p1
+%autosetup
+
 %build
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} TEXMF=%{_datarootdir}/texmf install-tex
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
+make DESTDIR=%{buildroot} TEXMF=%{_datarootdir}/texmf %{?_smp_mflags} install-tex
 rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name} --all-name
@@ -54,6 +54,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.8-1
+-   Automatic Version Bump
 *   Mon Sep 21 2020 Dweep Advani <dadvani@vmware.com> 6.5-3
 -   Rebuild for perl upgrade to 5.30.1
 *   Fri Nov 02 2018 Anish Swaminathan <anishs@vmware.com> 6.5-2
@@ -68,9 +70,9 @@ rm -rf %{buildroot}%{_infodir}
 -   Updated to version 6.3-2 due to perl build requires.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-1
 -   Updated to version 6.3.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.1-4
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 6.1-4
 -   Modified %check
-*   Wed Jun 27 2016 Divya Thaluru <dthaluru@vmware.com> 6.1-3
+*   Mon Jun 27 2016 Divya Thaluru <dthaluru@vmware.com> 6.1-3
 -   Removed packaging of debug files
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
 -   GA - Bump release of all rpms
@@ -81,4 +83,4 @@ rm -rf %{buildroot}%{_infodir}
 *   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
 -   Removing perl-libintl package from run-time required packages
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
--   Upgrade version
+-   Upgrade version.
