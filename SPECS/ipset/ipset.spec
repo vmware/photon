@@ -1,15 +1,14 @@
 Summary:       administration tool for IP sets
 Name:          ipset
-Version:       7.11
-Release:       2%{?dist}
+Version:       7.15
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://ipset.netfilter.org/
 Group:         System Environment/tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       ipset.netfilter.org/%{name}-%{version}.tar.bz2
-%define sha1 ipset=a10e4e8f0ed2fa540b653d987a93069c0c276f61
-
+%define sha512 ipset=0fc936d971c30a0925c585d506c8840e782fdaeec09bc8fd249e874fe838fa55a4dbb697f6e1423a6769abf07a1ce2195abc37cb641e8e4ad70f1b4c7130916a
 BuildRequires: libmnl-devel
 Requires:      libmnl
 
@@ -27,16 +26,16 @@ express complex IP address and ports based rulesets with one single iptables
 rule and benefit from the speed of IP sets then ipset may be the proper tool
 for you.
 
-%package devel
-Summary:    Development files for the ipset library
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
+%package       devel
+Summary:       Development files for the ipset library
+Group:         Development/Libraries
+Requires:      %{name} = %{version}-%{release}
 
-%description devel
+%description   devel
 Libraries and header files for ipset.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
@@ -45,7 +44,7 @@ Libraries and header files for ipset.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -53,7 +52,7 @@ sed -i 's/tests=\"$tests nethash/#tests=\"$tests nethash/g' tests/runtest.sh
 sed -i 's/tests=\"$tests hash:net,port/#tests=\"$tests hash:net,port/g' tests/runtest.sh
 sed -i 's/tests=\"$tests hash:ip/#tests=\"$tests hash:ip/g' tests/runtest.sh
 sed -i 's/tests=\"$tests hash:net,iface/#tests=\"$tests hash:net,iface/g' tests/runtest.sh
-make tests |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make tests %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %ldconfig_scriptlets
 
@@ -73,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 7.15-1
+- Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 7.6-2
 - Use autosetup and ldconfig scriptlets
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 7.6-1
@@ -82,4 +83,4 @@ rm -rf %{buildroot}/*
 * Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
 - Upgrading version to 6.32
 * Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
-- Initial build. First version
+- Initial build. First version.
