@@ -2,7 +2,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.12.1
+Version:        2.9.27
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=e728ea784c754d8e702068340247a6b08a632b1b
+%define sha512 %{name}=99987b8a1d243ef3496d66178774c33b05951daaff584b12e645c0176391805f90d00780e86adec01316b28645287489326218c0de7c10084552da90848735c7
 
 Patch0:         Add-Photon-OS-tdnf-support.patch
 
@@ -60,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.27-1
+- Automatic Version Bump
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
 - Upgrade to v2.12.1 & fix tdnf module packaging
 * Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.11.1-1
