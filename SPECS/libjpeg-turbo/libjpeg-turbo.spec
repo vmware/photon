@@ -1,6 +1,6 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
-Version:        2.1.0
+Version:        2.1.3
 Release:        1%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha1    libjpeg-turbo=6bf63c869105d341011cd4915816de888338231a
+%define sha512  libjpeg-turbo=975c9835de7d70c6c8c5a1959adfa18f7f956bc9946fde8f1b40c1d853245c38a3118ac06b93841ec3e90be6945c38d687d062b371496c2ee9b5638d7f60418d
 %ifarch x86_64
 BuildRequires:  nasm
 %endif
@@ -21,11 +21,12 @@ libjpeg is a library that implements JPEG image encoding, decoding and transcodi
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 
 %build
 mkdir build
@@ -37,7 +38,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %post
 /sbin/ldconfig
@@ -59,6 +60,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.3-1
+-   Automatic Version Bump
 *   Fri Apr 23 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.0-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.6-1
@@ -81,4 +84,4 @@ make DESTDIR=%{buildroot} install
 *   Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
 -   Updated to version 1.5.1
 *   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
--   Initial version
+-   Initial version.
