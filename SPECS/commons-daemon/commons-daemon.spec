@@ -1,6 +1,6 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
-Version:        1.2.4
+Version:        1.3.1
 Release:        1%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
@@ -8,9 +8,9 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
-%define sha1    commons-daemon-%{version}-src=cfef2034cb5c63df20de82bebdc1752a9c730a66
+%define sha512  commons-daemon-%{version}-src=b810ac152f8296d980a4fb3786eff9d147b234dc2377df5fe1bded0824c694c9e82a7ef50b0a63c3e6432dfc4684a3aa2ce8d583aacb740bd4664c3dfb8b8f16
 Source1:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
-%define sha1    commons-daemon-%{version}-bin=e30de545144119d284bab2f5b221f558f3d6edb1
+%define sha512  commons-daemon-%{version}-bin=101fa25c723694ed7b1475a178aec40b5c94c6e8bdcfb17411841606148db25dc46825539a5afca02413fefa2566002d69310203f132edfb4e49f3018f158504
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -22,7 +22,7 @@ including a set of Java interfaces applications must implement
 and Unix native code to control a Java daemon from a Unix operating system.
 
 %prep
-%setup -q -n %{name}-%{version}-src
+%autosetup -n %{name}-%{version}-src
 mkdir dist
 cd dist
 tar -xf %{SOURCE1} --no-same-owner
@@ -59,6 +59,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.1-1
+-   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.3-1
@@ -94,4 +96,4 @@ chmod -R 755 $DIST_DIR
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-2
 -   Updated dependencies after repackaging openjdk.
 *   Wed Jul 15 2015 Sriram Nambakam <snambakam@vmware.com> 1.0.15-1
--   Initial commit
+-   Initial commit.
