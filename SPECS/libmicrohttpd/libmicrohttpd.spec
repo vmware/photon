@@ -1,7 +1,7 @@
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
-Version:        0.9.73
-Release:        2%{?dist}
+Version:        0.9.75
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha1    %{name}=5ff80818bbe3f8984e49809f4efeb2c38c7be232
+%define sha512  %{name}=4dc62ed191342a61cc2767171bb1ff4050f390db14ef7100299888237b52ea0b04b939c843878fe7f5daec2b35a47b3c1b7e7c11fb32d458184fe6b19986a37c
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -28,11 +28,11 @@ Summary:        Development files for libmicrohttpd
 Requires:       %{name} = %{version}-%{release}
 Requires:       gnutls-devel
 
-%description devel
+%description    devel
 Development files for libmicrohttpd
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 autoreconf -fi
@@ -62,6 +62,8 @@ rm -f %{buildroot}%{_libdir}/*.la \
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.75-1
+- Automatic Version Bump
 * Thu Aug 05 2021 Susant Sahani <ssahani@vmware.com> 0.9.73-2
 - Modernize spec file. Use ldconfig scriptlets and autosetup
 * Sun Apr 25 2021 Gerrit Photon <photon-checkins@vmware.com> 0.9.73-1
@@ -73,4 +75,4 @@ rm -f %{buildroot}%{_libdir}/*.la \
 * Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.71-1
 - Automatic Version Bump
 * Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.9.70-1
-- Initial rpm release
+- Initial rpm release.
