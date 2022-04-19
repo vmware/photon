@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
-Version:          6.22.04
+Version:          6.24.00
 Release:          1%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org/
 Group:            System Environment/Shells
 Source:           http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
-%define sha1      tcsh=2724d287cf9bd3e4729502a15643fd78f49863d4
+%define sha512    tcsh=0a50332aadd4309a8b1506a4771ac77c5368c4e1952dd719bd01eca15711743983ff13ec7098dbaf565b4293ac0355ff565344991e0d0c0c9ef75237220e7730
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Provides:         csh = %{version}
@@ -26,7 +26,7 @@ spelling correction, a history mechanism, job control and a C language
 like syntax.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
@@ -112,6 +112,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.00-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.22.04-1
 -   Automatic Version Bump
 *   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 6.22.02-2
