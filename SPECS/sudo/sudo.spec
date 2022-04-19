@@ -1,60 +1,41 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.5
+Version:        1.9.10
 Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    %{name}=1e9fccda4beccca811ecb48866776388c9c377ae
-
+%define sha512  %{name}=65cf92b67b64413cb807da8b9602fc90b75e5b30dd1402d682ca36f276a3d6209a8a59c14e463898abc9856bc56263e5ba4bb6d44774f56a2885a9eea4a35375
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
-
 Requires:       Linux-PAM
 Requires:       shadow
-
-Patch0:         CVE-2021-3156_1.patch
-Patch1:         CVE-2021-3156_2.patch
-Patch2:         CVE-2021-3156_3.patch
-Patch3:         CVE-2021-3156_4.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
-sh ./configure --host=%{_host} --build=%{_build} \
+%configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
     --disable-dependency-tracking \
-    --prefix=%{_prefix} \
-    --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --sbindir=%{_sbindir} \
-    --sysconfdir=%{_sysconfdir} \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
     --libdir=%{_libdir} \
-    --libexecdir=%{_libdir} \
-    --localstatedir=%{_localstatedir} \
-    --sharedstatedir=%{_sharedstatedir} \
-    --mandir=%{_mandir} \
-    --infodir=%{_infodir} \
     --docdir=%{_docdir}/%{name}-%{version} \
     --with-all-insults \
     --with-env-editor \
     --with-pam \
     --with-passprompt="[sudo] password for %p"
-
 make %{?_smp_mflags}
 
 %install
@@ -103,9 +84,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
 %{_includedir}/*
-%{_libdir}/sudo/*.so
-%{_libdir}/sudo/*.so.*
 %{_sbindir}/*
+%{_prefix}/libexec/sudo/*.so
+%{_prefix}/libexec/sudo/*.so.*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
@@ -113,8 +94,11 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 %attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
 %exclude  /etc/sudoers.dist
+%exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.10-1
+- Automatic Version Bump
 * Fri Jan 29 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-1
 - Upgrade sudo to v1.9.5
 * Thu Jan 21 2021 Tapas Kundu <tkundu@vmware.com> 1.8.30-3
@@ -163,4 +147,4 @@ rm -rf %{buildroot}/*
 * Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-2
 - Adding PAM support
 * Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
-- Initial build.  First version
+- Initial build.  First version.
