@@ -1,13 +1,13 @@
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
-Version:        3.0.10
-Release:        3%{?dist}
+Version:        3.0.14
+Release:        1%{?dist}
 License:        MPL-2.0
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    libical=ed9a3bcff30d543c6caae019f4333f6af55934ed
+%define sha512  libical=36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
 BuildRequires:  cmake
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -45,7 +45,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 make %{?_smp_mflags} -k check
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -61,6 +60,8 @@ make %{?_smp_mflags} -k check
 /usr/local/lib64/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.14-1
+- Automatic Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 3.0.10-3
 - Release bump up to use libxml2 2.9.12-1.
 * Wed Jun 30 2021 Tapas Kundu <tkundu@vmware.com> 3.0.10-2
@@ -70,4 +71,4 @@ make %{?_smp_mflags} -k check
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1
 - Automatic Version Bump
 * Mon Jan 6 2020 Ajay Kaher <akaher@vmware.com> 3.0.7-1
-- Initial version
+- Initial version.
