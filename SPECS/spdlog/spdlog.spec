@@ -1,11 +1,11 @@
 Summary:	Very fast, header only, C++ logging library.
 Name:		spdlog
-Version:	1.8.1
+Version:	1.10.0
 Release:	1%{?dist}
 License:	MIT
 URL:		https://github.com/gabime/spdlog
 Source0:	%{name}-%{version}.tar.gz
-%define sha1    spdlog=a0fe45cfb77cb4201e9a0e40325c1792dd434a28
+%define sha512  spdlog=e82ec0a0c813ed2f1c8a31a0f21dbb733d0a7bd8d05284feae3bd66040bc53ad47a93b26c3e389c7e5623cfdeba1854d690992c842748e072aab3e6e6ecc5666
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -19,7 +19,7 @@ Very fast, header only, C++ logging library.
 %global debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup
 
 %build
 mkdir -p build
@@ -29,20 +29,23 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %check
 cd build
-make test
+make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
 %{_lib64dir}/cmake/%{name}/*.cmake
 %{_lib64dir}/pkgconfig/spdlog.pc
-%{_lib64dir}/libspdlog.a
+%{_lib64dir}/libspdlog.so
+%{_lib64dir}/libspdlog.so.*
 
 %changelog
+*    Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.10.0-1
+-    Automatic Version Bump
 *    Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
 -    Automatic Version Bump
 *    Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
