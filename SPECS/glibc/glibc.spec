@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -40,13 +40,13 @@ Patch20:        0004-elf-Add-test-case-for-BZ-19329.patch
 Patch21:        CVE-2021-35942.patch
 Patch22:        CVE-2021-38604.patch
 Patch23:        glibc-fix-for-semctl-ltp.patch
-
 Patch24:        0001-socket_Add_the__sockaddr_un_set_function.patch
 Patch25:        CVE-2022-23218.patch
 Patch26:        CVE-2022-23219.patch
 Patch27:        0001-CVE-2020-29573.patch
 Patch28:        0002-CVE-2020-29573.patch
 Patch29:        CVE-2021-43396.patch
+Patch30:        nptl-Fix-pthread_rwlock-stalls.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -132,6 +132,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -334,6 +335,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 19 2022 Alexey Makhalov <amakhalov@vmware.com> 2.28-20
+-   One more fix for rwlock stall
 *   Wed Feb 16 2022 Ajay Kaher <akaher@vmware.com> 2.28-19
 -   Fix CVE-2020-29573, CVE-2021-43396
 *   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.28-18
