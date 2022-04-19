@@ -1,16 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.66
-Release:        2%{?dist}
+Version:        3.78
+Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_66_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=c0d452f828e16e3345e891fe2bd016250f1b51e1
+%define sha512  nss=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
 Patch0:         nss-%{version}-standalone-1.patch
-Patch1:         nss-CVE-2021-43527.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -122,6 +121,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.78-1
+-   Automatic Version Bump
 *   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.66-2
 -   Fix CVE-2021-43527
 *   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.66-1
