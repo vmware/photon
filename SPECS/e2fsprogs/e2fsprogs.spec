@@ -1,6 +1,6 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.46.2
+Version:        1.46.5
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
@@ -8,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=cfaf65ecdfb71cbb424d4cce13b436da4a079dff
+%define sha512  e2fsprogs=1a3496cb6ac575c7a5c523cc4eede39bc77c313a6d1fea2d303fc967792d75d94e42d7821e1a61b7513509320aae4a7170506decf5753ddbd1dda9d304cc392e
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 BuildRequires:  util-linux-devel
@@ -17,26 +17,29 @@ Requires:       util-linux-libs
 %description
 The E2fsprogs package contains the utilities for handling the ext2 file system.
 
-%package    libs
-Summary:    contains libraries used by other packages
+%package        libs
+Summary:        contains libraries used by other packages
+
 %description    libs
 It contains the libraries: libss and libcom_err
 
-%package    devel
-Summary:    Header and development files for e2fsprogs
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files for e2fsprogs
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
-%package lang
-Summary: Additional language files for e2fsprogs
-Group:   System Environment/Base
-Requires: %{name} = %{version}-%{release}
-%description lang
+%package        lang
+Summary:        Additional language files for e2fsprogs
+Group:          System Environment/Base
+Requires:       %{name} = %{version}-%{release}
+
+%description    lang
 These are the additional language files of e2fsprogs
 
 %prep
-%setup -q
+%autosetup
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 
 %build
@@ -55,8 +58,8 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} install-libs
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install-libs
 chmod -v u+w %{buildroot}/%{_libdir}/{libcom_err,libe2p,libext2fs,libss}.a
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
@@ -131,6 +134,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46.5-1
+-   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.46.2-1
 -   Automatic Version Bump
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 1.45.6-2
