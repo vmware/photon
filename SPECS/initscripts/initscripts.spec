@@ -1,12 +1,12 @@
 Summary:        Scripts to bring up network interfaces and legacy utilities
 Name:           initscripts
-Version:        10.09
+Version:        10.16
 License:        GPLv2
 Group:          System Environment/Base
 Release:        1%{?dist}
 URL:            https://github.com/fedora-sysv/initscripts
 Source0:        https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
-%define sha1    initscripts=776d665ab82272bfb9564aba1531ce88126aa742
+%define sha512  initscripts=a9465d8cb6e49c62e36d91f01833048cf215cb8e43bc163db406426eab8a42f95eb4cfbbcb9a7381565be85d53216cba846c51fed60c73343f0d85bad9cc5602
 Source1:        adjtime
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,10 +51,10 @@ This package provides script & configuration file for setting up read-only root
 support. Additional configuration is required after installation.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-make PYTHON=/usr/bin/python3
+make PYTHON=/usr/bin/python3 %{?_smp_mflags}
 
 %install
 %make_install
@@ -199,6 +199,8 @@ EOF
 %{_prefix}/lib/systemd/system/readonly-root.service
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 10.16-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 10.09-1
 -   Automatic Version Bump
 *   Wed Jul 22 2020 Ankit Jain <ankitja@vmware.com> 10.04-1
@@ -218,4 +220,4 @@ EOF
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
 -   Updated to version 9.65
 *   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
--   Got Spec file from source tar ball and modified it to be compatible to build in Photon
+-   Got Spec file from source tar ball and modified it to be compatible to build in Photon.
