@@ -1,6 +1,6 @@
 Summary:        Contains a utility for determining file types
 Name:           file
-Version:        5.40
+Version:        5.41
 Release:        1%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
@@ -8,9 +8,10 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1    file=8a5d51c59cf090f09b00c2d75e50a194ee43250e
+%define sha512  file=bbf2d8e39450b31d0ba8d76d202790fea953775657f942f06e6dc9091798d4a395f7205e542388e4a25b6a4506d07f36c5c4da37cfce0734133e9203a3b00654
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
+
 %description
 The package contains a utility for determining the type of a
 given file or files
@@ -23,18 +24,19 @@ It contains the libraries to run the application.
 %package        devel
 Summary:        Header and development files for file
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -61,6 +63,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.41-1
+-   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.40-1
 -   Automatic Version Bump
 *   Thu Feb 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.39-2
@@ -87,4 +91,4 @@ make %{?_smp_mflags} check
 *   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 5.24-1
 -   Updated to version 5.24
 *   Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 5.22-1
--   Initial build. First version
+-   Initial build. First version.
