@@ -1,14 +1,14 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
-Version:        1.20.3
-Release:        3%{?dist}
+Version:        1.21.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha1    wget=2b886eab5b97267cc358ab35e42d14d33d6dfc95
+%define sha512  wget=29889ecbf590dff0f39183d9e0621741d731a554d990e5c995a4644725dca62e8e19601d40db0ef7d62ebf54e5457c7409965e4832b6e60e4ccbc9c8caa30718
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if %{with_check}
@@ -16,32 +16,24 @@ BuildRequires:  perl
 %endif
 
 %description
-The Wget package contains a utility useful for non-interactive
-downloading of files from the Web.
+The Wget package contains a utility useful for non-interactive downloading of files from the Web.
+
 %prep
 %autosetup
+
 %build
-sh ./configure --host=%{_host} --build=%{_build} \
+%configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
     --disable-dependency-tracking \
-    --prefix=%{_prefix} \
-    --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --sbindir=%{_sbindir} \
-    --sysconfdir=/etc \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
     --libdir=%{_libdir} \
-    --libexecdir=%{_libexecdir} \
-    --localstatedir=%{_localstatedir} \
-    --sharedstatedir=%{_sharedstatedir} \
-    --mandir=%{_mandir} \
-    --infodir=%{_infodir} \
     --disable-silent-rules \
     --with-ssl=openssl
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
@@ -50,22 +42,29 @@ cat >> %{buildroot}/etc/wgetrc <<-EOF
 #   default root certs location
     ca_certificate=/etc/pki/tls/certs/ca-bundle.crt
 EOF
-rm -rf %{buildroot}/%{_infodir}
+rm -rf %{buildroot}%{_infodir}
+
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+
 %check
 export PERL_MM_USE_DEFAULT=1
 cpan HTTP::Daemon
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config(noreplace) /etc/wgetrc
 %{_bindir}/*
 %{_mandir}/man1/*
+%exclude %{_datadir}/locale/*
+
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.3-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-3
 -   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-2
