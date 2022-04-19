@@ -1,21 +1,19 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
-Version:        2.1.4
-Release:        2%{?dist}
+Version:        2.1.6
+Release:        1%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    open=0e0d50142ee0d903f7c73ab7276e04e00c8a436d
-
+%define sha512  open=4a32a76c1c32d7d1a01fe3a0f88ce9616a54323ec043757be73051eb41ebae8de90ce057acce72fb6fe07aa47e814c9bc6ee88b13fa7d7769ca10c5175974f1d
 BuildRequires:  open-isns-devel
 BuildRequires:  openssl-devel
 BuildRequires:  kmod-devel
 BuildRequires:  systemd-devel
 BuildRequires:  util-linux-devel
-
 Requires:       openssl
 Requires:       kmod
 Requires:       systemd
@@ -24,15 +22,16 @@ Requires:       util-linux
 %description
 iSCSI tools for Linux
 
-%package devel
-Summary: Development Libraries for open-iscsi
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
-%description devel
-Header files for doing development with open-iscsi.
+%package        devel
+Summary:        Development Libraries for open-iscsi
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+Header files for doing development with open-iscsi
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 sed -i 's/lib64/lib/g' libopeniscsiusr/Makefile
@@ -47,7 +46,7 @@ install -pm 644 etc/systemd/iscsid.socket %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsiuio.service %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -77,6 +76,7 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_mandir}/man8/iscsid.8.gz
 %{_mandir}/man8/iscsistart.8.gz
 %{_mandir}/man8/iscsiuio.8.gz
+%{_mandir}/man8/iscsi-gen-initiatorname.8.gz
 
 %files devel
 %defattr(-,root,root)
@@ -89,6 +89,8 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.6-1
+- Automatic Version Bump
 * Wed Nov 24 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.4-2
 - increment for openssl 3.0.0 compatibility
 * Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.4-1
