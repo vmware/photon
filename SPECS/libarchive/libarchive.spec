@@ -1,14 +1,14 @@
-Summary:    Multi-format archive and compression library
-Name:       libarchive
-Version:    3.5.1
-Release:    2%{?dist}
-License:    BSD 2-Clause License
-URL:        http://www.libarchive.org/
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
+Summary:        Multi-format archive and compression library
+Name:           libarchive
+Version:        3.6.1
+Release:        1%{?dist}
+License:        BSD 2-Clause License
+URL:            http://www.libarchive.org/
+Group:          System Environment/Development
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 libarchive=8783fd595f1405400e624ac2c0977d9dc3f9ca30
+Source0:        http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
+%define sha512  libarchive=58f7ac0c52116f73326a07dec10ff232be33b318862078785dc39f1fb2f8773b5194eabfa14764bb51ce6a5a1aa8820526e7f4c76087a6f4fcbe7789a22275b4
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 BuildRequires:  zstd-devel
@@ -16,12 +16,14 @@ BuildRequires:  openssl-devel
 Requires:       xz-libs
 Requires:       zstd
 Requires:       openssl >= 1.1.1
+
 %description
 Multi-format archive and compression library
 
 %package	devel
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
+
 %description	devel
 It contains the libraries and header files to create applications
 
@@ -31,7 +33,6 @@ It contains the libraries and header files to create applications
 %build
 export CFLAGS="%{optflags}"
 %configure --disable-static
-
 make %{?_smp_mflags}
 
 %install
@@ -58,6 +59,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.6.1-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.5.1-2
 -   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.5.1-1
@@ -96,4 +99,4 @@ make %{?_smp_mflags} check
 *   Wed Jul 8 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2
 -   Added devel package, dist tag. Use macroses part.
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 3.1.2-1
--   Initial build.  First version
+-   Initial build.  First version.
