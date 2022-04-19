@@ -2,8 +2,8 @@
 
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
-Version:        2.0.31
-Release:        2%{?dist}
+Version:        2.0.32
+Release:        1%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
-%define sha1    OpenIPMI=5b9494e61d8fbcee05d6cea3c688f7f69fded4e7
+%define sha512  OpenIPMI=e409f32e6bbf26756338ada386fa394d48d734b4d6ba4beca700ce60bc3af3d0f41e972a328c4e076ae014f4fbd8598d05d3f879f9c6d76198e6ae1a2ba03e95
 Source1:        openipmi-helper
 Source2:        ipmi.service
 
@@ -188,6 +188,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.32-1
+- Automatic Version Bump
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.31-2
 - Bump up release for openssl
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.31-1
