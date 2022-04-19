@@ -1,14 +1,13 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        C extensions for Python3
 Name:           cython3
-Version:        0.29.23
+Version:        0.29.28
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
 Source0:        https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
-%define sha1    Cython=1b4fa0055a1d165339c763abc619fd8a13fa69e7
-Patch0:         fix_make_check_tests.patch
+%define sha512  Cython=52490d0b5355e13cbe586830f763173d7556cf3d79d79192ca75138b1190e7a4c1f3feeb0568349802ef3b97300c3805f54eef5ffd73a5180d68f023ac2a44cd
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3
@@ -23,8 +22,7 @@ and the extended Cython programming language (based on Pyrex).
 It makes writing C extensions for Python as easy as Python itself.
 
 %prep
-%setup -q -n cython-%{version}
-%patch0 -p1
+%autosetup -n cython-%{version}
 %build
 python3 setup.py build
 
@@ -51,6 +49,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/__pycache__/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.28-1
+-   Automatic Version Bump
 *   Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 0.29.23-1
 -   Automatic Version Bump
 *   Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 3.0a6-1
