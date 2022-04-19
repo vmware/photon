@@ -1,28 +1,28 @@
 %define _gnu %{nil}
 %define _programprefix eu-
 
-Summary:    A collection of utilities and DSOs to handle compiled objects
-Name:       elfutils
-Version:    0.183
-Release:    2%{?dist}
-License:    GPLv3+ and (GPLv2+ or LGPLv3+)
-Group:      Development/Tools
-URL:        https://sourceware.org/elfutils
-Vendor:     VMware, Inc.
+Summary:        A collection of utilities and DSOs to handle compiled objects
+Name:           elfutils
+Version:        0.186
+Release:        1%{?dist}
+License:        GPLv3+ and (GPLv2+ or LGPLv3+)
+Group:          Development/Tools
+URL:            https://sourceware.org/elfutils
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 %{name}=20227ae4cc7474de505ddf0f1f0b1b24ce5198e7
+Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=c9180b27ec62935f18b9431268d176f6023d1bb938731d2af6e7626ae460af6608a70ba68483aa1ec7e6cb0fa0528b661ca8b68bc4f58ea8e18af527c5950c78
 
-Obsoletes:  libelf
-Obsoletes:  libelf-devel
+Obsoletes:      libelf
+Obsoletes:      libelf-devel
 
-Requires:   elfutils-libelf = %{version}-%{release}
-Requires:   glibc >= 2.7
-Requires:   bzip2-libs
-Requires:   libmicrohttpd
-Requires:   curl
-Requires:   libarchive
+Requires:       elfutils-libelf = %{version}-%{release}
+Requires:       glibc >= 2.7
+Requires:       bzip2-libs
+Requires:       libmicrohttpd
+Requires:       curl
+Requires:       libarchive
 
 BuildRequires:  gcc >= 4.1.2-33
 BuildRequires:  glibc >= 2.7
@@ -177,6 +177,7 @@ rm -rf %{buildroot}
 %{_mandir}/man3/elf_*.3*
 %{_mandir}/man3/debuginfod*.3*
 %{_mandir}/man8/debuginfod.8*
+%{_mandir}/man7/debuginfod-client-config.7.gz
 
 %files devel-static
 %{_libdir}/libdw.a
@@ -201,6 +202,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.186-1
+- Automatic Version Bump
 * Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 0.183-2
 - Added requires libarchive.
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.183-1
