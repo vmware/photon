@@ -1,49 +1,45 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.12.0
-Release:        2%{?dist}
+Version:        1.15.0
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=68009078d5f5025c95a8c9fe20b9e84335d53e2d
+%define sha512  unbound=c5dab305694c14f64e05080700bb52f6e6bf5b76f15e1fde34e35c932cb3ffed0de2c03b570cf4bfe18165cb10e82e67ee9b12c6583295380f88c2c03800cc1f
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
-Patch0:         patch_cve-2020-28935_unbound.diff
-Patch1:         unbound-openssl-3.0.0-compatibility.patch
-
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
 
-%package    devel
-Summary:    unbound development libs and headers
-Group:      Development/Libraries
-Requires:   expat-devel
+%package        devel
+Summary:        unbound development libs and headers
+Group:          Development/Libraries
+Requires:       expat-devel
 
-%description devel
+%description    devel
 Development files for unbound dns server
 
-%package    docs
-Summary:    unbound docs
-Group:      Documentation
+%package        docs
+Summary:        unbound docs
+Group:          Documentation
 
-%description docs
+%description    docs
 unbound dns server docs
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
     --with-conf-file=%{_sysconfdir}/%{name}/unbound.conf \
     --disable-static
-
 make %{?_smp_mflags}
 
 %install
@@ -62,7 +58,7 @@ useradd -r -g unbound -d %{_sysconfdir}/unbound -s /sbin/nologin \
 -c "Unbound DNS resolver" unbound
 
 %post
-    /sbin/ldconfig
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -83,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1
+-  Automatic Version Bump
 *  Fri Jul 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-2
 -  Fix openssl 3.0.0 compatibility with unbound
 *  Thu Mar 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-1
@@ -107,4 +105,4 @@ rm -rf %{buildroot}/*
 *  Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-1
 -  Updated to version 1.6.1
 *  Fri Jan 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-1
--  Initial
+-  Initial.
