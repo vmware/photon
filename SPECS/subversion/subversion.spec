@@ -1,14 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.14.1
-Release:        3%{?dist}
+Version:        1.14.2
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=ee4283c21b5925ee499f8cb9cb0ff546ac7b4b9a
+%define sha512    %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
 
 Requires:       apr
 Requires:       apr-util
@@ -96,6 +96,8 @@ sudo -u test make check %{?_smp_mflags} ; userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
+-   Automatic Version Bump
 *   Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.1-3
 -   Bump version for openssl 3.0.0
 *   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.1-2
