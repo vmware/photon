@@ -1,16 +1,16 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.20.3
-Release:         5%{?dist}
+Version:         1.22.1
+Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1     telegraf=e5f62411fc4bf8b98b10c184b504d3b78181e4c2
+%define sha1     telegraf=b939f8aa3e93e1f65d503d31054513bae9d59f8b
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha1     telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
-Source3:         golang-dep-0.5.0.tar.gz
-%define sha1     golang-dep-0.5.0=b8bb441fe3a4445e6cd4fa263dd2112e8566a734
+Source3:         golang-dep-0.5.4.tar.gz
+%define sha1     golang-dep-0.5.4=f3d546f3ffb07ff988603d4a36df9b819f2fe9e6
 Group:           Development/Tools
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -98,6 +98,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Tue Apr 19 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.1-1
+-   Update to version 1.22.1
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-5
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-4
