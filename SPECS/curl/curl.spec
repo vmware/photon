@@ -1,17 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.78.0
-Release:        4%{?dist}
+Version:        7.82.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=c51b85373ae7b3186ad364e909f29b93043a9c16
-Patch0:         curl-CVE-2021-22945.patch
-Patch1:         curl-CVE-2021-22946.patch
-Patch2:         curl-CVE-2021-22947.patch
+%define sha512  curl=d4c4a785876e0d1ba1c1adbe65528d56a8b81fc03ff724e87819cfe51aca60f8a7bf2ac9384f30c3a6bbd28669b2bd3e9a6794737243c836c4902d085a72c474
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -33,6 +30,7 @@ functions like streaming media.
 %package        devel
 Summary:        Libraries and header files for curl
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 Static libraries and header files for the support library for curl
 
@@ -40,11 +38,12 @@ Static libraries and header files for the support library for curl
 Summary:        Libraries for curl
 Group:          System Environment/Libraries
 Requires:       ca-certificates-pki
+
 %description    libs
 This package contains minimal set of shared curl libraries.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
@@ -93,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 7.82.0-1
+-   Automatic Version Bump
 *   Fri Dec 10 2021 Harinadh D<hdommaraju@vmware.com> 7.78.0-4
 -   Fix makecheck issues
 *   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.78.0-3
