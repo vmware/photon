@@ -1,11 +1,11 @@
 Summary:        An Event notification library.
 Name:           libevent
 Version:        2.1.12
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        BSD
 URL:            http://libevent.org
 Source0:        https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
-%define sha1    libevent=cd55656a9b5bed630b08f05495230affb7996b21
+%define sha512  libevent=88d8944cd75cbe78bc4e56a6741ca67c017a3686d5349100f1c74f8a68ac0b6410ce64dff160be4a4ba0696ee29540dfed59aaf3c9a02f0c164b00307fcfe84f
 Group:          System/Library
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
+*       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
+-       Automatic Version Bump
 *       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.12-2
 -       Bump up release for openssl
 *       Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
