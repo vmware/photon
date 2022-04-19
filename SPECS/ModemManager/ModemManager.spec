@@ -1,6 +1,6 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
-Version:        1.16.4
+Version:        1.18.6
 Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%{version}.tar.xz
-%define sha1    ModemManager=34859eb01814424289949344c825322eb69bc3c3
+%define sha512  ModemManager=3b154d459e1196494d7f99303f88088215992aadb57a8cc66f838b068e762fa3d25f19a597922c26a138f670e1da46d627de11cf41d83ce96b3197a086f8e91b
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libgudev-devel
@@ -26,36 +26,39 @@ BuildRequires:  dbus-devel
 Requires:       libgudev
 Requires:       libqmi
 Requires:       gobject-introspection
+
 %description
 ModemManager provides a unified high level API for communicating
 with mobile broadband modems, regardless of the protocol used to
 communicate with the actual device.
 
-%package      devel
-Summary:      Header and development files for ModemManager
-Requires:     %{name} = %{version}
-Requires:     libqmi-devel
-Requires:     gobject-introspection-devel
-%description  devel
+%package        devel
+Summary:        Header and development files for ModemManager
+Requires:       %{name} = %{version}
+Requires:       libqmi-devel
+Requires:       gobject-introspection-devel
+
+%description    devel
 It contains the libraries and header files for ModemManager
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
     --disable-static \
     --enable-more-warnings=no \
-    --without-qmi
+    --without-qmi \
+    --without-mbim
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %check
 make %{?_smp_mflags} check
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -84,8 +87,11 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/ModemManager.pc
 %{_libdir}/pkgconfig/mm-glib.pc
 %{_libdir}/libmm-glib.la
+%{_datadir}/ModemManager/fcc-unlock.available.d/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.6-1
+-   Automatic Version Bump
 *   Wed Apr 21 2021 Gerrit Photon <photon-checkins@vmware.com> 1.16.4-1
 -   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.16.2-1
