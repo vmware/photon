@@ -1,6 +1,6 @@
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
-Version:        5.4.2
+Version:        5.4.3
 Release:        1%{?dist}
 License:        Freeware
 URL:            http://www.gnuplot.info/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=2e076b29f38bfcb841cb5eb3377fd1a469ced1ac
+%define sha512    %{name}=fc35ab68a992acc8e35402c89cb7704c0efe117ec1fb272739d4378289d6c5a2e8f4b747b339fca916e559453547f2405863fb52038576883f0d5643a7220b5e
 
 BuildRequires:  lua-devel
 
@@ -37,6 +37,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.4.3-1
+- Automatic Version Bump
 * Wed Dec 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.2-1
 - Upgrade to version 5.4.2
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.4.1-1
