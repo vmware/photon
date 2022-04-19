@@ -1,12 +1,12 @@
 Summary:	Library for accessing X.509 and CMS data structure.
 Name:		libksba
-Version:	1.5.1
+Version:	1.6.0
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:		Security/Libraries.
 Source0:        https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 libksba=740ac2551b33110e879aff100c6a6749284daf97
+%define sha512  libksba=a7c76d41dfd8ec6383ac2de3c53848cd9f066b538f6f3cd43175e3c8095df51b96d0a24a573481c0c4856b09b7c224e2b562d88f5c0801e7acfb582ea2739c2b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libgpg-error-devel >= 1.2
@@ -17,14 +17,14 @@ CMS data and related objects more easy. It provides a highlevel interface
 to the implemented protocols and presents the data in a consistent way.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-%configure --disable-static \
-make
+%configure --disable-static
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -45,12 +45,14 @@ make %{?_smp_mflags} -k check
 %exclude %{_datadir}/info/dir
 
 %changelog
-*Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
--Automatic Version Bump
-*Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
--Automatic Version Bump
-*	Tue	Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.3.5-1
--	Udpated to version 1.3.5
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
+-   Automatic Version Bump
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
+-   Automatic Version Bump
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
+-   Automatic Version Bump
+*   Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.3.5-1
+-   Udpated to version 1.3.5
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
 -   BuildRequired libgpg-error-devel.
 *   Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 1.3.4-1
