@@ -1,6 +1,6 @@
 Summary:        DBus for systemd
 Name:           dbus
-Version:        1.13.20
+Version:        1.14.0
 Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha1    %{name}=721389d265da7eaa644789efac4bcd848b11e313
+%define sha512  %{name}=9bf17a3ebb3cf44722c6fbf24ee56e9dc14d6882fc312f26c7f07459d969424bc2fb63a229139e011804ecc479a8f0eb1a0c83286f8d5a664c5979d12634179f
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -22,15 +22,16 @@ Requires:       xz
 %description
 The dbus package contains dbus.
 
-%package    devel
-Summary:    Header and development files
-Requires:   %{name} = %{version}
-Requires:   expat-devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}
+Requires:       expat-devel
+
 %description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
@@ -72,6 +73,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
+- Automatic Version Bump
 * Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 1.13.20-1
 - Update to 1.13.20
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.18-1
