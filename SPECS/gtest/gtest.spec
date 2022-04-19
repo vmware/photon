@@ -1,11 +1,11 @@
 Summary:	Google's C++ gtest framework
 Name:		gtest
-Version:	1.10.0
+Version:	1.11.0
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/google/googletest
 Source0:	https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
-%define sha1 googletest=9c89be7df9c5e8cb0bc20b3c4b39bf7e82686770
+%define sha512  googletest=6fcc7827e4c4d95e3ae643dd65e6c4fc0e3d04e1778b84f6e06e390410fe3d18026c131d828d949d2f20dde6327d30ecee24dcd3ef919e21c91e010d149f3a28
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -16,50 +16,56 @@ BuildRequires:  make
 BuildRequires:  gcc
 
 %description
-Google's C++ test framework that combines the GoogleTest and GoogleMock projects. This package provides gtest shared libraries.
+Google's C++ test framework that combines the GoogleTest and GoogleMock projects.
+This package provides gtest shared libraries.
 
-%package devel
+%package        devel
 Summary:        libgtest headers
 Group:          Development/Tools
-%description devel
+
+%description    devel
 This contains libgtest header files.
 
-%package static
+%package        static
 Summary:        libgtest static lib
 Group:          Development/Tools
-%description static
+
+%description    static
 This contains libgtest static library.
 
-%package -n gmock
-Summary: Google's C++ gmock framework
-Group: Development/Tools
-%description -n gmock
-Google's C++ test framework that combines the GoogleTest and GoogleMock projects. This package provides gmock shared libraries.
+%package -n     gmock
+Summary:        Google's C++ gmock framework
+Group:          Development/Tools
 
-%package -n gmock-devel
+%description -n gmock
+Google's C++ test framework that combines the GoogleTest and GoogleMock projects.
+This package provides gmock shared libraries.
+
+%package -n     gmock-devel
 Summary:        libgmock headers
 Group:          Development/Tools
+
 %description -n gmock-devel
 This contains libgmock header files.
 
-%package -n gmock-static
+%package -n     gmock-static
 Summary:        libgtest static lib
 Group:          Development/Tools
+
 %description -n gmock-static
 This contains libgmock static library.
 
-
 %prep
-%setup -n googletest-release-%{version}
+%autosetup -n googletest-release-%{version}
 
 %build
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DBUILD_SHARED_LIBS=OFF .
-make
+make %{_smp_mflags}
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DBUILD_SHARED_LIBS=ON .
-make
+make %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{_smp_mflags} install
 install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgmock.a
 install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgmock_main.a
 install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgtest.a
@@ -85,6 +91,10 @@ find %{buildroot} -name '*.la' -delete
 /usr/src/gtest/
 %{_lib64dir}/cmake/GTest/*.cmake
 %{_lib64dir}/pkgconfig/*.pc
+%{_lib64dir}/libgmock.so.*
+%{_lib64dir}/libgmock_main.so.*
+%{_lib64dir}/libgtest.so.*
+%{_lib64dir}/libgtest_main.so.*
 
 %files -n gmock-devel
 %{_includedir}/gmock/*
@@ -101,6 +111,8 @@ find %{buildroot} -name '*.la' -delete
 %{_lib64dir}/libgtest_main.a
 
 %changelog
+*    Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1
+-    Automatic Version Bump
 *    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.0-1
 -    Automatic Version Bump
 *    Sun Sep 23 2018 Sharath George <anishs@vmware.com> 1.8.1-2
