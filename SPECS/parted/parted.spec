@@ -1,14 +1,14 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
-Version:        3.4
+Version:        3.5
 Release:        1%{?dist}
 License:        GPLv3+
-URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
+URL:            http://ftp.gnu.org/gnu/parted/parted-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha1 parted=903c58fab429d3b62aa324033a3e41b0b96ad810
+%define sha512  parted=87fc69e947de5f0b670ee5373a7cdf86180cd782f6d7280f970f217f73f55ee1b1b018563f48954f3a54fdde5974b33e07eee68c9ccdf08e621d3dc0e3ce126a
 Patch0:         parted-freelocale.patch
 Conflicts:      toybox < 0.8.2-2
 
@@ -19,8 +19,7 @@ The package contains a library, libparted, as well as well as a
 command-line frontend, parted, which can also be used in scripts.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 #Add a header to allow building with glibc-2.28 or later
@@ -31,7 +30,7 @@ sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -50,9 +49,11 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+*  Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
+-  Automatic Version Bump
 *  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.4-1
 -  Automatic Version Bump
-*  Tue Jan 22 2021 Dweep Advani <dadvani@vmware.com> 3.3-2
+*  Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 3.3-2
 -  Remove conflict causing /usr/share/info/dir from packaging
 *  Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
 -  Automatic Version Bump
