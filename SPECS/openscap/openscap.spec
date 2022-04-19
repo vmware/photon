@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.3.5
-Release:        3%{?dist}
+Version:        1.3.6
+Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    %{name}=77494383980082f8bc625a6e196a6760d30a5107
+%define sha512    %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
@@ -105,6 +105,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.9/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.6-1
+- Automatic Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.5-3
 - Release bump up to use libxml2 2.9.12-1.
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.5-2
