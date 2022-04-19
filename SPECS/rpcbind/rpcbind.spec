@@ -1,30 +1,32 @@
-Summary:        RPC program number mapper
-Name:           rpcbind
-Version:        1.2.5
-Release:        1%{?dist}
-License:        BSD
-URL:            http://nfsv4.bullopensource.org
-Group:          Applications/Daemons
-Source0:        http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
-%define sha1 rpcbind=e9f8046b69b45efe2396a8cca1c1f090644c6d31
-Source1:        rpcbind.service
-Source2:        rpcbind.socket
-Source3:        rpcbind.sysconfig
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  libtirpc-devel
-BuildRequires:  systemd-devel
-Requires:       libtirpc
-Requires:       systemd
-Requires(pre):  /usr/sbin/useradd /usr/sbin/userdel /usr/sbin/groupadd /usr/sbin/groupdel /bin/false
-Requires(preun):/usr/sbin/userdel /usr/sbin/groupdel
-Requires(post): /bin/chown
+Summary:         RPC program number mapper
+Name:            rpcbind
+Version:         1.2.6
+Release:         1%{?dist}
+License:         BSD
+URL:             http://nfsv4.bullopensource.org
+Group:           Applications/Daemons
+Source0:         http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
+%define sha512   rpcbind=fb89c61be4c533fe2e6057749d97079a2d1c9fac0d35d6be1a159a0edbf86092b3fc121f19fa920e75aac5ecdd3f59f5978e6401d5cad16cd438c977736206a7
+Source1:         rpcbind.service
+Source2:         rpcbind.socket
+Source3:         rpcbind.sysconfig
+Vendor:          VMware, Inc.
+Distribution:    Photon
+BuildRequires:   libtirpc-devel
+BuildRequires:   systemd-devel
+Requires:        libtirpc
+Requires:        systemd
+Requires(pre):   /usr/sbin/useradd /usr/sbin/userdel /usr/sbin/groupadd /usr/sbin/groupdel /bin/false
+Requires(preun): /usr/sbin/userdel /usr/sbin/groupdel
+Requires(post):  /bin/chown
 
 %description
-The rpcbind program is a replacement for portmap. It is required for import or export of Network File System (NFS) shared directories. The rpcbind utility is a server that converts RPC program numbers into universal addresses
+The rpcbind program is a replacement for portmap.
+It is required for import or export of Network File System (NFS) shared directories.
+The rpcbind utility is a server that converts RPC program numbers into universal addresses.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
@@ -33,17 +35,16 @@ sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
             --disable-debug \
             --with-statedir=%{_localstatedir}/lib/rpcbind \
             --with-rpcuser=rpc
-make
+make %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{_smp_mflags} DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_localstatedir}/lib/rpcbind
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}/etc/sysconfig
 install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
-
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable rpcbind.socket" > %{buildroot}%{_libdir}/systemd/system-preset/50-rpcbind.preset
 echo "disable rpcbind.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-rpcbind.preset
@@ -70,6 +71,7 @@ else
     useradd -d /var/lib/rpcbind -g rpc -s /bin/false rpc > /dev/null 2>&1
 fi
 fi
+
 %preun
 %systemd_preun rpcbind.service rpcbind.socket
 if [ $1 -eq 0 ]; then
@@ -92,6 +94,8 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.6-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 1.2.5-1
 -   Update to version 1.2.5
 *   Tue Mar 06 2018 Xiaolin Li <xiaolinl@vmware.com> 0.2.4-5
@@ -121,4 +125,4 @@ rm -rf %{buildroot}/*
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.2.3-2
 -   Add systemd to Requires and BuildRequires.
 *   Tue Dec 8 2015 Divya Thaluru <dthaluru@vmware.com> 0.2.3-1
--   Initial build.  First version
+-   Initial build.  First version.
