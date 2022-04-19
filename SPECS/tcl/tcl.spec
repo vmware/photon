@@ -1,20 +1,16 @@
-Summary:        Tool Command Language - the language and library.
-Name:           tcl
-Version:        8.6.10
+Summary:         Tool Command Language - the language and library.
+Name:            tcl
+Version:         8.6.12
 %define majorver 8.6
-Release:        2%{?dist}
-URL:            http://tcl.sourceforge.net/
-License:        LGPLv2+
-Group:          System Environment/Libraries
-Vendor:         VMware, Inc.
-Distribution:   Photon
-
-Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha1    tcl-core=8a51f3cf987e75f859b5e378f27d9182030cc3f7
-
-Patch0:         tcl-CVE-2021-35331.patch
-
-BuildRequires:  cmake
+Release:         1%{?dist}
+URL:             http://tcl.sourceforge.net/
+License:         LGPLv2+
+Group:           System Environment/Libraries
+Vendor:          VMware, Inc.
+Distribution:    Photon
+Source0:         http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
+%define sha512   tcl-core=7144a50d19d3855edbda14b538cc94fe26c0dd357b979676c3fe02d599dab61ba777bf14f6aaebb63e238aeff1d0bad25ea7b0ff31b2398468f67fc0a305b9f3
+BuildRequires:   cmake
 
 %description
 Tcl provides a powerful platform for creating integration applications that
@@ -24,16 +20,16 @@ way to create GUI applications that run on PCs, Unix, and Mac OS X.
 Tcl can also be used for a variety of web-related tasks and for creating
 powerful command languages for applications.
 
-%package devel
-Summary: Headers and development libraries for tcl
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+%package         devel
+Summary:         Headers and development libraries for tcl
+Group:           Development/Libraries
+Requires:        %{name} = %{version}-%{release}
 
-%description devel
+%description     devel
 Headers and development libraries for tcl
 
 %prep
-%autosetup -p1 -n %{name}%{version}
+%autosetup -n %{name}%{version}
 
 %build
 cd unix
@@ -99,6 +95,8 @@ make test %{?_smp_mflags}
 %exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 8.6.12-1
+- Automatic Version Bump
 * Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.10-2
 - Fix CVE-2021-35331
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.6.10-1
