@@ -1,39 +1,34 @@
 # this file is encoded in UTF-8  -*- coding: utf-8 -*-
-
-Summary:      Z shell
-Name:         zsh
-Version:      5.8
-Release:      2%{?dist}
-License:      MIT
-URL:          http://zsh.org/
-Group:        System Environment/Shells
-Vendor:       VMware, Inc.
-Distribution: Photon
-Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
-Source1:      zprofile.rhs
-Source2:      zshrc
-
-Patch0:       ncurses-fix.patch
-
-BuildRequires: coreutils
-BuildRequires: tar
-BuildRequires: patch
-BuildRequires: diffutils
-BuildRequires: make
-BuildRequires: gcc
-BuildRequires: binutils
-BuildRequires: linux-api-headers
-BuildRequires: sed
-BuildRequires: ncurses-devel
-BuildRequires: libcap-devel
-BuildRequires: texinfo
-BuildRequires: gawk
-BuildRequires: elfutils
-Requires(post): /bin/grep
+Summary:          Z shell
+Name:             zsh
+Version:          5.8.1
+Release:          1%{?dist}
+License:          MIT
+URL:              http://zsh.org/
+Group:            System Environment/Shells
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Source0:          http://www.zsh.org/pub/%{name}-%{version}.tar.xz
+%define sha512    zsh=f54a5a47ed15d134902613f6169c985680afc45a67538505e11b66b348fcb367145e9b8ae2d9eac185e07ef5f97254b85df01ba97294002a8c036fd02ed5e76d
+Source1:          zprofile.rhs
+Source2:          zshrc
+BuildRequires:    coreutils
+BuildRequires:    tar
+BuildRequires:    patch
+BuildRequires:    diffutils
+BuildRequires:    make
+BuildRequires:    gcc
+BuildRequires:    binutils
+BuildRequires:    linux-api-headers
+BuildRequires:    sed
+BuildRequires:    ncurses-devel
+BuildRequires:    libcap-devel
+BuildRequires:    texinfo
+BuildRequires:    gawk
+BuildRequires:    elfutils
+Requires(post):   /bin/grep
 Requires(postun): (coreutils or toybox) /bin/grep
-
-Provides: /bin/zsh
+Provides:         /bin/zsh
 
 %description
 The zsh shell is a command interpreter usable as an interactive login
@@ -43,73 +38,66 @@ command line editing, built-in spelling correction, programmable
 command completion, shell functions (with autoloading), a history
 mechanism, and more.
 
-%package html
-Summary: Zsh shell manual in html format
-Group: System Environment/Shells
+%package          html
+Summary:          Zsh shell manual in html format
+Group:            System Environment/Shells
 
-%description html
+%description      html
 The zsh shell is a command interpreter usable as an interactive login
 shell and as a shell script command processor.  Zsh resembles the ksh
 shell (the Korn shell), but includes many enhancements.  Zsh supports
 command line editing, built-in spelling correction, programmable
 command completion, shell functions (with autoloading), a history
-mechanism, and more.
-
-This package contains the Zsh manual in html format.
+mechanism, and more. This package contains the Zsh manual in html format.
 
 %prep
-
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
 export LIBLDFLAGS='-z lazy'
 
 %configure --enable-etcdir=%{_sysconfdir} --with-tcsetpgrp --enable-maildir-support
-
-make all html
+make %{_smp_mflags} all html
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %makeinstall install.info \
-  fndir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/functions \
-  sitefndir=$RPM_BUILD_ROOT%{_datadir}/%{name}/site-functions \
-  scriptdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/scripts \
-  sitescriptdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/scripts \
-  runhelpdir=$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/help
+  fndir=%{buildroot}/%{_datadir}/%{name}/%{version}/functions \
+  sitefndir=%{buildroot}/%{_datadir}/%{name}/site-functions \
+  scriptdir=%{buildroot}/%{_datadir}/%{name}/%{version}/scripts \
+  sitescriptdir=%{buildroot}/%{_datadir}/%{name}/scripts \
+  runhelpdir=%{buildroot}/%{_datadir}/%{name}/%{version}/help
+rm -f %{buildroot}/%{_bindir}/zsh-%{version}
+rm -f %{buildroot}/%{_infodir}/dir
 
-rm -f ${RPM_BUILD_ROOT}%{_bindir}/zsh-%{version}
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
-
-mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}
+mkdir -p %{buildroot}/%{_sysconfdir}
 for i in %{SOURCE1}; do
-    install -m 644 $i $RPM_BUILD_ROOT%{_sysconfdir}/"$(basename $i .rhs)"
+    install -m 644 $i %{buildroot}/%{_sysconfdir}/"$(basename $i .rhs)"
 done
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/skel
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/skel/.zshrc
+mkdir -p %{buildroot}/%{_sysconfdir}/skel
+install -m 644 %{SOURCE2} %{buildroot}/%{_sysconfdir}/skel/.zshrc
 
 # This is just here to shut up rpmlint, and is very annoying.
 # Note that we can't chmod everything as then rpmlint will complain about
 # those without a she-bang line.
 for i in checkmail harden run-help zcalc zkbd; do
     sed -i -e 's!/usr/local/bin/zsh!%{_bindir}/zsh!' \
-    $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/$i
-    chmod +x $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/$i
+    %{buildroot}/%{_datadir}/zsh/%{version}/functions/$i
+    chmod +x %{buildroot}/%{_datadir}/zsh/%{version}/functions/$i
 done
 
-sed -i "s!$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/help!%{_datadir}/%{name}/%{version}/help!" \
-    $RPM_BUILD_ROOT%{_datadir}/zsh/%{version}/functions/{run-help,_run-help}
-
+sed -i "s!%{buildroot}/%{_datadir}/%{name}/%{version}/help!%{_datadir}/%{name}/%{version}/help!" \
+    %{buildroot}/%{_datadir}/zsh/%{version}/functions/{run-help,_run-help}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %check
 rm -f Test/C02cond.ztst
-make check
+make check %{_smp_mflags}
 
 %post
 if [ "$1" = 1 ]; then
@@ -130,7 +118,6 @@ if [ "$1" = 0 ] && [ -f %{_sysconfdir}/shells ] ; then
   sed -i '\!^/bin/%{name}$!d' %{_sysconfdir}/shells
 fi
 
-
 %files
 %defattr(-,root,root)
 %doc README LICENCE Etc/BUGS Etc/CONTRIBUTORS Etc/FAQ FEATURES MACHINES
@@ -148,9 +135,11 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.8.1-1
+-   Automatic Version Bump
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 5.8-2
 -   Fix ncurses compilation failure
-*   Mon May 11 2020 Susant Sahani <ssahani@vmware.com> 5.8-1
+*   Mon May 11 2020 Susant Sahani <ssahani@vmware.com> 5.8.1
 -   Upgrading to 5.8
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
 -   Upgrading to latest
