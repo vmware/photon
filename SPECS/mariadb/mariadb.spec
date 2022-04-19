@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.8.2
+Version:          10.6.7
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=e264c41c468a0f400eb5b53462398e70d0e4144c
+%define           sha512 %{name}=2d26f56ea5f39b800a6f279c8411d4091b4f4d3acbf3ea1864068328d34a1437e7c46c08d3772009357fd89602e58f214266038e177c0a4fac914a5e5d01e3e6
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -282,7 +282,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/enable_encryption.preset
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
-%config(noreplace) %{_sysconfdir}/my.cnf.d/provider_bzip2.cnf
 %dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
 %{_bindir}/mariadb-install-db
@@ -340,7 +339,6 @@ rm -rf %{buildroot}
 %{_datadir}/policy/selinux/mariadb.te
 %{_datadir}/wsrep.cnf
 %{_datadir}/wsrep_notify
-%{_datadir}/mini-benchmark
 %{_mandir}/man1/aria_s3_copy.1.gz
 %{_mandir}/man1/aria_chk.1.gz
 %{_mandir}/man1/aria_dump_log.1.gz
@@ -450,6 +448,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 10.6.7-1
+- Automatic Version Bump
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.2-1
 - CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.1-1
