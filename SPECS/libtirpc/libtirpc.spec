@@ -1,9 +1,9 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
-Version:        1.3.1
+Version:        1.3.2
 Release:        1%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha1    libtirpc=882eaf4c13f0cafb83afd96cd2855638f978d755
+%define sha512  libtirpc=8664d5c4f842ee5acf83b9c1cadb7871f17b8157a7c4500e2236dcfb3a25768cab39f7c5123758dcd7381e30eb028ddfa26a28f458283f2dcea3426c9878c255
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -24,17 +24,17 @@ Transport Layer Interface (TLI) or an equivalent X/Open Transport Interface
 by almost 70 vendors on all major operating systems.  TS-RPC source code
 (RPCSRC 4.0) remains available from several internet sites.
 
-%package    devel
-Summary:    Development files for the libtirpc library
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
-Requires:   krb5-devel
+%package        devel
+Summary:        Development files for the libtirpc library
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+Requires:       krb5-devel
 
 %description    devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
@@ -43,7 +43,7 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %post
 /sbin/ldconfig
@@ -66,6 +66,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.2-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.3.1-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.6-1
@@ -89,4 +91,4 @@ make install DESTDIR=%{buildroot}
 *   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Updated to version 1.0.1
 *   Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1
--   Initial version
+-   Initial version.
