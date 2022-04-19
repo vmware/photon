@@ -1,6 +1,6 @@
 Summary:      simple interface for defining and acessing commandline arguments
 Name:         tclap
-Version:      1.2.4
+Version:      1.2.5
 Release:      1%{?dist}
 License:      MIT
 URL:          http://tclap.sourceforge.net
@@ -8,7 +8,7 @@ Group:        Development/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1  tclap=87fb7726eba37cf7ce1dffb1ee25d9e0ef158b1c
+%define sha512  tclap=3b5b3d76e8ff21133001f5f9589fa6ec143729909bf0b9cc9934377bce178360c161fb5c1f4c4d9e9c74b09cff3d65f1d5100e61d4a732283524a78b6f236b10
 BuildArch:    noarch
 
 %description
@@ -26,17 +26,17 @@ Group:        Documentation
 API documentation for TCLAP
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -48,6 +48,8 @@ make check
 %{_docdir}/*
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.5-1
+-   Automatic Version Bump
 *   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
 -   Automatic Version Bump
 *   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 1.2.2-3
@@ -57,4 +59,4 @@ make check
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.2.2-1
 -   Update version to 1.2.2.
 *   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.1-1
--   First version
+-   First version.
