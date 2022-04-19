@@ -1,6 +1,6 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
-Version:	1.10
+Version:	1.12
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
@@ -8,15 +8,18 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
-%define sha1 gzip=48d28c77cb8cac38573809fdd1665ecf75f91fa9
+%define sha512  gzip=116326fe991828227de150336a0c016f4fe932dfbb728a16b4a84965256d9929574a4f5cfaf3cf6bb4154972ef0d110f26ab472c93e62ec9a5fd7a5d65abea24
 %if %{with_check}
 BuildRequires:	less
 %endif
+
 %description
 The Gzip package contains programs for compressing and
 decompressing files.
+
 %prep
-%setup -q
+%autosetup
+
 %build
 #make some fixes required by glibc-2.28:
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -24,8 +27,9 @@ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
 %configure --disable-silent-rules
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -vdm 755 %{buildroot}%{_bindir}
 rm -rf %{buildroot}%{_infodir}
 
@@ -36,7 +40,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
+
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.12-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10-1
 - Automatic Version Bump
 * Thu Aug 22 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 1.9-2
@@ -50,4 +57,4 @@ make %{?_smp_mflags} check
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6-2
 - GA - Bump release of all rpms
 * Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.6-1
-- Initial build. First version
+- Initial build. First version.
