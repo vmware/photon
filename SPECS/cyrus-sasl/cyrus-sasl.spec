@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
-Version:        2.1.27
-Release:        6%{?dist}
+Version:        2.1.28
+Release:        1%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -9,12 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
-%define sha1    %{name}=fbfe6f298b0d2efcdab6a40bf47e16d003ae5dc6
-
-Patch0:         cyrus-sasl-2.1.26-fix-cross-compiling.patch
-Patch1:         avoid-to-call-AC_TRY_RUN.patch
-Patch2:         cyrus-sasl-CVE-2019-19906.patch
-Patch3:         cyrus-sasl-CVE-2022-24407.patch
+%define sha512  %{name}=dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
 
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
@@ -38,15 +33,10 @@ protocol and the connection.
 
 %prep
 # Using autosetup is not feasible
-%setup -q
-if [ %{_host} != %{_build} ]; then
-%patch0 -p1
-%patch1 -p1
-fi
-%patch2 -p1
-%patch3 -p1
+%autosetup -n %{name}-%{name}-%{version}
 
 %build
+./autogen.sh
 pushd saslauthd
 popd
 %configure \
@@ -141,10 +131,13 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
+%{_mandir}/man8/testsaslauthd.8.gz
 
 %changelog
-*   Fri Mar 04 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.27-6
--   Fix CVE-2022-24407
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.28-1
+- Automatic Version Bump
+* Fri Mar 04 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.27-6
+- Fix CVE-2022-24407
 * Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.27-5
 - Bump up release for openssl
 * Fri Oct 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-4
@@ -184,4 +177,4 @@ rm -rf %{buildroot}/*
 * Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
 - Disabling parallel threads in make
 * Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
-- Initial build. First version
+- Initial build. First version.
