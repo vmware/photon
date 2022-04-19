@@ -1,12 +1,12 @@
 Summary:        Text editor
 Name:           nano
-Version:        5.7
+Version:        6.2
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.nano-editor.org/
 Group:          Applications/Editors
 Source0:        http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
-%define sha1    nano=ae19875914a31859ccd52cceaac344d275df2e49
+%define sha512  nano=cee43c7e72fa9dbfc79fd5c602eb37cba55c8cde849a3bfd283c0dc3d35162f46551a0401b9f865c6f7d5c6dce6e7a894d97e22a4e6729cd20b9929221b46583
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ncurses-devel
@@ -23,15 +23,16 @@ Requires:       %{name} = %{version}
 Lang for nano
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup
+
 %build
 %configure \
             --enable-utf8     \
             --docdir=%{_docdir}/%{name}-%{version}
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/sample.nanorc %{_sysconfdir}
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/nano.html %{_docdir}/%{name}-%{version}.html
 %find_lang %{name}
@@ -53,6 +54,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2-1
+-   Automatic Version Bump
 *   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.6.1-1
@@ -75,7 +78,7 @@ make %{?_smp_mflags} check
 -   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.2-1
 -   Updating to new version.
-*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.2.6-2
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.2.6.2
 -   Handled locale files with macro find_lang
 *   Tue Dec 30 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.2.6-1
--   Initial build.	First version
+-   Initial build. First version.
