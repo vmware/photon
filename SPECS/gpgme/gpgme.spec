@@ -1,6 +1,6 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
-Version:	1.15.1
+Version:	1.17.1
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
@@ -8,7 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 gpgme=5ae07a303fcf9cec490dabdfbc6e0f3b8f6dd5a0
+%define sha512  gpgme=e6399c3de1e430e38f2692bf5ec0c02ecb36ea3dbb56ff29dc3a438a5be4900a77a0559dc5b673dc1ffbff5e7f589e548e19176b2644fe8f63e00c6b9181b920
 Requires:	libassuan
 Requires:	libgpg-error >= 1.32
 # gpgme uses gnupg binaries only at runtime
@@ -30,7 +30,7 @@ Requires:	libgpg-error-devel >= 1.32
 Static libraries and header files from GPGME, GnuPG Made Easy.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 ./autogen.sh
@@ -42,15 +42,14 @@ Static libraries and header files from GPGME, GnuPG Made Easy.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm %{buildroot}/%{_libdir}/*.la
 rm -rf %{buildroot}/%{_infodir}
 
 %check
-cd tests && make check-TESTS
+cd tests && make check-TESTS %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-
+%post -p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
 %files
@@ -67,6 +66,8 @@ cd tests && make check-TESTS
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.1-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.15.1-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
@@ -90,4 +91,4 @@ cd tests && make check-TESTS
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.3-2
 -   Updated group.
 *   Tue Dec 30 2014 Divya Thaluru <dthaluru@vmware.com> 1.5.3-1
--   Initial version
+-   Initial version.
