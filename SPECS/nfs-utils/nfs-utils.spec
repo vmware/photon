@@ -1,12 +1,12 @@
 Summary:          NFS client utils
 Name:             nfs-utils
-Version:          2.5.3
+Version:          2.6.1
 Release:          1%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
-Source0:          http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
-%define sha1      nfs-utils=d28a73e39fb9624cb0e1c6fd19fa576236053efb
+Source0:          https://sourceforge.net/projects/nfs/files/nfs-utils/%{version}/%{name}-%{version}.tar.gz
+%define sha512    nfs-utils=b0e6e454e644deeda770650818b9a52d4eeef6dc45740b17554d76efece96c1665b7a6f6494852e801997655de1ab72ffbb14e66ee213e8c4350a00dfba8c0f2
 Source1:          nfs-client.service
 Source2:          nfs-client.target
 Source3:          rpc-statd.service
@@ -41,7 +41,7 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 The nfs-utils package contains simple nfs client service.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
@@ -59,7 +59,7 @@ sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
 mkdir -p %{buildroot}/lib/systemd/system/
 mkdir -p %{buildroot}/etc/default
@@ -86,7 +86,7 @@ echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/5
 #ignore test that might require additional setup
 sed -i '/check_root/i \
 exit 77' tests/t0001-statd-basic-mon-unmon.sh
-make check
+make check %{?_smp_mflags}
 
 %pre
 if ! getent group nobody >/dev/null; then
@@ -124,6 +124,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.5.3-1
 -   Automatic Version Bump
 *   Sun Nov 22 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-2
