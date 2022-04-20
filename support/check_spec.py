@@ -478,6 +478,13 @@ def check_for_unused_files(spec_fn, err_dict):
     return ret
 
 
+def check_for_sha1_usage(spec, err_dict):
+    if hasattr(spec, "sha1"):
+        err_dict.update_err_dict("others", "sha1 usage found, use sha512")
+        return True
+    return False
+
+
 def check_specs(files_list):
     ret = False
 
@@ -504,7 +511,8 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(spec_fn, err_dict)]):
+                check_for_unused_files(spec_fn, err_dict),
+                check_for_sha1_usage(spec, err_dict)]):
             err = True
 
         if err:

@@ -165,9 +165,9 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             listSourceNames = SPECS.getData().getSources(package, version)
             if listSourceNames:
                 sourceName = listSourceNames[0]
-                sha1 = SPECS.getData().getSHA1(package, version, sourceName)
-                if sha1 is not None:
-                    PullSources.get(package, sourceName, sha1, yamlSourceDir,
+                checksum = SPECS.getData().getChecksum(package, version, sourceName)
+                if checksum is not None:
+                    PullSources.get(package, sourceName, checksum, yamlSourceDir,
                                     constants.getPullSourcesURLs(package),
                                     logger)
 

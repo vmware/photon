@@ -265,27 +265,27 @@ class PackageUtils(object):
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
         cmdUtils = CommandUtils()
-        # Fetch/verify sources if sha1 not None.
-        sha1 = SPECS.getData().getSHA1(package, version, source)
-        if sha1 is not None:
-            PullSources.get(package, source, sha1, constants.sourcePath,
+        # Fetch/verify sources if checksum not None.
+        checksum = SPECS.getData().getChecksum(package, version, source)
+        if checksum is not None:
+            PullSources.get(package, source, checksum, constants.sourcePath,
                             constants.getPullSourcesURLs(package), self.logger)
 
         sourcePath = cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
             sourcePath = cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
             if not sourcePath:
-                if sha1 is None:
-                    self.logger.error("No sha1 found or missing source for " + source)
-                    raise Exception("No sha1 found or missing source for " + source)
+                if checksum is None:
+                    self.logger.error("No checksum found or missing source for " + source)
+                    raise Exception("No checksum found or missing source for " + source)
                 else:
                     self.logger.error("Missing source: " + source +
                                       ". Cannot find sources for package: " + package)
                     raise Exception("Missing source")
         else:
-            if sha1 is None:
-                self.logger.error("No sha1 found for "+source)
-                raise Exception("No sha1 found")
+            if checksum is None:
+                self.logger.error("No checksum found for "+source)
+                raise Exception("No checksum found")
         if len(sourcePath) > 1:
             self.logger.error("Multiple sources found for source:" + source + "\n" +
                               ",".join(sourcePath) +"\nUnable to determine one.")
@@ -293,7 +293,7 @@ class PackageUtils(object):
         return sourcePath
 
     def _copySources(self, sandbox, listSourceFiles, package, version, destDir):
-        # Fetch and verify sha1 if missing
+        # Fetch and verify checksum if missing
         for source in listSourceFiles:
             sourcePath = self._verifyShaAndGetSourcePath(source, package, version)
             self.logger.debug("Copying... Source path :" + source +
