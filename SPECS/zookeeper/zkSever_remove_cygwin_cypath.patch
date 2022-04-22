@@ -1,7 +1,7 @@
 diff --git a/bin/zkServer.sh b/bin/zkServer.sh
---- a/bin/zkServer.sh  2020-06-19 23:40:37.997872185 +0000
-+++ b/bin/zkServer.sh 2020-06-19 23:41:07.148271767 +0000
-@@ -91,14 +91,7 @@
+--- a/bin/zkServer.sh 2022-05-01 05:49:15.087752089 +0000
++++ b/bin/zkServer.sh     2022-05-01 05:49:46.903296288 +0000
+@@ -97,14 +97,7 @@
      ZOOCFG="$2"
  fi
 
