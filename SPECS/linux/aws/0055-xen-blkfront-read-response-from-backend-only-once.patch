@@ -1,0 +1,131 @@
+From 496e5d5772661e5e4c7c2f5943b7bc0bb0bdea59 Mon Sep 17 00:00:00 2001
+From: Juergen Gross <jgross@suse.com>
+Date: Mon, 29 Nov 2021 13:07:26 +0100
+Subject: [PATCH] xen/blkfront: read response from backend only once
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 71b66243f9898d0e54296b4e7035fb33cdcb0707 upstream.
+
+In order to avoid problems in case the backend is modifying a response
+on the ring page while the frontend has already seen it, just read the
+response into a local buffer in one go and then operate on that buffer
+only.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Acked-by: Roger Pau Monné <roger.pau@citrix.com>
+Link: https://lore.kernel.org/r/20210730103854.12681-2-jgross@suse.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ashwin: Regenerated the patch for v4.9]
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+---
+ drivers/amazon/block/xen-blkfront.c | 35 ++++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index 6ee3e928ebf1..7dbfc2da92ec 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -1538,7 +1538,7 @@ static bool blkif_completion(unsigned long *id,
+ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ {
+ 	struct request *req;
+-	struct blkif_response *bret;
++	struct blkif_response bret;
+ 	RING_IDX i, rp;
+ 	unsigned long flags;
+ 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+@@ -1556,8 +1556,9 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 	for (i = rinfo->ring.rsp_cons; i != rp; i++) {
+ 		unsigned long id;
+ 
+-		bret = RING_GET_RESPONSE(&rinfo->ring, i);
+-		id   = bret->id;
++		RING_COPY_RESPONSE(&rinfo->ring, i, &bret);
++		id = bret.id;
++
+ 		/*
+ 		 * The backend has messed up and given us an id that we would
+ 		 * never have given to it (we stamp it up to BLK_RING_SIZE -
+@@ -1565,35 +1566,35 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 		 */
+ 		if (id >= BLK_RING_SIZE(info)) {
+ 			WARN(1, "%s: response to %s has incorrect id (%ld)\n",
+-			     info->gd->disk_name, op_name(bret->operation), id);
++			     info->gd->disk_name, op_name(bret.operation), id);
+ 			/* We can't safely get the 'struct request' as
+ 			 * the id is busted. */
+ 			continue;
+ 		}
+ 		req  = rinfo->shadow[id].request;
+ 
+-		if (bret->operation != BLKIF_OP_DISCARD) {
++		if (bret.operation != BLKIF_OP_DISCARD) {
+ 			/*
+ 			 * We may need to wait for an extra response if the
+ 			 * I/O request is split in 2
+ 			 */
+-			if (!blkif_completion(&id, rinfo, bret))
++			if (!blkif_completion(&id, rinfo, &bret))
+ 				continue;
+ 		}
+ 
+ 		if (add_id_to_freelist(rinfo, id)) {
+ 			WARN(1, "%s: response to %s (id %ld) couldn't be recycled!\n",
+-			     info->gd->disk_name, op_name(bret->operation), id);
++			     info->gd->disk_name, op_name(bret.operation), id);
+ 			continue;
+ 		}
+ 
+-		error = (bret->status == BLKIF_RSP_OKAY) ? 0 : -EIO;
+-		switch (bret->operation) {
++		error = (bret.status == BLKIF_RSP_OKAY) ? 0 : -EIO;
++		switch (bret.operation) {
+ 		case BLKIF_OP_DISCARD:
+-			if (unlikely(bret->status == BLKIF_RSP_EOPNOTSUPP)) {
++			if (unlikely(bret.status == BLKIF_RSP_EOPNOTSUPP)) {
+ 				struct request_queue *rq = info->rq;
+ 				printk(KERN_WARNING "blkfront: %s: %s op failed\n",
+-					   info->gd->disk_name, op_name(bret->operation));
++					   info->gd->disk_name, op_name(bret.operation));
+ 				error = -EOPNOTSUPP;
+ 				info->feature_discard = 0;
+ 				info->feature_secdiscard = 0;
+@@ -1604,15 +1605,15 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 			break;
+ 		case BLKIF_OP_FLUSH_DISKCACHE:
+ 		case BLKIF_OP_WRITE_BARRIER:
+-			if (unlikely(bret->status == BLKIF_RSP_EOPNOTSUPP)) {
++			if (unlikely(bret.status == BLKIF_RSP_EOPNOTSUPP)) {
+ 				printk(KERN_WARNING "blkfront: %s: %s op failed\n",
+-				       info->gd->disk_name, op_name(bret->operation));
++				       info->gd->disk_name, op_name(bret.operation));
+ 				error = -EOPNOTSUPP;
+ 			}
+-			if (unlikely(bret->status == BLKIF_RSP_ERROR &&
++			if (unlikely(bret.status == BLKIF_RSP_ERROR &&
+ 				     rinfo->shadow[id].req.u.rw.nr_segments == 0)) {
+ 				printk(KERN_WARNING "blkfront: %s: empty %s op failed\n",
+-				       info->gd->disk_name, op_name(bret->operation));
++				       info->gd->disk_name, op_name(bret.operation));
+ 				error = -EOPNOTSUPP;
+ 			}
+ 			if (unlikely(error)) {
+@@ -1625,9 +1626,9 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 			/* fall through */
+ 		case BLKIF_OP_READ:
+ 		case BLKIF_OP_WRITE:
+-			if (unlikely(bret->status != BLKIF_RSP_OKAY))
++			if (unlikely(bret.status != BLKIF_RSP_OKAY))
+ 				dev_dbg(&info->xbdev->dev, "Bad return from blkdev data "
+-					"request: %x\n", bret->status);
++					"request: %x\n", bret.status);
+ 
+ 			blkif_complete_request(req, error);
+ 			break;
+-- 
+2.23.3
+

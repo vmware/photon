@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.304
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.311
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=99ca94bd6dd31e24ad714a2aac92a1964ca1f3a7
+%define sha1 linux=5f17d0f85f6f1e96ab1141913c92fca66fc5d83f
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -161,9 +161,6 @@ Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-1016
-Patch124:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -339,7 +336,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch119 -p1
 %patch120 -p1
 %patch123 -p1
-%patch124 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -510,6 +506,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Apr 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.311-1
+-   Update to version 4.9.311
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.9.304-2
 -   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1

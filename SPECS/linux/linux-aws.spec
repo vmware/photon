@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.304
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.311
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=99ca94bd6dd31e24ad714a2aac92a1964ca1f3a7
+%define sha1 linux=5f17d0f85f6f1e96ab1141913c92fca66fc5d83f
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -186,6 +186,9 @@ Patch143: 0051-xen-netfront-add-longer-default-freeze-timeout-as-a-.patch
 Patch144: 0052-drivers-amazon-ena-update-to-1.4.0.patch
 Patch145: 0053-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
 Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+Patch147: 0055-xen-blkfront-read-response-from-backend-only-once.patch
+Patch148: 0056-xen-blkfront-don-t-trust-the-backend-response-data-b.patch
+Patch149: 0057-xen-blkfront-don-t-use-gnttab_query_foreign_access-f.patch
 
 # Fix dummy console function definitions
 Patch150: 0001-console-Expand-dummy-functions-for-CFI.patch
@@ -195,9 +198,6 @@ Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
 Patch158:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-1016
-Patch159:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -400,11 +400,13 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch144 -p1
 %patch145 -p1
 %patch146 -p1
+%patch147 -p1
+%patch148 -p1
+%patch149 -p1
 
 %patch150 -p1
 %patch155 -p1
 %patch158 -p1
-%patch159 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -552,6 +554,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Apr 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.311-1
+-   Update to version 4.9.311
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.9.304-2
 -   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1
