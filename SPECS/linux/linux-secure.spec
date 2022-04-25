@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.232
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -123,6 +123,7 @@ Patch110:       0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
 Patch111:       0010-RPS-flow-balance.patch
 Patch112:       0011-add-mss-clamp-support-to-gretap-baseimage.patch
 Patch113:       0012-set-max_mtu-as-IP_MAX_MTU.patch
+Patch114:       0013-set-max_mtu-as-IP_MAX_MTU_for_vlan.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -302,6 +303,7 @@ popd
 %patch111 -p1
 %patch112 -p1
 %patch113 -p1
+%patch114 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -354,7 +356,6 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
 %include %{SOURCE4}
-
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 # build LKCM module
 bldroot=`pwd`
@@ -492,6 +493,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 18 2022 Harinadh D <hdommaraju@vmware.com> 4.19.232-4
+-   Set max MTU as IP_MAX_MTU for type vlan
 *   Mon Apr 18 2022 Harinadh D <hdommaraju@vmware.com> 4.19.232-3
 -   Set max MTU as IP_MAX_MTU for type vxlantrunk
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
