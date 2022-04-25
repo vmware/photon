@@ -1,6 +1,6 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
-Version:        9.0
+Version:        9.1
 Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
@@ -9,18 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/coreutils/coreutils-%{version}.tar.xz
-%define sha1    coreutils=e2623469f37259d4a89ced5f91af5eaf0ab8792d
+%define sha512  coreutils=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
 
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
-Patch0: coreutils-9.0-i18n-1.patch
-Patch1: coreutils-9.0-chmod_fix-1.patch
-
-%ifarch aarch64
-Patch2: 0001-ls-improve-removed-directory-test.patch
-%endif
+Patch0: coreutils-%{version}-i18n-1.patch
 
 BuildRequires: libselinux-devel
 
@@ -90,6 +85,8 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
+- Upgrade to v9.1
 * Sat Apr 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.0-1
 - Upgrade to v9.0
 * Thu Aug 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.32-2
