@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.10.2
-Release:        7%{?dist}
+Version:        1.10.8
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -9,12 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=bc52ef2e671f821998ac9a5f7ebecbbcaaef83b8
-
-Patch0:         subversion-CVE-2018-11782.patch
-Patch1:         subversion-CVE-2019-0203.patch
-Patch2:         subversion-CVE-2018-11803.patch
-Patch3:         subversion-CVE-2020-17525.patch
+%define sha1    %{name}=e007178650e853c2d8096855a9795e22ec856085
 
 Requires:       apr
 Requires:       apr-util
@@ -104,6 +99,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.10.8-1
+- Update to 1.10.8 to fix CVE-2022-24070, CVE-2021-28544
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.2-7
 - Exclude debug symbols properly
 * Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.10.2-6
