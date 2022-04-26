@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -54,6 +54,9 @@ BuildRequires:  openssl >= 1.1.1
 BuildRequires:  zstd-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  libtool
+BuildRequires:  libltdl-devel
+BuildRequires:  openssl-devel
 
 %description
 RPM package manager
@@ -78,6 +81,8 @@ Requires:   bzip2-libs
 Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
+Requires:   openssl
+Requires:   (toybox or coreutils)
 
 Conflicts:  libsolv < 0.7.19
 
@@ -319,6 +324,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Apr 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-8
+- Fix Requires & BuildRequires
 * Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-7
 - Fix posttrans logic
 - Drop libdb support
