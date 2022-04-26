@@ -1,17 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.10.4
-Release:        2%{?dist}
+Version:        1.10.8
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=a9052724d94fe5d3ee886473eb7cdc4297af4cdd
-Patch0:         subversion-CVE-2018-11782.patch
-Patch1:         subversion-CVE-2019-0203.patch
-Patch2:         subversion-CVE-2020-17525.patch
+%define sha1    subversion=e007178650e853c2d8096855a9795e22ec856085
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -36,13 +33,9 @@ Requires:   %{name} = %{version}
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
-./configure --prefix=%{_prefix}         \
-        --disable-static                \
+%configure \
         --with-apache-libexecdir        \
         --with-serf=%{_prefix}          \
         --with-lz4=internal
@@ -74,6 +67,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.10.8-1
+-   Update to 1.10.8 to fix CVE-2022-24070, CVE-2021-28544
 *   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.10.4-2
 -   Added patches for CVE-2020-17525
 *   Mon Nov 11 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.4-1
@@ -103,7 +98,7 @@ sudo -u test make check && userdel test -r -f
 *   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-5
 -   Handled locale files with macro find_lang
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.13-4
--   Updated build-requires after creating devel package for apr. 
+-   Updated build-requires after creating devel package for apr.
 *   Mon Sep 21 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-3
 -   Move .a, and .so files to devel pkg.
 *   Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.13-2
