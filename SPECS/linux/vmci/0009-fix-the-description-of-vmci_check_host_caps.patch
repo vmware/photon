@@ -1,0 +1,33 @@
+From b791da238992436f6269e8743b3bc23305702674 Mon Sep 17 00:00:00 2001
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: VMCI: Fix the description of vmci_check_host_caps()
+
+commit b791da238992436f6269e8743b3bc23305702674 upstream.
+
+vmci_check_host_caps() doesn't return a bool but an int.
+Fix the description accordingly.
+
+Fixes: 782f24453536 ("VMCI: fix error handling path when registering guest driver")
+Acked-by: Vishnu Dasa <vdasa@vmware.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/c181bec88aab1145d3868d61b7e52d53923f8206.1645734041.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index aa61a687b3e26..1a1858742f75e 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -253,9 +253,9 @@ static void vmci_guest_cid_update(u32 sub_id,
+ 
+ /*
+  * Verify that the host supports the hypercalls we need. If it does not,
+- * try to find fallback hypercalls and use those instead.  Returns
+- * true if required hypercalls (or fallback hypercalls) are
+- * supported by the host, false otherwise.
++ * try to find fallback hypercalls and use those instead.  Returns 0 if
++ * required hypercalls (or fallback hypercalls) are supported by the host,
++ * an error code otherwise.
+  */
+ static int vmci_check_host_caps(struct pci_dev *pdev)
+ {

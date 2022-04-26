@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -178,6 +178,26 @@ Patch1510: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 #Patches for iavf driver
 Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
+#Patches for vmci driver
+Patch1521:       001-return-correct-error-code.patch
+Patch1522:       002-switch-to-kvfree_rcu-API.patch
+Patch1523:       003-print-unexpanded-names-of-ioctl.patch
+Patch1524:       004-enforce-queuepair-max-size-for-IOCTL_VMCI_QUEUEPAIR_ALLOC.patch
+Patch1531:       0001-whitespace-formatting-change-for-vmci-register-defines.patch
+Patch1532:       0002-add-MMIO-access-to-registers.patch
+Patch1533:       0003-detect-DMA-datagram-capability.patch
+Patch1534:       0004-set-OS-page-size.patch
+Patch1535:       0005-register-dummy-IRQ-handlers-for-DMA-datagrams.patch
+Patch1536:       0006-allocate-send-receive-buffers-for-DMAdatagrams.patch
+Patch1537:       0007-add-support-for-DMA-datagrams-send.patch
+Patch1538:       0008-add-support-for-DMA-datagrams-receive.patch
+Patch1539:       0009-fix-the-description-of-vmci_check_host_caps.patch
+Patch1540:       0010-no-need-to-clear-memory-after-dma_alloc_coherent.patch
+Patch1541:       0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
+Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
+Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
+Patch1544:       0014-add-support-for-arm64.patch
+
 BuildArch:     x86_64
 
 BuildRequires: bc
@@ -287,6 +307,26 @@ pushd ../iavf-%{iavf_version}
 %patch1511 -p1
 popd
 %endif
+
+# vmci
+%patch1521 -p1
+%patch1522 -p1
+%patch1523 -p1
+%patch1524 -p1
+%patch1531 -p1
+%patch1532 -p1
+%patch1533 -p1
+%patch1534 -p1
+%patch1535 -p1
+%patch1536 -p1
+%patch1537 -p1
+%patch1538 -p1
+%patch1539 -p1
+%patch1540 -p1
+%patch1541 -p1
+%patch1542 -p1
+%patch1543 -p1
+%patch1544 -p1
 
 %build
 make %{?_smp_mflags} mrproper
@@ -464,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 01 2022 HarinadhD <hdommaraju@vmware.com> 5.10.118-3
+- VMCI patches & configs
 * Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-2
 - Fix debug_package macro usage while adding vmlinux to debuginfo rpm
 * Mon Jun 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-1

@@ -148,7 +148,7 @@ index fa4c386c8..8d475fdb8 100644
 +
 +	{0x15ad, 0x0740,   /*VMware Virtual Machine Communication Interface*/
 +	2,         /*Number of bars*/
-+	{0xffffffc1, 0xffffe004, 0, 0, 0, 0,
++	{0xffffffc1, 0xffffffff, 0, 0, 0, 0,
 +	0, 0, 0, 0, 0} },
 +
 +	{0x15ad, 0x0790,   /*VMware PCI bridge*/

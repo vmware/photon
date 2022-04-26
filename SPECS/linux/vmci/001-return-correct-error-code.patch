@@ -1,0 +1,25 @@
+From 7487257cea875a2ee0aab088ee1dd92cd77698d4 Mon Sep 17 00:00:00 2001
+From: Junlin Yang <yangjunlin@yulong.com>
+Date: Sat, 19 Jun 2021 19:28:54 +0800
+Subject: misc: vmw_vmci: return the correct errno code
+
+commit 7487257cea875a2ee0aab088ee1dd92cd77698d4 upstream.
+
+When kzalloc failed, should return -ENOMEM rather than -EINVAL.
+
+Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
+Link: https://lore.kernel.org/r/20210619112854.1720-1-angkery@163.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/misc/vmw_vmci/vmci_context.c b/drivers/misc/vmw_vmci/vmci_context.c
+index 26ff49fdf0f7d..c0b5e339d5a1d 100644
+--- a/drivers/misc/vmw_vmci/vmci_context.c
++++ b/drivers/misc/vmw_vmci/vmci_context.c
+@@ -107,7 +107,7 @@ struct vmci_ctx *vmci_ctx_create(u32 cid, u32 priv_flags,
+ 	context = kzalloc(sizeof(*context), GFP_KERNEL);
+ 	if (!context) {
+ 		pr_warn("Failed to allocate memory for VMCI context\n");
+-		error = -EINVAL;
++		error = -ENOMEM;
+ 		goto err_out;
+ 	}

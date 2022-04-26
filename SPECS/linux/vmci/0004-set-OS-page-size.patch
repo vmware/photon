@@ -1,0 +1,45 @@
+From 8cb520bea1470ca205980fbf030ed1f472f4af2f Mon Sep 17 00:00:00 2001
+From	Jorgen Hansen <jhansen@vmware.com>
+Subject	[PATCH v3 4/8] VMCI: dma dg: set OS page size
+Date	Mon, 7 Feb 2022 02:27:21 -0800
+
+commit 8cb520bea1470ca205980fbf030ed1f472f4af2f upstream.
+
+Tell the device the page size used by the OS.
+
+Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+Signed-off-by: Jorgen Hansen <jhansen@vmware.com>
+---
+ drivers/misc/vmw_vmci/vmci_guest.c | 4 ++++
+ include/linux/vmw_vmci_defs.h      | 1 +
+ 2 files changed, 5 insertions(+)
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index b93afe7f7119..ced187e7ac08 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -578,6 +578,10 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 	/* Let the host know which capabilities we intend to use. */
+ 	vmci_write_reg(vmci_dev, caps_in_use, VMCI_CAPS_ADDR);
+ 
++	/* Let the device know the size for pages passed down. */
++	if (caps_in_use & VMCI_CAPS_DMA_DATAGRAM)
++		vmci_write_reg(vmci_dev, PAGE_SHIFT, VMCI_GUEST_PAGE_SHIFT);
++
+ 	/* Set up global device so that we can start sending datagrams */
+ 	spin_lock_irq(&vmci_dev_spinlock);
+ 	vmci_dev_g = vmci_dev;
+diff --git a/include/linux/vmw_vmci_defs.h b/include/linux/vmw_vmci_defs.h
+index 1ce2cffdc3ae..4167779469fd 100644
+--- a/include/linux/vmw_vmci_defs.h
++++ b/include/linux/vmw_vmci_defs.h
+@@ -21,6 +21,7 @@
+ #define VMCI_CAPS_ADDR          0x18
+ #define VMCI_RESULT_LOW_ADDR    0x1c
+ #define VMCI_RESULT_HIGH_ADDR   0x20
++#define VMCI_GUEST_PAGE_SHIFT   0x34
+ 
+ /* Max number of devices. */
+ #define VMCI_MAX_DEVICES 1
+-- 
+2.25.1
