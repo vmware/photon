@@ -1,7 +1,7 @@
 Summary:        LightStep distributed tracing library for C++
 Name:           lightstep-tracer-cpp
 Version:        0.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/lightstep/lightstep-tracer-cpp
 Source0:        https://github.com/lightstep/lightstep-tracer-cpp/releases/download/v0_19/%{name}-%{version}.tar.gz
@@ -55,5 +55,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/liblightstep_core_cxx11.so
 
 %changelog
+*    Wed Apr 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.19-2
+-    Bump up release for c-ares update
 *    Wed Jun 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19-1
 -    Initial version of lightstep-tracer-cpp package for Photon.
