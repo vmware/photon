@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,19 +12,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 %{name}=842aa660b301aeb8d1fd18346fb14c0de74b9c95
+%define sha512 %{name}=1bbd245f8e73cfe28fea76c59898a8433ae643a8333f7409914c9cf9a86303242a64dd5667807cf4600ec1f4ff42dd38b14ad8aed795878e17508d4b3d43be73
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
-%define sha1 %{gosc_scripts}-%{gosc_ver}=eb90b74e9282bc5b80f1f8ae358cb7e9bfdda4cb
+%define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+Patch1:     gosc-root-password-update.patch
 
 %if "%{_arch}" == "aarch64"
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch1:     ovt-unknown-ioctl.patch
+Patch2:     ovt-unknown-ioctl.patch
 %endif
 
 BuildRequires:  glib-devel
@@ -176,6 +177,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Apr 25 2022 Shivani Agarwal <shivania2@vmware.com> 11.3.5-7
+- Update root password change command in gosc-scripts
 * Fri Nov 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-6
 - Workaround for "Unknown ioctl 1976" issue on aarch64
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.3.5-5
