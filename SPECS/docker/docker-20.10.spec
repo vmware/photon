@@ -1,17 +1,18 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
+# Must be in sync with package version
+%define DOCKER_ENGINE_GITCOMMIT 87a90dc
+%define DOCKER_CLI_GITCOMMIT a224086
+%define TINI_GITCOMMIT de40ad0
+
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 %define gopath_comp_libnetwork github.com/docker/libnetwork
 
-# Must be in sync with package version
-%define DOCKER_GITCOMMIT 99e3ed8
-%define TINI_GITCOMMIT fec3683
-
 Summary:        Docker
 Name:           docker
-Version:        19.03.15
+Version:        20.10.14
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -19,21 +20,23 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
+Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
+%define sha512  moby=94ee555337aaf96bb95ce8cbe8fe1d9c8b87fcd4f256d2af5082fc47915f7576882929c1211ef7fba0c754097bdef5e6df59abbdf77456d3babe139f4353ed21
 
-Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha512 tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
+Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
+%define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
 
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
-%define sha512 libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
+Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
+%define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
+Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
+%define sha512  docker-cli=f8b7f1040eccd404e39ec33bcef8bb8423636b0695af65f84c0612e77223844892d219f82cfbb99ccd5326e228f8af27be1870d90ebace77810ea5fce9f86e4a
+
+Source97:       docker-post19.service
+Source98:       docker-post19.socket
 Source99:       default-disable.preset
 
 Patch97:        tini-disable-git.patch
-Patch98:        disable-docker-cli-md2man-install.patch
-Patch99:        remove-firewalld-1809.patch
-Patch100:       CVE-2021-41089.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -69,6 +72,8 @@ Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
 Requires:       containerd
+# 20.10 uses containerd v2 shim by default
+Requires:       /usr/bin/containerd-shim-runc-v2
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -90,7 +95,7 @@ Documentation and vimfiles for docker
 
 %prep
 # Using autosetup is not feasible
-%setup -q -c
+%setup -q -c -n moby-%{version}
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
@@ -98,23 +103,23 @@ mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          tini \
          bin
 
+mv moby-%{version} src/%{gopath_comp_engine}
+
+tar -xf %{SOURCE3}
+mv cli-%{version} src/%{gopath_comp_cli}
+
 tar -C tini -xf %{SOURCE1}
 
+tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
+
+# Patch sources
 pushd tini
 %patch97 -p1
 popd
 
-tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
-cd %{name}-ce-%{version}
-%patch99 -p1
-%patch98 -p1
-mv components/engine ../src/%{gopath_comp_engine}
-mv components/cli ../src/%{gopath_comp_cli}
-mv components/packaging ../
-
 %build
 export GOPATH="$(pwd)"
-export GO111MODULE=auto
+export GO111MODULE=off
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
@@ -128,7 +133,7 @@ pushd "src/%{gopath_comp_cli}"
   VERSION=%{version} \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
-  GITCOMMIT=%{DOCKER_GITCOMMIT} \
+  GITCOMMIT=%{DOCKER_CLI_GITCOMMIT} \
   make dynbinary manpages
 popd
 
@@ -140,12 +145,12 @@ popd
 # daemon
 pushd "src/%{gopath_comp_engine}"
   VERSION=%{version} \
-  DOCKER_GITCOMMIT=%{DOCKER_GITCOMMIT} \
+  DOCKER_GITCOMMIT=%{DOCKER_ENGINE_GITCOMMIT} \
   PRODUCT=docker \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   DEFAULT_PRODUCT_LICENSE="$DEFAULT_PRODUCT_LICENSE" \
-  DOCKER_BUILDTAGS="seccomp apparmor selinux exclude_graphdriver_aufs" \
+  DOCKER_BUILDTAGS="seccomp selinux apparmor exclude_graphdriver_aufs" \
   ./hack/make.sh dynbinary
 popd
 
@@ -181,8 +186,8 @@ install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
-install -p -m 755 "src/%{gopath_comp_cli}/build/docker" %{buildroot}%{_bindir}/docker
-install -p -m 755 "src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd" %{buildroot}%{_bindir}/dockerd
+install -p -m 755 src/%{gopath_comp_cli}/build/docker %{buildroot}%{_bindir}/docker
+install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{buildroot}%{_bindir}/dockerd
 
 # install proxy
 install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
@@ -194,8 +199,8 @@ install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
 install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
-install -p -m 644 packaging/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
-install -p -m 644 packaging/systemd/docker.socket %{buildroot}%{_unitdir}/docker.socket
+install -p -m 644 %{SOURCE97} %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 %{SOURCE98} %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
 install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
@@ -208,13 +213,7 @@ install -p -m 644 src/%{gopath_comp_cli}/man/man1/*.1 %{buildroot}%{_mandir}/man
 install -p -m 644 src/%{gopath_comp_cli}/man/man5/*.5 %{buildroot}%{_mandir}/man5
 install -p -m 644 src/%{gopath_comp_cli}/man/man8/*.8 %{buildroot}%{_mandir}/man8
 
-# add vimfiles
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/doc
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/syntax
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+# vimfiles are now upstream, no vim files installed
 
 mkdir -p build-docs
 for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
@@ -296,23 +295,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-* Wed Apr 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-1
-- Upgrade to 19.03.15
-- Enable selinux in DOCKER_BUILDTAGS
-* Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 19.03.10-6
-- Bump up version to use containerd 1.4.12.
-* Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 19.03.10-5
-- Bump up version to compile with new glibc
-* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.10-4
-- Bump up version to compile with new go
-* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 19.03.10-3
-- Bump up version to compile with new go
-* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.10-2
-- Bump up version to compile with new go
-* Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
-- Initial version
+* Wed Apr 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-1
+- Initial packaging of 20.10
