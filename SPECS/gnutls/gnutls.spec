@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    %{name}=6ba8fb898dcf4b4046b60662ba97df835593e687
+%define sha512  %{name}=72c78d7fcb024393c1d15f2a1856608ae4460ba43cc5bbbb4c29b80508cae6cb822df4638029de2363437d110187e0a3cc19a7288c3b2f44b2f648399a028438
 
 Patch0:         default-priority.patch
 
@@ -53,7 +53,6 @@ developing applications that use gnutls.
 %configure \
     --without-p11-kit \
     --disable-openssl-compatibility \
-    --enable-fips140-mode \
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
@@ -102,6 +101,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Apr 27 2022 Susant Sahani <ssahani@vmware.com> 3.6.16-2
+- Disabled fips-140 mode.
 * Tue Apr 05 2022 Susant Sahani <ssahani@vmware.com> 3.6.16-1
 - Version bump
 * Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
