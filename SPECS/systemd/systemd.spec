@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          36%{?dist}
+Release:          37%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -163,6 +163,7 @@ meson  --prefix %{_prefix}                                            \
        -Dsysvinit-path=/etc/rc.d/init.d                               \
        -Drc-local=/etc/rc.d/rc.local                                  \
        -Ddefault-dns-over-tls=opportunistic                           \
+       -Ddns-over-tls=true                                            \
        -Dgnutls=true                                                  \
        $PWD build &&
        cd build &&
@@ -326,6 +327,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Thu Apr 28 2022 Susant Sahani <ssahani@vmware.com> 239-37
+- Enable dns-over-tls
 * Wed Feb 16 2022 Susant Sahani <ssahani@vmware.com> 239-36
 - Enable default-dns-over-tls=opportunistic
 * Sun Oct 03 2021 Susant Sahani <ssahani@vmware.com> 239-35
