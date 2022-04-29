@@ -1,21 +1,18 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=e007178650e853c2d8096855a9795e22ec856085
-
+%define sha512  %{name}=94464202b4a4ac7a6055c50eaa19ea55127f70f0efe5e0e655ef0a0866c8148bde56417b1dfd3204260300488ab668228faadec5015fe3e4b17e06c76e1d86b4
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
 Requires:       utf8proc
-
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
@@ -30,16 +27,18 @@ BuildRequires:  swig
 %description
 The Apache version control system.
 
-%package    devel
-Summary:    Header and development files for mesos
-Requires:   %{name} = %{version}
-%description    devel
- subversion-devel package contains header files, libraries.
+%package        devel
+Summary:        Header and development files for mesos
+Requires:       %{name} = %{version}
 
-%package    perl
-Summary:    Allows Perl scripts to directly use Subversion repositories.
-Requires:   perl
-Requires:   %{name} = %{version}
+%description    devel
+The subversion-devel package contains header files, libraries.
+
+%package        perl
+Summary:        Allows Perl scripts to directly use Subversion repositories.
+Requires:       perl
+Requires:       %{name} = %{version}
+
 %description    perl
 Provides Perl (SWIG) support for Subversion version control system.
 
@@ -47,7 +46,7 @@ Provides Perl (SWIG) support for Subversion version control system.
 %autosetup -p1
 
 %build
-sh ./configure --prefix=%{_prefix} \
+%configure \
         --disable-static \
         --with-apache-libexecdir \
         --with-serf=%{_prefix} \
@@ -99,6 +98,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 1.10.8-2
+- Update sha1 to sha512
 * Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.10.8-1
 - Update to 1.10.8 to fix CVE-2022-24070, CVE-2021-28544
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.2-7
