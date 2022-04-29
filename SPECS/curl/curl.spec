@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.82.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=78d135ae0bc0180dd3bcc625af7e7eae9c0ba189
+%define sha512  %{name}=d4c4a785876e0d1ba1c1adbe65528d56a8b81fc03ff724e87819cfe51aca60f8a7bf2ac9384f30c3a6bbd28669b2bd3e9a6794737243c836c4902d085a72c474
 Patch0:         curl-CVE-2022-22576.patch
 Patch1:         curl-CVE-2022-27774.patch
 
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 7.82.0-3
+- Update sha1 to sha512
 * Mon Apr 18 2022 Dweep Advani <dadvani@vmware.com> 7.82.0-2
 - Fix CVE-2022-22576 and CVE-2022-27774
 * Tue Mar 29 2022 Harinadh D<hdommaraju@vmware.com> 7.82.0-1
