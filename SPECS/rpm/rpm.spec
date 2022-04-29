@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=7aa50461dc5500ac5c1b5d4f475cc282add2673e
+%define sha512  %{name}=dc1be96d433223e764f20fc7807f46baf44d2ec23a54edcf570251f0fec4b5040a311f62521e6fb4cd96723a4b791c51fa1f5fb5bc86b478e89b587ea36b46a4
 Source1:        brp-strip-debug-symbols
 Source2:        brp-strip-unneeded
 Source3:        macros
@@ -324,6 +324,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 4.16.1.3-9
+- Update sha1 to sha512
 * Tue Apr 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-8
 - Fix Requires & BuildRequires
 * Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-7
