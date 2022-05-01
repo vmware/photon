@@ -1,17 +1,16 @@
-Name:         distcc
-Version:      3.4
-Release:      1%{?dist}
-Summary:      Distributed C/C++ compilation
-License:      GPLv2+
-URL:          https://github.com/distcc/distcc
-Group:        Applications/File
-Vendor:       VMware, Inc.
-Distribution: Photon
-Source0:      https://github.com/distcc/distcc/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1  %{name}=8ee369da86678b02caa6d4ef9177e26deeb106f9
-Source1:      hosts.sample
-Source2:      distccd.service
-
+Name:          distcc
+Version:       3.4
+Release:       2%{?dist}
+Summary:       de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eefDistributed C/C++ compilation
+License:       GPLv2+
+URL:           https://github.com/distcc/distcc
+Group:         Applications/File
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       https://github.com/distcc/distcc/archive/v%{version}/%{name}-%{version}.tar.gz
+%define sha1   %{name}=de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eef
+Source1:       hosts.sample
+Source2:       distccd.service
 BuildRequires: automake
 BuildRequires: autoconf
 BuildRequires: which
@@ -21,10 +20,9 @@ BuildRequires: krb5-devel
 BuildRequires: binutils-devel
 BuildRequires: systemd-rpm-macros
 BuildRequires: make
-
-Requires: krb5
-Requires: popt
-Requires: python3
+Requires:      krb5
+Requires:      popt
+Requires:      python3
 
 %description
 distcc is a program to distribute builds of C, C++, Objective C or Objective
@@ -32,15 +30,15 @@ C++ code across several machines on a network. distcc should always generate
 the same results as a local build, is simple to install and use, and is
 usually much faster than a local compile.
 
-%package server
-Summary: Server for distributed C/C++ compilation
+%package       server
+Summary:       Server for distributed C/C++ compilation
 
-Requires: %{name} = %{version}-%{release}
-Requires: krb5
-Requires: popt
-Requires: systemd
+Requires:      %{name} = %{version}-%{release}
+Requires:      krb5
+Requires:      popt
+Requires:      systemd
 
-%description server
+%description   server
 This package contains the compilation server needed to use %{name}.
 
 %prep
@@ -103,5 +101,7 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
-* Tue Apr 12 2022 Oliver Kurth <okurth@vmware.com> 3.4-1
-- initial build for Photon
+*   Mon May 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4-2
+-   Update sha1 to sha512
+*   Tue Apr 12 2022 Oliver Kurth <okurth@vmware.com> 3.4-1
+-   initial build for Photon
