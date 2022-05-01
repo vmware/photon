@@ -1,6 +1,6 @@
 Name:          distcc
 Version:       3.4
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eefDistributed C/C++ compilation
 License:       GPLv2+
 URL:           https://github.com/distcc/distcc
@@ -8,7 +8,7 @@ Group:         Applications/File
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://github.com/distcc/distcc/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1   %{name}=de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eef
+%define sha512 %{name}=de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eef
 Source1:       hosts.sample
 Source2:       distccd.service
 BuildRequires: automake
@@ -101,6 +101,8 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+*   Sun May 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4-4
+-   update sha1 to sha512
 *   Sun May 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4-3
 -   fix changelog
 *   Sat Apr 30 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4-2
