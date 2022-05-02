@@ -1,0 +1,20 @@
+From 41e6d2555eb6fb735924e60067666d3b834f3211 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Sun, 1 May 2022 19:07:18 -0500
+Subject: [PATCH 347/347] Linux 4.19.240-rt108 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 2e0a3c960575..e31dc78d28cb 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt107
++-rt108
+-- 
+2.35.1
+

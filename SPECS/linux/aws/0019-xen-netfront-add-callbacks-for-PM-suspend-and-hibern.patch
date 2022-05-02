@@ -80,7 +80,7 @@ index 434a009c52d9..f2c8b784bce7 100644
  
  struct netfront_rx_info {
 @@ -764,6 +764,21 @@ static int xennet_close(struct net_device *dev)
- 	return 0;
+ 	xennet_destroy_queues(np);
  }
  
 +static int xennet_disable_interrupts(struct net_device *dev)

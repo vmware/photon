@@ -1,0 +1,20 @@
+From 3997e551e034563daa52790d533970ee459ed613 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Fri, 29 Oct 2021 09:49:56 -0500
+Subject: [PATCH 340/347] Linux 4.19.214-rt93 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index bd5aee366a48..e98a1fe050bd 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt87
++-rt93
+-- 
+2.35.1
+

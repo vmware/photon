@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.232
+Version:        4.19.240
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt102
-Release:        2%{?kat_build:.%kat}%{?dist}
+%define rt_version rt108
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,20 +15,20 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
+%define sha512 linux=c0f39eaa36cd1979d055565138c14bda52dd7017d5bf1409566029748e77d9a66900b0d9c9495183bb227d5577ea01ffed51134cac47862b8330d13f581fe15d
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
 %define i40e_version 2.16.11
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=8fbfb9d0bf8feec0c74a5dc150613b430921fdcd
+%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
 %define iavf_version 4.2.7
 Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define sha512 iavf=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
 %define ice_version 1.6.4
 Source9:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
+%define sha512 ice=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -86,8 +86,8 @@ Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch67:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch68:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
-# Fix for CVE-2022-1016
-Patch71:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
+#Fix for CVE-2022-1055
+Patch69:        0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -463,8 +463,10 @@ Patch541:       0341-fscache-fix-initialisation-of-cookie-hash-table-raw-.patch
 Patch542:       0342-Linux-4.19.225-rt101-REBASE.patch
 Patch543:       0343-rt-PREEMPT_RT-safety-net-for-backported-patches.patch
 Patch544:       0344-net-Add-missing-xmit_lock_owner-hunks.patch
+Patch545:	0345-Linux-4.19.237-rt107-REBASE.patch
+Patch546:	0346-genirq-Add-lost-hunk-to-irq_forced_thread_fn.patch
 # Keep rt_version matched up with this patch.
-Patch545:       0345-Linux-4.19.227-rt102-REBASE.patch
+Patch547:       0347-Linux-4.19.240-rt108-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -605,7 +607,7 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
-%patch71 -p1
+%patch69 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -973,6 +975,8 @@ The Linux package contains the Linux kernel doc files
 %patch543 -p1
 %patch544 -p1
 %patch545 -p1
+%patch546 -p1
+%patch547 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
@@ -1197,6 +1201,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
+-   Update to version 4.19.240
+-   Fix CVE-2022-1055
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
 -   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1

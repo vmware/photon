@@ -7,7 +7,7 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Utilities
 Source0:         https://github.com/vmware/photon-checksum-generator/%{name}-%{version}.tar.gz
-%define sha1     %{name}=20658a922c0beca840942bf27d743955711c043a
+%define sha512   %{name}=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
 BuildRequires:   gcc
 Requires:        (linux-hmacgen or linux-secure-hmacgen or linux-aws-hmacgen or linux-esx-hmacgen)
 

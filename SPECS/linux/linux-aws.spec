@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.232
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.240
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,14 +13,14 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
+%define sha512 linux=c0f39eaa36cd1979d055565138c14bda52dd7017d5bf1409566029748e77d9a66900b0d9c9495183bb227d5577ea01ffed51134cac47862b8330d13f581fe15d
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
+%define sha512 photon-checksum-generator=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
 Source6:        genhmac.inc
 
 # common
@@ -83,8 +83,8 @@ Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch64:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch65:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
-# Fix for CVE-2022-1016
-Patch71:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
+#Fix for CVE-2022-1055
+Patch66:        0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -255,7 +255,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
-%patch71 -p1
+%patch66 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -492,6 +492,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
+-   Update to version 4.19.240
+-   Fix CVE-2022-1055
 *   Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 4.19.232-2
 -   Fix for CVE-2022-1016
 *   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1

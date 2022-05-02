@@ -1,9 +1,10 @@
 %global security_hardening none
+
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.232
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.240
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,14 +14,14 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
+%define sha512 linux=c0f39eaa36cd1979d055565138c14bda52dd7017d5bf1409566029748e77d9a66900b0d9c9495183bb227d5577ea01ffed51134cac47862b8330d13f581fe15d
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
+%define sha512 photon-checksum-generator=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
 Source6:        genhmac.inc
 
 # common
@@ -86,8 +87,8 @@ Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch66:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch67:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
-# Fix for CVE-2022-1016
-Patch71:        0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
+#Fix for CVE-2022-1055
+Patch68:        0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -271,7 +272,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch71 -p1
+%patch68 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -493,6 +494,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
+-   Update to version 4.19.240
+-   Fix CVE-2022-1055
 *   Mon Apr 18 2022 Harinadh D <hdommaraju@vmware.com> 4.19.232-4
 -   Set max MTU as IP_MAX_MTU for type vlan
 *   Mon Apr 18 2022 Harinadh D <hdommaraju@vmware.com> 4.19.232-3
