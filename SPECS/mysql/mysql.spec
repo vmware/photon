@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.28
-Release:        2%{?dist}
+Version:        8.0.29
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=0f34d6a9c8cedacb71549b1beb33133e31d75014
+%define         sha512 mysql-boost=fd67f306ef8be60b4010e34e8ccc2c26577256200c183d71149743eeb5c038fd72adde107bfee34abd7df318902db6f94646a482f9f29a8396a6d57014b81b8a
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -42,7 +42,7 @@ This package contains ICU data files needed by MySQL regular expressions.
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_73_0 \
+      -DWITH_BOOST=boost/boost_1_77_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -93,6 +93,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+*   Mon May 02 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.29-1
+-   Upgrade version to 8.0.29 to fix bunch of CVE's
 *   Mon Mar 28 2022 Harinadh D<hdommaraju@vmware.com> 8.0.28-2
 -   Version bump up to build with protobuf 3.19.4
 *   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.28-1
