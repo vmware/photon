@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.0
-Release:        6%{?dist}
+Version:        3.0.3
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,15 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    %{name}=93b7693e18c9c122ad4e95b509dc856d2e4618ac
+%define sha512  %{name}=39130a30ef6e3cdf1a7360c47a884899bcb5df5356e4187db621702d1fcc6e46489d725ca3e14e93dbb1ada0d3cfb9d39d9d974351eec33708a515c6da71f659
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source2:        sample-fips-enable-openssl.cnf
 %endif
-
-Patch0:         openssl-CVE-2021-4044.patch
-Patch1:         openssl-CVE-2022-0778.patch
-Patch2:         openssl-CVE-2021-4160.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -202,6 +198,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed May 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-1
+- update to openssl 3.0.3
 * Thu Mar 17 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-6
 - Fix CVE-2021-4160
 * Wed Mar 09 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-5
