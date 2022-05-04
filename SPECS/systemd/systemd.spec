@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          37%{?dist}
+Release:          38%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}=8803baa484cbe36680463c8c5e6febeff074b8e7
+%define sha512    %{name}=fd44590dfd148504c5ed1e67521efce50d84b627b7fc77015fa95dfa76d7a42297c56cc89eff40181809732024b16d48f2a87038cf435e0c63bc2b95ecd86b0f
 
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
@@ -327,6 +327,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Wed May 4 2022 Michelle Wang <michellew@vmware.com> 239-38
+- Update sha1 to sha512
 * Thu Apr 28 2022 Susant Sahani <ssahani@vmware.com> 239-37
 - Enable dns-over-tls
 * Wed Feb 16 2022 Susant Sahani <ssahani@vmware.com> 239-36
