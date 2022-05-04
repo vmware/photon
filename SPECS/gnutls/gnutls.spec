@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha1    %{name}=02e12259680b6ad3ec973e0df6bf2cf0c5ef1100
+%define sha512  %{name}=5d01d561a05379da71e4847e30ba13c2abe09f7a5c4359fd539d8bd19abad0ce87120f82ee7b6264e787bd3edbc5ae16beffa892983cbc3d59f11a1811c10329
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -52,7 +52,6 @@ developing applications that use gnutls.
 %configure \
     --without-p11-kit \
     --disable-static \
-    --enable-fips140-mode \
     --disable-openssl-compatibility \
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
@@ -97,6 +96,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Wed May 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-3
+- Disable fips140 module
 * Wed Apr 06 2022 Susant Sahani <ssahani@vmware.com> 3.7.2-2
 - Enable fips140 mode
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 3.7.2-1
