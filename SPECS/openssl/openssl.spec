@@ -1,18 +1,18 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2zc
-Release:        2%{?dist}
+Version:        1.0.2ze
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2zc.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2zc=71c457ae5e961b8b0ce3606d461d6ef70ca7a09f
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2ze.tar.gz
+%define sha512  vmware-OpenSSL_1_0_2ze=78a8e373c9d0cfbfdc589931a009e39d194149f9c05fab73ade121c5ecbe71a873a4415320231bd6e0481896a726a6d2246101576c2c77c6d8cdbf26877f10e7
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.20-vmw.tar.gz
-%define sha1    openssl-fips=973ac82a77285f573296ffe94809da8c019aab33
+%define sha512  openssl-fips=6cce1845183d6f208c5e6bdd7f36376ee80fbe1fb722f16b4f67a076c6ce7efd9b5f31a8dd756be258bc0de2ff1a91fc9db824131beb1f5f31e35e7386c11b95
 %endif
 Patch0:         c_rehash.patch
 Patch1:         openssl-ipv6apps.patch
@@ -22,7 +22,6 @@ Patch3:         openssl-drbg-default-read-system-fips.patch
 Patch4:         fips-2.20-vmw.patch
 %endif
 Patch5:         openssl-optimized-curves.patch
-Patch6:         openssl-CVE-2022-0778.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -63,7 +62,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2zc
+%setup -q -n vmware-OpenSSL_1_0_2ze
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -72,7 +71,6 @@ Perl scripts that convert certificates and keys to various formats.
 %patch4 -p1
 %endif
 %patch5 -p1
-%patch6 -p1
 
 %build
 %if 0%{?with_fips:1}
@@ -145,6 +143,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed May 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2ze-1
+-   Update to openssl 1.0.2ze
 *   Thu Mar 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2zc-2
 -   Fix CVE-2022-0778
 *   Sat Mar 05 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2zc-1
