@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.37
+Version:        5.7.38
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=85cd3271b16bc93807641fe530f8d5e02146b934
+%define         sha1 mysql-boost=ae0ca3a51db9477caf8e3d38e6292631fb8caec0
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -65,6 +65,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Wed May 04 2022 Nitesh Kumar <kunitesh@vmware.com> 5.7.38-1
+-   Upgrade version to 5.7.38 to fix bunch of CVE's
 *   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 5.7.37-1
 -   Upgrade version to 5.7.37 to fix following CVE's:
 -   CVE-2022-21245, CVE-2022-21304, CVE-2022-21270,
