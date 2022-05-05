@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          38%{?dist}
+Release:          39%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -67,6 +67,7 @@ Patch45:          timedate-defer-the-property-changed-signal-until-job.patch
 Patch46:          systemd-239-CVE-2021-33910.patch
 Patch47:          systemd-239-CVE-2020-13529.patch
 Patch48:          bus-socket-Fix-line_begins-to-accept-word-matching-f.patch
+Patch49:          sd-bus-make-bus_slot_disconnect-also-unref-the-slot-object.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -327,6 +328,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Thu May 05 2022 Alexey Makhalov <amakhalov@vmware.com> 239-39
+- Fix memory leak in sd-bus.
 * Wed May 4 2022 Michelle Wang <michellew@vmware.com> 239-38
 - Update sha1 to sha512
 * Thu Apr 28 2022 Susant Sahani <ssahani@vmware.com> 239-37
