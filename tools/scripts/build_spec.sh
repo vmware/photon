@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Target to Photon OS version
-VERSION=3
+VERSION=4
 
 # Keep running container instance alive?
 KEEP_SANDBOX_AFTER_FAILURE=1
@@ -12,16 +12,17 @@ DRAW_SPINNER=1
 test "$#" -ne 1 && echo "Usage: $0 spec-file-to-build.spec" && exit 1
 
 CONTAINER=build_spec
-SPECPATH=$(readlink -m $1)
-SPECFILE=$(basename $SPECPATH)
-SPECDIR=$(dirname $SPECPATH)
-mkdir -p $SPECDIR/stage/LOGS
-LOGFILE=$SPECDIR/stage/LOGS/$(basename $SPECFILE .spec).log
+SOURCES_BASEURL=https://packages.vmware.com/photon/photon_sources/1.0
+SPECPATH=$(readlink -m "$1")
+SPECFILE=$(basename "$SPECPATH")
+SPECDIR=$(dirname "$SPECPATH")
+mkdir -p "$SPECDIR/stage/LOGS"
+LOGFILE=$SPECDIR/stage/LOGS/$(basename "$SPECFILE" .spec).log
 
 # use &3 for user output
 exec 3>&1
 # redirect &1 and &2 to the log file
-exec &>$LOGFILE
+exec &>"$LOGFILE"
 
 function wait_for_result() {
   local pid=$!
@@ -35,8 +36,7 @@ function wait_for_result() {
     done
     echo -ne "\b" >&3
   fi
-  wait $pid
-  if [ $? -eq 0 ]; then
+  if wait $pid; then
     echo -e "\033[0;32mOK\033[0m" >&3
   else
     echo -e "\033[0;31mFAIL\033[0m" >&3
@@ -47,8 +47,8 @@ function wait_for_result() {
 function run() {
   echo -ne "\t$1 " >&3
   shift
-  echo "run: $@"
-  $@ &
+  echo "run: $*"
+  "$@" &
   wait_for_result
 }
 
@@ -56,16 +56,19 @@ function in_sandbox() {
   docker exec $CONTAINER "$@"
 }
 
+
 function create_sandbox() {
   docker ps -f "name=$CONTAINER" && docker rm -f $CONTAINER
   docker inspect --format='{{.Created}}' photon_build_spec:$VERSION.0
   local status=$?
-  local cdate=$(date --date=`docker inspect --format='{{.Created}}' photon_build_spec:$VERSION.0` '+%s')
+  local cdate
+  cdate=$(date --date="$(docker inspect --format='{{.Created}}' photon_build_spec:$VERSION.0)" '+%s')
   # image exists?
   if [ $status -eq 0 ]; then
-    local vdate=$((`date '+%s'` - 1209600))
+    local vdate
+    vdate=$(($(date '+%s') - 1209600))
     # image is less then 2 weeks
-    if [ $cdate -gt $vdate ]; then
+    if [ "$cdate" -gt "$vdate" ]; then
       # use this image
       run "Use local build template image" docker run -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
       return 0
@@ -80,33 +83,40 @@ function create_sandbox() {
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
-  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential tar sed findutils file gzip patch
+  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential tar sed findutils file gzip patch bzip2
 
-  run "Create build template image for future use" docker commit `docker ps -q -f "name=$CONTAINER"` photon_build_spec:$VERSION.0
+  run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" photon_build_spec:$VERSION.0
 }
 
 function prepare_buildenv() {
-  run "Create source folder" in_sandbox mkdir -p /usr/src/photon/SOURCES
-  run "Copy sources from $SPECDIR" docker cp $SPECDIR/. $CONTAINER:/usr/src/photon/SOURCES
-  for f in `find $SPECDIR -name "*.patch"`;
+  mkdir -p "$SPECDIR/stage/SOURCES"
+  in_sandbox mkdir -p /usr/src/photon/SOURCES
+  run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/stage/SOURCES" \;
+  run "Copy sources from $SPECDIR" docker cp "$SPECDIR/stage/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
+
+  for url in $(in_sandbox rpmspec -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^ ]\+$');
   do
-    test "$(dirname $f)" != "$SPECDIR" && docker cp $f $CONTAINER:/usr/src/photon/SOURCES
+    file=$(basename "$url")
+    test -f "$SPECDIR/stage/SOURCES/$file" && continue
+    run "Download $file" wget -P "$SPECDIR/stage/SOURCES" "$SOURCES_BASEURL/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
   done
-  local br=`sed -n 's/BuildRequires://p' $SPECPATH | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g'`
+
+  local br
+  br=$(sed -n 's/BuildRequires://p' "$SPECPATH" | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ *//g' | tr '\n' ' ')
   if [ "$br" != "" ]; then
-    run "Install build requirements" in_sandbox tdnf install -y $br 
+    run "Install build requirements" in_sandbox tdnf install -y $br
   fi
 }
 
 function build() {
   echo -ne "\tRun rpmbuild " >&3
-  docker exec $CONTAINER rpmbuild -bb --define "dist .ph$VERSION" --define "with_check 0" /usr/src/photon/SOURCES/$SPECFILE &
+  in_sandbox rpmbuild -bb --define "dist .ph$VERSION" --define "with_check 0" /usr/src/photon/SOURCES/"$SPECFILE" &
   wait_for_result
 }
 
 function get_rpms() {
-  run "Copy RPMS" docker cp $CONTAINER:/usr/src/photon/RPMS $SPECDIR/stage
-  run "Copy SRPMS" docker cp $CONTAINER:/usr/src/photon/SRPMS $SPECDIR/stage
+  run "Copy RPMS" docker cp $CONTAINER:/usr/src/photon/RPMS "$SPECDIR/stage"
+  run "Copy SRPMS" docker cp $CONTAINER:/usr/src/photon/SRPMS "$SPECDIR/stage"
 }
 
 function destroy_sandbox() {
@@ -124,7 +134,7 @@ function fail() {
     echo "Sandbox is preserved for analisys. Use 'docker exec -it $CONTAINER /bin/bash'" >&3
   echo "Build failed. See $LOGFILE for full output" >&3
   echo -e "\033[1;33m" >&3
-  tail $LOGFILE >&3
+  tail "$LOGFILE" >&3
   echo -e "\033[0m" >&3
   exit 1
 }
