@@ -1,25 +1,26 @@
-Summary:	software font engine.
-Name:		freetype2
-Version:	2.9.1
-Release:	2%{?dist}
-License:	BSD/GPL
-URL:		http://www.freetype.org/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha1 freetype=7498739e34e5dca4c61d05efdde6191ba69a2df0
+Summary:        software font engine.
+Name:           freetype2
+Version:        2.9.1
+Release:        3%{?dist}
+License:        BSD/GPL
+URL:            http://www.freetype.org/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
+%define sha512  freetype=cf8a5cb957090ff10879e7e6b9e93ad359948059076436f8a7c51e15f54becde944ddfd3ac38564e4540c81b0bb1dd466d915457b3a3aec4b6eb4ce6faa7ae4f
 Patch0:         CVE-2020-15999.patch
-BuildRequires:	libtool
-BuildRequires:	zlib-devel
+Patch1:         CVE-2022-27404.patch
+BuildRequires:  libtool
+BuildRequires:  zlib-devel
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.
 
-%package	devel
-Summary:	Header and development files
-Requires:	freetype2 = %{version}-%{release}
-%description	devel
+%package       devel
+Summary:       Header and development files
+Requires:      %{name} = %{version}-%{release}
+%description   devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -55,6 +56,8 @@ make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu May 05 2022 Tapas Kundu <tkundu@vmware.com> 2.9.1-3
+- Fix CVE-2022-27404
 * Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.9.1-2
 - Fix CVE-2020-15999
 * Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.9.1-1
