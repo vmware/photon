@@ -1,7 +1,7 @@
 Summary:	software font engine.
 Name:		freetype2
 Version:	2.7.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD/GPL
 URL:		http://www.freetype.org/
 Group:		System Environment/Libraries
@@ -14,6 +14,8 @@ Patch1:         CVE-2017-7864.patch
 Patch2:         CVE-2017-8287.patch
 Patch3:         CVE-2018-6942.patch
 Patch4:         CVE-2020-15999.patch
+Patch5:         CVE-2022-27404.patch
+
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 
@@ -33,6 +35,7 @@ It contains the libraries and header files to create applications
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 %configure --with-harfbuzz=no
@@ -65,6 +68,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Fri May 06 2022 Tapas Kundu <tkundu@vmware.com> 2.7.1-7
+-       Fix CVE-2022-27404
 *       Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.7.1-6
 -       Fix CVE-2020-15999
 *       Tue Jun 12 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-5
