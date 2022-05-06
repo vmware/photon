@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.2.5
+Version:        3.3.1
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=460a4dbd44ef73de9047657c400c42a6210a0578
+%define sha512  %{name}=4c6756aa1778464e3d8eefe69271809f9b9b29ba4ab7756f6c230352f9bcc40eabc541f21f385adfc8d78420101411038e49cf56409ec889beac062571c21d5f
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -32,8 +32,8 @@ BuildRequires:  systemd
 BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
-
-%if 0%{?with_check:1}
+BuildRequires:  python3-setuptools
+%if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
@@ -107,19 +107,22 @@ cmake \
   -DSYSTEMD_DIR=%{_unitdir} \
   ..
 
-make %{?_smp_mflags} && make python %{?_smp_mflags}
+%make_build
+%make_build python
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 cd build && make %{?_smp_mflags} check
 %endif
 
 %install
-cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
+cd build
+%make_install
 find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/tdnf %{buildroot}%{_unitdir}
-ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
-ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
+ln -sf tdnf %{buildroot}%{_bindir}/tyum
+ln -sf tdnf %{buildroot}%{_bindir}/yum
+ln -sf tdnf %{buildroot}%{_bindir}/tdnfj
 mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
 mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
 mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
@@ -181,6 +184,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_bindir}/tdnf
 %{_bindir}/tyum
 %{_bindir}/yum
+%{_bindir}/tdnfj
 %{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
 %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
@@ -225,6 +229,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue May 10 2022 Oliver Kurth <okurth@vmware.com> 3.3.1-1
+- update to 3.3.1
 * Mon Feb 21 2022 Oliver Kurth <okurth@vmware.com> 3.2.5-1
 - update to 3.2.5
 * Thu Feb 03 2022 Oliver Kurth <okurth@vmware.com> 3.2.4-1
