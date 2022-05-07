@@ -1,23 +1,24 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
-%define RUNC_COMMIT_SHORT f46b6ba
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.0.3
-%define RUNC_GITTAG v%{RUNC_VERSION}
+%define RUNC_VERSION 1.1.1
+%define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
+
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.0.3
-Release:             4%{?dist}
+Version:             1.1.1
+Release:             1%{?dist}
 License:             ASL 2.0
-URL:                 https://runc.io/
-Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha1         runc=cbd1b1eff60b0d6f61a034cb50a7fe22edd2b140
-
+URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
+
+Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+%define sha512       %{name}=baf622e7edae9b68d2fa255f02359d770489c7578be3c6379a5d939b4f1dfa697ec9eb4ef7dce252e64ee5225f76c06e45182a9b92b68a952e21e3f5f91450d0
+
 BuildRequires:       go
 BuildRequires:       which
 BuildRequires:       go-md2man
@@ -33,30 +34,29 @@ Containers are started as a child process of runC and can be embedded into vario
 Summary:             Documentation for runc
 Requires:            %{name} = %{version}-%{release}
 
-%description         doc
+%description doc
 Documentation for runc
 
 %prep
 %autosetup -p1 -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
-cd src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
-# Use the format of `git describe --long` as COMMIT
-make %{?_smp_mflags} GIT_BRANCH=%{RUNC_GITTAG} COMMIT=%{RUNC_GITTAG}-0-g%{RUNC_COMMIT_SHORT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} BUILDTAGS='seccomp selinux apparmor' EXTRA_LDFLAGS=-w %{name} man
 
 %install
 cd src/%{gopath_comp}
+#BINDIR is pointing to absolute path so DESTDIR is not required.
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-bash install-man %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bindir} install install-bash install-man
 
 %files
 %defattr(-,root,root)
-%{_bindir}/runc
-%{_datadir}/bash-completion/completions/runc
+%{_bindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/licenses/%{name}
 
 %files doc
@@ -64,41 +64,43 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
-*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-4
--   Fix build commit hash and tag
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
--   Bump up version to compile with new go
-*   Fri Feb 11 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
--   Bump up version to compile with new go
-*   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.3-1
--   Version upgrade to fix CVE-2021-43784.
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-5
--   Bump up version to compile with new go
-*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-4
--   Bump up version to compile with new go
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-3
--   Bump up version to compile with new go
-*   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2
--   Fix for CVE-2021-30465
-*   Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-1
--   Bump up version to 1.0.0-rc93
-*   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-4
--   Bump up version to compile with new go
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc92-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-2
--   Bump up version to compile with new go
-*   Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc92-1
--   Updated to rc92
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.0.rc9-1
--   Automatic Version Bump
--   it is manually updated with containerd
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-2
--   Build with python3
--   Mass removal python2
-*   Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-1
--   Update to release 1.0.0-rc8
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2
--   Add iptables-devel to BuildRequires
-*   Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
--   Initial runc package for PhotonOS.
+* Sat May 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.1-1
+- Upgrade to v1.1.1 & enable selinux in BUILDTAGS
+* Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-4
+- Fix build commit hash and tag
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
+- Bump up version to compile with new go
+* Fri Feb 11 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
+- Bump up version to compile with new go
+* Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.3-1
+- Version upgrade to fix CVE-2021-43784.
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-5
+- Bump up version to compile with new go
+* Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-4
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-3
+- Bump up version to compile with new go
+* Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2
+- Fix for CVE-2021-30465
+* Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-1
+- Bump up version to 1.0.0-rc93
+* Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-4
+- Bump up version to compile with new go
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc92-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-2
+- Bump up version to compile with new go
+* Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc92-1
+- Updated to rc92
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.0.rc9-1
+- Automatic Version Bump
+- it is manually updated with containerd
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-2
+- Build with python3
+- Mass removal python2
+* Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-1
+- Update to release 1.0.0-rc8
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2
+- Add iptables-devel to BuildRequires
+* Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
+- Initial runc package for PhotonOS.
