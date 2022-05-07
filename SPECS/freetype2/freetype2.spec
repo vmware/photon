@@ -1,15 +1,18 @@
 Summary:        software font engine.
 Name:           freetype2
 Version:        2.10.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD/GPL
 URL:            http://www.freetype.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha1 freetype=2c53944cd7eaefb9cb207672d8a4368c31aa97c4
+%define sha512  freetype=cbb1b6bb7f99f6ecb473ce6027ec5f2868af939f793dd7b083b23e9823e18c4bcbac0b92483ebe70804ad7f4ef5bf4ea5c6b476e7f631a3e6a1b3e904a41e1a5
 Patch0:         CVE-2020-15999.patch
+Patch1:         CVE-2022-27404.patch
+Patch2:         CVE-2022-27405.patch
+Patch3:         CVE-2022-27406.patch
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 BuildRequires:	glibc
@@ -58,6 +61,8 @@ make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri May 06 2022 Tapas Kundu <tkundu@vmware.com> 2.10.2-4
+- Fix CVE-2022-27404, CVE-2022-27405 and CVE-2022-27406
 * Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.10.2-3
 - Fix CVE-2020-15999
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.10.2-2
