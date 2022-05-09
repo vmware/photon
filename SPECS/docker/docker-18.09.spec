@@ -3,21 +3,21 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha1 docker=efe4cb8b60f888ab83776c84717a2b3078928bce
+%define sha512  docker=e0019ec85f094f24e09926c93b7ef954a85051bbdbb9b4c5a3c07ddcf0fd7bb904d85114eec355cdbbb3246fb70c967c2baca1236b81d46f1ff5797500377a68
 # Must be in sync with package version
 %define DOCKER_GITCOMMIT 039a7df
 %define TINI_GITCOMMIT fec3683
 Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha1 tini=f7cc697bf7483fbc963c8331ab433d0758b766e9
+%define sha512  tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
 Source2:        https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
-%define sha1 libnetwork=11f4cce6793ff8f7b6caf5ed4c68a0eb9a33e32f
+%define sha512  libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
@@ -291,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-19
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-18
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-17

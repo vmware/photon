@@ -7,11 +7,11 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.2.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        network-event-broker-%{version}.tar.gz
-%define sha1 %{name}=cd820745bc06dd0138db36f552acb17b2f3d888b
+%define sha512  %{name}=d51fa2df334a94a3761479a3e0a175026d8e9f17c8dfaa7b61a44cbfc42e9c486b853699a80947fe122afe49d158277be2bc281c35d30b9f485e6a6625356989
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -101,6 +101,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-5
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-3

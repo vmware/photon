@@ -1,16 +1,16 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat
 Version:        1
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        Apache
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/tobert/pcstat/archive/pcstat-1.zip
-%define sha1    pcstat=cd67c42d291763597dbe3fb19e8e367c54a4a898
+%define sha512  pcstat=7f62d16447fe5f8e9c126fb4f0e00df697bb253ea0213ece2be2ce0b919ccaa175e009987a4f01252225c35b05c55685da4db684d68b7bd4501fe781163d01d3
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
-%define sha1    golang-sys=7f713451011d127755448c6603c15dc907bc47bc
+%define sha512  golang-sys=0c40f2acd0466637b5b01f75eed593939075fc742c8991b4ff884076852a5c02eb6ed0a162be8539ff73eba665ae04fb011efe739c4bda999f5365241945015a
 Patch0:         pcstat-aarch64-support.patch
 BuildRequires:  unzip go audit git
 Requires:       go
@@ -52,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/pcstat
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1-20
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1-19
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1-18

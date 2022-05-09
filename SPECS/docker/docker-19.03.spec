@@ -11,7 +11,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -19,13 +19,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha1 %{name}=fc0263bef5a47b1b4db2c0fc4eca7d4b294f008e
+%define sha512  %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
 
 Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha1 tini=f7cc697bf7483fbc963c8331ab433d0758b766e9
+%define sha512  tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
 
 Source2:        https://github.com/docker/libnetwork/archive/libnetwork-2fe6352.tar.gz
-%define sha1 libnetwork=7c47626d5870a05a7e5135752adc9b3c83775297
+%define sha512  libnetwork=320232cc49a383f8f541c57d8a6b18432b5cc71ee8f10908c40bbcb345112f213c78c284a7f92cacd7183d89b0f0d2093391121891ab80796a3bab5430ae5fba
 
 Source3:       default-disable.preset
 
@@ -298,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-16
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-15
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-14

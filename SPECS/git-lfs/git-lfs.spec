@@ -3,12 +3,12 @@
 Summary:     Git extension for versioning large files
 Name:        git-lfs
 Version:     2.12.0
-Release:     11%{?dist}
+Release:     12%{?dist}
 URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:     %{name}-%{version}.tar.gz
 License:     MIT
 Group:       System Environment/Programming
-%define sha1 %{name}=fa48d4e536f7d931efb78c5cb3c094746ad83d4a
+%define sha512  %{name}=be143f4008040504357e6e8748e6549bcff08c42340c1cca14b6d617c7a215554c6c3ad8b4c1ce26906bc812ef21c9aa4c8b6f36be2c01a65952c5e075ad81da
 Vendor:      VMware, Inc.
 Distribution:  Photon
 BuildRequires: go
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-12
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-11
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-10

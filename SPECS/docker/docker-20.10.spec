@@ -3,24 +3,24 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha1 moby=1a2b6d8eef15c12c7adba385c5eff6ad482b9165
+%define sha512  moby=ac947e882abb02d52aea4aecb5dcfef6e23c86aadf98b49e3312ca3079dac7a01d6c936c0a4e51b3561def926ae50b4c5587063b8c58cac5c5de3c5e7985b120
 # Must be in sync with package version
 %define DOCKER_ENGINE_GITCOMMIT 847da18
 %define DOCKER_CLI_GITCOMMIT dea9396
 %define TINI_GITCOMMIT de40ad0
 Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
-%define sha1    tini=dd5d80924dc7997112123cc99c20a59dead8b2d0
+%define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
 Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
-%define sha1    libnetwork=f70d56100a97049f9f5f3e06aee1a905bb655852
+%define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha1    docker-cli=ae39d335d60d8dc6a55899037cd46d7ad52df301
+%define sha512  docker-cli=c0bd1ab77b6e8ac1b6fb094bb51ed488e0ed3ed6ead3181b9f761fcce6e4901b90a34e779a90365731e65765877a502399be2dd1af95293209b846fa69dee3b8
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
@@ -288,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-6
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-5
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-4

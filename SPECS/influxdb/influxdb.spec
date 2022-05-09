@@ -1,89 +1,89 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        20%{?dist}
+Release:        21%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=364d2fb39fc3a983f96910133a6256932fffd0e3
+%define sha512  %{name}=bbeddde2ff5498cb7ca3339d6edcac62b8be3b32550eab315d99d47621787390903fbd1d1cb7c8e9b66fa5836e01b4d052dacc70e1782939d3a67ab0a08be4a5
 Source1:        influxdata.tar.gz
-%define sha1    influxdata=eceaa0c1bb8712cd1f10407b3a6e5e09d5a1945e
+%define sha512  influxdata=61d7427da9b4e05965bcaf74e856747168424e0dbc8aa892406705dc80ad0dda6a1ff9682d36cd6136cbaa1873d852ac086411b94036c34d0d73090eb56fbfde
 Source2:        liner.tar.gz
-%define sha1    liner=8bbbccb2c5878f9ce31aaed4aa7fb400996ef13d
+%define sha512  liner=96c3af7c4ecc252eb59389745c16174833e484d2cd3323707bb78db4c7a0c479ca3daea68f9ef75ff78ca98583f09a4e97525e812d7c7e165ddc885aae91125a
 Source3:        toml.tar.gz
-%define sha1    toml=22c1d1d230be805248ac9d19439ae4a2bd2070d7
+%define sha512  toml=f0a9e5bdb0ba5fa82ca2a25d77c521a55aec53f39e065ae7d01b8a0e089c078c8209fd2c32599d07d85e96982491b67492905cb12c149d09978c022c02f5f1f3
 Source4:        roaring.tar.gz
-%define sha1    roaring=3126a09d46b08d562857e9f07eb1f213b32b63fb
+%define sha512  roaring=c5cdd26a8d8431440132deebe10f8516cad03bd8a16b6fcb337c9bc52a2936e2b94c7c271d2a4bbf474a28c5494e5f7258d529b5c704876eccc501d8049a01c4
 Source5:        pat.tar.gz
-%define sha1    pat=6b6dfbefa7289d0b18836156250beece71617dba
+%define sha512  pat=cf758f046e42137302dc65f54034e33a5c9294bacb5a155d3b483b848bbf3c0274f3b7543fba3bf68766396e54804347f307bf383c4d9c03501e194e50700916
 Source6:        xxhash.tar.gz
-%define sha1    xxhash=f5882005086a932ad7b915049aaf94d1deb1aa06
+%define sha512  xxhash=8e3b3b8d6a7eb9e15e341aa6e788ae4526f58d5e2d8e2f7bdb086fb300035c79aacd9e63340c4f87258d6ebc9f53469909bea31097ca737b382f7286dbf34716
 Source7:        jwt-go.tar.gz
-%define sha1    jwt-go=7b5f1ed04032b54c4eb2a5d5c535281b71a70114
+%define sha512  jwt-go=25cff1e360c49dc1fe8d932690e20392e82394b5f0357990af1541c1c480fc698784062c7996b6ca59a2b822398ba9dd0214abde45ca4776b2cf489d01c2e4fe
 Source8:        go-bitstream.tar.gz
-%define sha1    go-bitstream=e53f387f69d571f538114321311f79162729d500
+%define sha512  go-bitstream=ae00d987f39b7140236afc96ab908a7f6ed5930dcfa081f1ef892931d773bce3a573e8ae9f8416c4d47697e354bd1de317a3d5716b6da7575f8d7162486f920c
 Source9:        snappy.tar.gz
-%define sha1    snappy=bc13a6be54bd26bb203f74f5b50b900fadc5d63b
+%define sha512  snappy=fe282fb77a2118a29e1cd7d76b7546f66c27d8fcd81ffe0aed9175e9533a184cb8af21ede4ad5e7af6eafc640fb1fef021ee801152c65c380cff08b1430f5051
 Source10:       zap-logfmt.tar.gz
-%define sha1    zap-logfmt=09c051661fc0f77c3c14680117ac2c14a18b299a
+%define sha512  zap-logfmt=cc768b838f4c051bcb4e4b76bbde2d35e05b97a0522bac97f350e204597bd2334844f5e0ff9e0db8f034c994270afcd2c65818468ce6ffd31a739b14105f3fdf
 Source11:       encoding.tar.gz
-%define sha1    encoding=19eceae2608686fd561b1c5c7341014a810a4f0c
+%define sha512  encoding=b5b2e75991b5ca25738b7db09b422416718fba8247bfda7dcb9412a508efe6e6fb07d420de50effa7d76ca38b6cec34f7d3181948fc35e62ede22656bebdc74e
 Source12:       go-isatty.tar.gz
-%define sha1    go-isatty=fe4a9ce5a81501ad46831590d9dbb4b47825a583
+%define sha512  go-isatty=b89667a7800a5f7ad250ab3c1b6cdcf892b7671b4cf68c9d63916ab05f663263159c6d39254555a5730faf63813577f97a140db365bfa51a876499aedadeea4b
 Source13:       opentracing-go.tar.gz
-%define sha1    opentracing-go=cb0b37e9a6cfdb5f641f132340081e705ed5691f
+%define sha512  opentracing-go=2880ae28dcfb8a1261949569786fb3d41d351c99987c3185ff074c40cf2d49fd379450f00bf7e99c38ffe00049f12c40019aa4236cfbb2b2626d9d7499a8b342
 Source14:       client_golang.tar.gz
-%define sha1    client_golang=aa559fd695323b980b3eec464b23fc27550c72ee
+%define sha512  client_golang=fbd9bb54048e97908cc7303d557ad78990eaede172b7423b84b9bc66218ba832d6cb69dc8b4535c97710ed2710c9af944b01bbf72bff02eaa8dc88a5cdcfd1b2
 Source15:       msgp.tar.gz
-%define sha1    msgp=31a49f9b34bc7f6b8aca8f66eec2eb9e007582a7
+%define sha512  msgp=629b9c442cab0f4bce993c79058479c751d2b05fa43947ba97756632830efd9747c46bf030e565c9332802e50dbe0f5d195d778f07e16306f5b343d588819501
 Source16:       treeprint.tar.gz
-%define sha1    treeprint=54d4c5adea21a6dd9388af68b678d0607f21be44
+%define sha512  treeprint=230d4d0754e16efcd70f464c08f214934a9e315b512f6bebd01b73df561c66a1ea2be96a9bb7d87be5b771a0f3b8e057bed5d770448747e9ad842e9a6283fe2e
 Source17:       hllpp.tar.gz
-%define sha1    hllpp=35a079df8b578d453cdd3b9cafbb48e87a705326
+%define sha512  hllpp=2b12deb156d171622a58dd9ba56aedbd0e4e33d2a667f078ab52548494c226003dd094acdef7cbba1c39e6ef9ff3080fcd8940902984c045216d20bd59d2ae5e
 Source18:       bolt.tar.gz
-%define sha1    bolt=9dfece85c773d20bf57c55759765c46d8bf00b84
+%define sha512  bolt=ea3356ab86ddcbb7639bdc6fa6b8aedb4de9149b5f5f41ef2b20c6dd68909d8c436d39165b2aed244d0532b20a3111bd74e5fa6ed43a9fbd88a3c899dab3515c
 Source19:       pgzip.tar.gz
-%define sha1    pgzip=14c338202812c7a036cd2f651525db59a4eaac0b
+%define sha512  pgzip=25c4013707975641983da0af7f32dbf1a241a45f9586d513dd512adf621afb4d9209c2b2fbbf406bd087404a475cacd73af2cfee72b8e0c1128dc63aef418c0b
 Source20:       ratecounter.tar.gz
-%define sha1    ratecounter=80ed07ec366a8f9e525d3d5452cdc96381c7bb64
+%define sha512  ratecounter=a08b0bf1cf20bd448d422a2c7445cc1893d1f10cd82da4baded0739f4178c5716eca8a8afa235aaaef6cfa9093efe5b7c5222033cc466c630d1f282de47a51f8
 Source21:       x-golang.tar.gz
-%define sha1    x-golang=815014d8c3654f894903b27fa0e426bbd06f7a9e
+%define sha512  x-golang=43d29e53f66eaebf712f31590336894f91494f0b7343a39905c14868ad3ccb9b2ecddca54ea6381d6d62c97a794d30744b3ba1437d68d7d36eb46d6ede434d1d
 Source22:       collectd.org.tar.gz
-%define sha1    collectd.org=c4b785a64b789fb01a1c7c03211101893f62ee7c
+%define sha512  collectd.org=faa3d2785cc07bac04db8e1753404b0c9c1f85d422323398d6d52200453cc5a8ca8e60910a16455b4ade108dbee4a8213e3724a9a2937da74bf1e4211760e5a9
 Source23:       protobuf-gogo.tar.gz
-%define sha1    protobuf-gogo=1dd504f012f2e4134d92075bdf2434c25d9cc92f
+%define sha512  protobuf-gogo=556c88db396e780ef1bca1c83c589fff663c87958b2152d05c358821f6f54f970c48dbb88401464fd759dbb02e2498a6c02e185b90e3d3511fdd2e11ee95d9b2
 Source24:       go-runewidth.tar.gz
-%define sha1    go-runewidth=b285c56da43ad7a7c1a7dff1996af00738908466
+%define sha512  go-runewidth=4e9fefa98db8498438b71b600723c0a73d6ce27351e4da2c7c0ef0df1ef2cfc0b1e53f24f906f21a6e532643959b9b9d6503a8d27b78c12207456537d08470c7
 Source25:       perks.tar.gz
-%define sha1    perks=9238e0f9f9756192ae821fa8d4389e1b4adb50cd
+%define sha512  perks=fc864e7e9f03a4090b556c21b9a734333ca3962fcd0f4dfa64b07dabbbf80d05220e4a6bb8bf5da52ccc37bac73956f04b5d58f7042f97db2a3f1fb841086274
 Source26:       go-unsnap-stream.tar.gz
-%define sha1    go-unsnap-stream=5f524be03e8ddc20f01c5e13a250cf52fdb870e4
+%define sha512  go-unsnap-stream=d5272e18a57d631ec76161762f93d5258ba2b919a9dc6b706b64f5d70090616049d4b762f3d80d062afe58aebf4cb346b7500413d1828bf6111c6accbb9acf35
 Source27:       protobuf-golang.tar.gz
-%define sha1    protobuf-golang=5af8d015243c934befb699404b78374d9fdde4d9
+%define sha512  protobuf-golang=1b1e0ae763e5e465529c3a6c98df821aa622862f5ab68a189b26fa8c48555e130c352235b63753f582f02d3121e50f755a493f19b7ff2d4ce5d4e42a97521b9e
 Source28:       fwd.tar.gz
-%define sha1    fwd=babaa98dc9ba8f75e90b5f3cd00cb05ef212fe5a
+%define sha512  fwd=0da2880a25f8476bd43f9d63e1ac69530ae667ac862785606897be2df91045d0a105d063d637fc432753f7a8e57cf6af340de3574cb0536716537482f0cda98c
 Source29:       client_model.tar.gz
-%define sha1    client_model=dbf38a3217a4ac943fa17502424edf4363bb226a
+%define sha512  client_model=9d2506e21cd7016362382346d02052fb72af9aaed92f924def5bec9bb5db3c41a1700ab29447411522915b47c076174400428c4ddc4fe37c5fea7e270f69f834
 Source30:       common-prometheus.tar.gz
-%define sha1    common-prometheus=8c2b0ca3f398844fc2f35c15f40cc4596bc0f749
+%define sha512  common-prometheus=67656ca7a4dc5a3980f54ab5091fb36333068c01e21b476df8f3f34fd588c567c7496f0e34e67af9615933ea1d701d4067e254e08c7fbec1437e0968a2950ebe
 Source31:       procfs-prometheus.tar.gz
-%define sha1    procfs-prometheus=4b34db5de4a849601cacd759e71d9d637d0b7bde
+%define sha512  procfs-prometheus=eb85a3574a72bd1ca3f4e8a53135fdc25f4ad7eadcd909fe0a91926bca2a27cce579a40c01dd16843cc416aedb3c4f1cdc6913c51f4ef2a8dc3b7480c9e7e793
 Source32:       zap-gouber.tar.gz
-%define sha1    zap-gouber=7dc49e1d132300b1d282cc5b3d2f06d4c068cdbf
+%define sha512  zap-gouber=e83653882ebb9c9a781e9e6e08c9955eaf482ac4070086c1f3f098be1c5f66b13a295419e9676597eeea588ecfd305c010ed2f92e232052ac4468000fda3357e
 Source33:       compress.tar.gz
-%define sha1    compress=6e24a9b94a6e9e8a14d13fa21b10df98e2d84641
+%define sha512  compress=eadaff172a788476b9f7f23409c308a6ea9022bbba8667b912247820d7fa8de9f8e348c46f89bb45e3fe7831b159fb5facfb44a3872ffb7d4ae5e32247b82a02
 Source34:       crc32.tar.gz
-%define sha1    crc32=f2a5e0f7b94c913a87c0f8bee56d5d43fe31b0a8
+%define sha512  crc32=8fa463cee64e8ee9ae8e48c690fc270c24cc1218471309632e6442015609891f9e03bb3a395ce09571c54fbb9f820844565d755eef389e0852a6d77a08604517
 Source35:       golang_protobuf_extensions.tar.gz
-%define sha1    golang_protobuf_extensions=a28c3060440942f4439b656c00a9b62fbae74950
+%define sha512  golang_protobuf_extensions=f3de9ee65225f5bc418e015e354bf112c2cd9f65f28c36744cd05377b3444b7acd9560ccefd5a1ec1e3609fd3b161d128c5dba9ecb727ec6f2db6d826ef843f2
 Source36:       atomic.tar.gz
-%define sha1    atomic=ca0810ba1b97bf35e953daa07157596cbbad33ae
+%define sha512  atomic=0cc667693beb368436ce4cecb03ef16cc557700acc442515f94624c3c3e2bc27b45271e2a14ca6310899edf794e9b8fd6b2e6d2e238510ed05862a662c75464d
 Source37:       multierr.tar.gz
-%define sha1    multierr=ac35063c9f23fd2eb5cb0c7b5ded4b47a861877f
+%define sha512  multierr=e495684980cc80c5633a0940fd84c80e26701982ebfaa887e1c9d99e3e7685dfd1d78fcfbd626f3b96456977434ccddbba3ed315050d39277d5b09228e9d1cd1
 Source38:       cpuid.tar.gz
-%define sha1    cpuid=e3fafb37e0d46282784c26bed14cde2f4979be86
+%define sha512  cpuid=457a87d0f8f72a6ff13d55dd817e26aacf0d44cff8c29384d93a1f6d24f23d9fbf2a3ca151683f402a7bd2ab0849979077a2aeda121f504e4ac65e2dbd6165f3
 Source39:       yamux.tar.gz
-%define sha1    yamux=306f059060067e4c093e5ebf1e2dbd47bbc573d0
+%define sha512  yamux=89819a60f8c4b5e84fefd5a4e013c994fb621ebe8dc4200ebf9666a32da819147eb24c9a6442b6015200f99ffa579eb85497e56a69de1164d01b3092ccc71ddf
 
 Patch0: CVE-2019-20933.patch
 
@@ -230,6 +230,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-21
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-20
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-19

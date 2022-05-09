@@ -1,11 +1,11 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.2.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-metrics-server-%{version}.tar.gz=ac18b1360aede4647c9dbaa72bddf735b228daf3
+%define sha512  kubernetes-metrics-server-%{version}.tar.gz=4dd9c802bc0b7f5cfd778b05bf26bf701c848b30b89cc682647a44ee8c4c601252197b44ef3d6a1cff55b61b52e4cf5376e445cf4f872b22a02d6010c6cc4149
 Patch0:         go-27704.patch
 Patch1:         go-27842.patch
 Group:          Development/Tools
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-16
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-15
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-14

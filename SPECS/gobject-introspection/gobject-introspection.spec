@@ -4,12 +4,12 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.58.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=4edc652656af31127988b125537d4f1994cdf7f2
+%define sha512  gobject-introspection=838fda0ddf1889f402eb03edbb82ace28b01b2392fb62be9bb32721aa7aadca6e906f9286c54c2c90d15cd77b258513eb939f2992daf726089755e23a8a17b78
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -135,6 +135,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.58.0-16
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.58.0-15
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.58.0-14

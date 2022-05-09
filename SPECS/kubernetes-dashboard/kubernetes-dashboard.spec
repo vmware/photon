@@ -1,13 +1,13 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-dashboard=ad2d26be3a7d099e0d917f04b873a72945694d58
+%define sha512  kubernetes-dashboard=9887ea4bab324abf1b1bebbfeb58d7f45a0c4bf43e65768412086256406bd1d70f313b704a8211d43c5eff33ee2739caf16467a3fe6bf45b17f8c54e02909e93
 Source1:        npm-sources-9.9.0.tar.gz
-%define sha1    npm-sources=0d50a69bd3a2e0cd637b752d67759755d94ece4c
+%define sha512  npm-sources=f3dd8468189a6458faf1c878f861e1e67e68886da73fbcbea7eecbc3963c536ba7a1153f6e3619d48494ab6de78e495810a221f4de2742d7729bd8e07ae8513d
 Source2:        package-lock.json
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-16
+-   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-15
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-14
