@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 %global ncursessubversion 20191102
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha1    ncurses=7a5cec2e85878f1d00b71805ece1fb5582fa4435
+%define sha512  ncurses=a3a2dd04fc391fca51ab0d44f66e5d53ebcb5fb4c9357386e60ac2645785725288c6971e6fa686620ed814ef3e208f964ab06a03d9e230fe79fde8b703ce3426
 Requires:       ncurses-libs = %{version}-%{release}
 
 Patch0:         0001-CVE-2021-39537.patch
+Patch1:		0001-CVE-2022-29458.patch
 
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -195,6 +196,8 @@ make %{?_smp_mflags}
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Mon May 09 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1-5
+-   Fix for CVE-2022-29458
 *   Thu Nov 18 2021 Oliver Kurth <okurth@vmware.com> 6.1-4
 -   add libtinfo
 -   use smp_mflags and autosetup
