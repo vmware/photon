@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -18,7 +18,9 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
+BuildRequires:  libffi-devel
 
+Requires:       libffi
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -96,6 +98,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-4
+- Bump version as a part of libffi upgrade
 * Wed May 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-3
 - Disable fips140 module
 * Wed Apr 06 2022 Susant Sahani <ssahani@vmware.com> 3.7.2-2

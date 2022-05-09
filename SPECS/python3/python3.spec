@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=77f4105846f6740297e50d7535a42c02d6b8e7db
+%define sha512  Python=b90029d6825751685983e9dcf0e0ec9e46f18e6c7d37b0dd7a245a94316f8c0090308ad7c2b2b49ed2514b0b909177231dd5bcad03031bf4624e37136fcf8019
 Source1:        macros.python
 
 Patch0:         cgi3.patch
@@ -319,6 +319,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-7
+- Bump version as a part of libffi upgrade
 * Wed Feb 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-6
 - Package python gdb hooks script
 * Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.1-5
