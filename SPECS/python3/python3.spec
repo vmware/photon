@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -12,10 +12,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=c6114b411b7e6d26fc9887c11c0800d9625f1ade
+%define sha512    Python=82b2729afc7d72a80882f199970667dce7d971a2e5ecfe6cf84f7b68612ab2caf6ed6d7a8cb81f24ea85cb0816464bb2e8b2e6884eda62fa40742edc674193bd
 Source1:        macros.python
 
 Patch0:         cgi3.patch
+Patch1:         mailcap_deprecation_warning.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -319,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+* Mon May 09 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-3
+- Add mailcap deprecation warning
 * Wed Feb 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-2
 - Package python gdb hooks script
 * Fri Nov 12 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-1

@@ -1,0 +1,56 @@
+From a36d97e3f1daeb431e1c5bc8ab83daca93b747b0 Mon Sep 17 00:00:00 2001
+From: Victor Stinner <vstinner@python.org>
+Date: Wed, 27 Apr 2022 11:39:51 +0200
+Subject: [PATCH] gh-68966: Document mailcap deprecation in Python 3.11
+ (#91971)
+
+(cherry picked from commit 80de0273c0caf8bae19787bb00255eb3fb2a2d0c)
+---
+ Doc/library/mailcap.rst    | 5 +++++
+ Doc/library/netdata.rst    | 1 -
+ Doc/library/superseded.rst | 3 ++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/Doc/library/mailcap.rst b/Doc/library/mailcap.rst
+index 7749b7dd45ef4..416b181f45a77 100644
+--- a/Doc/library/mailcap.rst
++++ b/Doc/library/mailcap.rst
+@@ -3,9 +3,14 @@
+ 
+ .. module:: mailcap
+    :synopsis: Mailcap file handling.
++   :deprecated:
+ 
+ **Source code:** :source:`Lib/mailcap.py`
+ 
++.. deprecated:: 3.11
++   The :mod:`mailcap` module is deprecated. See :pep:`594` for the rationale
++   and the :mod:`mimetypes` module for an alternative.
++
+ --------------
+ 
+ Mailcap files are used to configure how MIME-aware applications such as mail
+diff --git a/Doc/library/netdata.rst b/Doc/library/netdata.rst
+index 0e6ebd3b02ddd..1cf717332731c 100644
+--- a/Doc/library/netdata.rst
++++ b/Doc/library/netdata.rst
+@@ -13,7 +13,6 @@ on the internet.
+ 
+    email.rst
+    json.rst
+-   mailcap.rst
+    mailbox.rst
+    mimetypes.rst
+    base64.rst
+diff --git a/Doc/library/superseded.rst b/Doc/library/superseded.rst
+index 50a5983..3cad7e4 100644
+--- a/Doc/library/superseded.rst
++++ b/Doc/library/superseded.rst
+@@ -10,5 +10,6 @@ backwards compatibility. They have been superseded by other modules.
+ 
+ .. toctree::
+ 
+-   optparse.rst
+    imp.rst
++   mailcap.rst
++   optparse.rst
