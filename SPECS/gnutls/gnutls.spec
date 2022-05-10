@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.7.2
-Release:        4%{?dist}
+Version:        3.7.4
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,8 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512  %{name}=5d01d561a05379da71e4847e30ba13c2abe09f7a5c4359fd539d8bd19abad0ce87120f82ee7b6264e787bd3edbc5ae16beffa892983cbc3d59f11a1811c10329
-
+%define sha512  %{name}=38b488ca1223d9aa8fc25756df08db6f29aaf76fb5816fdeaa14bd89fb431a2e1c495fefc64094f726337d5b89e198146ec7dc22e9a1bca6841a9d881b0d99e6
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -18,9 +17,7 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
-BuildRequires:  libffi-devel
 
-Requires:       libffi
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -35,18 +32,18 @@ GnuTLS is a secure communications library implementing the SSL, TLS and DTLS pro
 It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509,
 PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
-%package devel
-Summary:    Development libraries and header files for gnutls
-Requires:   gnutls
-Requires:   libtasn1-devel
-Requires:   nettle-devel
+%package        devel
+Summary:        Development libraries and header files for gnutls
+Requires:       gnutls
+Requires:       libtasn1-devel
+Requires:       nettle-devel
 
-%description devel
+%description    devel
 The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 # check for trust store file presence
@@ -98,8 +95,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
-* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-4
-- Bump version as a part of libffi upgrade
+* Mon May 09 2022 Gerrit Photon <photon-checkins@vmware.com> 3.7.4-1
+- Automatic Version Bump
 * Wed May 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-3
 - Disable fips140 module
 * Wed Apr 06 2022 Susant Sahani <ssahani@vmware.com> 3.7.2-2
