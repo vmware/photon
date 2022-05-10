@@ -35,5 +35,5 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/cpulimit
 
 %changelog
-*   Tue May 10 2022 Benson Kwok <bkwok@vmware.com> 0.2-1
+*   Tue May 10 2022 Benson Kwok <bkwok@vmware.com> 1.1-1
 -   Initial build. First version
