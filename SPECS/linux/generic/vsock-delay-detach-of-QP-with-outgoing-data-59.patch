@@ -44,10 +44,10 @@ index 8b65323..cdc3884 100644
  
  static struct vmci_handle vmci_transport_stream_handle = { VMCI_INVALID_ID,
  							   VMCI_INVALID_ID };
-@@ -75,6 +78,18 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
- 
- static int PROTOCOL_OVERRIDE = -1;
- 
+@@ -80,6 +80,18 @@ static int PROTOCOL_OVERRIDE = -1;
+
+ static struct vsock_transport vmci_transport; /* forward declaration */
+
 +/* The default peer timeout indicates how long we will wait for a peer response
 + * to a control message.
 + */
@@ -61,7 +61,7 @@ index 8b65323..cdc3884 100644
 +#define VSOCK_CLOSE_WAIT_RETRY_TIMEOUT   (10 * HZ)
 +
  /* Helper function to convert from a VMCI error code to a VSock error code. */
- 
+
  static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
 @@ -847,6 +862,7 @@ static void vmci_transport_peer_detach_cb(u32 sub_id,
  {

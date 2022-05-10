@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.103
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.109
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=8f40f4a67d912ffa7763ee0faa1acd3c371cbc63
+%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -30,7 +30,7 @@ Source4:        check_for_config_applicability.inc
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 
 # common
@@ -82,9 +82,6 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-1016
-Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -199,7 +196,6 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
-%patch108 -p1
 
 # crypto
 %patch500 -p1
@@ -334,6 +330,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-1
+- Update to version 5.10.109
 * Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-5
 - Add objtool to the -devel package.
 * Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4

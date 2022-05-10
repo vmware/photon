@@ -6,8 +6,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.103
-Release:        4%{?dist}
+Version:        5.10.109
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -17,7 +17,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=8f40f4a67d912ffa7763ee0faa1acd3c371cbc63
+%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -60,9 +60,6 @@ Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-1016
-Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -200,7 +197,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch101 -p1
 %patch102 -p1
 %patch105 -p1
-%patch108 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -402,6 +398,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-1
+- Update to version 5.10.109
 * Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4
 - .config: enable zstd compression for squashfs.
 - .config: enable crypto user api rng.

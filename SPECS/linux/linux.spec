@@ -22,8 +22,8 @@
 Summary:        Kernel
 Name:           linux
 
-Version:        5.10.103
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.109
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -33,32 +33,32 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=8f40f4a67d912ffa7763ee0faa1acd3c371cbc63
+%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
 Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=054d4c724b037ff8d722cd3bc04e92bb159d7824
+%define sha512 ena_linux=e14b706d06444dcc832d73150a08bbdc0fc53b291d2fd233aef62d8f989f529b4aabc7865526fe27a895d43d5f8ba5993752a920601be8a1d3ed9ea973e9c6ef
 %define sgx_version 1.8
 Source5:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
-%define sha1 DCAP=6161846c2ba03099a2307f28a91e9d45627614d7
+%define sha512 DCAP=79d0b4aba102559bed9baf9fe20917e9781a22d742fa52b49b2c1a00c452a452796e6ce1a92bad80d6e6fc92ad71fa72ee02c1b65a59bddbb562aaaad4b2d8b2
 Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 %define i40e_version 2.15.9
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
 %define iavf_version 4.2.7
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define sha512 iavf=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
 Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 %define ice_version 1.6.4
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
+%define sha512 ice=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 
 # common
@@ -108,9 +108,6 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-1016
-Patch108:       0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -325,7 +322,6 @@ Python programming language to use the interface to manipulate perf events.
 
 %patch103 -p1
 %patch107 -p1
-%patch108 -p1
 
 # Allow PCI resets to be disabled from vfio_pci module
 %patch120 -p1
@@ -702,6 +698,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-1
+- Update to version 5.10.109
 * Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4
 - .config: enable zstd compression for squashfs.
 - .config: enable crypto user api rng.
