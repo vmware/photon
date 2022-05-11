@@ -1,22 +1,27 @@
-Summary:	advanced key-value store
-Name:		redis
-Version:	6.0.16
-Release:	2%{?dist}
-License:	BSD
-URL:		http://redis.io/
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
+Summary:    advanced key-value store
+Name:       redis
+Version:    7.0.0
+Release:    1%{?dist}
+License:    BSD
+URL:        http://redis.io
+Group:      Applications/Databases
+Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=71724c22f6069aa374729d2ae93dbb9b41eb1837
+
+Source0:    http://download.redis.io/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9209dd95511a27802f83197b037c006c5f40c50fe5315eb6a5ac2af1619a7b1c890160106157086420c1aca8a058f573681bfad1897052308ca6e64407404757
+
 Patch0:         redis-conf.patch
+
 BuildRequires:  gcc
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  make
 BuildRequires:  which
 BuildRequires:  tcl
 BuildRequires:  tcl-devel
-Requires:	systemd
+
+Requires:   systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -30,21 +35,24 @@ make BUILD_TLS=yes %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}/usr install %{?_smp_mflags}
+make PREFIX=%{buildroot}%{_usr} install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
-mkdir -p %{buildroot}/var/lib/redis
-mkdir -p %{buildroot}/var/log
-mkdir -p %{buildroot}/var/opt/%{name}/log
+
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
+          %{buildroot}/var/log \
+          %{buildroot}/var/opt/%{name}/log \
+          %{buildroot}%{_unitdir}
+
 ln -sfv /var/opt/%{name}/log %{buildroot}/var/log/%{name}
-mkdir -p %{buildroot}/usr/lib/systemd/system
-cat << EOF >>  %{buildroot}/usr/lib/systemd/system/redis.service
+
+cat << EOF >>  %{buildroot}%{_unitdir}/redis.service
 [Unit]
 Description=Redis in-memory key-value database
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/redis-server /etc/redis.conf --daemonize no
-ExecStop=/usr/bin/redis-cli shutdown
+ExecStart=%{_bindir}/redis-server %{_sysconfdir}/redis.conf --daemonize no
+ExecStop=%{_bindir}/redis-cli shutdown
 User=redis
 Group=redis
 
@@ -53,15 +61,16 @@ WantedBy=multi-user.target
 EOF
 
 %check
+%if 0%{?with_check}
 make check %{?_smp_mflags}
+%endif
 
 %pre
-getent group %{name} &> /dev/null || \
-groupadd -r %{name} &> /dev/null
+getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
+
 getent passwd %{name} &> /dev/null || \
 useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 -c 'Redis Database Server' %{name} &> /dev/null
-exit 0
 
 %post
 /sbin/ldconfig
@@ -81,6 +90,9 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-1
+- Upgrade to v7.0.0
+- This fixes CVE-2022-24735, CVE-2022-24736
 * Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.16-2
 - Bump up to fix downgrading issue
 * Thu Oct 21 2021 Nitesh Kumar <kunitesh@vmware.com> 6.0.16-1
