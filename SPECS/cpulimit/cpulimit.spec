@@ -1,5 +1,5 @@
 Name:           cpulimit
-Version:        1.1	
+Version:        1.1
 Release:        1%{?dist}
 Summary:        CPU Usage Limiter for Linux
 Vendor:         VMware, Inc.
@@ -22,10 +22,8 @@ is able to adapt itself to the overall system load, dynamically and quickly.
 %prep
 %autosetup -p1
 
-
 %build
 gcc $RPM_OPT_FLAGS -lrt -o cpulimit cpulimit.c
-
 
 %install
 rm -rf %{buildroot}
