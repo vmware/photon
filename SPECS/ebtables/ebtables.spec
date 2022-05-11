@@ -1,42 +1,64 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
-Version:        2.0.10
-Release:        4%{?dist}
+Version:        2.0.11
+Release:        1%{?dist}
 License:        GPLv2+
-URL:            http://ebtables.netfilter.org/
+URL:            http://ebtables.netfilter.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.netfilter.org/pub/ebtables/%{name}-v%{version}-4.tar.gz
-%define sha1    %{name}=907d3b82329e8fbb7aaaa98049732bd8dab022f9
-Source1:        ebtables_script
-Source2:        ebtables.service
+Source0:        https://www.netfilter.org/pub/ebtables/%{name}-%{version}.tar.gz
+%define sha512  %{name}=43a04c6174c8028c501591ef260526297e0f018016f226e2a3bcf80766fddf53d4605c347554d6da7c4ab5e2131584a18da20916ffddcbf2d26ac93b00c5777f
+Source1:        %{name}
+Source2:        %{name}.service
+Source3:        %{name}-config
 
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  gcc
+BuildRequires:  make
 
 Requires:       systemd
 
 %description
-The ebtables program is a filtering tool for a Linux-based bridging firewall. It enables transparent filtering of network traffic passing through a Linux bridge. The filtering possibilities are limited to link layer filtering and some basic filtering on higher network layers. Advanced logging, MAC DNAT/SNAT and brouter facilities are also included.
+Ethernet bridge tables is a firewalling tool to transparently filter network
+traffic passing a bridge. The filtering possibilities are limited to link
+layer filtering and some basic filtering on higher network layers.
+
+This tool is the userspace control for the bridge and %{name} kernel
+components (built by default in Fedora kernels).
+
+The %{name} tool can be used together with the other Linux filtering tools,
+like iptables. There are no known incompatibility issues.
 
 %prep
-%autosetup -p1 -n %{name}-v%{version}-4
+%autosetup -p1
 
 %build
-make %{?_smp_mflags} CFLAGS="${RPM_OPT_FLAGS}"
+sh ./autogen.sh
+%configure --disable-silent-rules LOCKFILE=/run/%{name}.lock
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} BINDIR=%{_sbindir} MANDIR=%{_mandir} install %{?_smp_mflags}
+%make_install
 
-mkdir -p %{buildroot}/%{_libdir}/systemd/system
-install -vdm755 %{buildroot}/etc/systemd/scripts
-install -m 755 %{SOURCE1} %{buildroot}/etc/systemd/scripts/ebtables
-install -m 644 %{SOURCE2} %{buildroot}/%{_libdir}/systemd/system/ebtables.service
+rm -f %{buildroot}%{_libdir}/*.la
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable ebtables.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ebtables.preset
+mkdir -p %{buildroot}%{_unitdir}
+install -vdm755 %{buildroot}%{_sysconfdir}/systemd/scripts
+install -m 755 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/scripts/%{name}
+install -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 600 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/ebtables-config
+
+ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy %{buildroot}%{_sbindir}/%{name}
+ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy-save %{buildroot}%{_sbindir}/%{name}-save
+ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy-restore %{buildroot}%{_sbindir}/%{name}-restore
+
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 %preun
 %systemd_preun ebtables.service
@@ -58,19 +80,21 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_mandir}/man8/*
 %{_libdir}/*.so
-%config(noreplace) %{_sysconfdir}/sysconfig/ebtables-config
-%{_libdir}/systemd/system/*
-%{_libdir}/systemd/system-preset/50-ebtables.preset
+%{_libdir}/*.so.*
+%{_unitdir}/*
+%{_presetdir}/50-%{name}.preset
 %{_sysconfdir}/ethertypes
-%{_sysconfdir}/systemd/scripts/ebtables
-%exclude %{_sysconfdir}/rc.d/init.d/ebtables
+%{_sysconfdir}/systemd/scripts/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}-config
 
 %changelog
-* Wed Jul 05 2017 Chang Lee <changlee@vmware.com>  2.0.10-4
+* Wed May 11 2022 Shreenidhi Shedi >sshedi@vmware.com> 2.0.11-1
+- Upgrade to v2.0.11
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 2.0.10-4
 - Commented out %check due to the limited chroot environment of bind.
-* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.0.10-3
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.10-3
 - Disabled ebtables service by default
-* Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
+* Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.10-2
 - Added systemd to Requires and BuildRequires.
-* Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
+* Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.10-1
 - Initial build.
