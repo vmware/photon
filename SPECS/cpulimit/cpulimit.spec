@@ -1,13 +1,16 @@
-Name:		cpulimit
+Name:           cpulimit
 Version:        1.1	
-Release:	1%{?dist}
-Summary:	CPU Usage Limiter for Linux
-
-Group:		Applications/System
-License:	GPLv2+
-URL:		http://cpulimit.sourceforge.net/
-Source0:	http://downloads.sourceforge.net/project/%{name}/%{name}/%{name}/%{name}-%{version}.tar.gz
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Release:        1%{?dist}
+Summary:        CPU Usage Limiter for Linux
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Group:          Applications/System
+License:        GPLv2+
+URL:            http://cpulimit.sourceforge.net/
+Source0:        http://downloads.sourceforge.net/project/%{name}/%{name}/%{name}/%{name}-%{version}.tar.gz
+%define sha1    %{name}=9f020c22d633e3f6289c69844bd7136c1f2704f1
+BuildRequires:  glibc-devel
+Requires:       glibc
 
 %description
 cpulimit is a simple program which attempts to limit the CPU usage of a process
@@ -17,7 +20,7 @@ value or other scheduling priority stuff, but on the real CPU usage. Also, it
 is able to adapt itself to the overall system load, dynamically and quickly.
 
 %prep
-%setup -q
+%autosetup -p1
 
 
 %build
@@ -25,13 +28,14 @@ gcc $RPM_OPT_FLAGS -lrt -o cpulimit cpulimit.c
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-install -Dp -m 755 cpulimit $RPM_BUILD_ROOT/%{_bindir}/cpulimit
+rm -rf %{buildroot}
+install -Dp -m 755 %{name} %{buildroot}/%{_bindir}/%{name}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
+add %defattr(-,root,root)
 %{_bindir}/cpulimit
 
 %changelog
