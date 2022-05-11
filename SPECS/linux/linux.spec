@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.240
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1260,6 +1260,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed May 11 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-2
+- Enabling CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
 * Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
 - Update to version 4.19.240
 - Fix CVE-2022-1055
