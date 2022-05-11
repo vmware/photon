@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}-%{version}=6df99e90cb4d59032ab2050ebb426fe065249bd3
+%define sha512  %{name}-%{version}=84b10080646077cbea78b7f3fcc58c6c6e1898213341c69862e1b48179f37a6820c3d84437c896071f966b61aa6d16b132d91948a85fd8c05740f29be3a0986d
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
@@ -22,6 +22,8 @@ BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
 
 Requires:       systemd
+Requires:       libmnl
+Requires:       libnftnl
 
 %description
 The next part of this chapter deals with firewalls. The principal
@@ -31,8 +33,26 @@ Iptables if you intend on using any form of a firewall.
 %package        devel
 Summary:        Header and development files for iptables
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
+
+%package -n ebtables-nft
+Summary:    A filtering tool for a Linux-based bridging firewall.
+Requires:   %{name} = %{version}-%{release}
+
+Obsoletes:  ebtables
+
+%description -n ebtables-nft
+Ethernet bridge tables is a firewalling tool to transparently filter network
+traffic passing a bridge. The filtering possibilities are limited to link
+layer filtering and some basic filtering on higher network layers.
+
+This tool is the userspace control for the bridge and ebtables-nft kernel
+components (built by default in Fedora kernels).
+
+The ebtables-nft tool can be used together with the other Linux filtering tools,
+like iptables. There are no known incompatibility issues.
 
 %prep
 %autosetup -p1
@@ -59,7 +79,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --disable-silent-rules \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
-    --disable-nftables \
+    --enable-nftables \
     --enable-libipq \
     --enable-devel
 
@@ -102,22 +122,38 @@ rm -rf %{buildroot}/*
 %config(noreplace) /etc/systemd/scripts/iptables.stop
 %config(noreplace) /etc/systemd/scripts/ip4save
 %config(noreplace) /etc/systemd/scripts/ip6save
-/lib/systemd/system/iptables.service
-%{_sbindir}/*
+%{_unitdir}/iptables.service
+%{_sbindir}/ip*
+%{_sbindir}/xtables*
+%{_sbindir}/arptables*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/iptables/*
+%{_libdir}/%{name}/libip*.so
+%{_libdir}/%{name}/libxt*.so
+%{_libdir}/%{name}/libarpt_mangle.so
 %{_libdir}/iptables-xml
 %{_mandir}/man1/*
-%{_mandir}/man8/*
+%{_mandir}/man8/ip*.gz
+%{_mandir}/man8/xtables*.gz
+%{_mandir}/man8/arptables*.gz
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_mandir}/man3/*
 
+%files -n ebtables-nft
+%defattr(-,root,root)
+%{_libdir}/%{name}/libebt*.so
+%{_sbindir}/ebtables*
+%{_sysconfdir}/ethertypes
+%{_mandir}/man8/ebtables-nft.8.gz
+
 %changelog
+* Thu May 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.3-4
+- Add ebtables-nft sub package
 * Wed Mar 31 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-3
 - Allow IPv6 RA and DHCP6
 * Mon Feb 08 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-2
