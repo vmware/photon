@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.240
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1201,6 +1201,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed May 11 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.240-2
+-   Add vhost and vhost-net drivers in config
 *   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
 -   Update to version 4.19.240
 -   Fix CVE-2022-1055
