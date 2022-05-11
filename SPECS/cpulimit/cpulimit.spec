@@ -23,7 +23,7 @@ is able to adapt itself to the overall system load, dynamically and quickly.
 %autosetup -p1
 
 %build
-gcc $RPM_OPT_FLAGS -lrt -o cpulimit cpulimit.c
+make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
