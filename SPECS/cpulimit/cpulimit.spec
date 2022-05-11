@@ -35,7 +35,7 @@ install -Dp -m 755 %{name} %{buildroot}/%{_bindir}/%{name}
 rm -rf %{buildroot}
 
 %files
-add %defattr(-,root,root)
+%defattr(-,root,root)
 %{_bindir}/cpulimit
 
 %changelog
