@@ -1,54 +1,57 @@
-Summary:	advanced key-value store
-Name:		redis
-Version:	4.0.14
-Release:	5%{?dist}
-License:	BSD
-URL:		http://redis.io/
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
+Summary:    advanced key-value store
+Name:       redis
+Version:    6.2.7
+Release:    1%{?dist}
+License:    BSD
+URL:        http://redis.io
+Group:      Applications/Databases
+Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=21a4e37d532ff2469943864096db36fd1b8f43bb
+
+Source0:    http://download.redis.io/releases/%{name}-%{version}.tar.gz
+%define sha1 %{name}=d1e412f99fed7349825f2cf4d4fc39f1b7f40d8a
+
 Patch0:         redis-conf.patch
-Patch1:         CVE-2020-14147.patch
-Patch2:         hiredis-CVE-2020-7105.patch
-Patch3:         CVE-2021-3470.patch
-Patch4:         CVE-2021-32672.patch
+
 BuildRequires:  gcc
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  make
-Requires:	systemd
+BuildRequires:  which
+BuildRequires:  tcl
+BuildRequires:  tcl-devel
+
+Requires:   systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-	
+
 %description
 Redis is an in-memory data structure store, used as database, cache and message broker.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -p1
 
 %build
-make %{?_smp_mflags}
+make BUILD_TLS=yes %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}/usr install
+make PREFIX=%{buildroot}%{_usr} install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
-mkdir -p %{buildroot}/var/lib/redis
-mkdir -p %{buildroot}/var/log/redis
-mkdir -p %{buildroot}/usr/lib/systemd/system
-cat << EOF >>  %{buildroot}/usr/lib/systemd/system/redis.service
+
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
+          %{buildroot}/var/log \
+          %{buildroot}/var/opt/%{name}/log \
+          %{buildroot}%{_unitdir}
+
+ln -sfv /var/opt/%{name}/log %{buildroot}/var/log/%{name}
+
+cat << EOF >>  %{buildroot}%{_unitdir}/redis.service
 [Unit]
 Description=Redis in-memory key-value database
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/redis-server /etc/redis.conf --daemonize no
-ExecStop=/usr/bin/redis-cli shutdown
+ExecStart=%{_bindir}/redis-server %{_sysconfdir}/redis.conf --daemonize no
+ExecStop=%{_bindir}/redis-cli shutdown
 User=redis
 Group=redis
 
@@ -57,16 +60,16 @@ WantedBy=multi-user.target
 EOF
 
 %check
-#check requires tcl which is not supported in Photon OS right now.
-
+%if 0%{?with_check}
+make check %{?_smp_mflags}
+%endif
 
 %pre
-getent group %{name} &> /dev/null || \
-groupadd -r %{name} &> /dev/null
+getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
+
 getent passwd %{name} &> /dev/null || \
 useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 -c 'Redis Database Server' %{name} &> /dev/null
-exit 0
 
 %post
 /sbin/ldconfig
@@ -76,16 +79,19 @@ exit 0
 /sbin/ldconfig
 %systemd_postun_with_restart redis.service
 
-
 %files
 %defattr(-,root,root)
 %dir %attr(0750, redis, redis) /var/lib/redis
-%dir %attr(0750, redis, redis) /var/log/redis
+%dir %attr(0750, redis, redis) /var/opt/%{name}/log
+%attr(0750, redis, redis) %{_var}/log/%{name}
 %{_bindir}/*
-%{_libdir}/systemd/*
+%{_unitdir}/*
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-1
+- Upgrade to v6.2.7
+- This fixes CVE-2022-24735, CVE-2022-24736
 * Wed Oct 13 2021 Nitesh Kumar <kunitesh@vmware.com> 4.0.14-5
 - Fix for CVE-2021-32672
 * Fri Apr 09 2021 Shreyas B <shreyasb@vmware.com> 4.0.14-4
