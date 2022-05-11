@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.240
+Version:        4.19.241
 Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=c0f39eaa36cd1979d055565138c14bda52dd7017d5bf1409566029748e77d9a66900b0d9c9495183bb227d5577ea01ffed51134cac47862b8330d13f581fe15d
+%define sha512 linux=8ddf5791febed8de146367fcf96d84da15e859d8b8b5de01899415f0080c22fbe18e5eef1a1db681260eb80a60b9e33cd551515d9ec4c065977cf5d3da9045c4
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -492,6 +492,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
+-   Update to version 4.19.241
 *   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1
 -   Update to version 4.19.240
 -   Fix CVE-2022-1055
