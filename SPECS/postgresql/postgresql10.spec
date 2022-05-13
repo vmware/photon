@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql10
-Version:        10.20
+Version:        10.21
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha1    postgresql=780d133ea30f654bd5e7c48f8f61fed6dcf47a3a
+%define sha512  postgresql=1053e15505c0448df491119c9aad1617889b66118628a2155e3ec87e6648b2071a0a54e10d8fbbe00161b2aa86d1a6194d932a8cf5808c626e7972d135bb05c5
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 10
@@ -171,6 +171,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/libpgtypes.a
 
 %changelog
+*   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 10.21-1
+-   Upgraded to version 10.21.
 *   Tue Mar 15 2022 Tapas Kundu <tkundu@vmware.com> 10.20-1
 -   Packaged postgresql10 in custom path.
 -   This will help in-place db upgrade for users migrating from photon os 3.0
