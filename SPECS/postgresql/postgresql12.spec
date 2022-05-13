@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql12
-Version:        12.10
+Version:        12.11
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha1    postgresql=1583870ec48c0b7fbc59baf9deca1a51aa0f3fc8
+%define sha512  postgresql=705e9e1ccf8202062cce61069b5ddb7db5f804dd0736c620640ce5622b9e42fdcbc1417771e77d51aa54beb4562a09b4307f2ff7dec135bd0e31f4941ca36ac8
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 12
@@ -533,6 +533,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 12.11-1
+-   Upgraded to version 12.11.
 *   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 12.10-1
 -   Upgraded to version 12.10.
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.9-2

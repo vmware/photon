@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        14.2
+Version:        14.3
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=2cf1556e9462dfc471bd7fdf951f52702c278b98
+%define sha512  postgresql=70e6f67b5729a23f80b92b04e3fad2e09596b939660e3ddebf499d06af946459a45a019279e05413673e7b65d09a28a0440ed3c2ae565068466ed37e2d4f6f17
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 14
@@ -545,6 +545,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 14.3-1
+-   Upgraded to version 14.3.
 *   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 14.2-1
 -   Upgraded to version 14.2.
 *   Fri Nov 19 2021 Nitesh Kumar <kunitesh@vmware.com> 14.1-3
