@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.241
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1201,6 +1201,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu May 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.241-2
+-   .config: Enable CONFIG_NFT_CHAIN_ROUTE_IPV4, CONFIG_NFT_CHAIN_NAT_IPV4,
+-            CONFIG_NFT_MASQ_IPV4 and CONFIG_NFT_REDIR_IPV4
 *   Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
 -   Update to version 4.19.241
 *   Wed May 11 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.240-2
