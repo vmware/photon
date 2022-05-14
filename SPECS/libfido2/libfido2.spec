@@ -33,7 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 Summary:        FIDO2 CLI tools
 Requires:       %{name} = %{version}-%{release}
 
-%description -n libfido2-tools
+%description tools
 FIDO2 CLI tools to access and configure a FIDO2 compliant authentication device.
 
 %prep
