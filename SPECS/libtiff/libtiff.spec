@@ -1,18 +1,25 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha1    libtiff-v=3e4f5c772c564cb03e2eba0ab331c6ff95a58125
+%define sha512  libtiff-v=eaa2503dc1805283e0590b06e3e660a793fe849ae8b975b2d69369695d65a40640787c156574faaca856917be799eeb844e60f55555e1f219dd513cef66ea95d
 Source1:        config.guess
 Source2:        config.sub
 Patch0:         CVE-2018-12900.patch
 Patch1:         autogen.patch
+Patch2:         libtiff-CVE-2022-0891.patch
+Patch3:         libtiff-CVE-2022-22844.patch
+Patch4:         libtiff-CVE-2022-0865.patch
+Patch5:         libtiff-CVE-2022-0924.patch
+Patch6:         libtiff-CVE-2022-0908.patch
+Patch7:         libtiff-CVE-2022-0909.patch
+Patch8:         libtiff-CVE-2022-0907.patch
 BuildRequires:  libjpeg-turbo-devel wget
 Requires:       libjpeg-turbo
 
@@ -29,9 +36,7 @@ Requires:       libjpeg-turbo-devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n libtiff-v%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -n libtiff-v%{version} -p1
 
 %build
 sh autogen.sh
@@ -42,7 +47,7 @@ cp %{SOURCE2} config/
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -69,6 +74,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Mon May 16 2022 Shivani Agarwal <shivania2@vmware.com> 4.3.0-2
+-   Fix CVE-2022-22844, CVE-2022-0865, CVE-2022-0924, CVE-2022-0908, CVE-2022-0909, CVE-2022-0907, CVE-2022-0891
 *   Sat Apr 24 2021 Gerrit Photon <photon-checkins@vmware.com> 4.3.0-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 4.2.0-1
