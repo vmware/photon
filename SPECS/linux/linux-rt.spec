@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.241
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -509,6 +509,11 @@ Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch633:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Backport hrtick changes
+Patch634:       0001-sched-Mark-hrtimers-to-expire-in-hard-interrupt-cont.patch
+Patch635:       0002-sched-features-Fix-hrtick-reprogramming.patch
+Patch636:       0003-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -1004,6 +1009,9 @@ The Linux package contains the Linux kernel doc files
 %patch625 -p1
 %patch630 -p1
 %patch633 -p1
+%patch634 -p1
+%patch635 -p1
+%patch636 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1201,6 +1209,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon May 16 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.241-3
+-   Backport hrtick changes to fix lost timer wakeups
 *   Thu May 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.241-2
 -   .config: Enable CONFIG_NFT_CHAIN_ROUTE_IPV4, CONFIG_NFT_CHAIN_NAT_IPV4,
 -            CONFIG_NFT_MASQ_IPV4 and CONFIG_NFT_REDIR_IPV4

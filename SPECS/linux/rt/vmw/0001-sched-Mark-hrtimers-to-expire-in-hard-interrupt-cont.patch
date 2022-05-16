@@ -1,0 +1,77 @@
+From 441a1a15f677fd3e70a60f8e11d490674a7d355e Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 26 Jul 2019 20:30:52 +0200
+Subject: [PATCH 1/3] sched: Mark hrtimers to expire in hard interrupt context
+
+[ commit d5096aa65acd0ef2d18ac8247260ab4481ade399 upstream ]
+
+The scheduler related hrtimers need to expire in hard interrupt context
+even on PREEMPT_RT enabled kernels. Mark then as such.
+
+No functional change.
+
+[ tglx: Split out from larger combo patch. Add changelog. ]
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20190726185753.077004842@linutronix.de
+[ Sharan - dropped the changes already present in PREEMPT_RT for 4.19.y]
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ kernel/sched/core.c     | 4 ++--
+ kernel/sched/deadline.c | 2 +-
+ kernel/sched/rt.c       | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 410882ff2007..d89e2a1fbd61 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -246,7 +246,7 @@ static void __hrtick_restart(struct rq *rq)
+ {
+ 	struct hrtimer *timer = &rq->hrtick_timer;
+ 
+-	hrtimer_start_expires(timer, HRTIMER_MODE_ABS_PINNED);
++	hrtimer_start_expires(timer, HRTIMER_MODE_ABS_PINNED_HARD);
+ }
+ 
+ /*
+@@ -305,7 +305,7 @@ void hrtick_start(struct rq *rq, u64 delay)
+ 	 */
+ 	delay = max_t(u64, delay, 10000LL);
+ 	hrtimer_start(&rq->hrtick_timer, ns_to_ktime(delay),
+-		      HRTIMER_MODE_REL_PINNED);
++		      HRTIMER_MODE_REL_PINNED_HARD);
+ }
+ #endif /* CONFIG_SMP */
+ 
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 0bc1bad199c1..be97b4ce7d2f 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -956,7 +956,7 @@ static int start_dl_timer(struct task_struct *p)
+ 	 */
+ 	if (!hrtimer_is_queued(timer)) {
+ 		get_task_struct(p);
+-		hrtimer_start(timer, act, HRTIMER_MODE_ABS);
++		hrtimer_start(timer, act, HRTIMER_MODE_ABS_HARD);
+ 	}
+ 
+ 	return 1;
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index a2f2c6c91e05..4a3fd2b1ccbd 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -64,7 +64,7 @@ static inline void do_start_rt_bandwidth(struct rt_bandwidth *rt_b)
+ 		 * to update the period.
+ 		 */
+ 		hrtimer_forward_now(&rt_b->rt_period_timer, ns_to_ktime(0));
+-		hrtimer_start_expires(&rt_b->rt_period_timer, HRTIMER_MODE_ABS_PINNED);
++		hrtimer_start_expires(&rt_b->rt_period_timer, HRTIMER_MODE_ABS_PINNED_HARD);
+ 	}
+ 	raw_spin_unlock(&rt_b->rt_runtime_lock);
+ }
+-- 
+2.19.0
+
