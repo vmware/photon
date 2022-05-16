@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.241
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,6 +85,13 @@ Patch65:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch66:        0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+#Fix for CVE-2022-1048
+Patch73:        0001-ALSA-pcm-fix-races-among-concurrent-hw_params-and-hw_free-calls.patch
+Patch74:        0002-ALSA-pcm-fix-races-between-concurrent-read-write-and-buffer-changes.patch
+Patch75:        0003-ALSA-pcm-fix-races-among-concurrent-prepare-and-hw_params-hw_free-calls.patch
+Patch76:        0004-ALSA-pcm-fix-races-among-concurrent-prealloc-proc-writes.patch
+Patch77:	0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-and-mmap_lock.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -256,6 +263,12 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+
+%patch73 -p1
+%patch74 -p1
+%patch75 -p1
+%patch76 -p1
+%patch77 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -492,6 +505,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-2
+-   Fix for CVE-2022-1048
 *   Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
 -   Update to version 4.19.241
 *   Fri Apr 29 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-1

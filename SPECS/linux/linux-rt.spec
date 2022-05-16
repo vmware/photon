@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.241
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -88,6 +88,13 @@ Patch68:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch69:        0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+#Fix for CVE-2022-1048
+Patch73:        0001-ALSA-pcm-fix-races-among-concurrent-hw_params-and-hw_free-calls.patch
+Patch74:        0002-ALSA-pcm-fix-races-between-concurrent-read-write-and-buffer-changes.patch
+Patch75:        0003-ALSA-pcm-fix-races-among-concurrent-prepare-and-hw_params-hw_free-calls.patch
+Patch76:        0004-ALSA-pcm-fix-races-among-concurrent-prealloc-proc-writes.patch
+Patch77:	0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-and-mmap_lock.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -613,6 +620,12 @@ The Linux package contains the Linux kernel doc files
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
+
+%patch73 -p1
+%patch74 -p1
+%patch75 -p1
+%patch76 -p1
+%patch77 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1209,6 +1222,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-4
+-   Fix for CVE-2022-1048
 *   Mon May 16 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.241-3
 -   Backport hrtick changes to fix lost timer wakeups
 *   Thu May 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.241-2

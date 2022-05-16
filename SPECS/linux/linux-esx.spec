@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.241
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -113,6 +113,13 @@ Patch62:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch63:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
 # 9p improve write pages cache
 Patch64:        0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
+
+#Fix for CVE-2022-1048
+Patch65:        0001-ALSA-pcm-fix-races-among-concurrent-hw_params-and-hw_free-calls.patch
+Patch66:        0002-ALSA-pcm-fix-races-between-concurrent-read-write-and-buffer-changes.patch
+Patch67:        0003-ALSA-pcm-fix-races-among-concurrent-prepare-and-hw_params-hw_free-calls.patch
+Patch68:        0004-ALSA-pcm-fix-races-among-concurrent-prealloc-proc-writes.patch
+Patch69:	0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-and-mmap_lock.patch
 
 # Fix for CVE-2020-16119
 Patch73:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -507,6 +514,12 @@ This Linux package contains hmac sha generator kernel module.
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
+%patch69 -p1
+
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
@@ -949,6 +962,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-3
+-   Fix for CVE-2022-1048
 *   Fri May 13 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.241-2
 -   Add objtool to the -devel package.
 *   Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1

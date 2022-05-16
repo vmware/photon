@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.241
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -121,6 +121,13 @@ Patch70:	0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 #Fix for 9p
 Patch71:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch72:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
+
+#Fix for CVE-2022-1048
+Patch73:	0001-ALSA-pcm-fix-races-among-concurrent-hw_params-and-hw_free-calls.patch
+Patch74:	0002-ALSA-pcm-fix-races-between-concurrent-read-write-and-buffer-changes.patch
+Patch75:	0003-ALSA-pcm-fix-races-among-concurrent-prepare-and-hw_params-hw_free-calls.patch
+Patch76:	0004-ALSA-pcm-fix-races-among-concurrent-prealloc-proc-writes.patch
+Patch77:	0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-and-mmap_lock.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -620,6 +627,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch70 -p1
 %patch71 -p1
 %patch72 -p1
+%patch73 -p1
+%patch74 -p1
+%patch75 -p1
+%patch76 -p1
+%patch77 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1260,6 +1272,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-2
+- Fix for CVE-2022-1048
 * Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
 - Update to version 4.19.241
 * Wed May 11 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.240-2
