@@ -1,11 +1,11 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        1.0.0
-Release:        10%{?dist}
+Version:        3.21.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
+%define sha1 calico-k8s-policy=f331429c73fcfe7bb0f2bf4b7612cf2a50df8125
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,17 +63,10 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
-export GO111MODULE=off
-mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
-cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
-glide install -strip-vendor
 mkdir -p dist
-CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./main.go
+go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./cmd/kube-controllers/
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 
@@ -82,6 +75,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Fri May 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.21.0-1
+-   Update to 3.21.0
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-10
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-9
