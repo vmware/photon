@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2zc
+Version:        1.0.2ze
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,8 +8,8 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2zc.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2zc=71c457ae5e961b8b0ce3606d461d6ef70ca7a09f
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2ze.tar.gz
+%define sha1    vmware-OpenSSL_1_0_2ze=2002e2aa0a49b8b8bfec153596269e7ecb02f4ae
 Source1:        rehash_ca_certificates.sh
 
 Patch0:         c_rehash.patch
@@ -18,7 +18,6 @@ Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
 Patch4:         fips-2.20-vmw.patch
 Patch5:         openssl-optimized-curves.patch
-Patch6:         openssl-CVE-2022-0778.patch
 
 %if %{with_check}
 BuildRequires: zlib-devel
@@ -63,7 +62,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2zc
+%setup -q -n vmware-OpenSSL_1_0_2ze
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -72,7 +71,6 @@ Perl scripts that convert certificates and keys to various formats.
 %patch4 -p1
 %endif
 %patch5 -p1
-%patch6 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -138,6 +136,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Wed May 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2ze-1
+- Update to openssl 1.0.2ze
 * Wed Mar 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2zc-1
 - Update to openssl 1.0.2zc
 * Thu Mar 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2za-2
