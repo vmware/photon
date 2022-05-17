@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       22%{?dist}
+Release:       23%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ URL:           https://github.com/vmware/lightwave
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.gz
-%define        sha1 %{name}=93cc2c0518753a7ec7efd250bb0988de727067ff
+%define sha512 %{name}=8afe786efea02333d7045779584038cbf627d5a7f3d49aed4f0b850df4ce564e40f3ac27722b84ea835a24ac2b9fbebb071326804b4bca11d3272ea438935b4b
 
 Patch0:     fix-python-include-path.patch
 Patch1:     log4j-security-fix.patch
@@ -181,7 +181,6 @@ sh ../configure \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/opt/vmware/share/config
 
@@ -193,11 +192,11 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             ;;
         2)
             if [ ! -d %{_vmsts_dbdir} ]; then
-                /bin/install -d %{_vmsts_dbdir} -o %{_lwuser} -g %{_lwgroup} -m 700
+                install -d %{_vmsts_dbdir} -o %{_lwuser} -g %{_lwgroup} -m 700
             else
                 chown -R %{_lwuser}:%{_lwgroup} %{_vmsts_dbdir} >/dev/null 2>&1
             fi
-            /bin/cp "%{_stsconfdir}/server.xml" "%{_vmsts_dbdir}/server.xml"
+            cp "%{_stsconfdir}/server.xml" "%{_vmsts_dbdir}/server.xml"
             ;;
     esac
 
@@ -207,7 +206,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
-                    /bin/systemctl start lwsmd
+                    systemctl start lwsmd
                 fi
             fi
             ;;
@@ -225,7 +224,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
-                    /bin/systemctl start lwsmd
+                    systemctl start lwsmd
                 fi
             fi
             ;;
@@ -239,7 +238,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
-                    /bin/systemctl start lwsmd
+                    systemctl start lwsmd
                 fi
             fi
             ;;
@@ -258,17 +257,17 @@ mkdir -p %{buildroot}/opt/vmware/share/config
         1)
             if [ ! -f /.dockerenv ]; then
                 # Not in container
-                /bin/systemctl enable vmware-stsd.service
-                /bin/systemctl daemon-reload
+                systemctl enable vmware-stsd.service
+                systemctl daemon-reload
             fi
 
             # create logs dir and link tomcat logs there
             if [ -d %{_stslogsdir} ]; then
-                /bin/rm -rf %{_stslogsdir}
+                rm -rf %{_stslogsdir}
             fi
 
-            /bin/install -d %{_lightwavelogsdir} -o %{_lwuser} -g %{_lwgroup} -m 755
-            /bin/ln -s %{_lightwavelogsdir} %{_stslogsdir}
+            install -d %{_lightwavelogsdir} -o %{_lwuser} -g %{_lwgroup} -m 755
+            ln -s %{_lightwavelogsdir} %{_stslogsdir}
 
             stop_lwsmd=0
             if [ -f /.dockerenv ]; then
@@ -296,7 +295,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             ;;
         2)
             # Note: Upgrades are not handled in container
-            /bin/systemctl daemon-reload
+            systemctl daemon-reload
 
             %{_likewise_open_bindir}/lwregshell upgrade %{_configdir}/idm/idm.reg
             # set version
@@ -315,7 +314,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             ;;
     esac
 
-    /bin/cp %{_sysconfdir}/vmware/java/vmware-override-java.security %{_stsconfdir}
+    cp %{_sysconfdir}/vmware/java/vmware-override-java.security %{_stsconfdir}
     chmod 600 %{_stsconfdir}/vmware-override-java.security
 
     chown -R %{_lwuser}:%{_lwgroup} %{_stsdir} >/dev/null 2>&1
@@ -331,15 +330,15 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     if [ ! -f /.dockerenv ]; then
         # Not in container
         # start the firewall service
-        /bin/systemctl restart firewall.service
+        systemctl restart firewall.service
         if [ $? -ne 0 ]; then
             echo "Firewall service not restarted"
         fi
     fi
 
     # common
-    /bin/install -d %{_logdir} -o lightwave -g lightwave -m 755
-    /bin/mkdir -m 755 -p %{_logconfdir}
+    install -d %{_logdir} -o lightwave -g lightwave -m 755
+    mkdir -m 755 -p %{_logconfdir}
 
     lw_uid="$(id -u lightwave)"
     lw_gid="$(id -g lightwave)"
@@ -348,36 +347,36 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     sed -i -e "s|@LIGHTWAVE_UID@|$lw_uid|" -e "s|@LIGHTWAVE_GID@|$lw_gid|" %{_datadir}/config/vmca.reg
 
     # vmdir
-    /bin/install -d %{_vmdir_dbdir} -o lightwave -g lightwave -m 700
-    /bin/install -d %{_integchkdir}/reports -o lightwave -g lightwave -m 755
-    /bin/install -d %{_integchkdir}/archive -o lightwave -g lightwave -m 755
+    install -d %{_vmdir_dbdir} -o lightwave -g lightwave -m 700
+    install -d %{_integchkdir}/reports -o lightwave -g lightwave -m 755
+    install -d %{_integchkdir}/archive -o lightwave -g lightwave -m 755
 
     if [ -a %{_sasl2dir}/vmdird.conf ]; then
-        /bin/rm %{_sasl2dir}/vmdird.conf
+        rm %{_sasl2dir}/vmdird.conf
     fi
 
     # add vmdird.conf to sasl2 directory
-    /bin/ln -s %{_datadir}/config/saslvmdird.conf %{_sasl2dir}/vmdird.conf
+    ln -s %{_datadir}/config/saslvmdird.conf %{_sasl2dir}/vmdird.conf
 
-    /bin/mkdir -m 755 -p %{_logconfdir}
+    mkdir -m 755 -p %{_logconfdir}
     if [ -a %{_logconfdir}/vmdird-syslog-ng.conf ]; then
-        /bin/rm %{_logconfdir}/vmdird-syslog-ng.conf
+        rm %{_logconfdir}/vmdird-syslog-ng.conf
     fi
-    /bin/ln -s %{_datadir}/config/vmdird-syslog-ng.conf %{_logconfdir}/vmdird-syslog-ng.conf
+    ln -s %{_datadir}/config/vmdird-syslog-ng.conf %{_logconfdir}/vmdird-syslog-ng.conf
 
     # vmdns
     if [ -a %{_logconfdir}/vmdnsd-syslog-ng.conf ]; then
-        /bin/rm %{_logconfdir}/vmdnsd-syslog-ng.conf
+        rm %{_logconfdir}/vmdnsd-syslog-ng.conf
     fi
-    /bin/ln -s %{_datadir}/config/vmdnsd-syslog-ng.conf %{_logconfdir}/vmdnsd-syslog-ng.conf
+    ln -s %{_datadir}/config/vmdnsd-syslog-ng.conf %{_logconfdir}/vmdnsd-syslog-ng.conf
 
     # vmca
-    /bin/install -d %{_vmca_dbdir} -o lightwave -g lightwave -m 700
+    install -d %{_vmca_dbdir} -o lightwave -g lightwave -m 700
 
     if [ -a %{_logconfdir}/vmcad-syslog-ng.conf ]; then
-        /bin/rm %{_logconfdir}/vmcad-syslog-ng.conf
+        rm %{_logconfdir}/vmcad-syslog-ng.conf
     fi
-    /bin/ln -s %{_datadir}/config/vmcad-syslog-ng.conf %{_logconfdir}/vmcad-syslog-ng.conf
+    ln -s %{_datadir}/config/vmcad-syslog-ng.conf %{_logconfdir}/vmcad-syslog-ng.conf
 
     case "$1" in
         1)
@@ -432,22 +431,22 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     # config firewall service for server/post
     if [ ! -f /.dockerenv ]; then
         # Not in container
-        /bin/systemctl enable firewall.service
-        /bin/systemctl daemon-reload
-        /bin/systemctl restart firewall.service
+        systemctl enable firewall.service
+        systemctl daemon-reload
+        systemctl restart firewall.service
         if [ $? -ne 0 ]; then
             echo "Firewall service not restarted"
         fi
     fi
 
-    /bin/install -d %{_logdir} -o lightwave -g lightwave -m 755
+    install -d %{_logdir} -o lightwave -g lightwave -m 755
 
     SRP_MECH_OID="1.2.840.113554.1.2.10"
     UNIX_MECH_OID="1.3.6.1.4.1.6876.11711.2.1.2"
 
     # add libgssapi_srp.so to GSSAPI plugin directory
     if [ ! -h %{_krb5_lib_dir}/gss/libgssapi_srp.so ]; then
-        /bin/ln -s %{_lib64dir}/libgssapi_srp.so %{_krb5_lib_dir}/gss/libgssapi_srp.so
+        ln -s %{_lib64dir}/libgssapi_srp.so %{_krb5_lib_dir}/gss/libgssapi_srp.so
     fi
 
     # Add GSSAPI SRP plugin configuration to GSS mech file
@@ -466,23 +465,23 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 
     # Restore commented out NTLM mech oid if found
     if [ `grep -c  "#ntlm " %{_krb5_gss_conf_dir}/mech` -ge 1 ]; then
-        /bin/mv %{_krb5_gss_conf_dir}/mech %{_krb5_gss_conf_dir}/mech-$$
-        /bin/cat %{_krb5_gss_conf_dir}/mech-$$ | sed 's|^#ntlm|ntlm|' > %{_krb5_gss_conf_dir}/mech
+        mv %{_krb5_gss_conf_dir}/mech %{_krb5_gss_conf_dir}/mech-$$
+        cat %{_krb5_gss_conf_dir}/mech-$$ | sed 's|^#ntlm|ntlm|' > %{_krb5_gss_conf_dir}/mech
         if [ -s %{_krb5_gss_conf_dir}/mech ]; then
-            /bin/rm %{_krb5_gss_conf_dir}/mech-$$
+            rm %{_krb5_gss_conf_dir}/mech-$$
         fi
     fi
     chmod 644 %{_krb5_gss_conf_dir}/mech
 
-    /bin/mkdir -m 700 -p %{_vmafd_dbdir}
-    /bin/mkdir -m 700 -p %{_vecsdir}
-    /bin/mkdir -m 700 -p %{_crlsdir}
+    mkdir -m 700 -p %{_vmafd_dbdir}
+    mkdir -m 700 -p %{_vecsdir}
+    mkdir -m 700 -p %{_crlsdir}
 
-    /bin/mkdir -m 755 -p %{_logconfdir}
+    mkdir -m 755 -p %{_logconfdir}
     if [ -a %{_logconfdir}/vmafdd-syslog-ng.conf ]; then
-        /bin/rm %{_logconfdir}/vmafdd-syslog-ng.conf
+        rm %{_logconfdir}/vmafdd-syslog-ng.conf
     fi
-    /bin/ln -s %{_datadir}/config/vmafdd-syslog-ng.conf %{_logconfdir}/vmafdd-syslog-ng.conf
+    ln -s %{_datadir}/config/vmafdd-syslog-ng.conf %{_logconfdir}/vmafdd-syslog-ng.conf
 
     lw_uid="$(id -u lightwave)"
     lw_gid="$(id -g lightwave)"
@@ -490,12 +489,12 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     sed -i -e "s|@LIGHTWAVE_UID@|$lw_uid|" -e "s|@LIGHTWAVE_GID@|$lw_gid|" %{_datadir}/config/vmafd.reg
     sed -i -e "s|@LIGHTWAVE_UID@|$lw_uid|" -e "s|@LIGHTWAVE_GID@|$lw_gid|" %{_datadir}/config/vmdir-client.reg
 
-    /bin/install -d %{_rpcdir} -o lightwave -g lightwave -m 755
-    /bin/install -d %{_ipcdir} -o lightwave -g lightwave -m 755
+    install -d %{_rpcdir} -o lightwave -g lightwave -m 755
+    install -d %{_ipcdir} -o lightwave -g lightwave -m 755
 
     # create lightwave_tmp directory
     if [ ! -d %{_lw_tmp_dir} ]; then
-        /bin/mkdir -m 700 -p %{_lw_tmp_dir}
+        mkdir -m 700 -p %{_lw_tmp_dir}
     fi
     chown %{_lwuser}:%{_lwgroup} %{_lw_tmp_dir} >/dev/null 2>&1
 
@@ -559,27 +558,27 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     # start the firewall service
     if [ ! -f /.dockerenv ]; then
         # Not in container
-        /bin/systemctl restart firewall.service
+        systemctl restart firewall.service
         if [ $? -ne 0 ]; then
             echo "Firewall service not restarted"
         fi
     fi
 
     # make post db directory
-    /bin/mkdir -m 700 -p %{_post_dbdir}
+    mkdir -m 700 -p %{_post_dbdir}
 
     if [ -a %{_sasl2dir}/postd.conf ]; then
-        /bin/rm %{_sasl2dir}/postd.conf
+        rm %{_sasl2dir}/postd.conf
     fi
 
     # add postd.conf to sasl2 directory
-    /bin/ln -s %{_datadir}/config/saslpostd.conf %{_sasl2dir}/postd.conf
+    ln -s %{_datadir}/config/saslpostd.conf %{_sasl2dir}/postd.conf
 
-    /bin/mkdir -m 755 -p %{_logconfdir}
+    mkdir -m 755 -p %{_logconfdir}
     if [ -a %{_logconfdir}/postd-syslog-ng.conf ]; then
-        /bin/rm %{_logconfdir}/postd-syslog-ng.conf
+        rm %{_logconfdir}/postd-syslog-ng.conf
     fi
-    /bin/ln -s %{_datadir}/config/postd-syslog-ng.conf %{_logconfdir}/postd-syslog-ng.conf
+    ln -s %{_datadir}/config/postd-syslog-ng.conf %{_logconfdir}/postd-syslog-ng.conf
 
     case "$1" in
         1)
@@ -618,28 +617,28 @@ mkdir -p %{buildroot}/opt/vmware/share/config
         1)
             if [ ! -f /.dockerenv ]; then
                 # Not in container
-                /bin/systemctl enable vmware-sampled.service
-                /bin/systemctl daemon-reload
+                systemctl enable vmware-sampled.service
+                systemctl daemon-reload
             fi
             ;;
         2)
             ;;
    esac
 
-   /bin/cp %{_sysconfdir}/vmware/java/vmware-override-java.security \
+   cp %{_sysconfdir}/vmware/java/vmware-override-java.security \
            %{_stssampleconfdir}
    chmod 600 %{_stssampleconfdir}/vmware-override-java.security
 
 %preun
     case "$1" in
         0)
-            /bin/systemctl >/dev/null 2>&1
+            systemctl >/dev/null 2>&1
             if [ $? -eq 0 ]; then
                  if [ -f /etc/systemd/system/vmware-stsd.service ]; then
-                     /bin/systemctl stop vmware-stsd.service
-                     /bin/systemctl disable vmware-stsd.service
-                     /bin/rm -f /etc/systemd/system/vmware-stsd.service
-                     /bin/systemctl daemon-reload
+                     systemctl stop vmware-stsd.service
+                     systemctl disable vmware-stsd.service
+                     rm -f /etc/systemd/system/vmware-stsd.service
+                     systemctl daemon-reload
                  fi
             fi
             ;;
@@ -668,17 +667,17 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 %{_likewise_open_bindir}/lwregshell delete_tree 'HKEY_THIS_MACHINE\Services\vmdns'
             fi
 
-            /bin/systemctl restart lwsmd
+            systemctl restart lwsmd
             sleep 5
 
             if [ -h %{_logconfdir}/vmdird-syslog-ng.conf ]; then
-                /bin/rm -f %{_logconfdir}/vmdird-syslog-ng.conf
+                rm -f %{_logconfdir}/vmdird-syslog-ng.conf
             fi
             if [ -h %{_logconfdir}/vmcad-syslog-ng.conf ]; then
-                /bin/rm -f %{_logconfdir}/vmcad-syslog-ng.conf
+                rm -f %{_logconfdir}/vmcad-syslog-ng.conf
             fi
             if [ -h %{_logconfdir}/vmdnsd-syslog-ng.conf ]; then
-                /bin/rm -f %{_logconfdir}/vmdnsd-syslog-ng.conf
+                rm -f %{_logconfdir}/vmdnsd-syslog-ng.conf
             fi
             ;;
         1)
@@ -692,22 +691,22 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ $? -eq 0 ]; then
                 %{_likewise_open_bindir}/lwsm stop vmafd
                 %{_likewise_open_bindir}/lwregshell delete_tree 'HKEY_THIS_MACHINE\Services\vmafd'
-                /bin/systemctl restart lwsmd
+                systemctl restart lwsmd
                 sleep 5
             fi
 
-            /bin/systemctl >/dev/null 2>&1
+            systemctl >/dev/null 2>&1
             if [ $? -eq 0 ]; then
                  if [ -f /etc/systemd/system/firewall.service ]; then
-                     /bin/systemctl stop firewall.service
-                     /bin/systemctl disable firewall.service
-                     /bin/rm -f /etc/systemd/system/multi-user.target.wants/firewall.service
-                     /bin/systemctl daemon-reload
+                     systemctl stop firewall.service
+                     systemctl disable firewall.service
+                     rm -f /etc/systemd/system/multi-user.target.wants/firewall.service
+                     systemctl daemon-reload
                  fi
             fi
 
             if [ -h %{_logconfdir}/vmafdd-syslog-ng.conf ]; then
-                /bin/rm -f %{_logconfdir}/vmafdd-syslog-ng.conf
+                rm -f %{_logconfdir}/vmafdd-syslog-ng.conf
             fi
             ;;
         1)
@@ -721,7 +720,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ $? -eq 0 ]; then
                 %{_likewise_open_bindir}/lwsm stop post
                 %{_likewise_open_bindir}/lwregshell delete_tree 'HKEY_THIS_MACHINE\Services\post'
-                /bin/systemctl restart lwsmd
+                systemctl restart lwsmd
                 sleep 5
             fi
             ;;
@@ -735,10 +734,10 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                  if [ -f /etc/systemd/system/vmware-stsd.service ]; then
-                     /bin/systemctl stop vmware-sampled.service
-                     /bin/systemctl disable vmware-sampled.service
-                     /bin/rm -f /etc/systemd/system/vmware-sampled.service
-                     /bin/systemctl daemon-reload
+                     systemctl stop vmware-sampled.service
+                     systemctl disable vmware-sampled.service
+                     rm -f /etc/systemd/system/vmware-sampled.service
+                     systemctl daemon-reload
                  fi
             fi
             ;;
@@ -782,7 +781,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     esac
 
     if [ -a %{_sasl2dir}/vmdird.conf ]; then
-        /bin/rm %{_sasl2dir}/vmdird.conf
+        rm %{_sasl2dir}/vmdird.conf
     fi
 
 %postun client
@@ -845,7 +844,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     esac
 
     if [ -a %{_sasl2dir}/postd.conf ]; then
-        /bin/rm %{_sasl2dir}/postd.conf
+        rm %{_sasl2dir}/postd.conf
     fi
 
 %files
@@ -1175,6 +1174,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+*   Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-23
+-   Bump version as a part of apache-maven upgrade
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-22
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-21

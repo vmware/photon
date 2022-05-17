@@ -1,23 +1,27 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
-Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512  wavefront=1ce2d9f67c57b7268cb3b6e1d1bf3a5cb84e974ed39d6bc733b549d00020fa67c342f76616315b77950523f58c160d87396c5bd88aa8633bf2fa5002af2c27c5
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
+%define sha512  wavefront=1ce2d9f67c57b7268cb3b6e1d1bf3a5cb84e974ed39d6bc733b549d00020fa67c342f76616315b77950523f58c160d87396c5bd88aa8633bf2fa5002af2c27c5
+
 BuildRequires:  apache-maven
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  systemd-devel
+
 Requires:       systemd
 Requires:       openjre8
 Requires:       commons-daemon
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
 BuildArch:      noarch
 
 %description
@@ -25,38 +29,38 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%autosetup -n wavefront-proxy-proxy-%{version}
+%autosetup -p1 -n %{name}-proxy-%{version}
 
-cat << EOF >>wavefront-proxy.service
+cat << EOF >> %{name}.service
 [Unit]
 Description=The Wavefront Proxy Server
 After=network.target
 
 [Service]
-PIDFile=/var/run/wavefront-proxy.pid
-ExecStart=/usr/bin/java -Xmx4G -Xms1G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=/etc/wavefront/wavefront-proxy/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f /etc/wavefront/wavefront-proxy/wavefront.conf
-ExecStop=/bin/kill -HUP \$MAINPID
+PIDFile=%{_var}/run/%{name}.pid
+ExecStart=%{_bindir}/java -Xmx4G -Xms1G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=%{_sysconfdir}/wavefront/%{name}/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f %{_sysconfdir}/wavefront/%{name}/wavefront.conf
+ExecStop=%{_bindir}/kill -HUP \$MAINPID
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
-sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
-sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' docker/run.sh
+sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/%{name}/bin/autoconf-%{name}.sh
+sed -i 's/-jar \/opt\/wavefront\/%{name}\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' docker/run.sh
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
 mvn -f proxy install -DskipTests
 
 %install
-install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/log4j2-stdout.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/log4j2.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2.xml
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/wavefront.conf.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/wavefront.conf
-install -m 755 -D pkg/usr/share/doc/wavefront-proxy/copyright %{buildroot}/%{_docdir}/%name/copyright
+install -m 755 -D pkg/opt/wavefront/%{name}/bin/autoconf-%{name}.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-%{name}.sh
+install -m 755 -D pkg/etc/wavefront/%{name}/log4j2-stdout.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
+install -m 755 -D pkg/etc/wavefront/%{name}/log4j2.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2.xml
+install -m 755 -D pkg/etc/wavefront/%{name}/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
+install -m 755 -D pkg/etc/wavefront/%{name}/wavefront.conf.default %{buildroot}%{_sysconfdir}/wavefront/%{name}/wavefront.conf
+install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/copyright
 install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
-install -m 755 -D wavefront-proxy.service %{buildroot}/%{_unitdir}/wavefront-proxy.service
+install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
 %pre
@@ -65,7 +69,7 @@ group="wavefront"
 getent group $group >/dev/null || groupadd -r $group
 getent passwd $user >/dev/null || useradd -c "Wavefront Proxy Server" -d /opt/wavefront -g $group \
         -s /sbin/nologin -M -r $user
-spool_dir="/var/spool/wavefront-proxy"
+spool_dir="/var/spool/%{name}"
 log_dir="/var/log/wavefront"
 [[ -d $spool_dir ]] || mkdir -p $spool_dir && chown $user:$group $spool_dir
 [[ -d $log_dir ]] || mkdir -p $log_dir && chown $user:$group $log_dir
@@ -92,6 +96,7 @@ if [ $1 -eq 0 ] ; then
 fi
 %systemd_postun_with_restart %{name}.service
 
+%clean
 rm -rf %{buildroot}/*
 
 %files
@@ -102,9 +107,11 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
 %{_sysconfdir}/wavefront/%{name}/log4j2.xml
 %{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
-%{_unitdir}/wavefront-proxy.service
+%{_unitdir}/%{name}.service
 
 %changelog
+* Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.1-2
+- Bump version as a part of apache-maven upgrade
 * Fri May 20 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.1-1
 - Upgrade to 11.1
 * Thu Mar 10 2022 Piyush Gupta <gpiyush@vmware.com> 10.14-1
