@@ -2,7 +2,7 @@
 Summary:        OpenLdap-2.4.48
 Name:           openldap
 Version:        2.4.57
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{v
 Patch0:         openldap-2.4.51-consolidated-2.patch
 Patch1:         openldap-2.4.40-gssapi-1.patch
 Patch2:         openldap-CVE-2021-27212.patch
+Patch3:         openldap-CVE-2022-29155.patch
 
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 
@@ -75,6 +76,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+* Tue May 17 2022 Dweep Advani <dadvani@vmware.com> 2.4.57-3
+- Fix CVE-2022-29155
 * Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
 - Fix CVE CVE-2021-27212
 * Tue Feb 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-1
