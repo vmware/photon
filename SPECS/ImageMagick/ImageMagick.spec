@@ -1,9 +1,9 @@
 %global VER 7.1.0
-%global Patchlevel 1
+%global Patchlevel 19
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.0.1
+Version:        7.1.0.19
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -12,7 +12,8 @@ Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org/
 Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha1 %{name}=c56851c400f23338a3d285a6f38a0ca23398064f
+%define sha512  %{name}=92fb6bcee50686330b01f3fc2db8584c78138fca7a3d0c7e375a65005d2fa7e8c4991d5554aa80dc9058c758b5d90449da06fbdf892673e8825a840bdacc61a8
+Patch0:         CVE-2022-1114.patch
 Requires:       %{name}-libs%{?_isa}
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -172,5 +173,7 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
+-   Fix for CVE-2022-1114
 *   Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
 -   Initial build for Photon.
