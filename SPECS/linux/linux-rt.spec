@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.245
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -502,6 +502,9 @@ Patch624:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 #Patch to enable nohz with idle=poll
 Patch625:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
+
+#Patch to add timer padding on guest
+Patch626:	0001-timer-padding-on-guest.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -1007,6 +1010,7 @@ The Linux package contains the Linux kernel doc files
 %patch623 -p1
 %patch624 -p1
 %patch625 -p1
+%patch626 -p1
 %patch630 -p1
 %patch633 -p1
 %patch634 -p1
@@ -1209,6 +1213,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue May 31 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.245-2
+-   Patch for timer padding on guest
 *   Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1
 -   Update to version 4.19.245
 *   Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-4
