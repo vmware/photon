@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.4827
+Version:        8.2.4925
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=f2c094745ee1f8b037f9a59d9e97e046d2c26655
+%define sha1    %{name}=42b2b8d4b1f33e7077bc5c9eb43da4046be35b18
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -94,6 +94,7 @@ fi
 %{_datarootdir}/vim/%{maj_ver}/vimrc_example.vim
 %{_datarootdir}/vim/%{maj_ver}/print/*
 %{_datarootdir}/vim/%{maj_ver}/scripts.vim
+%{_datarootdir}/vim/%{maj_ver}/import/dist/vimhelp.vim
 %{_datarootdir}/vim/%{maj_ver}/spell/*
 %{_datarootdir}/vim/%{maj_ver}/syntax/*
 %exclude %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -164,6 +165,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed May 18 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4925-1
+- Update to 8.2.4925 to fix several CVEs
 * Tue Apr 26 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4827-1
 - Update to 8.2.4827 to fix CVE-2022-1381
 * Thu Apr 07 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4647-1
