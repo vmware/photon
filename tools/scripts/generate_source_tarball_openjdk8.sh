@@ -10,7 +10,7 @@ if [ $# -ne 2 ]; then
 fi
 
 if [[ "$1" = *aarch64* ]]; then
-  url="http://hg.openjdk.java.net/aarch64-port/jdk8u"
+  url="http://hg.openjdk.java.net/aarch64-port/jdk8u-shenandoah/"
   tarball_name="$1.tar.gz"
   clone_dir="openjdk-aarch64-jdk8u-$1"
 else
