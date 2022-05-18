@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.4827
+Version:        8.2.4925
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=f3437e5c3f7f8184d62102f2191fe39e8f6e3751c1d2aa86bb2802ccb7ac992bea10ac0bf75370674605c59a9fc6cc7b6c849f4d72a60f2c68bb7794d758ec29
+%define sha512  %{name}=0b11344bc505c76aa5853effca7959eb997635c3815b0d9cb0bc58c306246306a6b37bcddcaf07104e773f05972a5ec9f397818ca45f3fed6ca95f2cfca6783d
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -97,6 +97,7 @@ fi
 %{_datarootdir}/vim/vim*/vimrc_example.vim
 %{_datarootdir}/vim/vim*/print/*
 %{_datarootdir}/vim/vim*/scripts.vim
+%{_datarootdir}/vim/%{maj_ver}/import/dist/vimhelp.vim
 %{_datarootdir}/vim/vim*/spell/*
 %{_datarootdir}/vim/vim*/syntax/*
 %exclude %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -168,6 +169,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed May 18 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4925-1
+- Update to 8.2.4925 to fix several CVEs
 * Tue Apr 26 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4827-1
 - Update to 8.2.4827 to fix CVE-2022-1381
 * Thu Apr 07 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4647-1
