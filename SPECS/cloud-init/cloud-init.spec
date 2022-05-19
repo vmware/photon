@@ -4,7 +4,7 @@
 %define _udevrulesdir           %{_libdir}/udev/rules.d
 
 Name:           cloud-init
-Version:        22.1
+Version:        22.2
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -14,7 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 %{name}=830185bb5ce87ad86e4d1c0c62329bb255ec1648
+%define sha512 %{name}=07fec2f1d6eab20a1161672bb339a0c6b2826540bcb03936f95458b179fcb1b3142773c9a4038fe02b30bb05a5ca48a4153b6b0f59015b43bd6c6602832f9d6f
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
@@ -44,6 +44,7 @@ BuildRequires: python3-pip
 BuildRequires: python3-configobj
 BuildRequires: python3-jsonpatch
 BuildRequires: python3-pytest
+BuildRequires: python3-jsonschema
 %endif
 
 Requires: iproute2
@@ -109,7 +110,7 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 conf_file='/etc/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
-%define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces
+%define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces responses pytest-mock
 
 pip3 install --upgrade %test_pkgs
 make check %{?_smp_mflags}
@@ -130,6 +131,7 @@ rm -rf %{buildroot}
 %systemd_postun %cl_services
 
 %files
+%defattr(-,root,root)
 %{_bindir}/*
 %license LICENSE
 %{python3_sitelib}/*
@@ -150,6 +152,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu May 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.2-1
+- Upgrade to v22.2
 * Thu Feb 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.1-1
 - Upgrade to v22.1
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.4-1
