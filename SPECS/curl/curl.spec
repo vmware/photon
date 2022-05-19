@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.82.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -12,6 +12,7 @@ Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    %{name}=78d135ae0bc0180dd3bcc625af7e7eae9c0ba189
 Patch0:         curl-CVE-2022-22576.patch
 Patch1:         curl-CVE-2022-27774.patch
+Patch2:         curl-fix-cn-check-oom.patch
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Thu May 19 2022 Dweep Advani <dadvani@vmware.com> 7.82.0-3
+- Fix of curl issue 8559 causing OOM error in CN check
 * Wed Apr 20 2022 Dweep Advani <dadvani@vmware.com> 7.82.0-2
 - Fix CVE-2022-22576 and CVE-2022-27774
 * Tue Mar 29 2022 Harinadh D <hdommaraju@vmware.com> 7.82.0-1
