@@ -9,8 +9,8 @@ index d07dc3c0..c5d93a7d 100755
  import json
  import logging
  import os
-@@ -28,6 +29,7 @@ from cloudinit import (
- from cloudinit.net import dhcp
+@@ -19,6 +20,7 @@ from cloudinit import (
+ from cloudinit import distros, subp, temp_utils, url_helper, util, version
  from cloudinit.reporting import events
  from cloudinit.settings import CFG_BUILTIN
 +from io import StringIO
@@ -23,12 +23,12 @@ index d07dc3c0..c5d93a7d 100755
  
 +NETWORKD_LEASES_DIR = '/run/systemd/netif/leases'
 +
- 
+
  def azure_ds_telemetry_reporter(func):
      def impl(*args, **kwargs):
-@@ -903,6 +907,32 @@ class WALinuxAgentShim:
-                 ) from e
-         return dhcp_options
+@@ -942,6 +945,32 @@ class WALinuxAgentShim:
+         report_diagnostic_event(msg, logger_func=LOG.debug)
+         return goal_state
  
 +    @staticmethod
 +    def networkd_parse_lease(content):
@@ -56,14 +56,6 @@ index d07dc3c0..c5d93a7d 100755
 +                util.load_file(os.path.join(leases_d, lfile)))
 +        return ret
 +
-     @staticmethod
      @azure_ds_telemetry_reporter
-     def _get_value_from_dhcpoptions(dhcp_options):
-@@ -956,6 +986,7 @@ class WALinuxAgentShim:
-             )
-             dhcp_options = WALinuxAgentShim._load_dhclient_json()
-             value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
-+            LOG.debug('networkd value from lease %s', value)
-         if value is None:
-             # Fallback and check the leases file if unsuccessful
-             report_diagnostic_event(
+     def _get_user_pubkeys(
+         self, goal_state: GoalState, pubkey_info: list
