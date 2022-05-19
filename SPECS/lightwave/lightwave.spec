@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       27%{?dist}
+Release:       28%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -17,6 +17,7 @@ Patch2:     lightwave-openssl-1.1.1-fixV2.patch
 Patch3:     lightwave-openssl-1.1.1-fixV3.patch
 Patch4:     log4j-security-fix.patch
 Patch5:     upgrade-jackson-jars-to-latest-to-fix-security-issue.patch
+Patch6:     lightwave-CVE-2017-18214-CVE-2022-24785.patch
 
 Requires:      apache-tomcat >= 8.5.8
 Requires:      boost = 1.74.0
@@ -1178,6 +1179,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+*   Tue Jul 12 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.1.34-28
+-   Fix CVE-2017-18214, CVE-2022-24785
 *   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-27
 -   Bump up version to compile with new go
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-26
