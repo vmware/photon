@@ -1,6 +1,6 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20200821
+Version:          20211215
 Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
@@ -8,7 +8,7 @@ Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-s%{version}.tar.gz
-%define sha512    iputils=4a57c3637cdd9aab2600682774e27370716cbdf1c7ac8ae61bf86c21c08701a5b697792df4aa95309b196eaa74f3cb6b2836a40f04da0e602156e982ac99d8c9
+%define sha512    iputils=191062e51f7c8e8b38e3e4a96845adb77cd69f487d548c7cc578fad544443b4bc0dbe965d8f8e6fbda0a2f5b2fe2829789c05f873190c53d773245959298f6e9
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
 BuildRequires:    ninja-build
@@ -32,10 +32,10 @@ Node Information Query (RFC4620) daemon. Responds to IPv6 Node Information
 Queries
 
 %prep
-%autosetup -p1 -n %{name}-s%{version}
+%autosetup
 
 %build
-%meson -DBUILD_TRACEROUTE6=true -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
+%meson -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
 %meson_build
 
 %install
@@ -61,7 +61,6 @@ ln -sf ../bin/arping %{buildroot}%{_sbindir}/arping
 %{_sbindir}/tracepath6
 
 %{_bindir}/tracepath
-%{_bindir}/traceroute6
 
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/clockdiff
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
@@ -72,6 +71,8 @@ ln -sf ../bin/arping %{buildroot}%{_sbindir}/arping
 %{_sysconfdir}/init.d/ninfod.sh
 
 %changelog
+* Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 20211215-1
+- Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
 - Automatic Version Bump
 * Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 20210722-1
