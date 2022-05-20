@@ -1,6 +1,6 @@
 Summary:        Portable Hardware Locality
 Name:           hwloc
-Version:        2.1.0
+Version:        2.7.1
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -8,7 +8,7 @@ License:        BSD
 Url:            http://www.open-mpi.org/projects/hwloc
 Group:          Applications/Utilities
 Source0:        https://github.com/open-mpi/hwloc/archive/%{name}-%{version}.tar.gz
-%define sha512  hwloc=3ad088db64135f86728c0bd93557a843977d4e1a2a8eee9a071bc2da9b7f3dae16dc213790067f8dc249fc1505735db5c009698b8e45ebc8693e9a7449ac7245
+%define sha512  hwloc=9af16ca7fbc9bf53aefdf2434ae3210de68475ce9af4cfef69a7031c2d2fbc10c9361de92bc08b9d50316cb8d8a61d33ea04b92f2a58e77b5e04e7809e3529e1
 
 %description
 The Portable Hardware Locality (hwloc) software package provides a portable abstraction (across OS, versions, architectures, ...)
@@ -30,10 +30,9 @@ Requires:       %{name} = %{version}-%{release}
 Documentation for hwloc
 
 %prep
-%autosetup -n hwloc-hwloc-%{version}
+%autosetup
 
 %build
-sh autogen.sh
 %configure
 make %{?_smp_mflags}
 
@@ -79,7 +78,7 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %endif
 %{_libdir}/*.so.*
-%{_sysconfdir}/bash_completion.d/hwloc-completion.bash
+%{_datadir}/bash-completion/completions/hwloc
 
 %files devel
 %defattr(-,root,root)
@@ -94,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
+- Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.0-1
 - Automatic Version Bump
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
