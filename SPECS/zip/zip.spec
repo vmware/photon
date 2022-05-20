@@ -1,7 +1,7 @@
 Summary:      zip-3.0
 Name:         zip
-Version:      30
-Release:      1%{?dist}
+Version:      3.0
+Release:      3%{?dist}
 License:      BSD
 URL:          http://downloads.sourceforge.net/infozip
 Source0:      http://downloads.sourceforge.net/infozip/zip30.tar.gz
@@ -30,8 +30,6 @@ make %{?_smp_mflags} prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/shar
 %{_mandir}/*
 
 %changelog
-* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 30-1
-- Automatic Version Bump
 * Wed Oct 07 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 3.0-3
 - Added one compiler flags to give passwd as stdin
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-2
