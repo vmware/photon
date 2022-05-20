@@ -1,12 +1,11 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        10.14
+Version:        11.1
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha1    wavefront=310dc1400f18dab23b8a6e60ec42ee5a07840d74
-Patch0:         0001-upgrade-second-level-dependencies.patch
+%define sha512  wavefront=1ce2d9f67c57b7268cb3b6e1d1bf3a5cb84e974ed39d6bc733b549d00020fa67c342f76616315b77950523f58c160d87396c5bd88aa8633bf2fa5002af2c27c5
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,7 +25,7 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%autosetup -p1 -n wavefront-proxy-wavefront-%{version}
+%autosetup -n wavefront-proxy-proxy-%{version}
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -43,11 +42,11 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
-sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
+sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' docker/run.sh
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
-mvn install -DskipTests
+mvn -f proxy install -DskipTests
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
@@ -58,7 +57,7 @@ install -m 755 -D pkg/etc/wavefront/wavefront-proxy/wavefront.conf.default %{bui
 install -m 755 -D pkg/usr/share/doc/wavefront-proxy/copyright %{buildroot}/%{_docdir}/%name/copyright
 install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D wavefront-proxy.service %{buildroot}/%{_unitdir}/wavefront-proxy.service
-install -m 755 -D proxy/docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
+install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
 %pre
 user="wavefront"
@@ -106,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Fri May 20 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.1-1
+- Upgrade to 11.1
 * Thu Mar 10 2022 Piyush Gupta <gpiyush@vmware.com> 10.14-1
 - Upgrade to 10.14.
 * Tue Dec 14 2021 Dweep Advani <dadvani@vmware.com> 9.7-2
