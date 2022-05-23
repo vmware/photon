@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.3.34
+Version:          10.3.35
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=4084b765b40de13dfee27fd064cf227a4e2149c9
+%define           sha512 %{name}=9355de944eccef4e0bc01b19ffc3c0c72cf88befae7385c6f0ee1ea47dbd98d23f6bb46af9c140acc48d9d9613552870684bc0b7ca1f3cff1dc09c1a2c801573
 
 Patch0: MDEV-25787-Bug-report-crash-on-SELECT-DISTINCT-thous.patch
 
@@ -23,6 +23,7 @@ BuildRequires:    systemd-devel
 BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
 BuildRequires:    systemd-devel
+BuildRequires:    ncurses-devel
 
 Conflicts:        mysql
 
@@ -264,6 +265,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
+%{_bindir}/wsrep_sst_backup
 %{_sbindir}/*
 %{_unitdir}/mariadb.service
 %{_unitdir}/mariadb@.service
@@ -376,6 +378,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.35-1
+- Upgrade to v10.3.35 to fix bunch of CVEs
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.34-1
 - CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.33-1
