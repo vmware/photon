@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.8.2
+Version:          10.8.3
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define sha512    %{name}=0bda9b4239e3bb881b3819809509127141b8c51babfb134ffadf301b80b081a9e78dc40bb0613c86dcaba327791e18b32a87a71957843ac5581c6a8b3a9fa838
+%define sha512    %{name}=04d1bb47688963f66f267a5d3fbc2a8f8766956d47223a9e6b5803bd6649f02bdace1290c6c31fd704f95f6e7641dd65b6214d5701ee0c43d7b6e34028e8021b
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -323,6 +323,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
+%{_bindir}/wsrep_sst_backup
 %{_sbindir}/*
 %{_unitdir}/*.service
 %{_unitdir}/*.socket
@@ -448,8 +449,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/swedish/errmsg.sys
 %{_datadir}/mysql/ukrainian/errmsg.sys
 %{_datadir}/mysql/hindi/errmsg.sys
+%{_datadir}/mysql/bulgarian/errmsg.sys
+%{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.3-1
+- Upgrade to v10.8.3
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.2-1
 - CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.1-1
