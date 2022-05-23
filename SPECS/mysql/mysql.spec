@@ -1,14 +1,15 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.28
+Version:        8.0.29
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
+
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=0f34d6a9c8cedacb71549b1beb33133e31d75014
+%define sha512 %{name}-boost=fd67f306ef8be60b4010e34e8ccc2c26577256200c183d71149743eeb5c038fd72adde107bfee34abd7df318902db6f94646a482f9f29a8396a6d57014b81b8a
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -16,6 +17,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  protobuf-devel
+
 Requires:       protobuf
 Requires:       %{name}-icu-data-files = %{version}-%{release}
 
@@ -40,43 +42,44 @@ This package contains ICU data files needed by MySQL regular expressions.
 
 %build
 cmake . \
-      -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_73_0 \
-      -DINSTALL_MANDIR=share/man \
-      -DINSTALL_DOCDIR=share/doc \
-      -DINSTALL_DOCREADMEDIR=share/doc \
+      -DCMAKE_INSTALL_PREFIX=%{_usr} \
+      -DWITH_BOOST=boost/boost_1_77_0 \
+      -DINSTALL_MANDIR=%{_mandir} \
+      -DINSTALL_DOCDIR=%{_docdir} \
+      -DINSTALL_DOCREADMEDIR=%{_docdir} \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
       -DCMAKE_BUILD_TYPE=RELEASE \
       -DCMAKE_C_FLAGS=-fPIC \
       -DCMAKE_CXX_FLAGS=-fPIC \
       -DWITH_EMBEDDED_SERVER=OFF \
       -DFORCE_INSOURCE_BUILD=1 \
-      -DWITH_PROTOBUF=system
+      -DWITH_PROTOBUF=system \
+      -DWITH_UNIT_TESTS=OFF \
+      -DWITH_ROUTER=OFF
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make test %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
 %doc LICENSE README router/LICENSE.router router/README.router
 %{_libdir}/plugin/*
 %{_libdir}/*.so.*
-%{_libdir}/mysqlrouter/*.so
-%{_libdir}/mysqlrouter/private/libmysql*.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
 %{_datadir}/support-files/*
-%exclude /usr/mysql-test
-%exclude /usr/docs
-%exclude /usr/share
-%exclude /usr/*.router
-%exclude /usr/mysqlrouter-log-rotate
+
+%exclude %{_usr}/mysql-test
+%exclude %{_usr}/docs
+%exclude %{_datadir}
 
 %files devel
 %{_libdir}/*.so
@@ -85,59 +88,60 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %files icu-data-files
-%defattr(-, root, root, -)
+%defattr(-,root,root,-)
 %doc LICENSE README
 %{_libdir}/private/icudt69l
-%{_libdir}/private/icudt69l/unames.icu
-%{_libdir}/private/icudt69l/brkitr
 
 %changelog
-*   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.28-1
--   Upgrade version to 8.0.28 to fix bunch of CVE's
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 8.0.27-2
--   Version Bump to build with new version of cmake
-*   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1
--   Update to 8.0.27
-*   Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1
--   Update to 8.0.26
-*   Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 8.0.24-1
--   Update to 8.0.24
-*   Tue Feb 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.23-1
--   Update to 8.0.23
-*   Mon Nov 02 2020 Shreyas B. <shreyasb@vmware.com> 8.0.22-1
--   Upgrade to v8.0.22
-*   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 8.0.21-1
--   Update to 8.0.21
-*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 8.0.20-1
--   Update to 8.0.20
-*   Thu Apr 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.19-1
--   Upgrade to version 8.0.19 to fix several CVEs
-*   Wed Jul 31 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.17-1
--   Upgrade to version 8.0.17 to fix CVE-2019-2800, CVE-2019-2822 and more
-*   Tue May 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.16-1
--   Upgrade to version 8.0.16 to fix CVE-2019-2632 and more
-*   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 8.0.14-1
--   Upgrade to 8.0.14
-*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.13-1
--   Upgrade to version 8.0.13
--   Workaround for broken DCMAKE_BUILD_TYPE=RELEASE(Mysql Bug#92945). Revert in next version
-*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-4
--   Enabling for aarch64
-*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
--   Adding BuildArch
-*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
--   Use libtirpc instead obsoleted rpc from glibc.
-*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1
--   Update to version 8.0.12
-*   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
--   Update to version 5.7.23 to get it to build with gcc 7.3
-*   Thu Jan 25 2018 Divya Thaluru <dthaluru@vmware.com> 5.7.20-2
--   Added patch for CVE-2018-2696
-*   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.20-1
--   Update to version 5.7.20
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 5.7.18-3
--   Fix typo in description
-*   Fri Jul 14 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-2
--   Run make test in the %check section
-*   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-1
--   Initial packaging for Photon
+* Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-1
+- Upgrade to v8.0.29 to fix bunch of CVEs
+- Disable unit tests & mysql-router while building
+* Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.28-1
+- Upgrade version to 8.0.28 to fix bunch of CVE's
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 8.0.27-2
+- Version Bump to build with new version of cmake
+* Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1
+- Update to 8.0.27
+* Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1
+- Update to 8.0.26
+* Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 8.0.24-1
+- Update to 8.0.24
+* Tue Feb 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.23-1
+- Update to 8.0.23
+* Mon Nov 02 2020 Shreyas B. <shreyasb@vmware.com> 8.0.22-1
+- Upgrade to v8.0.22
+* Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 8.0.21-1
+- Update to 8.0.21
+* Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 8.0.20-1
+- Update to 8.0.20
+* Thu Apr 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.19-1
+- Upgrade to version 8.0.19 to fix several CVEs
+* Wed Jul 31 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.17-1
+- Upgrade to version 8.0.17 to fix CVE-2019-2800, CVE-2019-2822 and more
+* Tue May 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.16-1
+- Upgrade to version 8.0.16 to fix CVE-2019-2632 and more
+* Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 8.0.14-1
+- Upgrade to 8.0.14
+* Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.13-1
+- Upgrade to version 8.0.13
+- Workaround for broken DCMAKE_BUILD_TYPE=RELEASE(Mysql Bug#92945). Revert in next version
+* Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-4
+- Enabling for aarch64
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
+- Adding BuildArch
+* Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
+- Use libtirpc instead obsoleted rpc from glibc.
+* Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1
+- Update to version 8.0.12
+* Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
+- Update to version 5.7.23 to get it to build with gcc 7.3
+* Thu Jan 25 2018 Divya Thaluru <dthaluru@vmware.com> 5.7.20-2
+- Added patch for CVE-2018-2696
+* Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.20-1
+- Update to version 5.7.20
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 5.7.18-3
+- Fix typo in description
+* Fri Jul 14 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-2
+- Run make test in the %check section
+* Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-1
+- Initial packaging for Photon
