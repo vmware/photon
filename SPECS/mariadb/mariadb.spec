@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.7.3
+Version:          10.7.4
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=214d9fade2cfd6a6acec7d8a30273ac542ca4a92
+%define           sha512 %{name}=17b616d410fbcd5d54c0e2b75c34239396eccce1346c2a049d369f9e90b709169724d09a0eb6749dc143057fa9abc72d972bf4bf48c6b5c656ee3a3bec5c15c5
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -323,6 +323,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
+%{_bindir}/wsrep_sst_backup
 %{_sbindir}/*
 %{_unitdir}/*.service
 %{_unitdir}/*.socket
@@ -447,8 +448,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/swedish/errmsg.sys
 %{_datadir}/mysql/ukrainian/errmsg.sys
 %{_datadir}/mysql/hindi/errmsg.sys
+%{_datadir}/mysql/bulgarian/errmsg.sys
+%{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.4-1
+- Upgrade to v10.3.35 to fix bunch of CVEs
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.3-1
 - CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.2-1
