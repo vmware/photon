@@ -1,18 +1,22 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-Summary:    QEMU disk image utility
-Name:       qemu-img
-Version:    4.2.1
-Release:    1%{?dist}
-License:    GNU GPLv2
-URL:        https://www.qemu.org
-Group:      Development/Tools
-Vendor:     VMware, Inc.
-Distribution:   Photon
-Source0:    https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha1 qemu=03d221806203a32795042279e0a21413a0c5ffc3
-BuildRequires:  python3-devel
-BuildRequires:  glib-devel
-BuildRequires:  pixman-devel
+Summary:       QEMU disk image utility
+Name:          qemu-img
+Version:       4.2.1
+Release:       2%{?dist}
+License:       GNU GPLv2
+URL:           https://www.qemu.org
+Group:         Development/Tools
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       https://download.qemu.org/qemu-%{version}.tar.xz
+%define sha512 qemu=30af46fd47d353bb692df85fe28b867604a7476348106210b747c608b585f3c19c0cfb7e394d0911c310d46fecc86685661dcde726d732c8de33bec592c16891
+BuildRequires: python3-devel
+BuildRequires: glib-devel
+BuildRequires: pixman-devel
+Requires:      libstdc++
+Requires:      glib
+Requires:      glibc
+Requires:      zlib
 
 %global debug_package %{nil}
 
@@ -20,7 +24,7 @@ BuildRequires:  pixman-devel
 Qemu-img is the tool used to create, manage, convert shrink etc. the disk images of virtual machines.
 
 %prep
-%setup -q -n qemu-%{version}
+%autosetup -n qemu-%{version}
 # Do not build QEMU's ivshmem
 sed -i 's#ivshmem=yes#ivshmem=no#g' configure
 mkdir build
@@ -133,6 +137,7 @@ popd
 
 %install
 pushd build
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 # Removed unnessary files
 find %{buildroot}/%{_datadir} -name '*.png' -delete
@@ -155,6 +160,8 @@ popd
 %{_datadir}/qemu
 
 %changelog
+*   Tue May 24 2022 Piyush Gupta <gpiyush@vmware.com> 4.2.1-2
+-   Added libstdc++ in Requires.
 *   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
 -   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
