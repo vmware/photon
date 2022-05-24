@@ -7,17 +7,22 @@ URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=b1301d5c5555b3f9fbd024159621db7f65bbf5a7
+%define sha512  %{name}-%{version}=a462ce6b8dde9c2984cee26c4828e9db4468d7311c61dddc1399a2c5b04602f777c65b40c79d00477db77d2b142f85c41119d1f8bac1f57a66ee326c7d2d2d97
 Source1:        91-ostree.preset
+
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
 Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
 
 BuildRequires:  git
-BuildRequires:  autoconf automake libtool which
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  which
 BuildRequires:  gtk-doc
 BuildRequires:  glib-devel
 BuildRequires:  gobject-introspection
@@ -93,6 +98,7 @@ env NOCONFIGURE=1 ./autogen.sh
      --with-mkinitcpio \
      --with-selinux \
      --enable-libsoup-client-certs
+
 make %{?_smp_mflags}
 
 %install
@@ -111,6 +117,7 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %systemd_postun_with_restart ostree-remount.service
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %doc README.md
 %{_bindir}/ostree
@@ -118,14 +125,14 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_datadir}/ostree
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_libdir}/systemd/system/ostree-finalize-staged.path
+%{_unitdir}/ostree-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
-%{_libdir}/systemd/system-generators/ostree-system-generator
-%{_libdir}/systemd/system-preset/91-ostree.preset
-%{_libdir}/systemd/system/ostree*.service
+%{_systemdgeneratordir}/ostree-system-generator
+%{_presetdir}/91-ostree.preset
+%{_unitdir}/ostree*.service
 %{_libdir}/ostree/ostree-prepare-root
 %{_libdir}/ostree/ostree-remount
-%{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
+%{_tmpfilesdir}/ostree-tmpfiles.conf
 %config(noreplace) %{_sysconfdir}/dracut.conf.d/ostree.conf
 %config(noreplace) %{_sysconfdir}/ostree-mkinitcpio.conf
 %{_mandir}/man1/ostree-admin*
@@ -134,11 +141,13 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
+%defattr(-,root,root)
 %{_sysconfdir}/ostree
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/OSTree-1.0.typelib
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -150,26 +159,27 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_mandir}/man5/*.gz
 
 %files grub2
+%defattr(-,root,root)
 %{_sysconfdir}/grub.d/*ostree
 %{_libexecdir}/libostree/grub2*
 
 %changelog
-*   Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.3-3
--   Do not depend on icu and libpsl and libsoup will bring them
-*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.3-2
--   Bump up for openssl
-*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.3-1
--   Updated to 2021.3
-*   Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
--   Updated to 2020.6
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
--   Updated to 2020.4
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
--   Build with gobject-introspection-python3
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
--   Added for ARM Build
-*   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
--   Added support to get kernel and systemd commandline param
--   from photon.cfg and systemd.cfg
-*   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
--   Initial build. First version
+* Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.3-3
+- Do not depend on icu and libpsl and libsoup will bring them
+* Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.3-2
+- Bump up for openssl
+* Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.3-1
+- Updated to 2021.3
+* Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
+- Updated to 2020.6
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
+- Updated to 2020.4
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
+- Build with gobject-introspection-python3
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
+- Added for ARM Build
+* Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
+- Added support to get kernel and systemd commandline param
+- from photon.cfg and systemd.cfg
+* Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
+- Initial build. First version
