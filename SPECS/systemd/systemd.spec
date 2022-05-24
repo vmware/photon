@@ -1,6 +1,6 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        250.4
+Version:        251
 Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    %{name}=c662e22d628414c4c310c5f7cea38e4a1e60742a
+%define sha512  %{name}=9a67136b1fc6600881b2b1a1d89185e5e48ab600a9226b1f27229f8d87c1afc9a1502095f2e26dff3bf0de8f4780293d6b3f78536357859cbfc4bec62d425125
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -453,6 +453,7 @@ rm -rf %{_libdir}/systemd/tests
 %{_tmpfilesdir}/systemd-tmp.conf
 %{_tmpfilesdir}/systemd.conf
 %{_tmpfilesdir}/systemd-resolve.conf
+%{_tmpfilesdir}/systemd-network.conf
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
@@ -664,6 +665,8 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue May 24 2022 Susant Sahani <ssahani@vmware.com>  251-1
+- Version bump
 * Mon Apr 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 250.4-1
 - Upgrade to v250.4
 - Fix systemd-boot-update.service failure

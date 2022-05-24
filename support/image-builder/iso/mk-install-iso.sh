@@ -68,7 +68,10 @@ rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 # 3. finalize initrd system (mk-finalize-system.sh)
 chroot ${INITRD} /usr/sbin/pwconv
 chroot ${INITRD} /usr/sbin/grpconv
-chroot ${INITRD} /bin/systemd-machine-id-setup
+
+# Workaround Failed to generate randomized machine ID: Function not implemented
+chroot ${INITRD} /bin/systemd-machine-id-setup || chroot ${INITRD} date -Ins | md5sum | cut -f1 -d' ' > /etc/machine-id
+
 echo "LANG=en_US.UTF-8" > $INITRD/etc/locale.conf
 echo "photon-installer" > $INITRD/etc/hostname
 # locales/en_GB should be moved to glibc main package to make it working
