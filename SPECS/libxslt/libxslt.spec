@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -9,13 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    %{name}=c47969f16747a72f9095b6a7a56d3afdd1e6e9ac
+%define sha512  %{name}=e1ed3c103cd4c9897e7dd2360a11f63cf30382b7566ce6fcc81117804e203714446b5a62179ce628c3834b0b32ecdeeceecbdfa417507ce9ed5a107a0ebefb39
 
 Patch0:         libxslt-CVE-2019-11068.patch
 Patch1:         libxslt-CVE-2019-13117.patch
 Patch2:         libxslt-CVE-2019-13118.patch
 Patch3:         CVE-2019-18197.patch
 Patch4:         libxslt-CVE-2019-5815.patch
+Patch5:         libxslt-CVE-2021-30560.patch
 
 Requires:       libxml2-devel
 
@@ -77,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue May 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.32-9
+- Apply patch for CVE-2021-30560
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.1.32-8
 - Version bump up to use libxml2 2.9.11-4.
 * Fri Mar 13 2020 Shreyas B. <shreyasb@vmware.com> 1.1.32-7
