@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.109
-Release:        4%{?dist}
+Version:        5.10.118
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
+%define sha512 linux=5ce0746c3b519abe9e20d1c80264a6a8e49bc18907cc0712fd0520f8e74806028a1b3929da636d6ab88b195895f1873122122b1506b7047c37ba30ed22b357f1
 Source1:    config-aws
 Source2:    initramfs.trigger
 Source3:    pre-preun-postun-tasks.inc
@@ -62,14 +62,12 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-29582
-Patch106: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
-Patch107: 0001-debug-Lock-down-kgdb.patch
+Patch106: 0001-debug-Lock-down-kgdb.patch
 # Fix for CVE-2022-1966
-Patch108: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+Patch107: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 # Fix for CVE-2022-1972
-Patch109: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+Patch108: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -190,7 +188,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M109
+%autopatch -p1 -m100 -M108
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -356,6 +354,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jun 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-1
+- Update to version 5.10.118
 * Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
 - Fix for CVE-2022-1966, CVE-2022-1972
 * Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.109-3

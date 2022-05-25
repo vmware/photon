@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.109
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.118
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
+%define sha512 linux=5ce0746c3b519abe9e20d1c80264a6a8e49bc18907cc0712fd0520f8e74806028a1b3929da636d6ab88b195895f1873122122b1506b7047c37ba30ed22b357f1
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -123,19 +123,16 @@ Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
-Patch107: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-29582
-Patch108: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
+Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2022-21499
-Patch109: 0001-debug-Lock-down-kgdb.patch
+Patch105: 0001-debug-Lock-down-kgdb.patch
 
 # Fix for CVE-2022-1966
-Patch110: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 
 # Fix for CVE-2022-1972
-Patch111: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -255,7 +252,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M111
+%autopatch -p1 -m100 -M107
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -467,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-1
+- Update to version 5.10.118
 * Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
 - Fix for CVE-2022-1966, CVE-2022-1972
 * Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.109-3

@@ -2481,7 +2481,6 @@ CONFIG_HYPERV_NET=m
 CONFIG_NETDEVSIM=m
 CONFIG_NET_FAILOVER=m
 # CONFIG_ISDN is not set
-# CONFIG_NVM is not set
 
 #
 # Input device support
