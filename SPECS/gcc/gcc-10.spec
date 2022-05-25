@@ -3,7 +3,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc-10
 Version:        10.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -22,6 +22,8 @@ BuildRequires:  zlib-devel
 BuildRequires:  autogen
 BuildRequires:  dejagnu
 %endif
+# Do not provide any libraries as it will conflict with default system ones
+AutoReqProv:    no
 
 %description
 The GCC package contains the GNU compiler collection,
@@ -67,6 +69,7 @@ rm -rf %{buildroot}%{_lib64dir} \
        %{buildroot}%{_infodir} \
        %{buildroot}%{_datadir}/locale
 
+%if 0%{?with_check}
 %check
 ulimit -s 32768
 # PCH tests fail with error: one ordd more PCH files were found, but they were invalid
@@ -97,6 +100,7 @@ GCC_SUM_FILE=host-%{_host}/gcc/testsuite/gcc/gcc.sum
 # No g++ failures
 CPP_SUM_FILE=host-%{_host}/gcc/testsuite/g++/g++.sum
 [ `grep ^FAIL $CPP_SUM_FILE | wc -l` -ne 0 -o `grep ^XPASS $CPP_SUM_FILE | wc -l` -ne 0 ] && exit 1 ||:
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -125,5 +129,7 @@ CPP_SUM_FILE=host-%{_host}/gcc/testsuite/g++/g++.sum
 %{_datarootdir}/gcc-%{version}/python/libstdcxx/*
 
 %changelog
-*   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 10.2.0-1
--   Alternative, higher version of gcc
+* Wed May 25 2022 Alexey Makhalov <amakhalov@vmware.com> 10.2.0-2
+- Do not use auto provides.
+* Fri May 13 2022 Alexey Makhalov <amakhalov@vmware.com> 10.2.0-1
+- Alternative, higher version of gcc
