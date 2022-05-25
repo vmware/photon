@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        11.1
-Release:        2%{?dist}
+Version:        11.3
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Group:          Development/Tools
@@ -9,15 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512  wavefront=1ce2d9f67c57b7268cb3b6e1d1bf3a5cb84e974ed39d6bc733b549d00020fa67c342f76616315b77950523f58c160d87396c5bd88aa8633bf2fa5002af2c27c5
-
+%define sha512  wavefront=8c540f413a47396e6618fa800a22928252f7ec13e6ba68c3bf7ccdaa09e6bfa10ac25629ea176c2a89970ebbb4ccf1aa2c5cc7a67c0ecd56544d69f9767ce3fb
+Patch0:         0001-Added-Main-class-for-proxy-11.3-jar-with-dependencies.patch
 BuildRequires:  apache-maven
-BuildRequires:  openjre8
-BuildRequires:  openjdk8
+BuildRequires:  openjdk11
 BuildRequires:  systemd-devel
 
 Requires:       systemd
-Requires:       openjre8
+Requires:       openjdk11
 Requires:       commons-daemon
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
@@ -50,6 +49,7 @@ sed -i 's/-jar \/opt\/wavefront\/%{name}\/bin\/wavefront-push-agent.jar/-jar \/o
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*11.0*)
 mvn -f proxy install -DskipTests
 
 %install
@@ -59,7 +59,7 @@ install -m 755 -D pkg/etc/wavefront/%{name}/log4j2.xml.default %{buildroot}/%{_s
 install -m 755 -D pkg/etc/wavefront/%{name}/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
 install -m 755 -D pkg/etc/wavefront/%{name}/wavefront.conf.default %{buildroot}%{_sysconfdir}/wavefront/%{name}/wavefront.conf
 install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/copyright
-install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
+install -m 755 -D proxy/target/proxy-%{version}-jar-with-dependencies.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
@@ -110,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Tue May 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.3-1
+- Use openjdk11 to build wavefront-proxy, Update to 11.3
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.1-2
 - Bump version as a part of apache-maven upgrade
 * Fri May 20 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.1-1
