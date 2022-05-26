@@ -1,12 +1,12 @@
 Name:           btrfs-progs
-Version:        5.11.1
-Release:        2%{?dist}
+Version:        6.1.3
+Release:        1%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 License:        GPLv2+
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha512  %{name}=c7fab6241e5598a3279bb0e221d721c8d51480eb965dc0c16e8d1e98c7fab008e10196f2033a8b1158f27e68985ef8d11f3057cd1304f1d8c6d7ae00ae33e40e
+%define sha512  %{name}=a266316d38cc34a07d73e9fa40840bc058e235fb0d1b4fdfe7aea26f613d14fc62acb731329371386e22c68d770e151ec803ee2a6a82bf185f4c3254555d60bc
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -18,6 +18,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  xmlto
 BuildRequires:  asciidoc3
+BuildRequires:  systemd-devel
 
 Requires:       e2fsprogs
 Requires:       lzo
@@ -71,6 +72,8 @@ rm -rf %{buildroot}
 %{_sbindir}/btrfs
 %{_sbindir}/btrfs-map-logical
 %{_sbindir}/btrfs-find-root
+%{_udevrulesdir}/64-btrfs-dm.rules
+%{_udevrulesdir}/64-btrfs-zoned.rules
 %{_sbindir}/btrfs-select-super
 
 %files devel
@@ -82,6 +85,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 6.1.3-1
+- Automatic Version Bump
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.11.1-2
 - Update release to compile with python 3.11
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.1-1
