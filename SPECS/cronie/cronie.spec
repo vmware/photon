@@ -1,11 +1,11 @@
 Summary:        Cron Daemon
 Name:           cronie
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha512  cronie=9d078e2f8ffc0d2feaa16d419fcccf354f8de8021869b14d315b6f0a0acbd888da98fb47888b71672354ec221bbbaf5b77a543b909ae44b0fc6d2b39394ddf5b
+%define sha512  cronie=1e095df9670ec25d6629f4cf2cacd82c6c1cb1487a859815a7881a1d130e4f18f9976396f773abae24dadc232166bb6467bbaeac1cb0254209fcadf3530d5e6f
 Source1:        run-parts.sh
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -122,6 +122,8 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
 -   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.7-1
