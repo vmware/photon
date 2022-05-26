@@ -1,14 +1,14 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        3.6.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
+Source0: https://wireshark.org/download/src/%{name}-%{version}.tar.xz
 %define sha512 %{name}=cd4a8077629632e9a924600f9af2ffd01917726fd64504d6f3b4a2a1cb5340c9c0bac23e4abab63743952a0a78efd2e09bb125b127d24e85eca6fa41928fd070
 
 BuildRequires:  bzip2-devel
@@ -46,10 +46,10 @@ including a rich display filter language and the ability to view the
 reconstructed stream of a TCP session.
 
 %package devel
-Summary:Development headers and libraries for %{name}
-Requires: %{name} = %{version}-%{release}
-Requires: glibc-devel
-Requires: glib-devel
+Summary:    Development headers and libraries for %{name}
+Requires:   %{name} = %{version}-%{release}
+Requires:   glibc-devel
+Requires:   glib-devel
 
 %description devel
 The %{name}-devel package contains the header files, developer
@@ -99,6 +99,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.2-3
+- Bump version as a part of gnutls upgrade
 * Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.2-2
 - Spec fixes to make it work with latest cmake
 * Fri Feb 25 2022 Susant Sahani <ssahani@vmware.com> 3.6.2-1

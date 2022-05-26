@@ -1,14 +1,16 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        8.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
-URL:            http://libvirt.org/
-Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha512  libvirt=fbdc2953e86117643aafb3198a3d9327188d94abfd155eae4439ee0e722737a57ee44dbb2929746c0a28e10e275c35f4a8190e99668e4cba4025555358591544
+URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
+%define sha512 %{name}=fbdc2953e86117643aafb3198a3d9327188d94abfd155eae4439ee0e722737a57ee44dbb2929746c0a28e10e275c35f4a8190e99668e4cba4025555358591544
+
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl
 BuildRequires:  curl-devel
@@ -34,6 +36,7 @@ BuildRequires:  readline-devel
 BuildRequires:  rpcsvc-proto
 BuildRequires:  systemd-devel
 BuildRequires:  wireshark-devel
+
 Requires:       cyrus-sasl
 Requires:       device-mapper
 Requires:       e2fsprogs
@@ -150,8 +153,10 @@ CONFIGURE_OPTS=(
 
 find %{buildroot} -name '*.la' -delete
 
+%if 0%{?with_check}
 %check
 %meson_test
+%endif
 
 %files
 %defattr(-,root,root)
@@ -182,17 +187,21 @@ find %{buildroot} -name '*.la' -delete
 %config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/libvirt/*
 %{_libdir}/libvirt*.so
 %{_libdir}/pkgconfig/libvirt*
 
 %files docs
+%defattr(-,root,root)
 %{_datadir}/doc/libvirt/*
 %{_datadir}/locale/*
 %{_datadir}/libvirt/test-screenshot.png
 %{_datadir}/libvirt/schemas/*.rng
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.0-3
+- Bump version as a part of gnutls upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.2.0-2
 - Bump version as a part of libxslt upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 8.2.0-1

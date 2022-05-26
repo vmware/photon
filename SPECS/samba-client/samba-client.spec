@@ -1,21 +1,24 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
-Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=200b2b2b08b369915e045f22ee993d5deea7a2533c6c582d4b88c614adcad5529109d449e843a2a1f292e5cfb1877d66421b5b0801ad988896cbe5413717e4dc
-%define samba_ver %{version}-%{release}
+
+Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
+%define sha512 samba=200b2b2b08b369915e045f22ee993d5deea7a2533c6c582d4b88c614adcad5529109d449e843a2a1f292e5cfb1877d66421b5b0801ad988896cbe5413717e4dc
+
 Source1:        smb.conf.vendor
 
-Patch1:         rename_dcerpc_to_smbdcerpc_%{version}.patch
+Patch0:         rename_dcerpc_to_smbdcerpc_%{version}.patch
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+
+%define samba_ver %{version}-%{release}
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -125,12 +128,12 @@ export LDFLAGS="-ltirpc"
         --with-shared-modules=%{_samba_modules} \
         --disable-python \
         --without-ads \
-        --without-ntvfs-fileserver &&
-make bin/smbclient %{?_smp_mflags}
+        --without-ntvfs-fileserver
+
+%make_build bin/smbclient
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 # Install other stuff
 install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/samba/smb.conf
@@ -199,8 +202,8 @@ for file_dir in \
    %{_sbindir}/samba-gpupdate \
    %{_sbindir}/smbd \
    %{_sbindir}/winbindd \
-   /etc/openldap/schema/samba.schema \
-   /etc/pam.d/samba \
+   %{_sysconfdir}/openldap/schema/samba.schema \
+   %{_sysconfdir}/pam.d/samba \
    %{_bindir}/async_connect_send_test \
    %{_bindir}/dns_lookuptest \
    %{_bindir}/gentest \
@@ -303,8 +306,7 @@ for file_dir in \
    %{_mandir}/man8/idmap* \
    %{_mandir}/man8/tdb* \
    %{_mandir}/man8/vfs* \
-   %{_mandir}/man8/winbind* \
-   ; do \
+   %{_mandir}/man8/winbind* ; do \
    rm -rf %{buildroot}$file_dir
 done
 
@@ -313,8 +315,7 @@ done
 for aarch64_file_dir in \
    %{_libdir}/libsamba-policy.cpython-37m-aarch64-linux-gnu.* \
    %{_libdir}/samba/libsamba-net.cpython-37m-aarch64-linux-gnu-samba4.so \
-   %{_libdir}/samba/libsamba-python.cpython-37m-aarch64-linux-gnu-samba4.so \
-   ; do
+   %{_libdir}/samba/libsamba-python.cpython-37m-aarch64-linux-gnu-samba4.so ; do
    rm -f %{buildroot}$aarch64_file_dir
 done
 %endif
@@ -561,14 +562,16 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
-*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.14.4-3
--   Bump version as a part of libxslt upgrade
-*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
--   Release bump up to use libxml2 2.9.12-1.
-*   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
--   Split libwclient from samba-client and create separate package.
--   Upgrade to version 4.14.4
-*   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
--   Upgrade to version 4.13.4
-*   Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
--   Initial version of samba spec.
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.4-4
+- Bump version as a part of gnutls upgrade
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.14.4-3
+- Bump version as a part of libxslt upgrade
+* Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
+- Release bump up to use libxml2 2.9.12-1.
+* Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
+- Split libwclient from samba-client and create separate package.
+- Upgrade to version 4.14.4
+* Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
+- Upgrade to version 4.13.4
+* Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
+- Initial version of samba spec.

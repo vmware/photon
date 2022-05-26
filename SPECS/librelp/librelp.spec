@@ -1,19 +1,20 @@
-Summary:	RELP Library
-Name:		librelp
-Version:	1.10.0
-Release:	2%{?dist}
-License:	GPLv3+
-URL:		http://www.librelp.com
-Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=595a718aabe368762d2c14512956bf94364da489
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    RELP Library
+Name:       librelp
+Version:    1.10.0
+Release:    3%{?dist}
+License:    GPLv3+
+URL:        http://www.librelp.com
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-BuildRequires:	gnutls-devel
-BuildRequires:	autogen
+Source0: http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a38840231902bec034edb497166deded7577c989e4f735e406c8488384972925de1ca6132b3080472f7919d2439559c8774c02a49c356e90ad791dfbba2a4865
 
-Requires:	gnutls
+BuildRequires:  gnutls-devel
+BuildRequires:  autogen
+
+Requires:   gnutls
 
 %description
 Librelp is an easy to use library for the RELP protocol. RELP (stands
@@ -21,8 +22,8 @@ for Reliable Event Logging Protocol) is a general-purpose, extensible
 logging protocol.
 
 %package devel
-Summary:	Development libraries and header files for librelp
-Requires:	librelp
+Summary:    Development libraries and header files for librelp
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 The package contains libraries and header files for
@@ -34,11 +35,12 @@ autoreconf -fiv
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 #There are two tests(out of 16) which run under valgrind.
 #Currently these two tests just greps for a message output after test.
@@ -54,14 +56,17 @@ sed -i '/duplicate-receiver-vg.sh \\/d' tests/Makefile.am
 sed -i '/basic-sessionbreak-vg.sh/d' tests/Makefile.am
 
 make check %{?_smp_mflags}
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/*.la
 %{_libdir}/*.a
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*.h
@@ -69,6 +74,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-3
+- Bump version as a part of gnutls upgrade
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.0-2
 - Bump up release for openssl
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.10.0-1

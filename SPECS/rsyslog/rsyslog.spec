@@ -1,15 +1,16 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2202.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha512  %{name}=b1c68099236cc0722f52822f8b46d7f2a4a023e0809907f2b0173d5593df3c6f914516310bd832ac028252fb2c467dc90756d4472950e4244f3919b328a8bd6e
+Source0: http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
+%define sha512 %{name}=b1c68099236cc0722f52822f8b46d7f2a4a023e0809907f2b0173d5593df3c6f914516310bd832ac028252fb2c467dc90756d4472950e4244f3919b328a8bd6e
+
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -57,10 +58,10 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-imtcp \
     --enable-openssl
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -vd %{buildroot}%{_unitdir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
 install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
@@ -70,8 +71,8 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rsyslog.conf
 find %{buildroot} -name '*.la' -delete
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} check
 %endif
 
@@ -98,6 +99,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2202.0-3
+- Bump version as a part of gnutls upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2202.0-2
 - Add libgpg-error-devel to BuildRequires
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 8.2202.0-1

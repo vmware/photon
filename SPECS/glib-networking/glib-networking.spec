@@ -1,7 +1,7 @@
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.70.1
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      GPLv2
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
@@ -77,6 +77,8 @@ CONFIGURE_OPTS=(
 %{_libdir}/gio/modules/libgiognutls.so
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.1-3
+- Bump version as a part of gnutls upgrade
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.1-2
 - Bump version as a part of nettle upgrade
 * Mon Dec 13 2021 Susant Sahani <sshedi@vmware.com> 2.70.1-1
