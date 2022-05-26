@@ -1,24 +1,27 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define debug_package %{nil}
 
 Summary:        AsciiDoc is a human readable text document format
 Name:           asciidoc3
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.com/asciidoc3/asciidoc3
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://asciidoc3.org/asciidoc3-3.2.0.tar.gz
-%define sha1 asciidoc3=496a8c515dbb962a9fd3ced810d514cae7677071
-BuildRequires:  python3
-BuildRequires:  python3-libs
+
+Source0: https://asciidoc3.org/%{name}-%{version}.tar.gz
+%define sha512 %{name}=31ea277aeb037b7b217e17a2ba54c86b4c7cf923669538b6732120fccd6582097815e5d5ea832ea39c3514068887d4dc5ecafc0d65359794d729cf4711c8e693
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+
 Requires:       python3-setuptools
 Requires:       python3
+
 BuildArch:      noarch
+
+Provides:       asciidoc
 
 %description
 AsciiDoc3 is a text document format for writing notes, documentation,
@@ -30,16 +33,18 @@ both the AsciiDoc3 source file syntax and the backend output markups
 and extended by the user.
 
 %prep
-%setup
+%autosetup -p1
 
 %build
-python3 setup.py build
+%{py3_build}
 
 %install
-python3 setup.py install --skip-build --root %{buildroot}
-mkdir -p %{buildroot}%{_sysconfdir}
-mv %{buildroot}/asciidoc3 %{buildroot}%{python3_sitelib}
+%{py3_install}
+mv %{buildroot}/%{name} %{buildroot}%{python3_sitelib}
+ln -sfv %{_bindir}/%{name} %{buildroot}%{_bindir}/asciidoc
 
+%clean
+rm -rf %{buildroot}/*
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,5 +55,7 @@ mv %{buildroot}/asciidoc3 %{buildroot}%{python3_sitelib}
 %{_bindir}/*
 
 %changelog
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.2.0-1
--   Initial build.  First version
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-2
+- Provde asciidoc from asciidoc3
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.2.0-1
+- Initial build. First version
