@@ -1,23 +1,26 @@
-%global major 78
+%global major 102
 
-Summary:       Mozilla's JavaScript engine.
+Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
-Version:       78.15.0
-Release:       4%{?dist}
+Version:       102.3.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
-URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
+URL:           https://spidermonkey.dev
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha512 firefox-%{version}=ac3de735b246ce4f0e1619cd2664321ffa374240ce6843e785d79a350dc30c967996bbcc5e3b301cb3d822ca981cbea116758fc4122f1738d75ddfd1165b6378
+%define sha512 firefox-%{version}=35357791f4de8b474780083a22fb52b7846b8012cbf01403f2b9526151d11c196ce0f9fba8e0f16d8235d7259af6fba1bc3acbb5b7e79129a28f390467aa7556
 
 Patch0:        emitter.patch
-Patch1:        emitter_test.patch
+
 # Build fixes
-Patch2:        init_patch.patch
-Patch3:        spidermonkey_checks_disable.patch
+Patch1:     init_patch.patch
+Patch2:     spidermonkey_checks_disable.patch
+Patch3:     copy-headers.patch
+Patch4:     fix-soname.patch
+Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -37,8 +40,9 @@ Obsoletes:     mozjs60
 Obsoletes:     js
 
 %description
-Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
-JavaScript to machine code, for a significant speed increase.
+SpiderMonkey is the code-name for Mozilla Firefox's C++ implementation of
+JavaScript. It is intended to be embedded in other applications
+that provide host environments for JavaScript.
 
 %package       devel
 Summary:       mozjs devel
@@ -46,20 +50,37 @@ Group:         Development/Tools
 Requires:      %{name} = %{version}-%{release}
 
 %description   devel
-This contains development tools and libraries for SpiderMonkey.
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
 
 %prep
 %autosetup -p1 -n firefox-%{version}
 rm -rf modules/zlib
 
 %build
+export CC=gcc
+export CXX=g++
+export M4=m4
+export AWK=awk
+export AC_MACRODIR=$PWD/build/autoconf/
+
 cd js/src
+
+sh ../../build/autoconf/autoconf.sh --localdir=$PWD configure.in > configure
+chmod +x configure
+
 %configure \
-    --with-system-icu \
-    --enable-readline \
-    --disable-jemalloc \
-    --disable-tests \
-    --with-system-zlib
+  --with-system-icu \
+  --with-system-zlib \
+  --disable-tests \
+  --disable-strip \
+  --with-intl-api \
+  --enable-readline \
+  --enable-shared-js \
+  --enable-optimize \
+  --disable-debug \
+  --enable-pie \
+  --disable-jemalloc
 
 %make_build
 
@@ -67,27 +88,51 @@ cd js/src
 cd js/src
 %make_install %{?_smp_mflags}
 chmod -x %{buildroot}%{_libdir}/pkgconfig/*.pc
-# remove non required files
-rm %{buildroot}%{_libdir}/libjs_static.ajs
+
+mv %{buildroot}%{_includedir}/%{name}-%{major}/js-config.h \
+    %{buildroot}%{_includedir}/%{name}-%{major}/js-config-64.h
+
+cat >%{buildroot}%{_includedir}/%{name}-%{major}/js-config.h <<EOF
+#ifndef JS_CONFIG_H_MULTILIB
+#define JS_CONFIG_H_MULTILIB
+
+#include <bits/wordsize.h>
+
+#if __WORDSIZE == 64
+# include "js-config-64.h"
+#else
+# error "unexpected value for __WORDSIZE macro"
+#endif
+
+#endif
+EOF
+
+# Remove unneeded files
+rm %{buildroot}%{_bindir}/js%{major}-config %{buildroot}%{_libdir}/libjs_static.ajs
+
+# Rename library and create symlinks, following fix-soname.patch
+mv %{buildroot}%{_libdir}/libmozjs-%{major}.so \
+   %{buildroot}%{_libdir}/libmozjs-%{major}.so.0.0.0
+ln -s libmozjs-%{major}.so.0.0.0 %{buildroot}%{_libdir}/libmozjs-%{major}.so.0
+ln -s libmozjs-%{major}.so.0 %{buildroot}%{_libdir}/libmozjs-%{major}.so
+
 find %{buildroot} -name '*.la' -delete
 
 %ldconfig_scriptlets
 
-%clean
-rm -rf %{buildroot}/*
-
 %files
-%defattr(-,root,root)
-%{_bindir}/js%{major}
-%{_bindir}/js%{major}-config
-%{_libdir}/libmozjs-%{major}.so
+%license LICENSE
+%{_libdir}/libmozjs-%{major}.so.0*
 
 %files devel
-%defattr(-,root,root)
-%{_includedir}/mozjs-%{major}
-%{_libdir}/pkgconfig/mozjs-%{major}.pc
+%{_bindir}/js%{major}
+%{_libdir}/libmozjs-%{major}.so
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/%{name}-%{major}
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 102.3.0-1
+- Upgrade to v102.3.0
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-4
 - Bump version as a part of icu upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-3
