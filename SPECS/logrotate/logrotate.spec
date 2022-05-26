@@ -1,11 +1,11 @@
 Summary:	Logrotate
 Name:		logrotate
-Version:	3.19.0
+Version:	3.20.1
 Release:	1%{?dist}
 License:	GPLv2
 URL:		https://github.com/logrotate/logrotate/
 Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
-%define sha512  logrotate=68bca961608565687a9ccb18e72f0627b405aff95286e508fdc78926d2cc172c56e1523a24ca81a161f683c2d568312984e2757edd291d144e0e4b982433e119
+%define sha512  logrotate=07e904ca11c045497073db629a90c2d41e6f5834b227aab1e5f259d0f0385d326ceb6800b9c5fba373f920a90d5f49b4898b87c098170c542b1fb9f1cb0dd7f0
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -65,6 +65,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_localstatedir}/lib/logrotate/logrotate.status
 
 %changelog
+*       Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 3.20.1-1
+-       Automatic Version Bump
 *       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.19.0-1
 -       Automatic Version Bump
 *       Wed Mar 24 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.18.0-1
