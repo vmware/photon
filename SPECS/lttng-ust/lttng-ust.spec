@@ -1,33 +1,33 @@
-Summary: LTTng-UST is an Userspace Tracer library
-Name:    lttng-ust
-Version: 2.12.1
-Release: 1%{?dist}
-License: GPLv2, LGPLv2.1 and MIT
-URL: https://lttng.org/download/
-Source: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha1 lttng-ust=bd6c0deff625464b456cbd585f371fb17bbe10e0
-Group:      Development/Libraries
-Vendor:     VMware, Inc.
+Summary:       LTTng-UST is an Userspace Tracer library
+Name:          lttng-ust
+Version:       2.13.3
+Release:       1%{?dist}
+License:       GPLv2, LGPLv2.1 and MIT
+URL:           https://lttng.org/download/
+Source:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+%define sha512 lttng-ust=7d83c64a86698e85cf1133cd2551e4e5f9f2544175fb756f47ec821ece24995305dc892dd681ac24fdb58956ed2c1d982f60b108bc6fbbc17b9244cc4b82d876
+Group:         Development/Libraries
+Vendor:        VMware, Inc.
 Distribution:  Photon
-
 BuildRequires: userspace-rcu-devel
 %if %{with_check}
 BuildRequires: perl
 %endif
 Requires:      userspace-rcu
+
 %description
 This library may be used by user-space applications to generate
 trace-points using LTTng.
 
-%package devel
-Summary:    The libraries and header files needed for LTTng-UST development.
-Requires:   %{name} = %{version}-%{release}
+%package       devel
+Summary:       The libraries and header files needed for LTTng-UST development.
+Requires:      %{name} = %{version}-%{release}
 
-%description devel
+%description   devel
 The libraries and header files needed for LTTng-UST development.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -41,7 +41,7 @@ make %{?_smp_mflags}
 make %{?_smp_mflags} check
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm -vf %{buildroot}%{_libdir}/*.la
 
 %post -p /sbin/ldconfig
@@ -60,6 +60,8 @@ rm -vf %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.3-1
+- Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.12.1-1
 - Automatic Version Bump
 * Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1
