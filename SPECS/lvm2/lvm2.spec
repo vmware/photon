@@ -1,6 +1,6 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.03.15
+Version:        2.03.16
 Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
@@ -8,7 +8,7 @@ URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha512  LVM2=ad3cc33b9d54eebcbb79ada71baa7fdf2e76eca01d593a6aaa3649ef9345dc2fa939f09598486520c0548afde5a7691af13a35d8c1d431e5bbe51c41bbe6c2e9
+%define sha512  LVM2=084ba4080537359458db936637fc7f83bb9bfcf2de9f3660882551b5c31c7e9900c7d381b238ce1bb7629942c740c121f0dea5e404c302d31ed028b5c65efaa5
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -297,6 +297,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.16-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.15-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.03.11-1
