@@ -1,7 +1,5 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-sphinxcontrib-htmlhelp
-Version:        1.0.3
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
@@ -9,15 +7,26 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/sphinxcontrib-htmlhelp
-Source0:        https://files.pythonhosted.org/packages/c9/2e/a7a5fef38327b7f643ed13646321d19903a2f54b0a05868e4bc34d729e1f/sphinxcontrib-htmlhelp-%{version}.tar.gz
-%define sha1    sphinxcontrib-htmlhelp=fc695250bc781777203b3a97a7aa7b0eab8a2c51
-BuildArch:      noarch
 
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+Source0: https://files.pythonhosted.org/packages/eb/85/93464ac9bd43d248e7c74573d58a791d48c475230bcf000df2b2700b9027/sphinxcontrib-htmlhelp-%{version}.tar.gz
+%define sha512 sphinxcontrib-htmlhelp=6ed673966615f3e818e00de4b7e59c27f0a0d7b494294f804540777c580480870c36002c08d8ad626b7b41a676fe40edc0b0b5ffc6ad8080f38f59c24e157636
 
-Requires:       python3
+%if 0%{?with_check}
+Patch0: fix-tests.patch
+%endif
+
+BuildArch: noarch
+
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+
+%if 0%{?with_check}
+BuildRequires: python3-sphinx
+BuildRequires: python3-pytest
+BuildRequires: python3-pip
+%endif
+
+Requires: python3
 
 Provides: python3.9dist(sphinxcontrib-htmlhelp)
 
@@ -32,13 +41,16 @@ the same lock object twice, it will not block.
 %autosetup -p1 -n sphinxcontrib-htmlhelp-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
-%{__python3} test.py
+pip3 install html5lib
+%pytest
+%endif
 
 %files
 %defattr(-,root,root,-)
@@ -48,5 +60,7 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/sphinxcontrib/
 
 %changelog
+* Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-1
+- Upgrade to v2.0.0
 * Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.0.3-1
 - initial version
