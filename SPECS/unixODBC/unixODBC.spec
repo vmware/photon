@@ -1,6 +1,6 @@
 Summary:       ODBC driver manager
 Name:          unixODBC
-Version:       2.3.9
+Version:       2.3.11
 Release:       1%{?dist}
 License:       GPLv2+ and LGPLv2+
 URL:           http://www.unixodbc.org/
@@ -8,7 +8,7 @@ Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha1   unixODBC=8787833ccfa6b7b6b14a391ae9cbefcff13fb753
+%define sha512   unixODBC=dddc32f90a7962e6988e1130a8093c6fb8b9ff532cad270d572250324aecbc739f45f9d8021d217313910bab25b08e69009b4f87456575535e93be1f46f5f13d
 BuildRequires: automake autoconf libtool
 
 %description
@@ -25,18 +25,17 @@ To develop programs that will access data through
 ODBC, you need to install this package.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-%configure --prefix=/usr               \
-           --sysconfdir=/etc/%{name}   \
+%configure \
            --enable-threads=yes        \
            --enable-drivers=yes        \
            --enable-driverc=yes
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find doc -name "Makefile*" -delete
 chmod 644 doc/{lst,ProgrammerManual/Tutorial}/*
 install -v -m755 -d /usr/share/doc/%{name}-%{version}
@@ -52,7 +51,7 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %files
 %defattr(-,root,root)
 %doc README COPYING AUTHORS ChangeLog NEWS doc
-%config(noreplace) %{_sysconfdir}/%{name}/odbc*
+%config(noreplace) %{_sysconfdir}/odbc*
 %{_bindir}/odbcinst
 %{_bindir}/isql
 %{_bindir}/dltest
@@ -68,6 +67,8 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %{_libdir}/pkgconfig
 
 %changelog
+*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.11-1
+-   Automatic Version Bump
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.9-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-2
