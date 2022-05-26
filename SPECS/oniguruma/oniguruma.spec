@@ -1,5 +1,5 @@
 Name:           oniguruma
-Version:        6.9.7
+Version:        6.9.8
 Release:        1%{?dist}
 License:        BSD
 Summary:        Regular expressions library
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/kkos/oniguruma/
 Source0:        https://github.com/kkos/oniguruma/releases/download/v%{version}/onig-%{version}.tar.gz
-%define sha1    onig=ce95a3c3ae653ad423f2868b843a46b64bdb878c
+%define sha512    onig=6f541e8cecf73b029e54d4e11a6ddffe058d6c47674086df5a3921323351032819aca2719d35584648c3bffce6779d976a7513eabd4645362b3af701e59c67ca
 %description
 Oniguruma is a regular expressions library.
 The characteristics of this library is that different character encoding
@@ -24,23 +24,24 @@ Requires:       oniguruma = %{version}-%{release}
 Development files for libonig
 
 %prep
-%setup -q
+%autosetup
+
 %build
 autoreconf -vfi
 %configure                    \
         --disable-silent-rules \
         --disable-static       \
         --with-rubydir=%{_bindir}
-make
+make %{?_smp_mflags}
 
 %install
-make install \
+make install %{?_smp_mflags} \
         DESTDIR=%{buildroot}  \
         INSTALL="install -c -p"
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 %check
-make  check
+make check %{?_smp_mflags}
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -61,6 +62,8 @@ make  check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 6.9.8-1
+- Automatic Version Bump
 * Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 6.9.7-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.9.6-1
