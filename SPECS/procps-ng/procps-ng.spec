@@ -1,6 +1,6 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.17
+Version:        4.0.0
 Release:        1%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
@@ -9,22 +9,22 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    %{name}=a52952e8bc6aaab812176c00d25adc4d4e1552e2
+%define sha512  %{name}=1749375f72fdede58b394a7b64127b7ef7f432854995669c73802d5d626e611d23b0f6eca85106590a0b6cc21057c7c389c459dbff8f02ec52ed506723330541
 
-BuildRequires:  ncurses-devel
+BuildRequires: ncurses-devel
 
-Requires:       ncurses
+Requires: ncurses
 
-Conflicts:      toybox < 0.8.2-2
+Conflicts: toybox < 0.8.2-2
 
 %description
 The Procps package contains programs for monitoring processes.
 
-%package    devel
+%package devel
 Summary:    Header and development files for procps-ng
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
-%description    devel
+%description devel
 It contains the libraries and header files to create applications
 
 %package lang
@@ -32,11 +32,11 @@ Summary:    Additional language files for procps-ng
 Group:      Applications/Databases
 Requires:   %{name} = %{version}-%{release}
 
-%description lang
+%description    lang
 These are the additional language files of procps-ng
 
 %prep
-%autosetup -p1 -n procps-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -49,10 +49,10 @@ fi
            --disable-kill \
            --disable-silent-rules
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libprocps.so) %{buildroot}%{_libdir}/libprocps.so
@@ -61,8 +61,10 @@ ln -sfv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %ldconfig_scriptlets
 
@@ -82,7 +84,7 @@ make %{?_smp_mflags} check
 %{_bindir}/slabtop
 %{_bindir}/watch
 %{_bindir}/pkill
-%{_bindir}/pwait
+%{_bindir}/pidwait
 %{_sbindir}/sysctl
 %{_sbindir}/pidof
 %_datadir/locale/*
@@ -90,26 +92,22 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_libdir}/libprocps.so.*
+%{_libdir}/libproc-2.so.*
 
 %files devel
-%{_includedir}/proc/sig.h
-%{_includedir}/proc/wchan.h
-%{_includedir}/proc/version.h
-%{_includedir}/proc/pwcache.h
-%{_includedir}/proc/procps.h
-%{_includedir}/proc/devname.h
-%{_includedir}/proc/sysinfo.h
-%{_includedir}/proc/readproc.h
-%{_includedir}/proc/escape.h
-%{_includedir}/proc/slab.h
-%{_includedir}/proc/alloc.h
-%{_includedir}/proc/whattime.h
-%{_includedir}/proc/numa.h
-%{_libdir}/pkgconfig/libprocps.pc
+%defattr(-,root,root)
 %{_libdir}/libprocps.so
+%{_libdir}/libproc-2.so
+%{_includedir}/procps/diskstats.h
+%{_includedir}/procps/meminfo.h
+%{_includedir}/procps/misc.h
+%{_includedir}/procps/pids.h
+%{_includedir}/procps/slabinfo.h
+%{_includedir}/procps/stat.h
+%{_includedir}/procps/vmstat.h
+%{_includedir}/procps/xtra-procps-debug.h
 %{_mandir}/man3/*
-
+%{_libdir}/pkgconfig/*.pc
 %exclude %{_mandir}/pl/*
 %exclude %{_mandir}/pt_BR/*
 %exclude %{_mandir}/sv/*
@@ -121,6 +119,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-1
+- Upgrade to v4.0.0
 * Mon Dec 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.17-1
 - Fix file packaging paths
 * Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.16-1
