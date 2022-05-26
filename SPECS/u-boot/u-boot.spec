@@ -2,14 +2,14 @@
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware
 Name:		u-boot
-Version:	2020.07
-Release:	4%{?dist}
+Version:	2023.01
+Release:	1%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
-%define sha1 u-boot=1b59dd6875b0ceeb5202ef027f26bf3c99a8d91b
+Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.gz
+%define sha512 u-boot=bdbdf7eb3fe05981d1030d194b90889e71630ae27aef2d8f5660535ac0d8b8ab2af580cd1ab7e12ead08c9a45cfb20d6c1510aed941becb32057795f7f99e846
 Source1:        rpi_3_photon_defconfig
 Source2:        rpi_4_photon_defconfig
 Source3:        rpi_photon_defconfig
@@ -49,10 +49,7 @@ Requires:       raspberrypi-firmware-pi4
 Bootloader file (u-boot.bin) for Raspberry Pi 4
 
 %prep
-%setup -q -n u-boot-%{version}
-%patch0 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
 cp -t configs/ %{SOURCE1} %{SOURCE2} %{SOURCE3}
@@ -89,6 +86,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 2023.01-1
+-   Automatic Version Bump
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 2020.07-4
 -   Add Raspberry Pi 4 support
 -   Move bootloader files into sub-packages

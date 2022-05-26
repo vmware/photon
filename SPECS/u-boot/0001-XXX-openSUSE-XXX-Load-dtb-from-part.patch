@@ -1,6 +1,6 @@
-From a7e044eece1d28a53f343503890e361322de96e3 Mon Sep 17 00:00:00 2001
+From 6c1aef393ba4e3756f0f5d88e813a6b985c6efff Mon Sep 17 00:00:00 2001
 From: Alexander Graf <agraf@suse.de>
-Date: Wed, 13 Apr 2016 13:44:29 +0200
+Date: Sun, 12 Feb 2023 17:34:34 +0000
 Subject: [PATCH] XXX openSUSE XXX: Load dtb from partition 2
 
 Upstream U-Boot loads the device tree from the EFI partition. This is
@@ -16,10 +16,10 @@ Signed-off-by: Alexander Graf <agraf@suse.de>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
-index e0d0034ed3..120e22e995 100644
+index c3a2414b..12486c86 100644
 --- a/include/config_distro_bootcmd.h
 +++ b/include/config_distro_bootcmd.h
-@@ -126,16 +126,16 @@
+@@ -155,17 +155,17 @@
  		"fi\0"                                                    \
  	\
  	"load_efi_dtb="                                                   \
@@ -32,10 +32,14 @@ index e0d0034ed3..120e22e995 100644
  	"scan_dev_for_efi="                                               \
  		"setenv efi_fdtfile ${fdtfile}; "                         \
  		BOOTENV_EFI_SET_FDTFILE_FALLBACK                          \
+ 		BOOTENV_RUN_EXTENSION_INIT                                \
  		"for prefix in ${efi_dtb_prefixes}; do "                  \
  			"if test -e ${devtype} "                          \
 -					"${devnum}:${distro_bootpart} "   \
 +					"${devnum}:2 "   \
  					"${prefix}${efi_fdtfile}; then "  \
  				"run load_efi_dtb; "                      \
- 			"fi;"                                             \
+ 				BOOTENV_RUN_EXTENSION_APPLY               \
+-- 
+2.19.0
+
