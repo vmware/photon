@@ -1,11 +1,11 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
-Version:        236
+Version:        237
 Release:        1%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha1 libgudev=24a73f68868c0e42940663a64bea952d29a71d17
+%define sha512 libgudev=2d68981e3ba5c58ee080b6ed5cd5152c1c352b2bdb3ecb5eaf2b91f6800d3369121222a7fe4f82630aabd164069ee7276c52082b2fc2ff5f318481b85b25abc6
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +62,8 @@ libgudev-devel package contains header files for building gudev applications.
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 237-1
+- Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 236-1
 - Use autosetup, ldconfig scriptlets, switch to meson
 - and version bump

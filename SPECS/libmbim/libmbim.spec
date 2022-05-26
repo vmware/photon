@@ -1,7 +1,7 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.26.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -71,6 +71,8 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Tue Jan 03 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.26.2-5
+- Bump release as a part of libgudev upgrade to 237-1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.26.2-4
 - Update release to compile with python 3.11
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.26.2-3
