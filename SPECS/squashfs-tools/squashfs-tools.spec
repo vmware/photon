@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the SQUASHFS filesystem
 Name:           squashfs-tools
 Version:        4.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU GPLv2
 URL:            https://github.com/plougher/squashfs-tools/
 Group:          System Environment/Base
@@ -12,14 +12,14 @@ Source0:        https://github.com/plougher/squashfs-tools/archive/refs/tags/%{n
 BuildRequires:  which
 BuildRequires:  autoconf-archive
 BuildRequires:  gzip
-BuildRequires:  zlib-devel zstd-devel
+BuildRequires:  zlib-devel
 Requires:       zlib zstd-libs
 
 %description
 The squashfs-tools package contains tools for creation and extraction SQUASHFS file system.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 cd %{name}
@@ -42,6 +42,8 @@ make INSTALL_DIR=%{buildroot}%{_bindir} %{?_smp_mflags} install
 %{_bindir}/unsquashfs
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.5.1-2
+- Bump version as a part of zstd upgrade
 * Tue Mar 22 2022 Shivani Agarwal <shivania2@vmware.com> 4.5.1-1
 - Fix CVE-2021-41072 CVE-2021-40153
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 4.5-1

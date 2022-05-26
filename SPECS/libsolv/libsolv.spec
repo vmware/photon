@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -76,6 +76,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-2
+- Bump version as a part of zstd upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-1
 - Upgrade to v0.7.22
 * Wed Jul 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.20-1
