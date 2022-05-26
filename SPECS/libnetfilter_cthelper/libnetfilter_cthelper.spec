@@ -1,14 +1,14 @@
-Summary:    User-space infrastructure for connection tracking helpers
-Name:       libnetfilter_cthelper
-Version:    1.0.0
-Release:    1%{?dist}
-License:    GPLv2
-URL:        http://www.netfilter.org/projects/libnetfilter_cthelper/index.html
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
+Summary:        User-space infrastructure for connection tracking helpers
+Name:           libnetfilter_cthelper
+Version:        1.0.1
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://www.netfilter.org/projects/libnetfilter_cthelper/index.html
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_cthelper=5d0a82794bd46aafde20c16800edca23d563de66
+Source0:        http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+%define sha512  libnetfilter_cthelper=f0591edd579aee92b62446e2b8fef6af9c404848c42c8da76850bb01aec3567442612f53cf8d3af6ba4d6d920487bff310a4e547bccf595478b1f96b4280eada
 
 BuildRequires:  libmnl-devel
 BuildRequires:  linux-api-headers
@@ -28,7 +28,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure --disable-static
@@ -53,6 +53,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 
 %changelog
+*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.1-1
+-   Automatic Version Bump
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.0-1
 -   Initial packaging
-
