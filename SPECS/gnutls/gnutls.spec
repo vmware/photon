@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -35,7 +35,7 @@ PKCS #12, OpenPGP and other required structures. It is aimed to be portable and 
 
 %package        devel
 Summary:        Development libraries and header files for gnutls
-Requires:       gnutls
+Requires:       %{name} = %{version}-%{release}
 Requires:       libtasn1-devel
 Requires:       nettle-devel
 
@@ -54,7 +54,7 @@ developing applications that use gnutls.
     --disable-static \
     --disable-openssl-compatibility \
     --with-included-unistring \
-    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
+    --with-system-priority-file=%{_sysconfdir}/%{name}/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %make_build
@@ -84,11 +84,11 @@ make check %{?_smp_mflags}
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_datadir}/locale/*
-%{_docdir}/gnutls/*.png
+%{_docdir}/%{name}/*.png
 %{_libdir}/guile/2.2/extensions/*.so*
-%{_libdir}/guile/2.2/site-ccache/gnutls*
-%{_datadir}/guile/site/2.2/gnutls*
-%config(noreplace) %{_sysconfdir}/gnutls/default-priorities
+%{_libdir}/guile/2.2/site-ccache/%{name}*
+%{_datadir}/guile/site/2.2/%{name}*
+%config(noreplace) %{_sysconfdir}/%{name}/default-priorities
 
 %files devel
 %defattr(-,root,root)
@@ -98,6 +98,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-2
+- Bump version as a part of gc upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-1
 - Upgrade to v3.7.7
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.4-2

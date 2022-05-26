@@ -1,6 +1,6 @@
 Summary:       Atomic memory update operations portable implementation
 Name:          libatomic_ops
-Version:       7.6.12
+Version:       7.6.14
 Release:       1%{?dist}
 License:       GPLv2 and MIT
 URL:           https://github.com/ivmai/libatomic_ops
@@ -8,8 +8,8 @@ Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-%{version}.tar.gz
-%define sha512 libatomic_ops=bbf98a38a80c8fe6b7eab773967edc55b8d48be32b36ed827fb835ee3dcd96d5ec1dc97149714e015e93a0a5b9fc03595797663fdb5a0f673869ea8bfe640df5
+Source0: http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-%{version}.tar.gz
+%define sha512 %{name}=da83886b4d766da64b27672eede40bd5787523a4c308ac7bd3f03ac831ae1a141ba21e5f5ada27bfcf811b9fb04d8a519331ea2573af036f8791958668dad851
 
 %description
 This package provides semi-portable access to hardware-provided atomic memory update operations on a number of architectures.
@@ -17,21 +17,19 @@ This package provides semi-portable access to hardware-provided atomic memory up
 %package       devel
 Summary:       Development files for the libatomic_ops library
 Group:         Development/Libraries
-Requires:      libatomic_ops
-Provides:      libatomic_ops-devel
-Provides:      libatomic_ops-devel(x86-64)
+Requires:      %{name} = %{version}-%{release}
 
 %description   devel
 Libraries and header files for libatomic_ops library.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
-        --bindir=%{_sbindir} \
-        --enable-shared \
-        --disable-silent-rules
+    --bindir=%{_sbindir} \
+    --enable-shared \
+    --disable-silent-rules
 
 %make_build
 
@@ -39,8 +37,10 @@ Libraries and header files for libatomic_ops library.
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/atomic_ops.pc
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.6.14-1
+- Upgrade to v7.6.14
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 7.6.12-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 7.6.10-1

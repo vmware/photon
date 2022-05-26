@@ -2,7 +2,7 @@ Summary:    The Automated Text and Program Generation Tool
 Name:       autogen
 Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/autogen
 Group:      System Environment/Tools
@@ -89,6 +89,8 @@ make check %{?_smp_mflags}
 %{_libdir}/*.a
 
 %changelog
+* Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-6
+- Bump version as a part of gc upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-5
 - Remove .la files
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-4

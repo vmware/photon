@@ -1,17 +1,17 @@
-%define guile_major_ver 2.2
+%define guile_major_ver 3.0
 
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
-Name:           guile
-Version:        2.2.7
-Release:        4%{?dist}
+Name:           guile3
+Version:        3.0.8
+Release:        1%{?dist}
 License:        LGPLv3+
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://ftp.gnu.org/gnu/guile/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ad11885ffeb7655ef6c8543e67233992dc37bdcf91ed82188e6a144169c6b7d4e31cf7a6d01509c573d00904cb002719b851f71cdf1359a86de401daf613d773
+Source0: https://ftp.gnu.org/gnu/guile/guile-%{version}.tar.xz
+%define sha512 guile=5d1d93e3e22c524ea3c2fe28cf3c343ab8ba99bf5c7b8750c4ebcaf556ae21485fb99e5ccc50c4b07037cdc678552557753d67ef2c93d8c1b62603e1809418f6
 
 BuildRequires:  libltdl-devel
 BuildRequires:  libunistring-devel
@@ -42,12 +42,13 @@ The package contains libraries and header files for
 developing applications that use guile.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n guile-%{version}
 
 %build
 %configure \
     --disable-static \
-    --disable-error-on-warning
+    --disable-error-on-warning \
+    --program-suffix=%{guile_major_ver}
 
 %make_build
 
@@ -70,36 +71,18 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/%{name}/*
+%{_libdir}/guile/*
 %{_mandir}/man1/*
 
 %files devel
 %defattr(-,root,root)
 %{_datadir}/aclocal/*.m4
-%{_includedir}/%{name}/%{guile_major_ver}/*.h
-%{_includedir}/%{name}/%{guile_major_ver}/libguile/*.h
+%{_includedir}/guile/%{guile_major_ver}/*.h
+%{_includedir}/guile/%{guile_major_ver}/libguile/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_datadir}/%{name}/*
+%{_datadir}/guile/*
 
 %changelog
-* Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-4
-- Bump version as a part of gc upgrade
-* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-3
-- Remove .la files
-* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-2
-- Bump version as a part of libffi upgrade
-* Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
-- Automatic Version Bump
-* Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.13-3
-- Bump to build with latest libffi
-* Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
-- Adding glibc-iconv to Requires section
-* Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
-- Bumped to latest version 2.0.13 to handle CVE-2016-8606
-* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
-- Modified %check
-* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
-- GA - Bump release of all rpms
-* Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
-- Initial build. First version
+* Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-1
+- First build, guile3.
