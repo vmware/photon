@@ -1,50 +1,49 @@
 Summary:        software font engine.
 Name:           freetype2
-Version:        2.12.0
+Version:        2.12.1
 Release:        1%{?dist}
 License:        BSD/GPL
-URL:            http://www.freetype.org/
+URL:            http://www.freetype.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha512  freetype=e256901c00ae5b01735d9255ac83926d466270d617b9e828aebad608759f137c89bf120d2071aa4209f7447b60d15b4ee8fb66834b61a0ed4d32e10aaf01e2a4
-BuildRequires:	libtool
-BuildRequires:	zlib-devel
-BuildRequires:	glibc
-BuildRequires:	pkg-config
-BuildRequires:	bash
+%define sha512  freetype=4f923c82121940e866022c1ee6afb97f447b83ab8b54188df169029f37589e3bad0768a3bfb3095982804db1eec582f05aa846dfb32639697e231af8d52676cc
+
+BuildRequires:  libtool
+BuildRequires:  zlib-devel
+BuildRequires:  glibc
+BuildRequires:  pkg-config
+BuildRequires:  bash
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.
 
-%package	devel
-Summary:	Header and development files
-Requires:	freetype2 = %{version}-%{release}
+%package    devel
+Summary:    Header and development files
+Requires:   freetype2 = %{version}-%{release}
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup -n freetype-%{version}
+%autosetup -p1 -n freetype-%{version}
 
 %build
 %configure --with-harfbuzz=no
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
 make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -58,6 +57,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
+- Upgrade to v2.12.1
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.10.4-1
