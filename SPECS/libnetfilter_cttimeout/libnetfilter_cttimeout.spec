@@ -1,6 +1,6 @@
 Summary:    User-space infrastructure for connection tracking timeout
 Name:       libnetfilter_cttimeout
-Version:    1.0.0
+Version:    1.0.1
 Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://www.netfilter.org/projects/libnetfilter_cttimeout/index.html
@@ -8,7 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_cttimeout=24cba24b0371e80007be4ea0fa9d872df63b8a7a
+%define sha512 libnetfilter_cttimeout=3f7886b2b8c67fb45d9f6d03f8a327d0f04072abf75ec0fa310f4a321a1749607e79b48f47c8b8488f9833734689419264afada0cbc1f0360a5ae9e17d4a1100
 
 BuildRequires:  libmnl-devel
 BuildRequires:  linux-api-headers
@@ -28,7 +28,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup -n libnetfilter_cttimeout-%{version}
 
 %build
 %configure --disable-static
@@ -52,7 +52,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 
 %changelog
+*   Mon Dec 05 2022 Anmol Jain <anmolja@vmware.com> 1.0.1-1
+-   Update to 1.0.1
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.0-1
 -   Initial packaging
-
-
