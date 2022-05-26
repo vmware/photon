@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -14,7 +14,7 @@ Source0: https://ftp.sendmail.org/sendmail.%{version}.tar.gz
 Patch0: fix-compatibility-with-openssl-3.0.patch
 
 BuildRequires:    systemd-devel
-BuildRequires:    openldap
+BuildRequires:    openldap-devel
 BuildRequires:    openssl-devel
 BuildRequires:    shadow
 BuildRequires:    tinycdb-devel
@@ -132,8 +132,8 @@ if ! getent passwd smmsp >/dev/null; then
   useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
 fi
 
-chmod -v 1775 /var/mail
-install -v -m700 -d /var/spool/mqueue
+chmod -v 1775 %{_var}/mail
+install -v -m700 -d %{_var}/spool/mqueue
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -149,8 +149,8 @@ EOF
   m4 m4/cf.m4 submit.mc > submit.cf
 fi
 
-chmod 700 /var/spool/clientmqueue
-chown smmsp:smmsp /var/spool/clientmqueue
+chmod 700 %{_var}/spool/clientmqueue
+chown smmsp:smmsp %{_var}/spool/clientmqueue
 
 %systemd_post %{name}.service
 
@@ -193,6 +193,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-6
+- Bump version as a part of openldap upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-5
 - Add cyrus-sasl to requires
 * Thu Nov 17 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-4

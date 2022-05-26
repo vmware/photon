@@ -1,10 +1,10 @@
 %global _default_patch_fuzz 2
-%global debug_package %{nil}
+%global debug_package       %{nil}
 
 Summary:        OpenLdap-2.4.43
 Name:           openldap
-Version:        2.4.58
-Release:        2%{?dist}
+Version:        2.6.3
+Release:        1%{?dist}
 License:        OpenLDAP
 URL:            https://www.openldap.org
 Group:          System Environment/Security
@@ -12,20 +12,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.openldap.org/software/download/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha512 %{name}=2fa2aa36117692eca44e55559f162c8c796f78469e6c2aee91b06d46f2b755d416979c913a3d89bbf9db14cc84881ecffee69af75b48e1d16b7aa9d2e3873baa
+%define sha512 %{name}=56efbbfc68779ad635d2c25228eb9c4f1553b107b96e8a438029b1c5d2f2647cf4d437770554392b436718ea44a4813e17f5195049f67fc09d063a981096cd85
 
-Patch0:         openldap-2.4.51-consolidated-2.patch
+# Patch0 is downloaded from:
+# https://www.linuxfromscratch.org/patches/blfs/svn
+Patch0: %{name}-%{version}-consolidated-1.patch
+Patch2: openldap-add-export-symbols-LDAP_CONNECTIONLESS.patch
 
-Requires:       openssl >= 1.0.1
-Requires:       cyrus-sasl >= 2.1
-Requires:       systemd
+Requires: openssl
+Requires: cyrus-sasl
+Requires: systemd
 
-BuildRequires:  cyrus-sasl-devel >= 2.1
-BuildRequires:  openssl-devel >= 1.0.1
-BuildRequires:  groff
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  libtool
-BuildRequires:  systemd-devel
+BuildRequires: cyrus-sasl-devel
+BuildRequires: openssl-devel
+BuildRequires: groff
+BuildRequires: e2fsprogs-devel
+BuildRequires: libtool
+BuildRequires: systemd-devel
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -36,50 +39,53 @@ similar to the way DNS (Domain Name System) information is propagated
 over the Internet. The openldap package contains configuration files,
 libraries, and documentation for OpenLDAP.
 
+%package devel
+Summary: LDAP development libraries and header files
+Requires: %{name} = %{version}-%{release}
+Requires: cyrus-sasl-devel
+
+%description devel
+The openldap-devel package includes the development libraries and
+header files needed for compiling applications that use LDAP
+(Lightweight Directory Access Protocol) internals. LDAP is a set of
+protocols for enabling directory services over the Internet. Install
+this package only if you plan to develop or will need to compile
+customized LDAP clients.
+
 %prep
 %autosetup -p1
 
 %build
-autoconf
-sed -i '/6.0.20/ a\\t__db_version_compat' configure
-export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
+export CFLAGS="${CFLAGS} ${LDFLAGS} -Wl,--as-needed -DLDAP_CONNECTIONLESS"
 %configure \
          $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
-        --disable-static     \
-        --disable-slapd      \
-        --with-tls=openssl   \
-        --enable-debug       \
-        --enable-dynamic     \
-        --enable-syslog      \
-        --enable-ipv6        \
-        --enable-local       \
-        --enable-crypt       \
-        --enable-spasswd     \
-        --enable-modules     \
-        --enable-backends    \
-        --disable-ndb --enable-overlays=mod \
-        --with-cyrus-sasl    \
-        --with-threads
-sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+        --disable-static \
+        --disable-slapd \
+        --disable-ndb \
+        --with-tls=openssl \
+        --enable-debug \
+        --enable-dynamic \
+        --enable-syslog \
+        --enable-ipv6 \
+        --enable-local \
+        --enable-crypt \
+        --enable-spasswd \
+        --enable-modules \
+        --enable-backends \
+        --enable-overlays=mod \
+        --with-cyrus-sasl \
+        --with-threads \
+        --with-pic \
+        --with-gnu-ld
 
 if [ %{_host} != %{_build} ]; then
  sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
 fi
-%make_build depend
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
-
-pushd %{buildroot}%{_libdir}
-v=%{version}
-version=$(echo ${v%.[0-9]*})
-for lib in liblber libldap libldap_r libslapi; do
-  rm -f ${lib}.so
-  ln -s ${lib}-${version}.so.2 ${lib}.so
-done
-popd
 
 %if 0%{?with_check}
 %check
@@ -96,16 +102,24 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/*
 %dir %{_sysconfdir}/%{name}
-%{_sysconfdir}/%{name}/*
-%{_libdir}/*
+%{_sysconfdir}/%{name}/ldap.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/ldap.conf
+%{_libdir}/*.so.*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.3-1
+- Upgrade to v2.6.3
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.58-2
 - Bump up release for openssl
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.58-1

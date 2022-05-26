@@ -5,7 +5,7 @@ Documentation=man:nslcd(8) man:nslcd.conf(5)
 
 [Service]
 Type=forking
-PIDFile=/var/run/nslcd/nslcd.pid
+PIDFile=/run/nslcd/nslcd.pid
 ExecStart=/usr/sbin/nslcd
 RestartSec=10s
 Restart=on-failure

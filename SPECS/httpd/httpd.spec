@@ -1,28 +1,26 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.55
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=94982f7a1fedac8961fc17b5a22cf763ac28cb27ee6facab2e6a15b249b927773667493fd3f7354fb13fcb34a6f1afc1bdd5cf4b7be030cba1dfb523e40d43fb
+Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=94982f7a1fedac8961fc17b5a22cf763ac28cb27ee6facab2e6a15b249b927773667493fd3f7354fb13fcb34a6f1afc1bdd5cf4b7be030cba1dfb523e40d43fb
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
-Patch0:         %{name}-%{version}-blfs_layout-1.patch
-Patch1:         %{name}-uncomment-ServerName.patch
+Patch0: %{name}-%{version}-blfs_layout-1.patch
+Patch1: %{name}-uncomment-ServerName.patch
 
-BuildRequires:  openssl >= 1.1.1
-BuildRequires:  openssl-devel >= 1.1.1
+BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  apr
-BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
 BuildRequires:  nghttp2-devel
@@ -31,7 +29,7 @@ BuildRequires:  systemd-devel
 Requires:       nghttp2
 Requires:       pcre
 Requires:       apr-util
-Requires:       openssl >= 1.1.1
+Requires:       openssl
 Requires:       openldap
 Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -97,13 +95,13 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_unitdir}
-install -vdm755 %{buildroot}/etc/%{name}/logs
+install -vdm755 %{buildroot}%{_sysconfdir}/%{name}/logs
 
 cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
@@ -124,8 +122,8 @@ EOF
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
-ln -sfv %{_sbindir}/%{name} %{buildroot}%{_sbindir}/apache2
-ln -sfv /etc/%{name}/conf/%{name}.conf %{buildroot}/etc/%{name}/%{name}.conf
+ln -sfrv %{buildroot}%{_sbindir}/%{name} %{buildroot}%{_sbindir}/apache2
+ln -sfrv %{buildroot}%{_sysconfdir}/%{name}/conf/%{name}.conf %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
 
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
@@ -145,12 +143,12 @@ if [ $1 -eq 1 ]; then
         -s /bin/false -u 25 apache
   fi
 
-  if [ -h /etc/mime.types ]; then
-    mv /etc/mime.types /etc/mime.types.orig
+  if [ -h %{_sysconfdir}/mime.types ]; then
+    mv %{_sysconfdir}/mime.types %{_sysconfdir}/mime.types.orig
   fi
 fi
 
-ln -sf /etc/%{name}/conf/mime.types /etc/mime.types
+ln -sfr %{_sysconfdir}/%{name}/conf/mime.types %{_sysconfdir}/mime.types
 systemd-tmpfiles --create %{name}.conf
 %systemd_post %{name}.service
 
@@ -160,8 +158,8 @@ systemd-tmpfiles --create %{name}.conf
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
-  if [ -f /etc/mime.types.orig ]; then
-    mv /etc/mime.types.orig /etc/mime.types
+  if [ -f %{_sysconfdir}/mime.types.orig ]; then
+    mv %{_sysconfdir}/mime.types.orig %{_sysconfdir}/mime.types
   fi
 fi
 %systemd_postun_with_restart %{name}.service
@@ -204,6 +202,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.55-2
+- Bump version as a part of openldap upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.55-1
 - Upgrade to v2.4.55 to fix following CVE's:
 - CVE-2006-20001, CVE-2022-37436, and CVE-2022-36760

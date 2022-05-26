@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -37,7 +37,7 @@ BuildRequires:  linux-api-headers
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  llvm-devel
 BuildRequires:  lz4-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  perl
 BuildRequires:  perl-IPC-Run
 BuildRequires:  python3-devel
@@ -663,6 +663,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.1-4
+- Bump version as a part of openldap upgrade
 * Thu Feb 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.1-3
 - Fix CVE-2022-41862
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.1-2

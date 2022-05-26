@@ -1,7 +1,10 @@
+%define _confdir %{_sysconfdir}
+%define _squiddatadir %{_datadir}/%{name}
+
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -28,7 +31,7 @@ BuildRequires:  libecap-devel
 BuildRequires:  libgpg-error-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  nettle-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
@@ -59,9 +62,6 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %prep
 %autosetup -p1
-
-%define _confdir %{_sysconfdir}
-%define _squiddatadir %{_datadir}/%{name}
 
 %build
 %define _lto_cflags %{nil}
@@ -158,15 +158,15 @@ d /run/%{name} 0755 %{name} %{name} - -
 EOF
 
 %pre
-if ! getent group %{name} >/dev/null 2>&1; then
-  /usr/sbin/groupadd -g 53 %{name}
+if ! getent group %{name} &> /dev/null; then
+  groupadd -g 53 %{name} &> /dev/null
 fi
 
-if ! getent passwd %{name} >/dev/null 2>&1 ; then
-  /usr/sbin/useradd -g 53 -u 53 -d /var/spool/%{name} -r -s /sbin/nologin %{name} >/dev/null 2>&1 || exit 1
+if ! getent passwd %{name} &> /dev/null; then
+  useradd -g 53 -u 53 -d %{_var}/spool/%{name} -r -s /sbin/nologin %{name} &>/dev/null || exit 1
 fi
 
-for i in /var/log/%{name} /var/spool/%{name}; do
+for i in %{_var}/log/%{name} %{_var}/spool/%{name}; do
   if [ -d $i ]; then
     for adir in $(find $i -maxdepth 0 \! -user %{name}); do
       chown -R %{name}:%{name} $adir
@@ -188,10 +188,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%license COPYING
-%doc CONTRIBUTORS README ChangeLog QUICKSTART src/%{name}.conf.documented
 %doc contrib/url-normalizer.pl contrib/user-agents.pl
-
 %{_unitdir}/%{name}.service
 %attr(755,root,root) %dir %{_libexecdir}/%{name}
 %attr(755,root,root) %{_libexecdir}/%{name}/cache_swap.sh
@@ -226,6 +223,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-4
+- Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-3
 - Bump version as a part of krb5 upgrade
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.7-2

@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.8
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -37,7 +37,7 @@ BuildRequires:  libxslt-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  llvm-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  perl
 BuildRequires:  perl-IPC-Run
 BuildRequires:  python3-devel
@@ -644,6 +644,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-12
+- Bump version as a part of openldap upgrade
 * Thu Feb 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-11
 - Fix CVE-2022-41862
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.8-10

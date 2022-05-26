@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -11,9 +11,9 @@ URL:            https://www.samba.org
 Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
 %define sha512 samba=200b2b2b08b369915e045f22ee993d5deea7a2533c6c582d4b88c614adcad5529109d449e843a2a1f292e5cfb1877d66421b5b0801ad988896cbe5413717e4dc
 
-Source1:        smb.conf.vendor
+Source1: smb.conf.vendor
 
-Patch0:         rename_dcerpc_to_smbdcerpc_%{version}.patch
+Patch0: rename_dcerpc_to_smbdcerpc_%{version}.patch
 
 %define samba_ver %{version}-%{release}
 
@@ -29,11 +29,11 @@ BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: docbook-xml
 BuildRequires: gcc
-BuildRequires: gnutls-devel >= 3.4.7
+BuildRequires: gnutls-devel
 BuildRequires: jansson-devel
 BuildRequires: libxml2-devel
 BuildRequires: lmdb
-BuildRequires: openldap
+BuildRequires: openldap-devel
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 
@@ -108,7 +108,7 @@ echo "^samba4.rpc.echo.*on.*ncacn_np.*with.*object.*nt4_dc" >> selftest/knownfai
 %global _samba_pdb_modules pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
 %global _samba_modules %{_samba_pdb_modules}
 
-export CFLAGS="-I/usr/include/tirpc"
+export CFLAGS="-I%{_includedir}/tirpc"
 export LDFLAGS="-ltirpc"
 
 %configure \
@@ -339,7 +339,6 @@ rm -rf %{buildroot}/*
 # Samba Client
 %files
 %defattr(-,root,root,-)
-%doc source3/client/README.smbspool
 %{_bindir}/cifsdd
 %{_bindir}/dbwrap_tool
 %{_bindir}/dumpmscat
@@ -567,6 +566,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.4-9
+- Bump version as a part of openldap upgrade
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 4.14.4-8
 - Rebuild for perl version upgrade to 5.36.0
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.14.4-7

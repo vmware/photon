@@ -3,7 +3,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.14.2
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
 Vendor:          VMware, Inc.
@@ -16,7 +16,6 @@ Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{ve
 BuildRequires:   git
 BuildRequires:   sed
 BuildRequires:   erlang
-BuildRequires:   openldap
 
 Requires:        erlang
 
@@ -34,20 +33,23 @@ fault-tolerant, non-stop applications with hot code swapping.
 export LANG="en_US.UTF-8"
 make compile %{?_smp_mflags}
 
+%install
+mkdir -p %{buildroot}%{_datadir}/%{name}/%{version}
+cp -pra bin lib %{buildroot}%{_datadir}/%{name}/%{version}
+
+mkdir -p %{buildroot}%{_bindir}
+# don't create relative symlinks, this must be absolute symlink
+# or else some builds fail with weird errors (rabbimq for example)
+ln -sfv %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}
+
+%if 0%{?with_check}
 %check
 export LANG="en_US.UTF-8"
 make test %{?_smp_mflags}
-
-%install
-mkdir -p %{buildroot}%{_datadir}/%{name}/%{version}
-cp -ra bin lib %{buildroot}%{_datadir}/%{name}/%{version}
-
-mkdir -p %{buildroot}%{_bindir}
-ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}/
+%endif
 
 %files
 %defattr(-,root,root)
-%license LICENSE
 %{_bindir}/elixir
 %{_bindir}/elixirc
 %{_bindir}/iex
@@ -55,6 +57,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{
 %{_datadir}/%{name}
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-2
+- Bump version as a part of openldap upgrade
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
 - Automatic Version Bump
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.1-1

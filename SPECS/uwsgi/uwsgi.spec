@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -31,7 +31,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  httpd-devel
 BuildRequires:  curl-libs
 BuildRequires:  libstdc++-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  boost-devel
 BuildRequires:  attr-devel
 BuildRequires:  libxslt-devel
@@ -96,8 +96,8 @@ This package contains support for Python 3 applications via the WSGI protocol.
 cp -p %{SOURCE1} buildconf/
 
 %build
-%{__python3} uwsgiconfig.py --verbose --build photon.ini
-%{__python3} uwsgiconfig.py --verbose --plugin plugins/python core
+%{python3} uwsgiconfig.py --verbose --build photon.ini
+%{python3} uwsgiconfig.py --verbose --plugin plugins/python core
 
 %install
 install -d %{buildroot}%{_sysconfdir}/%{name}.d
@@ -116,15 +116,12 @@ cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
 d /run/%{name} 0775 %{name} %{name}
 EOF
 
-%if 0%{?with_check}
-%check
-%endif
-
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || \
+getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null || exit 1
+getent passwd %{name} &> /dev/null || \
     useradd -c "uWSGI daemon user" -d /run/%{name} -g %{name} \
-        -s /sbin/nologin -M -r %{name}
+        -s /sbin/nologin -M -r %{name} &> /dev/null || exit 1
+
 %post
 %systemd_post %{name}.service
 
@@ -144,8 +141,6 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 %{_tmpfilesdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}.d
-%doc README
-%license LICENSE
 
 %files devel
 %defattr(-,root,root,-)
@@ -239,6 +234,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.21-5
+- Bump version as a part of openldap upgrade
 * Tue Jan 31 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.21-4
 - Bump version as a part of krb5 upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-3

@@ -3,27 +3,27 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha512  %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
+Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
+%define sha512 %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
 
 # patches for audit workaround for linux-headers >= 5.17
 # https://github.com/linux-audit/audit-userspace/issues/252
 # https://github.com/linux-audit/audit-userspace/issues/236
 # https://listman.redhat.com/archives/linux-audit/2022-February/msg00085.html
 # patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-flex-array-workaround.patch
-Patch0:         audit-3.0.8-flex-array-workaround.patch
+Patch0: audit-3.0.8-flex-array-workaround.patch
 # patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-undo-flex-array.patch
-Patch1:         audit-3.0.8-undo-flex-array.patch
+Patch1: audit-3.0.8-undo-flex-array.patch
 
 BuildRequires:  krb5-devel
-BuildRequires:  openldap
+BuildRequires:  openldap-devel
 BuildRequires:  tcp_wrappers-devel
 BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
@@ -55,20 +55,20 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libraries and header files needed for audit development.
 
-%package  -n    python3-audit
+%package  -n    python3-%{name}
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
-%description -n python3-audit
+%description -n python3-%{name}
 The python3-audit package contains the python2 bindings for libaudit
 and libauparse.
 
 %prep
 # Using autosetup is not feasible
 %setup -q
-cp /usr/include/linux/audit.h lib/
+cp %{_includedir}/linux/%{name}.h lib/
 %patch0 -p1
 
 %build
@@ -90,25 +90,27 @@ cp /usr/include/linux/audit.h lib/
 %make_build
 
 %install
-mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/opt/audit/log
-mkdir -p %{buildroot}/%{_var}/log
-mkdir -p %{buildroot}/%{_var}/spool/audit
-ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
-%make_install
+mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/%{name}/rules.d} \
+         %{buildroot}/%{_var}/opt/%{name}/log \
+         %{buildroot}/%{_var}/log \
+         %{buildroot}/%{_var}/spool/%{name}
+ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
+%make_install %{?_smp_mflags}
+
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable auditd.service" > %{buildroot}%{_presetdir}/50-auditd.preset
 
 # undo the workaround
-cur=`pwd`
-cd %{buildroot}
+pushd %{buildroot}
 patch --fuzz=1 -p0 < %{PATCH1}
 find . -name '*.orig' -delete
-cd $cur
+popd
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post
 /sbin/ldconfig
@@ -132,23 +134,23 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%dir %{_var}/opt/audit/log
-%{_var}/log/audit
-%{_var}/spool/audit
-%attr(750,root,root) %dir %{_sysconfdir}/audit
-%attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
+%dir %{_var}/opt/%{name}/log
+%{_var}/log/%{name}
+%{_var}/spool/%{name}
+%attr(750,root,root) %dir %{_sysconfdir}/%{name}
+%attr(750,root,root) %dir %{_sysconfdir}/%{name}/rules.d
 
 %attr(750,root,root) %dir %{_sysconfdir}/audispd
 %attr(750,root,root) %dir %{_sysconfdir}/audispd/plugins.d
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/auditd.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audisp-remote.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/zos-remote.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/plugins.d/*.conf
-%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/rules.d/audit.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit-stop.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/audit/sample-rules/*.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/audit/sample-rules/README-rules
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/auditd.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/audisp-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/zos-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/plugins.d/*.conf
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/rules.d/%{name}.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}-stop.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/sample-rules/*.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/sample-rules/README-rules
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
 
 %files devel
@@ -160,13 +162,15 @@ make %{?_smp_mflags} check
 %endif
 %{_includedir}/*.h
 %{_mandir}/man3/*
-%{_datadir}/aclocal/audit.m4
+%{_datadir}/aclocal/%{name}.m4
 
-%files -n python3-audit
+%files -n python3-%{name}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-6
+- Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.0.9-5
 - Bump version as a part of krb5 upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.0.9-4

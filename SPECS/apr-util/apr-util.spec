@@ -3,7 +3,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org
 Group:      System Environment/Libraries
@@ -18,7 +18,7 @@ BuildRequires:   sqlite-devel
 BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
 BuildRequires:   expat-devel
-BuildRequires:   openldap
+BuildRequires:   openldap-devel
 BuildRequires:   postgresql15-devel
 
 Requires:   apr
@@ -126,6 +126,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-10
+- Bump version as a part of openldap upgrade
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-9
 - Remove pgsql-12 dependency
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.6.1-8

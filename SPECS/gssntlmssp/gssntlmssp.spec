@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
@@ -30,16 +30,16 @@ BuildRequires: docbook-xsl
 BuildRequires: doxygen
 BuildRequires: gettext
 BuildRequires: pkg-config
-BuildRequires: krb5-devel >= 1.11.2
+BuildRequires: krb5-devel
 BuildRequires: libunistring-devel
 BuildRequires: openssl-devel
-BuildRequires: gnutls-devel >= 3.4.7
+BuildRequires: gnutls-devel
 BuildRequires: libtasn1-devel
 BuildRequires: libtirpc-devel
-BuildRequires: openldap
+BuildRequires: openldap-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: jansson-devel
-BuildRequires: gnutls-devel >= 3.4.7
+BuildRequires: gnutls-devel
 BuildRequires: samba-client-libs
 BuildRequires: libwbclient
 BuildRequires: libwbclient-devel
@@ -88,13 +88,14 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/gss/mech.d/ntlmssp.conf
 %{_libdir}/%{name}/%{name}.so
-%doc COPYING
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-7
+- Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-6
 - Bump version as a part of krb5 upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-5
