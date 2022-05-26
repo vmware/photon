@@ -1,15 +1,15 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.74.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Distribution:   Photon
 Vendor:         VMware, Inc.
 
-Source0:        https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{version}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=decff5dda0ec5ec0afda4d6bcd3bdadcbf34289002c0d9c0c77ecf8c5d3f15d196b24d8035041545031006acbdfe76af47c42da061c40e200c87f2c74cd301f0
+Source0: https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{version}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=decff5dda0ec5ec0afda4d6bcd3bdadcbf34289002c0d9c0c77ecf8c5d3f15d196b24d8035041545031006acbdfe76af47c42da061c40e200c87f2c74cd301f0
 
 BuildRequires:  gettext
 BuildRequires:  intltool
@@ -21,9 +21,9 @@ BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-xml
 BuildRequires:  meson
+BuildRequires:  cmake
 
 Requires:       libffi
 Requires:       glib >= 2.58.0
@@ -34,15 +34,14 @@ generate introspection "typelib" files.  It also provides an API to examine
 typelib files, useful for creating language bindings among other
 things.
 
-%package -n     python3-gobject-introspection
+%package -n     python3-%{name}
 Summary:        Python3 package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3-xml
-Requires:       python3-libs
 Requires:       python3
 
-%description -n python3-gobject-introspection
+%description -n python3-%{name}
 This package contains a Python package for handling the introspection
 data from Python.
 
@@ -50,7 +49,7 @@ data from Python.
 Summary:        Libraries and headers for gobject-introspection
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       python3-gobject-introspection = %{version}-%{release}
+Requires:       python3-%{name} = %{version}-%{release}
 Requires:       libffi-devel
 Requires:       glib-devel
 
@@ -61,30 +60,33 @@ Libraries and headers for gobject-introspection.
 %autosetup -p1
 
 %build
-meson --prefix=/usr --libdir=lib -Dpython=%{__python3} build
-ninja -C build
+%{meson} \
+    -Dpython=%{python3} \
+    -Dcairo=disabled \
+    -Ddoctool=disabled
+
+%{meson_build}
 
 %install
-rm -rf %{buildroot}/*
-
-DESTDIR=%{buildroot} ninja -C build install
+%{meson_install}
 # Move the python3 modules to the correct location
-mkdir -p %{buildroot}/%{python3_sitelib}
-mv %{buildroot}%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
+mkdir -p %{buildroot}%{python3_sitelib}
+mv %{buildroot}%{_libdir}/%{name}/giscanner %{buildroot}%{python3_sitelib}
 rm -rf %{buildroot}%{_datarootdir}/gtk-doc/html
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
 %if 0%{?with_check}
-meson test
+%{meson_test}
 %endif
+
+%clean
+rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING
 %{_libdir}/lib*.so.*
 %dir %{_libdir}/girepository-1.0
 %{_libdir}/girepository-1.0/*.typelib
@@ -101,10 +103,12 @@ meson test
 %{_bindir}/g-ir-*
 %{_datadir}/gir-1.0
 %{_datadir}/aclocal/introspection.m4
-%{_datadir}/gobject-introspection-1.0
+%{_datadir}/%{name}-1.0
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.74.0-2
+- Bump version as a part of autoconf-archive upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.74.0-1
 - Bump up version
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.68.0-5

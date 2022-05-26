@@ -4,7 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -46,16 +46,19 @@ setting LAN configuration, and chassis power control.
 
 %build
 sh ./bootstrap
-%configure --with-kerneldir \
-          --with-rpm-distro=
+%configure \
+    --with-kerneldir \
+    --with-rpm-distro=
 
 %make_build
 
 %install
 %make_install install-strip %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -70,6 +73,8 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-2
+- Bump version as a part of autoconf-archive upgrade
 * Thu Sep 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-1
 - Upgrade to v1.8.19
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-6

@@ -1,7 +1,7 @@
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
 Version:        1.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
@@ -89,6 +89,9 @@ cd tools
 python3 setup.py test
 %endif
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root,-)
 %license LICENSE
@@ -101,6 +104,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-2
+- Bump version as a part of autoconf-archive upgrade
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com>  1.8.0-1
 - Upgrade to v1.8.0
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-4
