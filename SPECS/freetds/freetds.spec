@@ -1,7 +1,7 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.3.10
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.unixodbc.org
 Group:         System Environment/Libraries
@@ -63,7 +63,6 @@ and can be installed even if FreeTDS main package is not installed
 %install
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a'  -delete
-find %{buildroot} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -84,7 +83,6 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS.md BUGS.md COPYING_LIB.txt COPYING.txt ChangeLog INSTALL.md NEWS.md README.md TODO.md
 %{_bindir}/*
 %{_mandir}/man?/*
 %{_libdir}/libct.so.*
@@ -107,6 +105,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-3
+- Bump version as a part of readline upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-2
 - Bump version as a part of gnutls upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.10-1

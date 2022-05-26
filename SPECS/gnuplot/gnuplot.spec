@@ -1,19 +1,21 @@
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
 Version:        5.4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Freeware
-URL:            http://www.gnuplot.info/
+URL:            http://www.gnuplot.info
 Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha512    %{name}=dbd0b338c5662304566fc0d790c8f53db071d7c486e7422f6ba4b7a9e0d8e50db756ab37dade9bdc01ed1a1ca6fe4e63749038c0ceec95b78bf8b92a0ae2dd20
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=dbd0b338c5662304566fc0d790c8f53db071d7c486e7422f6ba4b7a9e0d8e50db756ab37dade9bdc01ed1a1ca6fe4e63749038c0ceec95b78bf8b92a0ae2dd20
 
 BuildRequires:  lua-devel
+BuildRequires:  readline-devel
 
 Requires:       lua
+Requires:       readline
 
 %description
 Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. The source code is copyrighted but freely distributed (i.e., you don't have to pay for it). It was originally created to allow scientists and students to visualize mathematical functions and data interactively, but has grown to support many non-interactive uses such as web scripting. It is also used as a plotting engine by third-party applications like Octave. Gnuplot has been supported and under active development since 1986.
@@ -23,13 +25,13 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 %build
 %configure --disable-static --enable-shared
-make %{?_smp_mflags}
+%make_build
+
+%install
+%make_install %{?_smp_mflags}
 
 %check
 make check %{?_smp_mflags}
-
-%install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -37,6 +39,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.5-2
+- Bump version as a part of readline upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.4.5-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.4.3-1

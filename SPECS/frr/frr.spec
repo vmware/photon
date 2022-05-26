@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -246,6 +246,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.2.2-3
+- Bump release as a part of readline upgrade
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.2-2
 - Bump version as a part of libyang upgrade
 * Wed Apr 20 2022 Roye Eshed <eshedr@vmware.com> 8.2.2-1

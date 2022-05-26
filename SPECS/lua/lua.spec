@@ -9,32 +9,33 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.lua.org/ftp/%{name}-%{version}.tar.gz
+Source0: http://www.lua.org/ftp/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=af0c35d5ba00fecbb2dd617bd7b825edf7418a16a73076e04f2a0df58cdbf098dc3ff4402e974afd789eb5d86d2e12ec6df9c84b99b23656ea694a85f83bcd21
 
 %if 0%{?bootstrap}
-Source1:    http://www.lua.org/ftp/lua-%{bootstrap_version}.tar.gz
+Source1: http://www.lua.org/ftp/%{name}-%{bootstrap_version}.tar.gz
 %define sha512 %{name}-%{bootstrap_version}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 %endif
 
-Patch0:     lua-%{version}-shared-library.patch
-Patch2:     CVE-2022-28805.patch
-Patch3:     CVE-2022-33099.patch
+Patch0: lua-%{version}-shared-library.patch
 
 %if 0%{?bootstrap}
-Patch1:     lua-%{bootstrap_version}-shared-library.patch
+Patch1: lua-%{bootstrap_version}-shared-library.patch
 %endif
 
-BuildRequires:  readline-devel
+Patch2: CVE-2022-28805.patch
+Patch3: CVE-2022-33099.patch
 
-Requires:       readline
+BuildRequires: readline-devel
+
+Requires: readline
 
 %description
 Lua is a powerful light-weight programming language designed for
@@ -48,40 +49,37 @@ configuration, scripting, and rapid prototyping.
 
 %package devel
 Summary:    Development files for %{name}
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 This package contains development files for %{name}.
 
 %prep
-prep_lua_src() {
-  local fname="$1"
-
-  sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
-  sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
-  patch -p1 < ${fname}
-}
-
 %if 0%{?bootstrap}
 # Using autosetup is not feasible
 %setup -q -a0 -a1 -n %{name}-%{version}
-pushd lua-%{bootstrap_version}
-prep_lua_src %{PATCH1}
+pushd %{name}-%{bootstrap_version}
+sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
+sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
+%patch1 -p1
 popd
 %else
 # Using autosetup is not feasible
 %setup -q
 %endif
 
-prep_lua_src %{PATCH0}
-prep_lua_src %{PATCH2}
-prep_lua_src %{PATCH3}
+sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
+sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
+
+%patch0 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
 
 %if 0%{?bootstrap}
-pushd lua-%{bootstrap_version}
+pushd %{name}-%{bootstrap_version}
 make VERBOSE=1 %{?_smp_mflags} linux
 popd
 %endif
@@ -102,7 +100,7 @@ lua_make_install() {
 lua_make_install %{buildroot}%{_prefix} %{major_version} %{version}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 
-cat > %{buildroot}%{_libdir}/pkgconfig/lua.pc <<- "EOF"
+cat > %{buildroot}%{_libdir}/pkgconfig/%{name}.pc <<- "EOF"
     V=%{major_version}
     R=%{version}
     prefix=%{_prefix}
@@ -121,10 +119,11 @@ cat > %{buildroot}%{_libdir}/pkgconfig/lua.pc <<- "EOF"
     Cflags: -I${includedir}
 EOF
 
-rmdir %{buildroot}%{_libdir}/lua/%{major_version} %{buildroot}%{_libdir}/lua
+rmdir %{buildroot}%{_libdir}/%{name}/%{major_version} \
+      %{buildroot}%{_libdir}/%{name}
 
 %if 0%{?bootstrap}
-pushd lua-%{bootstrap_version}
+pushd %{name}-%{bootstrap_version}
 mkdir -p %{buildroot}/installdir
 lua_make_install %{buildroot}/installdir%{_prefix} %{bootstrap_major_version} %{bootstrap_version}
 cp -a %{buildroot}/installdir%{_libdir}/liblua.so.%{bootstrap_version} \
@@ -134,13 +133,16 @@ rm -rf %{buildroot}/installdir
 popd
 %endif
 
-%check
 %if 0%{?with_check}
+%check
 make test %{?_smp_mflags}
 %endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -149,11 +151,14 @@ make test %{?_smp_mflags}
 %{_mandir}/*/*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/lua.pc
+%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/liblua.so
 
 %changelog
+* Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-4
+- Bump version as a part of readline upgrade
 * Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-3
 - Fix CVE-2022-33099
 * Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-2

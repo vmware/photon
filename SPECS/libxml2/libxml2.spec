@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.14
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -12,8 +12,14 @@ Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.g
 %define sha512 %{name}=18cd5354228af5eb8698273e61313961ec7fb2aed880caed15d7c678eaad8a42e826c171fb514272b350479b7ceb9cb963dc535a50101edeaa321972cdda6ae2
 
 BuildRequires:  python3-devel
-BuildRequires:  zlib
+BuildRequires:  zlib-devel
 BuildRequires:  pkg-config
+BuildRequires:  readline-devel
+BuildRequires:  ncurses-devel
+
+Requires:  readline
+Requires:  ncurses-libs
+Requires:  zlib
 
 Provides:       pkgconfig(libxml-2.0)
 
@@ -84,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-5
+- Bump version as a part of readline upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.14-4
 - Update release to compile with python 3.11
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-3

@@ -1,14 +1,15 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.66
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.bluez.org
-Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha512    %{name}=ed0994932687eacf27207867366671b323671f5d5199daf36ea5eff8f254f2bc99ef989ef7df9883b35c06f2af60452be8bad0a06109428a4717cf2b247b4865
+
+Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
+%define sha512 %{name}=ed0994932687eacf27207867366671b323671f5d5199daf36ea5eff8f254f2bc99ef989ef7df9883b35c06f2af60452be8bad0a06109428a4717cf2b247b4865
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -74,7 +75,6 @@ make %{?_smp_mflags} -k check
 %{_libdir}/systemd/user/obex.service
 %{_unitdir}/bluetooth.service
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
-%doc COPYING TODO
 
 %files devel
 %defattr(-,root,root)
@@ -84,6 +84,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.66-2
+- Bump version as a part of readline upgrade
 * Fri Dec 16 2022 Nitesh Kumar <kunitesh@vmware.com> 5.66-1
 - Version upgrade to v5.66
 * Sun Sep 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.65-2

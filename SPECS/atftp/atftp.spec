@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
@@ -11,7 +11,8 @@ Distribution:     Photon
 Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
 
-BuildRequires:    systemd
+BuildRequires:    systemd-devel
+BuildRequires:    readline-devel
 BuildRequires:    pcre2-devel
 
 Requires:         systemd
@@ -50,8 +51,10 @@ sh ./autogen.sh
 %install
 %make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot
-mkdir -p %{buildroot}%{_unitdir}
+mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_sysconfdir}/sysconfig
+
 cat << EOF >> %{buildroot}%{_unitdir}/atftpd.service
 [Unit]
 Description=The tftp server serves files using the trivial file transfer protocol.
@@ -76,7 +79,6 @@ ListenDatagram=69
 WantedBy=sockets.target
 EOF
 
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/atftpd
 ATFTPD_USER=tftp
 ATFTPD_GROUP=tftp
@@ -128,6 +130,8 @@ rm -rf %{buildroot}
 %{_bindir}/atftp
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-2
+- Bump version as a part of readline upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-1
 - Upgrade to v0.8.0
 * Mon Sep 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.5-1

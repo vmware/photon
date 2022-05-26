@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.1.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -342,6 +342,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.1.16-2
+- Bump release as a part of readline upgrade
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.16-1
 - Upgrade to v5.1.16
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.0-3

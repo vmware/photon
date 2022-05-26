@@ -1,14 +1,14 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.38
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.xz
+Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
 %define sha512  %{name}=d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
 
 BuildRequires:  ncurses-devel
@@ -20,7 +20,7 @@ BuildRequires:  ncurses-terminfo
 
 Requires: %{name}-libs = %{version}-%{release}
 
-Conflicts:      toybox < 0.8.2-2
+Conflicts: toybox < 0.8.2-2
 
 %description
 Utilities for handling file systems, consoles, partitions,
@@ -109,6 +109,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.38-2
+- Bump version as a part of readline upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.38-1
 - Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.36-4

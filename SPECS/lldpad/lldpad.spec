@@ -1,11 +1,11 @@
 Summary:       Intel LLDP Agent
 Name:          lldpad
 Version:       1.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://open-lldp.org/
 Source:        %{name}-%{version}.tar.gz
-%define sha1   lldpad=22d302c8600dae7e70c3c1ead086b392dc3c6962
+%define sha512   lldpad=794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -27,7 +27,6 @@ modes per TLV.
 
 %package       devel
 Summary:       Development files for %{name}
-
 Requires:      %{name} = %{version}-%{release}
 Provides:      dcbd-devel = %{version}-%{release}
 
@@ -45,9 +44,6 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
-
-mkdir -p %{buildroot}/lib/systemd/system
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 %post
@@ -78,6 +74,8 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %{_libdir}/liblldp_clif.so
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1-3
+- Bump release as a part of readline upgrade
 * Wed Aug 25 2021 Susant Sahani <ssahani@vmware.com> 1.1-2
 - Spec cleaup, split package into devel.
 * Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 1.1-1

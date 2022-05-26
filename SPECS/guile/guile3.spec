@@ -3,7 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile3
 Version:        3.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv3+
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
@@ -17,7 +17,9 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libunistring-devel
 BuildRequires:  gc-devel
 BuildRequires:  libffi-devel
+BuildRequires:  readline-devel
 
+Requires:       readline
 Requires:       libltdl
 Requires:       libunistring
 Requires:       gc
@@ -84,5 +86,7 @@ make %{?_smp_mflags} check
 %{_datadir}/guile/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-2
+- Bump version as a part of readline upgrade
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-1
 - First build, guile3.

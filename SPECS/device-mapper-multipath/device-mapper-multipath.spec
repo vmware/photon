@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.9.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPL+
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -101,6 +101,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.9.2-2
+- Bump release as a part of readline upgrade
 * Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.2-1
 - Upgrade to v0.9.2
 * Sun Sep 18 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.9.0-1

@@ -1,7 +1,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -297,6 +297,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.03.16-2
+-   Bump release as a part of readline upgrade
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.16-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.15-1

@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -323,6 +323,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.11.0-2
+- Bump release as a part of readline upgrade
 * Mon Sep 19 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-1
 - Update to 3.11
 * Fri Aug 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-9

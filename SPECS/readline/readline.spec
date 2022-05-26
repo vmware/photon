@@ -1,52 +1,109 @@
-Summary:	Command-line editing and history capabilities
-Name:		readline
-Version:	7.0
-Release:	3%{?dist}
-License:	GPLv3+
-URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
-%define sha1 readline=d9095fa14a812495052357e1d678b3f2ac635463
-BuildRequires:	ncurses-devel
-Requires:	ncurses-libs
+%global major_version 8.2
+
+# If you are incrementing major_version, enable bootstrapping and adjust accordingly.
+# Version should be the latest prior build. If you don't do this, build will break.
+# once bootstrapped rpm is built, keep it in PUBLISHRPMS & build other dependent publish rpms
+# And once done, bootstrap can be set to 0.
+%global bootstrap 0
+%global bootstrap_major_version 7.0
+%global bootstrap_version %{bootstrap_major_version}
+
+Summary:        Command-line editing and history capabilities
+Name:           readline
+Version:        8.2
+Release:        1%{?dist}
+License:        GPLv3+
+URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
+%define sha512 %{name}=0a451d459146bfdeecc9cdd94bda6a6416d3e93abd80885a40b334312f16eb890f8618a27ca26868cebbddf1224983e631b1cbc002c1a4d1cd0d65fba9fea49a
+
+%if 0%{?bootstrap}
+Source1: http://ftp.gnu.org/gnu/readline/%{name}-%{bootstrap_major_version}.tar.gz
+%define sha512 readline-%{bootstrap_major_version}=18243189d39bf0d4c8a76cddcce75243c1bae8824c686e9b6ba352667607e5b10c5feb79372a1093c1c388d821841670702e940df12eae94bcebdeed90047870
+%endif
+
+BuildRequires:  ncurses-devel
+
+Requires:       ncurses-libs
+
 %description
 The Readline package is a set of libraries that offers command-line
 editing and history capabilities.
-%package	devel
-Summary:	Header and development files for readline
-Requires:	%{name} = %{version}
-%description	devel
+
+%package        devel
+Summary:        Header and development files for readline
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
 It contains the libraries and header files to create applications
+
 %prep
-%setup -q
+tar xf %{SOURCE0} --no-same-owner
+%if 0%{?bootstrap}
+tar xf %{SOURCE1} --no-same-owner
+%endif
+
+pushd %{name}-%{major_version}
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
+popd
+
+%if 0%{?bootstrap}
+pushd %{name}-%{bootstrap_major_version}
+sed -i '/MV.*old/d' Makefile.in
+sed -i '/{OLDSUFF}/c:' support/shlib-install
+popd
+%endif
+
 %build
+pushd %{name}-%{major_version}
 %configure --disable-silent-rules
-make SHLIB_LIBS=-lncurses
+%make_build SHLIB_LIBS=-lncurses
+popd
+
+%if 0%{?bootstrap}
+pushd %{name}-%{bootstrap_major_version}
+%configure --disable-silent-rules
+%make_build SHLIB_LIBS=-lncurses shared
+popd
+%endif
+
 %install
-make DESTDIR=%{buildroot} install
+%if 0%{?bootstrap}
+pushd %{name}-%{bootstrap_major_version}
+%make_install -C shlib %{?_smp_mflags}
+popd
+%endif
+
+pushd %{name}-%{major_version}
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
+popd
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
-%{_libdir}/libreadline.so.7
-%{_libdir}/libhistory.so.7
-%{_libdir}/libhistory.so.7.0
-%{_libdir}/libreadline.so.7.0
+%{_libdir}/libreadline.so.*
+%{_libdir}/libhistory.so.*
+
 %files devel
+%defattr(-,root,root)
 %{_includedir}/%{name}/keymaps.h
 %{_includedir}/%{name}/history.h
 %{_includedir}/%{name}/rlstdc.h
@@ -59,6 +116,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libhistory.a
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
+%{_libdir}/pkgconfig/readline.pc
+%{_libdir}/pkgconfig/history.pc
 %{_datadir}/%{name}/hist_purgecmd.c
 %{_datadir}/%{name}/rlbasic.c
 %{_datadir}/%{name}/rltest.c
@@ -74,6 +133,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/manexamp.c
 %{_datadir}/%{name}/hist_erasedups.c
 %{_datadir}/%{name}/fileman.c
+%{_datadir}/%{name}/rlkeymaps.c
+%{_datadir}/%{name}/rl-timeout.c
 %{_docdir}/%{name}/INSTALL
 %{_docdir}/%{name}/README
 %{_docdir}/%{name}/CHANGES
@@ -95,6 +156,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2-1
+- Upgrade to v8.2
 * Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 7.0-3
 - Use %configure
 * Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 7.0-2

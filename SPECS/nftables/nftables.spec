@@ -1,7 +1,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -119,6 +119,8 @@ chmod 700  %{buildroot}/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.0.5-3
+- Bump release as a part of readline upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.5-2
 - Update release to compile with python 3.11
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.0.5-1

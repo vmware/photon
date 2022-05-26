@@ -3,7 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv3+
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
@@ -83,6 +83,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-5
+- Bump version as a part of readline upgrade
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-4
 - Bump version as a part of gc upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-3

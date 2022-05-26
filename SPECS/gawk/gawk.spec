@@ -1,19 +1,21 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.1.1
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv3
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0:      http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
-%define sha512  %{name}=794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
+Source0: http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
+%define sha512 %{name}=794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
 
 Provides:   /bin/awk
 Provides:   /bin/gawk
 Provides:   awk
+
+BuildRequires: readline-devel
 
 Requires:   mpfr
 Requires:   gmp
@@ -60,6 +62,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/profile.d/gawk.sh
 
 %changelog
+* Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-2
+- Bump version as a part of readline upgrade
 * Thu Dec 02 2021 Susant Sahani <ssahani@vmware.com> 5.1.1-1
 - Version Bump
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1

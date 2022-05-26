@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.45
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -96,6 +96,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.45-3
+- Bump release as a part of readline upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.45-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 8.45-1

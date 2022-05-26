@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        5.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.18.0-2
+- Bump release as a part of readline upgrade
 * Mon Jul 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.0-1
 - Automatic version bump
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.8.0-2

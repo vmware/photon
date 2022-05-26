@@ -1,27 +1,26 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.33
-Release:        3%{?dist}
-URL:            https://sourceforge.net/projects/openipmi/
+Release:        4%{?dist}
+URL:            https://sourceforge.net/projects/openipmi
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
-%define sha512  OpenIPMI=615fccd1ffd4af18584c1b0e54667ba2de60b6d42b44e7448f27808114180fa3b31b4834276bdf69c3df1e5210df871fd888deec8186377524838390fe41e641
+Source0: https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
+%define sha512 OpenIPMI=615fccd1ffd4af18584c1b0e54667ba2de60b6d42b44e7448f27808114180fa3b31b4834276bdf69c3df1e5210df871fd888deec8186377524838390fe41e641
+
 Source1:        openipmi-helper
 Source2:        ipmi.service
 
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  perl
 BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3
 
 Requires:       systemd
 
@@ -32,7 +31,7 @@ basic tools used with OpenIPMI.
 %package        devel
 Summary:        Development files for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       ncurses-devel
 
 %description devel
@@ -42,7 +41,8 @@ and/or middleware that depends on libOpenIPMI
 %package        perl
 Summary:        Perl interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, perl >= 5
+Requires:       %{name} = %{version}-%{release}
+Requires:       perl >= 5
 
 %description    perl
 A Perl interface for OpenIPMI.
@@ -50,7 +50,8 @@ A Perl interface for OpenIPMI.
 %package        python3
 Summary:        Python interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, python3
+Requires:       %{name} = %{version}-%{release}
+Requires:       python3
 
 %description    python3
 A Python interface for OpenIPMI.
@@ -58,7 +59,7 @@ A Python interface for OpenIPMI.
 %package        ui
 Summary:        User Interface (ui)
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    ui
 This package contains a user interface
@@ -66,13 +67,13 @@ This package contains a user interface
 %package        lanserv
 Summary:        Emulates an IPMI network listener
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    lanserv
 This package contains a network IPMI listener.
 
 %prep
-%autosetup -n OpenIPMI-%{version}
+%autosetup -p1 -n OpenIPMI-%{version}
 
 %build
 # USERFIX: Things you might have to add to configure:
@@ -85,71 +86,62 @@ This package contains a network IPMI listener.
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
     --with-perlinstall=%{perl_vendorarch}   \
-    --with-python=/usr/bin/python%{python3_version} \
+    --with-python=%{python3} \
     --with-pythoninstall=%{python3_sitelib}
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
-install -d %{buildroot}/etc/init.d
-install -d %{buildroot}/etc/sysconfig
-install ipmi.init %{buildroot}/etc/init.d/ipmi
-install ipmi.sysconf %{buildroot}/etc/sysconfig/ipmi
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-mkdir -p %{buildroot}/lib/systemd/system
-mkdir -p %{buildroot}/%{_libexecdir}
-cp %{SOURCE1} %{buildroot}/%{_libexecdir}/.
-cp %{SOURCE2} %{buildroot}/lib/systemd/system/ipmi.service
-chmod 755 %{buildroot}/%{_libexecdir}/openipmi-helper
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ipmi.preset
+install -d %{buildroot}%{_sysconfdir}/init.d
+install -d %{buildroot}%{_sysconfdir}/sysconfig
+install ipmi.init %{buildroot}%{_sysconfdir}/init.d/ipmi
+install ipmi.sysconf %{buildroot}%{_sysconfdir}/sysconfig/ipmi
 
-#The build VM does not support ipmi.
-#%%check
-#make %{?_smp_mflags} check
+mkdir -p %{buildroot}%{_unitdir} \
+         %{buildroot}/%{_libexecdir}
+
+cp %{SOURCE1} %{buildroot}%{_libexecdir}/.
+cp %{SOURCE2} %{buildroot}%{_unitdir}/ipmi.service
+
+chmod 755 %{buildroot}%{_libexecdir}/openipmi-helper
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable ipmi.service" > %{buildroot}%{_presetdir}/50-ipmi.preset
 
 %preun
 %systemd_preun ipmi.service
+
 %post
 /sbin/ldconfig
 %systemd_post ipmi.service
+
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart ipmi.service
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libOpenIPMIcmdlang.so.*
-%{_libdir}/libOpenIPMIposix.so.*
-%{_libdir}/libOpenIPMIpthread.so.*
-%{_libdir}/libOpenIPMI.so.*
-%{_libdir}/libOpenIPMIutils.so.*
-%doc COPYING COPYING.LIB FAQ INSTALL README README.Force
-%doc README.MotorolaMXP CONFIGURING_FOR_LAN COPYING.BSD
-%exclude /etc/init.d/ipmi
+%{_libdir}/libOpenIPMI*.so.*
+%exclude %{_sysconfdir}/init.d/ipmi
 %config(noreplace) %{_sysconfdir}/sysconfig/ipmi
 %{_libexecdir}/*
-/lib/systemd/system/ipmi.service
-%{_libdir}/systemd/system-preset/50-ipmi.preset
+%{_unitdir}/ipmi.service
+%{_presetdir}/50-ipmi.preset
 
 %files perl
 %defattr(-,root,root)
-%{perl_vendorarch}
-%doc swig/OpenIPMI.i swig/perl/sample swig/perl/ipmi_powerctl
+%{perl_vendorarch}/*
 
 %files python3
 %defattr(-,root,root,-)
-%{_libdir}/python*/site-packages/*OpenIPMI.*
-%doc swig/OpenIPMI.i
+%{python3_sitearch}/*OpenIPMI*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/OpenIPMI
 %{_libdir}/*.so
 %{_libdir}/pkgconfig
-%doc doc/IPMI.pdf
 
 %files ui
 %defattr(-,root,root)
@@ -186,6 +178,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+* Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.33-4
+- Bump version as a part of readline upgrade
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.0.33-3
 - Perl versiion upgraded to 5.36.0
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.33-2

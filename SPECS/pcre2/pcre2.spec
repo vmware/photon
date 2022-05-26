@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2/
 License:        BSD
 Group:          Development/Tools
@@ -97,6 +97,8 @@ make check %{?_smp_mflags}
 %{_libdir}/*.so*
 
 %changelog
+*   Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 10.40-2
+-   Bump release as a part of readline upgrade
 *   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 10.40-1
 -   Automatic Version Bump
 *   Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 10.39-1
