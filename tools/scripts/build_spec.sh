@@ -9,6 +9,9 @@ KEEP_SANDBOX_AFTER_FAILURE=1
 # Draw spinner while waiting
 DRAW_SPINNER=1
 
+# Process %check section
+WITH_CHECK=0
+
 test "$#" -ne 1 && echo "Usage: $0 spec-file-to-build.spec" && exit 1
 
 CONTAINER=build_spec
@@ -24,6 +27,7 @@ exec 3>&1
 # redirect &1 and &2 to the log file
 exec &>"$LOGFILE"
 
+# First argument meaning: 1 - exit on fail, 0 - continue on failure.
 function wait_for_result() {
   local pid=$!
   if [ "$DRAW_SPINNER" -eq 1 ]; then
@@ -38,10 +42,14 @@ function wait_for_result() {
   fi
   if wait $pid; then
     echo -e "\033[0;32mOK\033[0m" >&3
+  elif [ $1 -eq 0 ]; then
+    echo -e "\033[0;33mERROR\033[0m" >&3
+    return 1
   else
     echo -e "\033[0;31mFAIL\033[0m" >&3
     fail
   fi
+  return 0
 }
 
 function run() {
@@ -49,7 +57,15 @@ function run() {
   shift
   echo "run: $*"
   "$@" &
-  wait_for_result
+  wait_for_result 1
+}
+
+function tryrun() {
+  echo -ne "\t$1 " >&3
+  shift
+  echo "run: $*"
+  "$@" &
+  wait_for_result 0
 }
 
 function in_sandbox() {
@@ -83,7 +99,7 @@ function create_sandbox() {
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
-  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential tar sed findutils file gzip patch bzip2
+  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential gmp-devel mpfr-devel tar sed findutils file gzip patch bzip2
 
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" photon_build_spec:$VERSION.0
 }
@@ -94,15 +110,17 @@ function prepare_buildenv() {
   run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/stage/SOURCES" \;
   run "Copy sources from $SPECDIR" docker cp "$SPECDIR/stage/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
 
-  for url in $(in_sandbox rpmspec -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^ ]\+$');
+  for url in $(in_sandbox rpmspec -D "with_check $WITH_CHECK" -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^ ]\+$');
   do
     file=$(basename "$url")
     test -f "$SPECDIR/stage/SOURCES/$file" && continue
-    run "Download $file" wget -P "$SPECDIR/stage/SOURCES" "$SOURCES_BASEURL/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
+    tryrun "Download $file" wget "$SOURCES_BASEURL/$file" -O "$SPECDIR/stage/SOURCES/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
+    # Retry from original URL
+    [ $? -eq 0 ] || run "Download $url" wget "$url" -O "$SPECDIR/stage/SOURCES/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
   done
 
   local br
-  br=$(sed -n 's/BuildRequires://p' "$SPECPATH" | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ *//g' | tr '\n' ' ')
+  br=$(in_sandbox rpmspec -D "with_check $WITH_CHECK" -P /usr/src/photon/SOURCES/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ "$br" != "" ]; then
     run "Install build requirements" in_sandbox tdnf install -y $br
   fi
@@ -110,8 +128,9 @@ function prepare_buildenv() {
 
 function build() {
   echo -ne "\tRun rpmbuild " >&3
-  in_sandbox rpmbuild -bb --define "dist .ph$VERSION" --define "with_check 0" /usr/src/photon/SOURCES/"$SPECFILE" &
-  wait_for_result
+  [ $WITH_CHECK -eq 0 ] && WITH_CHECK_PARAM="--nocheck"
+  in_sandbox rpmbuild $WITH_CHECK_PARAM -bb --define "dist .ph$VERSION" --define "with_check $WITH_CHECK" /usr/src/photon/SOURCES/"$SPECFILE" &
+  wait_for_result 1
 }
 
 function get_rpms() {
