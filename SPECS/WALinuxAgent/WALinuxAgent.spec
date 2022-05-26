@@ -1,6 +1,6 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.4.0.2
+Version:        2.7.1.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=62b2819a63e615c8a9699685d6009820f025f212
-
-Patch0:         Add-PhotonOS-support.patch
+%define sha512    %{name}=4546f6fbf8e572ce450185888317b4499d2e3ecb3d8501d7b2473a53fc8911b10dac6a288d033833b8b9dde4bccb58367dac965f3bd4ad0dd58e5e0fe4c15751
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -44,7 +42,7 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %pre -p /bin/sh
 
@@ -87,6 +85,8 @@ python3 setup.py check && python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.1.0-1
+- Automatic Version Bump
 * Sat Nov 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.0.2-1
 - Upgrade to version 2.4.0.2
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.53.1-1
@@ -128,6 +128,6 @@ python3 setup.py check && python3 setup.py test
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
 - Removed redundant requires
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
-- Added sha1sum
+- Added sha512sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com
 - Initial packaging
