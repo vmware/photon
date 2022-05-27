@@ -3,7 +3,7 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.0.0
+Version:        12.0.5
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=1306f5549be3f81225c872f09b54778a7d2587cb9158d675ac840864c6322c72dfb66d9e7e85d34c5e7a3e4fe360875876ec43014b3785f7f29e157a35ec35d6
+%define sha512 %{name}=c5503caa8a6d4a7e0a18066781448bba4a800288b1a0e788204d57faf039cddfd297e809e006a5d37e336ba96bfc42ec6d33ab540c0ce62dd59c8a946df8d6ed
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 Source2:        vmtoolsd.service
@@ -178,6 +178,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Thu May 26 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.5-1
+- Upgrade to version 12.0.5.
 * Mon May 9 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.0-1
 - Upgrade to version 12.0.0
 * Mon Apr 25 2022 Shivani Agarwal <shivania2@vmware.com> 11.3.5-7
