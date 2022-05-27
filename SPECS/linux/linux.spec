@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.241
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.245
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=8ddf5791febed8de146367fcf96d84da15e859d8b8b5de01899415f0080c22fbe18e5eef1a1db681260eb80a60b9e33cd551515d9ec4c065977cf5d3da9045c4
+%define sha512 linux=76d94dd656c7eb71b24ebbdee97e90cceccbb07d0cba3f831bc5bd3c10289549ec0e6f6a240fcba8f0d02de296990db615d7211654bf5ea070b58270fb9e28d4
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -121,13 +121,6 @@ Patch70:	0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 #Fix for 9p
 Patch71:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch72:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
-
-#Fix for CVE-2022-1048
-Patch73:	0001-ALSA-pcm-fix-races-among-concurrent-hw_params-and-hw_free-calls.patch
-Patch74:	0002-ALSA-pcm-fix-races-between-concurrent-read-write-and-buffer-changes.patch
-Patch75:	0003-ALSA-pcm-fix-races-among-concurrent-prepare-and-hw_params-hw_free-calls.patch
-Patch76:	0004-ALSA-pcm-fix-races-among-concurrent-prealloc-proc-writes.patch
-Patch77:	0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-and-mmap_lock.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -627,11 +620,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch70 -p1
 %patch71 -p1
 %patch72 -p1
-%patch73 -p1
-%patch74 -p1
-%patch75 -p1
-%patch76 -p1
-%patch77 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1272,6 +1260,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1
+- Update to version 4.19.245
 * Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-2
 - Fix for CVE-2022-1048
 * Wed May 11 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-1
