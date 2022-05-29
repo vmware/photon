@@ -2,15 +2,18 @@ Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
 Version:        2.0.0
 Release:        1%{?dist}
-Source0:        https://github.com/thkukuk/libnsl/archive/v%{version}/libnsl-%{version}.tar.gz
-%define sha512  libnsl=86a7738707a3e4e56b60c8de0445fb576e66148bc12fa2a6aab422ea81eb4b42be3287a12f78384acd2b8bfb3885e9a0ce4f7328f078da3a5099acb66a35a935
 License:        GPLv2+
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/libnsl
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/thkukuk/libnsl/archive/v%{version}/libnsl-%{version}.tar.gz
+%define sha512  %{name}=86a7738707a3e4e56b60c8de0445fb576e66148bc12fa2a6aab422ea81eb4b42be3287a12f78384acd2b8bfb3885e9a0ce4f7328f078da3a5099acb66a35a935
+
 Requires:       libtirpc
 Requires:       rpcsvc-proto
+
 BuildRequires:  libtirpc-devel
 BuildRequires:  rpcsvc-proto-devel
 
@@ -29,7 +32,7 @@ Requires:       rpcsvc-proto-devel
 This package includes header files and libraries necessary for developing programs which use the nsl library.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 autoreconf -fi
@@ -39,11 +42,8 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %{_libdir}/*.so

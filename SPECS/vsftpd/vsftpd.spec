@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
-%define sha1    %{name}=0159531cc9f9fc6dd64cd734e2fd42601e44b5d9
+%define sha512  %{name}=9e9f9bde8c460fbc6b1d29ca531327fb2e40e336358f1cc19e1da205ef81b553719a148ad4613ceead25499d1ac3f03301a0ecd3776e5c228acccb7f9461a7ee
 
 Patch0: add-debug-symbols-to-build.patch
 Patch1: fix-libssl-link.patch
@@ -100,6 +100,8 @@ fi
 %{_datadir}/*
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-3
+- Bump version as a part of libnsl upgrade
 * Wed Apr 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-2
 - Fix spec issues
 * Fri Feb 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-1
