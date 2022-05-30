@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.9
-Release:        2%{?dist}
+Version:        3.11
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 #Source download URL: https://github.com/esnet/iperf/archive/3.8.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
 Patch1:         disablepg.patch
-%define sha1 iperf=52c9e7668d7cd371e5dabf187aab3123d0550145
+%define sha512  iperf=4be3e407f77a083d826bddc5ce2939047c85f5b816a6aeb3293eacabf2ea23bf13df4226e629ade3bf390c2eb08d6a1cb96f8cdb0fefb290a0fa4c8331d11a17
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+*       Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11-1
+-       Automatic Version Bump
 *       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9-2
 -       Bump up release for openssl
 *       Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9-1
