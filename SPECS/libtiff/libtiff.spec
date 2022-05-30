@@ -1,6 +1,6 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.3.0
+Version:        4.4.0
 Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
@@ -8,11 +8,8 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha1    libtiff-v=3e4f5c772c564cb03e2eba0ab331c6ff95a58125
+%define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
 Patch0:         CVE-2018-12900.patch
-Patch1:         libtiff-CVE-2022-0561.patch
-Patch2:         libtiff-CVE-2022-0562.patch
-Patch3:         libtiff-CVE-2022-0891.patch
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  ca-certificates
 BuildRequires:  wget
@@ -64,6 +61,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Mon May 30 2022 Shivani Agarwal <shivania2@vmware.com> 4.4.0-1
+-   Fix CVE-2022-1622, CVE-2022-22844, CVE-2022-0865, CVE-2022-0924, CVE-2022-0908, CVE-2022-0909, CVE-2022-0907
 *   Mon Mar 21 2022 Harinadh D <hdommaraju@vmware.com> 4.3.0-1
 -   Fix CVE-2022-0891,CVE-2022-0562
 *   Fri Mar 11 2022 Harinadh D <hdommaraju@vmware.com> 4.1.0-4
