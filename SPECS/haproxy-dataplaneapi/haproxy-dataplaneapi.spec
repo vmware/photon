@@ -10,15 +10,15 @@
 
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
-Version:        2.2.0
-Release:        2%{?dist}
+Version:        2.5.4
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/haproxytech/%{repo}-%{version}.tar.gz
-%define sha1    %{repo}=d4ce27bfb1bc564b87ab98362c87e0ee1a2919b0
+%define sha512  %{repo}=eaca4c3ffd272a7e6a8d8a26a4fb27ef5347272a175e443f2951659f899e42dfa9d1f4a0019c10476068021f11e62b0e14f9456300d3ba84da57415e110370a1
 BuildRequires:  go
 BuildRequires:  ca-certificates
 Requires:       haproxy >= 2.0.10
@@ -54,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
+*   Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.4-1
+-   Automatic Version Bump
 *   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.2.0-2
 -   Version bump up to use haproxy-2.5.5
 *   Fri Feb 19 2021 HarinadhD <hdommaraju@vmware.com> 2.2.0-1
