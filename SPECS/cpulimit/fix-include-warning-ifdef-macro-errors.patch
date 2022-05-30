@@ -1,0 +1,45 @@
+From c1ff6d0325dfc68a88236bbf9f8f9ac832a7aa10 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 30 May 2022 23:39:40 +0530
+Subject: [PATCH] fix include warning & ifdef macro errors
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ src/cpulimit.c                | 3 +--
+ tests/process_iterator_test.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/cpulimit.c b/src/cpulimit.c
+index 50eabea..2acebf1 100644
+--- a/src/cpulimit.c
++++ b/src/cpulimit.c
+@@ -38,12 +38,11 @@
+ #include <string.h>
+ #include <sys/stat.h>
+ #include <sys/time.h>
+-#include <sys/sysctl.h>
+ #include <sys/resource.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
+ 
+-#ifdef __APPLE__ || __FREEBSD__
++#if defined __APPLE__ || defined __FREEBSD__
+ #include <libgen.h>
+ #endif
+ 
+diff --git a/tests/process_iterator_test.c b/tests/process_iterator_test.c
+index 1615196..6fba4c0 100644
+--- a/tests/process_iterator_test.c
++++ b/tests/process_iterator_test.c
+@@ -28,7 +28,7 @@
+ #include <signal.h>
+ #include <string.h>
+ 
+-#ifdef __APPLE__ || __FREEBSD__
++#if defined __APPLE__ || defined __FREEBSD__
+ #include <libgen.h>
+ #endif
+ 
+-- 
+2.25.1
+
