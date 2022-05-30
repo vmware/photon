@@ -492,6 +492,30 @@ label my_unattended
 	kernel vmlinuz
 	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
+cat >> isolinux/menu.cfg << EOF
+label my_unattended
+    menu label ^My Unattended Install
+    menu default
+    kernel vmlinuz
+    append initrd=initrd.img root=/dev/ram0 ks=my_ks.cfg loglevel=3 photon.media=cdrom
+EOF
+
+cat >> boot/grub2/grub.cfg << EOF
+set default=0
+set timeout=3
+loadfont ascii
+set gfxmode="1024x768"
+gfxpayload=keep
+set theme=/boot/grub2/themes/photon/theme.txt
+terminal_output gfxterm
+probe -s photondisk -u ($root)
+
+menuentry "Install" {
+    linux /isolinux/vmlinuz root=/dev/ram0 ks=my_ks.cfg loglevel=3 photon.media=UUID=$photondisk
+    initrd /isolinux/initrd.img
+}
+EOF 
+
 ```
 
 **Note:** You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the `photon.media` field. You can specify the path as shown in the following syntax:
