@@ -3,7 +3,7 @@
 
 Summary:        Java Native Access
 Name:           jna
-Version:        5.8.0
+Version:        5.12.1
 Release:        1%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
@@ -11,7 +11,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=c009cf8c6a31c86f6713083e54cce4cc2be5e156
+%define sha512  %{name}-%{version}=6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
 Patch0:         jna_remove_clover_jar.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -32,8 +32,7 @@ Requires:       %{name} = %{version}-%{release}
 Sources for JNA
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %clean
 rm -rf %{buildroot}
@@ -82,6 +81,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 5.12.1-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.8.0-1
 -   Automatic Version Bump
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
