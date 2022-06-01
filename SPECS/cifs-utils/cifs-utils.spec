@@ -1,7 +1,7 @@
 Summary:	cifs client utils
 Name:		cifs-utils
 Version:	6.7
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
@@ -14,6 +14,12 @@ Patch0:         0001-CVE-2020-14342-mount.cifs-fix-shell-command-injectio.patch
 
 # fix for CVE-2021-20208
 Patch1:         0001-cifs-upcall-try-to-use-container-ipc-uts-net-pid-mnt-user.patch
+
+# fix for CVE-2022-27239
+Patch2:         0001-CVE-2022-27239_mount_cifs_fix_length_check_for_ip_option_parsing.patch
+
+# fix for CVE-2022-29869
+Patch3:         0001-mount.cifs_fix_verbose_messages_on_option_parsing.patch
 
 BuildRequires:  libcap-ng-devel
 BuildRequires:  libtalloc-devel
@@ -35,6 +41,8 @@ Provides header files needed for Cifs-Utils development.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 autoreconf -fiv &&./configure --prefix=%{_prefix}
@@ -56,6 +64,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+*       Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 6.7-4
+-       Fix for CVE-2022-27239, CVE-2022-29869
 *       Tue May 11 2021 Ajay Kaher <akaher@vmware.com> 6.7-3
 -       Fix for CVE-2021-20208
 *       Tue Sep 15 2020 Ajay Kaher <akaher@vmware.com> 6.7-2
