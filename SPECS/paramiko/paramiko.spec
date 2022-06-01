@@ -1,6 +1,6 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        2.10.3
+Version:        2.11.0
 Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            http://www.paramiko.org
 
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=dd2481e15187cfc56d4ba6848b43fd8fbb4917fa
+%define sha512  paramiko=59e439bd54d83938f91d6c9888f2278bafa4ca48582939580bdabc6207dbe6dc856f6006ad26b7ec91b9d39e92ca70dc6270c6b5d4f77a5e1fa0ec8bd084d4b5
 
 BuildArch:      noarch
 
@@ -55,6 +55,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.0-1
+- Automatic Version Bump
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.10.3-1
 - Upgrade to v2.10.3
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
