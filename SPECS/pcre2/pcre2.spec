@@ -1,6 +1,6 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
-Version:        10.39
+Version:        10.40
 Release:        1%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2/
 License:        BSD
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/PhilipHazel/pcre2/releases/download/pcre2-%{version}/pcre2-%{version}.tar.gz
-%define sha1 %{name}=36f235c0cdb992ef68c9a88d45dd2380b1dd921d
+%define sha512  %{name}=679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -31,18 +31,18 @@ The PCRE2 library is a set of C functions that implement regular expression patt
 PCRE2 has its own native API, as well as a set of wrapper functions that correspond to the POSIX regular expression API.
 It comes in three forms, for processing 8-bit, 16-bit, or 32-bit code units, in either literal or UTF encoding.
 
-%package devel
-Summary:    Development files for libpcre2
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Development files for libpcre2
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 All of the required files to develop with the pcre2 library
 
-%package libs
-Summary:    Libraries for pcre2
-Group:      System Environment/Libraries
+%package        libs
+Summary:        Libraries for pcre2
+Group:          System Environment/Libraries
 
-%description libs
+%description    libs
 This package contains minimal set of shared pcre libraries.
 
 %prep
@@ -62,7 +62,6 @@ This package contains minimal set of shared pcre libraries.
             --enable-shared \
             --disable-static \
             ..
-
 make %{?_smp_mflags}
 
 %install
@@ -98,6 +97,8 @@ make check %{?_smp_mflags}
 %{_libdir}/*.so*
 
 %changelog
+*   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 10.40-1
+-   Automatic Version Bump
 *   Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 10.39-1
 -   Initial addition of pcre2 - needed for building libnetconf2.
 -   Modified from photon/SPECS/pcre.spec for pcre2.
