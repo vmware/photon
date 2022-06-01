@@ -1,14 +1,14 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
-Version:        3.9.4
-Release:        3%{?dist}
+Version:        3.11.0
+Release:        1%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha1    fuse3=412f063f1aafc4d409271810f40b0f31e07239bb
+%define sha512  fuse3=b4b6cd3a4ee9ace6ec8d8143f80417b10e34444f8432b4a506b4f45e19193bb7b29020ab0c59cb50ff7ce2fb81d37ac6955aec778a1cef9e7831b2a6e8cf19b5
 
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
@@ -41,7 +41,7 @@ Requires:	systemd-devel
 It contains the libraries and header files to create fuse applications.
 
 %prep
-%setup -qn libfuse-fuse-%{version}
+%autosetup -n libfuse-fuse-%{version}
 
 %build
 export LANG=en_US.UTF-8
@@ -54,7 +54,6 @@ CONFIGURE_OPTS=(
 
 meson build ${CONFIGURE_OPTS[@]}
 ninja -C build
-
 
 %install
 export LANG=en_US.UTF-8
@@ -77,8 +76,6 @@ easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pluggy more_itertools
 python3 -m pytest test/
 
-
-
 %files
 %defattr(-, root, root)
 %{_libdir}/libfuse3.so*
@@ -94,6 +91,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
 -   openssl 1.1.1
 *   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2
