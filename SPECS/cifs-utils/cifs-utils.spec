@@ -1,21 +1,26 @@
 Summary:	cifs client utils
 Name:		cifs-utils
 Version:	6.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
-%define sha1 cifs-utils=f803719bb8cbc21c8d6181cb2c249744887cd22e
+%define sha512 cifs-utils=1337ac4b69f0c3e8d0241eb608207ba81dfa35f84c661649d25da78637882c4d73467b0f632be0bd120362e0b786e40eb340bffcf21c8a09629c441100fd10de
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libcap-ng-devel
 BuildRequires:  libtalloc-devel
 Requires:       libcap-ng
 
+# fix for CVE-2022-27239
+Patch0:     0001-CVE-2022-27239_mount_cifs_fix_length_check_for_ip_option_parsing.patch
+
+# fix for CVE-2022-29869
+Patch1:     0001-mount.cifs_fix_verbose_messages_on_option_parsing.patch
+
 %description
 Cifs-utils, a package of utilities for doing and managing mounts of the Linux CIFS filesystem.
-
 
 %package devel
 Summary:    The libraries and header files needed for Cifs-Utils development.
@@ -26,18 +31,17 @@ Requires:   cifs-utils = %{version}-%{release}
 Provides header files needed for Cifs-Utils development.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
     ROOTSBINDIR=/usr/sbin \
-    --prefix=/usr \
     --disable-pam \
     --disable-systemd &&
 make
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} check
@@ -53,6 +57,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+*       Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 6.13-2
+-       Fix for CVE-2022-27239, CVE-2022-29869
 *       Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 6.13-1
 -       Automatic Version Bump
 *       Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 6.11-1
