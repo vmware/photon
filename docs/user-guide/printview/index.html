@@ -197,13 +197,30 @@ cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
 </code></pre><p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the <code>isolinux</code> directory and is named <code>sample_ks.cfg.</code> The name of the directory and the name of the file might be in all uppercase letters.</p><pre><code class=language-console data-lang=console>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
-</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code>:</p><pre><code class=language-console data-lang=console>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
+</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code> and <code>/boot/grub2/grub.cfg</code>:</p><pre><code class=language-console data-lang=console>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
 label my_unattended
 	menu label ^My Unattended Install
 	menu default
 	kernel vmlinuz
-	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
+	append initrd=initrd.img root=/dev/ram0 ks=&lt;ks_path&gt;/my_ks.cfg loglevel=3 photon.media=cdrom
 EOF
+
+
+cat &gt;&gt; /boot/grub2/grub.cfg &lt;&lt; EOF
+set default=0
+set timeout=3
+loadfont ascii
+set gfxmode=&quot;1024x768&quot;
+gfxpayload=keep
+set theme=/boot/grub2/themes/photon/theme.txt
+terminal_output gfxterm
+probe -s photondisk -u ($root)
+
+menuentry &quot;Install&quot; {
+    linux /isolinux/vmlinuz root=/dev/ram0 ks=&lt;ks_path&gt;/my_ks.cfg loglevel=3 photon.media=UUID=$photondisk
+    initrd /isolinux/initrd.img
+}
+EOF 
 </code></pre><p><strong>Note:</strong> You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the <code>photon.media</code> field. You can specify the path as shown in the following syntax:</p><pre><code class=language-console data-lang=console>photon.media=/dev/&lt;path of the Photon OS ISO&gt;
 </code></pre><p>Finally, rebuild the ISO so that it includes your kickstart config file:</p><pre><code class=language-console data-lang=console>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -V &quot;PHOTON_$(date +%Y%m%d)&quot; \

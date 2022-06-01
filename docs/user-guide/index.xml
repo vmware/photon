@@ -495,13 +495,27 @@ pushd /tmp/photon-ks-iso/
 &lt;pre>&lt;code class="language-console" data-lang="console">cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
 &lt;/code>&lt;/pre>&lt;p>With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p>
-&lt;p>Now add a new item to the installation menu by modifying &lt;code>isolinux/menu.cfg&lt;/code>:&lt;/p>
+&lt;p>Now add a new item to the installation menu by modifying &lt;code>isolinux/menu.cfg&lt;/code> and &lt;code>/boot/grub2/grub.cfg&lt;/code>:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
 label my_unattended
 menu label ^My Unattended Install
 menu default
 kernel vmlinuz
-append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
+append initrd=initrd.img root=/dev/ram0 ks=&amp;lt;ks_path&amp;gt;/my_ks.cfg loglevel=3 photon.media=cdrom
+EOF
+cat &amp;gt;&amp;gt; /boot/grub2/grub.cfg &amp;lt;&amp;lt; EOF
+set default=0
+set timeout=3
+loadfont ascii
+set gfxmode=&amp;quot;1024x768&amp;quot;
+gfxpayload=keep
+set theme=/boot/grub2/themes/photon/theme.txt
+terminal_output gfxterm
+probe -s photondisk -u ($root)
+menuentry &amp;quot;Install&amp;quot; {
+linux /isolinux/vmlinuz root=/dev/ram0 ks=&amp;lt;ks_path&amp;gt;/my_ks.cfg loglevel=3 photon.media=UUID=$photondisk
+initrd /isolinux/initrd.img
+}
 EOF
 &lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the &lt;code>photon.media&lt;/code> field. You can specify the path as shown in the following syntax:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">photon.media=/dev/&amp;lt;path of the Photon OS ISO&amp;gt;
