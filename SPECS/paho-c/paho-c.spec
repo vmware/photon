@@ -1,5 +1,5 @@
 Name:          paho-c
-Version:       1.3.9
+Version:       1.3.10
 Release:       1%{?dist}
 Summary:       MQTT C Client
 License:       BSD and EPL
@@ -8,7 +8,7 @@ Distribution:  Photon
 Group:         Applications/Database
 URL:           https://eclipse.org/paho/clients/c/
 Source0:       https://github.com/eclipse/paho.mqtt.c/archive/v%{version}/paho.mqtt.c-%{version}.tar.gz
-%define sha1   paho.mqtt.c-%{version}=5a7058ab971522965ef390ffcfa5428e672b5135
+%define sha512 paho.mqtt.c-%{version}=a2f7d78fe9a18603de7bf106b1bb2cf121b907947278fa444828ab75df232742be80c58fff78010a540b46b2a550206013048fba1ab69ff689a65f359e3e05bb
 BuildRequires: cmake
 BuildRequires: openssl-devel
 
@@ -56,5 +56,7 @@ cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_libdir}/cmake/eclipse-paho-mqtt-c/
 
 %changelog
+* Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.10-1
+- Automatic Version Bump
 * Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 1.3.9-1
 - first release in Photon
