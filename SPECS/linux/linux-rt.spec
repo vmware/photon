@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.109
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt65
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -90,6 +90,10 @@ Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch108:       0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
 Patch109:       0001-debug-Lock-down-kgdb.patch
+# Fix for CVE-2022-1966
+Patch110:       0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+# Fix for CVE-2022-1972
+Patch111:       0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -567,6 +571,8 @@ The Linux package contains the Linux kernel doc files
 %patch107 -p1
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
+%patch111 -p1
 
 %patch120 -p1
 %patch121 -p1
@@ -1127,6 +1133,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
+- Fix for CVE-2022-1966, CVE-2022-1972
 * Mon May 23 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.109-3
 - Fix for CVE-2022-21499
 * Thu May 12 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-2

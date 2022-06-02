@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.109
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -64,6 +64,10 @@ Patch105:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch106:       0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
 Patch107:       0001-debug-Lock-down-kgdb.patch
+# Fix for CVE-2022-1966
+Patch108:       0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+# Fix for CVE-2022-1972
+Patch109:       0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -203,6 +207,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
+%patch108 -p1
+%patch109 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -404,6 +410,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
+- Fix for CVE-2022-1966, CVE-2022-1972
 * Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.109-3
 - Fix for CVE-2022-21499
 * Thu May 12 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-2

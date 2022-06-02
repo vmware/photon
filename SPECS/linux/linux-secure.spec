@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.109
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -86,6 +86,10 @@ Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch108:       0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
 Patch109:       0001-debug-Lock-down-kgdb.patch
+# Fix for CVE-2022-1966
+Patch110:       0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+# Fix for CVE-2022-1972
+Patch111:       0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -202,6 +206,8 @@ The Linux package contains the Linux kernel doc files
 %patch107 -p1
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
+%patch111 -p1
 
 # crypto
 %patch500 -p1
@@ -336,6 +342,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
+- Fix for CVE-2022-1966, CVE-2022-1972
 * Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.109-3
 - Fix for CVE-2022-21499
 * Thu May 12 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.109-2
