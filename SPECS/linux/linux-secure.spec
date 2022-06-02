@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.315
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -71,6 +71,8 @@ Patch41:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch45:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
+# Fix for CVE-2022-1966
+Patch46:        0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 # Fix for CVE-2018-10322
 Patch48:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch49:        0002-xfs-verify-dinode-header-first.patch
@@ -275,6 +277,7 @@ EOF
 %patch41 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
@@ -467,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 4.9.315-2
+-   Fix for CVE-2022-1966
 *   Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.315-1
 -   Update to version 4.9.315
 *   Tue Apr 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.311-1
