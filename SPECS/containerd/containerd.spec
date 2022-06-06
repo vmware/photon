@@ -3,20 +3,20 @@
 %define gopath_comp github.com/containerd/containerd
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.12
-Release:        4%{?dist}
+Version:        1.4.13
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512  containerd=52dc4b0344eb4c6a6f1cc5690ff0c70ee052ef05c02300ed4a806458c40bb1970c26b374b0733b2c30a05c04a731d62a7c4206b1d768075d51c202912efd32b1
+%define sha512  containerd=8e8ec206f29e55bfdf96feb1d858c857db3895de424fd20c75e57ac66512bb2e84bc955ee93ea23b822da55376b76be3a94f1dbd5b58ecfd2d2a302ba0a553de
 # Must be in sync with package version
 %define CONTAINERD_GITCOMMIT 7b11cfaabd73bb80907dd23182b9347b4245eb5d
 
 Patch1:         containerd-service.patch
-Patch2:         containerd-1.4-Use-fs.RootPath-when-mounting-volumes.patch
+Patch2:         containerd-1.4-Limit-the-response-size-of-ExecSync.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 
@@ -123,6 +123,9 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jun 03 2022 Bo Gan <ganb@vmware.com> 1.4.13-1
+-   Upgrade to 1.4.13
+-   Fix CVE-2022-31030 with ExecSync API
 *   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.12-4
 -   Bump up version to compile with new go
 *   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.4.12-3
