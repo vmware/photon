@@ -6,6 +6,7 @@ DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
 STAGE_DIR=$4
+PH_BUILDER_TAG=$5
 ARCH=x86_64
 
 #
@@ -35,7 +36,7 @@ done
 mkdir -p tmp/k8dns
 cp ${K8S_DNS_RPM_FILE} tmp/k8dns/
 pushd ./tmp/k8dns
-docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${K8S_DNS_RPM}' | cpio -vid"
+docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && rpm2cpio '${K8S_DNS_RPM}' | cpio -vid"
 popd
 
 setup_repo

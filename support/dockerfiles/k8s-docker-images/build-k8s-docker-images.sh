@@ -4,6 +4,7 @@ DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
 STAGE_DIR=$4
+PH_BUILDER_TAG=$5
 ARCH=x86_64
 
 #
@@ -37,7 +38,7 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
     cp ${K8S_RPM_FILE} tmp/k8s/
     cp ${K8S_PAUSE_RPM_FILE} tmp/k8s/
     pushd ./tmp/k8s
-    docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && \
+    docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && \
     rpm2cpio '${K8S_RPM}' | cpio -vid && rpm2cpio '${K8S_PAUSE_RPM}' | cpio -vid"
     popd
 

@@ -6,6 +6,7 @@ DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
 STAGE_DIR=$4
+PH_BUILDER_TAG=$5
 ARCH=noarch
 
 #
@@ -34,7 +35,7 @@ fi
 mkdir -p tmp/wavefront-proxy
 cp ${WAVEFRONT_PROXY_RPM_FILE} tmp/wavefront-proxy/
 pushd ./tmp/wavefront-proxy
-docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${WAVEFRONT_PROXY_RPM}' | cpio -vid"
+docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && rpm2cpio '${WAVEFRONT_PROXY_RPM}' | cpio -vid"
 popd
 
 setup_repo

@@ -23,6 +23,7 @@ PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 INITRD=${WORKINGDIR}/photon-chroot
 PACKAGES=$8
 PHOTON_DOCKER_IMAGE=$9
+PH_BUILDER_TAG=${10}
 
 rm -rf $WORKINGDIR/*
 mkdir -m 755 -p $INITRD
@@ -51,7 +52,15 @@ clean_requirements_on_remove=true
 repodir=${WORKINGDIR}
 EOF
 
-rpm --root $INITRD --initdb --dbpath /var/lib/rpm
+rpmdb_init_cmd="rpm --root ${INITRD} --initdb --dbpath /var/lib/rpm"
+if [ "$(rpm -E %{_db_backend})" != "sqlite" ]; then
+  rpmdb_init_cmd="docker run --rm -v ${INITRD}:${INITRD} $PH_BUILDER_TAG /bin/bash -c \"${rpmdb_init_cmd}\""
+fi
+
+if ! eval "${rpmdb_init_cmd}"; then
+  echo "ERROR: failed to initialize rpmdb" 1>&2
+  exit 1
+fi
 
 TDNF_CMD="tdnf install -qy \
           --releasever $PHOTON_RELEASE_VER \
@@ -61,7 +70,7 @@ TDNF_CMD="tdnf install -qy \
           ${PACKAGES}"
 
 # run host's tdnf, if fails - try one from photon:latest docker image
-$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
+$TDNF_CMD || docker run --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 

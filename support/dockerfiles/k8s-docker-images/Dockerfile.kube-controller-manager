@@ -1,6 +1,6 @@
 # Photon Base Build Container
 
-FROM photon:3.0
+FROM photon:4.0
 
 ADD tmp/k8s/usr/bin/kube-controller-manager /usr/bin/kube-controller-manager
 

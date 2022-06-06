@@ -1,6 +1,7 @@
 import os
 import threading
 import copy
+import docker
 from PackageBuildDataGenerator import PackageBuildDataGenerator
 from Logger import Logger
 from constants import constants
@@ -30,7 +31,6 @@ class PackageManager(object):
         self.listOfPackagesAlreadyBuilt = set()
         self.pkgBuildType = pkgBuildType
         if self.pkgBuildType == "container":
-            import docker
             self.dockerClient = docker.from_env(version="auto")
 
     def buildToolChain(self):

@@ -6,6 +6,7 @@ DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
 STAGE_DIR=$4
+PH_BUILDER_TAG=$5
 ARCH=x86_64
 
 #
@@ -152,7 +153,7 @@ cp ${CALICO_CNI_RPM_FILE} tmp/calico/
 cp ${K8S_CNI_RPM_FILE} tmp/calico/
 cp ${CALICO_K8S_POLICY_RPM_FILE} tmp/calico/
 pushd ./tmp/calico
-docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && \
+docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && \
 rpm2cpio '${CALICO_RPM}' | cpio -vid && \
 rpm2cpio '${CALICO_BGP_RPM}' | cpio -vid && \
 rpm2cpio '${GO_BGP_RPM}' | cpio -vid && \

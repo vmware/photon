@@ -1,6 +1,6 @@
 # Photon Base Build Container
 
-FROM photon:3.0
+FROM photon:4.0
 
 RUN tdnf install -y ebtables iptables iproute2 shadow socat --refresh
 ADD tmp/k8s/usr/bin/kube-proxy /usr/bin/kube-proxy
