@@ -131,45 +131,24 @@ class ToolChainUtils(object):
         self.logger.debug(rpmFiles)
         self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
-               chroot.getID() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
+               chroot.getID() +" -D \'_dbpath /var/lib/rpm\' "+ rpmFiles)
 
         # If rpm doesn't have zstd support, use rpm from photon_builder image
-        if constants.hostRpmIsNotUsable:
+        if constants.checkIfHostRpmNotUsable():
             # if we are not root, make installed files owned by effective user to
             # support pure non-root package building.
-            if os.geteuid() != 0:
+            if os.geteuid():
                 cmd = cmd + "; chown -R {0}:{1} {2}".format(os.geteuid(), os.getegid(), chroot.getID())
-            cmd = ("docker run -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
+            cmd = ("docker run --rm -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
                    " -v " + constants.inputRPMSPath + ":" + constants.inputRPMSPath +
                    " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
-                   chroot.getID() + " photon_builder:latest " + "/bin/bash -c \"" + cmd + "\"")
+                   chroot.getID() + " " + constants.phBuilderTag + " /bin/bash -c \"" + cmd + "\"")
 
         self.logger.debug("Executing cmd: " + cmd)
-        retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-        if retVal != 0:
+        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
-
-        # There is some weird contention with this toolchain package installations and
-        # rpmdb rebuilds. So, let's do it explicitly here.
-        # XXX: Once we use latest ova template in our build env, we can remove this.
-        # Ubuntu build machines should also use backend db as sqlite to remove this
-        timeout = 900
-        old_epoch = time.time()
-        while True:
-            if chroot.run("[ -f /var/lib/rpm/Packages ]", logfn=self.logger.debug):
-                break
-            time.sleep(1)
-            # retry for 15 min, ideally this should finish quickly
-            # if not, abort after 15 min
-            if time.time() - old_epoch > timeout:
-                self.logger.debug("--- 15 min elapsed trying to rebuild db ---")
-                break
-
-        if time.time() - old_epoch > timeout and not chroot.run("[ -f /var/lib/rpm/Packages ]", logfn=self.logger.debug):
-            self.logger.error("rpmdb conversion failed after multiple retries")
-            raise Exception("RpmDB conversion error")
 
         if packageName:
             self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
@@ -237,7 +216,7 @@ class ToolChainUtils(object):
         if rpmFiles != "":
             cmd = (self.rpmCommand+" -Uvh --nodeps --ignorearch --noscripts --root "+
                    chroot.getID() +"/target-"+ constants.targetArch+
-                   " --define \'_dbpath /var/lib/rpm\' "+rpmFiles)
+                   " -D \'_dbpath /var/lib/rpm\' "+rpmFiles)
             retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
             if retVal != 0:
                 self.logger.debug("Command Executed:" + cmd)

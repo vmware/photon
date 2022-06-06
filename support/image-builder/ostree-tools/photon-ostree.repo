@@ -1,8 +1,7 @@
-[photon]
+[photon-ostree]
 name=VMware Photon OSTree Linux 4.0(x86_64)
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
 enabled=1
 skip_if_unavailable=True
-baseurl=file:///RPMS
 baseurl=file:///RPMS

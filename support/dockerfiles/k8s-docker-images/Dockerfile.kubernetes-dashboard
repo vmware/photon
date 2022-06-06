@@ -16,10 +16,11 @@
 # be built from the dist directory.
 
 # Taken from kubernetes-dashboard rpm, from /opt/k8sdashboard/Dockerfile
-# Replace ubuntu image with photon:3.0
-FROM photon:3.0 as builder
+# Replace ubuntu image with photon:4.0
+FROM photon:4.0 as builder
 
-RUN tdnf install -y shadow --refresh
+COPY [ "./stage-rpms-tdnf.conf", "./stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y shadow --refresh
 # Create a nonroot user for final image
 RUN useradd -u 10001 nonroot
 

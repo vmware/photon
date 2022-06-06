@@ -1,14 +1,17 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -e
 
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
 STAGE_DIR=$4
+PH_BUILDER_TAG=$5
 ARCH=x86_64
 
-#
+source common.sh
+
 # Docker images for kubernetes-metrics-server
-#
 K8S_MET_SERV_VER=`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Version: | cut -d: -f2 | tr -d ' '`
 K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_MET_SERV_RPM=kubernetes-metrics-server-${K8S_MET_SERV_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -32,8 +35,15 @@ fi
 mkdir -p tmp/k8smetserv
 cp ${K8S_MET_SERV_RPM_FILE} tmp/k8smetserv/
 pushd ./tmp/k8smetserv
-rpm2cpio ${K8S_MET_SERV_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${K8S_MET_SERV_RPM}' | cpio -vid"
+if ! rpmSupportsZstd; then
+  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
+else
+  eval "${cmd}"
+fi
 popd
+
+start_repo_server
 
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.metrics-server .
 docker save -o ${K8S_MET_SERV_TAR} ${IMG_NAME}

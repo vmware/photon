@@ -128,7 +128,7 @@ def createIso(options):
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
                                   options.generated_data_path, initrd_pkgs,
-                                  options.ph_docker_image])
+                                  options.ph_docker_image, options.ph_builder_tag])
 
         if retval:
             raise Exception("Unable to create install ISO")

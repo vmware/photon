@@ -1,5 +1,8 @@
 import platform
+
 from Logger import Logger
+from CommandUtils import CommandUtils as cmdUtils
+
 
 class constants(object):
     specPath = ""
@@ -37,6 +40,8 @@ class constants(object):
     crossCompiling = False
     currentArch = buildArch
     hostRpmIsNotUsable = False
+    hostRpmIsNotUsable = -1
+    phBuilderTag = ""
 
     noDepsPackageList = [
         "texinfo",
@@ -469,3 +474,24 @@ class constants(object):
                 k, v = m.split(' ', 1)
                 macros[k] = v
         return macros
+
+    def checkIfHostRpmNotUsable():
+        if constants.hostRpmIsNotUsable >= 0:
+            return constants.hostRpmIsNotUsable
+
+        # if rpm doesn't have zstd support
+        # if host rpm doesn't support sqlite backend db
+        cmds = [
+            "rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'",
+            "rpm -E %{_db_backend} | grep -qw 'sqlite'",
+        ]
+
+        for cmd in cmds:
+            if cmdUtils.runCommandInShell(cmd):
+                constants.hostRpmIsNotUsable = 1
+                break
+
+        if constants.hostRpmIsNotUsable < 0:
+            constants.hostRpmIsNotUsable = 0
+
+        return constants.hostRpmIsNotUsable
