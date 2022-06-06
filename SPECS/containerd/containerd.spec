@@ -2,20 +2,20 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.12
-Release:        3%{?dist}
+Version:        1.4.13
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1    containerd=23b7126e50df745e4b0b4b935dd1fab72d6fb4fa
+%define sha1    containerd=77a8b65efbd00d85ddbf02776650c2ab3178c08b
 # Must be in sync with package version
 %define CONTAINERD_GITCOMMIT 7b11cfaabd73bb80907dd23182b9347b4245eb5d
 
 Patch1:         containerd-service-file-binpath.patch
-Patch2:         containerd-1.4-Use-fs.RootPath-when-mounting-volumes.patch
+Patch2:         containerd-1.4-Limit-the-response-size-of-ExecSync.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
@@ -114,6 +114,9 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jun 03 2022 Bo Gan <ganb@vmware.com> 1.4.13-1
+-   Upgrade to 1.4.13
+-   Fix CVE-2022-31030 with ExecSync API
 *   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.12-3
 -   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.12-2
