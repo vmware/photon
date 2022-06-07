@@ -482,7 +482,7 @@ nano isolinux/my_ks.cfg
 
 With a copy of the sample kickstart config file open in nano, make the changes that you want. 
 
-Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `/boot/grub2/grub.cfg`:
+Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `boot/grub2/grub.cfg`:
 
 ```console
 cat >> isolinux/menu.cfg << EOF
@@ -494,7 +494,7 @@ label my_unattended
 EOF
 
 
-cat >> /boot/grub2/grub.cfg << EOF
+cat >> boot/grub2/grub.cfg << EOF
 set default=0
 set timeout=3
 loadfont ascii
@@ -510,6 +510,9 @@ menuentry "Install" {
 }
 EOF 
 ```
+Following is an example of the ks path:
+
+	`ks_path=cdrom:/isolinux`
 
 **Note:** You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the `photon.media` field. You can specify the path as shown in the following syntax:
 
@@ -521,8 +524,10 @@ Finally, rebuild the ISO so that it includes your kickstart config file:
 
 ```console
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
-		. > <new_iso_path>.iso
+                -no-emul-boot -boot-load-size 4 -boot-info-table \
+                -eltorito-alt-boot --eltorito-boot boot/grub2/efiboot.img -no-emul-boot \
+                -V "PHOTON_$(date +%Y%m%d)" . > <new_iso_path>.iso
+
 
 popd
 ```
