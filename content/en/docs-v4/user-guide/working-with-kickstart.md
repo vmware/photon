@@ -545,10 +545,14 @@ nano isolinux/my_ks.cfg
 With a copy of the sample kickstart config file open in nano, make the changes that you want. 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `boot/grub2/grub.cfg`:
 =======
 Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `/boot/grub2/grub.cfg`:
 >>>>>>> 2ee5fcd8b (kickstart  Option Added)
+=======
+Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `boot/grub2/grub.cfg`:
+>>>>>>> af8820998 (Doc Feedback Changes)
 
 ```console
 cat >> isolinux/menu.cfg << EOF
@@ -561,10 +565,14 @@ EOF
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 cat >> boot/grub2/grub.cfg << EOF
 =======
 cat >> /boot/grub2/grub.cfg << EOF
 >>>>>>> 2ee5fcd8b (kickstart  Option Added)
+=======
+cat >> boot/grub2/grub.cfg << EOF
+>>>>>>> af8820998 (Doc Feedback Changes)
 set default=0
 set timeout=3
 loadfont ascii
@@ -592,6 +600,9 @@ photon.media=/dev/<path of the Photon OS ISO>
 =======
 >>>>>>> 2ee5fcd8b (kickstart  Option Added)
 ```
+Following is an example of the ks path:
+
+	`ks_path=cdrom:/isolinux`
 
 **Note:** You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the `photon.media` field. You can specify the path as shown in the following syntax:
 
