@@ -2,23 +2,21 @@
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.1.1
+%define RUNC_VERSION 1.1.3
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.1.1
+Version:             1.1.3
 Release:             1%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
-
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha512       %{name}=baf622e7edae9b68d2fa255f02359d770489c7578be3c6379a5d939b4f1dfa697ec9eb4ef7dce252e64ee5225f76c06e45182a9b92b68a952e21e3f5f91450d0
-
+%define sha512       %{name}=27fce2569d0dc710a0f90095957be30c29da24ce1d2b8e115b9dc11d36f5226d98c4b2d8b92ecfa7581eade90bc51c5d9bccaf15fcb2542dafebe4fabc6e1cd9
 BuildRequires:       go
 BuildRequires:       which
 BuildRequires:       go-md2man
@@ -34,7 +32,7 @@ Containers are started as a child process of runC and can be embedded into vario
 Summary:             Documentation for runc
 Requires:            %{name} = %{version}-%{release}
 
-%description doc
+%description         doc
 Documentation for runc
 
 %prep
@@ -64,6 +62,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Tue Jun 07 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
+- Automatic Version Bump
 * Sat May 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.1-1
 - Upgrade to v1.1.1 & enable selinux in BUILDTAGS
 * Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.3-1
