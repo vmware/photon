@@ -197,7 +197,7 @@ cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
 </code></pre><p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the <code>isolinux</code> directory and is named <code>sample_ks.cfg.</code> The name of the directory and the name of the file might be in all uppercase letters.</p><pre><code class=language-console data-lang=console>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
-</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code> and <code>/boot/grub2/grub.cfg</code>:</p><pre><code class=language-console data-lang=console>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
+</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code> and <code>boot/grub2/grub.cfg</code>:</p><pre><code class=language-console data-lang=console>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
 label my_unattended
 	menu label ^My Unattended Install
 	menu default
@@ -206,7 +206,7 @@ label my_unattended
 EOF
 
 
-cat &gt;&gt; /boot/grub2/grub.cfg &lt;&lt; EOF
+cat &gt;&gt; boot/grub2/grub.cfg &lt;&lt; EOF
 set default=0
 set timeout=3
 loadfont ascii
@@ -221,10 +221,13 @@ menuentry &quot;Install&quot; {
     initrd /isolinux/initrd.img
 }
 EOF 
+</code></pre><p>Following is an example of the ks path:</p><pre><code>`ks_path=cdrom:/isolinux`
 </code></pre><p><strong>Note:</strong> You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the <code>photon.media</code> field. You can specify the path as shown in the following syntax:</p><pre><code class=language-console data-lang=console>photon.media=/dev/&lt;path of the Photon OS ISO&gt;
 </code></pre><p>Finally, rebuild the ISO so that it includes your kickstart config file:</p><pre><code class=language-console data-lang=console>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table -V &quot;PHOTON_$(date +%Y%m%d)&quot; \
-		. &gt; &lt;new_iso_path&gt;.iso
+                -no-emul-boot -boot-load-size 4 -boot-info-table \
+                -eltorito-alt-boot --eltorito-boot boot/grub2/efiboot.img -no-emul-boot \
+                -V &quot;PHOTON_$(date +%Y%m%d)&quot; . &gt; &lt;new_iso_path&gt;.iso
+
 
 popd
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-1761b6594ec0ef625527b71755e446a5>3 - Packer Examples for Photon OS</h1><p>Packer is an open source tool that enables you to create identical machine images for multiple platforms.</p><p>VMware maintains two GitHub projects with that include examples for creating Photon OS machine images using Packer.</p><p>All examples are authored in the HashiCorp Configuration Language (&ldquo;HCL2&rdquo;).</p><h2 id=vsphere-virtual-machine-images>vSphere Virtual Machine Images</h2><p><strong>GitHub Project</strong>: <a href=https://github.com/vmware-samples/packer-examples-for-vsphere>vmware-samples/packer-examples-for-vsphere</a></p><p>This project provides examples to automate the creation of virtual machine images and their guest operating systems on VMware vSphere using Packer and the Packer Plugin for VMware vSphere (<code>vsphere-iso</code>). This project includes Photon OS as one of the guest operating systems.</p><h2 id=vagrant-boxes>Vagrant Boxes</h2><p><strong>GitHub Project</strong>: <a href=https://github.com/vmware/photon-packer-templates>vmware/photon-packer-templates</a></p><p>This project provides examples to automate the creation of Photon OS machine images as Vagrant boxes using Packer and the Packer Plugins for VMware (<code>vmware-iso</code>) and Virtualbox (<code>virtualbox</code>).</p><p>The Vagrant boxes included in the project can be run on the following providers:</p><ul><li>VMware Fusion (<code>vmware_desktop</code>)</li><li>VMware Workstation Pro (<code>vmware_desktop</code>)</li><li>VirtualBox (<code>virtualbox</code>)</li></ul><p>This project is also used to generate the offical <a href=(https://app.vagrantup.com/vmware/boxes/photon)><code>vmware/photon</code></a> Vagrant boxes.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-3e27135293bfebb45948275ce7512443>4 - Kubernetes on Photon OS</h1><p>You can use Kubernetes with Photon OS. The instructions in this section present a manual configuration that gets one worker node running to help you understand the underlying packages, services, ports, and so forth.</p><p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8be233206817193d67a60d7415f17ef9>4.1 - Prerequisites</h1><p>You need two or more machines with version 3.0 &ldquo;GA&rdquo; or later of Photon OS installed. It is recommended to use the latest 4.0 GA version.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-ea490ab437c762e0efed3eb8be4354d4>4.2 - Running Kubernetes on Photon OS</h1><p>The procedure describes how to break the services up between the hosts.</p><p>The first host, <code>photon-master</code>, is the Kubernetes master. This host runs the <code>kube-apiserver</code>, <code>kube-controller-manager</code>, and <code>kube-scheduler</code>. In addition, the master also runs <code>etcd</code>. Although <code>etcd</code> is not needed on the master if <code>etcd</code> runs on a different host, this guide assumes that <code>etcd</code> and the Kubernetes master run on the same host. The remaining host, <code>photon-node</code>, is the node and runs <code>kubelet</code>, <code>proxy</code>, and <code>docker</code>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-a1d2e42542f91c88d6de82a65837b7e5>4.2.1 - System Information</h1><p>Hosts:</p><pre><code>photon-master = 192.168.121.9
