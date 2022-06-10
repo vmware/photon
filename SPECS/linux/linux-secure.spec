@@ -4,7 +4,7 @@
 %global fips 1
 
 # If kat_build is enabled, canister is not used.
-%if 0%{?kat_build:1}
+%if 0%{?kat_build}
 %global fips 0
 %endif
 
@@ -13,93 +13,98 @@ Name:           linux-secure
 Version:        5.10.78
 Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
-URL:            http://www.kernel.org/
+URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 %define uname_r %{version}-%{release}-secure
+%define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha512 linux=3ec352e6d50480dddfa3fa903c37f72b1b027c541862182e910013c5d461431d4782fb4908c74513d20a4c093abf0318ca9a76bac6c1b56145d0fb21ad194169
+
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
+
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
+
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 
 # common
-Patch0:         net-Double-tcp_mem-limits.patch
-Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch3:         9p-transport-for-9p.patch
-Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
-Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+Patch0: net-Double-tcp_mem-limits.patch
+Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3: 9p-transport-for-9p.patch
+Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
+Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 #HyperV patches
-Patch11:        vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 
 # Out-of-tree patches from AppArmor:
-Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch14:        apparmor-af_unix-mediation.patch
+Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch14: apparmor-af_unix-mediation.patch
 
 #vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch21:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch21: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMW:
-Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 
 #Secure:
-Patch90:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
-Patch91:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch92:        0002-Added-PAX_RANDKSTACK.patch
-Patch93:        0003-Added-rap_plugin.patch
-Patch94:        0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
+Patch91: 0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
+Patch92: 0002-Added-PAX_RANDKSTACK.patch
+Patch93: 0003-Added-rap_plugin.patch
+Patch94: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # CVE:
-Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
-Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
-Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-Patch502:       0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503:       0002-FIPS-crypto-self-tests.patch
+Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
+Patch503: 0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
-Patch506:       0001-fips-Continue-to-export-shash_no_setkey.patch
+Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508:       0001-FIPS-canister-binary-usage.patch
+Patch508: 0001-FIPS-canister-binary-usage.patch
 %else
-%if 0%{?kat_build:1}
-Patch509:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch510:       0003-FIPS-broken-kattest.patch
+%if 0%{?kat_build}
+Patch509: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+Patch510: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
 BuildArch:      x86_64
+
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -111,10 +116,13 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
+
 %if 0%{?fips}
 BuildRequires: gdb
 %endif
-Requires:       filesystem kmod
+
+Requires: kmod
+Requires: filesystem
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
 Requires(post):(coreutils or toybox)
@@ -129,7 +137,8 @@ This kernel is FIPS certified.
 %package devel
 Summary:       Kernel Dev
 Group:         System Environment/Kernel
-Requires:      python3 gawk
+Requires:      python3
+Requires:      gawk
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -147,59 +156,30 @@ The Linux package contains the Linux kernel doc files
 %setup -q -n linux-%{version}
 %if 0%{?fips}
 # Using autosetup is not feasible
-%setup -D -b 16 -n linux-%{version}
+%setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-
-#vmxnet3
-%patch20 -p1
-
-%patch21 -p1
+%autopatch -p1 -m0 -M21
 
 %ifarch x86_64
 # VMW x86
-%patch55 -p1
-%patch56 -p1
+%autopatch -p1 -m55 -M56
 %endif
 
 #Secure
-%patch90 -p1
-%patch91 -p1
-%patch92 -p1
-%patch93 -p1
-%patch94 -p1
+%autopatch -p1 -m90 -M94
 
 # CVE
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
+%autopatch -p1 -m100 -M102
 
 # crypto
-%patch500 -p1
-%patch501 -p1
-%patch502 -p1
-%patch503 -p1
-%patch504 -p1
-%patch505 -p1
-%patch506 -p1
+%autopatch -p1 -m500 -M506
+
 %if 0%{?fips}
 %patch508 -p1
 %else
-%if 0%{?kat_build:1}
-%patch509 -p1
-%patch510 -p1
+%if 0%{?kat_build}
+%autopatch -p1 -m509 -M510
 %endif
 %endif
 
@@ -207,25 +187,27 @@ The Linux package contains the Linux kernel doc files
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
-cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   crypto/
 sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
 %include %{SOURCE4}
 
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
 %endif
 
 %define __modules_install_post \
-for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
-	./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-	rm -f $MODULE.{sig,dig} \
-	xz $MODULE \
+for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
+  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+  rm -f $MODULE.{sig,dig} \
+  xz $MODULE \
 done \
 %{nil}
 
@@ -239,18 +221,21 @@ done \
 %{nil}
 
 %install
-install -vdm 755 %{buildroot}/%{_sysconfdir}
+install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
-install -vm 644 arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
-install -vm 400 System.map               %{buildroot}/boot/System.map-%{uname_r}
-install -vm 644 .config                  %{buildroot}/boot/config-%{uname_r}
-cp -r           Documentation/*          %{buildroot}%{_docdir}/linux-%{uname_r}
-install -vdm 755                         %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-install -vm 644 vmlinux                  %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
+install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
+cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
+
+%if 0%{?debug_package}
+install -vdm 755 %{buildroot}%{_libdir}/debug%{_modulesdir}
+install -vm 644 vmlinux %{buildroot}%{_libdir}/debug%{_modulesdir}/vmlinux-%{uname_r}
+%endif
 
 # Since we use compressed modules we cann't use load pinning,
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
@@ -262,30 +247,30 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 # Register myself to initramfs
-mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
+cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
 --add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod"
 EOF
 
 # cleanup dangling symlinks
-rm -f %{buildroot}/lib/modules/%{uname_r}/source
-rm -f %{buildroot}/lib/modules/%{uname_r}/build
+rm -f %{buildroot}%{_modulesdir}/source \
+      %{buildroot}%{_modulesdir}/build
 
 # create /use/src/linux-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
 # copy .config manually to be where it's expected to be
-cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 # symling to the build folder
-ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
+ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 %include %{SOURCE2}
 %include %{SOURCE3}
@@ -302,8 +287,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
-%exclude /lib/modules/%{uname_r}/build
-%exclude /usr/src
+%exclude %{_modulesdir}/build
+%exclude %{_usrsrc}
 
 %files docs
 %defattr(-,root,root)
@@ -311,8 +296,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files devel
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/build
-/usr/src/linux-headers-%{uname_r}
+%{_modulesdir}/build
+%{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
 * Mon Apr 18 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-6

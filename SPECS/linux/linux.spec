@@ -1,5 +1,5 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -8,7 +8,7 @@
 %global fips 1
 
 # If kat_build is enabled, canister is not used.
-%if 0%{?kat_build:1}
+%if 0%{?kat_build}
 %global fips 0
 %endif
 
@@ -23,144 +23,154 @@ Summary:        Kernel
 Name:           linux
 Version:        5.10.78
 Release:        6%{?kat_build:.kat}%{?dist}
-License:    	GPLv2
-URL:        	http://www.kernel.org/
-Group:        	System Environment/Kernel
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
-Distribution: 	Photon
+Distribution:   Photon
 
 %define uname_r %{version}-%{release}
+%define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
-Source1:	config_%{_arch}
-Source2:	initramfs.trigger
+%define sha512 %{name}=3ec352e6d50480dddfa3fa903c37f72b1b027c541862182e910013c5d461431d4782fb4908c74513d20a4c093abf0318ca9a76bac6c1b56145d0fb21ad194169
+
+Source1:    config_%{_arch}
+Source2:    initramfs.trigger
+
 %define ena_version 2.4.0
-Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=054d4c724b037ff8d722cd3bc04e92bb159d7824
+Source3:    https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
+%define sha512 ena_linux=e14b706d06444dcc832d73150a08bbdc0fc53b291d2fd233aef62d8f989f529b4aabc7865526fe27a895d43d5f8ba5993752a920601be8a1d3ed9ea973e9c6ef
+
 %define sgx_version 1.8
-Source5:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
-%define sha1 DCAP=6161846c2ba03099a2307f28a91e9d45627614d7
+Source5:    https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
+%define sha512 DCAP=79d0b4aba102559bed9baf9fe20917e9781a22d742fa52b49b2c1a00c452a452796e6ce1a92bad80d6e6fc92ad71fa72ee02c1b65a59bddbb562aaaad4b2d8b2
+
 Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
+
 %define i40e_version 2.15.9
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
+
 %define iavf_version 4.2.7
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define sha512 iavf=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
+
 Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
+
 %define ice_version 1.6.4
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
+%define sha512 ice=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
+
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
+
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 %endif
 
 # common
-Patch0:         net-Double-tcp_mem-limits.patch
-Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch3:         9p-transport-for-9p.patch
-Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
-Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+Patch0: net-Double-tcp_mem-limits.patch
+Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3: 9p-transport-for-9p.patch
+Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
+Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # ttyXRUSB support
-Patch10:	usb-acm-exclude-exar-usb-serial-ports-nxt.patch
+Patch10: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
 #HyperV patches
-Patch11:        vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patchx:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+#Patchx: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
+Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
-Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch14:        apparmor-af_unix-mediation.patch
+Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch14: apparmor-af_unix-mediation.patch
 # floppy:
-Patch17:        0001-floppy-lower-printk-message-priority.patch
+Patch17: 0001-floppy-lower-printk-message-priority.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch18:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 #vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
-Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
-Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch57:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
+Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 # arm64 hypervisor detection and kmsg dumper
-Patch58:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch59:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+Patch58: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch59: 0002-arm64-hyper-implement-VMware-hypervisor-features.patch
 
 # CVE:
-Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
-Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
-Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
-Patch201:        0001-OF-DT-Overlay-configfs-interface.patch
-Patch202:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch203:        0003-of-overlay-Correct-symbol-path-fixups.patch
+Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
+Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
-Patch204:        0001-Add-rpi-poe-fan-driver.patch
+Patch204: 0001-Add-rpi-poe-fan-driver.patch
 %endif
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-Patch502:       0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503:       0002-FIPS-crypto-self-tests.patch
+Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
+Patch503: 0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
-Patch506:       0001-fips-Continue-to-export-shash_no_setkey.patch
+Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508:       0001-FIPS-canister-binary-usage.patch
+Patch508: 0001-FIPS-canister-binary-usage.patch
 %else
-%if 0%{?kat_build:1}
-Patch510:       0003-FIPS-broken-kattest.patch
+%if 0%{?kat_build}
+Patch510: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
 # SEV on VMware:
-Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
-Patch601:       0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
-Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
-Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
+Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
+Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 
 #Patches for i40e driver
-Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
-Patch1501:      0001-Add-support-for-gettimex64-interface.patch
+Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
+Patch1501: 0001-Add-support-for-gettimex64-interface.patch
 
 #Patches for ice driver
-Patch1510:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1510: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 #Patches for iavf driver
-Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  libunwind-devel
-#BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
@@ -169,14 +179,18 @@ BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
+
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
 %endif
+
 %if 0%{?fips}
 BuildRequires:  gdb
 %endif
-Requires:       filesystem kmod
+
+Requires: kmod
+Requires: filesystem
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
 Requires(post): (coreutils or toybox)
@@ -219,9 +233,9 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 %package drivers-intel-sgx
-Summary:	Intel SGX driver
-Group:		System Environment/Kernel
-Requires:	%{name} = %{version}-%{release}
+Summary:    Intel SGX driver
+Group:      System Environment/Kernel
+Requires:   %{name} = %{version}-%{release}
 Requires(post): /usr/sbin/groupadd
 %description drivers-intel-sgx
 This Linux package contains Intel SGX kernel module.
@@ -238,7 +252,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
-Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 traceevent-plugins
+Requires:       audit elfutils-libelf binutils-libs
+Requires:       xz-libs libunwind slang
+Requires:       python3 traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
 %endif
@@ -263,96 +279,61 @@ Python programming language to use the interface to manipulate perf events.
 %setup -q -n linux-%{version}
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -D -b 3 -n linux-%{version}
+%setup -q -T -D -b 3 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 5 -n linux-%{version}
+%setup -q -T -D -b 5 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 10 -n linux-%{version}
+%setup -q -T -D -b 10 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 11 -n linux-%{version}
+%setup -q -T -D -b 11 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 13 -n linux-%{version}
+%setup -q -T -D -b 13 -n linux-%{version}
 %endif
 
 %if 0%{?fips}
 # Using autosetup is not feasible
-%setup -D -b 16 -n linux-%{version}
+%setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch17 -p1
-%patch18 -p1
-
-#vmxnet3
-%patch20 -p1
+%autopatch -p1 -m0 -M20
 
 %ifarch x86_64
 # VMW x86
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
+%autopatch -p1 -m55 -M57
 %endif
+
 %ifarch aarch64
 # arm64 hypervisor detection and kmsg dumper
-%patch58 -p1
-%patch59 -p1
+%autopatch -p1 -m58 -M59
 %endif
 
 # CVE
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
+%autopatch -p1 -m100 -M102
 
 %ifarch aarch64
 # Rpi of_configfs patches
-%patch201 -p1
-%patch202 -p1
-%patch203 -p1
-#Rpi fan driver
-%patch204 -p1
+# Rpi fan driver
+%autopatch -p1 -m201 -M204
 %endif
 
 # crypto
-%patch500 -p1
-%patch501 -p1
-%patch502 -p1
-%patch503 -p1
-%patch504 -p1
-%patch505 -p1
-%patch506 -p1
+%autopatch -p1 -m500 -M506
+
 %if 0%{?fips}
 %patch508 -p1
 %else
-%if 0%{?kat_build:1}
+%if 0%{?kat_build}
 %patch510 -p1
 %endif
 %endif
 
 %ifarch x86_64
 # SEV on VMware
-%patch600 -p1
-%patch601 -p1
-%patch602 -p1
-%patch603 -p1
-%patch604 -p1
-%patch605 -p1
+%autopatch -p1 -m600 -M605
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%patch1500 -p1
-%patch1501 -p1
+%autopatch -p1 -m1500 -M1501
 popd
 
 #Patches for ice driver
@@ -370,8 +351,9 @@ popd
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
-cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -381,10 +363,11 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 # Set/add CONFIG_CROSS_COMPILE= if needed
 if [ %{_host} != %{_build} ]; then
 grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFIG_CROSS_COMPILE="%{_host}-"' .config || \
-	echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
+  echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
 fi
 
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -400,46 +383,42 @@ make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 
 # build ENA module
-bldroot=`pwd`
+bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 patch -p4 < %{SOURCE12}
-make %{?_smp_mflags} -C $bldroot M=`pwd` V=1 modules %{?_smp_mflags}
+make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
 popd
 
 # build Intel SGX module
-bldroot=`pwd`
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
-make %{?_smp_mflags} KDIR=$bldroot ARCH=%{arch} %{?_smp_mflags}
+make %{?_smp_mflags} KDIR=${bldroot} ARCH=%{arch} %{?_smp_mflags}
 popd
 
 # build i40e module
-bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot clean
-make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build iavf module
-bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot clean
-make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build ice module
-bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot clean
-make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
 %define __modules_install_post \
-for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
-    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-    rm -f $MODULE.{sig,dig} \
-    xz $MODULE \
-    done \
+for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
+  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+  rm -f $MODULE.{sig,dig} \
+  xz $MODULE \
+done \
 %{nil}
 
 # We want to compress modules after stripping. Extra step is added to
@@ -456,54 +435,53 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
+install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 # install ENA module
-bldroot=`pwd`
+bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make %{?_smp_mflags} -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # install Intel SGX module
-bldroot=`pwd`
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
 mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d
-install -vm 644 10-sgx.rules %{buildroot}/%{_sysconfdir}/udev/rules.d
-mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
-install -vm 644 intel_sgx.ko %{buildroot}/lib/modules/%{uname_r}/extra/
+install -vm 644 10-sgx.rules %{buildroot}%{_sysconfdir}/udev/rules.d
+mkdir -p %{buildroot}%{_modulesdir}/extra
+install -vm 644 intel_sgx.ko %{buildroot}%{_modulesdir}/extra/
 popd
 
 # install i40e module
-bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install iavf module
-bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install ice module
-bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
-ID1=`readelf -n vmlinux | grep "Build ID"`
+ID1=$(readelf -n vmlinux | grep "Build ID")
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
-ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
+ID2=$(readelf -n extracted-vmlinux | grep "Build ID")
 if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
+  echo "Build IDs do not match"
+  echo $ID1
+  echo $ID2
+  exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
@@ -516,9 +494,12 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
-install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+
+%if 0%{?debug_package}
+install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
-ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
+ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
+%endif
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
@@ -528,27 +509,28 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 # Register myself to initramfs
-mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
+add_drivers_list="tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas"
+
+cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << EOF
 %ifarch x86_64
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas"
+--add-drivers "${add_drivers_list}"
 %endif
 
 %ifarch aarch64
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas nvme nvme-core"
+--add-drivers "${add_drivers_list} nvme nvme-core"
 %endif
-
 EOF
 
-#    Cleanup dangling symlinks
-rm -rf %{buildroot}/lib/modules/%{uname_r}/source
-rm -rf %{buildroot}/lib/modules/%{uname_r}/build
+# Cleanup dangling symlinks
+rm -rf %{buildroot}%{_modulesdir}/source \
+       %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
 install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
@@ -556,16 +538,22 @@ install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{u
 %endif
 
 cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
+ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
-make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
+
+make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
+
+make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} PYTHON=python3 install-python_ext
+
 %ifarch x86_64
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
 %include %{SOURCE2}
@@ -598,16 +586,16 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
-/lib/modules/%{uname_r}/*
-%exclude /lib/modules/%{uname_r}/build
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
-%exclude /lib/modules/%{uname_r}/kernel/sound
+%{_modulesdir}/*
+%exclude %{_modulesdir}/build
+%exclude %{_modulesdir}/kernel/drivers/gpu
+%exclude %{_modulesdir}/kernel/sound
 %ifarch aarch64
-%exclude /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 %ifarch x86_64
-%exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
-%exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
+%exclude %{_modulesdir}/kernel/arch/x86/oprofile/
+%exclude %{_modulesdir}/extra/intel_sgx.ko.xz
 /etc/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
@@ -623,39 +611,39 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 
 %files devel
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/build
+%{_modulesdir}/build
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
-/lib/modules/%{uname_r}/kernel/drivers/gpu
+%exclude %{_modulesdir}/kernel/drivers/gpu/drm/cirrus/
+%{_modulesdir}/kernel/drivers/gpu
 
 %files drivers-sound
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/sound
+%{_modulesdir}/kernel/sound
 %ifarch aarch64
-/lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 
 %ifarch x86_64
 %files drivers-intel-sgx
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
+%{_modulesdir}/extra/intel_sgx.ko.xz
 %config(noreplace) %{_sysconfdir}/udev/rules.d/10-sgx.rules
 
 %files oprofile
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
+%{_modulesdir}/kernel/arch/x86/oprofile/
 %endif
 
 %files tools
 %defattr(-,root,root)
 %ifarch x86_64
-%exclude /usr/lib64/traceevent
+%exclude %{_lib64}/traceevent
 %endif
 %ifarch aarch64
-%exclude /usr/lib/traceevent
+%exclude %{_libdir}/traceevent
 %endif
 %{_bindir}
 %{_sysconfdir}/bash_completion.d/perf
