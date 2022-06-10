@@ -3,22 +3,22 @@
 
 %define RUNC_COMMIT_SHORT f46b6ba
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.0.3
+%define RUNC_VERSION 1.1.3
 %define RUNC_GITTAG v%{RUNC_VERSION}
 %define gopath_comp github.com/opencontainers/runc
 
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
-Version:        1.0.3
-Release:        3%{?dist}
+Version:        1.1.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha512  %{name}=64a1894c2b4ed5a68b185e88548fc9fbbd01d8a9495feed59fb196aa06763d64cfb71ca6cbc09d1defa26a0d94ad58626296585741f23df2e290147ba6c4c26e
+Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.xz
+%define sha512  %{name}=529dcb7935e12b590ce67c1e49505cad3c789756bfb331d159e100ebe8c99234c55c49d7b74bb9e8b69c2b858f430f71451278f4cf3f5f6510cc7f9603184546
 
 BuildRequires:  go
 BuildRequires:  which
@@ -67,6 +67,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.3-1
+-   Upgrde runc to fix CVE-2022-24769, CVE-2022-29162
 *   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
 -   Bump up version to compile with new go
 *   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
