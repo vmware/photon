@@ -1,14 +1,14 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.44
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
-%define sha1    pcre=8179b083053fce9b4a766513fa1f14807aabee42
+%define sha512  pcre=f26d850aab5228799e58ac8c2306fb313889332c39e29b118ef1de57677c5c90f970d68d3f475cabc64f8b982a77f04eca990ff1057f3ccf5e19bd137997c4ac
 
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
@@ -38,10 +38,11 @@ Group:      System Environment/Libraries
 This package contains minimal set of shared pcre libraries.
 
 %prep
-%setup -q
+%autosetup
 %build
 %configure \
             --docdir=/usr/share/doc/pcre-%{version} \
+            --enable-jit \
             --enable-unicode-properties       \
             --enable-pcre16                   \
             --enable-pcre32                   \
@@ -53,7 +54,7 @@ This package contains minimal set of shared pcre libraries.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mv -v %{buildroot}/usr/lib/libpcre.so.* %{buildroot}/lib &&
 ln -sfv ../../lib/$(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so
 ln -sfv $(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so.0
@@ -89,6 +90,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Fri Jun 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 8.44-3
+-   Enable jit, just in time compiling
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.44-2
 -   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.44-1
@@ -118,6 +121,6 @@ make %{?_smp_mflags} check
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 8.38-1
 -   Updated to version 8.38
 *   Mon Nov 30 2015 Sharath George <sharathg@vmware.com> 8.36-2
-    Add symlink for libpcre.so.1
+-   Add symlink for libpcre.so.1
 *   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 8.36-1
-    Initial version
+-   Initial version
