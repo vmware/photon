@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -9,9 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
-%define sha1    ruby=f5bdecded2d68e4f2f0ab1d20137e8b4b0614e52
+%define sha512  ruby=f144c32c9cb0006dfcfa7d297f83f88b881f68c94f0130346c74dfd8758583a68d22accfd0fc9f31db304ab5ff0bc135bfb2868145c0dec1ee6cec5ac6c3725d
 
 Patch0:         0001-openssl-3.0.0-compatibility.patch
+Patch1:         ruby-CVE-2022-28739.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -77,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+* Sat Jun 11 2022 Harinadh D <hdommaraju@vmware.com> 2.7.4-4
+- fix CVE-2022-28739
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.4-3
 - Drop libdb support
 * Mon Sep 06 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.4-2
