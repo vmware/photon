@@ -1,10 +1,10 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 302
+%define subversion 322
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.302
+Version:	1.8.0.322
 Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
@@ -12,7 +12,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1 openjdk=70853090109e2303adb6fc399f3f7c039caa1cda
+%define sha512  openjdk=d18a229e4ca79fae7d6c801a89caefd4571b711dbadf547737d77569358612298e360631b3bc9bf56e90423a09b88e1c27755463330e91f9ed16743c1606ce21
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs-x86.patch
 Patch2:		allow_using_system_installed_libjpeg.patch
@@ -45,7 +45,6 @@ Requires:	libstdc++
 %description	-n openjre8
 It contains the libraries files for Java runtime environment
 
-
 %package	sample
 Summary:	Sample java applications.
 Group:          Development/Languages/Java
@@ -71,10 +70,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n openjdk-%{version}
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
@@ -254,6 +250,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK8-%{jdk_major_version}/src.zip
 
 %changelog
+*   Mon Jun 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
+-   Upgrade to version 1.8.0.322 (jdk8u322-b04)
 *   Tue Jul 27 2021 Ankit Jain <ankitja@vmware.com> 1.8.0.302-1
 -   Upgrade to version 1.8.0.302 (jdk8u302-ga)
 *   Thu Sep 10 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.262-3
