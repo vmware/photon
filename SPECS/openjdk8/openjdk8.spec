@@ -1,22 +1,22 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 312
-Summary:	OpenJDK
-Name:		openjdk8
-Version:	1.8.0.312
-Release:	1%{?dist}
-License:	GNU GPL
-URL:		https://openjdk.java.net
-Group:		Development/Tools
-Vendor:		VMware, Inc.
+%define subversion 322
+Summary:        OpenJDK
+Name:           openjdk8
+Version:        1.8.0.322
+Release:        1%{?dist}
+License:        GNU GPL
+URL:            https://openjdk.java.net
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
 # Generate Source using https://github.com/vmware/photon/tree/4.0/tools/script/generate_source_tarball_openjdk8.sh
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha512  openjdk=0150520fb18f3a795026a8f43f160a86a6457b6e0b8460dc7f704ac80cf9af8eff80bd51159daf42bfaf3b13abeaf0e6754324bac0a6b6f4b1f9d9940e971714
-Patch0:		Awt_build_headless_only.patch
-Patch1:		check-system-ca-certs-x86.patch
-Patch2:		allow_using_system_installed_libjpeg.patch
+Source0:        http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
+%define sha512  openjdk=d18a229e4ca79fae7d6c801a89caefd4571b711dbadf547737d77569358612298e360631b3bc9bf56e90423a09b88e1c27755463330e91f9ed16743c1606ce21
+Patch0:         Awt_build_headless_only.patch
+Patch1:         check-system-ca-certs-x86.patch
+Patch2:         allow_using_system_installed_libjpeg.patch
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -97,6 +97,9 @@ unset JAVA_HOME &&
 	--disable-zip-debug-info \
         --with-libjpeg=system
 
+export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+# using NUM_PROC instead of smp_mflags as -jN is not supported.
+# make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
     BUILD_HEADLESS_ONLY=1 \
@@ -107,10 +110,15 @@ make \
     CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
+    JOBS=${NUM_PROC} \
     SCTP_WERROR=
 
 %install
+export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+# using NUM_PROC instead of smp_mflags as -jN is not supported.
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
+        JOBS=${NUM_PROC} \
 	BUILD_HEADLESS_ONLY=yes \
 	OPENJDK_TARGET_OS=linux \
 	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -261,6 +269,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
+-   Upgrade to version 1.8.0.322 (jdk8u322-b04)
 *   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
 -   Upgrade to version 1.8.0.312 (jdk8u312-ga)
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.265-2
