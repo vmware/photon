@@ -1,53 +1,62 @@
-Summary:	Programs for searching through files
-Name:		grep
-Version:	3.7
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/grep
-Group:		Applications/File
-Vendor:		VMware, Inc.
+Summary:    Programs for searching through files
+Name:       grep
+Version:    3.7
+Release:    2%{?dist}
+License:    GPLv3+
+URL:        http://www.gnu.org/software/grep
+Group:      Applications/File
+Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
-%define sha512  grep=e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
-Conflicts:      toybox < 0.8.2-2
+
+Source0:    http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
+%define sha512  %{name}=e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
+
+Conflicts: toybox < 0.8.2-2
+
+Provides: /bin/grep
 
 %description
 The Grep package contains programs for searching through files.
 
-%package        lang
-Summary:        Additional language files for grep
-Group:          System Environment/Base
-Requires:       %{name} = %{version}-%{release}
+%package lang
+Summary:    Additional language files for grep
+Group:      System Environment/Base
+Requires:   %{name} = %{version}-%{release}
 
-%description    lang
+%description lang
 These are the additional language files of grep
 
 %prep
-%autosetup
+%autosetup -p1
+
 %build
 %configure \
-        --bindir=/bin \
-        --with-included-regex \
-	--disable-silent-rules
-make %{?_smp_mflags}
+    --with-included-regex \
+    --disable-silent-rules
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)
-/bin/*
+%{_bindir}/*
 %{_mandir}/*/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7-2
+- Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.7-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.6-1

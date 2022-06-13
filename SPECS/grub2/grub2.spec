@@ -121,16 +121,17 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %endif
 
 %install
-mkdir -p %{buildroot}
+mkdir -p %{buildroot} \
+         %{buildroot}%{_sysconfdir}/default \
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}/boot/%{name}
+
 cp -a install-for-efi/. %{buildroot}/.
 %ifarch x86_64
 cp -a install-for-pc/. %{buildroot}/.
 %endif
-mkdir %{buildroot}%{_sysconfdir}/default
 touch %{buildroot}%{_sysconfdir}/default/grub
-mkdir %{buildroot}%{_sysconfdir}/sysconfig
 ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
-mkdir -p %{buildroot}/boot/%{name}
 touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
 # Generate grub efi image
