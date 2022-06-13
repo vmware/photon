@@ -1,17 +1,26 @@
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
 Version:        3.0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPL-2.0
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  libical=36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
+%define sha512  %{name}=36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
+
 BuildRequires:  cmake
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  icu-devel
+
+%if 0%{?with_check}
+BuildRequires:  tzdata
+%endif
+
 Requires:       libxml2
+Requires:       icu
 
 %description
 Libical is an Open Source implementation of the iCalendar protocols and
@@ -23,6 +32,7 @@ calendar data and arrange meetings with other users.
 Summary:        Development files for Libical
 Group:          Development/System
 Requires:       %{name} = %{version}-%{release}
+Requires:       icu-devel
 
 %description    devel
 The libical-devel package contains libraries and header files for developing
@@ -32,34 +42,41 @@ applications that use libical.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-cmake -DENABLE_GTK_DOC=OFF ..
-make %{?_smp_mflags}
+mkdir build && cd build
+cmake -DENABLE_GTK_DOC=OFF \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+      -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
+      ..
+%make_build
 
 %install
 cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} -k check
+make test ARGS="-V" %{?_smp_mflags}
+%endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
-/usr/local/lib64/*.so.*
-/usr/local/lib64/cmake/LibIcal/*.cmake
-/usr/local/libexec/libical/ical-glib-src-generator
+%{_libdir}/*.so.*
+%{_libdir}/cmake/LibIcal/*.cmake
+%{_libexecdir}/%{name}/ical-glib-src-generator
 %doc COPYING TODO
 
 %files devel
-/usr/local/include/*
-/usr/local/lib64/*.so
-/usr/local/lib64/*.a
-/usr/local/lib64/pkgconfig/*.pc
+%{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.14-2
+- Fix deliverables packaging
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.14-1
 - Automatic Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 3.0.10-3
