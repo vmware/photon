@@ -1,7 +1,7 @@
 Summary:        Command-line tools to communicate with a FIDO device over USB
 Name:           libfido2
 Version:        1.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/Yubico/%{name}
 Group:          Applications/System
@@ -40,12 +40,17 @@ FIDO2 CLI tools to access and configure a FIDO2 compliant authentication device.
 %autosetup -p1
 
 %build
-%cmake
-make %{?_smp_mflags}
+LDFLAGS="-lasan"
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_STATIC_LIBS=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+%cmake_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -type f -name "*.a" -delete -print
+%cmake_install
 
 %files
 %defattr(-,root,root)
@@ -67,5 +72,7 @@ find %{buildroot} -type f -name "*.a" -delete -print
 %{_mandir}/man1/*
 
 %changelog
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-2
+- Fix build with latest cmake
 * Fri May 13 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.0-1
 - Initial version

@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -15,7 +15,7 @@ Patch0:         pool_flag_noinstalledobsoletes.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
-Requires:       tdnf-cli-libs = %{version}-%{release}
+Requires:       %{name}-cli-libs = %{version}-%{release}
 Requires:       libsolv >= 0.7.19
 Requires:       libxml2
 Requires:       zlib
@@ -50,41 +50,41 @@ Obsoletes:      yum
 Provides:       yum
 
 %description
-tdnf is a yum/dnf equivalent which uses libsolv and libcurl
+%{name} is a yum/dnf equivalent which uses libsolv and libcurl
 
-%define _tdnfpluginsdir %{_libdir}/tdnf-plugins
+%define _tdnfpluginsdir %{_libdir}/%{name}-plugins
 
 %package    devel
-Summary:    A Library providing C API for tdnf
+Summary:    A Library providing C API for %{name}
 Group:      Development/Libraries
-Requires:   tdnf = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 Requires:   libsolv-devel
 
 %description devel
-Development files for tdnf
+Development files for %{name}
 
-%package	cli-libs
-Summary:	Library providing cli libs for tdnf like clients
-Group:		Development/Libraries
+%package    cli-libs
+Summary:    Library providing cli libs for %{name} like clients
+Group:      Development/Libraries
 
 %description cli-libs
-Library providing cli libs for tdnf like clients.
+Library providing cli libs for %{name} like clients.
 
 %package    plugin-repogpgcheck
-Summary:    tdnf plugin providign gpg verification for repository metadata
+Summary:    %{name} plugin providign gpg verification for repository metadata
 Group:      Development/Libraries
 Requires:   gpgme
 
 %description plugin-repogpgcheck
-tdnf plugin providign gpg verification for repository metadata
+%{name} plugin providign gpg verification for repository metadata
 
 %package    python
-Summary:    python bindings for tdnf
+Summary:    python bindings for %{name}
 Group:      Development/Libraries
 Requires:   python3
 
 %description python
-python bindings for tdnf
+python bindings for %{name}
 
 %package automatic
 Summary:   %{name} - automated upgrades
@@ -99,35 +99,35 @@ Systemd units that can periodically download package upgrades and apply them.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-mkdir build && cd build
-cmake \
+%cmake \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-  -DCMAKE_INSTALL_LIBDIR:PATH=lib \
-  -DSYSTEMD_DIR=%{_unitdir} \
-  ..
+  -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+  -DSYSTEMD_DIR=%{_unitdir}
 
-%make_build
+%cmake_build
+
+cd %{__cmake_builddir}
 %make_build python
 
-%check
 %if 0%{?with_check}
-cd build && make %{?_smp_mflags} check
+%check
+pip3 install flake8
+cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %endif
 
 %install
-cd build
-%make_install
+%cmake_install
 find %{buildroot} -name '*.a' -delete
-mkdir -p %{buildroot}/var/cache/tdnf %{buildroot}%{_unitdir}
-ln -sf tdnf %{buildroot}%{_bindir}/tyum
-ln -sf tdnf %{buildroot}%{_bindir}/yum
-ln -sf tdnf %{buildroot}%{_bindir}/tdnfj
+mkdir -p %{buildroot}/var/cache/%{name} %{buildroot}%{_unitdir}
+ln -sfv %{name} %{buildroot}%{_bindir}/tyum
+ln -sfv %{name} %{buildroot}%{_bindir}/yum
+ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
 mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
 mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
 mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
 
-pushd python
+pushd %{__cmake_builddir}/python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 popd
 find %{buildroot} -name '*.pyc' -delete
@@ -139,28 +139,28 @@ find %{buildroot} -name '*.pyc' -delete
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 1 ]; then
-  echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer" >&2
-  systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
-  systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+  echo "detected install of %{name}/motd, enabling %{name}-cache-updateinfo.timer" >&2
+  systemctl enable %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
+  systemctl start %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 elif [ $1 -eq 2 ]; then
-  echo "detected upgrade of tdnf, daemon-reload" >&2
+  echo "detected upgrade of %{name}, daemon-reload" >&2
   systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
 %preun
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
-echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer" >&2
-systemctl --no-reload disable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
-systemctl stop tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
-rm -f /var/cache/tdnf/cached-updateinfo.txt
+echo "detected uninstall of %{name}/motd, disabling %{name}-cache-updateinfo.timer" >&2
+systemctl --no-reload disable %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
+systemctl stop %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
+rm -f /var/cache/%{name}/cached-updateinfo.txt
 
 %postun
 /sbin/ldconfig
 %triggerpostun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
-echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer" >&2
-systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+echo "detected upgrade of %{name}/motd, restarting %{name}-cache-updateinfo.timer" >&2
+systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %post cli-libs
 /sbin/ldconfig
@@ -168,7 +168,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %postun cli-libs
 /sbin/ldconfig
 
-%global automatic_services tdnf-automatic.timer tdnf-automatic-notifyonly.timer tdnf-automatic-install.timer
+%global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
 
 %post automatic
 %systemd_post %{automatic_services}
@@ -181,27 +181,27 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %files
 %defattr(-,root,root,0755)
-%{_bindir}/tdnf
+%{_bindir}/%{name}
 %{_bindir}/tyum
 %{_bindir}/yum
 %{_bindir}/tdnfj
 %{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
-%config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
-%config %{_unitdir}/tdnf-cache-updateinfo.service
-%config(noreplace) %{_unitdir}/tdnf-cache-updateinfo.timer
-%config %{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
-%dir /var/cache/tdnf
-%{_datadir}/bash-completion/completions/tdnf
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config %{_unitdir}/%{name}-cache-updateinfo.service
+%config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
+%config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
+%dir /var/cache/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/tdnf/*.h
+%{_includedir}/%{name}/*.h
 %{_libdir}/libtdnf.so
 %{_libdir}/libtdnfcli.so
 %exclude %{_libdir}/debug
-%{_libdir}/pkgconfig/tdnf.pc
-%{_libdir}/pkgconfig/tdnf-cli-libs.pc
+%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/pkgconfig/%{name}-cli-libs.pc
 
 %files cli-libs
 %defattr(-,root,root)
@@ -209,8 +209,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %files plugin-repogpgcheck
 %defattr(-,root,root)
-%dir %{_sysconfdir}/tdnf/pluginconf.d
-%config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
+%dir %{_sysconfdir}/%{name}/pluginconf.d
+%config(noreplace) %{_sysconfdir}/%{name}/pluginconf.d/tdnfrepogpgcheck.conf
 %{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
 
 %files python
@@ -229,6 +229,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-2
+- Spec improvements
 * Tue May 10 2022 Oliver Kurth <okurth@vmware.com> 3.3.1-1
 - update to 3.3.1
 * Mon Feb 21 2022 Oliver Kurth <okurth@vmware.com> 3.2.5-1

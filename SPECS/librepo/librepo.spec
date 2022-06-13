@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -12,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=c9f39d7497d310ae220df2dfbd8e95f347e2bc8c
+%define sha512  %{name}-%{version}=cbed7b6ab551366cc9cf9b5e8ac90cfc7395f6e79a1b44b1dcbf1e3ed6edcc644a339cca4efb4560d139355a893d00b6ac1b2e7116478f5bff3c8bfa5fdeb950
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -26,6 +23,10 @@ BuildRequires:  openssl-devel
 BuildRequires:  zchunk-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-sphinx
+
+%if 0%{?with_check}
+BuildRequires:  python3-pip
+%endif
 
 Requires:   curl-libs
 Requires:   gpgme
@@ -48,26 +49,33 @@ Development files for librepo.
 Summary:        Python 3 bindings for the librepo library
 Provides:       python3-librepo
 Requires:       %{name} = %{version}-%{release}
-Requires:   	python3-packaging
-Requires:   	python3-sphinx
+Requires:       python3-packaging
+Requires:       python3-sphinx
 
 %description -n python3-librepo
 Python 3 bindings for the librepo library.
 
 %prep
 %autosetup -p1
-mkdir build-py3
 
 %build
-pushd build-py3
-%cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
-make %{?_smp_mflags}
-popd
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DENABLE_PYTHON=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DENABLE_TESTS=ON
+
+%cmake_build
 
 %install
-pushd build-py3
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-popd
+%cmake_install
+
+%if 0%{?with_check}
+%check
+pip3 install pygpgme xattr
+%ctest
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -83,9 +91,11 @@ popd
 %{_includedir}/%{name}/
 
 %files -n python3-librepo
-%{_python3_sitearch}/%{name}/
+%{python3_sitearch}/%{name}/
 
 %changelog
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-3
+- Fix build with latest cmake
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-2
 - openssl 3.0.0 compatibility
 * Mon Oct 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-1

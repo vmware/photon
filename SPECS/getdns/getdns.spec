@@ -1,7 +1,7 @@
 Summary:        Modern asynchronous API to the DNS
 Name:           getdns
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Url:            http://www.getdnsapi.net
 Group:          Applications
@@ -57,21 +57,25 @@ getdns_query_mon is great for automated monitoring of DNS server replies.
 %autosetup -p1
 
 %build
-%cmake -DUSE_LIBIDN2=OFF -DENABLE_STUB_ONLY=ON
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DUSE_LIBIDN2=OFF \
+    -DENABLE_STUB_ONLY=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-cmake --build .
+%cmake_build
+
+%install
+%cmake_install
+
+rm -rf %{buildroot}%{_libdir}/*.la \
+       %{buildroot}%{_docdir}/%{name}
 
 %if 0%{?with_check}
 %check
 # make test needs a network connection - so disabled per default
 #make test %{?_smp_mflags}
 %endif
-
-%install
-DESTDIR=%{buildroot} cmake --install .
-
-rm -rf %{buildroot}%{_libdir}/*.la \
-       %{buildroot}%{_docdir}/%{name}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -99,5 +103,7 @@ rm -rf %{buildroot}
 %doc spec
 
 %changelog
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-2
+- Fix build with latest cmake
 * Mon Apr 11 2022 Mukul Sikka <msikka@vmware.com> 1.7.0-1
 - Initial Build
