@@ -1,7 +1,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -28,9 +28,10 @@ The Coreutils package contains utilities for showing and setting
 the basic system
 
 %package lang
-Summary: Additional language files for coreutils
-Group: System Environment/Base
-Requires: coreutils >= %{version}
+Summary:    Additional language files for coreutils
+Group:      System Environment/Base
+Requires:   coreutils >= %{version}
+
 %description lang
 These are the additional language files of coreutils.
 
@@ -44,32 +45,28 @@ export FORCE_UNSAFE_CONFIGURE=1
     --enable-no-install-program=kill,uptime \
     --disable-silent-rules
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm 755 %{buildroot}/bin
+%make_install %{?_smp_mflags}
+install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/man8
-mv -v %{buildroot}%{_bindir}/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{false,ln,ls,mkdir,mknod,mv,pwd,rm} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{rmdir,stty,sync,true,uname,test,[} %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/chroot %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_mandir}/man1/chroot.1 %{buildroot}%{_mandir}/man8/chroot.8
 sed -i 's/\"1\"/\"8\"/1' %{buildroot}%{_mandir}/man8/chroot.8
-mv -v %{buildroot}%{_bindir}/{head,sleep,nice} %{buildroot}/bin
 rm -rf %{buildroot}%{_infodir}
 install -vdm755 %{buildroot}/etc/profile.d
 install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
 
 %find_lang %{name}
 
-%check
 %if 0%{?with_check}
+%check
 sed -i '37,40d' tests/df/df-symlink.sh
 sed -i '/mb.sh/d' Makefile
 chown -Rv nobody .
-env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root
+env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root %{?_smp_mflags}
 make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %endif
 
@@ -78,7 +75,6 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-/bin/*
 %{_sysconfdir}/profile.d/serial-console.sh
 %{_libexecdir}/*
 %{_bindir}/*
@@ -89,6 +85,8 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-2
+- Fix binary path
 * Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
 - Upgrade to v9.1
 * Sat Apr 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.0-1

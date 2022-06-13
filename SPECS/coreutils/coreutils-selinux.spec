@@ -1,7 +1,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -40,27 +40,22 @@ export FORCE_UNSAFE_CONFIGURE=1
     --with-selinux \
     --disable-silent-rules
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm 755 %{buildroot}/bin
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/man8
-mv -v %{buildroot}%{_bindir}/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{false,ln,ls,mkdir,mknod,mv,pwd,rm} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{rmdir,stty,sync,true,uname,test,[} %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/chroot %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_mandir}/man1/chroot.1 %{buildroot}%{_mandir}/man8/chroot.8
 sed -i 's/\"1\"/\"8\"/1' %{buildroot}%{_mandir}/man8/chroot.8
-mv -v %{buildroot}%{_bindir}/{head,sleep,nice} %{buildroot}/bin
 rm -rf %{buildroot}%{_infodir}
 install -vdm755 %{buildroot}/etc/profile.d
 install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
 rm -rf %{buildroot}%{_datadir}/locale
 
-%check
 %if 0%{?with_check}
+%check
 sed -i '/tests\/misc\/sort.pl/d' Makefile
 sed -i 's/test-getlogin$(EXEEXT)//' gnulib-tests/Makefile
 sed -i 's/PET/-05/g' tests/misc/date-debug.sh
@@ -68,7 +63,7 @@ sed -i 's/2>err\/merge-/2>\&1 > err\/merge-/g' tests/misc/sort-merge-fdlimit.sh
 sed -i 's/)\" = \"10x0/| head -n 1)\" = \"10x0/g' tests/split/r-chunk.sh
 sed  -i '/mb.sh/d' Makefile
 chown -Rv nobody .
-env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root
+env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root %{?_smp_mflags}
 make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %endif
 
@@ -77,7 +72,6 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-/bin/*
 %{_sysconfdir}/profile.d/serial-console.sh
 %{_libexecdir}/*
 %{_bindir}/*
@@ -85,6 +79,8 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-3
+- Fix binary path
 * Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
 - Upgrade to v9.1
 * Sat Apr 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.0-1

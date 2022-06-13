@@ -321,12 +321,12 @@ class constants(object):
         "/bin/perl":"perl",
         "/bin/mergerepo":"createrepo_c",
         "/bin/modifyrepo":"createrepo_c",
-        "/bin/false":"coreutils",
-        "/bin/ln":"coreutils",
-        "/bin/chown":"coreutils",
-        "/bin/cp":"coreutils",
-        "/bin/rm":"coreutils",
-        "/bin/mv":"coreutils",
+        "/usr/bin/false":"coreutils",
+        "/usr/bin/ln":"coreutils",
+        "/usr/bin/chown":"coreutils",
+        "/usr/bin/cp":"coreutils",
+        "/usr/bin/rm":"coreutils",
+        "/usr/bin/mv":"coreutils",
         "/sbin/ldconfig":"glibc",
         "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
     }

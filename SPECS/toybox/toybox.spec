@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -9,18 +9,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 %{name}=7198960aa13ce5c79c7c057beb0823703cac69ec
+%define sha512  %{name}=2d8f9cc3a6bd7ee5bd4bce77399916aa90cd8acb90448f4e1b79c605c7f854c19016f5eb3704f112855c8347e69f0f4dc42f9755dd2ec975ac7799d00bc597be
 
-Patch0:         toybox-change-toys-path.patch
+Patch0:         %{name}-change-toys-path.patch
 
-Source1:        config-toybox
-Source2:        toybox-toys
+Source1:        config-%{name}
+Source2:        %{name}-toys
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 
 Requires:       openssl
 Requires:       zlib
+
+Provides:   /bin/grep
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -29,15 +31,15 @@ standards-compliant, and powerful enough to turn Android into a development
 environment.
 
 %package docs
-Summary:    toybox docs
+Summary:    %{name} docs
 Group:      Documentation
 Requires:   %{name} = %{version}-%{release}
 
 %description docs
-The package contains toybox doc files.
+The package contains %{name} doc files.
 
 %prep
-%autosetup -p1 -n toybox-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 cp %{SOURCE1} .config
@@ -45,29 +47,31 @@ cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g" %{?_smp_mflags}
 
 %install
-install -d %{buildroot}%{_bindir}
+install -d %{buildroot}{%{_bindir},%{_sbindir}}
 PREFIX=%{buildroot} make install %{?_smp_mflags}
-mv %{buildroot}/bin/%{name} %{buildroot}%{_bindir}/toybox
-chmod 755 %{buildroot}%{_bindir}/toybox
-install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/toybox-toys
+mv %{buildroot}/bin/* %{buildroot}%{_bindir}
+mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
+chmod 755 %{buildroot}%{_bindir}/%{name}
+install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}-toys
 
+%if 0%{?with_check}
 %check
-# Do not run all tests, skip losetup
-# make tests
+# Do not run all tests, skip losetup make tests
 sed -i "s/^  if \[ \$# -ne 0 \]/  if false; /" scripts/test.sh
 pushd tests
-tests_to_run=`ls *.test | sed 's/.test//;/losetup/d'`
+tests_to_run=$(ls *.test | sed 's/.test//;/losetup/d')
 popd
-tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
+tests_to_run=$(echo  $tests_to_run | sed -e 's/pkill//g')
 ./scripts/test.sh $tests_to_run
+%endif
 
 %define mktoy() %{_bindir}/toybox ln -sf %{_bindir}/toybox %1
 
 %posttrans
-%{_bindir}/toybox-toys --install
+%{_bindir}/%{name}-toys --install
 
 %preun
-%{_bindir}/toybox-toys --uninstall
+%{_bindir}/%{name}-toys --uninstall
 
 %triggerpostun -- dos2unix
 [ $2 -eq 0 ] || exit 0
@@ -81,34 +85,34 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- coreutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/cat
-%mktoy /bin/chgrp
-%mktoy /bin/chmod
-%mktoy /bin/chown
-%mktoy /bin/cksum
-%mktoy /bin/cp
-%mktoy /bin/date
-%mktoy /bin/df
-%mktoy /bin/echo
-%mktoy /bin/false
-%mktoy /bin/ln
-%mktoy /bin/ls
-%mktoy /bin/mkdir
-%mktoy /bin/mknod
-%mktoy /bin/mktemp
-%mktoy /bin/mv
-%mktoy /bin/nice
-%mktoy /bin/printenv
-%mktoy /bin/pwd
-%mktoy /bin/rm
-%mktoy /bin/rmdir
-%mktoy /bin/sleep
-%mktoy /bin/stat
-%mktoy /bin/stty
-%mktoy /bin/sync
-%mktoy /bin/touch
-%mktoy /bin/true
-%mktoy /bin/uname
+%mktoy /usr/bin/cat
+%mktoy /usr/bin/chgrp
+%mktoy /usr/bin/chmod
+%mktoy /usr/bin/chown
+%mktoy /usr/bin/cksum
+%mktoy /usr/bin/cp
+%mktoy /usr/bin/date
+%mktoy /usr/bin/df
+%mktoy /usr/bin/echo
+%mktoy /usr/bin/false
+%mktoy /usr/bin/ln
+%mktoy /usr/bin/ls
+%mktoy /usr/bin/mkdir
+%mktoy /usr/bin/mknod
+%mktoy /usr/bin/mktemp
+%mktoy /usr/bin/mv
+%mktoy /usr/bin/nice
+%mktoy /usr/bin/printenv
+%mktoy /usr/bin/pwd
+%mktoy /usr/bin/rm
+%mktoy /usr/bin/rmdir
+%mktoy /usr/bin/sleep
+%mktoy /usr/bin/stat
+%mktoy /usr/bin/stty
+%mktoy /usr/bin/sync
+%mktoy /usr/bin/touch
+%mktoy /usr/bin/true
+%mktoy /usr/bin/uname
 %mktoy /usr/bin/[
 %mktoy /usr/bin/base64
 %mktoy /usr/bin/basename
@@ -161,7 +165,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- cpio
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/cpio
+%mktoy /usr/bin/cpio
 
 %triggerpostun -- diffutils
 [ $2 -eq 0 ] || exit 0
@@ -177,8 +181,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- e2fsprogs
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/chattr
-%mktoy /bin/lsattr
+%mktoy /usr/bin/chattr
+%mktoy /usr/bin/lsattr
 
 %triggerpostun -- file
 [ $2 -eq 0 ] || exit 0
@@ -191,9 +195,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- grep
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/egrep
-%mktoy /bin/fgrep
-%mktoy /bin/grep
+%mktoy /usr/bin/egrep
+%mktoy /usr/bin/fgrep
+%mktoy /usr/bin/grep
 
 %triggerpostun -- gzip
 [ $2 -eq 0 ] || exit 0
@@ -216,25 +220,25 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- kmod
 [ $2 -eq 0 ] || exit 0
-%mktoy /sbin/insmod
-%mktoy /sbin/lsmod
-%mktoy /sbin/modinfo
-%mktoy /sbin/rmmod
+%mktoy /usr/sbin/insmod
+%mktoy /usr/sbin/lsmod
+%mktoy /usr/sbin/modinfo
+%mktoy /usr/sbin/rmmod
 
 %triggerpostun -- netcat
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/netcat
+%mktoy /usr/bin/netcat
 %mktoy /usr/bin/nc
 
 %triggerpostun -- net-tools
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/hostname
-%mktoy /bin/netstat
-%mktoy /sbin/ifconfig
+%mktoy /usr/bin/hostname
+%mktoy /usr/bin/netstat
+%mktoy /usr/sbin/ifconfig
 
 %triggerpostun -- parted
 [ $2 -eq 0 ] || exit 0
-%mktoy /sbin/partprobe
+%mktoy /usr/sbin/partprobe
 
 %triggerpostun -- patch
 [ $2 -eq 0 ] || exit 0
@@ -265,12 +269,12 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- sed
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/sed
+%mktoy /usr/bin/sed
 
 %triggerpostun -- shadow-tools
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/login
-%mktoy /bin/su
+%mktoy /usr/bin/login
+%mktoy /usr/bin/su
 %mktoy /usr/bin/passwd
 
 %triggerpostun -- tar
@@ -283,20 +287,20 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- util-linux
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/dmesg
-%mktoy /bin/kill
-%mktoy /bin/mount
-%mktoy /bin/mountpoint
-%mktoy /bin/umount
-%mktoy /sbin/blkid
-%mktoy /sbin/blockdev
-%mktoy /sbin/hwclock
-%mktoy /sbin/losetup
-%mktoy /sbin/mkswap
-%mktoy /sbin/pivot_root
-%mktoy /sbin/swapoff
-%mktoy /sbin/swapon
-%mktoy /sbin/switch_root
+%mktoy /usr/bin/dmesg
+%mktoy /usr/bin/kill
+%mktoy /usr/bin/mount
+%mktoy /usr/bin/mountpoint
+%mktoy /usr/bin/umount
+%mktoy /usr/sbin/blkid
+%mktoy /usr/sbin/blockdev
+%mktoy /usr/sbin/hwclock
+%mktoy /usr/sbin/losetup
+%mktoy /usr/sbin/mkswap
+%mktoy /usr/sbin/pivot_root
+%mktoy /usr/sbin/swapoff
+%mktoy /usr/sbin/swapon
+%mktoy /usr/sbin/switch_root
 %mktoy /usr/bin/cal
 %mktoy /usr/bin/eject
 %mktoy /usr/bin/fallocate
@@ -320,42 +324,42 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %files
 %defattr(-,root,root)
-%{_bindir}/toybox
-%{_bindir}/toybox-toys
+%{_bindir}/%{name}
+%{_bindir}/%{name}-toys
 
 # bzip2
 %ghost %{_bindir}/bunzip2
 %ghost %{_bindir}/bzcat
 
 # coreutils
-%ghost /bin/cat
-%ghost /bin/chgrp
-%ghost /bin/chmod
-%ghost /bin/chown
-%ghost /bin/cksum
-%ghost /bin/cp
-%ghost /bin/date
-%ghost /bin/df
-%ghost /bin/echo
-%ghost /bin/false
-%ghost /bin/ln
-%ghost /bin/ls
-%ghost /bin/mkdir
-%ghost /bin/mknod
-%ghost /bin/mktemp
-%ghost /bin/mv
-%ghost /bin/nice
-%ghost /bin/printenv
-%ghost /bin/pwd
-%ghost /bin/rm
-%ghost /bin/rmdir
-%ghost /bin/sleep
-%ghost /bin/stat
-%ghost /bin/stty
-%ghost /bin/sync
-%ghost /bin/touch
-%ghost /bin/true
-%ghost /bin/uname
+%ghost %{_bindir}/cat
+%ghost %{_bindir}/chgrp
+%ghost %{_bindir}/chmod
+%ghost %{_bindir}/chown
+%ghost %{_bindir}/cksum
+%ghost %{_bindir}/cp
+%ghost %{_bindir}/date
+%ghost %{_bindir}/df
+%ghost %{_bindir}/echo
+%ghost %{_bindir}/false
+%ghost %{_bindir}/ln
+%ghost %{_bindir}/ls
+%ghost %{_bindir}/mkdir
+%ghost %{_bindir}/mknod
+%ghost %{_bindir}/mktemp
+%ghost %{_bindir}/mv
+%ghost %{_bindir}/nice
+%ghost %{_bindir}/printenv
+%ghost %{_bindir}/pwd
+%ghost %{_bindir}/rm
+%ghost %{_bindir}/rmdir
+%ghost %{_bindir}/sleep
+%ghost %{_bindir}/stat
+%ghost %{_bindir}/stty
+%ghost %{_bindir}/sync
+%ghost %{_bindir}/touch
+%ghost %{_bindir}/true
+%ghost %{_bindir}/uname
 %ghost %{_bindir}/[
 %ghost %{_bindir}/base64
 %ghost %{_bindir}/basename
@@ -407,7 +411,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_sbindir}/chroot
 
 # cpio
-%ghost /bin/cpio
+%ghost %{_bindir}/cpio
 
 # diffutils
 %ghost %{_bindir}/cmp
@@ -419,8 +423,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/mkpasswd
 
 # e2fsprogs
-%ghost /bin/chattr
-%ghost /bin/lsattr
+%ghost %{_bindir}/chattr
+%ghost %{_bindir}/lsattr
 
 # file
 %ghost %{_bindir}/file
@@ -430,9 +434,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/xargs
 
 # grep
-%ghost /bin/egrep
-%ghost /bin/fgrep
-%ghost /bin/grep
+%ghost %{_bindir}/egrep
+%ghost %{_bindir}/fgrep
+%ghost %{_bindir}/grep
 
 # gzip
 %ghost %{_bindir}/gunzip
@@ -450,22 +454,22 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/chvt
 
 # kmod
-%ghost /sbin/insmod
-%ghost /sbin/lsmod
-%ghost /sbin/modinfo
-%ghost /sbin/rmmod
+%ghost %{_sbindir}/insmod
+%ghost %{_sbindir}/lsmod
+%ghost %{_sbindir}/modinfo
+%ghost %{_sbindir}/rmmod
 
 # netcat
-%ghost /bin/netcat
+%ghost %{_bindir}/netcat
 %ghost %{_bindir}/nc
 
 # net-tools
-%ghost /bin/hostname
-%ghost /bin/netstat
-%ghost /sbin/ifconfig
+%ghost %{_bindir}/hostname
+%ghost %{_bindir}/netstat
+%ghost %{_sbindir}/ifconfig
 
 # parted
-%ghost /sbin/partprobe
+%ghost %{_sbindir}/partprobe
 
 # patch
 %ghost %{_bindir}/patch
@@ -491,11 +495,11 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/killall
 
 # sed
-%ghost /bin/sed
+%ghost %{_bindir}/sed
 
 # shadow-tools
-%ghost /bin/login
-%ghost /bin/su
+%ghost %{_bindir}/login
+%ghost %{_bindir}/su
 %ghost %{_bindir}/passwd
 
 # tar
@@ -505,20 +509,20 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/lsusb
 
 # util-linux
-%ghost /bin/dmesg
-%ghost /bin/kill
-%ghost /bin/mount
-%ghost /bin/mountpoint
-%ghost /bin/umount
-%ghost /sbin/blkid
-%ghost /sbin/blockdev
-%ghost /sbin/hwclock
-%ghost /sbin/losetup
-%ghost /sbin/mkswap
-%ghost /sbin/pivot_root
-%ghost /sbin/swapoff
-%ghost /sbin/swapon
-%ghost /sbin/switch_root
+%ghost %{_bindir}/dmesg
+%ghost %{_bindir}/kill
+%ghost %{_bindir}/mount
+%ghost %{_bindir}/mountpoint
+%ghost %{_bindir}/umount
+%ghost %{_sbindir}/blkid
+%ghost %{_sbindir}/blockdev
+%ghost %{_sbindir}/hwclock
+%ghost %{_sbindir}/losetup
+%ghost %{_sbindir}/mkswap
+%ghost %{_sbindir}/pivot_root
+%ghost %{_sbindir}/swapoff
+%ghost %{_sbindir}/swapon
+%ghost %{_sbindir}/switch_root
 %ghost %{_bindir}/cal
 %ghost %{_bindir}/eject
 %ghost %{_bindir}/fallocate
@@ -572,6 +576,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %doc README LICENSE
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-3
+- Fix binary path
 * Sat Apr 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.6-2
 - Enable nsenter utility in toybox
 * Tue Dec 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-1

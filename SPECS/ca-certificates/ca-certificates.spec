@@ -1,17 +1,21 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
 Version:             20210429
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
 Group:               System Environment/Security
 Vendor:              VMware, Inc.
 Distribution:        Photon
+
 Source0:             certdata.txt
+
 Requires:            openssl
-BuildRequires:       openssl
 Requires:            ca-certificates-pki = %{version}-%{release}
-Requires(posttrans): /bin/ln
+Requires(posttrans): /usr/bin/ln
+
+BuildRequires:       openssl
+
 Provides:            ca-certificates-mozilla
 
 %description
@@ -33,13 +37,11 @@ Certificate Authority certificates (pki tls certs)
 %prep -p exit
 
 %build
-[ %{builddir} != "/"] && rm -rf %{builddir}/*
-install -vdm 755 %{_builddir}/bin/
+install -vdm 755 %{_builddir}%{_bindir}
 cp %{SOURCE0} %{_builddir}
-#
+
 # make-cert.pl
-#
-cat > %{_builddir}/bin/make-cert.pl << "EOF"
+cat > %{_builddir}%{_bindir}/make-cert.pl << "EOF"
 #!/usr/bin/perl -w
 # Used to generate PEM encoded files from Mozilla certdata.txt.
 # Run as ./make-cert.pl > certificate.crt
@@ -82,7 +84,7 @@ EOF
 #
 # make-ca.sh
 #
-cat > %{_builddir}/bin/make-ca.sh << "EOF"
+cat > %{_builddir}%{_bindir}/make-ca.sh << "EOF"
 #!/bin/bash
 # Begin make-ca.sh
 # Script to populate OpenSSL's CApath from a bundle of PEM formatted CAs
@@ -105,13 +107,13 @@ VERSION=$(echo $REVISION | cut -f2 -d" ")
 TEMPDIR=$(mktemp -d)
 TRUSTATTRIBUTES="CKA_TRUST_SERVER_AUTH"
 BUNDLE="BLFS-ca-bundle-${VERSION}.crt"
-CONVERTSCRIPT="bin/make-cert.pl"
-SSLDIR="/etc/ssl"
+CONVERTSCRIPT="%{_builddir}%{_bindir}/make-cert.pl"
+SSLDIR="%{_sysconfdir}/ssl"
 mkdir "${TEMPDIR}/certs"
 # Get a list of staring lines for each cert
-CERTBEGINLIST=$(grep -n "^# Certificate" "${certdata}" | cut -d ":" -f1)
+CERTBEGINLIST=$(grep -n "^# Certificate" "${certdata}" | cut -d":" -f1)
 # Get a list of ending lines for each cert
-CERTENDLIST=`grep -n "^CKA_TRUST_STEP_UP_APPROVED" "${certdata}" | cut -d ":" -f 1`
+CERTENDLIST=$(grep -n "^CKA_TRUST_STEP_UP_APPROVED" "${certdata}" | cut -d ":" -f 1)
 # Start a loop
 for certbegin in ${CERTBEGINLIST}; do
   for certend in ${CERTENDLIST}; do
@@ -154,13 +156,13 @@ if test -f certs/8f111d69.pem; then
   rm -f certs/8f111d69.pem
 fi
 # Finally, generate the bundle and clean up.
-cat certs/*.pem >  ${BUNDLE}
+cat certs/*.pem > ${BUNDLE}
 rm -r "${TEMPDIR}"
 EOF
 #
 # remove-expired-certs.sh\
 #
-cat > %{_builddir}/bin/remove-expired-certs.sh << "EOF"
+cat > %{_builddir}%{_bindir}/remove-expired-certs.sh << "EOF"
 #!/bin/bash
 # Begin /bin/remove-expired-certs.sh
 # Version 20120211
@@ -188,7 +190,7 @@ function mydate()
   esac
   certdate="${y}${m}${d}"
 }
-OPENSSL=/usr/bin/openssl
+OPENSSL=%{_bindir}/openssl
 DIR=certs
 if [ $# -gt 0 ]; then
   DIR="$1"
@@ -206,51 +208,54 @@ for cert in $certs; do
 done
 EOF
 
-chmod +x %{_builddir}/bin/make-cert.pl
-chmod +x %{_builddir}/bin/make-ca.sh
-chmod +x %{_builddir}/bin/remove-expired-certs.sh
+chmod +x %{_builddir}%{_bindir}/*
 
 printf "making certs\n"
-bin/make-ca.sh
+%{_builddir}%{_bindir}/make-ca.sh
 printf "Removing expired certs\n"
-bin/remove-expired-certs.sh
+%{_builddir}%{_bindir}/remove-expired-certs.sh
 printf "Build portion completed\n"
 
-sed -i 's|CONVERTSCRIPT="bin/make-cert.pl"|CONVERTSCRIPT="/bin/make-cert.pl"|' bin/make-ca.sh
-sed -i 's|DIR=certs|DIR=/etc/ssl/certs|' bin/remove-expired-certs.sh
+sed -i 's|CONVERTSCRIPT="%{_builddir}%{_bindir}/make-cert.pl"|CONVERTSCRIPT="%{_bindir}/make-cert.pl"|' %{_builddir}%{_bindir}/make-ca.sh
+sed -i 's|DIR=certs|DIR=%{_sysconfdir}/ssl/certs|' %{_builddir}%{_bindir}/remove-expired-certs.sh
 
 %install
-SSLDIR=/etc/ssl
-install -d %{buildroot}/${SSLDIR}/certs
-install -d %{buildroot}/etc/pki/tls/certs
-cp -v certs/*.pem %{buildroot}/${SSLDIR}/certs
-install BLFS-ca-bundle*.crt %{buildroot}/etc/pki/tls/certs/ca-bundle.crt
+SSLDIR=%{_sysconfdir}/ssl
+install -d %{buildroot}${SSLDIR}/certs
+install -d %{buildroot}%{_sysconfdir}/pki/tls/certs
+cp -v certs/*.pem %{buildroot}${SSLDIR}/certs
+install BLFS-ca-bundle*.crt %{buildroot}%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 #ln -sfv ../$(readlink %{buildroot}/${SSLDIR}/ca-bundle.crt) %{buildroot}/${SSLDIR}/certs/ca-certificates.crt
 unset SSLDIR
 
-install -Dm644 bin/make-ca.sh %{buildroot}/bin/make-ca.sh
-install -Dm644 bin/make-cert.pl %{buildroot}/bin/make-cert.pl
-install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs.sh
+install -Dm644 %{_builddir}%{_bindir}/make-ca.sh %{buildroot}%{_bindir}/make-ca.sh
+install -Dm644 %{_builddir}%{_bindir}/make-cert.pl %{buildroot}%{_bindir}/make-cert.pl
+install -Dm644 %{_builddir}%{_bindir}/remove-expired-certs.sh %{buildroot}%{_bindir}/remove-expired-certs.sh
 %{_fixperms} %{buildroot}/*
 
 %posttrans
-cd /etc/ssl/certs;
-for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
+cd %{_sysconfdir}/ssl/certs
+for file in *.pem; do
+  ln -sf $file $(openssl x509 -hash -noout -in $file).0
+done
 exit 0
 
 %clean
+
 %files
 %defattr(-,root,root)
-/etc/ssl/certs/*
-/bin/make-ca.sh
-/bin/remove-expired-certs.sh
-/bin/make-cert.pl
+%{_sysconfdir}/ssl/certs/*
+%{_bindir}/make-ca.sh
+%{_bindir}/remove-expired-certs.sh
+%{_bindir}/make-cert.pl
 
 %files pki
 %defattr(-,root,root)
-/etc/pki/tls/certs/ca-bundle.crt
+%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 20210429-2
+- Fix binary path
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 20210429-1
 - Automatic Version Bump
 * Fri Apr 23 2021 Gerrit Photon <photon-checkins@vmware.com> 20210422-1
