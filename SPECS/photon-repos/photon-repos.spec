@@ -1,12 +1,12 @@
-Summary:	Photon repo files, gpg keys
-Name:		photon-repos
-Version:	4.0
-Release:	3%{?dist}
-License:	Apache License
-Group:		System Environment/Base
-URL:		https://vmware.github.io/photon/
+Summary:        Photon repo files, gpg keys
+Name:           photon-repos
+Version:        4.0
+Release:        4%{?dist}
+License:        Apache License
+Group:          System Environment/Base
+URL:            https://vmware.github.io/photon/
 Source0:        photon-repos-4.0.tar.gz
-%define sha1    photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
+%define sha512  photon-repos=0ee59bd2c955d98b14dd2fee3b9e5a241ac3d3a62648853b0df1191128918af4316ec650906b70d4d1edce609180f5fd2d36b7719d08de74d3ce4260837645c0
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
@@ -15,10 +15,11 @@ Source5:        photon-iso.repo
 Source6:        photon-debuginfo.repo
 Source7:        photon-extras.repo
 Source8:        photon-release.repo
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	photon-repos
-BuildArch:	noarch
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       photon-release
+Provides:       photon-repos
+BuildArch:      noarch
 
 %description
 Photon repo files and gpg keys
@@ -56,6 +57,8 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-release.repo
 
 %changelog
+*   Mon Jul 18 2022 Piyush Gupta <gpiyush@vmware.com> 4.0-4
+-   Add photon-release as requires of photon-repos.
 *   Thu Feb 24 2022 Oliver Kurth <okurth@vmware.com> 4.0-3
 -   add 4096 bit RSA key
 -   disable filelists metadata in photon.repo
