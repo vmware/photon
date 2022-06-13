@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.86
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:         https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512    %{name}=487eae0afbc8bb3d5282a729ffb0cb2c9bdc7d8e46e2e8aa114cd7c5d82e0fd66f49926e7fa4028577548d6f57e8a865aca17f33963a589874584d608ab2deaf
+%define sha512   %{name}=487eae0afbc8bb3d5282a729ffb0cb2c9bdc7d8e46e2e8aa114cd7c5d82e0fd66f49926e7fa4028577548d6f57e8a865aca17f33963a589874584d608ab2deaf
 
 Patch0:         enable_dnssec.patch
 
@@ -37,28 +37,29 @@ make -C contrib/lease-tools %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_mandir}/{man1,man8}
-mkdir -p %{buildroot}%{_sharedstatedir}/dnsmasq
-mkdir -p %{buildroot}%{_sysconfdir}/dnsmasq.d
-mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{_sbindir} \
+         %{buildroot}%{_mandir}/{man1,man8} \
+         %{buildroot}%{_sharedstatedir}/%{name} \
+         %{buildroot}%{_sysconfdir}/%{name}.d \
+         %{buildroot}%{_sysconfdir}/dbus-1/system.d
+
 install src/%{name} %{buildroot}%{_sbindir}/%{name}
-install dnsmasq.conf.example %{buildroot}%{_sysconfdir}/dnsmasq.conf
-install dbus/dnsmasq.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/
-install -m 644 man/dnsmasq.8 %{buildroot}%{_mandir}/man8/
+install %{name}.conf.example %{buildroot}%{_sysconfdir}/%{name}.conf
+install dbus/%{name}.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/
+install -m 644 man/%{name}.8 %{buildroot}%{_mandir}/man8/
 install -D trust-anchors.conf %{buildroot}%{_datadir}/%{name}/trust-anchors.conf
 
 install -m 755 contrib/wrt/lease_update.sh %{buildroot}%{_sbindir}/lease_update.sh
 
 mkdir -p %{buildroot}%{_unitdir}
-cat << EOF >> %{buildroot}%{_unitdir}/dnsmasq.service
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=A lightweight, caching DNS proxy
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/dnsmasq -k
+ExecStart=%{_sbindir}/%{name} -k
 Restart=always
 
 [Install]
@@ -81,12 +82,12 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_unitdir}/*
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_sbindir}/*
 %{_mandir}/*
-%{_sysconfdir}/dnsmasq.d
-%config(noreplace) %{_sysconfdir}/dnsmasq.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/dnsmasq.conf
+%{_sysconfdir}/%{name}.d
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/%{name}.conf
 %dir %{_sharedstatedir}
 %config %{_datadir}/%{name}/trust-anchors.conf
 
@@ -95,6 +96,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.86-2
+- Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.86-1
 - Automatic Version Bump
 * Mon Aug 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.85-3

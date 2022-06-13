@@ -1,7 +1,7 @@
 Summary:    fuse filesystem to access remote ssh servers
 Name:       sshfs
 Version:    3.7.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 Url:        https://github.com/libfuse/sshfs
 Group:      Filesystemd tools
@@ -9,11 +9,11 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://github.com/libfuse/sshfs/archive/%{name}-%{version}.tar.gz
-%define sha1 %{name}=4efb70f498020b6169adf18aa1dd746ff15ad42a
+%define sha512  %{name}=8ce33e6f29a8d372a43a52c2e3cb3a08419bf9943d3a20425e9c8bec4ec6ec419c32bb5e5a86c67e1f8593505645a1d1d41ce638a35bb0aa24db0264812f8a40
 
-Requires:	fuse >= 2.3
-Requires:	fuse3 >= 3.0.0
-Requires:	glib > 2.0
+Requires:   fuse >= 2.3
+Requires:   fuse3 >= 3.0.0
+Requires:   glib > 2.0
 
 BuildRequires:  fuse3-devel >= 3.0.0
 BuildRequires:  meson >= 0.38.0
@@ -32,8 +32,8 @@ meson --prefix=%{_prefix} .. && ninja
 cd build
 DESTDIR=%{buildroot} ninja install
 
-%check
 %if 0%{?with_check}
+%check
 #cd build && pytest test
 %endif
 
@@ -41,10 +41,12 @@ DESTDIR=%{buildroot} ninja install
 %defattr(-, root, root)
 %{_bindir}/*
 %{_sbindir}/*
-%exclude %{_libdir}
+%exclude %dir %{_libdir}/debug
 %exclude %{_prefix}/src
 
 %changelog
+* Thu Mar 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-3
+- Fix binary path
 * Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2
 - Remove meson from Requires
 * Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1

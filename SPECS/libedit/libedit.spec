@@ -4,15 +4,18 @@
 Summary:        The NetBSD Editline library
 Name:           libedit
 Version:        3.1.20210910
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        libedit-%{libedit_release}-%{libedit_version}.tar.gz
-%define sha512  libedit=b7361c277f971ebe87e0e539e5e1fb01a4ca1bbab61e199eb97774d8b60dddeb9e35796faf9cc68eb86d1890e8aac11db13b44b57ccc8302d559741fbe9d979e
 License:        BSD
-Url:            http://www.thrysoee.dk/editline/
+Url:            http://www.thrysoee.dk/editline
 Group:          Applications/Libraries
+
+Source0:        %{name}-%{libedit_release}-%{libedit_version}.tar.gz
+%define sha512  %{name}=b7361c277f971ebe87e0e539e5e1fb01a4ca1bbab61e199eb97774d8b60dddeb9e35796faf9cc68eb86d1890e8aac11db13b44b57ccc8302d559741fbe9d979e
+
 Requires:       ncurses
+
 BuildRequires:  ncurses-devel
 
 %description
@@ -23,24 +26,23 @@ tokenization functions, similar to those found in GNU Readline.
 %package        devel
 Summary:        The NetBSD Editline library
 Group:          Development/Libraries
-Requires:       libedit = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
-Development files for libedit
+Development files for %{name}
 
 %prep
-%autosetup -n libedit-%{libedit_release}-%{libedit_version}
+%autosetup -n %{name}-%{libedit_release}-%{libedit_version}
 
 %build
-%configure \
---disable-static
+%configure --disable-static
 %make_build %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 # Remove history.3, a solftlink to editline, which conflicts with readline-devel
-rm -f %{buildroot}/%{_mandir}/man3/history.3
+rm -f %{buildroot}%{_mandir}/man3/history.3
 
 %ldconfig_scriptlets
 
@@ -49,7 +51,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_libdir}/*.so.*
 %{_mandir}/*
 
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.20210910-3
+- Exclude debug symbols properly
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.20210910-2
 - Update sha1 to sha512
 * Wed Dec 22 2021 Susant sahani <ssahani@vmware.com> 3.1.20210910-1

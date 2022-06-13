@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha512    %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
+%define sha512  %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig
@@ -87,13 +87,13 @@ ctest -V %{?_smp_mflags}
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-%exclude %{_usrsrc}/debug
-%exclude %{_libdir}/debug
 %{_bindir}/*
 %{_mandir}/man8/*
-%{_datadir}/%{name}/*
-%{_libdir}/lib%{name}_sce.so.*
-%{_libdir}/lib%{name}.so.*
+%{_datadir}/openscap/*
+%{_libdir}/libopenscap_sce.so.*
+%{_libdir}/libopenscap.so.*
+%exclude %dir %{_usrsrc}/debug
+%exclude %dir %{_libdir}/debug
 
 %files devel
 %defattr(-,root,root)
@@ -111,6 +111,8 @@ ctest -V %{?_smp_mflags}
 %{_libdir}/python3.9/*
 
 %changelog
+* Wed Jun 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-4
+- Exclude debug symbols properly
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-3
 - Fix build with latest cmake
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-2

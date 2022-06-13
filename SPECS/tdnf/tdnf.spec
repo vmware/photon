@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -199,9 +199,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_includedir}/%{name}/*.h
 %{_libdir}/libtdnf.so
 %{_libdir}/libtdnfcli.so
-%exclude %{_libdir}/debug
-%{_libdir}/pkgconfig/%{name}.pc
-%{_libdir}/pkgconfig/%{name}-cli-libs.pc
+%exclude %dir %{_libdir}/debug
+%{_libdir}/pkgconfig/tdnf.pc
+%{_libdir}/pkgconfig/tdnf-cli-libs.pc
 
 %files cli-libs
 %defattr(-,root,root)
@@ -229,6 +229,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Jun 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-3
+- Exclude debug symbols properly
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-2
 - Spec improvements
 * Tue May 10 2022 Oliver Kurth <okurth@vmware.com> 3.3.1-1

@@ -1,14 +1,16 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.26.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
-%define sha512  libmbim=7cce1fa6ff5630a1cc565a2198544de9f4a1db20b30304fac96de6c698eaf56b17fe6ccb089151623d4484d88fda6abe980bced19dfbf0d3ef425fc954fb5844
+%define sha512  %{name}=7cce1fa6ff5630a1cc565a2198544de9f4a1db20b30304fac96de6c698eaf56b17fe6ccb089151623d4484d88fda6abe980bced19dfbf0d3ef425fc954fb5844
+
 BuildRequires:  libgudev-devel
 BuildRequires:  libgudev
 BuildRequires:  systemd-devel
@@ -17,7 +19,10 @@ BuildRequires:  python3
 BuildRequires:  gcc
 BuildRequires:  glib-devel
 BuildRequires:  pkg-config
-BuildRequires:  automake autoconf libtool
+BuildRequires:  automake
+BuildRequires:  autoconf
+BuildRequires:  libtool
+
 Requires:       libgudev
 
 %description
@@ -33,17 +38,19 @@ Requires:       libgudev-devel
 It contains the libraries and header files for libmbim
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -54,7 +61,7 @@ make %{?_smp_mflags} check
 %{_bindir}/mbimcli
 %{_bindir}/mbim-network
 %{_libdir}/libmbim-glib.so*
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_mandir}/man1/*
 %{_datadir}/bash-completion/*
 
@@ -65,13 +72,15 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.26.2-1
--   Automatic Version Bump
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.24.6-1
--   Automatic Version Bump
-*   Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
--   Add build requires
-*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
--   Automatic Version Bump
-*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1
--   Initial build. First version.
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.26.2-2
+- Fix binary path
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.26.2-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.24.6-1
+- Automatic Version Bump
+* Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
+- Add build requires
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
+- Automatic Version Bump
+* Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1
+- Initial build. First version

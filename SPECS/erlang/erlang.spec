@@ -1,14 +1,16 @@
 Name:          erlang
 Summary:       erlang
 Version:       23.3.2
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       ASL2.0
 URL:           http://erlang.com
+
 Source0:       OTP-%{version}.tar.gz
-%define sha1   OTP=f3da06d9bfd1ad15fc2c72a08d45cbf8cb8bed55
+%define sha512  OTP=bb3dc1d827314b71f7e4da2082681e449859a69589d566a810baf554131e239ad3fe0555f352d69506467162016d6c6864abb20926843ee4da5876b26650810e
+
 Patch0:        0001-erlang-fix-vernemq-build-fail.patch
 
 Requires:     ncurses-libs
@@ -22,30 +24,33 @@ erlang programming language
 %autosetup -p1 -n otp-OTP-%{version}
 
 %build
-export ERL_TOP=`pwd`
+export ERL_TOP="${PWD}"
 export CFLAGS="-Wno-error=implicit-function-declaration"
-./otp_build autoconf
+
+sh ./otp_build autoconf
+
 %configure \
     --with-ssl=%{_libdir} \
     --with-ssl-incl=%{_includedir}/openssl \
     --with-ssl-rpath=%{_libdir} \
     --enable-dynamic-ssl-lib \
     --enable-fips
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-
-%post
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*
-%exclude /usr/src
-%exclude %{_libdir}/debug
+%{_libdir}/%{name}/*
+%exclude %dir %{_usrsrc}
+%exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-4
+- Fix binary path
 * Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 23.3.2-3
 - Enable FIPS, Adding ncurses-libs as Requires.
 * Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.3.2-2
