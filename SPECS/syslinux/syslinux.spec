@@ -3,7 +3,7 @@
 Summary:    Simple kernel loader which boots from a FAT filesystem
 Name:       syslinux
 Version:    6.04
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    GPLv2+
 URL:        http://www.syslinux.org
 Group:      Applications/System
@@ -12,8 +12,10 @@ Distribution:   Photon
 
 Source0:    https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
 %define sha512  %{name}=7927dd39be8e2dcf4138a6fea33def67d19d938379d694f15b48fdd2f5924c028b7a9e7bd71d0c7c6630c203e9e2a54296628e530632ad5e6f55b1ebefe8fc98
+
 Source1:        http://downloads.sourceforge.net/libpng/libpng-1.2.59.tar.xz
 %define sha512  libpng=bfdc51eca72a76697f1396611a08aa4ce6a169837197699c55d845fdef17850e8f7665b7b81ba815c277453737f12eeb41409ff9c7eca1ac0c0d134c44492a6e
+
 Source2:        http://www.zlib.net/zlib-1.2.11.tar.xz
 %define sha512  zlib=b7f50ada138c7f93eb7eb1631efccd1d9f03a5e77b6c13c8b757017b2d462e19d2d3e01c50fad60a4ae1bc86d431f6f94c72c11ff410c25121e571953017cb67
 
@@ -35,9 +37,9 @@ filesystems, Linux ext2/ext3 filesystems (EXTLINUX), PXE network boots
 MEMDISK, which loads legacy operating systems from these media.
 
 %package devel
-Summary: Headers and libraries for syslinux development.
-Group: Development/Libraries
-Provides: %{name}-static = %{version}-%{release}
+Summary:    Headers and libraries for syslinux development.
+Requires:   %{name} = %{version}-%{release}
+Provides:   %{name}-static = %{version}-%{release}
 %description devel
 Headers and libraries for syslinux development.
 
@@ -61,7 +63,7 @@ make bios clean all
 # make doesn't support _smp_mflags
 make bios install-all \
     INSTALLROOT=%{buildroot} BINDIR=%{_bindir} SBINDIR=%{_sbindir} \
-    LIBDIR=%{_prefix}/lib DATADIR=%{_datadir} \
+    LIBDIR=%{_libdir} DATADIR=%{_datadir} \
     MANDIR=%{_mandir} INCDIR=%{_includedir} \
     LDLINUX=ldlinux.c32
 
@@ -85,6 +87,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Mon Jul 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.04-8
+- Fix devel requires
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.04-7
 - Fix binary path
 * Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.04-6

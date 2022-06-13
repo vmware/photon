@@ -6,7 +6,7 @@ Name:           python3
 Version:        3.9.1
 Release:        7%{?dist}
 License:        PSF
-URL:            http://www.python.org/
+URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,11 +37,12 @@ Requires:       readline
 Requires:       xz
 Provides:       python-sqlite
 Provides:       python(abi)
+
 Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
 
-%if 0%{with_check:1}
+%if 0%{with_check}
 BuildRequires:  iana-etc
 BuildRequires:  tzdata
 BuildRequires:  curl-devel
@@ -164,7 +165,7 @@ python-devel packages require it. So install a python-devel package instead.
 %build
 export OPT="${CFLAGS}"
 if [ %{_host} != %{_build} ]; then
-  ln -sfv python3 /bin/python
+  ln -sfv python3 %{_bindir}/python
   export ac_cv_buggy_getaddrinfo=no
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
@@ -177,12 +178,10 @@ fi
     --enable-optimizations \
     --with-dbmliborder=gdbm:ndbm
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
@@ -201,8 +200,8 @@ install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
   cp Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
 %endif # with gdb_hooks
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 make %{?_smp_mflags} test
 %endif
 
