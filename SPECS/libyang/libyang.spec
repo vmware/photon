@@ -1,7 +1,7 @@
 Summary:        YANG data modeling language library
 Name:           libyang
 Version:        2.0.164
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/CESNET/libyang
 License:        BSD-3-Clause
 Group:          Development/Tools
@@ -9,14 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libyang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1 %{name}=2df5e4fa47c53b9d9d0477314664641f57e0025c
+%define sha512 %{name}=016e450110e968665195bec692ef1eca6889636de79bd873f74cddde6a58859ac1df4d1fb2bc3024ff05d82ff4c2b0f4eb8df06ddfd4b04d3a0c5f5fed44af65
 
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  pcre2-devel
 
-%if 0%{with_check}
+%if 0%{?with_check}
 BuildRequires:   cmocka
 BuildRequires:   valgrind
 %endif
@@ -29,6 +29,7 @@ written (and providing API) in C.
 
 %package devel
 Summary:    Development files for libyang
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Files needed to develop with libyang.
@@ -44,22 +45,22 @@ YANG validator tools.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
+mkdir build && cd build
 cmake \
     -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
     -DCMAKE_BUILD_TYPE:String="Release" \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DENABLE_TESTS=ON \
     ..
-make %{?_smp_mflags}
+
+%make_build
 
 %install
 cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-%check
 %if 0%{?with_check}
+%check
 cd build
 make test %{?_smp_mflags}
 %endif
@@ -89,5 +90,7 @@ make test %{?_smp_mflags}
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Mon Jun 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.164-2
+- Fix devel package dependency
 * Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.0.164-1
 - Modified from provided libyang.spec on GitHub. Needed for libnetconf2.
