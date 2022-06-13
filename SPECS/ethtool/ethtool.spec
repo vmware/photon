@@ -1,15 +1,18 @@
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
 Version:        5.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
-URL:            https://www.kernel.org/pub/software/network/ethtool/
+URL:            https://www.kernel.org/pub/software/network/ethtool
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://www.kernel.org/pub/software/network/%{name}/%{name}-%{version}.tar.xz
-%define sha512    ethtool=c9677829e3ed1f373bd993f72c710293a6e987bbd19829d437a436f42cf4e7995ee70a7db3590b1499ff6aa29c26815f4d0a3e4798ffb6992ae3f52b079cd3ff
+%define sha512  %{name}=c9677829e3ed1f373bd993f72c710293a6e987bbd19829d437a436f42cf4e7995ee70a7db3590b1499ff6aa29c26815f4d0a3e4798ffb6992ae3f52b079cd3ff
+
 BuildRequires:  libmnl-devel
+
 Requires:       libmnl
 
 %description
@@ -17,20 +20,21 @@ ethtool is the standard Linux utility for controlling network drivers and hardwa
 particularly for wired Ethernet devices
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 autoreconf -fi
-%configure --sbindir=/sbin
+%configure
 
-# make doesn't support _smp_mflags
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -38,11 +42,13 @@ rm -rf %{buildroot}/*
 %files
 %doc AUTHORS COPYING NEWS README ChangeLog
 %defattr(-,root,root)
-/sbin/ethtool
+%{_sbindir}/ethtool
 %{_datadir}/bash-completion/completions/ethtool
 %{_mandir}
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.17-2
+- Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.17-1
 - Automatic Version Bump
 * Tue Jan 11 2022 Susant Sahani <ssahani@vmware.com> 5.15-1
