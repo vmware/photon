@@ -1,14 +1,14 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    24
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=416789532960f7deecb4d5734a398da2437bbb58
+%define sha512  mkinitcpio=d8a98077fc7199eb014911dbd832bef14868a95a571f57a80314f2789a70652d6553c0127abd8b74a8f671d86faaebcbe7ac34a75ccbf9d1657708a64a890b83
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc
 BuildRequires: python2
@@ -23,8 +23,7 @@ BuildArch:     noarch
 Multi-format archive and compression library
 
 %prep
-%setup -q
-%patch0 -p0
+%autosetup -p0
 
 %build
 
@@ -37,7 +36,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,6 +49,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 24-3
+-   Bump version as a part of libxslt upgrade
 *   Tue Jan 07 2020 Prashant S Chauhan <psinghchauha@vmware.com> 24-2
 -   Added python2 as build requirement
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 24-1

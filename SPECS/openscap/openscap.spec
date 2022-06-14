@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.17
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    %{name}=588676a56b6adf389140d6fdbc6a6685ef06e7b3
+%define sha512  %{name}=38b80215e4815c3a4a50e86376fbd680e58d2470b67dbc02dda052b11de5dd4af4b525d639c3ad5359ac70194c63276fbecbe7445df36009f5fe492a80a77a27
 
 BuildRequires:  swig
 BuildRequires:  libxml2-devel
@@ -98,6 +98,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python2.7/*
 
 %changelog
+* Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.17-5
+- Bump version as a part of libxslt upgrade
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-4
 - Exclude debug symbols properly
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.17-3

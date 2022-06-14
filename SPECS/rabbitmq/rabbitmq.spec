@@ -1,14 +1,14 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.8.9
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 rabbitmq=dc945062816536124f0c2d6ac32d15c61d0b2f2a
+%define sha512  rabbitmq=11e041235280c23012d967c6dbd78d1fc95a312fe1acb3aa51a7ed8731cc8c26acbcd7272a8100b8a5d75f49d38466980be194c6013921b017ed6fd09eb5ee55
 Source1:       rabbitmq.config
 Requires:      erlang
 Requires:      erlang-sd_notify
@@ -36,9 +36,9 @@ LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} \
-             PREFIX=%{_prefix} \
-             RMQ_ROOTDIR=/usr/lib/rabbitmq/
+make %{?_smp_mflags} install DESTDIR=%{buildroot} \
+                     PREFIX=%{_prefix} \
+                     RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
@@ -106,6 +106,8 @@ rm -rf %{buildroot}
 /var/lib/*
 
 %changelog
+* Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.8.9-3
+- Bump version as a part of libxslt upgrade
 * Thu Dec 16 2021 Nitesh Kumar <kunitesh@vmware.com> 3.8.9-2
 - Bump up version to use fips enable erlang.
 * Wed Nov 11 2020 Harinadh D <hdommaraju@vmware.com> 3.8.9-1

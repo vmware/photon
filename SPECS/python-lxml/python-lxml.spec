@@ -3,7 +3,7 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        4.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.2.5-2
+-   Bump version as a part of libxslt upgrade
 *   Mon Jun 13 2022 Harinadh D <hdommaraju@vmware.com> 4.2.5-1
 -   fix CVE-2021-28957,CVE-2018-19787
 *   Thu Feb 03 2022 Harinadh D <hdommaraju@vmware.com> 4.2.4-3

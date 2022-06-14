@@ -1,14 +1,14 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.1.14
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha1 talloc=9d563b768148b620bdae1c97b36cfc30928a1044
+%define sha512  talloc=1fcc70bf283a4d9fb61faf1c57f80a9c158efbe996452740db9755e879ad72ee7bff6f6c9bed358e085c5c7f97c78800bb903161143af2202952b702141cc130
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
 BuildRequires: python2-devel
@@ -41,7 +41,7 @@ Requires: python-talloc = %{version}-%{release}
 Development libraries for python-talloc
 
 %prep
-%setup -q -n talloc-%{version}
+%autosetup -p1 -n talloc-%{version}
 
 %build
 %configure --bundled-libraries=NONE \
@@ -54,7 +54,7 @@ make %{?_smp_mflags} V=1
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -78,6 +78,8 @@ make check
 %{_libdir}/libpytalloc-util.so
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.1.14-3
+-   Bump version as a part of libxslt upgrade
 *   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.14-2
 -   Added python2-devel as a build requirement
 *   Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1

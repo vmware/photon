@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          40%{?dist}
+Release:          41%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -331,6 +331,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Tue Jun 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 239-41
+- Bump version as a part of libxslt upgrade
 * Mon Jun 20 2022 Susant Sahani <ssahani@vmware.com> 239-40
 - Enable ACL
 * Thu May 05 2022 Alexey Makhalov <amakhalov@vmware.com> 239-39

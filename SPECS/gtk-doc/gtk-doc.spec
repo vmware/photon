@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.29
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
-%define sha1 gtk-doc=c3dc579d84221c43ce2b0b5f523c46b13525416b
+%define sha512  gtk-doc=97e17be2563c2c12a04394633feaf6591918968a794c38e945a65be9c2de2bed5ce586592a7fe396a1874b8e43e63d6380c6d1a3193ccb7f9bb3d3a331526421
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,6 +47,8 @@ cd tests && make check-TESTS
 %{_libdir}/cmake/
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.29-4
+-   Bump version as a part of libxslt upgrade
 *   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.29-3
 -   Version Bump to build with new version of cmake
 *   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 1.29-2

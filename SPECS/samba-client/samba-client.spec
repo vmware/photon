@@ -1,14 +1,14 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=9d7dfb75ae050013d30dbf0bf0e7fdb8db3457a9
+%define sha512  samba=6a021d61dc2a8894c646a9b6d85e38c9020b3c227f10d1820cbdf2ad6793c0beeacedd5fff5f75718d4083ec9169cb1fb58f65636e1a50e638fcefce355690d9
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
@@ -564,6 +564,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.14.12-2
+-   Bump version as a part of libxslt upgrade
 *   Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
 -   Upgrade to version 4.14.12
 *   Wed Nov 24 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.10-2

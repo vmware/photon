@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -9,11 +9,11 @@ Distribution:   Photon
 Group:          Applications/System
 
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    %{name}=982c3b335debe04763c0b0b8769f7e43229beebc
+%define sha512  %{name}=3960fea97b0716746f9d9f8748244d3abe258f4f04c1120c807284cfc82c260a5bdc836b47df41c2a510d3a4af2b347454c8a3a34cf4d43a96bd04142ae8eeaa
 Source1:        libglnx-470af87.tar.gz
-%define sha1    libglnx=ed1ee84156ff0d9e70b551a7932fda79fb59e8d4
+%define sha512  libglnx=b3695c1f34be59921ba8cd86a662ae2866169967b81536f0360966af64e52d25d51d6b2a0160c7a21583af6e6ff0a13b1d0a1675395b152546e551efe66b75f7
 Source2:        libdnf-d8e481b.tar.gz
-%define sha1    libdnf=dde7dd434d715c46c7e91c179caccb6eaff2bdd5
+%define sha512  libdnf=785e6b21d31d359f25c39a912c42dcb54a6dff2631b91140d84d99fd3b736cf29e9075af39027269b2983aef8fca967809ec850565bf96d6ce36b26834a106bb
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
@@ -159,6 +159,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2019.3-9
+-   Bump version as a part of libxslt upgrade
 *   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2019.3-8
 -   Version Bump to build with new version of cmake
 *   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 2019.3-7

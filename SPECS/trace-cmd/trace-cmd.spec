@@ -1,7 +1,7 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        2.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0 and LGPL-2.1
 
 Group:          Development/Tools
@@ -9,7 +9,7 @@ URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
-%define sha1 trace-cmd=0938a81d44a87b672460faf2704f63fd124a172c
+%define sha512  trace-cmd=a37390e7ad29c9e7a97e5e7792505fe96a3802d6ea103e7c0f362a7b8cc29a102d483ec1a883b632fd9e0e7297f17866ae5eac59c825f08a8068b431a8f819e1
 Patch1:         0001-trace-cmd-Add-option-to-poll-trace-buffers.patch
 BuildRequires:  audit-devel
 BuildRequires:  asciidoc
@@ -43,8 +43,8 @@ make %{?_smp_mflags} \
 	prefix=%{_prefix} etcdir=%{_sysconfdir} DESTDIR=%{buildroot}
 
 %install
-make install install_python install_doc \
-	prefix=%{_prefix} etcdir=%{_sysconfdir} DESTDIR=%{buildroot}
+make %{?_smp_mflags} install install_python install_doc \
+	                    prefix=%{_prefix} etcdir=%{_sysconfdir} DESTDIR=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
@@ -69,6 +69,8 @@ rm -rf %{buildroot}
 %{_libdir}/traceevent/plugins
 
 %changelog
+* Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9-3
+- Bump version as a part of libxslt upgrade
 * Tue Oct 05 2021 Sharan Turlapati <sturlapati@vmware.com> 2.9-2
 - Include --poll option to trace-cmd
 * Wed Jul 22 2020 Sharan Turlapati <sturlapati@vmware.com> 2.9-1
