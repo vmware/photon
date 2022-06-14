@@ -2,8 +2,8 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.8
-Release:        2%{?dist}
+Version:        3.1.9
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -11,7 +11,7 @@ URL:            https://github.com/vmware/tdnf
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=04cb9c8613360926c51bdfc5f5a0835034600f5c
+%define sha512  %{name}=1c99017f0b9fd5ea919318086aa4e0bd9bcb512e7d660f47329cd8731931d736724d790ddcea817cbe144acb7279b83405d0a0b133417a08aecdf3f53fe6b380
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -232,6 +232,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jun 14 2022 Oliver Kurth <okurth@vware.co> 3.1.9-1
+- update to 3.1.9 (Check file from command line for "*.rpm" extension)
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.8-2
 - Exclude debug symbols properly
 * Wed Feb 23 2022 Oliver Kurth <okurth@vmware.com> 3.1.8-1
