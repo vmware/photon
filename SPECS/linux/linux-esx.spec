@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.315
-Release:        2%{?dist}
+Version:        4.9.318
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4d766ad06cf3bf52f0d60145fc41ce2962c16553
+%define sha1 linux=8935e0c1a98528ff531e8b7bf504a526174c9f80
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -62,8 +62,6 @@ Patch39:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 Patch41:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2022-1966
-Patch44:        0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 # Fix for CVE-2018-10322
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
@@ -214,7 +212,6 @@ The Linux package contains the Linux kernel doc files
 %patch39 -p1
 %patch41 -p1
 %patch43 -p1
-%patch44 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
@@ -361,6 +358,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.9.318-1
+-   Update to version 4.9.318
 *   Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 4.9.315-2
 -   Fix for CVE-2022-1966
 *   Tue May 24 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.315-1
