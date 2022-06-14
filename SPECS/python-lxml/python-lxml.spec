@@ -2,15 +2,16 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
-Version:        4.2.4
-Release:        3%{?dist}
+Version:        4.2.5
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
-Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
-%define sha1    lxml=4a77c5471dfea2a32fd16475d130350af7d33f85
+Source0:        https://lxml.de/files/lxml-%{version}.tgz
+%define sha512  lxml=4cf336d3e1471e8a26492760a143881517d12eb1c2dad82f8786540471bfabd68f8c795d97b7362166418c2be3c7996816638fdbd5a594536b9981478b90fdfe
 Patch0:         lxml-make-check-fix.patch
 Patch1:         lxml-CVE-2021-43818.patch
+Patch2:         lxml-CVE-2021-28957.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -75,7 +76,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Feb 03 2022 Harinadh D <tkundu@vmware.com> 4.2.4-3
+*   Mon Jun 13 2022 Harinadh D <hdommaraju@vmware.com> 4.2.5-1
+-   fix CVE-2021-28957,CVE-2018-19787
+*   Thu Feb 03 2022 Harinadh D <hdommaraju@vmware.com> 4.2.4-3
 -   Fix CVE-2021-43818
 *   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-2
 -   Fix make check
