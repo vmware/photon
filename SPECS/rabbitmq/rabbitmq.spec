@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.9.15
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -37,9 +37,9 @@ LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} \
-             PREFIX=%{_prefix} \
-             RMQ_ROOTDIR=/usr/lib/rabbitmq/
+make %{?_smp_mflags} install DESTDIR=%{buildroot} \
+                     PREFIX=%{_prefix} \
+                     RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
@@ -107,6 +107,8 @@ rm -rf %{buildroot}
 /var/lib/*
 
 %changelog
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.9.15-2
+- Bump version as a part of libxslt upgrade
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.9.15-1
 - Automatic Version Bump
 * Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 3.8.14-2

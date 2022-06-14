@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.3.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -96,6 +96,8 @@ make check %{?_smp_mflags}
 %endif
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-2
+-   Bump version as a part of libxslt upgrade
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.3-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1

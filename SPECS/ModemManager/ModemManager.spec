@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -90,6 +90,8 @@ make %{?_smp_mflags} check
 %{_datadir}/ModemManager/fcc-unlock.available.d/*
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.18.6-2
+-   Bump version as a part of libxslt upgrade
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.6-1
 -   Automatic Version Bump
 *   Wed Apr 21 2021 Gerrit Photon <photon-checkins@vmware.com> 1.16.4-1

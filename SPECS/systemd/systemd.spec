@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        251
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -665,6 +665,8 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 251-2
+- Bump version as a part of libxslt upgrade
 * Tue May 24 2022 Susant Sahani <ssahani@vmware.com>  251-1
 - Version bump
 * Mon Apr 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 250.4-1

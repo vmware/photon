@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql12
 Version:        12.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -533,6 +533,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 12.11-2
+-   Bump version as a part of libxslt upgrade
 *   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 12.11-1
 -   Upgraded to version 12.11.
 *   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 12.10-1

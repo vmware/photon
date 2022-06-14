@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -83,6 +83,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.33-2
+-   Bump version as a part of libxslt upgrade
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.33-1
 -   Automatic Version Bump
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.32-3
