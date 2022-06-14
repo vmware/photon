@@ -1,7 +1,5 @@
 FROM k8s-base-image:4.0
 
-MAINTAINER kulkarniv@vmware.com
-
 ENV FLANNEL_ARCH=amd64
 
 COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
