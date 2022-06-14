@@ -1,7 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.34
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -72,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jun 14 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-6
+- Bump up the release to fix CVE-2022-29824
 * Tue May 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-5
 - Apply patch for CVE-2021-30560
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.1.34-4
