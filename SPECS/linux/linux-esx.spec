@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.245
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.247
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=76d94dd656c7eb71b24ebbdee97e90cceccbb07d0cba3f831bc5bd3c10289549ec0e6f6a240fcba8f0d02de296990db615d7211654bf5ea070b58270fb9e28d4
+%define sha512 linux=3bb04c32b4f6a2c1154852fd66c597ca36d85420b4155dfeff53f9ece27717df498f7bb1b13f4f981e320383d2dd6ee2d107e27c52bd94e1bed444866c8d61c1
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -962,6 +962,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
+-   Update to version 4.19.247
 *   Wed Jun 08 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.245-2
 -   .config: enable CROSS_MEMORY_ATTACH
 -   Add elfutils-libelf-devel required to build objtool
