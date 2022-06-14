@@ -1,7 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    %{name}=5b42a1166a1688207028e4a5e72090828dd2a61e
+
+Patch0:         libxslt-CVE-2021-30560.patch
 
 Requires:       libxml2-devel
 Requires:       libgcrypt
@@ -72,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jun 14 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-2
+- Apply patch for CVE-2021-30560
 * Mon May 31 2021 Sujay G <gsujay@vmware.com> 1.1.34-1
 - Bump version to 1.1.34 to fix build issue with libxml2 upgrade.
 - Removed not applicable patches from the version upgrade.
