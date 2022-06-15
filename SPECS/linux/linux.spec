@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -670,6 +670,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 14 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.78-7
+- Enable CONFIG_LIVEPATCH, which requires enabling ftrace, and related.
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-6
 - Enable CONFIG_EXT2_FS_XATTR & related parameters
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-5

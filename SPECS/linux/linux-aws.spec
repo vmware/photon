@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.78
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -346,6 +346,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 14 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.78-6
+- Enabled CONFIG_LIVEPATCH
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-5
 - Enable CONFIG_EXT2_FS_XATTR & related parameters
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4

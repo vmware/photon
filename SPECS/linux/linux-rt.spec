@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.78
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -742,6 +742,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Tue Jun 14 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.78-6
+- Enable CONFIG_LIVEPATCH
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-5
 - Enable CONFIG_EXT2_FS_XATTR & related parameters
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
