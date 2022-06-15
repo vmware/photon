@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1260,6 +1260,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2
+- Enable config_livepatch.
 * Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
 - Update to version 4.19.247
 * Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1

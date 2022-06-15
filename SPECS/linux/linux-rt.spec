@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.247
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1214,6 +1214,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2
+-   Enable config_livepatch
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
 -   Update to version 4.19.247
 *   Fri Jun 10 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.245-3
