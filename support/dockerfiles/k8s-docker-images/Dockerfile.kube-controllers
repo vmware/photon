@@ -1,7 +1,5 @@
 FROM k8s-base-image:3.0
 
-MAINTAINER ashwinh@vmware.com
-
 # Minimum Docker API version required for libnetwork.
 ENV DOCKER_API_VERSION 1.21
 

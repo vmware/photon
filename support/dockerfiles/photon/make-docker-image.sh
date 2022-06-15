@@ -75,7 +75,7 @@ rm -rf usr/src/ home/* var/log/* var/cache/tdnf/*
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
-tar cpzf ../$ROOTFS_TAR_FILENAME .
+tar -I 'gzip -9' -cpf ../$ROOTFS_TAR_FILENAME .
 popd
 
 max_size=$(( 16 * 1024 * 1024 ))
