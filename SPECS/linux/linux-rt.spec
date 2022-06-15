@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -780,6 +780,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.118-2
+- Enable config_livepatch
 * Mon Jun 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-1
 - Update to version 5.10.118
 * Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
