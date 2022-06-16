@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       24%{?dist}
+Release:       25%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -26,6 +26,10 @@ Requires:      krb5 >= 1.14
 Requires:      likewise-open >= 6.2.11.4
 Requires:      openjre8
 Requires:      openssl >= 1.0.2
+Requires:      (grep or toybox)
+Requires:      (procps-ng or toybox)
+Requires:      (findutils or toybox)
+Requires:      (sed or toybox)
 Requires:      lightwave-client = %{version}-%{release}
 Requires:      lightwave-server = %{version}-%{release}
 
@@ -1174,14 +1178,16 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
-*   Wed Jun 01 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-24
--   Bump up version to compile with new go
-*   Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-23
--   Bump version as a part of apache-maven upgrade
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-22
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-21
--   Bump up version to compile with new go
+* Thu Jun 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-25
+- Add few essential tools to Requires
+* Wed Jun 01 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-24
+- Bump up version to compile with new go
+* Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-23
+- Bump version as a part of apache-maven upgrade
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-22
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-21
+- Bump up version to compile with new go
 * Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-20
 - Bump up version to compile with new go
 * Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-19
