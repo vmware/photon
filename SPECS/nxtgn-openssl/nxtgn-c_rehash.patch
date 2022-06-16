@@ -1,38 +1,39 @@
-diff -rupN openssl-1.1.1b_old/tools/c_rehash.in openssl-1.1.1b_new/tools/c_rehash.in
---- openssl-1.1.1b_old/tools/c_rehash.in	2019-02-26 14:15:30.000000000 +0000
-+++ openssl-1.1.1b_new/tools/c_rehash.in	2019-06-24 09:43:38.557446910 +0000
-@@ -115,7 +115,7 @@ sub hash_dir {
- 		# Delete any existing symbolic links
- 		foreach (grep {/^[\da-f]+\.r{0,1}\d+$/} @flist) {
- 			if (-l $_) {
--				print "unlink $_" if $verbose;
-+				print "unlink $_";
- 				unlink $_ || warn "Can't unlink $_, $!\n";
- 			}
- 		}
-@@ -179,10 +179,10 @@ sub link_hash_cert {
- 		}
- 		$hash .= ".$suffix";
- 		if ($symlink_exists) {
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname -> $hash\n";
- 			symlink $fname, $hash || warn "Can't symlink, $!";
- 		} else {
--			print "copy $fname -> $hash\n" if $verbose;
-+			print "copy $fname -> $hash\n";
-                         if (open($in, "<", $fname)) {
-                             if (open($out,">", $hash)) {
-                                 print $out $_ while (<$in>);
-@@ -220,10 +220,10 @@ sub link_hash_crl {
- 		}
- 		$hash .= ".r$suffix";
- 		if ($symlink_exists) {
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname -> $hash\n";
- 			symlink $fname, $hash || warn "Can't symlink, $!";
- 		} else {
--			print "cp $fname -> $hash\n" if $verbose;
-+			print "cp $fname -> $hash\n";
- 			system ("cp", $fname, $hash);
-                         warn "Can't copy, $!" if ($? >> 8) != 0;
- 		}
+From cc79480a79af60d309d134080b847b898b503f57 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Fri, 17 Jun 2022 17:25:18 +0530
+Subject: [PATCH] format c_rehash changes to resolve merge
+conflicts with CVE-2022-2068. Two different functions in the
+CVE were consolidated into one function link_hash()
+
+---
+ tools/c_rehash.in | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tools/c_rehash.in b/tools/c_rehash.in
+index 9d2a6f6..adfafe3 100644
+--- a/tools/c_rehash.in
++++ b/tools/c_rehash.in
+@@ -138,7 +138,7 @@ sub hash_dir {
+         # Delete any existing symbolic links
+         foreach (grep {/^[\da-f]+\.r{0,1}\d+$/} @flist) {
+             if (-l $_) {
+-                print "unlink $_\n" if $verbose;
++                print "unlink $_\n";
+                 unlink $_ || warn "Can't unlink $_, $!\n";
+             }
+         }
+@@ -240,10 +240,10 @@ sub link_hash {
+     }
+     $hash .= ".$crlmark$suffix";
+     if ($symlink_exists) {
+-        print "link $fname -> $hash\n" if $verbose;
++        print "link $fname -> $hash\n";
+         symlink $fname, $hash || warn "Can't symlink, $!";
+     } else {
+-        print "copy $fname -> $hash\n" if $verbose;
++        print "copy $fname -> $hash\n";
+         copy_file($fname, $hash);
+     }
+     $hashlist{$hash} = $fprint;
+--
+2.17.1
