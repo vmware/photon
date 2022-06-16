@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.82.0
-Release:        4%{?dist}
+Version:        7.83.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,10 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d4c4a785876e0d1ba1c1adbe65528d56a8b81fc03ff724e87819cfe51aca60f8a7bf2ac9384f30c3a6bbd28669b2bd3e9a6794737243c836c4902d085a72c474
-Patch0:         curl-CVE-2022-22576.patch
-Patch1:         curl-CVE-2022-27774.patch
-Patch2:         curl-fix-cn-check-oom.patch
+%define sha512  %{name}=0b909b7ed55f9a9789584fd9d2033d5838dcf29e33adf6657258e97ebe7c91b26282007687a729c8385594fd8220bd718fd008154926b87b8da254d586fab3c7
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -97,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Thu Jun 16 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-1
+- Upgrade to 7.83.1 to fix multiple CVEs
 * Wed May 18 2022 Dweep Advani <dadvani@vmware.com> 7.82.0-4
 - Fix of curl issue 8559 causing OOM error in CN check
 * Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 7.82.0-3
