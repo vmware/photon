@@ -1,7 +1,7 @@
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
 Version:        2.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD/GPL
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
@@ -14,6 +14,7 @@ BuildRequires:  libxml2
 BuildRequires:  expat-devel
 BuildRequires:  gperf
 BuildRequires:  python3
+Requires:       freetype2
 Provides:       pkgconfig(fontconfig)
 
 %description
@@ -38,7 +39,7 @@ It contains the libraries and header files to create applications
 export PYTHON=python3
 %configure \
         --disable-docs \
-	--docdir=/usr/share/doc/%{name}-%{version} &&
+        --docdir=/usr/share/doc/%{name}-%{version} &&
 make %{?_smp_mflags}
 
 %install
@@ -78,6 +79,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.14.0-2
+-   Fix fontconfig -> freetype2 dependency
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
 -   Automatic Version Bump
 *   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.93-2
