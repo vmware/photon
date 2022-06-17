@@ -63,7 +63,7 @@ Example:
 
 ### Platform & kernel version details ###
 
-To fetch the details about the platform and kernel versions on which the system is installed.
+To fetch the details about the platform and kernel versions on which the system is installed:
 
     curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
 
@@ -470,3 +470,180 @@ Example:
 	   "errors":""
 	}
 
+
+
+
+
+### sysctl Configuration Details Using `pmctl` Tool ###
+
+You can use the `pmctl` tool to fetch the `sysctl` configuration details. The following section lists the commands related to various use cases of `sysctl` configuration.
+
+
+####  sysctl Configuration Details 
+
+To fetch all the `sysctl` configuration details in the system, use the following command in the `pmctl` tool:
+
+`pmctl status sysctl`
+
+
+#### Specific Variable Configuration in sysctl
+
+To fetch a specific variable configuration in the `sysctl` configuration, use the following command in the `pmctl` tool:
+
+`pmctl status sysctl k <InputKey>`
+
+or
+
+`pmctl status sysctl key <InputKey>`
+
+Example:
+
+	>pmctl status sysctl k fs.file-max
+	fs.file-max: 9223372036854775807
+
+
+#### Variable Configuration in sysctl
+
+To fetch all the variable configuration in the `sysctl` configuration based on the input pattern, use the following command in the `pmctl` tool:
+
+`pmctl status sysctl p <InputPatern>`
+
+or
+
+`pmctl status sysctl pattern <InputPatern>`
+
+Example:
+
+	pmctl status sysctl p net.ipv6.route.gc{
+	   "net.ipv6.route.gc_elasticity":"9",
+	   "net.ipv6.route.gc_interval":"30",
+	   "net.ipv6.route.gc_min_interval":"0",
+	   "net.ipv6.route.gc_min_interval_ms":"500",
+	   "net.ipv6.route.gc_thresh":"1024",
+	   "net.ipv6.route.gc_timeout":"60"
+	}
+
+
+
+#### Add or Update Variable Configuration in sysctl
+
+To add or Update a variable configuration in the `sysctl` configuration,  use the following command in the `pmctl` tool.
+
+`pmctl sysctl u -k <InputKey> -v <InputValue> -f <InputFile>`
+
+or 
+
+`pmctl sysctl update key <InputKey> value <InputValue> filename <InputFile>`
+
+
+Examples:
+
+`pmctl sysctl u -k fs.file-max -v 65566 -f 99-sysctl.conf`
+
+
+`pmctl sysctl u -k fs.file-max -v 65566`
+
+
+#### Remove Variable Configuration in sysctl
+
+To remove a variable configuration in the `sysctl` configuration,  use the following command in the `pmctl` tool:
+
+`pmctl sysctl r -k <InputKey> -f <InputFile>`
+
+or
+
+`pmctl sysctl remove key <InputKey> filename <InputFile>`
+
+Examples:
+
+`pmctl sysctl r -k fs.file-max -f 99-sysctl.conf`
+
+`pmctl sysctl r -k fs.file-max`
+
+
+
+#### Load sysctl Configuration Files
+
+To Load `sysctl` configuration files, use the following command in the `pmctl` tool:
+
+`pmctl sysctl l -f <InputfileList>`
+
+or
+
+`pmctl sysctl load files <InputFileList>`
+
+Examples:
+
+`pmctl sysctl l -f 99-sysctl.conf,70-sysctl.conf`
+
+`pmctl sysctl l -f`
+
+
+
+
+### sysctl Configuration Details Using Curl Command ###
+
+
+#### sysctl Configuration 
+
+To fetch the `sysctl` configuration, execute a GET request in the following JSON format:
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/sysctl/statusall
+
+Example: 
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/sysctl/statusall
+
+#### Specific Variable Configuration in sysctl
+
+To fetch a specific variable configuration from `sysctl` configuration, execute a GET request in the following format:
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{"key":"<keyName>"}' http://localhost/api/v1/system/sysctl/status
+
+Example:
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{"key":"fs.file-max"}' http://localhost/api/v1/system/sysctl/status
+
+#### Variable Configuration in sysctl
+
+To fetch all the variable configuration in `sysctl`, execute a GET request in the following format:
+
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{"pattern":"<Pattern>"}' http://localhost/api/v1/system/sysctl/statuspattern
+
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{"pattern":"fs.file"}' http://localhost/api/v1/system/sysctl/statuspattern
+
+
+#### Add or Update Variable Configuration in sysctl Confiiguration
+
+To add or update a variable configuration in the `sysctl` configuration, execute a POST request in the following format: 
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"apply":true,"key":"<keyName>","value":"<Value>","filename":"<fileName>"}' http://localhost/api/v1/system/sysctl/update
+
+Example: 
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"apply":true,"key":"fs.file-max","value":"65409","filename":"99-sysctl.conf"}' http://localhost/api/v1/system/sysctl/update
+
+
+
+#### Remove a Variable Configuration in sysctl Configuration
+
+To remove a variable configuration from the `sysctl` configuration, execute a DELETE request in the following format:
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{"apply":true,"key":"<keyName>","filename":"<fileName>"}' http://localhost/api/v1/system/sysctl/remove
+
+Example:
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{"apply":true,"key":"fs.file-max","filename":"99-sysctl.conf"}' http://localhost/api/v1/system/sysctl/remove
+
+
+#### Load sysctl Configuration Files
+
+To load `sysctl` configuration files, execute a POST request in the following format:
+
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"apply":true,"files":["<fileName>","<fileName>"]}' http://localhost/api/v1/system/sysctl/load
+
+Example:
+
+	>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"apply":true,"files":["99-sysctl.conf","75-sysctl.conf"]}' http://localhost/api/v1/system/sysctl/load
