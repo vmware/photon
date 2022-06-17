@@ -1,32 +1,30 @@
---- openssl-1.0.2d-orig/tools/c_rehash.in	2015-07-09 04:57:15.000000000 -0700
-+++ openssl-1.0.2d/tools/c_rehash.in	2015-12-02 16:10:33.404878794 -0800
-@@ -165,14 +165,14 @@
- 		$hash .= ".$suffix";
- 		if ($symlink_exists) {
- 			symlink $fname, $hash;
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
- 		} else {
- 			open IN,"<$fname" or die "can't open $fname for read";
- 			open OUT,">$hash" or die "can't open $hash for write";
- 			print OUT <IN>;	# does the job for small text files
- 			close OUT;
- 			close IN;
--			print "copy $fname -> $hash\n" if $verbose;
-+			print "copy $fname => $hash\n";
- 		}
- 		$hashlist{$hash} = $fprint;
- }
-@@ -200,10 +200,10 @@
- 		$hash .= ".r$suffix";
- 		if ($symlink_exists) {
- 			symlink $fname, $hash;
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
- 		} else {
- 			system ("cp", $fname, $hash);
--			print "cp $fname -> $hash\n" if $verbose;
-+			print "cp $fname => $hash\n";
- 		}
- 		$hashlist{$hash} = $fprint;
- }
+From 0335829f4c40297b13917680e446d5eda1864864 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Fri, 17 Jun 2022 17:04:27 +0530
+Subject: [PATCH] format c_rehash changes to resolve merge
+conflicts with CVE-2022-2068. Two different functions in the
+CVE were consolidated into one function link_hash()
+
+---
+ tools/c_rehash.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/c_rehash.in b/tools/c_rehash.in
+index ca3a2d9..47b14ce 100644
+--- a/tools/c_rehash.in
++++ b/tools/c_rehash.in
+@@ -225,10 +225,10 @@ sub link_hash {
+     }
+     $hash .= ".$crlmark$suffix";
+     if ($symlink_exists) {
+-        print "link $fname -> $hash\n" if $verbose;
++        print "link $fname -> $hash\n";
+         symlink $fname, $hash || warn "Can't symlink, $!";
+     } else {
+-        print "copy $fname -> $hash\n" if $verbose;
++        print "copy $fname -> $hash\n";
+         copy_file($fname, $hash);
+     }
+     $hashlist{$hash} = $fprint;
+--
+2.17.1
