@@ -362,7 +362,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 }
 &lt;/code>&lt;/pre>
 &lt;h3 id="platform--kernel-version-details">Platform &amp;amp; kernel version details&lt;/h3>
-&lt;p>To fetch the details about the platform and kernel versions on which the system is installed.&lt;/p>
+&lt;p>To fetch the details about the platform and kernel versions on which the system is installed:&lt;/p>
 &lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
@@ -710,7 +710,100 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 },
 &amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
 }
-&lt;/code>&lt;/pre></description></item><item><title>Docs: Network Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</guid><description>
+&lt;/code>&lt;/pre>
+&lt;h3 id="sysctl-configuration-details-using-pmctl-tool">sysctl Configuration Details Using &lt;code>pmctl&lt;/code> Tool&lt;/h3>
+&lt;p>You can use the &lt;code>pmctl&lt;/code> tool to fetch the &lt;code>sysctl&lt;/code> configuration details. The following section lists the commands related to various use cases of &lt;code>sysctl&lt;/code> configuration.&lt;/p>
+&lt;h4 id="sysctl-configuration-details">sysctl Configuration Details&lt;/h4>
+&lt;p>To fetch all the &lt;code>sysctl&lt;/code> configuration details in the system, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;p>&lt;code>pmctl status sysctl&lt;/code>&lt;/p>
+&lt;h4 id="specific-variable-configuration-in-sysctl">Specific Variable Configuration in sysctl&lt;/h4>
+&lt;p>To fetch a specific variable configuration in the &lt;code>sysctl&lt;/code> configuration, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;p>&lt;code>pmctl status sysctl k &amp;lt;InputKey&amp;gt;&lt;/code>&lt;/p>
+&lt;p>or&lt;/p>
+&lt;p>&lt;code>pmctl status sysctl key &amp;lt;InputKey&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status sysctl k fs.file-max
+fs.file-max: 9223372036854775807
+&lt;/code>&lt;/pre>
+&lt;h4 id="variable-configuration-in-sysctl">Variable Configuration in sysctl&lt;/h4>
+&lt;p>To fetch all the variable configuration in the &lt;code>sysctl&lt;/code> configuration based on the input pattern, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;p>&lt;code>pmctl status sysctl p &amp;lt;InputPatern&amp;gt;&lt;/code>&lt;/p>
+&lt;p>or&lt;/p>
+&lt;p>&lt;code>pmctl status sysctl pattern &amp;lt;InputPatern&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl status sysctl p net.ipv6.route.gc{
+&amp;quot;net.ipv6.route.gc_elasticity&amp;quot;:&amp;quot;9&amp;quot;,
+&amp;quot;net.ipv6.route.gc_interval&amp;quot;:&amp;quot;30&amp;quot;,
+&amp;quot;net.ipv6.route.gc_min_interval&amp;quot;:&amp;quot;0&amp;quot;,
+&amp;quot;net.ipv6.route.gc_min_interval_ms&amp;quot;:&amp;quot;500&amp;quot;,
+&amp;quot;net.ipv6.route.gc_thresh&amp;quot;:&amp;quot;1024&amp;quot;,
+&amp;quot;net.ipv6.route.gc_timeout&amp;quot;:&amp;quot;60&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h4 id="add-or-update-variable-configuration-in-sysctl">Add or Update Variable Configuration in sysctl&lt;/h4>
+&lt;p>To add or Update a variable configuration in the &lt;code>sysctl&lt;/code> configuration, use the following command in the &lt;code>pmctl&lt;/code> tool.&lt;/p>
+&lt;p>&lt;code>pmctl sysctl u -k &amp;lt;InputKey&amp;gt; -v &amp;lt;InputValue&amp;gt; -f &amp;lt;InputFile&amp;gt;&lt;/code>&lt;/p>
+&lt;p>or&lt;/p>
+&lt;p>&lt;code>pmctl sysctl update key &amp;lt;InputKey&amp;gt; value &amp;lt;InputValue&amp;gt; filename &amp;lt;InputFile&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Examples:&lt;/p>
+&lt;p>&lt;code>pmctl sysctl u -k fs.file-max -v 65566 -f 99-sysctl.conf&lt;/code>&lt;/p>
+&lt;p>&lt;code>pmctl sysctl u -k fs.file-max -v 65566&lt;/code>&lt;/p>
+&lt;h4 id="remove-variable-configuration-in-sysctl">Remove Variable Configuration in sysctl&lt;/h4>
+&lt;p>To remove a variable configuration in the &lt;code>sysctl&lt;/code> configuration, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;p>&lt;code>pmctl sysctl r -k &amp;lt;InputKey&amp;gt; -f &amp;lt;InputFile&amp;gt;&lt;/code>&lt;/p>
+&lt;p>or&lt;/p>
+&lt;p>&lt;code>pmctl sysctl remove key &amp;lt;InputKey&amp;gt; filename &amp;lt;InputFile&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Examples:&lt;/p>
+&lt;p>&lt;code>pmctl sysctl r -k fs.file-max -f 99-sysctl.conf&lt;/code>&lt;/p>
+&lt;p>&lt;code>pmctl sysctl r -k fs.file-max&lt;/code>&lt;/p>
+&lt;h4 id="load-sysctl-configuration-files">Load sysctl Configuration Files&lt;/h4>
+&lt;p>To Load &lt;code>sysctl&lt;/code> configuration files, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;p>&lt;code>pmctl sysctl l -f &amp;lt;InputfileList&amp;gt;&lt;/code>&lt;/p>
+&lt;p>or&lt;/p>
+&lt;p>&lt;code>pmctl sysctl load files &amp;lt;InputFileList&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Examples:&lt;/p>
+&lt;p>&lt;code>pmctl sysctl l -f 99-sysctl.conf,70-sysctl.conf&lt;/code>&lt;/p>
+&lt;p>&lt;code>pmctl sysctl l -f&lt;/code>&lt;/p>
+&lt;h3 id="sysctl-configuration-details-using-curl-command">sysctl Configuration Details Using Curl Command&lt;/h3>
+&lt;h4 id="sysctl-configuration">sysctl Configuration&lt;/h4>
+&lt;p>To fetch the &lt;code>sysctl&lt;/code> configuration, execute a GET request in the following JSON format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/sysctl/statusall
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/sysctl/statusall
+&lt;/code>&lt;/pre>
+&lt;h4 id="specific-variable-configuration-in-sysctl-1">Specific Variable Configuration in sysctl&lt;/h4>
+&lt;p>To fetch a specific variable configuration from &lt;code>sysctl&lt;/code> configuration, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{&amp;quot;key&amp;quot;:&amp;quot;&amp;lt;keyName&amp;gt;&amp;quot;}' http://localhost/api/v1/system/sysctl/status
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{&amp;quot;key&amp;quot;:&amp;quot;fs.file-max&amp;quot;}' http://localhost/api/v1/system/sysctl/status
+&lt;/code>&lt;/pre>
+&lt;h4 id="variable-configuration-in-sysctl-1">Variable Configuration in sysctl&lt;/h4>
+&lt;p>To fetch all the variable configuration in &lt;code>sysctl&lt;/code>, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{&amp;quot;pattern&amp;quot;:&amp;quot;&amp;lt;Pattern&amp;gt;&amp;quot;}' http://localhost/api/v1/system/sysctl/statuspattern
+&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET --data '{&amp;quot;pattern&amp;quot;:&amp;quot;fs.file&amp;quot;}' http://localhost/api/v1/system/sysctl/statuspattern
+&lt;/code>&lt;/pre>
+&lt;h4 id="add-or-update-variable-configuration-in-sysctl-confiiguration">Add or Update Variable Configuration in sysctl Confiiguration&lt;/h4>
+&lt;p>To add or update a variable configuration in the &lt;code>sysctl&lt;/code> configuration, execute a POST request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;key&amp;quot;:&amp;quot;&amp;lt;keyName&amp;gt;&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;&amp;lt;Value&amp;gt;&amp;quot;,&amp;quot;filename&amp;quot;:&amp;quot;&amp;lt;fileName&amp;gt;&amp;quot;}' http://localhost/api/v1/system/sysctl/update
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;key&amp;quot;:&amp;quot;fs.file-max&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;65409&amp;quot;,&amp;quot;filename&amp;quot;:&amp;quot;99-sysctl.conf&amp;quot;}' http://localhost/api/v1/system/sysctl/update
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-a-variable-configuration-in-sysctl-configuration">Remove a Variable Configuration in sysctl Configuration&lt;/h4>
+&lt;p>To remove a variable configuration from the &lt;code>sysctl&lt;/code> configuration, execute a DELETE request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;key&amp;quot;:&amp;quot;&amp;lt;keyName&amp;gt;&amp;quot;,&amp;quot;filename&amp;quot;:&amp;quot;&amp;lt;fileName&amp;gt;&amp;quot;}' http://localhost/api/v1/system/sysctl/remove
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;key&amp;quot;:&amp;quot;fs.file-max&amp;quot;,&amp;quot;filename&amp;quot;:&amp;quot;99-sysctl.conf&amp;quot;}' http://localhost/api/v1/system/sysctl/remove
+&lt;/code>&lt;/pre>
+&lt;h4 id="load-sysctl-configuration-files-1">Load sysctl Configuration Files&lt;/h4>
+&lt;p>To load &lt;code>sysctl&lt;/code> configuration files, execute a POST request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;files&amp;quot;:[&amp;quot;&amp;lt;fileName&amp;gt;&amp;quot;,&amp;quot;&amp;lt;fileName&amp;gt;&amp;quot;]}' http://localhost/api/v1/system/sysctl/load
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;apply&amp;quot;:true,&amp;quot;files&amp;quot;:[&amp;quot;99-sysctl.conf&amp;quot;,&amp;quot;75-sysctl.conf&amp;quot;]}' http://localhost/api/v1/system/sysctl/load&lt;/code>&lt;/pre></description></item><item><title>Docs: Network Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</guid><description>
 &lt;h2 id="get-method">GET Method&lt;/h2>
 &lt;h3 id="network-details">Network Details&lt;/h3>
 &lt;p>To fetch complete network details, execute a GET request in the following format:&lt;/p>
@@ -1504,4 +1597,133 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478&lt;/code>&lt;/pre></description></item></channel></rss>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
+&lt;/code>&lt;/pre>
+&lt;h2 id="login-status">Login Status&lt;/h2>
+&lt;p>You can use the &lt;code>pmctl&lt;/code> tool to get login details of users. The following section lists the commands you can use to get the user details.&lt;/p>
+&lt;h4 id="list-users">List Users&lt;/h4>
+&lt;p>To list all the logged in users, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status login user
+&lt;/code>&lt;/pre>
+&lt;h4 id="list-sessions">List Sessions&lt;/h4>
+&lt;p>To list all the logged in sessions, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status login session
+&lt;/code>&lt;/pre>
+&lt;h4 id="get-user-based-on-uid">Get User based on UID&lt;/h4>
+&lt;p>To get the status of users based on user ID, use &lt;code>pmctl&lt;/code> command in the following format:&lt;/p>
+&lt;pre>&lt;code>pmctl status login user &amp;lt;UID&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status login user 2
+&lt;/code>&lt;/pre>
+&lt;h4 id="get-session-based-on-id">Get Session based on ID&lt;/h4>
+&lt;p>To get the status of logged in sessions based on the users ID, use the &lt;code>pmctl&lt;/code> command in the following format:&lt;/p>
+&lt;pre>&lt;code>pmctl status login session &amp;lt;ID&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status login session 1000
+&lt;/code>&lt;/pre>
+&lt;h2 id="group-details-using-pmctl-tool">Group Details Using &lt;code>pmctl&lt;/code> tool&lt;/h2>
+&lt;p>You can get the group details using commands in &lt;code>pmctl&lt;/code> tools. The following section lists the commands you can use in the &lt;code>pmctl&lt;/code> tool to get various group details.&lt;/p>
+&lt;h4 id="get-all-group-details">Get all Group Details&lt;/h4>
+&lt;p>To fetch all the group details, use the following command in the the &lt;code>pmctl&lt;/code> tool.&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status group
+Gid: 0
+Name: root
+Gid: 1
+Name: daemon
+Gid: 2
+Name: bin
+Gid: 3
+Name: sys
+Gid: 4
+Name: adm
+.
+.
+.
+Gid: 1001
+Name: photon-mgmt
+&lt;/code>&lt;/pre>
+&lt;h4 id="get-specific-group-details">Get specific Group Details&lt;/h4>
+&lt;p>To fetch specific group details, use the following commands in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>pmctl status group &amp;lt;GroupName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>or&lt;/p>
+&lt;pre>&lt;code>pmctl status group &amp;lt;GroupName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status group photon-mgmt
+Gid: 1001
+Name: photon-mgmt
+&lt;/code>&lt;/pre>
+&lt;h4 id="add-a-new-group">Add a new Group&lt;/h4>
+&lt;p>To add a new group, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>pmctl group add &amp;lt;GroupName&amp;gt; &amp;lt;Gid&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>or&lt;/p>
+&lt;pre>&lt;code>pmctl group add &amp;lt;GroupName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-a-group-1">Remove a Group&lt;/h4>
+&lt;p>To remove a group, us the followong command in the &lt;code>omctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>pmctl group remove &amp;lt;GroupName&amp;gt; &amp;lt;Gid&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>or&lt;/p>
+&lt;pre>&lt;code>pmctl group remove &amp;lt;GroupName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="group-details-using-curl-command">Group Details Using cURL command&lt;/h2>
+&lt;p>The following section list the cURL commands that you can use to fetch the groups details.&lt;/p>
+&lt;h4 id="get-all-group-information">Get all Group information&lt;/h4>
+&lt;p>To fetch the group details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/group/view
+&lt;/code>&lt;/pre>
+&lt;h4 id="get-particuller-group-information">Get particuller Group information.&lt;/h4>
+&lt;p>To fetch a specific group details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/group/view/&amp;lt;GroupName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="user-details-using-pmctl-tool">User Details Using &lt;code>pmctl&lt;/code> Tool&lt;/h2>
+&lt;p>You can use the &lt;code>pmctl&lt;/code> tool to get the user details. The following section lists the commands to get the user details.&lt;/p>
+&lt;h4 id="get-all-user-details">Get all User Details&lt;/h4>
+&lt;p>To get all the user details, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status user
+User Name: root
+Uid: 0
+Gid: 0
+GECOS: root
+Home Directory: /root
+User Name: daemon
+Uid: 1
+Gid: 1
+GECOS: daemon
+Home Directory: /usr/sbin
+User Name: bin
+Uid: 2
+Gid: 2
+GECOS: bin
+Home Directory: /bin
+User Name: sys
+Uid: 3
+Gid: 3
+GECOS: sys
+Home Directory: /dev
+User Name: photon-mgmt
+Uid: 1001
+Gid: 1001
+Home Directory: /home/photon-mgmt
+&lt;/code>&lt;/pre>
+&lt;h4 id="add-a-new-user">Add a New User&lt;/h4>
+&lt;p>To add a new user, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>pmctl user add &amp;lt;UserName&amp;gt; home-dir &amp;lt;HomeDir&amp;gt; groups &amp;lt;groupsList&amp;gt; uid &amp;lt;Uid&amp;gt; gid &amp;lt;Gid&amp;gt; shell &amp;lt;Shell&amp;gt; password &amp;lt;xxxxxxx&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>or&lt;/p>
+&lt;pre>&lt;code>pmctl user a &amp;lt;UserName&amp;gt; -d &amp;lt;HomeDir&amp;gt; -grp &amp;lt;groupsList&amp;gt; -u &amp;lt;Uid&amp;gt; -g &amp;lt;Gid&amp;gt; -s &amp;lt;Shell&amp;gt; -p &amp;lt;xxxxxxx&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-a-user-1">Remove a User&lt;/h4>
+&lt;p>To remove a user, use the following command in the &lt;code>pmctl&lt;/code> tool:&lt;/p>
+&lt;pre>&lt;code>pmctl user remove &amp;lt;UserName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>or&lt;/p>
+&lt;pre>&lt;code>pmctl user r &amp;lt;UserName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="get-user-details">GET User Details&lt;/h2>
+&lt;p>To fetch user details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view&lt;/code>&lt;/pre></description></item></channel></rss>
