@@ -169,7 +169,7 @@ Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch510: 0003-FIPS-broken-kattest.patch
 %endif
 
-%endif #%%if 0%{?fips}
+%endif
 
 # SEV on VMware:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
