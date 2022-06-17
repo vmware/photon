@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.245
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -544,6 +544,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
+BuildRequires:  elfutils-libelf-devel
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -1213,6 +1214,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Jun 10 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.245-3
+-   .config: enable CROSS_MEMORY_ATTACH
+-   Add elfutils-libelf-devel required to build objtool
 *   Tue May 31 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.245-2
 -   Patch for timer padding on guest
 *   Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1

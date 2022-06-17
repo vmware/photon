@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.245
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -376,6 +376,10 @@ Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch515:        support-selective-freeing-of-initramfs-images.patch
 Patch516:        initramfs-large-files-support-for-newca-format.patch
 
+%if 0%{?vmxnet3_sw_timestamp}
+Patch520:        0009-esx-vmxnet3-software-timestamping.patch
+%endif
+
 # TARFS
 Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
@@ -416,6 +420,7 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
+BuildRequires: elfutils-libelf-devel
 Requires:      filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -424,6 +429,10 @@ Requires(postun): (coreutils or toybox)
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
+%if 0%{?vmxnet3_sw_timestamp}
+Custom build:
+ - vmxnet3 with sotfware timestamping enabled
+%endif
 
 %package devel
 Summary:       Kernel Dev
@@ -741,6 +750,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch514 -p1
 %patch515 -p1
 %patch516 -p1
+%if 0%{?vmxnet3_sw_timestamp}
+%patch520 -p1
+%endif
 %patch521 -p1
 %patch522 -p1
 %patch525 -p1
@@ -950,6 +962,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Jun 08 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.245-2
+-   .config: enable CROSS_MEMORY_ATTACH
+-   Add elfutils-libelf-devel required to build objtool
+-   vmxnet3: enable software timestamping
 *   Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1
 -   Update to version 4.19.245
 *   Mon May 16 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.241-3
