@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -104,6 +104,10 @@ Patch64: initramfs-multiple-image-extraction-support.patch
 Patch65: initramfs-support-selective-freeing-of-initramfs-images.patch
 Patch66: initramfs-large-files-support-for-newca-format.patch
 Patch67: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+
+%if 0%{?vmxnet3_sw_timestamp}
+Patch68: 0009-esx-vmxnet3-software-timestamping.patch
+%endif
 
 #TARFS
 Patch80:    0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
@@ -220,6 +224,7 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
+BuildRequires: elfutils-libelf-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -236,6 +241,9 @@ Requires(postun):(coreutils or toybox)
 The Linux kernel build for GOS for VMware hypervisor.
 %if 0%{?fips}
 This kernel is FIPS certified.
+%endif
+%if 0%{?vmxnet3_sw_timestamp}
+- vmxnet3 with sotfware timestamping enabled
 %endif
 
 %package devel
@@ -513,6 +521,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-8
+- .config: enable CROSS_MEMORY_ATTACH
+- Add elfutils-libelf-devel required to build objtool
+- vmxnet3: enable software timestamping
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
 - .config: disable kernel accounting for memory cgroups
 - Enable cgroup v1 stats

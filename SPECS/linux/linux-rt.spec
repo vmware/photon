@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -533,6 +533,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  python3-macros
+BuildRequires:  elfutils-libelf-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -832,6 +833,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-13
+- .config: enable CROSS_MEMORY_ATTACH
+- Add elfutils-libelf-devel required to build objtool
 * Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-12
 - Patch for timer padding on guest
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-11

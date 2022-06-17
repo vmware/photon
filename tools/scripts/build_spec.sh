@@ -12,6 +12,10 @@ DRAW_SPINNER=1
 # Process %check section
 WITH_CHECK=0
 
+# Array of rpmbuild/rpmspec macro definitions
+# Example: RPM_MACROS=( --define \"vmxnet3_sw_timestamp 1\" )
+RPM_MACROS=()
+
 test "$#" -ne 1 && echo "Usage: $0 spec-file-to-build.spec" && exit 1
 
 CONTAINER=build_spec
@@ -21,6 +25,7 @@ SPECFILE=$(basename "$SPECPATH")
 SPECDIR=$(dirname "$SPECPATH")
 mkdir -p "$SPECDIR/stage/LOGS"
 LOGFILE=$SPECDIR/stage/LOGS/$(basename "$SPECFILE" .spec).log
+RPM_MACROS+=( --define \"dist .ph$VERSION\" --define \"with_check $WITH_CHECK\" )
 
 # use &3 for user output
 exec 3>&1
@@ -69,7 +74,7 @@ function tryrun() {
 }
 
 function in_sandbox() {
-  docker exec $CONTAINER "$@"
+  eval docker exec $CONTAINER $@
 }
 
 
@@ -110,7 +115,7 @@ function prepare_buildenv() {
   run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/stage/SOURCES" \;
   run "Copy sources from $SPECDIR" docker cp "$SPECDIR/stage/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
 
-  for url in $(in_sandbox rpmspec -D "with_check $WITH_CHECK" -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^ ]\+$');
+  for url in $(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^[:space:]]\+$');
   do
     file=$(basename "$url")
     test -f "$SPECDIR/stage/SOURCES/$file" && continue
@@ -120,7 +125,7 @@ function prepare_buildenv() {
   done
 
   local br
-  br=$(in_sandbox rpmspec -D "with_check $WITH_CHECK" -P /usr/src/photon/SOURCES/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
+  br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ "$br" != "" ]; then
     run "Install build requirements" in_sandbox tdnf install -y $br
   fi
@@ -129,7 +134,7 @@ function prepare_buildenv() {
 function build() {
   echo -ne "\tRun rpmbuild " >&3
   [ $WITH_CHECK -eq 0 ] && WITH_CHECK_PARAM="--nocheck"
-  in_sandbox rpmbuild $WITH_CHECK_PARAM -bb --define "dist .ph$VERSION" --define "with_check $WITH_CHECK" /usr/src/photon/SOURCES/"$SPECFILE" &
+  in_sandbox rpmbuild $WITH_CHECK_PARAM -bb ${RPM_MACROS[@]} /usr/src/photon/SOURCES/"$SPECFILE" &
   wait_for_result 1
 }
 
