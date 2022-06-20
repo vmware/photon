@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.78
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,11 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=bb5742af7d1d58f9080cd07d989ad01eda64a738
+%define sha512  apache-tomcat=b58fdaa57420fcf7759420fba26bfd6edaa5174f5d3a81fdf8783f19d5385e2502d2ad4bfa0e4a77c6a084bf6d97a6d3cd274ab0ab3f2311d23079e273c41b32
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=1445b56d5e4d34f37747931fc08c51a812aa5ce9
+%define sha512  base=e094562d3ddc4da45867422e64d5fe4788b961f9c10b49ebcf7ce522aa3a5a4a2b1cfdf18dce2b0f88c87af835ea9c7a4c1b0cc462b1d6ac4eb22e41eec9bc60
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         apache-tomcat-CVE-2022-29885.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -100,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Jun 20 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.78-2
+-   Fix CVE-2022-29885
 *   Mon Apr 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.78-1
 -   Update version to 8.5.78
 *   Thu Feb 10 2022 Nitesh Kumar <kunitesh@vmware.com> 8.5.72-2
