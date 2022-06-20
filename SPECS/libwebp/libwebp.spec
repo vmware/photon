@@ -1,14 +1,14 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
 Version:	1.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 libwebp=54383895bd18783c7af8517620252a712258b22c
+%define sha512  libwebp=177a4876035c300931ff3628a4ef6e2e7eb9372c126091f17ed0601c466b479e378d52cb593588df2844e1125395f50fc89a30c2908f2cc511b2e97c11a62968
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	libpng-devel
@@ -25,7 +25,7 @@ Requires:	%{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 %build
 ./autogen.sh
 
@@ -39,7 +39,7 @@ It contains the libraries and header files to create applications
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %post
@@ -61,6 +61,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* 	Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com>  1.2.0-2
+- 	Version bump up to use libtiff 4.4
 *       Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
 -       Automatic Version Bump
 *       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1

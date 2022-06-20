@@ -1,25 +1,18 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.3.0
-Release:        2%{?dist}
+Version:        4.4.0
+Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha512  libtiff-v=eaa2503dc1805283e0590b06e3e660a793fe849ae8b975b2d69369695d65a40640787c156574faaca856917be799eeb844e60f55555e1f219dd513cef66ea95d
+%define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
 Source1:        config.guess
 Source2:        config.sub
 Patch0:         CVE-2018-12900.patch
 Patch1:         autogen.patch
-Patch2:         libtiff-CVE-2022-0891.patch
-Patch3:         libtiff-CVE-2022-22844.patch
-Patch4:         libtiff-CVE-2022-0865.patch
-Patch5:         libtiff-CVE-2022-0924.patch
-Patch6:         libtiff-CVE-2022-0908.patch
-Patch7:         libtiff-CVE-2022-0909.patch
-Patch8:         libtiff-CVE-2022-0907.patch
 BuildRequires:  libjpeg-turbo-devel wget
 Requires:       libjpeg-turbo
 
@@ -74,6 +67,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com> 4.4.0-1
+-   Fix CVE-2022-1622
 *   Mon May 16 2022 Shivani Agarwal <shivania2@vmware.com> 4.3.0-2
 -   Fix CVE-2022-22844, CVE-2022-0865, CVE-2022-0924, CVE-2022-0908, CVE-2022-0909, CVE-2022-0907, CVE-2022-0891
 *   Sat Apr 24 2021 Gerrit Photon <photon-checkins@vmware.com> 4.3.0-1
