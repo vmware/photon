@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -58,6 +58,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
+Source17:       fips_canister-kallsyms
 %endif
 
 # common
@@ -157,6 +158,7 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
+Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %else
 %if 0%{?kat_build}
 Patch510: 0003-FIPS-broken-kattest.patch
@@ -276,7 +278,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M506
 
 %if 0%{?fips}
-%patch508 -p1
+%autopatch -p1 -m508 -M509
 %else
 %if 0%{?kat_build}
 %patch510 -p1
@@ -312,6 +314,7 @@ cp %{SOURCE1} .config
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    crypto/
+cp %{SOURCE17} crypto/
 # Change m to y for modules that are in the canister
 %include %{SOURCE5}
 %else
@@ -483,6 +486,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-15
+- Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
+- Add only fips_canister-kallsyms to vmlinux instead of all symbols
 * Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-14
 - Fix debug_package macro usage while adding vmlinux to debuginfo rpm
 * Tue May 31 2022 Ajay Kaher <akaher@vmware.com> 5.10.78-13
