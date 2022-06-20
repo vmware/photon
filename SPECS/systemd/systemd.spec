@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          39%{?dist}
+Release:          40%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -78,6 +78,7 @@ Requires:         libgcrypt
 Requires:         filesystem >= 1.1
 Requires:         elfutils
 Requires:         gnutls
+Requires:         libacl
 
 BuildRequires:    intltool
 BuildRequires:    gperf
@@ -97,6 +98,7 @@ BuildRequires:    gettext
 BuildRequires:    shadow
 BuildRequires:    libgcrypt-devel
 BuildRequires:    gnutls-devel
+BuildRequires:    libacl-devel
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
@@ -166,6 +168,7 @@ meson  --prefix %{_prefix}                                            \
        -Ddefault-dns-over-tls=opportunistic                           \
        -Ddns-over-tls=true                                            \
        -Dgnutls=true                                                  \
+       -Dacl=true                                                     \
        $PWD build &&
        cd build &&
        %ninja_build
@@ -328,6 +331,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Mon Jun 20 2022 Susant Sahani <ssahani@vmware.com> 239-40
+- Enable ACL
 * Thu May 05 2022 Alexey Makhalov <amakhalov@vmware.com> 239-39
 - Fix memory leak in sd-bus.
 * Wed May 4 2022 Michelle Wang <michellew@vmware.com> 239-38
