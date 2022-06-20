@@ -4,7 +4,7 @@
 
 Name:           apparmor
 Version:        2.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -13,12 +13,12 @@ Distribution:   Photon
 Group:          Productivity/Security
 
 Source0:        https://launchpad.net/apparmor/%{version}/%{version}.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
+%define sha512  %{name}=f98914713153d4c823a3ea7e96291cc4528bf7c8d3a139286ae0ecd806613e9c34b0ad81f2b258df2193cf6f3157d3252ef72d32d339427948a3fd8ba5651827
 
-Patch0:         apparmor-set-profiles-complain-mode.patch
-Patch1:         apparmor-service-start-fix.patch
-Patch2:         apparmor-fix-make-check.patch
-Patch3:         apparmor-fix-build-with-make-4.3.patch
+Patch0:         %{name}-set-profiles-complain-mode.patch
+Patch1:         %{name}-service-start-fix.patch
+Patch2:         %{name}-fix-make-check.patch
+Patch3:         %{name}-fix-build-with-make-4.3.patch
 
 BuildRequires:  python3
 BuildRequires:  perl
@@ -358,6 +358,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.13-10
+- Bump version as a part of httpd v2.4.54 upgrade
 * Wed Feb 16 2022 Tapas Kundu <tkundu@vmware.com> 2.13-9
 - Fix build with make 4.3
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-8
