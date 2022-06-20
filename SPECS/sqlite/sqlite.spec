@@ -1,7 +1,8 @@
-%define sourcever 3330000
+%define sourcever 3380500
+
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.33.0
+Version:        3.38.5
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -10,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=d63f3ce52cb295d62d09fc2ad8f2d29c35e1645f
+%define sha512 %{name}=6f515a7782bfb5414702721fc78ada5bf388f4bf8b3e3c2ec269df33a2e372859f682d028c30084e89847705c7050ea80790d51fbcc4decea8fbb0a35b89c0b3
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -45,26 +46,26 @@ The sqlite3 library.
 %autosetup -p1 -n %{name}-autoconf-%{sourcever}
 
 %build
-%configure \
-    CFLAGS="%{optflags}                 \
-    -DSQLITE_ENABLE_FTS3=1              \
-    -DSQLITE_ENABLE_COLUMN_METADATA=1   \
-    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
-    -DSQLITE_SECURE_DELETE=1"           \
-    CXXFLAGS="%{optflags}"              \
-    --disable-static
-make
+export CFLAGS="%{optflags} \
+           -DSQLITE_ENABLE_FTS3=1 \
+           -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+           -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
+           -DSQLITE_SECURE_DELETE=1"
+
+%configure --disable-static
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -D -m644 sqlite3.1 %{buildroot}/%{_mandir}/man1/sqlite3.1
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}/%{_infodir}
+%make_install %{?_smp_mflags}
+install -D -m644 sqlite3.1 %{buildroot}%{_mandir}/man1/sqlite3.1
+find %{buildroot}%{_libdir} -name '*.la' -delete
+rm -rf %{buildroot}%{_infodir}
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post libs
 /sbin/ldconfig
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.38.5-1
+- Upgrade to v3.38.5 to fix CVE-2021-20227
 * Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 3.33.0-1
 - Automatic Version Bump
 * Fri Jul 03 2020 Shreyas B <shreyasb@vmware.com> 3.32.1-1

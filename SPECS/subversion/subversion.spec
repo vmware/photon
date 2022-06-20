@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -48,30 +48,30 @@ Provides Perl (SWIG) support for Subversion version control system.
 %autosetup -p1
 
 %build
-sh ./configure --prefix=%{_prefix} \
+%configure \
         --disable-static \
         --with-apache-libexecdir \
         --with-serf=%{_prefix} \
         --with-lz4=internal
 
-make %{?_smp_mflags}
+%make_build
 
 # For Perl bindings
-make %{?_smp_mflags} swig-pl
+%make_build swig-pl
 
 %install
 # make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install
+%make_install
 
 %find_lang %{name}
 
 # For Perl bindings
 # make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install-swig-pl
+%make_install install-swig-pl
 
+%if 0%{?with_check}
 %check
 # subversion expect nonroot user to run tests
-%if 0%{?with_check}
 chmod g+w . -R
 useradd test -G root -m
 # make doesn't support _smp_mflags
@@ -83,25 +83,24 @@ sudo -u test make check && userdel test -r -f
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
 %{_mandir}/man[158]/*
-%{_datadir}/locale/*
 
 %files devel
 %{_includedir}/*
 %{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
 %{_datadir}/pkgconfig/*.pc
-%exclude %dir %{_libdir}/debug/
 
 %files perl
 %defattr(-,root,root)
 %{perl_sitearch}/SVN
 %{perl_sitearch}/auto/SVN
 %{_libdir}/libsvn_swig_perl*so*
-%{_libdir}/perl5/*
 %{_mandir}/man3/SVN*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-2
+- Bump version as a part of sqlite upgrade
 * Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.14.2-1
 - Update to 1.14.2 to fix CVE-2022-24070, CVE-2021-28544
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.1-4

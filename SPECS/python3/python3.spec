@@ -4,9 +4,9 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
-URL:            http://www.python.org/
+URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -180,11 +180,10 @@ fi
     --enable-optimizations \
     --with-dbmliborder=gdbm:ndbm
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
@@ -196,15 +195,17 @@ rm %{buildroot}%{_bindir}/2to3
 mkdir -p %{buildroot}%{_libdir}/rpm/macros.d
 install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
 
-%if 0%{?with_gdb_hooks:1}
+%if 0%{?__debug_package}
+%if 0%{?with_gdb_hooks}
   DirHoldingGdbPy=%{_libdir}/debug%{_libdir}
   mkdir -p %{buildroot}$DirHoldingGdbPy
   PathOfGdbPy=$DirHoldingGdbPy/libpython%{VER}.so.1.0-%{version}-%{release}.%{_arch}.debug-gdb.py
   cp Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
-%endif # with gdb_hooks
+%endif
+%endif
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} test
 %endif
 
@@ -321,6 +322,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-5
+- Bump version as a part of sqlite upgrade
 * Wed Jun 15 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-4
 - Fix for CVE-2015-20107
 * Mon May 09 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-3

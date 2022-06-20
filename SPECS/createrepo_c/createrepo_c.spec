@@ -1,15 +1,18 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=dab1acedd6b3f92bccf5448dee432b5ee1d1432f
+
+Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=78105c36bc75b5881ebafbec38a46063d46b9a8d7e26cd797bfd90af85534f1ef187d366b597b65798257e8236367507cec6487726b287d8d570a054fb31ba34
+
 Patch0:         remove-distutils.patch
+
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -27,6 +30,7 @@ BuildRequires:  doxygen
 
 Requires:       drpm
 Requires:       zchunk-libs
+
 %if %{with_check}
 Requires:       libxml2
 %endif
@@ -58,17 +62,17 @@ sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 %build
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DWITH_LIBMODULEMD=OFF ..
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd build
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
 ln -sf %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
 ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-, root, root)
@@ -84,6 +88,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-6
+- Bump version as a part of sqlite upgrade
 * Mon Nov 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16.0-5
 - Remove deprecated distutils to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 0.16.0-4

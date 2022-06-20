@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2021.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -99,13 +99,13 @@ env NOCONFIGURE=1 ./autogen.sh
      --with-selinux \
      --enable-libsoup-client-certs
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} INSTALL="install -p -c" install %{?_smp_mflags}
+%make_install
 find %{buildroot} -name '*.la' -delete
-install -D -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system-preset/91-ostree.preset
-install -vdm 755 %{buildroot}/etc/ostree/remotes.d
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-ostree.preset
+install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 
 %post
 %systemd_post ostree-remount.service
@@ -120,29 +120,29 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %defattr(-,root,root)
 %doc COPYING
 %doc README.md
-%{_bindir}/ostree
+%{_bindir}/%{name}
 %{_bindir}/rofiles-fuse
-%{_datadir}/ostree
+%{_datadir}/%{name}
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_unitdir}/ostree-finalize-staged.path
+%{_unitdir}/%{name}-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
-%{_systemdgeneratordir}/ostree-system-generator
+%{_systemdgeneratordir}/%{name}-system-generator
 %{_presetdir}/91-ostree.preset
-%{_unitdir}/ostree*.service
-%{_libdir}/ostree/ostree-prepare-root
-%{_libdir}/ostree/ostree-remount
-%{_tmpfilesdir}/ostree-tmpfiles.conf
-%config(noreplace) %{_sysconfdir}/dracut.conf.d/ostree.conf
-%config(noreplace) %{_sysconfdir}/ostree-mkinitcpio.conf
-%{_mandir}/man1/ostree-admin*
+%{_unitdir}/%{name}*.service
+%{_libdir}/%{name}/%{name}-prepare-root
+%{_libdir}/%{name}/%{name}-remount
+%{_tmpfilesdir}/%{name}-tmpfiles.conf
+%config(noreplace) %{_sysconfdir}/dracut.conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}-mkinitcpio.conf
+%{_mandir}/man1/%{name}-admin*
 %{_libexecdir}/libostree/*
 %exclude %{_sysconfdir}/grub.d/*ostree
 %exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
 %defattr(-,root,root)
-%{_sysconfdir}/ostree
+%{_sysconfdir}/%{name}
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/OSTree-1.0.typelib
 
@@ -151,10 +151,10 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_prefix}/share/bash-completion/completions/ostree
-%{_datadir}/gtk-doc/html/ostree
+%{_datadir}/bash-completion/completions/%{name}
+%{_datadir}/gtk-doc/html/%{name}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
-%exclude %{_mandir}/man1/ostree-admin*
+%exclude %{_mandir}/man1/%{name}-admin*
 %{_mandir}/man1/*.gz
 %{_mandir}/man5/*.gz
 
@@ -164,6 +164,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.3-4
+- Bump version as a part of sqlite upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.3-3
 - Do not depend on icu and libpsl and libsoup will bring them
 * Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.3-2

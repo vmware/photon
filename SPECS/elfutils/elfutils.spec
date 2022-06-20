@@ -1,36 +1,40 @@
-# -*- rpm-spec-*-
 %define _gnu %{nil}
 %define _programprefix eu-
-Summary:	A collection of utilities and DSOs to handle compiled objects
-Name:		elfutils
-Version:	0.181
-Release:	4%{?dist}
-License:	GPLv3+ and (GPLv2+ or LGPLv3+)
-Group:		Development/Tools
-URL:    	https://sourceware.org/elfutils
-Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=b8c75d48be1e9c107e8e4d6cacd3781311b1a8b7
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Obsoletes:	libelf libelf-devel
-Requires:	elfutils-libelf = %{version}-%{release}
-Requires:	glibc >= 2.7
-Requires:	bzip2-libs
-Requires:	libmicrohttpd
-Requires:	curl
-Requires:       libarchive
-# ExcludeArch: xxx
-BuildRequires:	gcc >= 4.1.2-33
-BuildRequires:	glibc >= 2.7
-BuildRequires:	bison >= 1.875
-BuildRequires:	flex >= 2.5.4a
-BuildRequires:	m4
-BuildRequires:	gettext
-BuildRequires:	bzip2-devel
-BuildRequires:	libmicrohttpd-devel
-BuildRequires:	curl-devel
-BuildRequires:	libarchive-devel
-BuildRequires:	sqlite-devel
+
+Summary:    A collection of utilities and DSOs to handle compiled objects
+Name:       elfutils
+Version:    0.181
+Release:    5%{?dist}
+License:    GPLv3+ and (GPLv2+ or LGPLv3+)
+Group:      Development/Tools
+URL:        https://sourceware.org/elfutils
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=d565541d5817f409dc89ebb1ee593366f69c371a1531308eeb67ff934b14a0fab0c9009fd7c23240efbaa1b4e04edac5c425e47d80e3e66ba03dcaf000afea36
+
+Obsoletes:  libelf
+Obsoletes:  libelf-devel
+
+Requires:   elfutils-libelf = %{version}-%{release}
+Requires:   glibc >= 2.7
+Requires:   bzip2-libs
+Requires:   libmicrohttpd
+Requires:   curl
+Requires:   libarchive
+
+BuildRequires:  gcc >= 4.1.2-33
+BuildRequires:  glibc >= 2.7
+BuildRequires:  bison >= 1.875
+BuildRequires:  flex >= 2.5.4a
+BuildRequires:  m4
+BuildRequires:  gettext
+BuildRequires:  bzip2-devel
+BuildRequires:  libmicrohttpd-devel
+BuildRequires:  curl-devel
+BuildRequires:  libarchive-devel
+BuildRequires:  sqlite-devel
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -109,17 +113,15 @@ Requires: %{name}-libelf = %{version}-%{release}
 These are the additional language files of elfutils.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure --program-prefix=%{_programprefix}
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_prefix}
-
-%makeinstall
+%make_install
 
 chmod +x %{buildroot}/usr/lib/lib*.so*
 # XXX Nuke unpackaged files
@@ -133,8 +135,10 @@ chmod +x %{buildroot}/usr/lib/lib*.so*
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -200,6 +204,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.181-5
+- Bump version as a part of sqlite upgrade
 * Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 0.181-4
 - Replacement of ITS suggested words.
 * Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 0.181-3
@@ -314,17 +320,17 @@ rm -rf %{buildroot}
   to make the D behavior the default when U is not specified.
 - ranlib: Support -D and -U flags with same meaning.
 - readelf: Improve output of -wline. Add support for printing SDT elf
-  notes.          Add printing of .gdb_index section. 	 Support for
+  notes.          Add printing of .gdb_index section.    Support for
   typed DWARF stack, call_site and entry_value.
 - strip: Add --reloc-debug-sections option.        Improved SHT_GROUP
   sections handling.
 * Tue Feb 15 2011  <drepper@gmail.com> 0.152-1
 - Various build and warning nits fixed for newest GCC and Autoconf.
 - libdwfl: Yet another prelink-related fix for another regression.
-  	 Look for Linux kernel images in files named with compression
+     Look for Linux kernel images in files named with compression
   suffixes.
 - elfcmp: New flag --ignore-build-id to ignore differing build ID
-  bits. 	New flag -l/--verbose to print all differences.
+  bits.     New flag -l/--verbose to print all differences.
 * Wed Jan 12 2011  <drepper@gmail.com> 0.151-1
 - libdwfl: Fix for more prelink cases with separate debug file.
 - strip: New flag --strip-sections to remove section headers entirely.
@@ -346,7 +352,7 @@ rm -rf %{buildroot}
   dwarf_offdie_types.        New functions dwarf_lineisa,
   dwarf_linediscriminator, dwarf_lineop_index.
 - libdwfl: Fixes in core-file handling, support cores from PIEs.
-  	 When working from build IDs, don't open a named file that
+     When working from build IDs, don't open a named file that
   mismatches.
 - readelf: Handle DWARF 4 formats.
 * Mon May  3 2010 Ulrich Drepper <drepper@redhat.com> 0.147-1
@@ -361,11 +367,11 @@ rm -rf %{buildroot}
 - Fix build with most recent glibc headers.
 - libelf: More robust to bogus section headers.
 - libdw: Fix CFI decoding.
-- libdwfl: Fix address bias returned by CFI accessors. 	 Fix core
+- libdwfl: Fix address bias returned by CFI accessors.   Fix core
   file module layout identification.
 - readelf: Fix CFI decoding.
 * Thu Jan 14 2010  <drepper@redhat.com> 0.144-1
-- libelf: New function elf_getphdrnum. 	Now support using more than
+- libelf: New function elf_getphdrnum.  Now support using more than
   65536 program headers in a file.
 - libdw: New function dwarf_aggregate_size for computing (constant)
   type        sizes, including array_type cases with nontrivial
@@ -391,13 +397,13 @@ rm -rf %{buildroot}
   Handle some new DWARF 3 expression operations previously omitted.
   Basic handling of some new encodings slated for DWARF
 * Thu Apr 23 2009 Ulrich Drepper <drepper@redhat.com> 0.141-1
-- libebl: sparc backend fixes; 	some more arm backend support
+- libebl: sparc backend fixes;  some more arm backend support
 - libdwfl: fix dwfl_module_build_id for prelinked DSO case;
-  fixes in core file support; 	 dwfl_module_getsym interface
+  fixes in core file support;    dwfl_module_getsym interface
   improved for non-address symbols
 - strip: fix infinite loop on strange inputs with -f
 - addr2line: take -j/--section=NAME option for binutils compatibility
-  	   (same effect as '(NAME)0x123' syntax already supported)
+       (same effect as '(NAME)0x123' syntax already supported)
 * Mon Feb 16 2009 Ulrich Drepper <drepper@redhat.com> 0.140-1
 - libelf: Fix regression in creation of section header
 - libdwfl: Less strict behavior if DWARF reader ist just used to
@@ -420,7 +426,7 @@ rm -rf %{buildroot}
 * Tue Aug 26 2008 Ulrich Drepper <drepper@redhat.com> 0.137-1
 - Minor fixes for unreleased 0.136 release.
 * Mon Aug 25 2008 Ulrich Drepper <drepper@redhat.com> 0.136-1
-- libdwfl: bug fixes; new segment interfaces;	 all the libdwfl-based
+- libdwfl: bug fixes; new segment interfaces;    all the libdwfl-based
  tools now support --core=COREFILE option
 * Mon May 12 2008 Ulrich Drepper <drepper@redhat.com> 0.135-1
 - libdwfl: bug fixes
@@ -452,12 +458,12 @@ rm -rf %{buildroot}
 - new option --archive-index (or -c); improved -n output for
 - core files, on many machines
 - libelf: new function elf_getdata_rawchunk, replaces gelf_rawchunk;
-	new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
+    new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
 - readelf, elflint: handle SHT_NOTE sections without requiring phdrs
 - elflint: stricter checks on debug sections
 - libdwfl: new functions dwfl_build_id_find_elf, dwfl_build_id_find_debu
-    ginfo,	 dwfl_module_build_id, dwfl_module_report_build_id;	 suppo
-    rt dynamic symbol tables found via phdrs;	 dwfl_standard_find_de
+    ginfo,   dwfl_module_build_id, dwfl_module_report_build_id;  suppo
+    rt dynamic symbol tables found via phdrs;    dwfl_standard_find_de
     buginfo now uses build IDs when available
 - unstrip: new option --list (or -n)
 - libebl: backend improvements for sparc, alpha, powerpc
@@ -467,7 +473,7 @@ rm -rf %{buildroot}
 * Wed Apr 18 2007 Ulrich Drepper <drepper@redhat.com> 0.127-1
 - libdw: new function dwarf_getsrcdirs
 - libdwfl: new functions dwfl_module_addrsym, dwfl_report_begin_add,
-	 dwfl_module_address_section
+     dwfl_module_address_section
 * Mon Feb  5 2007 Ulrich Drepper <drepper@redhat.com> 0.126-1
 - new program: ar
 * Mon Dec 18 2006 Ulrich Drepper <drepper@redhat.com> 0.125-1

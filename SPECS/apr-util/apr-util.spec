@@ -3,7 +3,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1 %{name}=5bae4ff8f1dad3d7091036d59c1c0b2e76903bf4
+%define sha512  %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
 
 BuildRequires:   apr-devel
 BuildRequires:   sqlite-devel
@@ -78,13 +78,13 @@ This package provides the SQLite driver for the apr-util DBD
         --with-nss \
         --with-crypto
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-%check
 %if 0%{?with_check}
+%check
 # make doesn't support _smp_mflags
 make check
 %endif
@@ -124,6 +124,8 @@ rm -rf %{buildroot}
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-7
+- Bump version as a part of sqlite upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-6
 - Exclude debug symbols properly
 * Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 1.6.1-5

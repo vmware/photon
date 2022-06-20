@@ -17,7 +17,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
-%define sha1    %{name}=4bc190b6ac368f573e6a028f91430f831d40d30a
+%define sha512  %{name}=8f3339efdcd1bb58fa58a90042181bef86bb09e4598c737e446ed43b56d2ab23d67eced5e36fb08fc61e076acfdb572a12e46a1277f5299a3f412054df0b88bf
 
 %if 0%{?with_check}
 Patch0:         make-check-failure.patch
@@ -29,9 +29,6 @@ Patch3: CVE-2020-10878-2.patch
 Patch4: CVE-2020-12723.patch
 patch5: CVE-2020-10543.patch
 Patch6: 0001-Remove-libdb-support.patch
-
-Source1:	https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
-%define sha1	perl-cross=ded421469e0295ae6dde40e0cbcb2238b4e724e3
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -56,14 +53,9 @@ Report Language.
 %setup -q
 sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
-%patch0 -p1
-%patch1 -p1
+%autopatch -p1 -m0 -M1
 %endif
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autopatch -p1 -m2 -M6
 
 %build
 export BUILD_ZLIB=False
@@ -91,14 +83,14 @@ sh Configure -des \
     -Dusethreads
 fi
 
-make VERBOSE=1 %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 unset BUILD_ZLIB BUILD_BZIP2
 
-%check
 %if 0%{?with_check}
+%check
 sed -i '/02zlib.t/d' MANIFEST
 sed -i '/cz-03zlib-v1.t/d' MANIFEST
 sed -i '/cz-06gzsetp.t/d' MANIFEST

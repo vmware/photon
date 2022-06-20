@@ -8,8 +8,8 @@ Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.za.freebsd.org/openbsd/distfiles/sqlite-%{version}.tar.gz
-%define sha1    sqlite=75db1cf3b00ea18ae8528e676fc9fdf698e2fe58
+Source0:        https://www.sqlite.org/sqlite-%{version}.tar.gz
+%define sha512 sqlite=966e0b7f7ebbaaa9e1899864475040946fd7b66363be778d29fadd5184623b1e62644f3c8d4c4ecd001b88044befa7c34d9de9f68590329a1a8301d854b73e3f
 
 Patch0:         0001-lemon-fix.patch
 

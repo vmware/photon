@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    %{name}=be44c8d2b58595b6cc2e25dadb06ae18f765ada5
+%define sha512  %{name}=16dde1e37cd5958eb8e90d77f9c0967bd8f7b9464c0b56116fd5b1df5ff38c69d994b453c53187c33d7c44c05329f49d271a919a1575a493caaf0bffc5a6e34d
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
@@ -100,10 +100,10 @@ Includes the scripts for rpm-ostree repo creation to act as server
 %build
 env NOCONFIGURE=1 ./autogen.sh
 %configure --disable-silent-rules --enable-gtk-doc
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
+%make_install
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
 install -d %{buildroot}%{_bindir}/rpm-ostree-server
@@ -146,6 +146,8 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-5
+- Bump version as a part of sqlite upgrade
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-4
 - Bump version as a part of rpm upgrade
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.10-3

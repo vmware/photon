@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=b4101632c56b00e0bd8f41d772a7998a3d000a74
+%define sha512  %{name}=dfcebea314d549a15bf5af19db775ff1b1850bfc6fb147b68fe094e43bf1541fcfe22d2f6c6607a6393e01905a086cea606d0b25da2e3ce376d100c4ef4fee00
 
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
@@ -46,14 +46,16 @@ cmake \
     -DENABLE_RPMDB_LIBRPM=ON \
     -DENABLE_RPMMD=ON
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} test
+%endif
 
 %files
 %defattr(-,root,root)

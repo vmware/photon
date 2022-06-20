@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -143,8 +143,8 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 sed -i -e "/_db_backend/ s/ bdb/ sqlite/g" macros.in
 
 sh autogen.sh --noconfigure
+export CPPFLAGS="-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS"
 %configure \
-    CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
         --disable-dependency-tracking \
         --disable-static \
@@ -162,7 +162,7 @@ sh autogen.sh --noconfigure
         --enable-plugins \
         --enable-bdb=no
 
-make %{?_smp_mflags}
+%make_build
 
 gcc -Wall -o lock %{SOURCE11}
 chmod 700 lock
@@ -171,11 +171,13 @@ pushd python
 %py3_build
 popd
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
@@ -183,10 +185,10 @@ install -dm644 %{buildroot}%{_sysconfdir}/rpm
 install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
 install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE6} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE7} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE6} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE7} %{buildroot}%{_rpmmacrodir}
 install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm
 
 mkdir -p %{buildroot}%{_unitdir}
@@ -263,7 +265,7 @@ rm -rf %{buildroot}
 %{rpmhome}/lock
 %{_bindir}/rpmdb
 %{_unitdir}/rpmdb-rebuild.service
-%{_sysconfdir}/tdnf/minversions.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
 
 %files build
 %{_bindir}/rpmbuild
@@ -271,7 +273,7 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{rpmhome}/macros.d/*
+%{_rpmmacrodir}/*
 %{rpmhome}/perl.req
 %{rpmhome}/find-debuginfo.sh
 %{rpmhome}/find-lang.sh
@@ -324,6 +326,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-10
+- Bump version as a part of sqlite upgrade
+- Add latest perl rpm macros
 * Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 4.16.1.3-9
 - Update sha1 to sha512
 * Tue Apr 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-8
