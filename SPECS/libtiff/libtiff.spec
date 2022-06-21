@@ -11,8 +11,7 @@ Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff
 %define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
 Source1:        config.guess
 Source2:        config.sub
-Patch0:         CVE-2018-12900.patch
-Patch1:         autogen.patch
+Patch0:         autogen.patch
 BuildRequires:  libjpeg-turbo-devel wget
 Requires:       libjpeg-turbo
 
