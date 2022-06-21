@@ -8,7 +8,7 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt3
-Version: 3004.1
+Version: 3004.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
@@ -17,9 +17,9 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha1 salt=086f79384d7aaad69d8edb82f9a544900e833ff9
+%define sha512 salt=b2fa434f1d25eabac51d65d75bb020943eb71aff113d683e6f436a0f205bd3c7682b1b7acd4d9a62bf37a47eb0561293d263f3174d5e266f0998a1652fcae2ef
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
-%define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
+%define sha512 SaltTesting=5fc362ba6cf41efd0d3197c832f05b14267c9d92bbb0c34d872bd3ae1383996e0918dc6b01052076ecea70bbf4687fde3d5de2915aab7d07f961f2b6badac6ff
 Source2: salt-master.service
 Source3: salt-syndic.service
 Source4: salt-minion.service
@@ -298,6 +298,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Jun 21 2022 Kirill Ponomarev <kponomarev@vmware.com> 3004.2-1
+- Update to version 3004.2
 * Mon Mar 28 2022 Kirill Ponomarev <kponomarev@vmware.com> 3004.1-1
 - Update to version 3004.1
 * Mon Oct 18 2021 Bryce Larson <brycel@vmware.com> 3004-1
