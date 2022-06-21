@@ -544,7 +544,7 @@ index af4cdacf7506..8780a1acc2b2 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -182,6 +222,65 @@ obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
+@@ -182,6 +222,66 @@ obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  
@@ -591,15 +591,16 @@ index af4cdacf7506..8780a1acc2b2 100644
 +HOSTCFLAGS_gen_canister_relocs = -g
 +
 +quiet_cmd_gencr = GENCR   $@
-+cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds
++cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds $(obj)/fips_canister-kallsyms
 +$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
 +	$(call if_changed,gencr)
-+clean-files += $(src)/canister_relocs.c
++clean-files += canister_relocs.c
++clean-files += fips_canister-kallsyms
 +targets += canister_relocs.o
 +CFLAGS_REMOVE_canister_relocs.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 +$(obj)/canister_markers.lds: $(src)/canister_relocs.c
 +
-+clean-files += $(obj)/canister_markers.lds
++clean-files += canister_markers.lds
 +
 +quiet_cmd_update_hmac = HMAC    $@
 +cmd_update_hmac = $(obj)/update_canister_hmac.sh $@ $(obj)/canister_markers.lds

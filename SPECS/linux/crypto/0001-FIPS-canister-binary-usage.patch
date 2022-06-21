@@ -131,7 +131,7 @@ index b7861fc22d33..af4cdacf7506 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -198,3 +181,77 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -198,3 +181,74 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
@@ -141,9 +141,6 @@ index b7861fc22d33..af4cdacf7506 100644
 +ifdef CONFIG_CRYPTO_FIPS
 +ifneq ($(CONFIG_CRYPTO_FIPS),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_FIPS=y)
-+endif
-+ifneq ($(CONFIG_KALLSYMS_ALL),y)
-+  $(error FIPS canister requires CONFIG_KALLSYMS_ALL=y)
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AEAD)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_AEAD=y)

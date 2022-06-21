@@ -72,8 +72,8 @@ static int error(const char *format, ...);
 static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry *symbols, size_t strndx);
 static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strndx);
 static void dump_header(int ofd, char *prog);
-static void dump_sections(int ofd);
-static void dump_symbols(int ofd, struct symbol_entry *symbols, int n_syms);
+static void dump_sections(int ofd, int sfd);
+static void dump_symbols(int ofd, int sfd, struct symbol_entry *symbols, int n_syms);
 static void dump_relocations(int ofd, struct symbol_entry *symbols);
 static void generate_ldscript(char *filename);
 
@@ -319,7 +319,7 @@ static void dump_header(int ofd, char *prog)
 		"#include \"fips_integrity.h\"\n\n", prog);
 }
 
-static void dump_sections(int ofd)
+static void dump_sections(int ofd, int sfd)
 {
 	int i, n = 0;
 	/*
@@ -333,11 +333,14 @@ static void dump_sections(int ofd)
 			dprintf(ofd, "\t\"%s\\0\"\n\t\"%s\\0\"\n",
 				section_symbols[i]->begin,
 				section_symbols[i]->end);
+			dprintf(sfd, "%s\n%s\n", section_symbols[i]->begin,
+				section_symbols[i]->end);
 			n++;
 		}
 	/* We've just introduced/generated fresh .init.rodata section, add its section markers. */
 	if (!initrodata_present) {
 		dprintf(ofd, "\t\"__canister_sinitrodata\\0\"\n\t\"__canister_einitrodata\\0\"\n");
+		dprintf(sfd, "__canister_sinitrodata\n__canister_einitrodata\n");
 		n++;
 	}
 	dprintf(ofd, "};\n");
@@ -350,7 +353,7 @@ static void dump_sections(int ofd)
  * Not only dump the symbols table, but post process (optimize) it
  * to be used by dump_relocations() later.
  */
-static void dump_symbols(int ofd, struct symbol_entry *symbols, int n_syms)
+static void dump_symbols(int ofd, int sfd, struct symbol_entry *symbols, int n_syms)
 {
 	int i;
 	/* Index in output symbol table. */
@@ -389,6 +392,7 @@ static void dump_symbols(int ofd, struct symbol_entry *symbols, int n_syms)
 		}
 		symbols[i].index = index;
 		dprintf(ofd, "\t\"%s\\0\" /* %d: %x %d %lx */\n", symbols[i].name, i, symtab[i].st_info, symtab[i].st_shndx, symtab[i].st_value);
+		dprintf(sfd, "%s\n", symbols[i].name);
 		index++;
 	}
 	dprintf(ofd, "};\n");
@@ -505,7 +509,7 @@ static void generate_ldscript(char *filename)
 
 int main (int argc, char *argv[])
 {
-	int fd, ofd;
+	int fd, ofd, sfd;
 	Elf *elf;
 	GElf_Ehdr ehdr;
 	Elf_Scn *section;
@@ -582,16 +586,20 @@ int main (int argc, char *argv[])
 	if (ofd == -1)
 		error("Cannot open output file");
 
+	sfd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (sfd == -1)
+		error("Cannot open output symbols file");
 	/*
 	 * Main rule for generated .c file: do not introduce new relocations
 	 * as it won't be accounted (chicken-egg problem).
 	 */
 	dump_header(ofd, argv[0]);
-	dump_sections(ofd);
-	dump_symbols(ofd, symbols, n_syms);
+	dump_sections(ofd, sfd);
+	dump_symbols(ofd, sfd, symbols, n_syms);
 	dump_relocations(ofd, symbols);
 
 	close(ofd);
+	close(sfd);
 
 	/* Linker script for final canister linking. */
 	generate_ldscript(argv[3]);

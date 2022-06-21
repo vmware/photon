@@ -1,4 +1,3 @@
-sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
 sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
 sed -i 's/CONFIG_CRYPTO_SKCIPHER=m/CONFIG_CRYPTO_SKCIPHER=y/' .config
 sed -i 's/CONFIG_CRYPTO_RNG=m/CONFIG_CRYPTO_RNG=y/' .config

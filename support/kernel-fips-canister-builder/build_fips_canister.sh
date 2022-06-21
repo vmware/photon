@@ -7,8 +7,6 @@
 #          Alexey Makhalov <amakhalov@vmware.com>
 #
 
-
-
 # Target to Photon OS version
 VERSION=4
 
@@ -195,6 +193,9 @@ function copy_and_apply_canister_patch() {
 #  cat "$PATCHDIR/$patchname" $flavor_patchname $PATCHDIR/crypto-Makefile-generate-ii-files.patch > $SPECDIR/$patchname
   cat "$PATCHDIR/$patchname" $flavor_patchname > $SPECDIR/$patchname
 
+  patchname0001="0001-scripts-kallsyms-Extra-kallsyms-parsing.patch"
+  cp "$PATCHDIR/$patchname0001" $SPECDIR
+
   echo "Adding fips-canister subpackage and patch to $SPECPATH"
   if [ "$KATBUILD" -eq 1 ]; then
      sed -i "/%global fips 1/a %global kat_build" $SPECPATH
@@ -204,11 +205,13 @@ function copy_and_apply_canister_patch() {
 Patch10000:     '${srcpatchname}'\
 Patch10001:     0001-FIPS-canister-binary-usage.patch\
 Patch10002:     '${patchname}'\
+Patch10003:     '${patchname0001}'\
 ' $SPECPATH
   sed -i '0,/%build/!b;//i\
 %patch10000 -p0\
 %patch10001 -p1\
 %patch10002 -p1\
+%patch10003 -p1\
 chmod 750 crypto/update_canister_hmac.sh' $SPECPATH
 
   sed -i '0,/%prep/!b;//i\%package fips-canister \
@@ -223,6 +226,8 @@ This package contains the fips canister binary.\
     sed -i '1i %define debug_package %{nil}' $SPECPATH
     # Remove all subpackages
     sed -i '/%package devel/,/%package fips-canister/{/%package fips-canister/!d}' $SPECPATH
+# Used to get sources snapshot.
+#    sed -i '/make V=1/i exit 1' $SPECPATH
     # Make crypto folder only and exit
     sed -i 's/make V=1/make V=1 crypto\/fips_canister.o/' $SPECPATH
     sed -i '/make V=1/a touch debugfiles.list\nexit 0' $SPECPATH
@@ -239,6 +244,7 @@ pushd crypto/\
 mkdir fips-canister-'${CANISTER_TARBALL_VERSION}'\
 cp fips_canister.o fips-canister-'${CANISTER_TARBALL_VERSION}'\
 cp fips_canister_wrapper.c fips-canister-'${CANISTER_TARBALL_VERSION}'\
+cp fips_canister-kallsyms fips-canister-'${CANISTER_TARBALL_VERSION}'\
 tar -cvjf fips-canister-'${CANISTER_TARBALL_VERSION}'.tar.bz2 fips-canister-'${CANISTER_TARBALL_VERSION}'/\
 popd\
 cp crypto\/fips-canister-'${CANISTER_TARBALL_VERSION}'.tar.bz2 \%{buildroot}\/usr\/lib\/fips-canister\/\
@@ -269,7 +275,7 @@ function create_sandbox() {
   fi
 
 
-  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photonos-docker-local.artifactory.eng.vmware.com/photon$VERSION:20201120 tail -f /dev/null
+  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photonos-docker-local.artifactory.eng.vmware.com/photon$VERSION:20220624 tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
