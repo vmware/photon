@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -125,6 +125,17 @@ Patch111:       0010-RPS-flow-balance.patch
 Patch112:       0011-add-mss-clamp-support-to-gretap-baseimage.patch
 Patch113:       0012-set-max_mtu-as-IP_MAX_MTU.patch
 Patch114:       0013-set-max_mtu-as-IP_MAX_MTU_for_vlan.patch
+
+# Update vmxnet3 driver to version 6
+Patch120:        0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch121:        0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch122:        0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch123:        0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch124:        0001-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch125:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch126:        0007-vmxnet3-update-to-version-6.patch
+Patch127:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch128:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -305,6 +316,16 @@ popd
 %patch112 -p1
 %patch113 -p1
 %patch114 -p1
+
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch124 -p1
+%patch125 -p1
+%patch126 -p1
+%patch127 -p1
+%patch128 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -498,6 +519,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-2
+-   Update vmxnet3 driver to version 6
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
 -   Update to version 4.19.247
 *   Thu May 26 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.245-1

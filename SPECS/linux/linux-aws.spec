@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -141,6 +141,17 @@ Patch157:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
 Patch160:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Update vmxnet3 driver to version 6
+Patch161:        0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch162:        0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch163:        0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch164:        0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch165:        0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch166:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch167:        0007-vmxnet3-update-to-version-6.patch
+Patch168:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch169:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -302,6 +313,16 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch152 -p1
 %patch157 -p1
 %patch160 -p1
+
+%patch161 -p1
+%patch162 -p1
+%patch163 -p1
+%patch164 -p1
+%patch165 -p1
+%patch166 -p1
+%patch167 -p1
+%patch168 -p1
+%patch169 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -492,6 +513,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
+-   Update vmxnet3 driver to version 6
 *   Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2
 -   Enable config_livepatch and function tracer, which is needed for livepatch.
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1

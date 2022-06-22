@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -389,6 +389,17 @@ Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Update vmxnet3 driver to version 6
+Patch530:        0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch531:        0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch532:        0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch533:        0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch534:        0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch535:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch536:        0007-vmxnet3-update-to-version-6.patch
+Patch537:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch538:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -757,6 +768,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch522 -p1
 %patch525 -p1
 
+%patch530 -p1
+%patch531 -p1
+%patch532 -p1
+%patch533 -p1
+%patch534 -p1
+%patch535 -p1
+%patch536 -p1
+%patch537 -p1
+%patch538 -p1
+
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %patch801 -p1
@@ -962,6 +983,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-2
+-   Update vmxnet3 driver to version 6
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
 -   Update to version 4.19.247
 *   Wed Jun 08 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.245-2

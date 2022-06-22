@@ -1,0 +1,62 @@
+From dd4a12a27e7fb022fdaa0f03ea21e1836b123459 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Fri, 16 Jul 2021 15:36:22 -0700
+Subject: [PATCH] vmxnet3: remove power of 2 limitation on the queues
+
+commit 15ccf2f4b09c4443435e815b8086bc161da27e24 upstream
+
+With version 6, vmxnet3 relaxes the restriction on queues to
+be power of two. This is helpful in cases (Edge VM) where
+vcpus are less than 8 and device requires more than 4 queues.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 8b3b5cc326df..04a4d4d860c8 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3428,7 +3428,6 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	else
+ #endif
+ 		num_rx_queues = 1;
+-	num_rx_queues = rounddown_pow_of_two(num_rx_queues);
+ 
+ 	if (enable_mq)
+ 		num_tx_queues = min(VMXNET3_DEVICE_MAX_TX_QUEUES,
+@@ -3436,7 +3435,6 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	else
+ 		num_tx_queues = 1;
+ 
+-	num_tx_queues = rounddown_pow_of_two(num_tx_queues);
+ 	netdev = alloc_etherdev_mq(sizeof(struct vmxnet3_adapter),
+ 				   max(num_tx_queues, num_rx_queues));
+ 	if (!netdev)
+@@ -3564,6 +3562,8 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		}
+ 	} else {
+ 		adapter->queuesExtEnabled = false;
++		num_rx_queues = rounddown_pow_of_two(num_rx_queues);
++		num_tx_queues = rounddown_pow_of_two(num_tx_queues);
+ 		adapter->num_rx_queues = min(num_rx_queues,
+ 					     VMXNET3_DEVICE_DEFAULT_RX_QUEUES);
+ 		adapter->num_tx_queues = min(num_tx_queues,
+@@ -3748,7 +3748,9 @@ vmxnet3_remove_device(struct pci_dev *pdev)
+ 	else
+ #endif
+ 		num_rx_queues = 1;
+-	num_rx_queues = rounddown_pow_of_two(num_rx_queues);
++	if (!VMXNET3_VERSION_GE_6(adapter)) {
++		num_rx_queues = rounddown_pow_of_two(num_rx_queues);
++	}
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+-- 
+2.19.0
+

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -146,6 +146,17 @@ Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # Next 2 patches are about to be merged into stable
 Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+
+# Update vmxnet3 driver to version 6
+Patch110:        0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch111:        0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch112:        0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch113:        0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch114:        0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch115:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch116:        0007-vmxnet3-update-to-version-6.patch
+Patch117:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch118:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -638,6 +649,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
 
 %patch121 -p1
 %patch122 -p1
@@ -1260,6 +1281,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
+- Update vmxnet3 driver to version 6
 * Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2
 - Enable config_livepatch.
 * Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1

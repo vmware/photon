@@ -1,0 +1,86 @@
+From 7e24a725cc486ec0fdb20a721429f4913169d578 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Thu, 1 Jul 2021 23:44:27 -0700
+Subject: [PATCH 1/8] vmxnet3: fix cksum offload issues for tunnels with
+ non-default udp ports
+
+commit b22580233d473dbf7bbfa4f6549c09e2c80e9e64 upstream
+
+Commit dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload
+support") added support for encapsulation offload. However, the inner
+offload capability is to be restricted to UDP tunnels with default
+Vxlan and Geneve ports.
+
+This patch fixes the issue for tunnels with non-default ports using
+features check capability and filtering appropriate features for such
+tunnels.
+
+Fixes: dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload support")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Sharan: Add necessary defines since macros are not available in the header
+  files ]
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 11214f8853d2..407c2f8b7812 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -27,6 +27,10 @@
+ 
+ #include "vmxnet3_int.h"
+ 
++#define VXLAN_UDP_PORT 8472
++#define GENEVE_UDP_PORT 6081
++#define IANA_VXLAN_UDP_PORT 4789
++
+ struct vmxnet3_stat_desc {
+ 	char desc[ETH_GSTRING_LEN];
+ 	int  offset;
+@@ -277,6 +281,8 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
+ 	if (VMXNET3_VERSION_GE_4(adapter) &&
+ 	    skb->encapsulation && skb->ip_summed == CHECKSUM_PARTIAL) {
+ 		u8 l4_proto = 0;
++		u16 port;
++		struct udphdr *udph;
+ 
+ 		switch (vlan_get_protocol(skb)) {
+ 		case htons(ETH_P_IP):
+@@ -289,8 +295,20 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
+ 			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ 		}
+ 
+-		if (l4_proto != IPPROTO_UDP)
++		switch (l4_proto) {
++		case IPPROTO_UDP:
++			udph = udp_hdr(skb);
++			port = be16_to_cpu(udph->dest);
++			/* Check if offloaded port is supported */
++			if (port != GENEVE_UDP_PORT &&
++			    port != IANA_VXLAN_UDP_PORT &&
++			    port != VXLAN_UDP_PORT) {
++				return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++			}
++			break;
++		default:
+ 			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++		}
+ 	}
+ 	return features;
+ }
+-- 
+2.19.0
+
