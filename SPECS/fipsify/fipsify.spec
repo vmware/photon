@@ -3,21 +3,22 @@ Name:           fipsify
 Version:        1.0
 Release:        4%{?dist}
 License:        GPLv2+
-URL:            https://packages.vmware.com/photon/photon_sources/1.0/fipsify-1.0.tar.gz
+URL:            https://packages.vmware.com/photon/photon_sources/1.0/fipsify-%{version}.tar.gz
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        modules.fips
 Source1:        fips.conf
-Requires:	initramfs >= 2.0-5
-Requires:	photon-checksum-generator
-Requires:	dracut >= 048-2
+
+Requires:   initramfs >= 2.0-5
+Requires:   photon-checksum-generator
+Requires:   dracut >= 048-2
 
 %description
 Enable fips, add fips module to initrd and generate initrd.
 
 %install
-echo %{buildroot}
 install -vdm 755 %{buildroot}/lib/modules/
 cp %{SOURCE0} %{buildroot}/lib/modules/
 
@@ -37,11 +38,11 @@ rm -rf %{buildroot}
 /lib/modules/modules.fips
 
 %changelog
-*   Thu Jan 21 2021 Vikash Bansal <bvikas@vmware.com> 1.0-4
--   Add dependency on initramfs version ">= 2.0-5"
-*   Thu Jan 21 2021 Vikash Bansal <bvikas@vmware.com> 1.0-3
--   Add dependency on dracut version ">= 048-2"
-*   Tue Mar 31 2020 Michelle Wang <michellew@vmware.com> 1.0-2
--   Add sources fipsify-1.0.tar.gz to file OSSTP ticket
-*   Tue Jan 28 2020 Vikash Bansal <bvikas@vmware.com> 1.0-1
--   Added fipsify package to photon-3.0
+* Thu Jan 21 2021 Vikash Bansal <bvikas@vmware.com> 1.0-4
+- Add dependency on initramfs version ">= 2.0-5"
+* Thu Jan 21 2021 Vikash Bansal <bvikas@vmware.com> 1.0-3
+- Add dependency on dracut version ">= 048-2"
+* Tue Mar 31 2020 Michelle Wang <michellew@vmware.com> 1.0-2
+- Add sources fipsify-1.0.tar.gz to file OSSTP ticket
+* Tue Jan 28 2020 Vikash Bansal <bvikas@vmware.com> 1.0-1
+- Added fipsify package to photon-3.0

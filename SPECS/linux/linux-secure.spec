@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -250,6 +250,10 @@ The Linux package contains the Linux kernel doc files
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+# kernel is needed during postun else hmacgen might get
+# removed after kernel which will break keeping modules of
+# running kernel till next boot feature
+Requires(postun): %{name} = %{version}-%{release}
 Enhances:       %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
@@ -551,6 +555,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-5
+-   Add kernel as requires to hmacgen postun
 *   Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-4
 -   Fixes panic due to nested priority inheritance
 *   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3

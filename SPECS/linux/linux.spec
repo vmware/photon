@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -580,6 +580,10 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+# kernel is needed during postun else hmacgen might get
+# removed after kernel which will break keeping modules of
+# running kernel till next boot feature
+Requires(postun): %{name} = %{version}-%{release}
 Enhances:       %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
@@ -1326,6 +1330,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7
+- Add kernel as requires to hmacgen postun
 * Tue Jul 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-6
 - Update iavf driver to v4.4.2
 - Update ice driver to v1.8.3

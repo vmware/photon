@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -484,6 +484,10 @@ The Linux package contains the Linux kernel doc files
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+# kernel is needed during postun else hmacgen might get
+# removed after kernel which will break keeping modules of
+# running kernel till next boot feature
+Requires(postun): %{name} = %{version}-%{release}
 Enhances:        %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
@@ -1027,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
+-   Add kernel as requires to hmacgen postun
 *   Tue Jul 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-5
 -   Update iavf driver to v4.4.2
 -   Update ice driver to v1.8.3

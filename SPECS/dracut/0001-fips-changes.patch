@@ -1,12 +1,12 @@
-From 2c7a35656e2d69cd158a0d47b3957bdb34aebd8a Mon Sep 17 00:00:00 2001
+From a86980c09547cb8503839e2bbfc5570943d6c89b Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Fri, 11 Feb 2022 22:21:49 +0530
 Subject: [PATCH] fips changes
 
 ---
- modules.d/01fips/fips.sh         | 57 +++++++++++++++++++++++++++++++++++-----
- modules.d/01fips/module-setup.sh | 15 ++++++++---
- 2 files changed, 62 insertions(+), 10 deletions(-)
+ modules.d/01fips/fips.sh         | 57 ++++++++++++++++++++++++++++----
+ modules.d/01fips/module-setup.sh | 14 ++++++--
+ 2 files changed, 61 insertions(+), 10 deletions(-)
 
 diff --git a/modules.d/01fips/fips.sh b/modules.d/01fips/fips.sh
 index 9bc089f..bcd11ef 100755
@@ -105,7 +105,7 @@ index 9bc089f..bcd11ef 100755
      info "All initrd crypto checks done"
  
 diff --git a/modules.d/01fips/module-setup.sh b/modules.d/01fips/module-setup.sh
-index f3af4d9..7de3270 100755
+index f3af4d9..50b373e 100755
 --- a/modules.d/01fips/module-setup.sh
 +++ b/modules.d/01fips/module-setup.sh
 @@ -13,8 +13,8 @@ depends() {
@@ -119,7 +119,7 @@ index f3af4d9..7de3270 100755
      else
          _fipsmodules=""
  
-@@ -55,8 +55,17 @@ install() {
+@@ -55,8 +55,16 @@ install() {
      inst_hook pre-trigger 01 "$moddir/fips-boot.sh"
      inst_hook pre-pivot 01 "$moddir/fips-noboot.sh"
      inst_script "$moddir/fips.sh" /sbin/fips.sh
@@ -130,7 +130,6 @@ index f3af4d9..7de3270 100755
 +    inst_any -d /boot/.vmlinuz-${KERNEL}.hmac /boot/.vmlinuz-${KERNEL}.hmac
 +    x=$(find ${srcmods}/ -name "*.hmac")
 +    for MODULE in $x ; do
-+	echo $MODULE >> ${srcmods}/debug
 +	inst_any -d $MODULE $MODULE
 +    done
 +
@@ -139,5 +138,5 @@ index f3af4d9..7de3270 100755
      inst_simple /etc/system-fips
      [ -c ${initdir}/dev/random ] || mknod ${initdir}/dev/random c 1 8 \
 -- 
-2.7.4
+2.25.1
 

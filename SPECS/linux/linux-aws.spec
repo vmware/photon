@@ -3,12 +3,12 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
-Distribution: 	Photon
+Distribution:   Photon
 
 %define uname_r %{version}-%{release}-aws
 
@@ -171,7 +171,7 @@ Patch182:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch183:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 %if 0%{?kat_build:1}
-Patch1000:	fips-kat-tests.patch
+Patch1000:  fips-kat-tests.patch
 %endif
 
 BuildArch:      x86_64
@@ -186,7 +186,7 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
-BuildRequires:	audit-devel
+BuildRequires:  audit-devel
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -226,9 +226,13 @@ Requires:       python3
 The Linux package contains the Linux kernel doc files
 
 %package hmacgen
-Summary:	HMAC SHA256/HMAC SHA512 generator
-Group:		System Environment/Kernel
+Summary:    HMAC SHA256/HMAC SHA512 generator
+Group:      System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+# kernel is needed during postun else hmacgen might get
+# removed after kernel which will break keeping modules of
+# running kernel till next boot feature
+Requires(postun): %{name} = %{version}-%{release}
 Enhances:       %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
@@ -424,10 +428,10 @@ ID1=`readelf -n vmlinux | grep "Build ID"`
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
 ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
 if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
+    echo "Build IDs do not match"
+    echo $ID1
+    echo $ID2
+    exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
@@ -545,6 +549,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
+-   Add kernel as requires to hmacgen postun
 *   Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-5
 -   Fixes panic due to nested priority inheritance
 *   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
