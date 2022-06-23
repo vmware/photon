@@ -3,12 +3,12 @@ Version:       3.1.2
 Release:       1%{?dist}
 Summary:       Interactive process viewer
 License:       GPLv2+
-Group:i        Applications/System
+Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://hisham.hm/htop/
 Source0:       https://github.com/htop-dev/htop/archive/%{name}-%{version}.tar.gz
-%define sha1   htop=b24053944897cd601532762de83f76df7b161833
+%define sha512 htop=7e08b820042e480ca61137ff24b468804b49b95c1bbedaf82029dd79d29c2c541c5211284ec075692203788bbb868a9d4326ffd24c68419e22eec13ae5012700
 BuildRequires: ncurses-devel
 Requires:      ncurses-libs
 
