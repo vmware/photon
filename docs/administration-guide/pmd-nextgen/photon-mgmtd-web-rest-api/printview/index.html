@@ -2,7 +2,7 @@
 <a class=dropdown-item href=../../../../../docs-v3/>v3</a>
 <a class=dropdown-item href=../../../../../assets/files/html/3.0/>v3 (old)</a>
 <a class=dropdown-item href=../../../../../assets/files/html/1.0-2.0/>v2 and v1</a></div></li></div></ul></div></nav></div></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"></div><div class="d-none d-xl-block col-xl-2 td-toc d-print-none"></div><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><div class=td-content><div class="pageinfo pageinfo-primary d-print-none"><p>This the multi-page printable view of this section.
-<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../../../docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/>Return to the regular view of this page</a>.</p></div><h1 class=title>photon-mgmtd API</h1><ul><li>1: <a href=#pg-5b0f3247298fdb8de4cc1599573d17c3>Service Management</a></li><li>2: <a href=#pg-19e7d9ff8483f07de738438fda0a8630>System Management</a></li><li>3: <a href=#pg-4e4ab91ed8af6d422d9d488a40e236ce>Network Management</a></li><li>4: <a href=#pg-f509c300882e0da178d124743129006b>User, Group, and Host Management</a></li></ul><div class=content><p>Use <code>photon-mgmtd</code> REST-APIs to manage, control, configure, and monitor services remotely.</p><p>You can use <code>photon-mgmtd</code> to manage the following:</p><ul><li>Services</li><li>System</li><li>Network</li><li>User, Group, Host</li></ul></div></div><div class=td-content><h1 id=pg-5b0f3247298fdb8de4cc1599573d17c3>1 - Service Management</h1><h2 id=post-method>POST Method</h2><p>To manage the available services and take actions on the services, execute a POST request in the following format:</p><pre><code>curl --unix-socket  /run/photon-mgmtd/photon-mgmtd.sock  --request POST --data '{&quot;action&quot;:&quot;{command}”,”unit”:”{unit}&quot;}' http://localhost/api/v1/service/systemd
+<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../../../docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/>Return to the regular view of this page</a>.</p></div><h1 class=title>photon-mgmtd API</h1><ul><li>1: <a href=#pg-5b0f3247298fdb8de4cc1599573d17c3>Service Management</a></li><li>2: <a href=#pg-19e7d9ff8483f07de738438fda0a8630>System Management</a></li><li>3: <a href=#pg-4e4ab91ed8af6d422d9d488a40e236ce>Network Management</a></li><li>4: <a href=#pg-f509c300882e0da178d124743129006b>User, Group, and Host Management</a></li><li>5: <a href=#pg-69b35e38a6bf430dca8828ff9a99c879>Package Management</a></li><li>6: <a href=#pg-eea342573b6f12212bb4275c17b17d41>Firewall nftables Management</a></li><li>7: <a href=#pg-4bac95481e3112fa9615444f698541f1>Process Details and Configuration Management</a></li></ul><div class=content><p>Use <code>photon-mgmtd</code> REST-APIs to manage, control, configure, and monitor services remotely.</p><p>You can use <code>photon-mgmtd</code> to manage the following:</p><ul><li>Services</li><li>System</li><li>Network</li><li>User, Group, Host</li></ul></div></div><div class=td-content><h1 id=pg-5b0f3247298fdb8de4cc1599573d17c3>1 - Service Management</h1><h2 id=post-method>POST Method</h2><p>To manage the available services and take actions on the services, execute a POST request in the following format:</p><pre><code>curl --unix-socket  /run/photon-mgmtd/photon-mgmtd.sock  --request POST --data '{&quot;action&quot;:&quot;{command}”,”unit”:”{unit}&quot;}' http://localhost/api/v1/service/systemd
 </code></pre><p>The following table lists the parameters:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service you want to manage.</td></tr><tr><td>Action Commands</td><td>The action you want to take on the service. Start, stop, restart, try-restart, reload-or-restart, reload, enable, disable, mask, unnmask, kill</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;action&quot;:&quot;start&quot;,&quot;unit&quot;:&quot;nginx.service&quot;}' http://localhost/api/v1/service/systemd
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
@@ -1175,7 +1175,208 @@ fs.file-max: 9223372036854775807
       }
    ],
    &quot;errors&quot;:&quot;&quot;
-}</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-f509c300882e0da178d124743129006b>4 - User, Group, and Host Management</h1><h2 id=post-method>POST Method</h2><h3 id=add-a-group>Add a Group</h3><p>To add a group, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
+}
+</code></pre><h3 id=network-dns-status>Network DNS Status</h3><p>To fetch the network DNS status, use the following command in <code>pmctl</code>:</p><pre><code>&gt;pmctl status network dns
+Global
+
+        DNS: 8.8.8.1 8.8.8.2 
+DNS Domains: test3.com test4.com . localdomain . localdomain 
+Link 2 (ens33)
+Current DNS Server:  172.16.61.2
+       DNS Servers:  172.16.61.2
+
+Link 3 (ens37)
+Current DNS Server:  172.16.61.2
+       DNS Servers:  172.16.61.2
+</code></pre><h3 id=network-iostat-status>Network iostat Status</h3><p>To fetch the network iostat status, use the following command in <code>pmctl</code>:</p><pre><code>&gt; pmctl status network iostat
+            Name: lo
+Packets received: 7510
+  Bytes received: 7510
+      Bytes sent: 7510
+         Drop in: 7510
+        Drop out: 0
+        Error in: 0
+       Error out: 0
+         Fifo in: 0
+        Fifo out: 0
+
+            Name: ens33
+Packets received: 46014
+  Bytes received: 19072
+      Bytes sent: 19072
+         Drop in: 19072
+        Drop out: 0
+        Error in: 0
+       Error out: 0
+         Fifo in: 0
+        Fifo out: 0
+
+            Name: ens37
+Packets received: 9682
+  Bytes received: 10779
+      Bytes sent: 10779
+         Drop in: 10779
+        Drop out: 0
+        Error in: 0
+       Error out: 0
+         Fifo in: 0
+        Fifo out: 0
+</code></pre><h3 id=network-interfaces-status>Network interfaces status</h3><p>To fetch the network status of the network interfaces, use the following command in <code>pmctl</code>:</p><pre><code>&gt; pmctl status network interfaces
+            Name: lo
+           Index: 1
+             MTU: 65536
+           Flags: up loopback
+Hardware Address: 
+       Addresses: 127.0.0.1/8 ::1/128
+
+            Name: ens33
+           Index: 2
+             MTU: 1500
+           Flags: up broadcast multicast
+Hardware Address: 00:0c:29:7c:6f:84
+       Addresses: 172.16.61.128/24 fe80::c099:2598:cc4c:14d1/64
+
+            Name: ens37
+           Index: 3
+             MTU: 1500
+           Flags: up broadcast multicast
+Hardware Address: 00:0c:29:7c:6f:8e
+       Addresses: 172.16.61.134/24 fe80::be9:7746:7729:3e2/64
+</code></pre><h3 id=configure-network-link-section-using-pmctl>Configure Network Link Section Using pmctl</h3><p>You can configure the network links using <code>pmctl</code> command. The following section lists the commands you can use to configure network links.</p><h4 id=configure-network-dhcp>Configure Network dhcp</h4><pre><code>pmctl network set-dhcp &lt;deviceName&gt; &lt;DHCPMode&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcp ens37 ipv4
+</code></pre><h4 id=configure-network-linklocaladdressing>Configure network linkLocalAddressing</h4><pre><code>pmctl network set-link-local-addr &lt;deviceName&gt; &lt;linkLocalAddressingMode&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-link-local-addr ens37 ipv4
+</code></pre><h4 id=configure-network-multicastdns>Configure network multicastDNS</h4><pre><code>pmctl network set-multicast-dns &lt;deviceName&gt; &lt;MulticastDNSMode&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-multicast-dns ens37 resolve
+</code></pre><h4 id=configure-network-address>Configure network address</h4><pre><code>pmctl network add-link-address &lt;deviceName&gt; address &lt;Address&gt; peer &lt;Address&gt; label &lt;labelValue&gt; scope &lt;scopeValue&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-link-address ens37 address 192.168.0.15/24 peer 192.168.10.10/24 label ipv4 scope link
+</code></pre><h4 id=configure-network-route>Configure network route</h4><pre><code>pmctl network add-route dev &lt;deviceName&gt; gw &lt;Gateway&gt; gwonlink &lt;GatewayOnlink&gt; src &lt;Source&gt; dest &lt;Destination&gt; prefsrc &lt;preferredSource&gt; table &lt;Table&gt; scope &lt;Scope&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-route dev ens33 gw 192.168.1.0 gwonlink no src 192.168.1.15/24 dest 192.168.10.10/24 prefsrc 192.168.8.9 table 1234 scope link
+</code></pre><h4 id=configure-network-dns>Configure network dns</h4><pre><code>pmctl network add-dns dev &lt;deviceName&gt; dns &lt;dnslist&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-dns dev ens37 dns 8.8.8.8,8.8.4.4,8.8.8.1,8.8.8.2
+</code></pre><h4 id=configure-network-domains>Configure network domains</h4><pre><code>pmctl network add-domain dev &lt;deviceName&gt; domains &lt;domainlist&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-domain dev ens37 domains test1.com,test2.com,test3.com,test4.com
+</code></pre><h4 id=configure-network-ntp>Configure network ntp</h4><pre><code>pmctl network add-ntp dev &lt;deviceName&gt; ntp &lt;ntplist&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-ntp dev ens37 ntp 198.162.1.15,test3.com
+</code></pre><h4 id=configure-network-ipv6acceptra>Configure network ipv6AcceptRA</h4><pre><code>pmctl network set-ipv6-accept-ra &lt;deviceName&gt; &lt;IPv6AcceptRA&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-ipv6-accept-ra ens37 false
+</code></pre><h4 id=configure-link-mode>Configure link mode</h4><pre><code>pmctl network set-link-mode dev &lt;device&gt; mode &lt;unmanagedValue&gt; arp &lt;arpValue&gt; mc &lt;multicastValue&gt; amc &lt;allmulticastValue&gt; pcs &lt;PromiscuousValue&gt; rfo &lt;RequiredForOnline&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-link-mode dev ens37 arp 1 mc no amc true pcs yes rfo on
+</code></pre><h4 id=configure-link-mtubytes>Configure link mtubytes</h4><pre><code>pmctl network set-mtu &lt;deviceName&gt; &lt;mtubytesValue&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-mtu ens37 2048
+</code></pre><h4 id=configure-link-mac>Configure link mac</h4><pre><code>pmctl network set-mac &lt;deviceName&gt; &lt;MACAddress&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-gmac ens37 00:a0:de:63:7a:e6
+</code></pre><h4 id=configure-link-group>Configure link group</h4><pre><code>pmctl network set-group &lt;deviceName&gt; &lt;groupValue&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-group ens37 2147483647
+</code></pre><h4 id=configure-link-requiredfamilyforonline>Configure link requiredFamilyForOnline</h4><pre><code>pmctl network set-rf-online &lt;deviceName&gt; &lt;familyValue&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-rf-online ens37 ipv4
+</code></pre><h4 id=configure-link-activationpolicy>Configure link activationPolicy</h4><pre><code>pmctl network set-active-policy &lt;deviceName&gt; &lt;policyValue&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-active-policy ens37 always-up
+</code></pre><h4 id=configure-network-routingpolicyrule>Configure network routingPolicyRule</h4><pre><code>pmctl network add-rule dev &lt;deviceName&gt; tos &lt;TypeOfService&gt; from &lt;Address&gt; to &lt;Address&gt; fwmark &lt;FirewallMark&gt; table &lt;Table&gt; prio &lt;Priority&gt; iif &lt;IncomingInterface&gt; oif &lt;OutgoingInterface&gt; srcport &lt;SourcePort&gt; destport &lt;DestinationPort&gt; ipproto &lt;IPProtocol&gt; invertrule &lt;InvertRule&gt; family &lt;Family&gt; usr &lt;User&gt; suppressprefixlen &lt;SuppressPrefixLength&gt; suppressifgrp &lt;SuppressInterfaceGroup&gt; type &lt;Type&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-rule dev ens37 tos 12 from 192.168.1.10/24 to 192.168.2.20/24 fwmark 7/255 table 8 prio 3 iif ens37 oif ens37 srcport 8000-8080 destport 9876 ipproto 17 invertrule yes family ipv4 usr 1001 suppressprefixlen 128 suppressifgrp 2098 type prohibit
+</code></pre><h4 id=remove-network-routingpolicyrule>Remove network routingPolicyRule</h4><pre><code>pmctl network delete-rule dev &lt;deviceName&gt; tos &lt;TypeOfService&gt; from &lt;Address&gt; to &lt;Address&gt; fwmark &lt;FirewallMark&gt; table &lt;Table&gt; prio &lt;Priority&gt; iif &lt;IncomingInterface&gt; oif &lt;OutgoingInterface&gt; srcport &lt;SourcePort&gt; destport &lt;DestinationPort&gt; ipproto &lt;IPProtocol&gt; invertrule &lt;InvertRule&gt; family &lt;Family&gt; usr &lt;User&gt; suppressprefixlen &lt;SuppressPrefixLength&gt; suppressifgrp &lt;SuppressInterfaceGroup&gt; type &lt;Type&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network delete-rule dev ens37 tos 12 from 192.168.1.10/24 to 192.168.2.20/24 fwmark 7/255 table 8 prio 3 iif ens37 oif ens37 srcport 8000-8080 destport 9876 ipproto 17 invertrule yes family ipv4 usr 1001 suppressprefixlen 128 suppressifgrp 2098 type prohibit
+</code></pre><h4 id=configure-network-dhcpv4-ids>Configure network DHCPv4 id&rsquo;s</h4><pre><code>pmctl network set-dhcpv4-id dev &lt;deviceName&gt; clientid &lt;ClientIdentifier&gt; vendorclassid &lt;VendorClassIdentifier&gt; iaid &lt;IAID&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv4-id dev ens37 clientid duid vendorclassid 101 iaid 201
+</code></pre><h4 id=configure-network-dhcpv4-duid>Configure network DHCPv4 duid</h4><pre><code>pmctl network set-dhcpv4-duid dev &lt;deviceName&gt; duidtype &lt;DUIDType&gt; duidrawdata &lt;DUIDRawData&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv4-duid dev ens37 duidtype vendor duidrawdata af:03:ff:87
+</code></pre><h4 id=configure-network-dhcpv4-use-options>Configure network DHCPv4 use options</h4><pre><code>pmctl network set-dhcpv4-use dev &lt;deviceName&gt; usedns &lt;UseDNS&gt; usentp &lt;UseNTP&gt; usesip &lt;UseSIP&gt; usemtu &lt;UseMTU&gt; usehostname &lt;UseHostname&gt; usedomains &lt;UseDomains&gt; useroutes &lt;UseRoutes&gt; usegateway &lt;UseGateway&gt; usetimezone &lt;UseTimezone&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv4-use dev ens37 usedns false usentp false usesip false usemtu yes usehostname true usedomains yes useroutes no usegateway yes usetimezone no
+</code></pre><h4 id=configure-network-dhcpv6>Configure network DHCPv6</h4><pre><code>pmctl network set-dhcpv6 dev &lt;deviceName&gt; mudurl &lt;MUDURL&gt; userclass &lt;UserClass&gt; vendorclass &lt;VendorClass&gt; prefixhint &lt;IPV6ADDRESS&gt; withoutra &lt;WithoutRA&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv6 dev ens37 mudurl https://example.com/devB userclass usrcls1,usrcls2 vendorclass vdrcls1 prefixhint 2001:db1:fff::/64 withoutra solicit
+</code></pre><h4 id=configure-network-dhcpv6-ids>Configure network DHCPv6 id&rsquo;s</h4><pre><code>pmctl network set-dhcpv6-id dev &lt;deviceName&gt; iaid &lt;IAID&gt; duidtype &lt;DUIDType&gt; duidrawdata &lt;DUIDRawData&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv6-id dev ens37 iaid 201 duidtype vendor duidrawdata af:03:ff:87
+</code></pre><h4 id=configure-network-dhcpv6-use>Configure network DHCPv6 Use</h4><pre><code>pmctl network set-dhcpv6-use dev &lt;deviceName&gt; useaddr &lt;UseAddress&gt; useprefix &lt;UsePrefix&gt; usedns &lt;UseDNS&gt; usentp &lt;UseNTP&gt; usehostname &lt;UseHostname&gt; usedomains &lt;UseDomains&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv6-use dev ens37 useaddr yes useprefix no usedns false usentp false usehostname true usedomains yes
+</code></pre><h4 id=configure-network-dhcpv6-options>Configure network DHCPv6 Options</h4><pre><code>pmctl network set-dhcpv6-option dev &lt;deviceName&gt; reqopt &lt;RequestOptions&gt; sendopt &lt;SendOption&gt; sendvendoropt &lt;SendVendorOption&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network set-dhcpv6-option dev ens37 reqopt 10,198,34 sendopt 34563 sendvendoropt 1987653,65,ipv6address,af:03:ff:87
+</code></pre><h4 id=configure-network-dhcpserver>Configure network DHCPServer</h4><pre><code>pmctl network add-dhcpv4-server dev &lt;Devicename&gt; pool-offset &lt;poolOffset&gt; pool-size &lt;PoolSize&gt; default-lease-time-sec &lt;DefaultLeaseTimeSec&gt; max-lease-time-sec &lt;MaxLeaseTimeSec&gt; dns &lt;DNS&gt; emit-dns &lt;EmitDNS&gt; emit-ntp &lt;EmitNTP&gt; emit-router &lt;EmitRouter&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-dhcpv4-server dev ens37 pool-offset 100 pool-size 200 default-lease-time-sec 10 max-lease-time-sec 30 dns 192.168.1.2,192.168.10.10,192.168.20.30 emit-dns yes emit-ntp no emit-router yes
+</code></pre><h4 id=remove-network-dhcpserver>Remove network DHCPServer</h4><pre><code>pmctl network remove-dhcpv4-server &lt;Devicename&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network remove-dhcpv4-server ens37
+</code></pre><h4 id=configure-network-ipv6sendra>Configure network IPv6SendRA</h4><pre><code>pmctl network add-ipv6ra dev &lt;deviceName&gt; rt-pref &lt;RouterPreference&gt; emit-dns &lt;EmitDNS&gt; dns &lt;DNS&gt; emit-domains &lt;EmitDomains&gt; domains &lt;Domains&gt; dns-lifetime-sec &lt;DNSLifetimeSec&gt; prefix &lt;Prefix&gt; pref-lifetime-sec &lt;PreferredLifetimeSec&gt; valid-lifetime-sec &lt;ValidLifetimeSec&gt; assign &lt;Assign&gt; route &lt;Route&gt; lifetime-sec &lt;LifetimeSec&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-ipv6ra dev ens37 rt-pref medium emit-dns yes dns 2002:da8:1::1,2002:da8:2::1 emit-domains yes domains test1.com,test2.com dns-lifetime-sec 100 prefix 2002:da8:1::/64 pref-lifetime-sec 100 valid-lifetime-sec 200 assign yes route 2001:db1:fff::/64 lifetime-sec 1000
+</code></pre><h4 id=remove-network-ipv6sendra>Remove network IPv6SendRA</h4><pre><code>pmctl network remove-ipv6ra &lt;Devicename&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network remove-ipv6ra ens37
+</code></pre><h3 id=configure-network-device-using-pmctl>Configure Network Device using <code>pmctl</code></h3><p>You can configure the network devices using <code>pmctl</code> command. Use the following commands to configure network devices.</p><h4 id=configure-vlan>Configure VLan</h4><pre><code>pmctl network create-vlan &lt;vlanName&gt; dev &lt;device&gt; id &lt;vlanId&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-vlan vlan1 dev ens37 id 101
+</code></pre><h4 id=configure-bond>Configure Bond</h4><pre><code>pmctl network create-bond &lt;bondName&gt; dev &lt;device&gt; mode &lt;modeType&gt; thp &lt;TransmitHashPolicyType&gt; ltr &lt;LACPTransmitRateType&gt; mms &lt;MIIMonitorSecTime&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-bond bond1 dev ens37,ens38 mode 802.3ad thp layer2+3 ltr slow mms 1s
+</code></pre><h4 id=configure-bond-with-default>Configure Bond with default</h4><p>Example:</p><pre><code>&gt;pmctl network create-bond bond1 dev ens37,ens38
+</code></pre><h4 id=configure-bridge-with-default>Configure Bridge with default</h4><pre><code>pmctl network create-bridge &lt;bridgeName&gt; dev &lt;device list&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-bridge br0 dev ens37,ens38
+</code></pre><h4 id=configure-macvlan>Configure MacVLan</h4><pre><code>pmctl network create-macvlan &lt;macvlanName&gt; dev &lt;device&gt; mode &lt;modeName&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-macvlan macvlan1 dev ens37 mode private 
+</code></pre><h4 id=configure-ipvlan>Configure IpVLan</h4><pre><code>pmctl network create-ipvlan &lt;ipvlanName&gt; dev &lt;device&gt; mode &lt;modeName&gt; flags &lt;flagsName&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-ipvlan ipvlan1 dev ens37 mode l2 flags vepa
+</code></pre><h4 id=configure-ipvlan-with-default>Configure IpVLan with default</h4><p>Example:</p><pre><code>&gt;pmctl network create-ipvlan ipvlan1 dev ens38
+</code></pre><h4 id=configure-vxlan>Configure VxLan</h4><pre><code>pmctl network create-vxlan &lt;vxlanName&gt; dev &lt;device&gt; remote &lt;RemoteAddress&gt; local &lt;LocalAddress&gt; group &lt;GroupAddress&gt; destport &lt;DestinationPort&gt; independent &lt;IndependentFlag&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-vxlan vxlan1 dev ens37 vni 16777215 remote 192.168.1.3 local 192.168.1.2 group 192.168.0.0 destport 4789 independent no 
+</code></pre><h4 id=configure-wireguard>Configure WireGuard</h4><pre><code>pmctl network create-wg &lt;wireguardName&gt; dev &lt;device&gt; skey &lt;privateKey&gt; pkey&lt;publicKey&gt; endpoint &lt;address:Port&gt; port &lt;listenport&gt; ips &lt;allowedIPs&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network create-wg wg1 dev ens37 skey wCmc/74PQpRoxTgqGircVFtdArZFUFIiOoyQY8kVgmI= pkey dSanSzExlryduCwNnAFt+rzpI5fKeHuJx1xx2zxEG2Q= endpoint 10.217.69.88:51820 port 51822 ips fd31:bf08:57cb::/48,192.168.26.0/24
+</code></pre><h4 id=configure-wireguard-with-default>Configure WireGuard with default</h4><p>Example:</p><pre><code>&gt;pmctl network create-wg wg1 dev ens37 skey wCmc/74PQpRoxTgqGircVFtdArZFUFIiOoyQY8kVgmI= pkey dSanSzExlryduCwNnAFt+rzpI5fKeHuJx1xx2zxEG2Q= endpoint 10.217.69.88:51820
+</code></pre><h3 id=remove-network-device-using-pmctl>Remove Network Device Using <code>pmctl</code></h3><p>To remove a network device, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network remove-netdev &lt;kindDeviceName&gt; kind &lt;kindType&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network remove-netdev ipvlan1 dev ens37 kind ipvlan
+</code></pre><h3 id=configure-link-using-pmctl>Configure link using pmctl</h3><p>Use the following commands to configure links using the <code>pmctl</code> command.</p><h4 id=configure-link-macaddress>Configure Link MACAddress</h4><pre><code>pmctl link set-mac dev &lt;deviceName&gt; macpolicy &lt;MACAddressPolicy&gt; macaddr &lt;MACAddress&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-mac dev eth0 macpolicy none macaddr 00:a0:de:63:7a:e6
+</code></pre><h4 id=configure-link-name>Configure Link Name</h4><pre><code>pmctl link set-name dev &lt;deviceName&gt; namepolicy &lt;NamePolicy&gt; name &lt;Name&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-name dev ens37 namepolicy mac,kernel,database,onboard,keep,slot,path
+</code></pre><h4 id=configure-link-alternativenames>Configure Link AlternativeNames</h4><pre><code>pmctl link set-name dev &lt;deviceName&gt; altnamespolicy &lt;AlternativeNamesPolicy&gt; altname &lt;AlternativeName&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-alt-name dev ens37 altnamespolicy mac,database,onboard,slot,path
+</code></pre><h4 id=configure-link-checksumoffload>Configure Link ChecksumOffload</h4><pre><code>pmctl link set-csum-offload dev &lt;deviceName&gt; rco &lt;ReceiveCheksumOffload&gt; tco &lt;TransmitChecksumOffload&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-csum-offload dev ens37 rxco true txco true
+</code></pre><h4 id=configure-link-tcpsegmentationoffload>Configure Link TCPSegmentationOffload</h4><pre><code>pmctl link set-tcp-offload dev &lt;deviceName&gt; tcpso &lt;TCPSegmentationOffload&gt; tcp6so &lt;TCP6SegmentationOffload&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-tcp-offload dev ens37 tcpso true tcp6so true
+</code></pre><h4 id=configure-link-genericoffload>Configure Link GenericOffload</h4><pre><code>pmctl link set-generic-offload dev &lt;deviceName&gt; gso &lt;GenericSegmentationOffload&gt; gro &lt;GenericReceiveOffload&gt; grohw &lt;GenericReceiveOffloadHardware&gt; gsomaxbytes &lt;GenericSegmentOffloadMaxBytes&gt; gsomaxseg &lt;GenericSegementOffloadMaxSegments&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-generic-offload dev ens37 gso true gro true grohw false gsomaxbytes 65536 gsomaxseg 65535
+</code></pre><h4 id=configure-link-vlantag>Configure Link VLANTAG</h4><pre><code>pmctl link set-vlan-tags dev &lt;deviceName&gt; rxvlanctaghwacl &lt;ReceiveVLANCTAGHardwareAcceleration&gt; txvlanctaghwacl &lt;TransmitVLANCTAGHardwareAcceleration&gt; rxvlanctagfilter &lt;ReceiveVLANCTAGFilter&gt; txvlanstaghwacl &lt;TransmitVLANSTAGHardwareAcceleration&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-vlan-tags dev ens37 rxvlanctaghwacl true txvlanctaghwacl false rxvlanctagfilter true txvlanstaghwacl true
+</code></pre><h1 id=configure-link-channels>Configure Link Channels</h1><pre><code>pmctl link set-channel dev &lt;deviceName&gt; rxch &lt;RxChannels&gt; txch &lt;TxChannels&gt; oth &lt;OtherChannels&gt; coch &lt;CombinedChannels&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-channel dev ens37 rxch 1024 txch 2045 och 45678 coch 32456
+</code></pre><h4 id=configure-link-buffers>Configure Link Buffers</h4><pre><code>pmctl link set-buffer dev &lt;deviceName&gt; rxbufsz &lt;RxBufferSize&gt; rxmbufsz &lt;RxMiniBufferSize&gt; rxjbufsz &lt;RxJumboBufferSize&gt; txbufsz &lt;TxBufferSize&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-buffer dev ens37 rxbufsz 100009 rxmbufsz 1998 rxjbufsz 10999888 txbufsz 83724
+</code></pre><h4 id=configure-link-queues>Configure Link Queues</h4><pre><code>pmctl link set-queue dev &lt;deviceName&gt; rxq &lt;ReceiveQueues&gt; txq &lt;TransmitQueues&gt; txqlen &lt;TransmitQueueLength&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-queue dev ens37 rxq 4096 txq 4096 txqlen 4294967294
+</code></pre><h4 id=configure-link-flowcontrols>Configure Link FlowControls</h4><pre><code>pmctl link set-flow-ctrl dev &lt;deviceName&gt; rxfctrl &lt;RxFlowControl&gt; txfctrl &lt;TxFlowControl&gt; anfctrl &lt;AutoNegotiationFlowControl&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-flow-ctrl dev ens37 rxfctrl true txfctrl true anfctrl true
+</code></pre><h4 id=configure-link-useadaptivecoalesce>Configure Link UseAdaptiveCoalesce</h4><pre><code>pmctl link set-adpt-coalesce dev &lt;deviceName&gt; uarxc &lt;UseAdaptiveRxCoalesce&gt; uatxc &lt;UseAdaptiveTxCoalesce&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-adpt-coalesce dev ens37 uarxc true uatxc true
+</code></pre><h4 id=configure-link-receivecoalesce>Configure Link ReceiveCoalesce</h4><pre><code>pmctl link set-rx-coalesce dev &lt;deviceName&gt; rxcs &lt;RxCoalesceSec&gt; rxcsirq &lt;RxCoalesceIrqSec&gt; rxcslow &lt;RxCoalesceLowSec&gt; rxcshigh &lt;RxCoalesceHighSec&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-rx-coalesce dev ens37 rxcs 23 rxcsirq 56 rxcslow 5 rxcshigh 76788
+</code></pre><h4 id=configure-link-transmitcoalesce>Configure Link TransmitCoalesce</h4><pre><code>pmctl link set-tx-coalesce dev &lt;deviceName&gt; txcs &lt;TxCoalesceSec&gt; txcsirq &lt;TxCoalesceIrqSec&gt; txcslow &lt;TxCoalesceLowSec&gt; txcshigh &lt;TxCoalesceHighSec&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-tx-coalesce dev ens37 txcs 23 txcsirq 56 txcslow 5 txcshigh 76788
+</code></pre><h4 id=configure-link-receivemaxcoalescedframes>Configure Link ReceiveMaxCoalescedFrames</h4><pre><code>pmctl link set-rx-coald-frames dev &lt;deviceName&gt; rxcmf &lt;RxMaxCoalescedFrames&gt; rxcmfirq &lt;RxMaxCoalescedIrqFrames&gt; rxcmflow &lt;RxMaxCoalescedLowFrames&gt; rxcmfhigh &lt;RxMaxCoalescedHighFrames&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-rx-coald-frames dev ens37 rxmcf 23 rxmcfirq 56 rxmcflow 5 rxmcfhigh 76788
+</code></pre><h4 id=configure-link-transmitmaxcoalescedframes>Configure Link TransmitMaxCoalescedFrames</h4><pre><code>pmctl link set-tx-coald-frames dev &lt;deviceName&gt; txcmf &lt;TxMaxCoalescedFrames&gt; txcmfirq &lt;TxMaxCoalescedIrqFrames&gt; txcmflow &lt;TxMaxCoalescedLowFrames&gt; txcmfhigh &lt;TxMaxCoalescedHighFrames&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-tx-coald-frames dev ens37 txmcf 23 txmcfirq 56 txmcflow 5 txmcfhigh 76788
+</code></pre><h4 id=configure-link-coalescepacketrate>Configure Link CoalescePacketRate</h4><pre><code>pmctl link set-coalesce-pkt dev &lt;deviceName&gt; cprlow &lt;CoalescePacketRateLow&gt; cprhigh &lt;CoalescePacketRateHigh&gt; cprsis &lt;CoalescePacketRateSampleIntervalSec&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-coalesce-pkt dev ens37 cprlow 1000 cprhigh 32456 cprsis 102
+</code></pre><h4 id=configure-other-links>Configure Other Links</h4><p>You can configure links for Alias, Description, port, duplex, and so on.</p><pre><code>pmctl link set-link dev ens37 alias &lt;Alias&gt; desc &lt;Description&gt; mtub &lt;MTUBytes&gt; bits &lt;BitsPerSecond&gt; duplex &lt;Duplex&gt; auton &lt;AutoNegotiation&gt; wol &lt;WakeOnLan&gt; wolpassd &lt;WakeOnLanPassword&gt; port &lt;Port&gt; advertise &lt;Advertise&gt; lrxo &lt;LargeReceiveOffload&gt; ntf &lt;NTupleFilter&gt; ssbcs &lt;StatisticsBlockCoalesceSec&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl link set-link dev ens37 alias ifalias desc configdevice mtub 10M bits 5G duplex full auton no wol phy,unicast,broadcast,multicast,arp,magic,secureon wolpassd cb:a9:87:65:43:21  port mii advertise 10baset-half,10baset-full,20000basemld2-full lrxo true ntf true ssbcs 1024
+</code></pre><h3 id=ethtool-status>Ethtool status</h3><p>To fetch the Ethtool Status, use the following command:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>
+<span style=color:#4e9a06>\#</span>Get Ethtool all status 
+
+	pmctl status ethtool &lt;LINK&gt;
+
+Example: 
+
+	&gt;pmctl status ethtool ens37
+
+<span style=color:#4e9a06>\#</span>Get Ethtool status based on action
+
+	pmctl status ethtool &lt;LINK&gt; &lt;ACTION&gt;
+
+Example:
+
+	&gt;pmctl status ethtool ens37 bus
+
+
+
+
+
+
+
+</code></pre></div></div><div class=td-content style=page-break-before:always><h1 id=pg-f509c300882e0da178d124743129006b>4 - User, Group, and Host Management</h1><h2 id=post-method>POST Method</h2><h3 id=add-a-group>Add a Group</h3><p>To add a group, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
 </code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Gid</td><td>ID of the group that you want to add.</td></tr><tr><td>Name</td><td>Name of the group that you want to add.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
@@ -1271,6 +1472,128 @@ fs.file-max: 9223372036854775807
 </code></pre><p>or</p><pre><code>pmctl user a &lt;UserName&gt; -d &lt;HomeDir&gt; -grp &lt;groupsList&gt; -u &lt;Uid&gt; -g &lt;Gid&gt; -s &lt;Shell&gt; -p &lt;xxxxxxx&gt;
 </code></pre><h4 id=remove-a-user-1>Remove a User</h4><p>To remove a user, use the following command in the <code>pmctl</code> tool:</p><pre><code>pmctl user remove &lt;UserName&gt;
 </code></pre><p>or</p><pre><code>pmctl user r &lt;UserName&gt;
-</code></pre><h2 id=get-user-details>GET User Details</h2><p>To fetch user details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view</code></pre></div></main></div></div><div class=container><footer class="container-fluid p-0 m-0 py-5 row d-print-none"><div class="container-fluid p-0"><div class="row d-flex justify-content-between align-items-center mx-0"><div class="order-sm-1 left-links"><ul class="list-inline mb-0"><li class="list-inline-item h1 px-3 m-0" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class="text-dark ml-4" target=_blank rel="noopener noreferrer" href=https://github.com/vmware/photon#readme><i class="fab fa-github">&nbsp;</i>
+</code></pre><h2 id=get-user-details>GET User Details</h2><p>To fetch user details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-69b35e38a6bf430dca8828ff9a99c879>5 - Package Management</h1><p>You can use the <code>pmctl</code> commands to manage the available packages and perform various actions on the packages. The following section lists the <code>pmctl</code> commands for various services related to package management.</p><h2 id=list-all-packages>List all packages</h2><p>To list all the packages, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg list
+</code></pre><p>Example:</p><pre><code>&gt;pmctl pkg list
+</code></pre><h2 id=list-specific-packages>List specific packages</h2><p>To list a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg list &lt;pkg&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl pkg list lsof
+</code></pre><h2 id=package-details>Package Details</h2><p>To get the details of a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg info &lt;pkg&gt;
+</code></pre><p>Example:</p><pre><code>pmctl pkg info lsof
+</code></pre><h2 id=download-metadata>Download metadata</h2><p>To download the package metadata, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg makecache
+</code></pre><p>Example:</p><pre><code>&gt;pmctl pkg makecache
+</code></pre><h2 id=clean-cache>Clean cache</h2><p>To clean the package cache, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg clean
+</code></pre><p>Example:</p><pre><code>&gt;pmctl pkg clean
+</code></pre><h2 id=list-repositories>List repositories</h2><p>To list the repositories, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg repolist
+</code></pre><p>Example:</p><pre><code>pmctl pkg repolist
+</code></pre><h2 id=search-packages>Search packages</h2><p>To search a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg search &lt;pattern&gt;
+</code></pre><p>Example:</p><pre><code>pmctl pkg search lsof
+</code></pre><h2 id=get-update-info>Get update info</h2><p>To get the update details of the packages, use the following commands in <code>pmctl</code>:</p><pre><code>&gt; pmctl pkg updateinfo
+&gt; pmctl pkg updateinfo --list
+&gt; pmctl pkg updateinfo --info
+</code></pre><h2 id=install-a-package>Install a package</h2><p>To install a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg install &lt;pkg&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl install lsof
+</code></pre><h2 id=update-a-package>Update a package</h2><p>To update a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg update &lt;pkg&gt;
+</code></pre><p>Example:</p><pre><code>pmctl pkg update lsof
+</code></pre><h2 id=remove-a-package>Remove a package</h2><p>To remove a specific package, use the following command in <code>pmctl</code>:</p><pre><code>pmctl pkg remove &lt;pkg&gt;
+</code></pre><p>Example:</p><pre><code>pmctl pkg remove lsof
+</code></pre><h2 id=update-all>Update all</h2><p>To update all the packages, use th following command in <code>pmctl</code>:</p><pre><code>pmctl pkg update
+</code></pre><p>Example:</p><pre><code>pmctl pkg update
+</code></pre><h2 id=common-options>Common options</h2><p>In <code>pmctl</code>, run commands in the following format to use other common options:</p><pre><code>&gt; pmctl pkg [--allowerasing][--best][--cacheonly][--config=&lt;file&gt;][--disablerepo=&lt;pattern&gt;[,..]]
+	[--disableexcludes][--downloaddir=&lt;dir&gt;][--downloadonly][--enablerepo=&lt;pattern&gt;[,..]]
+	[--exclude=&lt;pkg&gt;][--installroot=&lt;dir&gt;][--noautoremove][--nogpgcheck][--noplugins]
+	[--rebootrequired][--refresh][--releaserver=&lt;release&gt;][--repoid=&lt;repo&gt;]
+	[--repofrompath=&lt;repo&gt;,&lt;dir&gt;][--security][--secseverity=&lt;sev&gt;][--setopt=&lt;key=value&gt;[,..]]
+	[--skipconflicts][--skipdigest][--skipobsletes][--skipsignature]
+pmctl pkg --repoid=photon-debuginfo list lsof*
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-eea342573b6f12212bb4275c17b17d41>6 - Firewall nftables Management</h1><p>Use <code>pmctl</code> command to manage the firewall nftables. The following section lists the command that you can use to manage the nftables.</p><h2 id=add-nftable>Add nftable</h2><p>To add an nftable, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network add-nft-table name &lt;TABLE&gt; family &lt;FAMILY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-nft-table name test99 family inet
+</code></pre><h2 id=delete-nftable>Delete nftable</h2><p>To delete an nftable, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network delete-nft-table name &lt;TABLE&gt; family &lt;FAMILY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network delete-nft-table name test99 family inet
+</code></pre><h2 id=show-nftable>Show nftable</h2><p>To show an nftable, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network show-nft-table name &lt;TABLE&gt; family &lt;FAMILY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network show-nft-table name test99 family inet
+</code></pre><h2 id=show-all-nftables>Show all nftables</h2><p>To show all the nftables, use the following command in <code>pmctl</code>:</p><pre><code>&gt;pmctl network show-nft-table
+</code></pre><h2 id=add-nftable-chain>Add nftable chain</h2><p>To add an nftable chain, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network add-nft-chain name &lt;CHAIN&gt; table &lt;TABLE&gt; family &lt;FAMILY&gt; hook &lt;HOOK&gt; priority &lt;PRIORITY&gt; type &lt;TYPE&gt; policy &lt;POLICY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network add-nft-chain name chain1 table test99 family inet hook input priority 300 type filter policy drop
+</code></pre><h2 id=delete-nft-chain>Delete nft chain</h2><p>To delete an nftable chain, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network delete-nft-chain name &lt;CHAIN&gt; table &lt;TABLE&gt; family &lt;FAMILY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network delete-nft-chain name chain1 table test99 family inet
+</code></pre><h2 id=show-nft-chain>Show nft chain</h2><p>To show an nftable chain, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network show-nft-chain name &lt;CHAIN&gt; table &lt;TABLE&gt; family &lt;FAMILY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl network show-nft-chain name chain1 table test99 family inet
+</code></pre><h2 id=show-all-nft-chain>Show all nft chain</h2><p>To show all nftable chains, use the following command in <code>pmctl</code>:</p><pre><code>&gt;pmctl network show-nft-chain
+</code></pre><h2 id=save-all-nftables>Save all nftables</h2><p>To save all nftables, use the following command in <code>pmctl</code>:</p><pre><code>&gt;pmctl network nft-save
+</code></pre><h2 id=run-nft-commands>Run nft commands</h2><p>To run the nftables command, use the following command in <code>pmctl</code>:</p><pre><code>pmctl network nft-run &lt;COMMAND&gt;
+</code></pre><p>Examples:</p><pre><code>&gt;pmctl network nft-run nft add table inet test99
+
+
+&gt;pmctl network nft-run nft add chain inet test99 my_chain '{ type filter hook input priority 0; }'
+
+
+&gt;pmctl network nft-run nft add rule inet test99 my_chain tcp dport {telnet, http, https} accept
+
+
+&gt;pmctl network nft-run nft delete rule inet test99 my_chain handle 3
+
+
+&gt;pmctl network nft-run nft delete chain inet test99 my_chain
+
+
+&gt;pmctl network nft-run nft delete table inet test99
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-4bac95481e3112fa9615444f698541f1>7 - Process Details and Configuration Management</h1><h2 id=net-device-property-status>Net device property status</h2><p>To get the status of the network device property, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc net path &lt;PATH&gt; property &lt;PROPERTY&gt;
+</code></pre><p>Example:</p><pre><code>pmctl status proc net path ipv6 property calipso_cache_bucket_size
+</code></pre><p>Response:</p><pre><code>                 Path: ipv6
+             Property: calipso_cache_bucket_size
+                Value: 10
+</code></pre><h2 id=net-device-property-configuration>Net device property configuration</h2><p>To get the network device property configuration details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl proc net path &lt;PATH&gt; property &lt;PROPERTY&gt; value &lt;VALUE&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl proc net path ipv6 property calipso_cache_bucket_size value 12
+</code></pre><h2 id=net-device-link-property-status>Net device link property status</h2><p>To get the status of the network device link, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc net path &lt;PATH&gt; dev &lt;LINK&gt; property &lt;PROPERTY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc net path ipv6 dev ens37 property mtu
+</code></pre><p>Response:</p><pre><code>                 Path: ipv6
+                 Link: ens37
+             Property: mtu
+                Value: 1300
+</code></pre><h2 id=net-device-link-property-configuration>Net device link property configuration</h2><p>To get the configuration details of the network device link, use the following command in <code>pmctl</code>:</p><pre><code>pmctl proc net path &lt;PATH&gt; dev &lt;LINK&gt; property &lt;PROPERTY&gt; value &lt;VALUE&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl proc net path ipv6 dev ens37 property mtu value 1500
+</code></pre><h2 id=vm-property-status>VM property status</h2><p>To get the property status of the virtual machine, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc vm &lt;PROPERTY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc vm page-cluster
+</code></pre><p>Response:</p><pre><code>             Property: page-cluster
+                Value: 3
+</code></pre><h2 id=vm-property-configuration>VM property configuration</h2><p>To get the property configuration details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl proc vm &lt;PROPERTY&gt; &lt;VALUE&gt;
+</code></pre><p>Example:</p><pre><code>pmctl proc vm page-cluster 5
+</code></pre><h2 id=system-property-status>System property status</h2><p>To get system property details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc system &lt;PROPERTY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc system cpuinfo
+</code></pre><h2 id=arp-status>ARP status</h2><p>To get the ARP status details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc arp
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc arp
+</code></pre><p>Response:</p><pre><code>         IPAddress: 172.16.61.254
+            HWType: 0x1
+             Flags: 0x2
+         HWAddress: 00:50:56:f3:5d:48
+              Mask: *
+            Device: ens37
+
+         IPAddress: 172.16.61.254
+            HWType: 0x1
+             Flags: 0x2
+         HWAddress: 00:50:56:f3:5d:48
+              Mask: *
+            Device: ens33
+
+         IPAddress: 172.16.61.2
+            HWType: 0x1
+             Flags: 0x2
+         HWAddress: 00:50:56:f4:e7:22
+              Mask: *
+            Device: ens33
+
+         IPAddress: 172.16.61.2
+            HWType: 0x1
+             Flags: 0x2
+         HWAddress: 00:50:56:f4:e7:22
+              Mask: *
+            Device: ens37
+</code></pre><h2 id=netstat-details>Netstat Details</h2><p>To get the netstat details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc netstat &lt;PROTOCOL&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc netstat tcp
+</code></pre><h2 id=process-status>Process status</h2><p>To get the process status details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc process &lt;PID&gt; &lt;PROPERTY&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc process 88157 pid-memory-percent
+</code></pre><h2 id=protopidstat-status>Protopidstat status</h2><p>To get the protopidstat status details, use the following command in <code>pmctl</code>:</p><pre><code>pmctl status proc protopidstat &lt;PID&gt; &lt;PROTOCOL&gt;
+</code></pre><p>Example:</p><pre><code>&gt;pmctl status proc protopidstat 89502 tcp
+</code></pre></div></main></div></div><div class=container><footer class="container-fluid p-0 m-0 py-5 row d-print-none"><div class="container-fluid p-0"><div class="row d-flex justify-content-between align-items-center mx-0"><div class="order-sm-1 left-links"><ul class="list-inline mb-0"><li class="list-inline-item h1 px-3 m-0" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class="text-dark ml-4" target=_blank rel="noopener noreferrer" href=https://github.com/vmware/photon#readme><i class="fab fa-github">&nbsp;</i>
 GitHub</a></li><li class="list-inline-item h1 px-3 m-0" data-toggle=tooltip data-placement=top title=Slack aria-label=Slack><a class="text-dark ml-4" target=_blank rel="noopener noreferrer" href=https://vmwarecode.slack.com><i class="fab fa-slack">&nbsp;</i>
 Slack</a></li></ul></div><div class="order-sm-3 justify-items-end footer-logo"><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.4375 135.7375" height="135.7375" width="511.4375" id="svg3355"><defs id="defs3359"><clipPath id="clipPath3387" clipPathUnits="userSpaceOnUse"><path id="path3389" d="M142.293 245.191l494.93 337.36L74.8398 348.098"/></clipPath><linearGradient id="linearGradient3391" spreadMethod="pad" gradientTransform="matrix(-493.8,-339.007,339.007,-493.8,601.845,634.081)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3393" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3395" offset="1" style="stop-opacity:1;stop-color:#80c64c"/></linearGradient><clipPath id="clipPath3405" clipPathUnits="userSpaceOnUse"><path id="path3407" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></clipPath><linearGradient id="linearGradient3409" spreadMethod="pad" gradientTransform="matrix(-304.079,-208.759,208.759,-304.079,420.197,734.568)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3411" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3413" offset="1" style="stop-opacity:1;stop-color:#22437e"/></linearGradient><clipPath id="clipPath3423" clipPathUnits="userSpaceOnUse"><path id="path3425" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></clipPath><linearGradient id="linearGradient3427" spreadMethod="pad" gradientTransform="matrix(-255.101,-175.134,175.134,-255.101,686.667,486.234)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3429" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3431" offset="1" style="stop-opacity:1;stop-color:#65a5de"/></linearGradient><clipPath id="clipPath3441" clipPathUnits="userSpaceOnUse"><path id="path3443" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></clipPath><linearGradient id="linearGradient3445" spreadMethod="pad" gradientTransform="matrix(-102.35,-449.574,449.574,-102.35,800.888,513.826)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3447" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3449" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3459" clipPathUnits="userSpaceOnUse"><path id="path3461" d="M481.316 864.746 635.938 602.125l-41.313 301.32"/></clipPath><linearGradient id="linearGradient3463" spreadMethod="pad" gradientTransform="matrix(67.7401,274.401,-274.401,67.7401,532.514,627.656)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3465" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3467" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3477" clipPathUnits="userSpaceOnUse"><path id="path3479" d="M1085.54 913.828 683.598 585.359l456.522 219.75"/></clipPath><linearGradient id="linearGradient3481" spreadMethod="pad" gradientTransform="matrix(441.375,262.068,-262.068,441.375,675.147,599.59)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3483" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3485" offset="1" style="stop-opacity:1;stop-color:#22638b"/></linearGradient><clipPath id="clipPath3495" clipPathUnits="userSpaceOnUse"><path id="path3497" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></clipPath><linearGradient id="linearGradient3499" spreadMethod="pad" gradientTransform="matrix(450.785,-274.875,274.875,450.785,694.818,558.101)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3501" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3503" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient><clipPath id="clipPath3513" clipPathUnits="userSpaceOnUse"><path id="path3515" d="M209.754 773.73l382.32-187.417L280.926 872.391"/></clipPath><linearGradient id="linearGradient3517" spreadMethod="pad" gradientTransform="matrix(-360.263,223.047,-223.047,-360.263,601.957,602.271)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3519" offset="0" style="stop-opacity:1;stop-color:#ffffff"/><stop id="stop3521" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient></defs><g transform="matrix(1.25,0,0,-1.25,0,135.7375)" id="g3363"><g transform="scale(0.1,0.1)" id="g3365"><path id="path3367" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1544.2 536.77c69.27.0 114.66 37.031 114.66 91.972v1.192c0 59.726-44.79 90.781-112.28 90.781h-105.7V536.77h103.32zm-150.51 203.652c0 13.141 10.75 23.891 23.29 23.891h133.19c94.36.0 156.47-50.172 156.47-132.586v-1.192c0-90.183-75.25-136.765-164.24-136.765h-101.52V367.148c0-13.132-10.76-23.886-23.9-23.886-12.54.0-23.29 10.754-23.29 23.886v373.274"/><path id="path3369" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1765.51 743.41c0 13.141 10.76 23.887 23.29 23.887 13.14.0 23.9-10.746 23.9-23.887V578.574h241.28V743.41c0 13.141 10.74 23.887 23.88 23.887 12.55.0 23.3-10.746 23.3-23.887V367.148c0-13.132-10.75-23.886-23.3-23.886-13.14.0-23.88 10.754-23.88 23.886v167.227H1812.7V367.148c0-13.132-10.76-23.886-23.9-23.886-12.53.0-23.29 10.754-23.29 23.886V743.41"/><path id="path3371" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2554.86 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3373" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2756.35 720.715h-121.24c-11.94.0-22.09 9.555-22.09 21.5.0 11.941 10.15 22.098 22.09 22.098h290.26c11.94.0 22.1-10.157 22.1-22.098.0-11.945-10.16-21.5-22.1-21.5h-121.23V367.148c0-13.132-10.75-23.886-23.9-23.886-13.13.0-23.89 10.754-23.89 23.886v353.567"/><path id="path3375" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3332.78 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3377" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3458.31 742.813c0 12.539 10.75 23.292 23.29 23.292h6.57c10.75.0 17.32-5.375 23.89-13.742l253.83-323.691v315.332c0 12.547 10.14 23.293 23.29 23.293 12.54.0 22.69-10.746 22.69-23.293V366.555c0-12.539-8.96-22.09-21.5-22.09h-2.4c-10.14.0-17.31 5.965-24.48 14.324l-259.2 331.465V366.555c0-12.539-10.14-23.293-23.29-23.293-12.54.0-22.69 10.754-22.69 23.293v376.258"/><path id="path3379" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3982.91 759.98c0 4.528 3.13 7.665 7.66 7.665h2.09c3.14.0 5.22-1.395 6.97-3.829l37.6-58.503 38.3 58.503c1.74 2.434 3.83 3.829 6.61 3.829h2.09c3.83.0 7.32-3.485 7.32-7.665v-94.011c0-4.18-3.49-7.66-7.66-7.66-4.18.0-7.31 3.48-7.31 7.66v72.426l-32.38-48.403c-1.75-2.785-3.83-4.527-6.97-4.527-3.13.0-5.22 1.742-6.96 4.527l-32.04 48.403v-72.426c0-4.18-3.48-7.66-7.66-7.66s-7.66 3.48-7.66 7.66v94.011zm-73.47-7.308h-28.91c-3.82.0-7.3 3.48-7.3 7.308.0 3.836 3.48 7.317 7.3 7.317h72.78c4.18.0 7.31-3.481 7.31-7.317.0-3.828-3.13-7.308-7.31-7.308h-28.55v-86.703c0-4.18-3.48-7.66-8.01-7.66-4.18.0-7.31 3.48-7.31 7.66v86.703"/><path id="path3381" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m597.898 989.039c-236.39.0-428.714-192.324-428.714-428.719.0-236.39 192.324-428.715 428.714-428.715 236.395.0 428.722 192.325 428.722 428.715.0 236.395-192.327 428.719-428.722 428.719zm0-954.289c-289.796.0-525.566 235.773-525.566 525.57s235.77 525.57 525.566 525.57c289.801.0 525.572-235.773 525.572-525.57S887.699 34.75 597.898 34.75"/><g id="g3383"><g clip-path="url(#clipPath3387)" id="g3385"><path id="path3397" style="fill:url(#linearGradient3391);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M142.293 245.191l494.93 337.36L74.8398 348.098"/></g></g><path id="path3399" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m167.938 304.09c-4.524 34.332-36.024 58.496-70.356 53.973-34.332-4.52-58.5-36.02-53.9765-70.352 4.5234-34.336 36.0234-58.5 70.3555-53.977 34.332 4.524 58.5 36.02 53.977 70.356"/><g id="g3401"><g clip-path="url(#clipPath3405)" id="g3403"><path id="path3415" style="fill:url(#linearGradient3409);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></g></g><path id="path3417" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m124.875 636.605c-4.523 34.333-36.0234 58.5-70.3555 53.977C20.1875 686.059-3.98047 654.559.542969 620.227 5.06641 585.895 36.5664 561.727 70.8984 566.25c34.3356 4.523 58.4996 36.023 53.9766 70.355"/><g id="g3419"><g clip-path="url(#clipPath3423)" id="g3421"><path id="path3433" style="fill:url(#linearGradient3427);fill-opacity:1;fill-rule:nonzero;stroke:none" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></g></g><path id="path3435" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m541.352 289.715c-4.524 34.332-36.024 58.5-70.356 53.973-34.336-4.52-58.5-36.02-53.976-70.352 4.523-34.336 36.023-58.5 70.355-53.977 34.332 4.524 58.496 36.024 53.977 70.356"/><g id="g3437"><g clip-path="url(#clipPath3441)" id="g3439"><path id="path3451" style="fill:url(#linearGradient3445);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></g></g><path id="path3453" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m846.91 110.883c-26.609 22.164-66.144 18.558-88.308-8.051-22.164-26.6132-18.559-66.1406 8.05-88.3125 26.61-22.16013 66.145-18.55075 88.309 8.0586 22.164 26.6016 18.559 66.1446-8.051 88.3049"/><g id="g3455"><g clip-path="url(#clipPath3459)" id="g3457"><path id="path3469" style="fill:url(#linearGradient3463);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M481.316 864.746 635.938 602.125l-41.313 301.32"/></g></g><path id="path3471" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m491.863 848.059c26.203-22.645 65.797-19.758 88.442 6.441 22.64 26.203 19.758 65.797-6.446 88.441-26.199 22.645-65.796 19.758-88.437-6.445-22.645-26.199-19.762-65.797 6.441-88.437"/><g id="g3473"><g clip-path="url(#clipPath3477)" id="g3475"><path id="path3487" style="fill:url(#linearGradient3481);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1085.54 913.828 683.598 585.359l456.522 219.75"/></g></g><path id="path3489" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1050.12 855.145c2.26-34.555 32.1-60.743 66.66-58.485 34.55 2.254 60.74 32.098 58.48 66.653-2.25 34.554-32.09 60.742-66.65 58.484-34.56-2.254-60.74-32.098-58.49-66.652"/><g id="g3491"><g clip-path="url(#clipPath3495)" id="g3493"><path id="path3505" style="fill:url(#linearGradient3499);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></g></g><path id="path3507" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1108.75 338.84c-29.47-18.176-38.63-56.805-20.46-86.281 18.18-29.477 56.81-38.637 86.29-20.461 29.47 18.179 38.63 56.808 20.45 86.285-18.17 29.476-56.8 38.637-86.28 20.457"/><g id="g3509"><g clip-path="url(#clipPath3513)" id="g3511"><path id="path3523" style="fill:url(#linearGradient3517);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M209.754 773.73l382.32-187.417L280.926 872.391"/></g></g><path id="path3525" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m278.168 769.453c29.598 17.977 39.02 56.543 21.043 86.145-17.977 29.597-56.543 39.019-86.145 21.043-29.597-17.977-39.019-56.543-21.043-86.141 17.977-29.602 56.543-39.023 86.145-21.047"/><path id="path3527" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 718.262c8.172-9.321 22.351-10.246 31.672-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3529" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m827.305 484.969c8.175-9.321 22.355-10.25 31.672-2.074 9.32 8.171 10.25 22.355 2.074 31.671-8.172 9.321-22.356 10.247-31.672 2.075-9.32-8.176-10.246-22.356-2.074-31.672"/><path id="path3531" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m906.813 877.289c8.175-9.316 22.355-10.246 31.675-2.07 9.317 8.172 10.246 22.351 2.071 31.672-8.172 9.32-22.356 10.246-31.672 2.074-9.321-8.176-10.246-22.356-2.074-31.676"/><path id="path3533" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m987.531 166.984c8.172-9.32 22.359-10.246 31.669-2.074 9.32 8.176 10.25 22.356 2.08 31.676-8.18 9.316-22.358 10.242-31.678 2.07-9.317-8.176-10.247-22.355-2.071-31.672"/><path id="path3535" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m140.008 473.707c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.176 10.246 22.355 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3537" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m609.063 315.641c8.171-9.321 22.355-10.246 31.671-2.075 9.321 8.176 10.246 22.356 2.075 31.676-8.176 9.317-22.356 10.246-31.676 2.071-9.317-8.172-10.246-22.352-2.07-31.672"/><path id="path3539" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.551 398.422c8.172-9.317 22.351-10.246 31.672-2.07 9.32 8.171 10.246 22.351 2.074 31.671-8.176 9.317-22.356 10.247-31.676 2.071-9.316-8.172-10.246-22.352-2.07-31.672"/><path id="path3541" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m518.754 661.82c8.176-9.32 22.355-10.246 31.672-2.074 9.32 8.176 10.25 22.356 2.074 31.676-8.176 9.316-22.355 10.246-31.672 2.07-9.32-8.172-10.25-22.355-2.074-31.672"/><path id="path3543" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m744.523 394.66c8.172-9.32 22.356-10.246 31.672-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.355-2.075-31.672"/><path id="path3545" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 605.379c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.172 10.246 22.355 2.07 31.672-8.172 9.32-22.351 10.246-31.672 2.074-9.316-8.176-10.246-22.356-2.07-31.672"/><path id="path3547" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m368.242 469.918c8.172-9.32 22.356-10.25 31.672-2.074 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.675 2.074-9.317-8.176-10.247-22.356-2.071-31.672"/><path id="path3549" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m633.461 620.176c8.172-9.317 22.355-10.246 31.672-2.071 9.32 8.172 10.246 22.356 2.074 31.672-8.176 9.321-22.355 10.246-31.676 2.075-9.316-8.176-10.246-22.356-2.07-31.676"/><path id="path3551" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m646.691 752.129c8.172-9.32 22.352-10.25 31.672-2.074 9.321 8.172 10.246 22.355 2.075 31.672-8.176 9.32-22.356 10.246-31.676 2.074-9.317-8.176-10.246-22.356-2.071-31.672"/><path id="path3553" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m819.777 334.453c8.176-9.316 22.356-10.246 31.676-2.07 9.317 8.172 10.246 22.351 2.07 31.672-8.171 9.32-22.351 10.246-31.671 2.074-9.321-8.176-10.247-22.356-2.075-31.676"/><path id="path3555" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m812.242 571.512c8.176-9.321 22.356-10.246 31.676-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.074-31.672"/><path id="path3557" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m382.156 392.988c8.172-9.316 22.356-10.246 31.672-2.07 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.672 2.074-9.32-8.176-10.25-22.355-2.074-31.676"/><path id="path3559" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m613.543 476.398c8.176-9.32 22.355-10.25 31.676-2.074 9.316 8.176 10.246 22.356 2.07 31.672-8.172 9.32-22.355 10.246-31.672 2.074-9.32-8.175-10.246-22.355-2.074-31.672"/><path id="path3561" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m435.969 645.902c8.172-9.32 22.351-10.246 31.672-2.074 9.32 8.176 10.246 22.356 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.355-2.07-31.672"/><path id="path3563" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m629.688 164.293c8.171-9.32 22.355-10.246 31.671-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.356-2.074-31.672"/><path id="path3565" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m499.398 462.395c12.329-1.301 23.379 7.632 24.684 19.96 1.305 12.325-7.633 23.375-19.961 24.68-12.324 1.305-23.375-7.633-24.68-19.957-1.304-12.328 7.633-23.379 19.957-24.683"/><path id="path3567" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m721.23 510.641c-12.3 1.527-23.511-7.207-25.039-19.508-1.527-12.301 7.207-23.512 19.508-25.039 12.301-1.528 23.512 7.207 25.039 19.508 1.528 12.3-7.207 23.507-19.508 25.039"/><path id="path3569" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.34 420.676c-7.543 9.836-21.629 11.695-31.469 4.152-9.836-7.543-11.691-21.633-4.148-31.469s21.632-11.695 31.468-4.152 11.696 21.633 4.149 31.469"/><path id="path3571" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.828 581.156c-7.543 9.836-21.633 11.696-31.469 4.153s-11.695-21.633-4.152-31.469c7.547-9.836 21.633-11.695 31.469-4.152 9.836 7.542 11.695 21.632 4.152 31.468"/><path id="path3573" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.199 576.973c5.156 11.273.199 24.59-11.07 29.75-11.274 5.156-24.59.199-29.746-11.071-5.16-11.273-.203-24.589 11.066-29.75 11.274-5.156 24.594-.199 29.75 11.071"/><path id="path3575" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m635.691 569.449c-5.234-11.234-.367-24.59 10.868-29.82 11.238-5.234 24.589-.371 29.824 10.867 5.234 11.234.367 24.586-10.867 29.82-11.239 5.235-24.59.372-29.825-10.867"/></g></g></svg></div></div><div class="row d-flex m-0 my-4 justify-content-end align-items-end"><small class="text-dark align-content-center mx-3">&copy; 2022 Photon OS Authors. <a href=https://vmware.github.io>A VMware Backed Project</a></small><div class=text-right><a href=../../../../../><img class=vmw-footer-logo src=../../../../../img/vmware-logo.svg></a></div></div></footer></div></div></div><script src=https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js integrity=sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49 crossorigin=anonymous></script><script src=https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js integrity=sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy crossorigin=anonymous></script><script src=../../../../../js/main.min.906bd02f142be20eb94bb49539a18a3e93ec0b9ff5f5dcf3796eed436a6103d2.js integrity="sha256-kGvQLxQr4g65S7SVOaGKPpPsC5/19dzzeW7tQ2phA9I=" crossorigin=anonymous></script><script src=../../../../../js/animated.js></script></body></html>

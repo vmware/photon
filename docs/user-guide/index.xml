@@ -106,7 +106,7 @@ popd
 &lt;/ul>
 &lt;h2 id="permitted-json-fields">Permitted JSON Fields&lt;/h2>
 &lt;p>The following is a list of allowed JSON fields and their descriptions:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
+&lt;table style="height: 470px;" border="1" width="250" cellspacing="0" cellpadding="10">
 &lt;tbody>
 &lt;tr>
 &lt;td>&lt;b>Field&lt;/b>&lt;/td>
@@ -114,9 +114,11 @@ popd
 &lt;/tr>
 &lt;tr>
 &lt;td>hostname&lt;/td>
-&lt;td>The host name as string. You can also specify the name in printf format.
+&lt;td> Optional.
+&lt;p> Set the target host name as string. You can also specify the name in print format. &lt;/p>
 &lt;p> The hostname must not start with a number or "-" and must be less than 64 characters.
-&lt;p> Example: "photon-$((RANDOM%4096))"
+&lt;p> Default value: "photon-&lt;randomized string>"&lt;/p>
+&lt;p> Examples: { "photon-$((RANDOM%4096))" }, { "photon-machine" }
 &lt;/p>&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -227,7 +229,7 @@ Default value: autodetected host architecture
 &lt;/td>
 &lt;/tr>&lt;tr>
 &lt;td>live&lt;/td>
-&lt;td>Optional. &lt;p>Should be set to flase if target system is not being run on
+&lt;td>Optional. &lt;p>Should be set to false if target system is not being run on
 host machine. When it set to false, installer will not add EFI boot
 entries, and will not generate unique machine-id.
 &lt;p>Default value: false if "disk" is /dev/loop and true otherwise.
@@ -327,6 +329,33 @@ Or logging output will be printed to console - default behavior.
 &lt;p>Boolean: true or false
 &lt;p>Default value: false
 &lt;p>Example: { "ui": true }
+&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>linux_flavor&lt;/td>
+&lt;td>Required if multiple Linux flavors are present in the list of packages to install.
+&lt;p>Contains the flavor of Linux to install if multiple Linux flavors
+are present in "packages" or "packagelist_file"&lt;/p>
+&lt;p>Acceptable values: "linux", "linux-esx", "linux-rt", "linux-aws", and "linux-secure"&lt;/p>
+&lt;p>Example: { "linux_flavor": "linux-esx" }&lt;/p>
+&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>photon_docker_image&lt;/td>
+&lt;td>Optional.
+&lt;p>Contains the docker image &lt;name:tag> present in "packages" or "packagelist_file"&lt;/p>
+&lt;p>Acceptable values: "photon:1.0", "photon:2.0", "photon:3.0", "photon" and so on.&lt;/p>
+&lt;p>Default value: "photon:latest"&lt;/p>
+&lt;p>Example: { "photon_docker_image": "photon:3.0" }&lt;/p>
+&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>release_version&lt;/td>
+&lt;td>Required.
+&lt;p>Contains the photon release version.&lt;/p>
+&lt;p>Acceptable values: "3.0", "4.0"&lt;/p>
+&lt;p>Example: {"release_version": "3.0"}&lt;/p>
+&lt;p>For reference, look at "sample_ks.cfg" file.&lt;/p>
 &lt;/td>
 &lt;/tr>
 &lt;/tbody>

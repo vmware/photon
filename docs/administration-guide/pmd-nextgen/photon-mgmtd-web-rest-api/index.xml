@@ -1481,7 +1481,433 @@ fs.file-max: 9223372036854775807
 }
 ],
 &amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
-}&lt;/code>&lt;/pre></description></item><item><title>Docs: User, Group, and Host Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</guid><description>
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="network-dns-status">Network DNS Status&lt;/h3>
+&lt;p>To fetch the network DNS status, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status network dns
+Global
+DNS: 8.8.8.1 8.8.8.2
+DNS Domains: test3.com test4.com . localdomain . localdomain
+Link 2 (ens33)
+Current DNS Server: 172.16.61.2
+DNS Servers: 172.16.61.2
+Link 3 (ens37)
+Current DNS Server: 172.16.61.2
+DNS Servers: 172.16.61.2
+&lt;/code>&lt;/pre>
+&lt;h3 id="network-iostat-status">Network iostat Status&lt;/h3>
+&lt;p>To fetch the network iostat status, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt; pmctl status network iostat
+Name: lo
+Packets received: 7510
+Bytes received: 7510
+Bytes sent: 7510
+Drop in: 7510
+Drop out: 0
+Error in: 0
+Error out: 0
+Fifo in: 0
+Fifo out: 0
+Name: ens33
+Packets received: 46014
+Bytes received: 19072
+Bytes sent: 19072
+Drop in: 19072
+Drop out: 0
+Error in: 0
+Error out: 0
+Fifo in: 0
+Fifo out: 0
+Name: ens37
+Packets received: 9682
+Bytes received: 10779
+Bytes sent: 10779
+Drop in: 10779
+Drop out: 0
+Error in: 0
+Error out: 0
+Fifo in: 0
+Fifo out: 0
+&lt;/code>&lt;/pre>
+&lt;h3 id="network-interfaces-status">Network interfaces status&lt;/h3>
+&lt;p>To fetch the network status of the network interfaces, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt; pmctl status network interfaces
+Name: lo
+Index: 1
+MTU: 65536
+Flags: up loopback
+Hardware Address:
+Addresses: 127.0.0.1/8 ::1/128
+Name: ens33
+Index: 2
+MTU: 1500
+Flags: up broadcast multicast
+Hardware Address: 00:0c:29:7c:6f:84
+Addresses: 172.16.61.128/24 fe80::c099:2598:cc4c:14d1/64
+Name: ens37
+Index: 3
+MTU: 1500
+Flags: up broadcast multicast
+Hardware Address: 00:0c:29:7c:6f:8e
+Addresses: 172.16.61.134/24 fe80::be9:7746:7729:3e2/64
+&lt;/code>&lt;/pre>
+&lt;h3 id="configure-network-link-section-using-pmctl">Configure Network Link Section Using pmctl&lt;/h3>
+&lt;p>You can configure the network links using &lt;code>pmctl&lt;/code> command. The following section lists the commands you can use to configure network links.&lt;/p>
+&lt;h4 id="configure-network-dhcp">Configure Network dhcp&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcp &amp;lt;deviceName&amp;gt; &amp;lt;DHCPMode&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcp ens37 ipv4
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-linklocaladdressing">Configure network linkLocalAddressing&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-link-local-addr &amp;lt;deviceName&amp;gt; &amp;lt;linkLocalAddressingMode&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-link-local-addr ens37 ipv4
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-multicastdns">Configure network multicastDNS&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-multicast-dns &amp;lt;deviceName&amp;gt; &amp;lt;MulticastDNSMode&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-multicast-dns ens37 resolve
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-address">Configure network address&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-link-address &amp;lt;deviceName&amp;gt; address &amp;lt;Address&amp;gt; peer &amp;lt;Address&amp;gt; label &amp;lt;labelValue&amp;gt; scope &amp;lt;scopeValue&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-link-address ens37 address 192.168.0.15/24 peer 192.168.10.10/24 label ipv4 scope link
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-route">Configure network route&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-route dev &amp;lt;deviceName&amp;gt; gw &amp;lt;Gateway&amp;gt; gwonlink &amp;lt;GatewayOnlink&amp;gt; src &amp;lt;Source&amp;gt; dest &amp;lt;Destination&amp;gt; prefsrc &amp;lt;preferredSource&amp;gt; table &amp;lt;Table&amp;gt; scope &amp;lt;Scope&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-route dev ens33 gw 192.168.1.0 gwonlink no src 192.168.1.15/24 dest 192.168.10.10/24 prefsrc 192.168.8.9 table 1234 scope link
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dns">Configure network dns&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-dns dev &amp;lt;deviceName&amp;gt; dns &amp;lt;dnslist&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-dns dev ens37 dns 8.8.8.8,8.8.4.4,8.8.8.1,8.8.8.2
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-domains">Configure network domains&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-domain dev &amp;lt;deviceName&amp;gt; domains &amp;lt;domainlist&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-domain dev ens37 domains test1.com,test2.com,test3.com,test4.com
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-ntp">Configure network ntp&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-ntp dev &amp;lt;deviceName&amp;gt; ntp &amp;lt;ntplist&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-ntp dev ens37 ntp 198.162.1.15,test3.com
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-ipv6acceptra">Configure network ipv6AcceptRA&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-ipv6-accept-ra &amp;lt;deviceName&amp;gt; &amp;lt;IPv6AcceptRA&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-ipv6-accept-ra ens37 false
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-mode">Configure link mode&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-link-mode dev &amp;lt;device&amp;gt; mode &amp;lt;unmanagedValue&amp;gt; arp &amp;lt;arpValue&amp;gt; mc &amp;lt;multicastValue&amp;gt; amc &amp;lt;allmulticastValue&amp;gt; pcs &amp;lt;PromiscuousValue&amp;gt; rfo &amp;lt;RequiredForOnline&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-link-mode dev ens37 arp 1 mc no amc true pcs yes rfo on
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-mtubytes">Configure link mtubytes&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-mtu &amp;lt;deviceName&amp;gt; &amp;lt;mtubytesValue&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-mtu ens37 2048
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-mac">Configure link mac&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-mac &amp;lt;deviceName&amp;gt; &amp;lt;MACAddress&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-gmac ens37 00:a0:de:63:7a:e6
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-group">Configure link group&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-group &amp;lt;deviceName&amp;gt; &amp;lt;groupValue&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-group ens37 2147483647
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-requiredfamilyforonline">Configure link requiredFamilyForOnline&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-rf-online &amp;lt;deviceName&amp;gt; &amp;lt;familyValue&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-rf-online ens37 ipv4
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-activationpolicy">Configure link activationPolicy&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-active-policy &amp;lt;deviceName&amp;gt; &amp;lt;policyValue&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-active-policy ens37 always-up
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-routingpolicyrule">Configure network routingPolicyRule&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-rule dev &amp;lt;deviceName&amp;gt; tos &amp;lt;TypeOfService&amp;gt; from &amp;lt;Address&amp;gt; to &amp;lt;Address&amp;gt; fwmark &amp;lt;FirewallMark&amp;gt; table &amp;lt;Table&amp;gt; prio &amp;lt;Priority&amp;gt; iif &amp;lt;IncomingInterface&amp;gt; oif &amp;lt;OutgoingInterface&amp;gt; srcport &amp;lt;SourcePort&amp;gt; destport &amp;lt;DestinationPort&amp;gt; ipproto &amp;lt;IPProtocol&amp;gt; invertrule &amp;lt;InvertRule&amp;gt; family &amp;lt;Family&amp;gt; usr &amp;lt;User&amp;gt; suppressprefixlen &amp;lt;SuppressPrefixLength&amp;gt; suppressifgrp &amp;lt;SuppressInterfaceGroup&amp;gt; type &amp;lt;Type&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-rule dev ens37 tos 12 from 192.168.1.10/24 to 192.168.2.20/24 fwmark 7/255 table 8 prio 3 iif ens37 oif ens37 srcport 8000-8080 destport 9876 ipproto 17 invertrule yes family ipv4 usr 1001 suppressprefixlen 128 suppressifgrp 2098 type prohibit
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-network-routingpolicyrule">Remove network routingPolicyRule&lt;/h4>
+&lt;pre>&lt;code>pmctl network delete-rule dev &amp;lt;deviceName&amp;gt; tos &amp;lt;TypeOfService&amp;gt; from &amp;lt;Address&amp;gt; to &amp;lt;Address&amp;gt; fwmark &amp;lt;FirewallMark&amp;gt; table &amp;lt;Table&amp;gt; prio &amp;lt;Priority&amp;gt; iif &amp;lt;IncomingInterface&amp;gt; oif &amp;lt;OutgoingInterface&amp;gt; srcport &amp;lt;SourcePort&amp;gt; destport &amp;lt;DestinationPort&amp;gt; ipproto &amp;lt;IPProtocol&amp;gt; invertrule &amp;lt;InvertRule&amp;gt; family &amp;lt;Family&amp;gt; usr &amp;lt;User&amp;gt; suppressprefixlen &amp;lt;SuppressPrefixLength&amp;gt; suppressifgrp &amp;lt;SuppressInterfaceGroup&amp;gt; type &amp;lt;Type&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network delete-rule dev ens37 tos 12 from 192.168.1.10/24 to 192.168.2.20/24 fwmark 7/255 table 8 prio 3 iif ens37 oif ens37 srcport 8000-8080 destport 9876 ipproto 17 invertrule yes family ipv4 usr 1001 suppressprefixlen 128 suppressifgrp 2098 type prohibit
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv4-ids">Configure network DHCPv4 id&amp;rsquo;s&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv4-id dev &amp;lt;deviceName&amp;gt; clientid &amp;lt;ClientIdentifier&amp;gt; vendorclassid &amp;lt;VendorClassIdentifier&amp;gt; iaid &amp;lt;IAID&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv4-id dev ens37 clientid duid vendorclassid 101 iaid 201
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv4-duid">Configure network DHCPv4 duid&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv4-duid dev &amp;lt;deviceName&amp;gt; duidtype &amp;lt;DUIDType&amp;gt; duidrawdata &amp;lt;DUIDRawData&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv4-duid dev ens37 duidtype vendor duidrawdata af:03:ff:87
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv4-use-options">Configure network DHCPv4 use options&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv4-use dev &amp;lt;deviceName&amp;gt; usedns &amp;lt;UseDNS&amp;gt; usentp &amp;lt;UseNTP&amp;gt; usesip &amp;lt;UseSIP&amp;gt; usemtu &amp;lt;UseMTU&amp;gt; usehostname &amp;lt;UseHostname&amp;gt; usedomains &amp;lt;UseDomains&amp;gt; useroutes &amp;lt;UseRoutes&amp;gt; usegateway &amp;lt;UseGateway&amp;gt; usetimezone &amp;lt;UseTimezone&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv4-use dev ens37 usedns false usentp false usesip false usemtu yes usehostname true usedomains yes useroutes no usegateway yes usetimezone no
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv6">Configure network DHCPv6&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv6 dev &amp;lt;deviceName&amp;gt; mudurl &amp;lt;MUDURL&amp;gt; userclass &amp;lt;UserClass&amp;gt; vendorclass &amp;lt;VendorClass&amp;gt; prefixhint &amp;lt;IPV6ADDRESS&amp;gt; withoutra &amp;lt;WithoutRA&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv6 dev ens37 mudurl https://example.com/devB userclass usrcls1,usrcls2 vendorclass vdrcls1 prefixhint 2001:db1:fff::/64 withoutra solicit
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv6-ids">Configure network DHCPv6 id&amp;rsquo;s&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv6-id dev &amp;lt;deviceName&amp;gt; iaid &amp;lt;IAID&amp;gt; duidtype &amp;lt;DUIDType&amp;gt; duidrawdata &amp;lt;DUIDRawData&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv6-id dev ens37 iaid 201 duidtype vendor duidrawdata af:03:ff:87
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv6-use">Configure network DHCPv6 Use&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv6-use dev &amp;lt;deviceName&amp;gt; useaddr &amp;lt;UseAddress&amp;gt; useprefix &amp;lt;UsePrefix&amp;gt; usedns &amp;lt;UseDNS&amp;gt; usentp &amp;lt;UseNTP&amp;gt; usehostname &amp;lt;UseHostname&amp;gt; usedomains &amp;lt;UseDomains&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv6-use dev ens37 useaddr yes useprefix no usedns false usentp false usehostname true usedomains yes
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpv6-options">Configure network DHCPv6 Options&lt;/h4>
+&lt;pre>&lt;code>pmctl network set-dhcpv6-option dev &amp;lt;deviceName&amp;gt; reqopt &amp;lt;RequestOptions&amp;gt; sendopt &amp;lt;SendOption&amp;gt; sendvendoropt &amp;lt;SendVendorOption&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network set-dhcpv6-option dev ens37 reqopt 10,198,34 sendopt 34563 sendvendoropt 1987653,65,ipv6address,af:03:ff:87
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-dhcpserver">Configure network DHCPServer&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-dhcpv4-server dev &amp;lt;Devicename&amp;gt; pool-offset &amp;lt;poolOffset&amp;gt; pool-size &amp;lt;PoolSize&amp;gt; default-lease-time-sec &amp;lt;DefaultLeaseTimeSec&amp;gt; max-lease-time-sec &amp;lt;MaxLeaseTimeSec&amp;gt; dns &amp;lt;DNS&amp;gt; emit-dns &amp;lt;EmitDNS&amp;gt; emit-ntp &amp;lt;EmitNTP&amp;gt; emit-router &amp;lt;EmitRouter&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-dhcpv4-server dev ens37 pool-offset 100 pool-size 200 default-lease-time-sec 10 max-lease-time-sec 30 dns 192.168.1.2,192.168.10.10,192.168.20.30 emit-dns yes emit-ntp no emit-router yes
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-network-dhcpserver">Remove network DHCPServer&lt;/h4>
+&lt;pre>&lt;code>pmctl network remove-dhcpv4-server &amp;lt;Devicename&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network remove-dhcpv4-server ens37
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-network-ipv6sendra">Configure network IPv6SendRA&lt;/h4>
+&lt;pre>&lt;code>pmctl network add-ipv6ra dev &amp;lt;deviceName&amp;gt; rt-pref &amp;lt;RouterPreference&amp;gt; emit-dns &amp;lt;EmitDNS&amp;gt; dns &amp;lt;DNS&amp;gt; emit-domains &amp;lt;EmitDomains&amp;gt; domains &amp;lt;Domains&amp;gt; dns-lifetime-sec &amp;lt;DNSLifetimeSec&amp;gt; prefix &amp;lt;Prefix&amp;gt; pref-lifetime-sec &amp;lt;PreferredLifetimeSec&amp;gt; valid-lifetime-sec &amp;lt;ValidLifetimeSec&amp;gt; assign &amp;lt;Assign&amp;gt; route &amp;lt;Route&amp;gt; lifetime-sec &amp;lt;LifetimeSec&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-ipv6ra dev ens37 rt-pref medium emit-dns yes dns 2002:da8:1::1,2002:da8:2::1 emit-domains yes domains test1.com,test2.com dns-lifetime-sec 100 prefix 2002:da8:1::/64 pref-lifetime-sec 100 valid-lifetime-sec 200 assign yes route 2001:db1:fff::/64 lifetime-sec 1000
+&lt;/code>&lt;/pre>
+&lt;h4 id="remove-network-ipv6sendra">Remove network IPv6SendRA&lt;/h4>
+&lt;pre>&lt;code>pmctl network remove-ipv6ra &amp;lt;Devicename&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network remove-ipv6ra ens37
+&lt;/code>&lt;/pre>
+&lt;h3 id="configure-network-device-using-pmctl">Configure Network Device using &lt;code>pmctl&lt;/code>&lt;/h3>
+&lt;p>You can configure the network devices using &lt;code>pmctl&lt;/code> command. Use the following commands to configure network devices.&lt;/p>
+&lt;h4 id="configure-vlan">Configure VLan&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-vlan &amp;lt;vlanName&amp;gt; dev &amp;lt;device&amp;gt; id &amp;lt;vlanId&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-vlan vlan1 dev ens37 id 101
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-bond">Configure Bond&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-bond &amp;lt;bondName&amp;gt; dev &amp;lt;device&amp;gt; mode &amp;lt;modeType&amp;gt; thp &amp;lt;TransmitHashPolicyType&amp;gt; ltr &amp;lt;LACPTransmitRateType&amp;gt; mms &amp;lt;MIIMonitorSecTime&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-bond bond1 dev ens37,ens38 mode 802.3ad thp layer2+3 ltr slow mms 1s
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-bond-with-default">Configure Bond with default&lt;/h4>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-bond bond1 dev ens37,ens38
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-bridge-with-default">Configure Bridge with default&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-bridge &amp;lt;bridgeName&amp;gt; dev &amp;lt;device list&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-bridge br0 dev ens37,ens38
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-macvlan">Configure MacVLan&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-macvlan &amp;lt;macvlanName&amp;gt; dev &amp;lt;device&amp;gt; mode &amp;lt;modeName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-macvlan macvlan1 dev ens37 mode private
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-ipvlan">Configure IpVLan&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-ipvlan &amp;lt;ipvlanName&amp;gt; dev &amp;lt;device&amp;gt; mode &amp;lt;modeName&amp;gt; flags &amp;lt;flagsName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-ipvlan ipvlan1 dev ens37 mode l2 flags vepa
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-ipvlan-with-default">Configure IpVLan with default&lt;/h4>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-ipvlan ipvlan1 dev ens38
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-vxlan">Configure VxLan&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-vxlan &amp;lt;vxlanName&amp;gt; dev &amp;lt;device&amp;gt; remote &amp;lt;RemoteAddress&amp;gt; local &amp;lt;LocalAddress&amp;gt; group &amp;lt;GroupAddress&amp;gt; destport &amp;lt;DestinationPort&amp;gt; independent &amp;lt;IndependentFlag&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-vxlan vxlan1 dev ens37 vni 16777215 remote 192.168.1.3 local 192.168.1.2 group 192.168.0.0 destport 4789 independent no
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-wireguard">Configure WireGuard&lt;/h4>
+&lt;pre>&lt;code>pmctl network create-wg &amp;lt;wireguardName&amp;gt; dev &amp;lt;device&amp;gt; skey &amp;lt;privateKey&amp;gt; pkey&amp;lt;publicKey&amp;gt; endpoint &amp;lt;address:Port&amp;gt; port &amp;lt;listenport&amp;gt; ips &amp;lt;allowedIPs&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-wg wg1 dev ens37 skey wCmc/74PQpRoxTgqGircVFtdArZFUFIiOoyQY8kVgmI= pkey dSanSzExlryduCwNnAFt+rzpI5fKeHuJx1xx2zxEG2Q= endpoint 10.217.69.88:51820 port 51822 ips fd31:bf08:57cb::/48,192.168.26.0/24
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-wireguard-with-default">Configure WireGuard with default&lt;/h4>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network create-wg wg1 dev ens37 skey wCmc/74PQpRoxTgqGircVFtdArZFUFIiOoyQY8kVgmI= pkey dSanSzExlryduCwNnAFt+rzpI5fKeHuJx1xx2zxEG2Q= endpoint 10.217.69.88:51820
+&lt;/code>&lt;/pre>
+&lt;h3 id="remove-network-device-using-pmctl">Remove Network Device Using &lt;code>pmctl&lt;/code>&lt;/h3>
+&lt;p>To remove a network device, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network remove-netdev &amp;lt;kindDeviceName&amp;gt; kind &amp;lt;kindType&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network remove-netdev ipvlan1 dev ens37 kind ipvlan
+&lt;/code>&lt;/pre>
+&lt;h3 id="configure-link-using-pmctl">Configure link using pmctl&lt;/h3>
+&lt;p>Use the following commands to configure links using the &lt;code>pmctl&lt;/code> command.&lt;/p>
+&lt;h4 id="configure-link-macaddress">Configure Link MACAddress&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-mac dev &amp;lt;deviceName&amp;gt; macpolicy &amp;lt;MACAddressPolicy&amp;gt; macaddr &amp;lt;MACAddress&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-mac dev eth0 macpolicy none macaddr 00:a0:de:63:7a:e6
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-name">Configure Link Name&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-name dev &amp;lt;deviceName&amp;gt; namepolicy &amp;lt;NamePolicy&amp;gt; name &amp;lt;Name&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-name dev ens37 namepolicy mac,kernel,database,onboard,keep,slot,path
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-alternativenames">Configure Link AlternativeNames&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-name dev &amp;lt;deviceName&amp;gt; altnamespolicy &amp;lt;AlternativeNamesPolicy&amp;gt; altname &amp;lt;AlternativeName&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-alt-name dev ens37 altnamespolicy mac,database,onboard,slot,path
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-checksumoffload">Configure Link ChecksumOffload&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-csum-offload dev &amp;lt;deviceName&amp;gt; rco &amp;lt;ReceiveCheksumOffload&amp;gt; tco &amp;lt;TransmitChecksumOffload&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-csum-offload dev ens37 rxco true txco true
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-tcpsegmentationoffload">Configure Link TCPSegmentationOffload&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-tcp-offload dev &amp;lt;deviceName&amp;gt; tcpso &amp;lt;TCPSegmentationOffload&amp;gt; tcp6so &amp;lt;TCP6SegmentationOffload&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-tcp-offload dev ens37 tcpso true tcp6so true
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-genericoffload">Configure Link GenericOffload&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-generic-offload dev &amp;lt;deviceName&amp;gt; gso &amp;lt;GenericSegmentationOffload&amp;gt; gro &amp;lt;GenericReceiveOffload&amp;gt; grohw &amp;lt;GenericReceiveOffloadHardware&amp;gt; gsomaxbytes &amp;lt;GenericSegmentOffloadMaxBytes&amp;gt; gsomaxseg &amp;lt;GenericSegementOffloadMaxSegments&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-generic-offload dev ens37 gso true gro true grohw false gsomaxbytes 65536 gsomaxseg 65535
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-vlantag">Configure Link VLANTAG&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-vlan-tags dev &amp;lt;deviceName&amp;gt; rxvlanctaghwacl &amp;lt;ReceiveVLANCTAGHardwareAcceleration&amp;gt; txvlanctaghwacl &amp;lt;TransmitVLANCTAGHardwareAcceleration&amp;gt; rxvlanctagfilter &amp;lt;ReceiveVLANCTAGFilter&amp;gt; txvlanstaghwacl &amp;lt;TransmitVLANSTAGHardwareAcceleration&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-vlan-tags dev ens37 rxvlanctaghwacl true txvlanctaghwacl false rxvlanctagfilter true txvlanstaghwacl true
+&lt;/code>&lt;/pre>
+&lt;h1 id="configure-link-channels">Configure Link Channels&lt;/h1>
+&lt;pre>&lt;code>pmctl link set-channel dev &amp;lt;deviceName&amp;gt; rxch &amp;lt;RxChannels&amp;gt; txch &amp;lt;TxChannels&amp;gt; oth &amp;lt;OtherChannels&amp;gt; coch &amp;lt;CombinedChannels&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-channel dev ens37 rxch 1024 txch 2045 och 45678 coch 32456
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-buffers">Configure Link Buffers&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-buffer dev &amp;lt;deviceName&amp;gt; rxbufsz &amp;lt;RxBufferSize&amp;gt; rxmbufsz &amp;lt;RxMiniBufferSize&amp;gt; rxjbufsz &amp;lt;RxJumboBufferSize&amp;gt; txbufsz &amp;lt;TxBufferSize&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-buffer dev ens37 rxbufsz 100009 rxmbufsz 1998 rxjbufsz 10999888 txbufsz 83724
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-queues">Configure Link Queues&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-queue dev &amp;lt;deviceName&amp;gt; rxq &amp;lt;ReceiveQueues&amp;gt; txq &amp;lt;TransmitQueues&amp;gt; txqlen &amp;lt;TransmitQueueLength&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-queue dev ens37 rxq 4096 txq 4096 txqlen 4294967294
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-flowcontrols">Configure Link FlowControls&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-flow-ctrl dev &amp;lt;deviceName&amp;gt; rxfctrl &amp;lt;RxFlowControl&amp;gt; txfctrl &amp;lt;TxFlowControl&amp;gt; anfctrl &amp;lt;AutoNegotiationFlowControl&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-flow-ctrl dev ens37 rxfctrl true txfctrl true anfctrl true
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-useadaptivecoalesce">Configure Link UseAdaptiveCoalesce&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-adpt-coalesce dev &amp;lt;deviceName&amp;gt; uarxc &amp;lt;UseAdaptiveRxCoalesce&amp;gt; uatxc &amp;lt;UseAdaptiveTxCoalesce&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-adpt-coalesce dev ens37 uarxc true uatxc true
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-receivecoalesce">Configure Link ReceiveCoalesce&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-rx-coalesce dev &amp;lt;deviceName&amp;gt; rxcs &amp;lt;RxCoalesceSec&amp;gt; rxcsirq &amp;lt;RxCoalesceIrqSec&amp;gt; rxcslow &amp;lt;RxCoalesceLowSec&amp;gt; rxcshigh &amp;lt;RxCoalesceHighSec&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-rx-coalesce dev ens37 rxcs 23 rxcsirq 56 rxcslow 5 rxcshigh 76788
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-transmitcoalesce">Configure Link TransmitCoalesce&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-tx-coalesce dev &amp;lt;deviceName&amp;gt; txcs &amp;lt;TxCoalesceSec&amp;gt; txcsirq &amp;lt;TxCoalesceIrqSec&amp;gt; txcslow &amp;lt;TxCoalesceLowSec&amp;gt; txcshigh &amp;lt;TxCoalesceHighSec&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-tx-coalesce dev ens37 txcs 23 txcsirq 56 txcslow 5 txcshigh 76788
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-receivemaxcoalescedframes">Configure Link ReceiveMaxCoalescedFrames&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-rx-coald-frames dev &amp;lt;deviceName&amp;gt; rxcmf &amp;lt;RxMaxCoalescedFrames&amp;gt; rxcmfirq &amp;lt;RxMaxCoalescedIrqFrames&amp;gt; rxcmflow &amp;lt;RxMaxCoalescedLowFrames&amp;gt; rxcmfhigh &amp;lt;RxMaxCoalescedHighFrames&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-rx-coald-frames dev ens37 rxmcf 23 rxmcfirq 56 rxmcflow 5 rxmcfhigh 76788
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-transmitmaxcoalescedframes">Configure Link TransmitMaxCoalescedFrames&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-tx-coald-frames dev &amp;lt;deviceName&amp;gt; txcmf &amp;lt;TxMaxCoalescedFrames&amp;gt; txcmfirq &amp;lt;TxMaxCoalescedIrqFrames&amp;gt; txcmflow &amp;lt;TxMaxCoalescedLowFrames&amp;gt; txcmfhigh &amp;lt;TxMaxCoalescedHighFrames&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-tx-coald-frames dev ens37 txmcf 23 txmcfirq 56 txmcflow 5 txmcfhigh 76788
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-link-coalescepacketrate">Configure Link CoalescePacketRate&lt;/h4>
+&lt;pre>&lt;code>pmctl link set-coalesce-pkt dev &amp;lt;deviceName&amp;gt; cprlow &amp;lt;CoalescePacketRateLow&amp;gt; cprhigh &amp;lt;CoalescePacketRateHigh&amp;gt; cprsis &amp;lt;CoalescePacketRateSampleIntervalSec&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-coalesce-pkt dev ens37 cprlow 1000 cprhigh 32456 cprsis 102
+&lt;/code>&lt;/pre>
+&lt;h4 id="configure-other-links">Configure Other Links&lt;/h4>
+&lt;p>You can configure links for Alias, Description, port, duplex, and so on.&lt;/p>
+&lt;pre>&lt;code>pmctl link set-link dev ens37 alias &amp;lt;Alias&amp;gt; desc &amp;lt;Description&amp;gt; mtub &amp;lt;MTUBytes&amp;gt; bits &amp;lt;BitsPerSecond&amp;gt; duplex &amp;lt;Duplex&amp;gt; auton &amp;lt;AutoNegotiation&amp;gt; wol &amp;lt;WakeOnLan&amp;gt; wolpassd &amp;lt;WakeOnLanPassword&amp;gt; port &amp;lt;Port&amp;gt; advertise &amp;lt;Advertise&amp;gt; lrxo &amp;lt;LargeReceiveOffload&amp;gt; ntf &amp;lt;NTupleFilter&amp;gt; ssbcs &amp;lt;StatisticsBlockCoalesceSec&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl link set-link dev ens37 alias ifalias desc configdevice mtub 10M bits 5G duplex full auton no wol phy,unicast,broadcast,multicast,arp,magic,secureon wolpassd cb:a9:87:65:43:21 port mii advertise 10baset-half,10baset-full,20000basemld2-full lrxo true ntf true ssbcs 1024
+&lt;/code>&lt;/pre>
+&lt;h3 id="ethtool-status">Ethtool status&lt;/h3>
+&lt;p>To fetch the Ethtool Status, use the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">
+&lt;span style="color:#4e9a06">\#&lt;/span>Get Ethtool all status
+pmctl status ethtool &amp;lt;LINK&amp;gt;
+Example:
+&amp;gt;pmctl status ethtool ens37
+&lt;span style="color:#4e9a06">\#&lt;/span>Get Ethtool status based on action
+pmctl status ethtool &amp;lt;LINK&amp;gt; &amp;lt;ACTION&amp;gt;
+Example:
+&amp;gt;pmctl status ethtool ens37 bus
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs: User, Group, and Host Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</guid><description>
 &lt;h2 id="post-method">POST Method&lt;/h2>
 &lt;h3 id="add-a-group">Add a Group&lt;/h3>
 &lt;p>To add a group, execute a POST request in the following format:&lt;/p>
@@ -1726,4 +2152,283 @@ Home Directory: /home/photon-mgmt
 &lt;/code>&lt;/pre>
 &lt;h2 id="get-user-details">GET User Details&lt;/h2>
 &lt;p>To fetch user details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view&lt;/code>&lt;/pre></description></item></channel></rss>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view&lt;/code>&lt;/pre></description></item><item><title>Docs: Package Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/package-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/package-management/</guid><description>
+&lt;p>You can use the &lt;code>pmctl&lt;/code> commands to manage the available packages and perform various actions on the packages. The following section lists the &lt;code>pmctl&lt;/code> commands for various services related to package management.&lt;/p>
+&lt;h2 id="list-all-packages">List all packages&lt;/h2>
+&lt;p>To list all the packages, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg list
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl pkg list
+&lt;/code>&lt;/pre>
+&lt;h2 id="list-specific-packages">List specific packages&lt;/h2>
+&lt;p>To list a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg list &amp;lt;pkg&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl pkg list lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="package-details">Package Details&lt;/h2>
+&lt;p>To get the details of a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg info &amp;lt;pkg&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg info lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="download-metadata">Download metadata&lt;/h2>
+&lt;p>To download the package metadata, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg makecache
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl pkg makecache
+&lt;/code>&lt;/pre>
+&lt;h2 id="clean-cache">Clean cache&lt;/h2>
+&lt;p>To clean the package cache, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg clean
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl pkg clean
+&lt;/code>&lt;/pre>
+&lt;h2 id="list-repositories">List repositories&lt;/h2>
+&lt;p>To list the repositories, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg repolist
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg repolist
+&lt;/code>&lt;/pre>
+&lt;h2 id="search-packages">Search packages&lt;/h2>
+&lt;p>To search a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg search &amp;lt;pattern&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg search lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="get-update-info">Get update info&lt;/h2>
+&lt;p>To get the update details of the packages, use the following commands in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt; pmctl pkg updateinfo
+&amp;gt; pmctl pkg updateinfo --list
+&amp;gt; pmctl pkg updateinfo --info
+&lt;/code>&lt;/pre>
+&lt;h2 id="install-a-package">Install a package&lt;/h2>
+&lt;p>To install a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg install &amp;lt;pkg&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl install lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="update-a-package">Update a package&lt;/h2>
+&lt;p>To update a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg update &amp;lt;pkg&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg update lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="remove-a-package">Remove a package&lt;/h2>
+&lt;p>To remove a specific package, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg remove &amp;lt;pkg&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg remove lsof
+&lt;/code>&lt;/pre>
+&lt;h2 id="update-all">Update all&lt;/h2>
+&lt;p>To update all the packages, use th following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg update
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl pkg update
+&lt;/code>&lt;/pre>
+&lt;h2 id="common-options">Common options&lt;/h2>
+&lt;p>In &lt;code>pmctl&lt;/code>, run commands in the following format to use other common options:&lt;/p>
+&lt;pre>&lt;code>&amp;gt; pmctl pkg [--allowerasing][--best][--cacheonly][--config=&amp;lt;file&amp;gt;][--disablerepo=&amp;lt;pattern&amp;gt;[,..]]
+[--disableexcludes][--downloaddir=&amp;lt;dir&amp;gt;][--downloadonly][--enablerepo=&amp;lt;pattern&amp;gt;[,..]]
+[--exclude=&amp;lt;pkg&amp;gt;][--installroot=&amp;lt;dir&amp;gt;][--noautoremove][--nogpgcheck][--noplugins]
+[--rebootrequired][--refresh][--releaserver=&amp;lt;release&amp;gt;][--repoid=&amp;lt;repo&amp;gt;]
+[--repofrompath=&amp;lt;repo&amp;gt;,&amp;lt;dir&amp;gt;][--security][--secseverity=&amp;lt;sev&amp;gt;][--setopt=&amp;lt;key=value&amp;gt;[,..]]
+[--skipconflicts][--skipdigest][--skipobsletes][--skipsignature]
+pmctl pkg --repoid=photon-debuginfo list lsof*
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Firewall nftables Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/firewall-nftable-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/firewall-nftable-management/</guid><description>
+&lt;p>Use &lt;code>pmctl&lt;/code> command to manage the firewall nftables. The following section lists the command that you can use to manage the nftables.&lt;/p>
+&lt;h2 id="add-nftable">Add nftable&lt;/h2>
+&lt;p>To add an nftable, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network add-nft-table name &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-nft-table name test99 family inet
+&lt;/code>&lt;/pre>
+&lt;h2 id="delete-nftable">Delete nftable&lt;/h2>
+&lt;p>To delete an nftable, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network delete-nft-table name &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network delete-nft-table name test99 family inet
+&lt;/code>&lt;/pre>
+&lt;h2 id="show-nftable">Show nftable&lt;/h2>
+&lt;p>To show an nftable, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network show-nft-table name &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network show-nft-table name test99 family inet
+&lt;/code>&lt;/pre>
+&lt;h2 id="show-all-nftables">Show all nftables&lt;/h2>
+&lt;p>To show all the nftables, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network show-nft-table
+&lt;/code>&lt;/pre>
+&lt;h2 id="add-nftable-chain">Add nftable chain&lt;/h2>
+&lt;p>To add an nftable chain, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network add-nft-chain name &amp;lt;CHAIN&amp;gt; table &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt; hook &amp;lt;HOOK&amp;gt; priority &amp;lt;PRIORITY&amp;gt; type &amp;lt;TYPE&amp;gt; policy &amp;lt;POLICY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network add-nft-chain name chain1 table test99 family inet hook input priority 300 type filter policy drop
+&lt;/code>&lt;/pre>
+&lt;h2 id="delete-nft-chain">Delete nft chain&lt;/h2>
+&lt;p>To delete an nftable chain, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network delete-nft-chain name &amp;lt;CHAIN&amp;gt; table &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network delete-nft-chain name chain1 table test99 family inet
+&lt;/code>&lt;/pre>
+&lt;h2 id="show-nft-chain">Show nft chain&lt;/h2>
+&lt;p>To show an nftable chain, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network show-nft-chain name &amp;lt;CHAIN&amp;gt; table &amp;lt;TABLE&amp;gt; family &amp;lt;FAMILY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network show-nft-chain name chain1 table test99 family inet
+&lt;/code>&lt;/pre>
+&lt;h2 id="show-all-nft-chain">Show all nft chain&lt;/h2>
+&lt;p>To show all nftable chains, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network show-nft-chain
+&lt;/code>&lt;/pre>
+&lt;h2 id="save-all-nftables">Save all nftables&lt;/h2>
+&lt;p>To save all nftables, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network nft-save
+&lt;/code>&lt;/pre>
+&lt;h2 id="run-nft-commands">Run nft commands&lt;/h2>
+&lt;p>To run the nftables command, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl network nft-run &amp;lt;COMMAND&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Examples:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl network nft-run nft add table inet test99
+&amp;gt;pmctl network nft-run nft add chain inet test99 my_chain '{ type filter hook input priority 0; }'
+&amp;gt;pmctl network nft-run nft add rule inet test99 my_chain tcp dport {telnet, http, https} accept
+&amp;gt;pmctl network nft-run nft delete rule inet test99 my_chain handle 3
+&amp;gt;pmctl network nft-run nft delete chain inet test99 my_chain
+&amp;gt;pmctl network nft-run nft delete table inet test99
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Process Details and Configuration Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/process-configurtion-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/process-configurtion-management/</guid><description>
+&lt;h2 id="net-device-property-status">Net device property status&lt;/h2>
+&lt;p>To get the status of the network device property, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc net path &amp;lt;PATH&amp;gt; property &amp;lt;PROPERTY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc net path ipv6 property calipso_cache_bucket_size
+&lt;/code>&lt;/pre>
+&lt;p>Response:&lt;/p>
+&lt;pre>&lt;code> Path: ipv6
+Property: calipso_cache_bucket_size
+Value: 10
+&lt;/code>&lt;/pre>
+&lt;h2 id="net-device-property-configuration">Net device property configuration&lt;/h2>
+&lt;p>To get the network device property configuration details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl proc net path &amp;lt;PATH&amp;gt; property &amp;lt;PROPERTY&amp;gt; value &amp;lt;VALUE&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl proc net path ipv6 property calipso_cache_bucket_size value 12
+&lt;/code>&lt;/pre>
+&lt;h2 id="net-device-link-property-status">Net device link property status&lt;/h2>
+&lt;p>To get the status of the network device link, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc net path &amp;lt;PATH&amp;gt; dev &amp;lt;LINK&amp;gt; property &amp;lt;PROPERTY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc net path ipv6 dev ens37 property mtu
+&lt;/code>&lt;/pre>
+&lt;p>Response:&lt;/p>
+&lt;pre>&lt;code> Path: ipv6
+Link: ens37
+Property: mtu
+Value: 1300
+&lt;/code>&lt;/pre>
+&lt;h2 id="net-device-link-property-configuration">Net device link property configuration&lt;/h2>
+&lt;p>To get the configuration details of the network device link, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl proc net path &amp;lt;PATH&amp;gt; dev &amp;lt;LINK&amp;gt; property &amp;lt;PROPERTY&amp;gt; value &amp;lt;VALUE&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl proc net path ipv6 dev ens37 property mtu value 1500
+&lt;/code>&lt;/pre>
+&lt;h2 id="vm-property-status">VM property status&lt;/h2>
+&lt;p>To get the property status of the virtual machine, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc vm &amp;lt;PROPERTY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc vm page-cluster
+&lt;/code>&lt;/pre>
+&lt;p>Response:&lt;/p>
+&lt;pre>&lt;code> Property: page-cluster
+Value: 3
+&lt;/code>&lt;/pre>
+&lt;h2 id="vm-property-configuration">VM property configuration&lt;/h2>
+&lt;p>To get the property configuration details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl proc vm &amp;lt;PROPERTY&amp;gt; &amp;lt;VALUE&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmctl proc vm page-cluster 5
+&lt;/code>&lt;/pre>
+&lt;h2 id="system-property-status">System property status&lt;/h2>
+&lt;p>To get system property details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc system &amp;lt;PROPERTY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc system cpuinfo
+&lt;/code>&lt;/pre>
+&lt;h2 id="arp-status">ARP status&lt;/h2>
+&lt;p>To get the ARP status details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc arp
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc arp
+&lt;/code>&lt;/pre>
+&lt;p>Response:&lt;/p>
+&lt;pre>&lt;code> IPAddress: 172.16.61.254
+HWType: 0x1
+Flags: 0x2
+HWAddress: 00:50:56:f3:5d:48
+Mask: *
+Device: ens37
+IPAddress: 172.16.61.254
+HWType: 0x1
+Flags: 0x2
+HWAddress: 00:50:56:f3:5d:48
+Mask: *
+Device: ens33
+IPAddress: 172.16.61.2
+HWType: 0x1
+Flags: 0x2
+HWAddress: 00:50:56:f4:e7:22
+Mask: *
+Device: ens33
+IPAddress: 172.16.61.2
+HWType: 0x1
+Flags: 0x2
+HWAddress: 00:50:56:f4:e7:22
+Mask: *
+Device: ens37
+&lt;/code>&lt;/pre>
+&lt;h2 id="netstat-details">Netstat Details&lt;/h2>
+&lt;p>To get the netstat details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc netstat &amp;lt;PROTOCOL&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc netstat tcp
+&lt;/code>&lt;/pre>
+&lt;h2 id="process-status">Process status&lt;/h2>
+&lt;p>To get the process status details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc process &amp;lt;PID&amp;gt; &amp;lt;PROPERTY&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc process 88157 pid-memory-percent
+&lt;/code>&lt;/pre>
+&lt;h2 id="protopidstat-status">Protopidstat status&lt;/h2>
+&lt;p>To get the protopidstat status details, use the following command in &lt;code>pmctl&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>pmctl status proc protopidstat &amp;lt;PID&amp;gt; &amp;lt;PROTOCOL&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;pmctl status proc protopidstat 89502 tcp
+&lt;/code>&lt;/pre></description></item></channel></rss>
