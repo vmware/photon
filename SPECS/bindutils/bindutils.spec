@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.27
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=29cfd63b5229bc95022d0e13f551d6bce4ef4dd1
+%define sha512  bind=5c71f228db83aa8cc9e65466d6e5afca4a9f80c693358111a003fe09e1a14522175eb2b6a0f11e2a2cd4fdba01f2ae315de52e394a441b3861ca2a011e02af62
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -33,9 +33,11 @@ make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
 make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
+make -C bin/nsupdate %{?_smp_mflags}
 
 %install
-make -C bin/dig DESTDIR=%{buildroot} install %{?_smp_mflags}
+make -C bin/dig  DESTDIR=%{buildroot} install %{?_smp_mflags}
+make -C bin/nsupdate  DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/%{_sysconfdir}
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
@@ -79,6 +81,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Thu Jun 23 2022 Harinadh D <hdommaraju@vmware.com> 9.16.27-3
+-   add nsupdate to the package
 *   Tue Mar 29 2022 Tapas Kundu <tkundu@vmware.com> 9.16.27-2
 -   Do not remove user and group in postun unless uninstalled
 *   Mon Mar 21 2022 Dweep Advani <dadvani@vmware.com> 9.16.27-1
