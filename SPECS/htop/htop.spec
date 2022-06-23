@@ -3,7 +3,7 @@ Version:       3.1.2
 Release:       1%{?dist}
 Summary:       Interactive process viewer
 License:       GPLv2+
-Group:i        Applications/System
+Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://hisham.hm/htop/
