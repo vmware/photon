@@ -26,7 +26,7 @@ Photon OS supports the following configurations with kickstart:
 
 The following is a list of allowed JSON fields and their descriptions:
 
-<table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
+<table style="height: 470px;" border="1" width="250" cellspacing="0" cellpadding="10">
 	<tbody>
 	<tr>
 	<td><b>Field</b></td>
@@ -34,9 +34,11 @@ The following is a list of allowed JSON fields and their descriptions:
 	</tr>
 	<tr>
 	<td>hostname</td>
-	<td>The host name as string. You can also specify the name in printf format. 
-<p> The hostname must not start with a number or "-" and must be less than 64 characters.  
-<p> Example: "photon-$((RANDOM%4096))"
+	<td> Optional. 
+<p> Set the target host name as string. You can also specify the name in print format. </p>
+<p> The hostname must not start with a number or "-" and must be less than 64 characters. 
+<p> Default value: "photon-<randomized string>"</p> 
+<p> Examples: { "photon-$((RANDOM%4096))" }, { "photon-machine" }
 </p></td>
 	</tr>
 	<tr>
@@ -148,7 +150,7 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 </td>
 </tr><tr>
 	<td>live</td>
-	<td>Optional. <p>Should be set to flase if target system is not being run on
+	<td>Optional. <p>Should be set to false if target system is not being run on
 	host machine. When it set to false, installer will not add EFI boot
 	entries, and will not generate unique machine-id.
 	<p>Default value: false if "disk" is /dev/loop and true otherwise.
@@ -250,6 +252,36 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 	<p>Example: { "ui": true }
 </td>
 	</tr>
+
+<tr>
+	<td>linux_flavor</td>
+	<td>Required if multiple Linux flavors are present in the list of packages to install.
+	<p>Contains the flavor of Linux to install if multiple Linux flavors
+	are present in "packages" or "packagelist_file"</p>
+	<p>Acceptable values: "linux", "linux-esx", "linux-rt", "linux-aws", and "linux-secure"</p>
+	<p>Example: { "linux_flavor": "linux-esx" }</p>
+	</td>
+</tr>
+
+<tr>
+	<td>photon_docker_image</td>
+	<td>Optional.
+	<p>Contains the docker image <name:tag> present in "packages" or "packagelist_file"</p>
+	<p>Acceptable values: "photon:1.0", "photon:2.0", "photon:3.0", "photon" and so on.</p>
+	<p>Default value: "photon:latest"</p>
+	<p>Example: { "photon_docker_image": "photon:3.0" }</p>
+	</td>
+</tr>
+
+<tr>
+	<td>release_version</td>
+	<td>Required.
+	<p>Contains the photon release version.</p>
+	<p>Acceptable values: "3.0", "4.0"</p>
+	<p>Example: {"release_version": "3.0"}</p>
+	<p>For reference, look at "sample_ks.cfg" file.</p>
+	</td>
+</tr>
 	</tbody>
 	</table>
 	
