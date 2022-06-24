@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -495,7 +495,7 @@ install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
 
-%if 0%{?debug_package}
+%if 0%{?__debug_package}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
 ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
@@ -670,6 +670,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-8
+- Fix debug_package macro usage while adding vmlinux to debuginfo rpm
 * Tue Jun 14 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.78-7
 - Enable CONFIG_LIVEPATCH, which requires enabling ftrace, and related.
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-6
