@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -393,7 +393,7 @@ install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
-%if 0%{?debug_package}
+%if 0%{?__debug_package}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 %endif
@@ -464,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-2
+- Fix debug_package macro usage while adding vmlinux to debuginfo rpm
 * Mon Jun 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-1
 - Update to version 5.10.118
 * Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 5.10.109-4
