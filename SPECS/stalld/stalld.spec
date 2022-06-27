@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.3.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -24,6 +24,7 @@ Patch3:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
 Patch4:         0001-stalld-Assign-name-to-stalld-thread.patch
 Patch5:         0001-utils-Add-HRTICK_DL-support.patch
 Patch6:         0001-utils.c-Add-error-handling-for-enabling-HRTICK.patch
+Patch7:         0001-stalld-Fix-nr_periods-calculation-in-do_fifo_boost.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -68,6 +69,9 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Jun 27 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-11
+- Fix nr_periods calculation while boosting using SCHED_FIFO
+- Expose FORCE_FIFO as an option in the conf file
 * Mon Apr 11 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-10
 - Exit early if enabling HRTICK fails when using SCHED_DEADLINE
 * Fri Mar 25 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-9
