@@ -6,12 +6,12 @@
 
 Summary:        pmd-nextgen is an open source, super light weight remote management API Gateway
 Name:           pmd-nextgen
-Version:        1.0
-Release:        5%{?dist}
+Version:        1.0.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        pmd-nextgen-%{version}.tar.gz
-%define sha512  %{name}=dbff7b10643ca75589951ac1c758d4a99040c4c60e1e06368c31fca9a712639acba755fbdcab8ba004132e47455c08c27d1549e95bf9269c336bd2b036973350
+%define sha512  %{name}=daa7cf9f708355274d34705f31910d2ca463b94815b7a7c3d4d47e13afb0694eb816e20e7005199862b690021a76a21370bc649f824681777d27796c5d26f908
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,7 +35,7 @@ It features real time health monitoring, configuration and performance for syste
 networking and applications.
 
 %prep -p exit
-%autosetup -p1 -n %{name}
+%autosetup -p1 -n pmd-%{version}
 
 %build
 mkdir -p bin
@@ -49,8 +49,7 @@ install -m 755 -d %{buildroot}%{_unitdir}
 
 install bin/photon-mgmtd %{buildroot}%{_bindir}
 install bin/pmctl %{buildroot}%{_bindir}
-install -m 755 conf/photon-mgmt.toml %{buildroot}%{_sysconfdir}/photon-mgmt
-install -m 755 conf/photon-mgmt-auth.conf %{buildroot}%{_sysconfdir}/photon-mgmt
+install -m 755 distribution/photon-mgmt.toml %{buildroot}%{_sysconfdir}/photon-mgmt
 
 install -m 0644 units/photon-mgmtd.service %{buildroot}%{_unitdir}
 
@@ -63,7 +62,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/pmctl
 
 %{_sysconfdir}/photon-mgmt/photon-mgmt.toml
-%config(noreplace) %{_sysconfdir}/photon-mgmt/photon-mgmt-auth.conf
 %{_unitdir}/photon-mgmtd.service
 
 %pre
@@ -94,12 +92,16 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
-*   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-5
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-4
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-3
--   Bump up version to compile with new go
+* Mon Jun 27 2022 Nitesh Kumar <kunitesh@vmware.com> 1.0.1-1
+- Version upgrade to v1.0.1
+* Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-5
+- Bump up version to compile with new go
+* Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-5
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-4
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0-3
+- Bump up version to compile with new go
 * Wed Jan 12 2022 Harinadh D <hdommaraju@vmware.com> 1.0-2
 - Adding Requires to the package
 * Mon Jan 10 2022 Harinadh D <hdommaraju@vmware.com> 1.0-1
