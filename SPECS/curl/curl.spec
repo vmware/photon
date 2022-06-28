@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.83.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -10,6 +10,11 @@ Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    %{name}=0073c0eb2d5199688334b8bd9f49e46c1f4ea35c
+Patch0:         curl-CVE-2022-32205.patch
+Patch1:         curl-CVE-2022-32206.patch
+Patch2:         curl-CVE-2022-32207.patch
+Patch3:         curl-libcurl-fix-for-Curl_fopen.patch
+Patch4:         curl-CVE-2022-32208.patch
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -90,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Jun 28 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-2
+- Fixed CVE-2022-32205, CVE-2022-32206, CVE-2022-32207, CVE-2022-32208
 * Thu Jun 16 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-1
 - Upgrade to 7.83.1 to fix multiple CVEs
 * Thu May 19 2022 Dweep Advani <dadvani@vmware.com> 7.82.0-3
