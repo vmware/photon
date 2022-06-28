@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.318
+Version:        4.9.321
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=8935e0c1a98528ff531e8b7bf504a526174c9f80
+%define sha1 linux=6bbda736a8fae4bcc7808cb29cf09fcea22a1df0
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -507,6 +507,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-1
+-   Update to version 4.9.321
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.9.318-1
 -   Update to version 4.9.318
 *   Wed Jun 01 2022 Ajay Kaher <akaher@vmware.com> 4.9.315-2

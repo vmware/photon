@@ -10,6 +10,7 @@ transactions from the guest to abort.
 
 Tested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  arch/x86/kvm/vmx.c | 43 +++++++++++++++++++++++++++++--------------
  1 file changed, 29 insertions(+), 14 deletions(-)
@@ -41,7 +42,7 @@ index 0954e6a6cddf..21e52b176f81 100644
  static void vmcs_clear(struct vmcs *vmcs)
  {
  	u64 phys_addr = __pa(vmcs);
-@@ -3412,20 +3428,10 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+@@ -3471,19 +3487,9 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  	default:
  	find_shared_msr:
  		msr = find_msr_entry(vmx, msr_index);
@@ -58,14 +59,12 @@ index 0954e6a6cddf..21e52b176f81 100644
 -			}
 -			break;
 -		}
--		ret = kvm_set_msr_common(vcpu, msr_info);
 +		if (msr)
 +			ret = vmx_set_guest_msr(vmx, msr, data);
 +		else
-+			ret = kvm_set_msr_common(vcpu, msr_info);
+ 			ret = kvm_set_msr_common(vcpu, msr_info);
  	}
  
- 	return ret;
 @@ -9727,6 +9733,15 @@ static void vmx_cpuid_update(struct kvm_vcpu *vcpu)
  	else
  		to_vmx(vcpu)->msr_ia32_feature_control_valid_bits &=

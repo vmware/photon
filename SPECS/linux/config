@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.9.276 Kernel Configuration
+# Linux/x86 4.9.321 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -2578,6 +2578,8 @@ CONFIG_TCG_XEN=m
 # CONFIG_TELCLOCK is not set
 CONFIG_DEVPORT=y
 # CONFIG_XILLYBUS is not set
+# CONFIG_RANDOM_TRUST_CPU is not set
+# CONFIG_RANDOM_TRUST_BOOTLOADER is not set
 
 #
 # I2C support
@@ -4744,6 +4746,7 @@ CONFIG_TIMER_STATS=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 # CONFIG_LOCK_TORTURE_TEST is not set
 CONFIG_STACKTRACE=y
+# CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
 # CONFIG_DEBUG_KOBJECT is not set
 CONFIG_DEBUG_BUGVERBOSE=y
 # CONFIG_DEBUG_LIST is not set

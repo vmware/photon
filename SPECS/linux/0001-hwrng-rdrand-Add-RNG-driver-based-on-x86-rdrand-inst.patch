@@ -11,6 +11,9 @@ This can be used to feed the kernel's entropy pool on
 entropy-starved virtual machines.
 
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+[ Keerthana: arch_has_random_seed() and arch_has_random()
+is deprecated, replaced it with static_cpu_has() ]
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
 
  drivers/char/hw_random/Kconfig      | 14 ++++++++
@@ -111,7 +114,7 @@ index 0000000..ba017f3
 +{
 +	int err = -ENODEV;
 +
-+	if (!arch_has_random_seed() && !arch_has_random()) {
++	if (!static_cpu_has(X86_FEATURE_RDSEED) && !static_cpu_has(X86_FEATURE_RDRAND)) {
 +		pr_err(PFX "Neither RDSEED nor RDRAND is available.\n");
 +		return err;
 +	}
