@@ -1,463 +1,473 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
-%global photon_checksum_generator_version 1.2
+
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        7%{?kat_build:.kat}%{?dist}
-License:    	GPLv2
-URL:        	http://www.kernel.org/
-Group:        	System Environment/Kernel
+Release:        8%{?kat_build:.kat}%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org
+Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
-Distribution: 	Photon
+Distribution:   Photon
 
 %define uname_r %{version}-%{release}
+%define _modulesdir /lib/modules/%{uname_r}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=3bb04c32b4f6a2c1154852fd66c597ca36d85420b4155dfeff53f9ece27717df498f7bb1b13f4f981e320383d2dd6ee2d107e27c52bd94e1bed444866c8d61c1
-Source1:	config
-Source2:	initramfs.trigger
+Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha512 %{name}=3bb04c32b4f6a2c1154852fd66c597ca36d85420b4155dfeff53f9ece27717df498f7bb1b13f4f981e320383d2dd6ee2d107e27c52bd94e1bed444866c8d61c1
+
+Source1: config
+Source2: initramfs.trigger
+
 %define ena_version 1.6.0
-Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
+Source3: https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha512 ena_linux=3106ed2f098ae0963875443e6d6f96c6ccb6e379abd5616e8f4dd8c11f0adad45d2d2699729e658819b2141e87eff97517518b43b27ce94de1c0bf593ba77ad7
-Source4:	config_aarch64
-Source6:        pre-preun-postun-tasks.inc
-Source7:        check_for_config_applicability.inc
-# Photon-checksum-generator kernel module
-Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
+
+Source4: config_aarch64
+Source6: pre-preun-postun-tasks.inc
+Source7: check_for_config_applicability.inc
+
+%global photon_checksum_generator_version 1.2
+Source8: https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha512 photon-checksum-generator=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
-Source9:        genhmac.inc
-Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
+
+Source9: genhmac.inc
+
+%define dcap_version 1.6
+Source10: https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{dcap_version}.tar.gz
 %define sha512 DCAP=264c2c9e6554e533c41df34291d5809bd18b32384c5d871687dae7d3587b200459fcfffe0a95d93063cb29c6b5a50feebc99612e3d7403c24c410c43b0e2f64c
+
 %define i40e_version 2.16.11
-Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+Source11: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
+
 %define iavf_version 4.4.2
-Source13:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+
 %define ice_version 1.8.3
-Source14:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
 
+Source15: ApplyPatch.inc
+
 # common
-Patch1:         double-tcp_mem-limits.patch
+Patch1: double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
-Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
-Patch10:        0001-cgroup-v1-cgroup_stat-support.patch
+#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch5: vsock-transport-for-9p.patch
+Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
+Patch8: perf-scripts-python-Convert-python2-scripts-to-python3.patch
+Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
+Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
 #HyperV patches
-Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch13: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 %ifarch x86_64
 # floppy:
-Patch17:        0001-floppy-lower-printk-message-priority.patch
+Patch17: 0001-floppy-lower-printk-message-priority.patch
 %endif
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+#Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
 
-Patch25:        0001-tools-perf-fix-compilation-error.patch
-Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch25: 0001-tools-perf-fix-compilation-error.patch
+Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 # Fix CVE-2017-1000252
-Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+Patch28: kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
-Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch29: 4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30: 4.17-0002-apparmor-af_unix-mediation.patch
+Patch31: 4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch32: 4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2019-12456
-Patch33:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+Patch33: 0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
 # Fix for CVE-2019-12379
-Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+Patch34: 0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12380
-Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+Patch35: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
-Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+Patch36: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 # Fix for CVE-2019-12378
-Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+Patch38: 0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
-Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+Patch39: 0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Secure boot uefi certificate import patches
-Patch40:        secure-boot-patches/0001-security-integrity-remove-unnecessary-init_keyring-v.patch
-Patch41:	secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
-Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
-Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
-Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
-Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
+Patch40: secure-boot-patches/0001-security-integrity-remove-unnecessary-init_keyring-v.patch
+Patch41: secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
+Patch42: secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
+Patch43: secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
+Patch44: secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
+Patch45: secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 
 #Fix for CVE-2019-19338
-Patch47:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
-Patch48:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+Patch47: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch48: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # Fix for CVE-2020-16119
-Patch59:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
-Patch60:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+Patch59: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch60: 0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 #Fix for CVE-2020-16120
-Patch61:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
-Patch62:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
-Patch63:        0003-ovl-verify-permissions-in-ovl_path_open.patch
-Patch64:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
-Patch65:        0005-ovl-check-permission-to-open-real-file.patch
+Patch61: 0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch62: 0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch63: 0003-ovl-verify-permissions-in-ovl_path_open.patch
+Patch64: 0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
+Patch65: 0005-ovl-check-permission-to-open-real-file.patch
 
 # Fix for CVE-2019-19770
-Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
-Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+Patch66: 0001-block-revert-back-to-synchronous-request_queue-remov.patch
+Patch67: 0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 #Fix for CVE-2020-36385
-Patch68:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
-Patch69:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+Patch68: 0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch69: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
-Patch70:	0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+Patch70: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 #Fix for 9p
-Patch71:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
-Patch72:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
+Patch71: 0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch72: 0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
 
 # Upgrade vmxnet3 driver to version 4
-Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
-Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch84:        0004-vmxnet3-update-to-version-4.patch
-Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
-Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+Patch81: 0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch82: 0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch83: 0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch84: 0004-vmxnet3-update-to-version-4.patch
+Patch85: 0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch86: 0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch87: 0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch88: 0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
-Patch89:        0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+Patch89: 0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # inherit tcp_limit_output_bytes
-Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
+Patch90: tcp-inherit-TSQ-limit-from-root-namespace.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
+Patch98: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch100: 0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
-Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+Patch101: 0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # Next 2 patches are about to be merged into stable
-Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch102: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Update vmxnet3 driver to version 6
-Patch110:        0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
-Patch111:        0002-vmxnet3-prepare-for-version-6-changes.patch
-Patch112:        0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
-Patch113:        0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
-Patch114:        0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
-Patch115:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
-Patch116:        0007-vmxnet3-update-to-version-6.patch
-Patch117:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
-Patch118:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+Patch110: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch111: 0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch112: 0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch113: 0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch114: 0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch115: 0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch116: 0007-vmxnet3-update-to-version-6.patch
+Patch117: 0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch118: 0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
-Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
-Patch122:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
-Patch123:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
-Patch124:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
+Patch121: 0001-ptp-reorder-declarations-in-ptp_ioctl.patch
+Patch122: 0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
+Patch123: 0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch124: 0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 # Update vmxnet3 driver to version 7
-Patch130:        0001-vmxnet3-prepare-for-version-7-changes.patch
-Patch131:        0002-vmxnet3-add-support-for-capability-registers.patch
-Patch132:        0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
-Patch133:        0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
-Patch134:        0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
-Patch135:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
-Patch136:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
-Patch137:        0008-vmxnet3-update-to-version-7.patch
-Patch138:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch130: 0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch131: 0002-vmxnet3-add-support-for-capability-registers.patch
+Patch132: 0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch133: 0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch134: 0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch135: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch136: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch137: 0008-vmxnet3-update-to-version-7.patch
+Patch138: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 
 # Patchset to fix Panic due to nested priority inheritance in sched_deadline
-Patch140:        0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
-Patch141:        0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
-Patch142:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
-Patch143:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch140: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
+Patch141: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
+Patch142: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
+Patch143: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 # Lockdown support
-Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
-Patch151:        lockdown/0003-ima-require-secure_boot-rules-in-lockdown-mode.patch
-Patch152:        lockdown/0004-Enforce-module-signatures-if-the-kernel-is-locked-do.patch
-Patch153:        lockdown/0005-Restrict-dev-mem-kmem-port-when-the-kernel-is-locked.patch
-Patch154:        lockdown/0006-kexec-Disable-at-runtime-if-the-kernel-is-locked-dow.patch
-Patch155:        lockdown/0007-Copy-secure_boot-flag-in-boot-params-across-kexec-re.patch
-Patch156:        lockdown/0008-kexec_file-Restrict-at-runtime-if-the-kernel-is-lock.patch
-Patch157:        lockdown/0009-hibernate-Disable-when-the-kernel-is-locked-down.patch
-Patch158:        lockdown/0010-uswsusp-Disable-when-the-kernel-is-locked-down.patch
-Patch159:        lockdown/0011-PCI-Lock-down-BAR-access-when-the-kernel-is-locked-d.patch
-Patch160:        lockdown/0012-x86-Lock-down-IO-port-access-when-the-kernel-is-lock.patch
-Patch161:        lockdown/0013-x86-msr-Restrict-MSR-access-when-the-kernel-is-locke.patch
-Patch162:        lockdown/0014-asus-wmi-Restrict-debugfs-interface-when-the-kernel-.patch
-Patch163:        lockdown/0015-ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
-Patch164:        lockdown/0016-acpi-Ignore-acpi_rsdp-kernel-param-when-the-kernel-h.patch
-Patch165:        lockdown/0017-acpi-Disable-ACPI-table-override-if-the-kernel-is-lo.patch
-Patch166:        lockdown/0018-acpi-Disable-APEI-error-injection-if-the-kernel-is-l.patch
-Patch167:        lockdown/0020-Prohibit-PCMCIA-CIS-storage-when-the-kernel-is-locke.patch
-Patch168:        lockdown/0021-Lock-down-TIOCSSERIAL.patch
-Patch169:        lockdown/0022-Lock-down-module-params-that-specify-hardware-parame.patch
-Patch170:        lockdown/0023-x86-mmiotrace-Lock-down-the-testmmiotrace-module.patch
-Patch171:        lockdown/0024-debugfs-Disallow-use-of-debugfs-files-when-the-kerne.patch
-Patch172:        lockdown/0025-Lock-down-proc-kcore.patch
-Patch173:        lockdown/0026-Lock-down-kprobes.patch
-Patch174:        lockdown/0027-bpf-Restrict-kernel-image-access-functions-when-the-.patch
-Patch175:        lockdown/0028-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
-Patch176:        lockdown/0029-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
-Patch177:        lockdown/enable-cold-boot-attack-mitigation.patch
-Patch178:        lockdown/mtd-disable-slram-and-phram-when-locked-down.patch
-Patch179:        lockdown/security-Add-a-locked-down-LSM-hook.patch
-Patch180:        lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
-Patch181:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
-Patch182:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
+Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
+Patch151: lockdown/0003-ima-require-secure_boot-rules-in-lockdown-mode.patch
+Patch152: lockdown/0004-Enforce-module-signatures-if-the-kernel-is-locked-do.patch
+Patch153: lockdown/0005-Restrict-dev-mem-kmem-port-when-the-kernel-is-locked.patch
+Patch154: lockdown/0006-kexec-Disable-at-runtime-if-the-kernel-is-locked-dow.patch
+Patch155: lockdown/0007-Copy-secure_boot-flag-in-boot-params-across-kexec-re.patch
+Patch156: lockdown/0008-kexec_file-Restrict-at-runtime-if-the-kernel-is-lock.patch
+Patch157: lockdown/0009-hibernate-Disable-when-the-kernel-is-locked-down.patch
+Patch158: lockdown/0010-uswsusp-Disable-when-the-kernel-is-locked-down.patch
+Patch159: lockdown/0011-PCI-Lock-down-BAR-access-when-the-kernel-is-locked-d.patch
+Patch160: lockdown/0012-x86-Lock-down-IO-port-access-when-the-kernel-is-lock.patch
+Patch161: lockdown/0013-x86-msr-Restrict-MSR-access-when-the-kernel-is-locke.patch
+Patch162: lockdown/0014-asus-wmi-Restrict-debugfs-interface-when-the-kernel-.patch
+Patch163: lockdown/0015-ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
+Patch164: lockdown/0016-acpi-Ignore-acpi_rsdp-kernel-param-when-the-kernel-h.patch
+Patch165: lockdown/0017-acpi-Disable-ACPI-table-override-if-the-kernel-is-lo.patch
+Patch166: lockdown/0018-acpi-Disable-APEI-error-injection-if-the-kernel-is-l.patch
+Patch167: lockdown/0020-Prohibit-PCMCIA-CIS-storage-when-the-kernel-is-locke.patch
+Patch168: lockdown/0021-Lock-down-TIOCSSERIAL.patch
+Patch169: lockdown/0022-Lock-down-module-params-that-specify-hardware-parame.patch
+Patch170: lockdown/0023-x86-mmiotrace-Lock-down-the-testmmiotrace-module.patch
+Patch171: lockdown/0024-debugfs-Disallow-use-of-debugfs-files-when-the-kerne.patch
+Patch172: lockdown/0025-Lock-down-proc-kcore.patch
+Patch173: lockdown/0026-Lock-down-kprobes.patch
+Patch174: lockdown/0027-bpf-Restrict-kernel-image-access-functions-when-the-.patch
+Patch175: lockdown/0028-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch176: lockdown/0029-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch177: lockdown/enable-cold-boot-attack-mitigation.patch
+Patch178: lockdown/mtd-disable-slram-and-phram-when-locked-down.patch
+Patch179: lockdown/security-Add-a-locked-down-LSM-hook.patch
+Patch180: lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
+Patch181: lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+Patch182: lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
-Patch200:        0001-OF-DT-Overlay-configfs-interface.patch
-Patch201:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch202:        0003-arm64-dts-broadcom-Add-symbols-to-dtb.patch
+Patch200: 0001-OF-DT-Overlay-configfs-interface.patch
+Patch201: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch202: 0003-arm64-dts-broadcom-Add-symbols-to-dtb.patch
 # Rpi add 'spidev' to spidev_dt_ids compatible list
-Patch203:        0001-spidev-Add-spidev-compatible-string-to-silence-warni.patch
+Patch203: 0001-spidev-Add-spidev-compatible-string-to-silence-warni.patch
 # Rpi device tree patch
-Patch204:        0001-Add-SPI-and-Sound-to-rpi3-device-trees.patch
+Patch204: 0001-Add-SPI-and-Sound-to-rpi3-device-trees.patch
 # Rpi Overlays
-Patch205:        0001-Infrastructure-to-compile-Overlays.patch
-Patch206:        0002-spi0-overlays-files.patch
-Patch207:        0003-audio-overlays-files.patch
+Patch205: 0001-Infrastructure-to-compile-Overlays.patch
+Patch206: 0002-spi0-overlays-files.patch
+Patch207: 0003-audio-overlays-files.patch
 
 # NXP LS10XXa FRWY patches
-Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
-Patch212:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
-Patch213:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
-Patch214:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
-Patch215:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
-Patch216:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
-Patch217:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
-Patch218:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
-Patch219:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
-Patch220:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
-Patch221:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
-Patch222:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
-Patch223:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
-Patch224:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
-Patch225:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
-Patch226:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
-Patch227:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
-Patch228:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
-Patch229:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
-Patch230:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
-Patch231:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
-Patch232:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
-Patch233:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
-
-Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
+Patch211: 0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
+Patch212: 0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
+Patch213: 0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
+Patch214: 0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
+Patch215: 0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
+Patch216: 0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
+Patch217: 0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
+Patch218: 0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
+Patch219: 0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
+Patch220: 0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
+Patch221: 0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
+Patch222: 0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
+Patch223: 0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
+Patch224: 0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
+Patch225: 0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
+Patch226: 0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
+Patch227: 0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
+Patch228: 0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
+Patch229: 0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
+Patch230: 0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
+Patch231: 0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
+Patch232: 0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
+Patch233: 0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
+Patch234: 0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %endif
 
 %ifarch x86_64
 # VMW:
-Patch281:        0001-x86-vmware-Update-platform-detection-code-for-VMCALL.patch
-Patch282:        0001-x86-vmware-Add-a-header-file-for-hypercall-definitio.patch
-Patch283:        0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_PO.patch
-Patch284:        0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_HY.patch
-Patch285:        0001-x86-cpu-vmware-Fix-platform-detection-VMWARE_PORT-ma.patch
-Patch286:        0001-x86-vmware-Steal-time-accounting-support.patch
-Patch287:        0001-x86-alternatives-Add-an-ALTERNATIVE_3-macro.patch
-Patch288:        0001-x86-vmware-Use-Efficient-and-Corrent-ALTERNATIVEs-fo.patch
-Patch289:        0001-x86-vmware-Log-kmsg-dump-on-panic.patch
-Patch290:        0006-x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch281: 0001-x86-vmware-Update-platform-detection-code-for-VMCALL.patch
+Patch282: 0001-x86-vmware-Add-a-header-file-for-hypercall-definitio.patch
+Patch283: 0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_PO.patch
+Patch284: 0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_HY.patch
+Patch285: 0001-x86-cpu-vmware-Fix-platform-detection-VMWARE_PORT-ma.patch
+Patch286: 0001-x86-vmware-Steal-time-accounting-support.patch
+Patch287: 0001-x86-alternatives-Add-an-ALTERNATIVE_3-macro.patch
+Patch288: 0001-x86-vmware-Use-Efficient-and-Corrent-ALTERNATIVEs-fo.patch
+Patch289: 0001-x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch290: 0006-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
-Patch291:        0001-x86-insn-eval-Add-support-for-64-bit-kernel-mode.patch
-Patch292:        0001-drm-vmwgfx-Update-the-backdoor-call-with-support-for.patch
-Patch293:        0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch291: 0001-x86-insn-eval-Add-support-for-64-bit-kernel-mode.patch
+Patch292: 0001-drm-vmwgfx-Update-the-backdoor-call-with-support-for.patch
+Patch293: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # vmw: gfx
-Patch301:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
-Patch302:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
-Patch303:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
+Patch301: 0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
+Patch302: 0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
+Patch303: 0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 
 # SEV-ES prerequisite: x86/efi,boot: GDT handling cleanup/fixes
-Patch311:        0001-x86-boot-Save-several-bytes-in-decompressor.patch
-Patch312:        0002-x86-boot-Remove-KEEP_SEGMENTS-support.patch
-Patch313:        0003-efi-x86-Don-t-depend-on-firmware-GDT-layout.patch
-Patch314:        0004-x86-boot-Reload-GDTR-after-copying-to-the-end-of-the.patch
-Patch315:        0005-x86-boot-Clear-direction-and-interrupt-flags-in-star.patch
-Patch316:        0006-efi-x86-Remove-GDT-setup-from-efi_main.patch
-Patch317:        0007-x86-boot-GDT-limit-value-should-be-size-1.patch
-Patch318:        0008-x86-boot-Micro-optimize-GDT-loading-instructions.patch
-Patch319:        0009-x86-boot-compressed-Fix-reloading-of-GDTR-post-relocation.patch
+Patch311: 0001-x86-boot-Save-several-bytes-in-decompressor.patch
+Patch312: 0002-x86-boot-Remove-KEEP_SEGMENTS-support.patch
+Patch313: 0003-efi-x86-Don-t-depend-on-firmware-GDT-layout.patch
+Patch314: 0004-x86-boot-Reload-GDTR-after-copying-to-the-end-of-the.patch
+Patch315: 0005-x86-boot-Clear-direction-and-interrupt-flags-in-star.patch
+Patch316: 0006-efi-x86-Remove-GDT-setup-from-efi_main.patch
+Patch317: 0007-x86-boot-GDT-limit-value-should-be-size-1.patch
+Patch318: 0008-x86-boot-Micro-optimize-GDT-loading-instructions.patch
+Patch319: 0009-x86-boot-compressed-Fix-reloading-of-GDTR-post-relocation.patch
 
 # SEV-ES prerequisite: x86: Add guard pages to exception and interrupt stacks
-Patch331:        0001-x86-dumpstack-Fix-off-by-one-errors-in-stack-identif.patch
-Patch332:        0002-x86-irq-64-Remove-a-hardcoded-irq_stack_union-access.patch
-Patch333:        0003-x86-irq-64-Sanitize-the-top-bottom-confusion.patch
-Patch334:        0004-x86-idt-Remove-unused-macro-SISTG.patch
-Patch335:        0005-x86-64-Remove-stale-CURRENT_MASK.patch
-Patch336:        0006-x86-exceptions-Remove-unused-stack-defines-on-32bit.patch
-Patch337:        0007-x86-exceptions-Make-IST-index-zero-based.patch
-Patch338:        0008-x86-cpu_entry_area-Cleanup-setup-functions.patch
-Patch339:        0009-x86-exceptions-Add-structs-for-exception-stacks.patch
-Patch340:        0010-x86-cpu_entry_area-Prepare-for-IST-guard-pages.patch
-Patch341:        0011-x86-cpu_entry_area-Provide-exception-stack-accessor.patch
-Patch342:        0012-x86-traps-Use-cpu_entry_area-instead-of-orig_ist.patch
-Patch343:        0013-x86-irq-64-Use-cpu-entry-area-instead-of-orig_ist.patch
-Patch344:        0014-x86-dumpstack-64-Use-cpu_entry_area-instead-of-orig_.patch
-Patch345:        0015-x86-cpu-Prepare-TSS.IST-setup-for-guard-pages.patch
-Patch346:        0016-x86-cpu-Remove-orig_ist-array.patch
-Patch347:        0017-x86-exceptions-Disconnect-IST-index-and-stack-order.patch
-Patch348:        0018-x86-exceptions-Enable-IST-guard-pages.patch
-Patch349:        0019-x86-exceptions-Split-debug-IST-stack.patch
-Patch350:        0020-x86-dumpstack-64-Speedup-in_exception_stack.patch
-Patch351:        0021-x86-irq-32-Define-IRQ_STACK_SIZE.patch
-Patch352:        0022-x86-irq-32-Make-irq-stack-a-character-array.patch
-Patch353:        0023-x86-irq-32-Rename-hard-softirq_stack-to-hard-softirq.patch
-Patch354:        0024-x86-irq-64-Rename-irq_stack_ptr-to-hardirq_stack_ptr.patch
-Patch355:        0025-x86-irq-32-Invoke-irq_ctx_init-from-init_IRQ.patch
-Patch356:        0026-x86-irq-32-Handle-irq-stack-allocation-failure-prope.patch
-Patch357:        0027-x86-irq-64-Init-hardirq_stack_ptr-during-CPU-hotplug.patch
-Patch358:        0028-x86-irq-64-Split-the-IRQ-stack-into-its-own-pages.patch
-Patch359:        0029-x86-irq-64-Remap-the-IRQ-stack-with-guard-pages.patch
-Patch360:        0030-x86-irq-64-Remove-stack-overflow-debug-code.patch
+Patch331: 0001-x86-dumpstack-Fix-off-by-one-errors-in-stack-identif.patch
+Patch332: 0002-x86-irq-64-Remove-a-hardcoded-irq_stack_union-access.patch
+Patch333: 0003-x86-irq-64-Sanitize-the-top-bottom-confusion.patch
+Patch334: 0004-x86-idt-Remove-unused-macro-SISTG.patch
+Patch335: 0005-x86-64-Remove-stale-CURRENT_MASK.patch
+Patch336: 0006-x86-exceptions-Remove-unused-stack-defines-on-32bit.patch
+Patch337: 0007-x86-exceptions-Make-IST-index-zero-based.patch
+Patch338: 0008-x86-cpu_entry_area-Cleanup-setup-functions.patch
+Patch339: 0009-x86-exceptions-Add-structs-for-exception-stacks.patch
+Patch340: 0010-x86-cpu_entry_area-Prepare-for-IST-guard-pages.patch
+Patch341: 0011-x86-cpu_entry_area-Provide-exception-stack-accessor.patch
+Patch342: 0012-x86-traps-Use-cpu_entry_area-instead-of-orig_ist.patch
+Patch343: 0013-x86-irq-64-Use-cpu-entry-area-instead-of-orig_ist.patch
+Patch344: 0014-x86-dumpstack-64-Use-cpu_entry_area-instead-of-orig_.patch
+Patch345: 0015-x86-cpu-Prepare-TSS.IST-setup-for-guard-pages.patch
+Patch346: 0016-x86-cpu-Remove-orig_ist-array.patch
+Patch347: 0017-x86-exceptions-Disconnect-IST-index-and-stack-order.patch
+Patch348: 0018-x86-exceptions-Enable-IST-guard-pages.patch
+Patch349: 0019-x86-exceptions-Split-debug-IST-stack.patch
+Patch350: 0020-x86-dumpstack-64-Speedup-in_exception_stack.patch
+Patch351: 0021-x86-irq-32-Define-IRQ_STACK_SIZE.patch
+Patch352: 0022-x86-irq-32-Make-irq-stack-a-character-array.patch
+Patch353: 0023-x86-irq-32-Rename-hard-softirq_stack-to-hard-softirq.patch
+Patch354: 0024-x86-irq-64-Rename-irq_stack_ptr-to-hardirq_stack_ptr.patch
+Patch355: 0025-x86-irq-32-Invoke-irq_ctx_init-from-init_IRQ.patch
+Patch356: 0026-x86-irq-32-Handle-irq-stack-allocation-failure-prope.patch
+Patch357: 0027-x86-irq-64-Init-hardirq_stack_ptr-during-CPU-hotplug.patch
+Patch358: 0028-x86-irq-64-Split-the-IRQ-stack-into-its-own-pages.patch
+Patch359: 0029-x86-irq-64-Remap-the-IRQ-stack-with-guard-pages.patch
+Patch360: 0030-x86-irq-64-Remove-stack-overflow-debug-code.patch
 
-Patch371:        0001-x86-ioremap-Add-an-ioremap_encrypted-helper.patch
-Patch372:        0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
+Patch371: 0001-x86-ioremap-Add-an-ioremap_encrypted-helper.patch
+Patch372: 0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
 
 # vmw_pvscsi
-Patch381:        0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
-Patch382:        0002-scsi-vmw_pvscsi-Fix-swiotlb-operation.patch
-Patch383:        0003-scsi-vmw_pvscsi-Silence-dma-mapping-errors.patch
-Patch384:        0004-scsi-vmw_pvscsi-Avoid-repeated-dma-mapping-and-unmapping-of-sg-list-memory.patch
-Patch385:        0005-scsi-vmw_pvscsi-Reduce-the-ring-size-when-SEV-is-active.patch
-Patch386:        0006-scsi-vmw_pvscsi-Fix-uninitialized-sense-buffer-with-swiotlb.patch
+Patch381: 0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
+Patch382: 0002-scsi-vmw_pvscsi-Fix-swiotlb-operation.patch
+Patch383: 0003-scsi-vmw_pvscsi-Silence-dma-mapping-errors.patch
+Patch384: 0004-scsi-vmw_pvscsi-Avoid-repeated-dma-mapping-and-unmapping-of-sg-list-memory.patch
+Patch385: 0005-scsi-vmw_pvscsi-Reduce-the-ring-size-when-SEV-is-active.patch
+Patch386: 0006-scsi-vmw_pvscsi-Fix-uninitialized-sense-buffer-with-swiotlb.patch
 
 # SEV-ES V3
-Patch401:        0001-KVM-SVM-Add-GHCB-definitions.patch
-Patch402:        0002-KVM-SVM-Add-GHCB-Accessor-functions.patch
-Patch403:        0003-KVM-SVM-Use-__packed-shorthand.patch
-Patch404:        0004-x86-cpufeatures-Add-SEV-ES-CPU-feature.patch
-Patch405:        0005-x86-traps-Move-some-definitions-to-asm-trap_defs.h.patch
-Patch406:        0006-x86-insn-Make-inat-tables.c-suitable-for-pre-decompr.patch
-Patch407:        0007-x86-umip-Factor-out-instruction-fetch.patch
-Patch408:        0008-x86-umip-Factor-out-instruction-decoding.patch
-Patch409:        0009-x86-insn-Add-insn_get_modrm_reg_off.patch
-Patch410:        0010-x86-insn-Add-insn_rep_prefix-helper.patch
-Patch411:        0011-x86-boot-compressed-64-Disable-red-zone-usage.patch
-Patch412:        0012-x86-boot-compressed-64-Switch-to-__KERNEL_CS-after-G.patch
-Patch413:        0013-x86-boot-compressed-64-Add-IDT-Infrastructure.patch
-Patch414:        0014-x86-boot-compressed-64-Rename-kaslr_64.c-to-ident_ma.patch
-Patch415:        0015-x86-boot-compressed-64-Add-page-fault-handler.patch
-Patch416:        0016-x86-boot-compressed-64-Always-switch-to-own-page-tab.patch
-Patch417:        0017-x86-boot-compressed-64-Don-t-pre-map-memory-in-KASLR.patch
-Patch418:        0018-x86-boot-compressed-64-Change-add_identity_map-to-ta.patch
-Patch419:        0019-x86-boot-compressed-64-Add-VC-handler.patch
-Patch420:        0020-x86-boot-compressed-64-Call-set_sev_encryption_mask.patch
-Patch421:        0021-x86-boot-compressed-64-Check-return-value-of-kernel_.patch
-Patch422:        0022-x86-boot-compressed-64-Add-set_page_en-decrypted-hel.patch
-Patch423:        0023-x86-boot-compressed-64-Setup-GHCB-Based-VC-Exception.patch
-Patch424:        0024-x86-boot-compressed-64-Unmap-GHCB-page-before-bootin.patch
-Patch425:        0025-x86-sev-es-Add-support-for-handling-IOIO-exceptions.patch
-Patch426:        0026-x86-fpu-Move-xgetbv-xsetbv-into-separate-header.patch
-Patch427:        0027-x86-sev-es-Add-CPUID-handling-to-VC-handler.patch
-Patch428:        0028-x86-idt-Move-IDT-to-data-segment.patch
-Patch429:        0029-x86-idt-Split-idt_data-setup-out-of-set_intr_gate.patch
-Patch430:        0030-x86-idt-Move-two-function-from-k-idt.c-to-i-a-desc.h.patch
-Patch431:        0031-x86-head-64-Install-boot-GDT.patch
-Patch432:        0032-x86-head-64-Reload-GDT-after-switch-to-virtual-addre.patch
-Patch433:        0033-x86-head-64-Load-segment-registers-earlier.patch
-Patch434:        0034-x86-head-64-Switch-to-initial-stack-earlier.patch
-Patch435:        0035-x86-head-64-Build-k-head64.c-with-fno-stack-protecto.patch
-Patch436:        0036-x86-head-64-Load-IDT-earlier.patch
-Patch437:        0037-x86-head-64-Move-early-exception-dispatch-to-C-code.patch
-Patch438:        0038-x86-sev-es-Add-SEV-ES-Feature-Detection.patch
-Patch439:        0039-x86-sev-es-Print-SEV-ES-info-into-kernel-log.patch
-Patch440:        0040-x86-sev-es-Compile-early-handler-code-into-kernel-im.patch
-Patch441:        0041-x86-sev-es-Setup-early-VC-handler.patch
-Patch442:        0042-x86-sev-es-Setup-GHCB-based-boot-VC-handler.patch
-Patch443:        0043-x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl.patch
-Patch444:        0044-x86-sev-es-Allocate-and-Map-IST-stacks-for-VC-handle.patch
-Patch445:        0045-x86-dumpstack-64-Handle-VC-exception-stacks.patch
-Patch446:        0046-x86-sev-es-Shift-VC-IST-Stack-in-nmi_enter-nmi_exit.patch
-Patch447:        0047-x86-sev-es-Add-Runtime-VC-Exception-Handler.patch
-Patch448:        0048-x86-sev-es-Wire-up-existing-VC-exit-code-handlers.patch
-Patch449:        0049-x86-sev-es-Handle-instruction-fetches-from-user-spac.patch
-Patch450:        0050-x86-sev-es-Do-not-crash-on-VC-exceptions-from-user-s.patch
-Patch451:        0051-x86-sev-es-Handle-MMIO-events.patch
-Patch452:        0052-x86-sev-es-Handle-MMIO-String-Instructions.patch
-Patch453:        0053-x86-sev-es-Handle-MSR-events.patch
-Patch454:        0054-x86-sev-es-Handle-DR7-read-write-events.patch
-Patch455:        0055-x86-sev-es-Handle-WBINVD-Events.patch
-Patch456:        0056-x86-sev-es-Handle-RDTSC-P-Events.patch
-Patch457:        0057-x86-sev-es-Handle-RDPMC-Events.patch
-Patch458:        0058-x86-sev-es-Handle-INVD-Events.patch
-Patch459:        0059-x86-sev-es-Handle-MONITOR-MONITORX-Events.patch
-Patch460:        0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
-Patch461:        0061-x86-sev-es-Handle-VMMCALL-Events.patch
-Patch462:        0062-x86-sev-es-Handle-AC-Events.patch
-Patch463:        0063-x86-sev-es-Handle-DB-Events.patch
-Patch464:        0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
-Patch465:        0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
-Patch466:        0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
-Patch467:        0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
-Patch468:        0068-x86-realmode-Add-SEV-ES-specific-trampoline-entry-po.patch
-Patch469:        0069-x86-realmode-Setup-AP-jump-table.patch
-Patch470:        0070-x86-head-64-Setup-TSS-early-for-secondary-CPUs.patch
-Patch471:        0071-x86-head-64-Don-t-call-verify_cpu-on-starting-APs.patch
-Patch472:        0072-x86-head-64-Rename-start_cpu0.patch
-Patch473:        0073-x86-sev-es-Support-CPU-offline-online.patch
-Patch474:        0074-x86-sev-es-Handle-NMI-State.patch
-Patch475:        0075-x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active.patch
-Patch476:        0001-x86-sev-es-Fix-crash-in-early_set_memory_enc_dec.patch
-Patch477:        0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
-Patch478:        0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
+Patch401: 0001-KVM-SVM-Add-GHCB-definitions.patch
+Patch402: 0002-KVM-SVM-Add-GHCB-Accessor-functions.patch
+Patch403: 0003-KVM-SVM-Use-__packed-shorthand.patch
+Patch404: 0004-x86-cpufeatures-Add-SEV-ES-CPU-feature.patch
+Patch405: 0005-x86-traps-Move-some-definitions-to-asm-trap_defs.h.patch
+Patch406: 0006-x86-insn-Make-inat-tables.c-suitable-for-pre-decompr.patch
+Patch407: 0007-x86-umip-Factor-out-instruction-fetch.patch
+Patch408: 0008-x86-umip-Factor-out-instruction-decoding.patch
+Patch409: 0009-x86-insn-Add-insn_get_modrm_reg_off.patch
+Patch410: 0010-x86-insn-Add-insn_rep_prefix-helper.patch
+Patch411: 0011-x86-boot-compressed-64-Disable-red-zone-usage.patch
+Patch412: 0012-x86-boot-compressed-64-Switch-to-__KERNEL_CS-after-G.patch
+Patch413: 0013-x86-boot-compressed-64-Add-IDT-Infrastructure.patch
+Patch414: 0014-x86-boot-compressed-64-Rename-kaslr_64.c-to-ident_ma.patch
+Patch415: 0015-x86-boot-compressed-64-Add-page-fault-handler.patch
+Patch416: 0016-x86-boot-compressed-64-Always-switch-to-own-page-tab.patch
+Patch417: 0017-x86-boot-compressed-64-Don-t-pre-map-memory-in-KASLR.patch
+Patch418: 0018-x86-boot-compressed-64-Change-add_identity_map-to-ta.patch
+Patch419: 0019-x86-boot-compressed-64-Add-VC-handler.patch
+Patch420: 0020-x86-boot-compressed-64-Call-set_sev_encryption_mask.patch
+Patch421: 0021-x86-boot-compressed-64-Check-return-value-of-kernel_.patch
+Patch422: 0022-x86-boot-compressed-64-Add-set_page_en-decrypted-hel.patch
+Patch423: 0023-x86-boot-compressed-64-Setup-GHCB-Based-VC-Exception.patch
+Patch424: 0024-x86-boot-compressed-64-Unmap-GHCB-page-before-bootin.patch
+Patch425: 0025-x86-sev-es-Add-support-for-handling-IOIO-exceptions.patch
+Patch426: 0026-x86-fpu-Move-xgetbv-xsetbv-into-separate-header.patch
+Patch427: 0027-x86-sev-es-Add-CPUID-handling-to-VC-handler.patch
+Patch428: 0028-x86-idt-Move-IDT-to-data-segment.patch
+Patch429: 0029-x86-idt-Split-idt_data-setup-out-of-set_intr_gate.patch
+Patch430: 0030-x86-idt-Move-two-function-from-k-idt.c-to-i-a-desc.h.patch
+Patch431: 0031-x86-head-64-Install-boot-GDT.patch
+Patch432: 0032-x86-head-64-Reload-GDT-after-switch-to-virtual-addre.patch
+Patch433: 0033-x86-head-64-Load-segment-registers-earlier.patch
+Patch434: 0034-x86-head-64-Switch-to-initial-stack-earlier.patch
+Patch435: 0035-x86-head-64-Build-k-head64.c-with-fno-stack-protecto.patch
+Patch436: 0036-x86-head-64-Load-IDT-earlier.patch
+Patch437: 0037-x86-head-64-Move-early-exception-dispatch-to-C-code.patch
+Patch438: 0038-x86-sev-es-Add-SEV-ES-Feature-Detection.patch
+Patch439: 0039-x86-sev-es-Print-SEV-ES-info-into-kernel-log.patch
+Patch440: 0040-x86-sev-es-Compile-early-handler-code-into-kernel-im.patch
+Patch441: 0041-x86-sev-es-Setup-early-VC-handler.patch
+Patch442: 0042-x86-sev-es-Setup-GHCB-based-boot-VC-handler.patch
+Patch443: 0043-x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl.patch
+Patch444: 0044-x86-sev-es-Allocate-and-Map-IST-stacks-for-VC-handle.patch
+Patch445: 0045-x86-dumpstack-64-Handle-VC-exception-stacks.patch
+Patch446: 0046-x86-sev-es-Shift-VC-IST-Stack-in-nmi_enter-nmi_exit.patch
+Patch447: 0047-x86-sev-es-Add-Runtime-VC-Exception-Handler.patch
+Patch448: 0048-x86-sev-es-Wire-up-existing-VC-exit-code-handlers.patch
+Patch449: 0049-x86-sev-es-Handle-instruction-fetches-from-user-spac.patch
+Patch450: 0050-x86-sev-es-Do-not-crash-on-VC-exceptions-from-user-s.patch
+Patch451: 0051-x86-sev-es-Handle-MMIO-events.patch
+Patch452: 0052-x86-sev-es-Handle-MMIO-String-Instructions.patch
+Patch453: 0053-x86-sev-es-Handle-MSR-events.patch
+Patch454: 0054-x86-sev-es-Handle-DR7-read-write-events.patch
+Patch455: 0055-x86-sev-es-Handle-WBINVD-Events.patch
+Patch456: 0056-x86-sev-es-Handle-RDTSC-P-Events.patch
+Patch457: 0057-x86-sev-es-Handle-RDPMC-Events.patch
+Patch458: 0058-x86-sev-es-Handle-INVD-Events.patch
+Patch459: 0059-x86-sev-es-Handle-MONITOR-MONITORX-Events.patch
+Patch460: 0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
+Patch461: 0061-x86-sev-es-Handle-VMMCALL-Events.patch
+Patch462: 0062-x86-sev-es-Handle-AC-Events.patch
+Patch463: 0063-x86-sev-es-Handle-DB-Events.patch
+#Patch464: 0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
+Patch465: 0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
+Patch466: 0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
+Patch467: 0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
+Patch468: 0068-x86-realmode-Add-SEV-ES-specific-trampoline-entry-po.patch
+Patch469: 0069-x86-realmode-Setup-AP-jump-table.patch
+Patch470: 0070-x86-head-64-Setup-TSS-early-for-secondary-CPUs.patch
+Patch471: 0071-x86-head-64-Don-t-call-verify_cpu-on-starting-APs.patch
+Patch472: 0072-x86-head-64-Rename-start_cpu0.patch
+Patch473: 0073-x86-sev-es-Support-CPU-offline-online.patch
+Patch474: 0074-x86-sev-es-Handle-NMI-State.patch
+Patch475: 0075-x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active.patch
+Patch476: 0001-x86-sev-es-Fix-crash-in-early_set_memory_enc_dec.patch
+Patch477: 0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
+Patch478: 0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
 
-Patch480:        0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
-Patch481:        0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
-Patch482:        0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch483:        0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch484:        0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
-Patch485:        0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
-Patch486:        0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
+Patch480: 0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
+#Patch481: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch482: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+#Patch484: 0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
+Patch485: 0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
+Patch486: 0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
 
 # SEV-ES: Security Mitigate
-Patch491:        0001-x86-boot-compressed-64-Introduce-sev_status.patch
-Patch492:        0002-x86-boot-compressed-64-Sanity-check-CPUID-results-in.patch
-Patch493:        0003-x86-boot-compressed-64-Check-SEV-encryption-in-64-bi.patch
-Patch494:        0004-x86-head-64-Check-SEV-encryption-before-switching-to.patch
-Patch495:        0005-x86-sev-es-Do-not-support-MMIO-to-from-encrypted-mem.patch
-Patch496:        x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
-Patch497:        x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
+Patch491: 0001-x86-boot-compressed-64-Introduce-sev_status.patch
+Patch492: 0002-x86-boot-compressed-64-Sanity-check-CPUID-results-in.patch
+Patch493: 0003-x86-boot-compressed-64-Check-SEV-encryption-in-64-bi.patch
+Patch494: 0004-x86-head-64-Check-SEV-encryption-before-switching-to.patch
+Patch495: 0005-x86-sev-es-Do-not-support-MMIO-to-from-encrypted-mem.patch
+Patch496: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch497: x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
-Patch500:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+Patch500: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
-Patch501:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+Patch501: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch506: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
-Patch509:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+Patch509: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 #Patches for i40e driver
-Patch1500:      0001-Add-support-for-gettimex64-interface.patch
+Patch1500: 0001-Add-support-for-gettimex64-interface.patch
 
 #Patches for iavf driver
-Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1512:      no-aux-symvers.patch
+Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1512: no-aux-symvers.patch
 
 #Patches for ice driver
-Patch1521:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1522:      no-aux-bus.patch
-
+Patch1521: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1522: no-aux-bus.patch
 %endif
 
-%if 0%{?kat_build:1}
-Patch1000:       fips-kat-tests.patch
+%if 0%{?kat_build}
+Patch1000: fips-kat-tests.patch
 %endif
 
 BuildRequires:  bc
@@ -481,7 +491,9 @@ BuildRequires:  python3-devel
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 %endif
-Requires:       filesystem kmod
+
+Requires:       filesystem
+Requires:       kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
 Requires(post): (coreutils or toybox)
@@ -495,7 +507,8 @@ Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Obsoletes:      linux-dev
 Requires:       %{name} = %{version}-%{release}
-Requires:       python3 gawk
+Requires:       python3
+Requires:       gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -522,9 +535,9 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 %package drivers-intel-sgx
-Summary:	Intel SGX driver
-Group:		System Environment/Kernel
-Requires:	%{name} = %{version}-%{release}
+Summary:    Intel SGX driver
+Group:      System Environment/Kernel
+Requires:   %{name} = %{version}-%{release}
 Requires(post): /usr/sbin/groupadd
 %description drivers-intel-sgx
 This Linux package contains Intel SGX kernel module.
@@ -577,14 +590,15 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %endif
 
 %package hmacgen
-Summary:	HMAC SHA256/HMAC SHA512 generator
-Group:		System Environment/Kernel
-Requires:      %{name} = %{version}-%{release}
+Summary:    HMAC SHA256/HMAC SHA512 generator
+Group:      System Environment/Kernel
+Requires:   %{name} = %{version}-%{release}
 # kernel is needed during postun else hmacgen might get
 # removed after kernel which will break keeping modules of
 # running kernel till next boot feature
 Requires(postun): %{name} = %{version}-%{release}
-Enhances:       %{name}
+Enhances:   %{name}
+
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
 
@@ -593,383 +607,61 @@ This Linux package contains hmac sha generator kernel module.
 %setup -q -n linux-%{version}
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -D -b 3 -n linux-%{version}
+%setup -q -T -D -b3 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 10 -n linux-%{version}
+%setup -q -T -D -b10 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 11 -n linux-%{version}
+%setup -q -T -D -b11 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 13 -n linux-%{version}
+%setup -q -T -D -b13 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -D -b 14 -n linux-%{version}
+%setup -q -T -D -b14 -n linux-%{version}
 %endif
 # Using autosetup is not feasible
-%setup -D -b 8 -n linux-%{version}
+%setup -q -T -D -b8 -n linux-%{version}
 
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch13 -p1
+# ApplyPatch.inc
+%include %{SOURCE15}
+
+ApplyPatch "1" "13"
 
 %ifarch x86_64
 %patch17 -p1
 %endif
 
-%patch25 -p1
-%patch26 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
-%patch47 -p1
-%patch48 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
-%patch68 -p1
-%patch69 -p1
-%patch70 -p1
-%patch71 -p1
-%patch72 -p1
-
-%patch80 -p1
-%patch81 -p1
-%patch82 -p1
-%patch83 -p1
-%patch84 -p1
-%patch85 -p1
-%patch86 -p1
-%patch87 -p1
-%patch88 -p1
-
-%patch89 -p1
-
-%patch90 -p1
-%patch98 -p1
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-
-%patch110 -p1
-%patch111 -p1
-%patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
-%patch116 -p1
-%patch117 -p1
-%patch118 -p1
-
-%patch121 -p1
-%patch122 -p1
-%patch123 -p1
-%patch124 -p1
-
-%patch130 -p1
-%patch131 -p1
-%patch132 -p1
-%patch133 -p1
-%patch134 -p1
-%patch135 -p1
-%patch136 -p1
-%patch137 -p1
-%patch138 -p1
-
-%patch140 -p1
-%patch141 -p1
-%patch142 -p1
-%patch143 -p1
-
-%patch150 -p1
-%patch151 -p1
-%patch152 -p1
-%patch153 -p1
-%patch154 -p1
-%patch155 -p1
-%patch156 -p1
-%patch157 -p1
-%patch158 -p1
-%patch159 -p1
-%patch160 -p1
-%patch161 -p1
-%patch162 -p1
-%patch163 -p1
-%patch164 -p1
-%patch165 -p1
-%patch166 -p1
-%patch167 -p1
-%patch168 -p1
-%patch169 -p1
-%patch170 -p1
-%patch171 -p1
-%patch172 -p1
-%patch173 -p1
-%patch174 -p1
-%patch175 -p1
-%patch176 -p1
-%patch177 -p1
-%patch178 -p1
-%patch179 -p1
-%patch180 -p1
-%patch181 -p1
-%patch182 -p1
+ApplyPatch "25" "182"
 
 %ifarch aarch64
 # Rpi of_configfs patches
-%patch200 -p1
-%patch201 -p1
-%patch202 -p1
-%patch203 -p1
-%patch204 -p1
-%patch205 -p1
-%patch206 -p1
-%patch207 -p1
-
-# NXP FSL_PPFE Driver patches
-%patch211 -p1
-%patch212 -p1
-%patch213 -p1
-%patch214 -p1
-%patch215 -p1
-%patch216 -p1
-%patch217 -p1
-%patch218 -p1
-%patch219 -p1
-%patch220 -p1
-%patch221 -p1
-%patch222 -p1
-%patch223 -p1
-%patch224 -p1
-%patch225 -p1
-%patch226 -p1
-%patch227 -p1
-%patch228 -p1
-%patch229 -p1
-%patch230 -p1
-%patch231 -p1
-%patch232 -p1
-%patch233 -p1
-%patch234 -p1
+ApplyPatch "200" "234"
 %endif
 
 %ifarch x86_64
-%patch281 -p1
-%patch282 -p1
-%patch283 -p1
-%patch284 -p1
-%patch285 -p1
-%patch286 -p1
-%patch287 -p1
-%patch288 -p1
-%patch289 -p1
-%patch290 -p1
-%patch291 -p1
-%patch292 -p1
-%patch293 -p1
+ApplyPatch "281" "509"
 
-%patch301 -p1
-%patch302 -p1
-%patch303 -p1
-%patch311 -p1
-%patch312 -p1
-%patch313 -p1
-%patch314 -p1
-%patch315 -p1
-%patch316 -p1
-%patch317 -p1
-%patch318 -p1
-%patch319 -p1
-
-%patch331 -p1
-%patch332 -p1
-
-%patch333 -p1
-%patch334 -p1
-%patch335 -p1
-%patch336 -p1
-%patch337 -p1
-%patch338 -p1
-%patch339 -p1
-%patch340 -p1
-%patch341 -p1
-%patch342 -p1
-%patch343 -p1
-%patch344 -p1
-%patch345 -p1
-%patch346 -p1
-%patch347 -p1
-%patch348 -p1
-%patch349 -p1
-%patch350 -p1
-%patch351 -p1
-%patch352 -p1
-%patch353 -p1
-%patch354 -p1
-%patch355 -p1
-%patch356 -p1
-%patch357 -p1
-%patch358 -p1
-%patch359 -p1
-%patch360 -p1
-
-%patch371 -p1
-%patch372 -p1
-%patch381 -p1
-%patch382 -p1
-%patch383 -p1
-%patch384 -p1
-%patch385 -p1
-%patch386 -p1
-
-%patch401 -p1
-%patch402 -p1
-%patch403 -p1
-%patch404 -p1
-%patch405 -p1
-%patch406 -p1
-%patch407 -p1
-%patch408 -p1
-%patch409 -p1
-%patch410 -p1
-%patch411 -p1
-%patch412 -p1
-%patch413 -p1
-%patch414 -p1
-%patch415 -p1
-
-%patch416 -p1
-%patch417 -p1
-%patch418 -p1
-%patch419 -p1
-%patch420 -p1
-%patch421 -p1
-%patch422 -p1
-%patch423 -p1
-%patch424 -p1
-%patch425 -p1
-%patch426 -p1
-%patch427 -p1
-%patch428 -p1
-%patch429 -p1
-%patch430 -p1
-%patch431 -p1
-%patch432 -p1
-%patch433 -p1
-%patch434 -p1
-%patch435 -p1
-%patch436 -p1
-%patch437 -p1
-%patch438 -p1
-%patch439 -p1
-%patch440 -p1
-%patch441 -p1
-%patch442 -p1
-%patch443 -p1
-%patch444 -p1
-%patch445 -p1
-%patch446 -p1
-%patch447 -p1
-%patch448 -p1
-%patch449 -p1
-%patch450 -p1
-%patch451 -p1
-%patch452 -p1
-%patch453 -p1
-%patch454 -p1
-%patch455 -p1
-%patch456 -p1
-%patch457 -p1
-%patch458 -p1
-%patch459 -p1
-%patch460 -p1
-%patch461 -p1
-%patch462 -p1
-%patch463 -p1
-%patch465 -p1
-%patch466 -p1
-%patch467 -p1
-%patch468 -p1
-%patch469 -p1
-%patch470 -p1
-%patch471 -p1
-%patch472 -p1
-%patch473 -p1
-%patch474 -p1
-%patch475 -p1
-%patch476 -p1
-%patch477 -p1
-%patch478 -p1
-
-%patch480 -p1
-%patch482 -p1
-%patch483 -p1
-#%%patch484 -p1
-%patch485 -p1
-%patch486 -p1
-
-%patch491 -p1
-%patch492 -p1
-%patch493 -p1
-%patch494 -p1
-%patch495 -p1
-%patch496 -p1
-%patch497 -p1
-
-%patch500 -p1
-%patch501 -p1
-%patch506 -p1
-%patch509 -p1
-
-#Patches for i40e driver
+# Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %patch1500 -p1
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
-%patch1512 -p1
+ApplyPatch "1511" "1512"
 popd
 
-#Patches for ice driver
+# Patches for ice driver
 pushd ../ice-%{ice_version}
-%patch1521 -p1
-%patch1522 -p1
+ApplyPatch "1521" "1522"
 popd
 
 %endif
 
-%if 0%{?kat_build:1}
+%if 0%{?kat_build}
 %patch1000 -p1
 %endif
 
 %build
-# make doesn't support _smp_mflags
-make mrproper
+make mrproper %{?_smp_mflags}
 
 %ifarch x86_64
 cp %{SOURCE1} .config
@@ -984,73 +676,73 @@ arch="arm64"
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %include %{SOURCE7}
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
+        KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+
 make -C tools perf PYTHON=python3 %{?_smp_mflags}
+
 %ifarch x86_64
 #build turbostat and cpupower
 make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3 %{?_smp_mflags}
 
 # build ENA module
-bldroot=`pwd`
+bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" VERBOSE=1 modules %{?_smp_mflags}
 popd
 
 # build Intel SGX module
-bldroot=`pwd`
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
-make KDIR=$bldroot %{?_smp_mflags}
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{dcap_version}/driver/linux
+make KDIR=${bldroot} %{?_smp_mflags}
 popd
 
 # build i40e module
-bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
 # make doesn't support _smp_mflags
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make -C src KSRC=${bldroot} clean
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build iavf module
-bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
 # make doesn't support _smp_mflags
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make -C src KSRC=${bldroot} clean
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build ice module
-bldroot=`pwd`
 pushd ../ice-%{ice_version}
 # make doesn't support _smp_mflags
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make -C src KSRC=${bldroot} clean
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
 #build photon-checksum-generator module
-bldroot=`pwd`
+bldroot="${PWD}"
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" modules %{?_smp_mflags}
 popd
 
 %define __modules_install_post \
-for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
-    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-    rm -f $MODULE.{sig,dig} \
-    xz $MODULE \
-    done \
+for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
+  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+  rm -f $MODULE.{sig,dig} \
+  xz $MODULE \
+  done \
 %{nil}
 
 %include %{SOURCE9}
 
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-    %{__modules_gen_hmac}\
+%define __spec_install_post \
+  %{?__debug_package:%{__debug_install_post}} \
+  %{__arch_install_post} \
+  %{__os_install_post} \
+  %{__modules_install_post} \
+  %{__modules_gen_hmac} \
 %{nil}
 
 %install
@@ -1062,72 +754,76 @@ archdir="x86"
 archdir="arm64"
 %endif
 
-install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
 %ifarch x86_64
 # install ENA module
-bldroot=`pwd`
+bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} \
+            modules_install %{?_smp_mflags}
 popd
 
 # install Intel SGX module
-bldroot=`pwd`
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
-mkdir -p %{buildroot}/%{_sysconfdir}/udev/rules.d
-install -vm 644 10-sgx.rules %{buildroot}/%{_sysconfdir}/udev/rules.d
-install -vm 644 intel_sgx.ko %{buildroot}/lib/modules/%{uname_r}/extra/
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{dcap_version}/driver/linux
+mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d
+install -vm 644 10-sgx.rules %{buildroot}%{_sysconfdir}/udev/rules.d
+install -vm 644 intel_sgx.ko %{buildroot}%{_modulesdir}/extra/
 popd
 
 # install i40e module
-bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
+            modules_install mandocs_install %{?_smp_mflags}
 popd
 
 # install iavf module
-bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
 # The auxiliary.ko kernel module is a common dependency for both iavf
 # and ice drivers.  Install it only once, along with the iavf driver
 # and re-use it in the ice driver.
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
-install -Dvm 644 src/linux/auxiliary_bus.h %{buildroot}/usr/src/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
+            modules_install mandocs_install %{?_smp_mflags}
+
+install -Dvm 644 src/linux/auxiliary_bus.h \
+        %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
-bldroot=`pwd`
 pushd ../ice-%{ice_version}
 # The auxiliary.ko kernel module is a common dependency for both iavf
 # and ice drivers.  Install it only once, along with the iavf driver
 # and re-use it in the ice driver.
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
+            modules_install mandocs_install %{?_smp_mflags}
 popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
-ID1=`readelf -n vmlinux | grep "Build ID"`
+ID1=$(readelf -n vmlinux | grep "Build ID")
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
-ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
+ID2=$(readelf -n extracted-vmlinux | grep "Build ID")
 if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
+  echo "Build IDs do not match"
+  echo $ID1
+  echo $ID2
+  exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
 
 #install photon-checksum-generator module
-bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 popd
 
 %ifarch aarch64
@@ -1146,9 +842,12 @@ install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dtb %{buildroot}/b
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
-install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+
+%if 0%{?__debug_package}
+install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
-ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
+ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
+%endif
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
@@ -1158,31 +857,32 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 # Register myself to initramfs
-mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+mkdir -p %{buildroot}%{_sharedstatedir}/initramfs/kernel
+cat > %{buildroot}%{_sharedstatedir}/initramfs/kernel/%{uname_r} << "EOF"
 --add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod megaraid_sas"
 EOF
 
-#    Cleanup dangling symlinks
-rm -rf %{buildroot}/lib/modules/%{uname_r}/source
-rm -rf %{buildroot}/lib/modules/%{uname_r}/build
+# Cleanup dangling symlinks
+rm -rf %{buildroot}%{_modulesdir}/source \
+       %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/${archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/${archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
+cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
-cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/arch/arm64/kernel/
+cp arch/arm64/kernel/module.lds %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/arch/arm64/kernel/
 %endif
 
 # disable (JOBS=1) parallel build to fix this issue:
@@ -1190,6 +890,7 @@ cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/
 # Linux version that was affected is 4.4.26
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 %{?_smp_mflags}
 make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext %{?_smp_mflags}
+
 %ifarch x86_64
 make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3 %{?_smp_mflags}
 %endif
@@ -1226,21 +927,23 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /boot/vmlinuz-%{uname_r}
 /boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
+%config %{_sharedstatedir}/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
-/lib/modules/%{uname_r}/*
-%exclude /lib/modules/%{uname_r}/build
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
-%exclude /lib/modules/%{uname_r}/kernel/sound
-%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
+%{_modulesdir}/*
+%exclude %{_modulesdir}/build
+%exclude %{_modulesdir}/kernel/drivers/gpu
+%exclude %{_modulesdir}/kernel/sound
+%exclude %{_modulesdir}/extra/hmac_generator.ko.xz
+%exclude %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
+
 %ifarch aarch64
-%exclude /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
+
 %ifarch x86_64
-%exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
-%exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
-/etc/modprobe.d/iavf.conf
+%exclude %{_modulesdir}/kernel/arch/x86/oprofile/
+%exclude %{_modulesdir}/extra/intel_sgx.ko.xz
+%{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -1255,51 +958,51 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 
 %files devel
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/build
-/usr/src/%{name}-headers-%{uname_r}
+%{_modulesdir}/build
+%{_usrsrc}/%{name}-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
-/lib/modules/%{uname_r}/kernel/drivers/gpu
+%exclude %{_modulesdir}/kernel/drivers/gpu/drm/cirrus/
+%{_modulesdir}/kernel/drivers/gpu
 
 %files drivers-sound
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/sound
+%{_modulesdir}/kernel/sound
 %ifarch aarch64
-/lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 
 %files hmacgen
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
+%{_modulesdir}/extra/hmac_generator.ko.xz
+%{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %ifarch x86_64
 %files drivers-intel-sgx
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
+%{_modulesdir}/extra/intel_sgx.ko.xz
 %config(noreplace) %{_sysconfdir}/udev/rules.d/10-sgx.rules
 
 %files oprofile
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
+%{_modulesdir}/kernel/arch/x86/oprofile/
 %endif
 
 %files tools
 %defattr(-,root,root)
-/usr/libexec
+%{_libexecdir}
 %exclude %dir %{_libdir}/debug
 %ifarch x86_64
-%exclude /usr/lib64/traceevent
+%exclude %{_lib64}/traceevent
 %endif
 %ifarch aarch64
-%exclude /usr/lib/traceevent
+%exclude %{_libdir}/traceevent
 %endif
 %{_bindir}
-/etc/bash_completion.d/*
-/usr/share/perf-core/strace/groups/file
-/usr/share/doc/*
+%{_sysconfdir}/bash_completion.d/*
+%{_datadir}/perf-core/strace/groups/file
+%{_datadir}/doc/*
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
 %ifarch x86_64
@@ -1330,6 +1033,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-8
+- Spec improvements
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7
 - Add kernel as requires to hmacgen postun
 * Tue Jul 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-6
