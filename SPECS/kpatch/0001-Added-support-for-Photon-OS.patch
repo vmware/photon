@@ -1,4 +1,4 @@
-From b5a09b6e99001a93f683347a06a076f40a9f33db Mon Sep 17 00:00:00 2001
+From bdfb7e97c5c809e2c12e88de3dfd64dfe5dbe68d Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <blamoreaux@vmware.com>
 Date: Tue, 31 May 2022 22:39:31 +0000
 Subject: [PATCH] Added support for Photon OS
@@ -6,17 +6,17 @@ Subject: [PATCH] Added support for Photon OS
 This has now been modified and tested (on aws, generic and rt only) to be
 compatible with all Photon OS flavors.
 ---
- kpatch-build/kpatch-build | 90 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 89 insertions(+), 1 deletion(-)
+ kpatch-build/kpatch-build | 92 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 91 insertions(+), 1 deletion(-)
 
 diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
-index 634095d..e17c321 100755
+index 634095d..b358fd1 100755
 --- a/kpatch-build/kpatch-build
 +++ b/kpatch-build/kpatch-build
 @@ -628,6 +628,13 @@ while [[ $# -gt 0 ]]; do
  	shift
  done
- 
+
 +#make sure we have at least 8 gb
 +let BYTES_NEEDED=$((8*(2**30)))
 +if (( $(df $PWD --block-size=1 | awk '/[0-9]%/{print $(NF-2)}') < $BYTES_NEEDED )); then
@@ -30,16 +30,16 @@ index 634095d..e17c321 100755
 @@ -712,7 +719,7 @@ if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
  	DISTRO="$ID"
  fi
- 
+
 -if [[ "$DISTRO" = fedora ]] || [[ "$DISTRO" = rhel ]] || [[ "$DISTRO" = ol ]] || [[ "$DISTRO" = centos ]] || [[ "$DISTRO" = openEuler ]]; then
 +if [[ "$DISTRO" = fedora ]] || [[ "$DISTRO" = rhel ]] || [[ "$DISTRO" = ol ]] || [[ "$DISTRO" = centos ]] || [[ "$DISTRO" = openEuler ]] || [[ "$DISTRO" = photon ]]; then
  	[[ -z "$VMLINUX" ]] && VMLINUX="/usr/lib/debug/lib/modules/$ARCHVERSION/vmlinux"
  	[[ -e "$VMLINUX" ]] || die "kernel-debuginfo-$ARCHVERSION not installed"
- 
-@@ -824,6 +831,87 @@ else
+
+@@ -824,6 +831,89 @@ else
  		sed -i "s/^SUBLEVEL.*/${sublevel}/" "$KERNEL_SRCDIR/Makefile" || die
  		echo "$ARCHVERSION" > "$VERSIONFILE" || die
- 
+
 +	elif [[ "$DISTRO" = photon ]]; then
 +		echo "Photon distribution detected, no cache. Setting up."
 +		clean_cache
@@ -71,8 +71,9 @@ index 634095d..e17c321 100755
 +
 +		#download and prep photon kernel source
 +		[ ! -d $PHOTON_TEMP_DIR ] && mkdir $PHOTON_TEMP_DIR
-+		pushd $PHOTON_TEMP_DIR
-+		
++		local topdir="${PWD}"
++		cd $PHOTON_TEMP_DIR
++
 +		# src rpm name
 +		if [[ $FLAVOR != "" ]]; then
 +			SRC_RPM_NAME="linux-$FLAVOR-$VERSION_RELEASE.src.rpm"
@@ -82,8 +83,18 @@ index 634095d..e17c321 100755
 +			SPEC_FILENAME="linux.spec"
 +		fi
 +
-+		echo "Downloading source rpm"
-+		curl "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_RPM_NAME" --output $SRC_RPM_NAME > /dev/null 2>&1 || die "Couldn't download photon kernel source rpm"
++		echo "Getting source rpm"
++		SRC_RPM_URL="https://packages.vmware.com/photon/$PHOTON_VERSION/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_RPM_NAME"
++
++		# allow downloading/copying of source rpm from either local or custom urls.
++		# Just need these variables to be exported before running to enable these options.
++		if [ -n "${SRC_RPM_LOCAL_PATH}" ]; then
++			cp $SRC_RPM_LOCAL_PATH $SRC_RPM_NAME || die "Couldn't find local src rpm"
++		elif [ -n "${SRC_RPM_REMOTE_URL}" ]; then
++			curl "$SRC_RPM_REMOTE_URL" --output $SRC_RPM_NAME &> /dev/null || die "Couldn't download remote src rpm"
++		else
++			curl "$SRC_RPM_URL" --output $SRC_RPM_NAME &> /dev/null || die "Couldn't download photon kernel source rpm"
++		fi
 +
 +		# set up temporary rpm build environment
 +		RPMDIR="%_topdir %(echo $PWD)/rpmbuild"
@@ -92,8 +103,13 @@ index 634095d..e17c321 100755
 +		echo "Extracting spec file"
 +		rpm -i "$SRC_RPM_NAME" --define "$RPMDIR"
 +
++		# make sure kernel build  dependencies are installed
++		to_be_installed_pkgs=($(rpm -qpR $SRC_RPM_NAME | grep -vw rpmlib))
++		echo -e "\nFollowing packages need to be installed:\n${to_be_installed_pkgs[@]}\n"
++		tdnf install -qy ${to_be_installed_pkgs[@]} || die "Error installing required packages"
++
 +		echo "Extracting kernel source from source rpm, this may take a few minutes..."
-+		rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$RPMDIR" > /dev/null 2>&1
++		rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$RPMDIR" &> /dev/null
 +		cp rpmbuild/BUILD/fips-canister*/* "rpmbuild/BUILD/linux-$KERNEL_VERSION/crypto"
 +		cp "$CONFIGFILE" rpmbuild/BUILD/linux-"$KERNEL_VERSION"/.config
 +		echo "Finished extracting source"
@@ -104,26 +120,12 @@ index 634095d..e17c321 100755
 +
 +		echo "$ARCHVERSION" > "$VERSIONFILE" || die
 +
-+		# make sure kernel dependencies are installed
-+		echo -e "\nMaking sure dependencies are installed for the kernel"
-+		old_IFS=$IFS
-+		IFS=$'\n'
-+		packages=( $(rpm -q --requires $SRC_RPM_NAME) )
-+		for package in "${packages[@]}"; do
-+			[[ $package =~ ^[^[:space:]]+ ]] && packagename=$BASH_REMATCH
-+
-+			#exclude rpmlib, tdnf install everything else
-+			echo "$packagename" | grep rpmlib || tdnf install -y "$packagename"
-+		done
-+		IFS=$old_IFS
-+		echo -e "\n***********************************************************"
-+
 +		#clean up
-+		popd
++		cd ${topdir}
 +		rm -rf $PHOTON_TEMP_DIR
  	else
  		die "Unsupported distribution"
  	fi
--- 
-2.30.0
+--
+2.30.3
 

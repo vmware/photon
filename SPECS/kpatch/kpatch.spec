@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -10,6 +10,14 @@ Distribution:   Photon
 
 Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
 %define sha512 kpatch=898c5704098c473187f2eab9bccd5fb3cfc31f4211492d658abcd0b7cac6d03f11a27df19a56ad17c20163803084ddf54a27defcf12b4975a8a8eb5dbad73f21
+
+Source1:        scripts/auto_livepatch.sh
+Source2:        scripts/gen_livepatch.sh
+Source3:        scripts/README.txt
+Source4:        scripts/dockerfiles/Dockerfile.ph3
+Source5:        scripts/dockerfiles/Dockerfile.ph4
+
+BuildArch:      x86_64
 
 Patch0:         0001-Added-support-for-Photon-OS.patch
 
@@ -22,8 +30,12 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:	coreutils
-Requires:	gawk
+Requires:       (coreutils or toybox or coreutils-selinux)
+Requires:       gawk
+Requires:       util-linux
+Requires:       binutils
+Requires:       (sed or toybox)
+Requires:       (findutils or toybox)
 
 %description
 Contains the kpatch utility, which allows loading of kernel livepatches.
@@ -36,6 +48,8 @@ sacrificing security or stability.
 
 %package build
 Requires: %{name} = %{version}-%{release}
+Requires: build-essential
+Requires: tar
 Summary: Dynamic kernel patching
 
 %description build
@@ -47,20 +61,30 @@ Summary: Development files for kpatch
 %description devel
 Contains files for developing with kpatch.
 
+%package utils
+Requires: %{name} = %{version}-%{release}
+Requires: %{name}-build = %{version}-%{release}
+Requires: docker
+Summary: Tools to automate livepatch building.
+
+%description utils
+Contains auto_livepatch and gen_livepatch scripts.
+
 %prep
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install PREFIX=%{_usr} DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install PREFIX=%{_usr} %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
+cp %{SOURCE4} %{SOURCE5} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
+cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
+cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 
 #%check
 # make check require shellcheck package, which is not in photon
-
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
@@ -81,7 +105,18 @@ make install PREFIX=%{_usr} DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_mandir}/man1/kpatch-build.1*
 %{_mandir}/man1/kpatch.1*
 
+%files utils
+%defattr(-,root,root,-)
+%doc %{_sysconfdir}/auto_livepatch/README.txt
+%{_bindir}/auto_livepatch.sh
+%{_bindir}/gen_livepatch.sh
+%{_sysconfdir}/auto_livepatch/dockerfiles/*
+
 %changelog
+* Tue Jun 28 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-2
+- Adding automatic livepatch generating utilities as subpackage
+- Adding more dependencies that are needed. Moved some from the kpatch-build
+- patch to just kpatch-build requires section. Moved the installation of
+- kernel build dependencies from after extraction of src rpm to before.
 * Tue May 24 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-1
-- Initial addition to photon. Modified from provided kpatch.spec on
-- GitHub.
+- Initial addition to photon. Modified from provided kpatch.spec on GitHub.
