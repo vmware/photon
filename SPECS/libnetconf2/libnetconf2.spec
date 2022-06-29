@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        2.1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1 %{name}=bac66d22bc7928f5fbd77850775f79f73e4b18b8
+%define sha512 %{name}=fd46a3c31a062324e6c9f2d66006ba8cd852ccb389bf8749d1d0d085b880409e1e373d1d1f2d79c1d88f5eaa72d56195889c07863d0eab1607da89484e21b86f
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -24,7 +24,7 @@ Requires: libyang
 Requires: libssh
 
 %if 0%{?with_check}
-BuildRequires:  cmocka
+BuildRequires:  cmocka-devel
 %endif
 
 %description
@@ -41,26 +41,22 @@ Headers of libnetconf library.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-cmake \
-    -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-    -DCMAKE_BUILD_TYPE:String="Release" \
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DENABLE_TESTS=ON \
     -DENABLE_TLS=ON \
     -DENABLE_SSH=ON \
-    ..
-make %{?_smp_mflags}
+
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
-%check
 %if 0%{?with_check}
+%check
 echo $'\n[SAN]\nsubjectAltName=IP:127.0.0.1' >> /etc/ssl/openssl.cnf
-pushd tests/data
+pushd %{__cmake_builddir}/tests/data
 openssl req \
     -out server.csr \
     -key server.key \
@@ -78,7 +74,7 @@ openssl x509 \
     -extfile /etc/ssl/openssl.cnf
 popd
 cd build
-ctest --output-on-failure
+%ctest
 %endif
 
 %post -p /sbin/ldconfig
@@ -98,5 +94,7 @@ ctest --output-on-failure
 %dir %{_includedir}/%{name}
 
 %changelog
-*   Thu Mar 24 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.7-1
--   Initial addition to Photon. Modified from provided libnetconf2 GitHub repo version.
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.7-2
+- Fix cmocka dependency
+* Thu Mar 24 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.7-1
+- Initial addition to Photon. Modified from provided libnetconf2 GitHub repo version.

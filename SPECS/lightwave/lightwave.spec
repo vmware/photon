@@ -1,15 +1,15 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       20%{?dist}
+Release:       21%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/vmware/lightwave
 Distribution:  Photon
 
-Source0:       %{name}-%{version}.tar.gz
-%define        sha1 %{name}=93cc2c0518753a7ec7efd250bb0988de727067ff
+Source0:       https://github.com/vmware/lightwave/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8afe786efea02333d7045779584038cbf627d5a7f3d49aed4f0b850df4ce564e40f3ac27722b84ea835a24ac2b9fbebb071326804b4bca11d3272ea438935b4b
 
 Patch0:     lightwave_build_with_python3.patch
 Patch1:     lightwave-openssl-1.1.1.patch
@@ -49,7 +49,7 @@ BuildRequires: openssl-devel >= 1.1.1
 BuildRequires: python3-devel
 BuildRequires: python3-libs
 BuildRequires: sqlite-devel >= 3.14
-BuildRequires: cmocka >= 1.1
+BuildRequires: cmocka-devel
 BuildRequires: go
 BuildRequires: binutils
 
@@ -1178,6 +1178,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-21
+- Fix cmocka dependency
 * Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-20
 - Upgrade jackson jars
 * Tue Dec 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-19

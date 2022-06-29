@@ -1,22 +1,22 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %global debug_package %{nil}
-%global __python3 \/usr\/bin\/python3
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.19.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
 URL:             https://github.com/iovisor/bcc
-Source0:         https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
-%define sha1     bcc=96882747089d093b8933456d9c7905407bde7fd9
+
+Source0:        https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
+%define sha512  %{name}=b6180462a45c768f219e026d8a4b43424b7cad4e07db8101725bd2bc31ee4de117774c0ad8d157502c97c1187057b45c7a491e7198ac2c59e6d56e58797f4df3
+
 #https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule.tar.gz
-Source1:         bcc-src-with-submodule-%{version}.tar.gz
-%define sha1     bcc-src-with-submodule=14adea5e3cffc1b5ceda96d4ad6f1044c81f6838
+Source1:        bcc-src-with-submodule-%{version}.tar.gz
+%define sha512  bcc-src-with-submodule=66a1ac0199e3e0405a795d0e4f0d7895a9df38260ac0d77e857a69c81457ff9976e1eb285fe49818a8e21461abd748c66837ce49cc9d3e0952278db92c611fb5
+
 BuildRequires:   bison
 BuildRequires:   cmake >= 2.8.7
 BuildRequires:   flex
@@ -45,48 +45,51 @@ Requires:        %{name} = %{version}-%{release}
 %{name}-devel contains shared libraries and header files for
 developing application.
 
-%package -n      python3-%{name}
+%package -n      python3-bcc
 Summary:         Python3 bindings for BPF Compiler Collection (BCC)
 Requires:        %{name} = %{version}-%{release}
-%{?python_provide:%python_provide python3-bcc}
-%description -n  python3-%{name}
+
+%description -n  python3-bcc
 Python bindings for BPF Compiler Collection (BCC)
 
 %package         examples
 Summary:         Examples for BPF Compiler Collection (BCC)
-Requires:        python3-%{name} = %{version}-%{release}
+Requires:        python3-bcc = %{version}-%{release}
+
 %description     examples
 Examples for BPF Compiler Collection (BCC)
 
 %package         tools
 Summary:         Command line tools for BPF Compiler Collection (BCC)
 Requires:        python3-%{name} = %{version}-%{release}
+
 %description     tools
 Command line tools for BPF Compiler Collection (BCC)
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n %{name}-%{version}
-%setup -D -c -T -a 1 -n %{name}-%{version}/
+# Using autosetup is not feasible
+%setup -D -c -T -a 1 -n %{name}-%{version}
 cp -rf bcc/* .
 rm -r bcc
 
 %build
-mkdir build
-pushd build
-cmake .. -DREVISION_LAST=%{version} -DREVISION=%{version} \
-      -DCMAKE_INSTALL_PREFIX=/usr \
-      -DPYTHON_CMD=python3 \
-      %{?with_llvm_shared:-DENABLE_LLVM_SHARED=1}
-make %{?_smp_mflags}
-popd
+%cmake -DREVISION_LAST=%{version} \
+       -DREVISION=%{version} \
+       -DPYTHON_CMD=%{python3} \
+       %{?with_llvm_shared:-DENABLE_LLVM_SHARED=1} \
+       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+       -DCMAKE_BUILD_TYPE=Debug
+
+%cmake_build
 
 %install
-pushd build
-make install/strip DESTDIR=%{buildroot}
+%cmake_install
 # mangle shebangs
-find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
-    sed -i -e '1 s|^#!/usr/bin/python$|#!'%{__python3}'|' \
-           -e '1 s|^#!/usr/bin/env python$|#!'%{__python3}'|' {} \;
+find %{buildroot}%{_datadir}/bcc/{tools,examples} -type f -exec \
+    sed -i -e '1 s|^#!/usr/bin/python$|#!'%{python3}'|' \
+           -e '1 s|^#!/usr/bin/env python$|#!'%{python3}'|' {} \;
 
 %post
 /sbin/ldconfig
@@ -97,14 +100,14 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %files
 %doc README.md
 %license LICENSE.txt
-%{_lib64dir}/lib%{name}.so.*
-%{_lib64dir}/libbcc_bpf.so.*
+%{_libdir}/lib%{name}.so.*
+%{_libdir}/libbcc_bpf.so.*
 
 %files devel
-%{_lib64dir}/lib%{name}.so
-%{_lib64dir}/libbcc_bpf.so
-%{_lib64dir}/*.a
-%{_lib64dir}/pkgconfig/lib%{name}.pc
+%{_libdir}/lib%{name}.so
+%{_libdir}/libbcc_bpf.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/lib%{name}.pc
 %{_includedir}/%{name}/
 
 %files -n python3-bcc
@@ -119,9 +122,11 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %{_datadir}/%{name}/man/*
 
 %changelog
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.19.0-1
--   Automatic Version Bump
-*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
--   Automatic Version Bump
-*   Wed Jun 26 2019  Keerthana K <keerthanak@vmware.com> 0.10.0-1
--   Initial bcc package for PhotonOS.
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.19.0-2
+- Use cmake macros for build and install
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.19.0-1
+- Automatic Version Bump
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
+- Automatic Version Bump
+* Wed Jun 26 2019  Keerthana K <keerthanak@vmware.com> 0.10.0-1
+- Initial bcc package for PhotonOS.

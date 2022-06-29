@@ -1,7 +1,7 @@
 Summary:        YANG data modeling language library
 Name:           libyang
 Version:        2.0.164
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/CESNET/libyang
 License:        BSD-3-Clause
 Group:          Development/Tools
@@ -17,7 +17,7 @@ BuildRequires:  make
 BuildRequires:  pcre2-devel
 
 %if 0%{?with_check}
-BuildRequires:   cmocka
+BuildRequires:   cmocka-devel
 BuildRequires:   valgrind
 %endif
 
@@ -45,23 +45,19 @@ YANG validator tools.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake \
-    -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-    -DCMAKE_BUILD_TYPE:String="Release" \
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DENABLE_TESTS=ON \
-    ..
+    -DENABLE_TESTS=ON
 
-%make_build
+%cmake_build
 
 %install
-cd build
-%make_install %{?_smp_mflags}
+%cmake_install
 
 %if 0%{?with_check}
 %check
-cd build
+cd %{__cmake_builddir}
 make test %{?_smp_mflags}
 %endif
 
@@ -79,17 +75,18 @@ make test %{?_smp_mflags}
 %defattr(-, root, root)
 %{_bindir}/yanglint
 %{_bindir}/yangre
-%{_datadir}/man/man1/yanglint.1.gz
-%{_datadir}/man/man1/yangre.1.gz
+%{_mandir}/man1/yanglint.1.gz
+%{_mandir}/man1/yangre.1.gz
 
 %files devel
 %defattr(-, root, root)
-%{_libdir}/*.so.*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.164-3
+- Use cmake macros for build and install
 * Mon Jun 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.164-2
 - Fix devel package dependency
 * Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.0.164-1
