@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -163,6 +163,17 @@ Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
 Patch122:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
 Patch123:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
 Patch124:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
+
+# Update vmxnet3 driver to version 7
+Patch130:        0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch131:        0002-vmxnet3-add-support-for-capability-registers.patch
+Patch132:        0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch133:        0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch134:        0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch135:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch136:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch137:        0008-vmxnet3-update-to-version-7.patch
+Patch138:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -664,6 +675,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch122 -p1
 %patch123 -p1
 %patch124 -p1
+
+%patch130 -p1
+%patch131 -p1
+%patch132 -p1
+%patch133 -p1
+%patch134 -p1
+%patch135 -p1
+%patch136 -p1
+%patch137 -p1
+%patch138 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -1281,6 +1302,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
+- Update vmxnet3 driver to version 7
 * Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
 - Update vmxnet3 driver to version 6
 * Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -152,6 +152,17 @@ Patch166:        0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
 Patch167:        0007-vmxnet3-update-to-version-6.patch
 Patch168:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
 Patch169:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+
+# Update vmxnet3 driver to version 7
+Patch170:        0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch171:        0002-vmxnet3-add-support-for-capability-registers.patch
+Patch172:        0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch173:        0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch174:        0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch175:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch176:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch177:        0008-vmxnet3-update-to-version-7.patch
+Patch178:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -323,6 +334,16 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch167 -p1
 %patch168 -p1
 %patch169 -p1
+
+%patch170 -p1
+%patch171 -p1
+%patch172 -p1
+%patch173 -p1
+%patch174 -p1
+%patch175 -p1
+%patch176 -p1
+%patch177 -p1
+%patch178 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -513,6 +534,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
+-   Update vmxnet3 driver to version 7
 *   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
 -   Update vmxnet3 driver to version 6
 *   Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.247-2

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -400,6 +400,17 @@ Patch536:        0007-vmxnet3-update-to-version-6.patch
 Patch537:        0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
 Patch538:        0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
+# Update vmxnet3 driver to version 7
+Patch540:        0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch541:        0002-vmxnet3-add-support-for-capability-registers.patch
+Patch542:        0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch543:        0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch544:        0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch545:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch546:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch547:        0008-vmxnet3-update-to-version-7.patch
+Patch548:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -778,6 +789,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch537 -p1
 %patch538 -p1
 
+%patch540 -p1
+%patch541 -p1
+%patch542 -p1
+%patch543 -p1
+%patch544 -p1
+%patch545 -p1
+%patch546 -p1
+%patch547 -p1
+%patch548 -p1
+
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %patch801 -p1
@@ -983,6 +1004,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
+-   Update vmxnet3 driver to version 7
 *   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-2
 -   Update vmxnet3 driver to version 6
 *   Tue Jun 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.247-1
