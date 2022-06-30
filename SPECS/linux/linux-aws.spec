@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -163,6 +163,12 @@ Patch175:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch176:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch177:        0008-vmxnet3-update-to-version-7.patch
 Patch178:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+
+# Patchset to fix Panic due to nested priority inheritance in sched_deadline
+Patch180:        0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
+Patch181:        0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
+Patch182:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
+Patch183:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -344,6 +350,11 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch176 -p1
 %patch177 -p1
 %patch178 -p1
+
+%patch180 -p1
+%patch181 -p1
+%patch182 -p1
+%patch183 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -534,6 +545,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-5
+-   Fixes panic due to nested priority inheritance
 *   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
 -   Update vmxnet3 driver to version 7
 *   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3

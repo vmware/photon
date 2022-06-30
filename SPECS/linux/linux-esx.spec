@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -252,6 +252,12 @@ Patch360:        0030-x86-irq-64-Remove-stack-overflow-debug-code.patch
 
 Patch371:        0001-x86-ioremap-Add-an-ioremap_encrypted-helper.patch
 Patch372:        0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
+
+# Patchset to fix Panic due to nested priority inheritance in sched_deadline
+Patch375:        0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
+Patch376:        0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
+Patch377:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
+Patch378:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 # vmw_pvscsi
 Patch381:        0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
@@ -653,6 +659,12 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch371 -p1
 %patch372 -p1
+
+%patch375 -p1
+%patch376 -p1
+%patch377 -p1
+%patch378 -p1
+
 %patch381 -p1
 %patch382 -p1
 %patch383 -p1
@@ -1004,6 +1016,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-4
+-   Fixes panic due to nested priority inheritance
 *   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3
 -   Update vmxnet3 driver to version 7
 *   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-2

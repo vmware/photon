@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.247
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt108
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -138,6 +138,12 @@ Patch125:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch126:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch127:        0008-vmxnet3-update-to-version-7.patch
 Patch128:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+
+# Patchset to fix Panic due to nested priority inheritance in sched_deadline
+Patch130:        0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
+Patch131:        0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
+Patch132:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
+Patch133:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -680,6 +686,10 @@ The Linux package contains the Linux kernel doc files
 %patch126 -p1
 %patch127 -p1
 %patch128 -p1
+%patch130 -p1
+%patch131 -p1
+%patch132 -p1
+%patch133 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1256,6 +1266,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-5
+-   Fixes panic due to nested priority inheritance
 *   Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
 -   Update vmxnet3 driver to version 7
 *   Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3

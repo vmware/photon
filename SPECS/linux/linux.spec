@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -174,6 +174,12 @@ Patch135:        0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch136:        0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch137:        0008-vmxnet3-update-to-version-7.patch
 Patch138:        0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+
+# Patchset to fix Panic due to nested priority inheritance in sched_deadline
+Patch140:        0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
+Patch141:        0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
+Patch142:        0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
+Patch143:        0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -685,6 +691,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch136 -p1
 %patch137 -p1
 %patch138 -p1
+
+%patch140 -p1
+%patch141 -p1
+%patch142 -p1
+%patch143 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -1302,6 +1313,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-5
+- Fixes panic due to nested priority inheritance
 * Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
 - Update vmxnet3 driver to version 7
 * Wed Jun 22 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-3

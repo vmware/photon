@@ -1,0 +1,64 @@
+From 3bd90024fc15af7cc4b1c84efe95f0b058dfe2e1 Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Mon, 31 Aug 2020 13:07:19 +0200
+Subject: [PATCH 2/4] sched/deadline: Fix stale throttling on de-/boosted tasks
+
+[Upstream commit 46fcc4b00c3cca8adb9b7c9afdd499f64e427135]
+
+When a boosted task gets throttled, what normally happens is that it's
+immediately enqueued again with ENQUEUE_REPLENISH, which replenishes the
+runtime and clears the dl_throttled flag. There is a special case however:
+if the throttling happened on sched-out and the task has been deboosted in
+the meantime, the replenish is skipped as the task will return to its
+normal scheduling class. This leaves the task with the dl_throttled flag
+set.
+
+Now if the task gets boosted up to the deadline scheduling class again
+while it is sleeping, it's still in the throttled state. The normal wakeup
+however will enqueue the task with ENQUEUE_REPLENISH not set, so we don't
+actually place it on the rq. Thus we end up with a task that is runnable,
+but not actually on the rq and neither a immediate replenishment happens,
+nor is the replenishment timer set up, so the task is stuck in
+forever-throttled limbo.
+
+Clear the dl_throttled flag before dropping back to the normal scheduling
+class to fix this issue.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200831110719.2126930-1-l.stach@pengutronix.de
+[Ankit Jain: Regenerated the patch for v4.19]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/sched/deadline.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 1f8444d9df9d..29cd4c0a92c0 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1507,12 +1507,15 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags)
+ 		}
+ 	} else if (!dl_prio(p->normal_prio)) {
+ 		/*
+-		 * Special case in which we have a !SCHED_DEADLINE task
+-		 * that is going to be deboosted, but exceeds its
+-		 * runtime while doing so. No point in replenishing
+-		 * it, as it's going to return back to its original
+-		 * scheduling class after this.
++		 * Special case in which we have a !SCHED_DEADLINE task that is going
++		 * to be deboosted, but exceeds its runtime while doing so. No point in
++		 * replenishing it, as it's going to return back to its original
++		 * scheduling class after this. If it has been throttled, we need to
++		 * clear the flag, otherwise the task may wake up as throttled after
++		 * being boosted again with no means to replenish the runtime and clear
++		 * the throttle.
+ 		 */
++		p->dl.dl_throttled = 0;
+ 		BUG_ON(!p->dl.dl_boosted || flags != ENQUEUE_REPLENISH);
+ 		return;
+ 	}
+-- 
+2.23.1
+

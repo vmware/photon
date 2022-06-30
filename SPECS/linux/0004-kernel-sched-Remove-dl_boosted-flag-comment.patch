@@ -1,0 +1,35 @@
+From 2c6d44e30ec84f48a4401f20c082b8f0ffa1faa2 Mon Sep 17 00:00:00 2001
+From: Hui Su <suhui_kernel@163.com>
+Date: Fri, 7 Jan 2022 17:52:54 +0800
+Subject: [PATCH 4/4] kernel/sched: Remove dl_boosted flag comment
+
+since commit 2279f540ea7d ("sched/deadline: Fix priority
+inheritance with multiple scheduling classes"), we should not
+keep it here.
+
+Signed-off-by: Hui Su <suhui_kernel@163.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Link: https://lore.kernel.org/r/20220107095254.GA49258@localhost.localdomain
+---
+ include/linux/sched.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 2ed820558da1..bc04745da6c1 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -528,10 +528,6 @@ struct sched_dl_entity {
+ 	 * task has to wait for a replenishment to be performed at the
+ 	 * next firing of dl_timer.
+ 	 *
+-	 * @dl_boosted tells if we are boosted due to DI. If so we are
+-	 * outside bandwidth enforcement mechanism (but only until we
+-	 * exit the critical section);
+-	 *
+ 	 * @dl_yielded tells if task gave up the CPU before consuming
+ 	 * all its available runtime during the last job.
+ 	 *
+-- 
+2.23.1
+
