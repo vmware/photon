@@ -1,6 +1,6 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.36.1
+Version:        3.37.1
 Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=5a49d1b27a783bcf66bf4ef183d75a5a809e6997
+%define sha512    %{name}=beebd89c54a415469dc58630ac1900d632ef351f6a13fad4a95ce7bb1760b16d6cfdcede02225a35e97ebce7dae151c6aa228f3d378463e8b873c4f71ed86ab7
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         fix_autogen_issue.patch
@@ -25,6 +25,7 @@ BuildRequires:  autoconf
 BuildRequires:  autoconf-archive
 BuildRequires:  automake
 BuildRequires:  libtool
+BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
@@ -35,7 +36,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  paho-c-devel
-Obsoletes:	eventlog
+Obsoletes:      eventlog
 
 %description
 The syslog-ng application is a flexible and highly scalable
@@ -62,28 +63,28 @@ needed to build applications using syslog-ng APIs.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-autoreconf -i
+autoreconf -i --force
 sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
-	--disable-dependency-tracking \
-	--prefix=%{_prefix} \
-	--exec-prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--sbindir=%{_sbindir} \
-	--sysconfdir=%{_sysconfdir}/%{name} \
-	--datadir=%{_datadir} \
-	--includedir=%{_includedir} \
-	--libdir=%{_libdir} \
-	--libexecdir=%{_libexecdir} \
-	--localstatedir=%{_localstatedir} \
-	--sharedstatedir=%{_sharedstatedir} \
-	--mandir=%{_mandir} \
-	--infodir=%{_infodir} \
+       --disable-dependency-tracking \
+       --prefix=%{_prefix} \
+       --exec-prefix=%{_prefix} \
+       --bindir=%{_bindir} \
+       --sbindir=%{_sbindir} \
+       --sysconfdir=%{_sysconfdir}/%{name} \
+       --datadir=%{_datadir} \
+       --includedir=%{_includedir} \
+       --libdir=%{_libdir} \
+       --libexecdir=%{_libexecdir} \
+       --localstatedir=%{_localstatedir} \
+       --sharedstatedir=%{_sharedstatedir} \
+       --mandir=%{_mandir} \
+       --infodir=%{_infodir} \
     --disable-silent-rules \
     --enable-systemd \
-    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
+    --with-systemdsystemunitdir=%{_unitdir} \
     --enable-json=yes \
     --with-jsonc=system \
     --disable-java \
@@ -93,36 +94,26 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-mqtt \
     --disable-static \
     --enable-dynamic-linking \
-    PYTHON=/bin/python3 \
-    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+    PYTHON=%{python3} \
+    PKG_CONFIG_PATH={%_libdir}/pkgconfig/
+GCCVERSION=$(rpm -q gcc | cut -d'-' -f2)
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+install -vdm755 %{buildroot}%{_unitdir}
+%make_install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
-rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
-rm -rf %{buildroot}/%{_infodir}
+rm -rf %{buildroot}/%{_unitdir}/syslog-ng@.service %{buildroot}/%{_infodir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
-install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
+install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/
 %{_fixperms} %{buildroot}/*
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
-
-%check
-%if 0%{?with_check}
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 unittest2
-$easy_install_3 nose
-$easy_install_3 ply
-$easy_install_3 pep8
-make %{?_smp_mflags} check
-%endif
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable syslog-ng.service" > %{buildroot}%{_presetdir}/50-syslog-ng.preset
 
 %post
 /sbin/ldconfig
@@ -146,8 +137,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/syslog-ng/syslog-ng.conf
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
 %{_sysconfdir}/systemd/journald.conf.d/*
-%{_libdir}/systemd/system/syslog-ng.service
-%{_libdir}/systemd/system-preset/50-syslog-ng.preset
+%{_unitdir}/syslog-ng.service
+%{_presetdir}/50-syslog-ng.preset
 %{_bindir}/*
 %{_sbindir}/syslog-ng
 %{_sbindir}/syslog-ng-ctl
@@ -176,7 +167,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Thu Mar 24 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
+*   Thu Jun 30 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
+-   Bump version
+*   Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
 -   Bump version, add MQTT support
 *   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
 -   Fix build with updated python symlink changes
