@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
@@ -9,7 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1    %{name}=e26c6594c14680da42ea2875b60664ec159670bf
+%define sha512  %{name}=26eda95c45598a500bc142da4d1abf93d03b3bbb0f2390fa87c72dcbffa208dbfa115c0b411095c31ee9955e36422ccf3e2df3bd486818fafffef8c4310798c4
+
 Source1:        pamtmp.conf
 
 Patch0:         faillock-add-support-to-print-login-failures.patch
@@ -50,7 +51,6 @@ sh ./configure --host=%{_host} --build=%{_build} \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --program-prefix= \
     --disable-dependency-tracking \
     --prefix=%{_prefix} \
     --exec-prefix=%{_prefix} \
@@ -70,11 +70,10 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-securedir=%{_libdir}/security \
     --enable-db=ndbm
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 chmod -v 4755 %{buildroot}%{_sbindir}/unix_chkpwd
 install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_auth.so
@@ -132,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-5
+- Further fixes to faillock patch
 * Wed Mar 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-4
 - Remove db support from pam
 * Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-3
