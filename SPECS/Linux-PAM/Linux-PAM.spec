@@ -1,22 +1,26 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.5.1
-Release:        2%{?dist}
+Version:        1.5.2
+Release:        1%{?dist}
 License:        BSD and GPLv2+
-URL:            https://github.com/linux-pam/linux-pam/releases
+URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1    %{name}=ad43b7fbdfdd38886fdf27e098b49f2db1c2a13d
+%define sha512 %{name}=fa16350c132d3e5fb82b60d991768fb596582639841b8ece645c684705467305ccf1302a0147ec222ab78c01b2c9114c5496dc1ca565d2b56bf315f29a815144
 Source1:        pamtmp.conf
 
 Patch0:         faillock-add-support-to-print-login-failures.patch
 
 BuildRequires:  libselinux-devel
+BuildRequires:  gdbm-devel
 
-Requires:       libselinux
+Requires: libselinux
+Requires: gdbm
+
+%define ExtraBuildRequires systemd-rpm-macros
 
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to
@@ -46,15 +50,14 @@ sh ./configure --host=%{_host} --build=%{_build} \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --program-prefix= \
     --disable-dependency-tracking \
     --prefix=%{_prefix} \
     --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
-    --sbindir=/sbin \
+    --sbindir=%{_sbindir} \
     --sysconfdir=%{_sysconfdir} \
     --datadir=%{_datadir} \
-    --includedir=/usr/include/security \
+    --includedir=%{_includedir}/security \
     --libdir=%{_libdir} \
     --libexecdir=%{_libexecdir} \
     --localstatedir=%{_localstatedir} \
@@ -63,28 +66,25 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --infodir=%{_infodir} \
     --enable-selinux \
     --docdir=%{_docdir}/%{name}-%{version} \
-    --enable-securedir=/usr/lib/security
+    --enable-securedir=%{_libdir}/security \
+    --enable-db=ndbm
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
-ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
-ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_acct.so
-ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_passwd.so
-ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_session.so
+%make_install %{?_smp_mflags}
+chmod -v 4755 %{buildroot}%{_sbindir}/unix_chkpwd
+install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
+ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_auth.so
+ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_acct.so
+ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
+ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 install -d -m 755 %{buildroot}/var/run/faillock
 install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
 
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-find %{buildroot}/usr/lib/ -name '*.la' -delete
-
 %{find_lang} %{name}
-
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -100,7 +100,6 @@ make %{?_smp_mflags} check
 %endif
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %clean
@@ -110,14 +109,14 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/security/*.conf
 %{_sysconfdir}/*
-/sbin/*
+%{_sbindir}/*
 %{_lib}/security/*
 %{_libdir}/*.so*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_lib}/systemd/system/pam_namespace.service
-%dir /var/run/faillock
 %{_libdir}/tmpfiles.d/pam.conf
+%{_unitdir}/pam_namespace.service
+%dir /var/run/faillock
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -127,8 +126,12 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_mandir}/man3/*
 %{_docdir}/%{name}-%{version}/*
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-1
+- Further fixes to faillock patch
+- Upgrade to v1.5.2
 * Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.1-2
 - create /var/run/faillock during install
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
@@ -157,4 +160,4 @@ rm -rf %{buildroot}/*
 * Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
 - Update according to UsrMove.
 * Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
-- Initial build.  First version
+- Initial build. First version
