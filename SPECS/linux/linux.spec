@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,12 +32,12 @@ Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DC
 %define i40e_version 2.16.11
 Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
-%define iavf_version 4.2.7
+%define iavf_version 4.4.2
 Source13:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
-%define ice_version 1.6.4
+%define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+%define ice_version 1.8.3
 Source14:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
+%define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
 
 # common
 Patch1:         double-tcp_mem-limits.patch
@@ -446,11 +446,14 @@ Patch509:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
 
-#Patches for ice driver
-Patch1510:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-
 #Patches for iavf driver
 Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1512:      no-aux-symvers.patch
+
+#Patches for ice driver
+Patch1521:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1522:      no-aux-bus.patch
+
 %endif
 
 %if 0%{?kat_build:1}
@@ -942,15 +945,18 @@ pushd ../i40e-%{i40e_version}
 %patch1500 -p1
 popd
 
-#Patches for ice driver
-pushd ../ice-%{ice_version}
-%patch1510 -p1
-popd
-
-#Patches for iavf river
+#Patches for iavf driver
 pushd ../iavf-%{iavf_version}
 %patch1511 -p1
+%patch1512 -p1
 popd
+
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1521 -p1
+%patch1522 -p1
+popd
+
 %endif
 
 %if 0%{?kat_build:1}
@@ -1083,12 +1089,19 @@ popd
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+# The auxiliary.ko kernel module is a common dependency for both iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice driver.
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+install -Dvm 644 src/linux/auxiliary_bus.h %{buildroot}/usr/src/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
+# The auxiliary.ko kernel module is a common dependency for both iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice driver.
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 popd
 
@@ -1313,6 +1326,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Jul 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-6
+- Update iavf driver to v4.4.2
+- Update ice driver to v1.8.3
+- .config: Enable CONFIG_NET_DEVLINK=y (ice v1.8.3 needs it).
 * Thu Jun 30 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-5
 - Fixes panic due to nested priority inheritance
 * Thu Jun 23 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-4
