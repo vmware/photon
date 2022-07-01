@@ -1,5 +1,5 @@
 Name:           cloud-init
-Version:        22.2
+Version:        22.2.2
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=07fec2f1d6eab20a1161672bb339a0c6b2826540bcb03936f95458b179fcb1b3142773c9a4038fe02b30bb05a5ca48a4153b6b0f59015b43bd6c6602832f9d6f
+%define sha512 %{name}=18b75ebbb5e808e19df5ceddb6402cc881c33443fb169f736f54837254ba43836994f2392a26febbd8df3342b3467ee72759b6942cfeb96d07c0e452c11dd0bf
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
@@ -149,6 +149,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Fri Jul 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.2-1
+- Upgrade to v22.2.2 to fix CVE-2022-2084
 * Thu May 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.2-1
 - Upgrade to v22.2
 * Thu Feb 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.1-1
