@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    7.0.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -11,7 +11,8 @@ Distribution:   Photon
 Source0:    http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9209dd95511a27802f83197b037c006c5f40c50fe5315eb6a5ac2af1619a7b1c890160106157086420c1aca8a058f573681bfad1897052308ca6e64407404757
 
-Patch0:         redis-conf.patch
+Patch0: %{name}-conf.patch
+Patch1: CVE-2022-33105.patch
 
 BuildRequires:  gcc
 BuildRequires:  systemd-devel
@@ -34,27 +35,26 @@ Redis is an in-memory data structure store, used as database, cache and message 
 make BUILD_TLS=yes %{?_smp_mflags}
 
 %install
-install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}%{_usr} install %{?_smp_mflags}
+%make_install PREFIX=%{buildroot}%{_usr} %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
-          %{buildroot}/var/log \
-          %{buildroot}/var/opt/%{name}/log \
-          %{buildroot}%{_unitdir}
+         %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/%{name}/log \
+         %{buildroot}%{_unitdir}
 
-ln -sfv /var/opt/%{name}/log %{buildroot}/var/log/%{name}
+ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 
-cat << EOF >>  %{buildroot}%{_unitdir}/redis.service
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=Redis in-memory key-value database
 After=network.target
 
 [Service]
-ExecStart=%{_bindir}/redis-server %{_sysconfdir}/redis.conf --daemonize no
-ExecStop=%{_bindir}/redis-cli shutdown
-User=redis
-Group=redis
+ExecStart=%{_bindir}/%{name}-server %{_sysconfdir}/%{name}.conf --daemonize no
+ExecStop=%{_bindir}/%{name}-cli shutdown
+User=%{name}
+Group=%{name}
 
 [Install]
 WantedBy=multi-user.target
@@ -70,26 +70,28 @@ getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
 
 getent passwd %{name} &> /dev/null || \
 useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
--c 'Redis Database Server' %{name} &> /dev/null
+    -c 'Redis Database Server' %{name} &> /dev/null
 
 %post
 /sbin/ldconfig
-%systemd_post  redis.service
+%systemd_post %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart redis.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, redis, redis) /var/lib/redis
-%dir %attr(0750, redis, redis) /var/opt/%{name}/log
-%attr(0750, redis, redis) %{_var}/log/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_sharedstatedir}/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_var}/opt/%{name}/log
+%attr(0750, %{name}, %{name}) %{_var}/log/%{name}
 %{_bindir}/*
-%{_libdir}/systemd/*
-%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
+%{_unitdir}/*
+%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Sat Jul 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-2
+- Fix CVE-2022-33105
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-1
 - Upgrade to v7.0.0
 - This fixes CVE-2022-24735, CVE-2022-24736
@@ -125,7 +127,7 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 - Updated to version 5.0.5.
 * Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 4.0.11-1
 - Updated to version 4.0.11.
-* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.2.8-5
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.2.8-5
 - Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.8-4
 - Remove shadow from requires and use explicit tools for post actions
