@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.15.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -13,8 +13,6 @@ Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar
 %define sha1    falco=0f1e3b5ab3e917084ae062de7525000f8c7ae8d7
 Source1:        https://github.com/draios/sysdig/archive/sysdig-0.26.0.tar.gz
 %define sha1    sysdig=0104006492afeda870b6b08a5d1f8e76d84559ff
-Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
-%define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 
 Patch0:         falco-CVE-2021-33505.patch
 
@@ -32,6 +30,8 @@ BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  wget
 BuildRequires:  which
+BuildRequires:  libvirt-devel
+
 %if %{with_check}
 BuildRequires:  dkms
 BuildRequires:  xz-devel
@@ -46,16 +46,14 @@ Requires:       libyaml
 Requires:       lua
 Requires:       sysdig
 Requires:       dkms
+Requires:       libvirt
 
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
-# Using autosetup is not feasible
-%setup
-# Using autosetup is not feasible
-%setup -T -D -a 1
-tar xf %{SOURCE2} --no-same-owner
+%setup -q
+%setup -q -T -D -a 1
 %patch0 -p1
 
 %build
@@ -72,16 +70,6 @@ make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" %{?_smp_
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-
-#falco requires docker instance and dpkg to pass make check.
-#%%check
-#easy_install pip
-#pip install 'stevedore>=0.14'
-#pip install 'avocado-framework<=36.0'
-#pip install fabric
-#pip install aexpect
-#pip install pystache
-#test/run_regression_tests.sh
 
 %clean
 rm -rf %{buildroot}/*
@@ -101,6 +89,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Fri Jul 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.15.0-4
+- Use libvirt from available photon package
 * Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.15.0-3
 - Patched to fix CVE-2021-33505
 * Wed Feb 12 2020 Ashwin H <ashwinh@vmware.com> 0.15.0-2

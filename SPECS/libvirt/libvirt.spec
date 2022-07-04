@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        3.2.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -12,6 +12,7 @@ Patch2:         libvirt-CVE-2019-3840.patch
 Patch3:         libvirt-CVE-2019-10161.patch
 patch4:         libvirt-CVE-2019-10167.patch
 patch5:         libvirt-3.2.0-CVE-2019-20485.patch
+patch6:         libvirt-CVE-2021-3631.patch
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -67,8 +68,9 @@ This contains development tools and libraries for libvirt.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 %build
-./configure \
+sh configure \
     --disable-silent-rules \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
@@ -122,6 +124,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Mon Jul 04 2022 Mukul Sikka <msikka@vmware.com> 3.2.0-9
+-   Fix for CVE-2021-3631
 *   Tue Apr 07 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 3.2.0-8
 -   Fix for CVE-2019-20485
 *   Wed Feb 12 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 3.2.0-7
@@ -135,7 +139,7 @@ find %{buildroot} -name '*.la' -delete
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
 -   Fix CVE-2017-1000256
 *   Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
--   Fix missing deps in devel package 
+-   Fix missing deps in devel package
 *   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
 -   Upgrading version to 3.2.0
 *   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
