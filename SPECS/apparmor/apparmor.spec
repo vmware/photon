@@ -1,7 +1,3 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
-%global py_ver 3.7
-
 Name:           apparmor
 Version:        2.13
 Release:        10%{?dist}
@@ -165,9 +161,9 @@ This package contains the AppArmor module for perl.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
+export PYTHONPATH=/usr/lib/python%{python3_version}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=%{py_ver}
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
 #Building libapparmor
 cd ./libraries/libapparmor
@@ -204,9 +200,9 @@ make %{?_smp_mflags}
 %check
 easy_install_3=$(ls /usr/bin | grep easy_install | grep 3)
 $easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
+export PYTHONPATH=/usr/lib/python%{python3_version}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=%{py_ver}
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd ./libraries/libapparmor
@@ -217,9 +213,9 @@ cd ../utils
 make check %{?_smp_mflags}
 
 %install
-export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
+export PYTHONPATH=/usr/lib/python%{python3_version}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=%{py_ver}
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor

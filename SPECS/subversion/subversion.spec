@@ -1,18 +1,21 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=94464202b4a4ac7a6055c50eaa19ea55127f70f0efe5e0e655ef0a0866c8148bde56417b1dfd3204260300488ab668228faadec5015fe3e4b17e06c76e1d86b4
+
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
 Requires:       utf8proc
+
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
@@ -52,21 +55,21 @@ Provides Perl (SWIG) support for Subversion version control system.
         --with-serf=%{_prefix} \
         --with-lz4=internal
 
-make %{?_smp_mflags}
+%make_build
 
 # For Perl bindings
-make %{?_smp_mflags} swig-pl
+%make_build swig-pl
 
 %install
 # make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install
+%make_install
 %find_lang %{name}
 
 # make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install-swig-pl
+%make_install install-swig-pl
 
-%check
 %if 0%{?with_check}
+%check
 # subversion expect nonroot user to run tests
 chmod g+w . -R
 useradd test -G root -m
@@ -77,9 +80,9 @@ sudo -u test make check && userdel test -r -f
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/svn*
+%exclude %{_libdir}/libsvn_swig_perl*so*
 %{_libdir}/libsvn_*.so.*
 %{_mandir}/man[158]/*
-%{_datadir}/locale/*
 
 %files devel
 %{_includedir}/*
@@ -92,12 +95,13 @@ sudo -u test make check && userdel test -r -f
 %defattr(-,root,root)
 %{perl_sitearch}/SVN
 %{perl_sitearch}/auto/SVN
-%{_libdir}/libsvn_swig_perl*so*
-%{_libdir}/perl5/*
+%{_libdir}/libsvn_swig_perl*.so.*
 %{_mandir}/man3/SVN*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-3
+- Remove redundant locale directory packaging
 * Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 1.10.8-2
 - Update sha1 to sha512
 * Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.10.8-1
