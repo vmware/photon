@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1o
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -12,6 +12,7 @@ Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch0:         nxtgn-openssl-CVE-2022-2068.patch
 Patch1:         nxtgn-c_rehash.patch
+Patch2:         nxtgn-openssl-CVE-2022-2097.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -54,6 +55,7 @@ Perl scripts that convert certificates and keys to various formats.
 %setup -q -n openssl-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -120,6 +122,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Mon Jul 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1o-3
+-   Fix CVE-2022-2097
 *   Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1o-2
 -   Fix CVE-2022-2068
 -   Format nxtgn-c_rehash.patch to resolve merge conflicts
