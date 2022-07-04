@@ -1,0 +1,61 @@
+From add531a1e55b0a739b0f42582f1c9747e5649ace Mon Sep 17 00:00:00 2001
+From: Benjamin Peterson <benjamin@python.org>
+Date: Tue, 28 Aug 2018 22:12:56 -0700
+Subject: [PATCH] closes bpo-34540: Convert shutil._call_external_zip to use
+ subprocess rather than distutils.spawn.
+
+---
+ Lib/shutil.py                                    | 16 ++++++++++------
+ .../2018-08-28-22-11-54.bpo-34540.gfQ0TM.rst     |  3 +++
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Security/2018-08-28-22-11-54.bpo-34540.gfQ0TM.rst
+
+diff --git a/Lib/shutil.py b/Lib/shutil.py
+index 3462f7c5e91c2..0ab1a06f5260e 100644
+--- a/Lib/shutil.py
++++ b/Lib/shutil.py
+@@ -413,17 +413,21 @@ def _set_uid_gid(tarinfo):
+ 
+     return archive_name
+ 
+-def _call_external_zip(base_dir, zip_filename, verbose=False, dry_run=False):
++def _call_external_zip(base_dir, zip_filename, verbose, dry_run, logger):
+     # XXX see if we want to keep an external call here
+     if verbose:
+         zipoptions = "-r"
+     else:
+         zipoptions = "-rq"
+-    from distutils.errors import DistutilsExecError
+-    from distutils.spawn import spawn
++    cmd = ["zip", zipoptions, zip_filename, base_dir]
++    if logger is not None:
++        logger.info(' '.join(cmd))
++    if dry_run:
++        return
++    import subprocess
+     try:
+-        spawn(["zip", zipoptions, zip_filename, base_dir], dry_run=dry_run)
+-    except DistutilsExecError:
++        subprocess.check_call(cmd)
++    except subprocess.CalledProcessError:
+         # XXX really should distinguish between "couldn't find
+         # external 'zip' command" and "zip failed".
+         raise ExecError, \
+@@ -458,7 +462,7 @@ def _make_zipfile(base_name, base_dir, verbose=0, dry_run=0, logger=None):
+         zipfile = None
+ 
+     if zipfile is None:
+-        _call_external_zip(base_dir, zip_filename, verbose, dry_run)
++        _call_external_zip(base_dir, zip_filename, verbose, dry_run, logger)
+     else:
+         if logger is not None:
+             logger.info("creating '%s' and adding '%s' to it",
+diff --git a/Misc/NEWS.d/next/Security/2018-08-28-22-11-54.bpo-34540.gfQ0TM.rst b/Misc/NEWS.d/next/Security/2018-08-28-22-11-54.bpo-34540.gfQ0TM.rst
+new file mode 100644
+index 0000000000000..4f686962a87b2
+--- /dev/null
++++ b/Misc/NEWS.d/next/Security/2018-08-28-22-11-54.bpo-34540.gfQ0TM.rst
+@@ -0,0 +1,3 @@
++When ``shutil.make_archive`` falls back to the external ``zip`` problem, it
++uses :mod:`subprocess` to invoke it rather than :mod:`distutils.spawn`. This
++closes a possible shell injection vector.
