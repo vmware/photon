@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          41%{?dist}
+Release:          42%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -184,7 +184,9 @@ ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
-sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
+sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
 mkdir -p %{buildroot}%{_localstatedir}/log
@@ -331,6 +333,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 239-42
+- Disable DNSSEC & DNSOverTLS by default
 * Tue Jun 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 239-41
 - Bump version as a part of libxslt upgrade
 * Mon Jun 20 2022 Susant Sahani <ssahani@vmware.com> 239-40
