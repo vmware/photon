@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -16,6 +16,8 @@ Patch3:         libvirt-CVE-2019-10168.patch
 Patch4:         libvirt-4.7.0-CVE-2019-20485.patch
 Patch5:         libvirt-CVE-2020-10703.patch
 Patch6:         libvirt-CVE-2019-10161.patch
+Patch7:		libvirt-CVE-2021-3631.patch
+Patch8:		libvirt-CVE-2021-3667.patch
 BuildRequires:  cyrus-sasl
 BuildRequires:  device-mapper-devel
 BuildRequires:  gnutls-devel
@@ -126,6 +128,8 @@ make check %{?_smp_mflags}
 %{_mandir}/*
 
 %changelog
+*   Mon Jul 04 2022 Mukul Sikka <msikka@vmware.com> 4.7.0-10
+-   Fix CVE-2021-3631 and CVE-2021-3667
 *   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.0-9
 -   Bump version as a part of libxslt upgrade
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.7.0-8
