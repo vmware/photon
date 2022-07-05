@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -535,6 +535,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 26 2022 Ankit Jain <ankitja@vmware.com> 5.10.118-10
+- Fix multiple issues in tarfs
 * Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-9
 - Update iavf driver to v4.4.2
 - Update ice driver to v1.8.3
