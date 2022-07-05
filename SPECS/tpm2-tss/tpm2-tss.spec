@@ -1,29 +1,30 @@
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-tss
-Version:          3.0.3
-Release:          2%{?dist}
+Version:          3.2.0
+Release:          1%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-tss
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      tpm2=f83a4a9e544893c42ec108f6616a75e2f209d2d3
-BuildRequires:    openssl-devel
+%define sha512    tpm2-tss=cabb411f074dfa94919ba914849aac77a0ac2f50622e28a1406cf575369148774748e0e2b7a7c566ec83561a96d4b883bac5a3b1763f4cf48668a0c5d68c0a23
+BuildRequires:    openssl-devel shadow
 Requires:         openssl
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 %description
 OSS implementation of the TCG TPM2 Software Stack (TSS2)
 
-%package devel
-Summary:      The libraries and header files needed for TSS2 development.
-Requires:     %{name} = %{version}-%{release}
-%description  devel
+%package          devel
+Summary:          The libraries and header files needed for TSS2 development.
+Requires:         %{name} = %{version}-%{release}
+
+%description      devel
 The libraries and header files needed for TSS2 development.
 
 %prep
 %autosetup
+
 %build
 %configure \
     --disable-static \
@@ -33,7 +34,7 @@ The libraries and header files needed for TSS2 development.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %post
 /sbin/ldconfig
@@ -79,6 +80,8 @@ fi
 %{_mandir}/man7
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-2
 -   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.3-1
@@ -92,4 +95,4 @@ fi
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
 -   Automatic Version Bump
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.2.0-1
--   Initial build. First version
+-   Initial build. First version.

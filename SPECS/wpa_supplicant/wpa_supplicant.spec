@@ -1,16 +1,14 @@
 Summary:          WPA client
 Name:             wpa_supplicant
-Version:          2.9
-Release:          3%{?dist}
+Version:          2.10
+Release:          1%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha1 wpa=b784c0e5e56889c81d027757a4623659bf15f9a8
-Patch0:           CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
-
+%define sha512    wpa=021c2a48f45d39c1dc6557730be5debaee071bc0ff82a271638beee6e32314e353e49d39e2f0dc8dff6e094dcc7008cfe1c32d0c7a34a1a345a12a3f1c1e11a1
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -19,7 +17,7 @@ Requires:         openssl
 WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplicant
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -96,6 +94,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-3
 -   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-2

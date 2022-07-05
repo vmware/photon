@@ -1,11 +1,11 @@
 Summary:        ASN.1 library
 Name:           libtasn1
-Version:        4.16.0
+Version:        4.18.0
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnu.org/software/libtasn1/
 Source0:        http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
-%define sha1    libtasn1=f4f1fc301c0835389d9db7754815e48f4f57937a
+%define sha512  libtasn1=4f2f4afc7561fda7a1f1c6c525c3c3b08228a1a4aa8c3d3d5e02e993d8f83ccee1dd0f1b201cec0fbfc97043d4b1d7a95ffd34d65422a38b85b931ac7a015831
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,24 +16,24 @@ the X.680 ITU-T recommendation) parsing and structures management, and
 Distinguished Encoding Rules (DER, as per X.690) encoding and decoding
 functions.
 
-%package devel
-Summary:    Development libraries and header files for libtasn1
-Requires:   libtasn1
-Provides:   pkgconfig(libtasn1)
+%package        devel
+Summary:        Development libraries and header files for libtasn1
+Requires:       libtasn1
+Provides:       pkgconfig(libtasn1)
 
-%description devel
+%description    devel
 The package contains libraries and header files for
 developing applications that use libtasn1.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
@@ -42,6 +42,7 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
@@ -57,6 +58,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.18.0-1
+-   Automatic Version Bump
 *   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 4.16.0-1
 -   Automatic Version Bump
 *   Mon Apr 13 2020 Siddharth Chandrasekran <csiddhath@vmware.com> 4.14-1
@@ -81,4 +84,3 @@ make %{?_smp_mflags} check
 -   Removing la files from packages.
 *   Fri Jun 19 2015 Divya Thaluru <dthaluru@vmware.com> 4.5-1
 -   Initial build. First version
-

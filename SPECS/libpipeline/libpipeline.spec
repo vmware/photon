@@ -1,6 +1,6 @@
 Summary:	Library for manipulating pipelines
 Name:		libpipeline
-Version:	1.5.3
+Version:	1.5.5
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://libpipeline.nongnu.org
@@ -8,38 +8,38 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
-%define sha1 libpipeline=725e1104b864f06835e5620bfe689a5a00cbeb1f
+%define sha512  libpipeline=adb228325c1f11e9f3566f2fc63541a90c88fe24656fc74ed0294d1eb3b80073bf4741fe7c289f53b340702145b11637d37682e3036dce41ec0fe45dcc6d62c5
 
 %if %{with_check}
-BuildRequires: check
-BuildRequires: pkg-config
+BuildRequires:  check
+BuildRequires:  pkg-config
 %endif
 
 %description
 Contains a library for manipulating pipelines of sub processes
 in a flexible and convenient way.
 
-%package devel
+%package        devel
 Summary:        Library providing headers and static libraries to libpipeline
 Group:          Development/Libraries
 Requires:       libpipeline = %{version}-%{release}
 Provides:       pkgconfig(libpipeline)
 
-%description devel
+%description    devel
 Development files for libpipeline
 
 %prep
-%setup -q
+%autosetup
 %build
 %configure
-
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 #find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 %check
-make -C tests check
+make -C tests check %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -56,6 +56,8 @@ make -C tests check
 %{_mandir}/man3/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.5.5-1
+- Automatic Version Bump
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
 - Automatic Version Bump
 * Tue Jul 07 2020 Shreenidhi Shedi <photon-checkins@vmware.com> 1.5.2-1

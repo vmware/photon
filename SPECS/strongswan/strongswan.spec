@@ -1,20 +1,18 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.9.0
-Release:          3%{?dist}
+Version:          5.9.5
+Release:          1%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      %{name}=8bb52214f72f2571f55dababfe76ff97fd31ca1f
+%define sha512    %{name}=3b11c4edb1ffccf0ea5b8b843acfe2eb18dcd3857fc2818b8481c4febe7959261e1b2804c3af29068319df469fa0b784682d3ba4d49a3eb580841ff3c34e33a1
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
 Patch0:           strongswan-fix-make-check.patch
-Patch1:           CVE-2021-41990.patch
-Patch2:           CVE-2021-41991.patch
 %{?systemd_requires}
 
 %description
@@ -64,6 +62,10 @@ rm -rf %{buildroot}/*
 %{_unitdir}/strongswan.service
 
 %changelog
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.5-1
+- Automatic Version Bump
+* Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.9.0-4
+- Fix CVE-2021-45079
 * Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-3
 - Fix CVE-2021-41991 and CVE-2021-41990.
 * Wed Jun 09 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-2

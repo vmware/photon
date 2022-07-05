@@ -1,89 +1,80 @@
 Summary:        Basic system utilities
 Name:           coreutils
-Version:        8.32
-Release:        3%{?dist}
+Version:        9.1
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1    coreutils=b2b12195e276c64c8e850cf40ea2cff9b3aa53f6
+%define sha512  %{name}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
-Patch0:         http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.32-i18n-1.patch
-%if %{with_check}
-# Commented out one symlink test because device node and '.' are mounted on different folder
-Patch1:         make-check-failure.patch
-%endif
-%ifarch aarch64
-Patch2:         coreutils-8.32-aarch64-build-fix.patch
-Patch3:         0001-ls-improve-removed-directory-test.patch
-%endif
+
+# Patches are taken from:
+# www.linuxfromscratch.org/patches/downloads/coreutils/
+Patch0: coreutils-%{version}-i18n-1.patch
+
 Requires:       gmp
+
 Provides:       sh-utils
+
 Conflicts:      toybox < 0.8.2-2
+
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system
 
 %package lang
-Summary: Additional language files for coreutils
-Group: System Environment/Base
-Requires: coreutils >= %{version}
+Summary:    Additional language files for coreutils
+Group:      System Environment/Base
+Requires:   coreutils >= %{version}
+
 %description lang
 These are the additional language files of coreutils.
 
 %prep
-%setup -q
-%patch0 -p1
-%if %{with_check}
-%patch1 -p1
-%endif
-%ifarch aarch64
-%patch2 -p1
-%patch3 -p1
-%endif
+%autosetup -p1
 
 %build
 autoreconf -fiv
 export FORCE_UNSAFE_CONFIGURE=1
 %configure \
-	--enable-no-install-program=kill,uptime \
-	--disable-silent-rules
-make %{?_smp_mflags}
+    --enable-no-install-program=kill,uptime \
+    --disable-silent-rules
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-install -vdm 755 %{buildroot}/bin
+%make_install %{?_smp_mflags}
+install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/man8
-mv -v %{buildroot}%{_bindir}/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{false,ln,ls,mkdir,mknod,mv,pwd,rm} %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/{rmdir,stty,sync,true,uname,test,[} %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/chroot %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_mandir}/man1/chroot.1 %{buildroot}%{_mandir}/man8/chroot.8
 sed -i 's/\"1\"/\"8\"/1' %{buildroot}%{_mandir}/man8/chroot.8
-mv -v %{buildroot}%{_bindir}/{head,sleep,nice} %{buildroot}/bin
 rm -rf %{buildroot}%{_infodir}
 install -vdm755 %{buildroot}/etc/profile.d
 install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
-sed  -i '37,40d' tests/df/df-symlink.sh
-sed  -i '/mb.sh/d' Makefile
+sed -i '37,40d' tests/df/df-symlink.sh
+sed -i '/mb.sh/d' Makefile
 chown -Rv nobody .
-env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root
-make NON_ROOT_USERNAME=nobody check
+env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root %{?_smp_mflags}
+make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-/bin/*
 %{_sysconfdir}/profile.d/serial-console.sh
 %{_libexecdir}/*
 %{_bindir}/*
@@ -94,6 +85,12 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-2
+- Fix binary path
+* Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
+- Upgrade to v9.1
+* Sat Apr 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.0-1
+- Upgrade to v9.0
 * Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.32-3
 - Fix for makecheck failure added a patch
 * Tue Aug 11 2020 Sujay G <gsujay@vmware,.com> 8.32-2

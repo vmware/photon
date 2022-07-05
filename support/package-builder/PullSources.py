@@ -8,17 +8,35 @@ import random
 from CommandUtils import CommandUtils
 
 
-def getFileHash(filepath):
-    sha1 = hashlib.sha1()
-    f = open(filepath, 'rb')
+"""
+TODO: need to remove sha1sum support from here in future
+All the spec files are using sha1sum currently
+Eventually it will be replaced with sha512 because of enforcement in check_spec.py
+"""
+def isFileHashOkay(filepath, checksum):
+    if "md5" in checksum:
+        csum = hashlib.md5()
+        chash = checksum["md5"]
+    elif "sha1" in checksum:
+        csum = hashlib.sha1()
+        chash = checksum["sha1"]
+    elif "sha256" in checksum:
+        csum = hashlib.sha256()
+        chash = checksum["sha256"]
+    else:
+        csum = hashlib.sha512()
+        chash = checksum["sha512"]
+
     try:
-        sha1.update(f.read())
+        f = open(filepath, "rb")
+        csum.update(f.read())
     finally:
         f.close()
-    return sha1.hexdigest()
+
+    return csum.hexdigest() == chash
 
 
-def get(package, source, sha1, sourcesPath, URLs, logger):
+def get(package, source, checksum, sourcesPath, URLs, logger):
     if not os.path.isdir(sourcesPath):
         os.mkdir(sourcesPath)
 
@@ -28,11 +46,10 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
         if len(sourcePath) > 1:
             raise Exception('Multiple sources found for source:' + source + '\n' +
                             ','.join(sourcePath) +'\nUnable to determine one.')
-        if sha1 == getFileHash(sourcePath[0]):
+        if isFileHashOkay(sourcePath[0], checksum):
             # Use file from sourcesPath
             return
-        logger.info('sha1 of ' + sourcePath[0] + ' does not match. ' + sha1 +
-                    ' vs ' + getFileHash(sourcePath[0]))
+        logger.info('checksum of ' + sourcePath[0] + ' does not match.')
     for baseurl in URLs:
         #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (baseurl, source)
@@ -40,8 +57,8 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
         logger.debug('Downloading: ' + url)
         try:
             downloadFile(url, destfile)
-            if sha1 != getFileHash(destfile):
-                raise Exception('Invalid sha1 for package %s file %s' % (package, source))
+            if not isFileHashOkay(destfile, checksum):
+                raise Exception('Invalid checksum for package %s file %s' % (package, source))
             return
         except requests.exceptions.HTTPError as e:
             logger.exception(e)

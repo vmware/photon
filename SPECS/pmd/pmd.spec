@@ -6,7 +6,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -15,19 +15,19 @@ Group:          Applications/System
 
 # PMD Source Code tarball
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    pmd=97694042554dd10d99e5e4f15913a27dc22299b1
+%define sha512  %{name}=f7b35964b779dcb79e9907e6f6f13939dc79ae25e9735861208a274044756c59eb9fcc45dd1c8cc00c3bb6e49dc0605810d5d3ba5d5ff2844bd483ae1c463770
 
 # gssapi_unix Source Code tarball
 # GSSAPI-Unix URL: https://github.com/vmware/gssapi-unix
 Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
-%define sha1    gssapi-unix-%{gssapi_unix_ver}=5736db248f460f97203ac0c079dcc7862479e754
+%define sha512  gssapi-unix-%{gssapi_unix_ver}=cc8044da827ee688c9d6b99709ff1f55e609787a47d4c992035750f3e8727fa2ee86897ceba8f754c48f21676ff547d0b7c0b5f7ac798bde38337d6e4dbd3212
 
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
 Requires:       network-config-manager
 Requires:       systemd
-Requires:       tdnf >= 2.1.1
+Requires:       tdnf >= 3.3.1
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 Requires:       dcerpc
@@ -41,12 +41,12 @@ BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
 BuildRequires:  krb5-devel
 BuildRequires:  network-config-manager-devel
-BuildRequires:  tdnf-devel >= 2.1.1
-BuildRequires:  python3-devel >= 3.5
+BuildRequires:  tdnf-devel >= 3.3.1
 BuildRequires:  dcerpc-devel
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  python3-devel >= 3.5
 
 %description
 Photon Management Daemon
@@ -108,7 +108,7 @@ autoreconf -mif
 %configure \
     --disable-static \
     --enable-python=no
-make %{?_smp_mflags}
+%make_build
 
 pushd python
 python3 setup.py build
@@ -121,11 +121,11 @@ autoreconf -mif &&
 aclocal && libtoolize && automake --add-missing && autoreconf &&
 %configure \
     LDFLAGS=-ldl
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd $RPM_BUILD_DIR/%{name}-%{version}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 rm -f %{buildroot}%{_libdir}/*.la
 
 pushd python
@@ -293,6 +293,7 @@ if [ "$1" = 0 ]; then
     fi
 fi
 
+%if 0%{?with_check}
 %check
 pushd tests/net
 # pmd-cli net tests
@@ -300,6 +301,7 @@ python3 pmd_net_cli.py
 # pmd.server.net python3 tests
 python3 pmd_net_python3.py
 popd
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -352,7 +354,9 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
-*   Wed Nov 24  2021 Oliver Kurth <okurth@vmware.com> 0.0.7-7
+*   Mon May 09 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-8
+-   Bump to consume latest tdnf (3.3.1)
+*   Wed Nov 24 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-7
 -   Bump to consume latest tdnf (3.2.0)
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.0.7-6
 -   Bump up release for openssl

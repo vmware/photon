@@ -6,12 +6,12 @@
 
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
-Version:        2.2.0
+Version:        2.3.0
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        termshark-%{version}.tar.gz
-%define sha1 %{name}=1071470741c4760437cb4e86140fc95f39c6657c
+%define sha1 %{name}=95b1860f724024d15c321ff8d492a36aaa2058e8
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,5 +65,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/termshark
 
 %changelog
+* Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 2.3.0-1
+- Version bump.
 * Thu May 06 2021 Susant Sahani <ssahani@vmware.com> 2.2.0-1
 - Initial rpm release.

@@ -1,14 +1,16 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
-Version:        1.6.2
+Version:        1.6.6
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
-%define sha1    %{name}=d08c06ee28fe15980bd6474be789f2ef5ec555ee
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
+%define sha512    %{name}=b9a737e4ba3ecdfb9cb8f5fb751cc74e5b1553664d3088c44a1f9e5396d4037958af214dcd290ddf5af98088f46167e10e371e134e1de5cbb7aec84c5c0fd017
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  python3-gobject-introspection
@@ -20,7 +22,9 @@ BuildRequires:	meson
 BuildRequires:	python3
 BuildRequires:	python3-libs
 BuildRequires:  gtk-doc
+
 Requires:	glib
+
 Provides:	pkgconfig(json-glib-1.4)
 
 %description
@@ -39,7 +43,7 @@ Requires:       gobject-introspection-devel
 Header files for the json-glib library.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 export LANG=en_US.UTF-8
@@ -56,16 +60,16 @@ DESTDIR=%{buildroot} ninja -C build install
 
 %check
 sed -i 's/mesontest/meson test/g' Makefile
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files -f json-glib-1.0.lang
-#%defattr(-, root, root)
+#%%defattr(-, root, root)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/json-glib-format
 %attr(755,root,root) %{_bindir}/json-glib-validate
@@ -73,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libjson-glib-1.0.so.*.*.*
 
 %files devel
-#%defattr(-, root, root)
+#%%defattr(-, root, root)
 %{_libdir}/libjson-glib-1.0.so
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
@@ -81,29 +85,30 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/girepository-1.0/Json-1.0.typelib
 %{_libexecdir}/installed-tests/*
 %{_datadir}/installed-tests/*
-%{_datadir}/gtk-doc/html/json-glib/*
 
 %changelog
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
--   Automatic Version Bump
-*   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
--   Automatic Version Bump
-*   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 1.4.4-3
--   Use meson and ninja build system
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
--   Build with python3
--   Mass removal python2
-*   Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.4.4-1
--   Updated package to version 1.4.4
-*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1
--   Updated package to version 1.2.8
-*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.0.4-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4-2
--   GA - Bump release of all rpms
-*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.0.4-1
--   Upgrade to 1.0.4
-*   Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
--   Added more requirements for devel subpackage.
-*   Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
--   Added Provides:	pkgconfig(json-glib-1.0)
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.6-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
+- Automatic Version Bump
+* Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
+- Automatic Version Bump
+* Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 1.4.4-3
+- Use meson and ninja build system
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
+- Build with python3
+- Mass removal python2
+* Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.4.4-1
+- Updated package to version 1.4.4
+* Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1
+- Updated package to version 1.2.8
+* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.0.4-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4-2
+- GA - Bump release of all rpms
+* Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.0.4-1
+- Upgrade to 1.0.4
+* Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
+- Added more requirements for devel subpackage.
+* Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
+- Added Provides:	pkgconfig(json-glib-1.0)

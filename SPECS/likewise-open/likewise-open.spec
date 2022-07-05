@@ -1,14 +1,14 @@
-Name: 		likewise-open
-Summary: 	Likewise Open
-Version: 	6.2.11.13
-Release: 	8%{?dist}
-Group:   	Development/Libraries
-Vendor: 	VMware, Inc.
-License: 	GPL 2.0,LGPL 2.1
-URL: 		https://github.com/vmware/likewise-open
+Name:       likewise-open
+Summary:    Likewise Open
+Version:    6.2.11.13
+Release:    8%{?dist}
+Group:      Development/Libraries
+Vendor:     VMware, Inc.
+License:    GPL 2.0,LGPL 2.1
+URL:        https://github.com/vmware/likewise-open
 Distribution:   Photon
-Source0: 	%{name}-%{version}.tar.gz
-%define sha1 %{name}=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+Source0:    %{name}-%{version}.tar.gz
+%define sha512  %{name}=8531fb95f8d26c7356e1504ee1ffd8245fa1f84cb4d83151b690f20ec4aeec1e9f9a8eb0145d568688efcfba4433fbec9ee17af112409ab4ad4ceba4520d2ee3
 
 Patch0:         likewise-open-openssl-1.1.1.patch
 Patch1:         likewise-open-openssl-1.1.1-FixV2.patch
@@ -187,7 +187,6 @@ case "$1" in
     2)
     ## Upgrade
 
-
     try_starting_lwregd_svc=true
 
     if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
@@ -311,36 +310,36 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
-*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-8
--   Release bump up to use libxml2 2.9.12-1.
-*   Mon Jul 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-7
--   openssl 3.0.0 compatibility
-*   Mon May 24 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-6
--   Fix aarch64 build errors
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-5
--   GCC-10 support.
-*   Tue Nov 03 2020 Shreyas B. <shreyasb@vmware.com> 6.2.11.13-4
--   Check NULL prior to use of HMAC_CTX_reset() & HMAC_CTX_free()
-*   Mon Aug 17 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3
--   Apply patches to use openssl-1.1.1
-*   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-2
--   Fix compilation issue with gcc-8.4.0
-*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 6.2.11.13-1
--   Added checks to make sure if we are in chroot or not.
--   Check pid of lwsmd when we are not in chroot.
-*   Wed Dec 12 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.13-0
--   Apply patches to source tar ball
-*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.12-2
--   Change domain join to recognize Photon release and use systemctl
-*   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.2.11.12-1
--   Update to version 6.2.11.12 and fix build issues with gcc 7.3
-*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-4
--   Aarch64 support
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
--   Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
-*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
--   Fix compilation issue for glibc-2.26
-*   Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
--   Update to 6.2.11.4.
-*   Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
--   Initial - spec modified for Photon from likewise-open git repo.
+* Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-8
+- Release bump up to use libxml2 2.9.12-1.
+* Mon Jul 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-7
+- openssl 3.0.0 compatibility
+* Mon May 24 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-6
+- Fix aarch64 build errors
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-5
+- GCC-10 support.
+* Tue Nov 03 2020 Shreyas B. <shreyasb@vmware.com> 6.2.11.13-4
+- Check NULL prior to use of HMAC_CTX_reset() & HMAC_CTX_free()
+* Mon Aug 17 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3
+- Apply patches to use openssl-1.1.1
+* Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-2
+- Fix compilation issue with gcc-8.4.0
+* Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 6.2.11.13-1
+- Added checks to make sure if we are in chroot or not.
+- Check pid of lwsmd when we are not in chroot.
+* Wed Dec 12 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.13-0
+- Apply patches to source tar ball
+* Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.12-2
+- Change domain join to recognize Photon release and use systemctl
+* Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.2.11.12-1
+- Update to version 6.2.11.12 and fix build issues with gcc 7.3
+* Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-4
+- Aarch64 support
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
+- Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
+* Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
+- Fix compilation issue for glibc-2.26
+* Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
+- Update to 6.2.11.4.
+* Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
+- Initial - spec modified for Photon from likewise-open git repo.

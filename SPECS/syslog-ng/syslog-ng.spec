@@ -1,15 +1,14 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.29.1
-Release:        4%{?dist}
+Version:        3.37.1
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=96165d2acdb5d166ba8fe43531c8927f2053f58d
+%define sha512    %{name}=beebd89c54a415469dc58630ac1900d632ef351f6a13fad4a95ce7bb1760b16d6cfdcede02225a35e97ebce7dae151c6aa228f3d378463e8b873c4f71ed86ab7
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         fix_autogen_issue.patch
@@ -20,23 +19,23 @@ Requires:       json-glib
 Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
+Requires:       paho-c
 BuildRequires:  which
 BuildRequires:  git
-BuildRequires:  autoconf
-BuildRequires:  autoconf-archive
-BuildRequires:  automake
 BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
-Obsoletes:	eventlog
+BuildRequires:  paho-c-devel
+Obsoletes:      eventlog
 
 %description
 The syslog-ng application is a flexible and highly scalable
@@ -61,8 +60,6 @@ needed to build applications using syslog-ng APIs.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
 autoreconf -i
@@ -70,23 +67,23 @@ sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
-	--disable-dependency-tracking \
-	--prefix=%{_prefix} \
-	--exec-prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--sbindir=%{_sbindir} \
-	--sysconfdir=%{_sysconfdir}/%{name} \
-	--datadir=%{_datadir} \
-	--includedir=%{_includedir} \
-	--libdir=%{_libdir} \
-	--libexecdir=%{_libexecdir} \
-	--localstatedir=%{_localstatedir} \
-	--sharedstatedir=%{_sharedstatedir} \
-	--mandir=%{_mandir} \
-	--infodir=%{_infodir} \
+       --disable-dependency-tracking \
+       --prefix=%{_prefix} \
+       --exec-prefix=%{_prefix} \
+       --bindir=%{_bindir} \
+       --sbindir=%{_sbindir} \
+       --sysconfdir=%{_sysconfdir}/%{name} \
+       --datadir=%{_datadir} \
+       --includedir=%{_includedir} \
+       --libdir=%{_libdir} \
+       --libexecdir=%{_libexecdir} \
+       --localstatedir=%{_localstatedir} \
+       --sharedstatedir=%{_sharedstatedir} \
+       --mandir=%{_mandir} \
+       --infodir=%{_infodir} \
     --disable-silent-rules \
     --enable-systemd \
-    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
+    --with-systemdsystemunitdir=%{_unitdir} \
     --enable-json=yes \
     --with-jsonc=system \
     --disable-java \
@@ -94,36 +91,28 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-python \
     --with-python=3 \
     --with-ivykis=system \
+    --enable-mqtt \
     --disable-static \
     --enable-dynamic-linking \
-    PYTHON=/bin/python3 \
-    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+    PYTHON=%{python3} \
+    PKG_CONFIG_PATH={%_libdir}/pkgconfig/
+GCCVERSION=$(rpm -q gcc | cut -d'-' -f2)
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
-rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
-rm -rf %{buildroot}/%{_infodir}
+rm -rf %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service %{buildroot}/%{_infodir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+install -vdm755 %{buildroot}%{_presetdir}
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
-
-%check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 unittest2
-$easy_install_3 nose
-$easy_install_3 ply
-$easy_install_3 pep8
-make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
@@ -147,20 +136,21 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/syslog-ng/syslog-ng.conf
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
 %{_sysconfdir}/systemd/journald.conf.d/*
-%{_libdir}/systemd/system/syslog-ng.service
-%{_libdir}/systemd/system-preset/50-syslog-ng.preset
+%{_unitdir}/syslog-ng.service
+%{_presetdir}/50-syslog-ng.preset
 %{_bindir}/*
 %{_sbindir}/syslog-ng
 %{_sbindir}/syslog-ng-ctl
 %{_sbindir}/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.29.so.*
-%{_libdir}/libevtlog-3.29.so.*
+%{_libdir}/libsyslog-ng-*.so.*
+%{_libdir}/libevtlog-*.so.*
 %{_libdir}/libloggen_helper*
 %{_libdir}/libloggen_plugin*
 %{_libdir}/libsecret-storage*
 %{_libdir}/%{name}/loggen/*
 %{_libdir}/syslog-ng/lib*.so
 %{_datadir}/syslog-ng/*
+%{_mandir}/*
 
 %files -n python3-syslog-ng
 %defattr(-,root,root,-)
@@ -176,6 +166,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Jun 09 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
+-   Bump version
+*   Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
+-   Bump version, add MQTT support
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.29.1-4
 -   Bump up release for openssl
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.29.1-3

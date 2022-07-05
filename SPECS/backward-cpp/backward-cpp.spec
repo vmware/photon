@@ -1,11 +1,11 @@
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
-Version:        1.5
+Version:        1.6
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/bombela/backward-cpp
 Source0:        %{name}-v%{version}.tar.gz
-%define sha1    backward-cpp=c76754a92d92690be9cf99a35823839da8cced89
+%define sha512  backward-cpp=db0256a54819952ff1d92e05d6ab81fe979d4826ebb6651b6b08c30e7a0091879dfeff33d81f9599462152ce68e61e2c8c42bf039129bc6b28d1e68b1eab039b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,7 +21,7 @@ Backward is a beautiful stack trace pretty printer for C++.
 %global debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup
 
 %build
 mkdir -p build
@@ -31,7 +31,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -vm644 libbackward.so %{buildroot}%{_lib64dir}/
 
 %check
@@ -42,8 +42,8 @@ cmake -DBUILD_SHARED_LIBS=ON CMakeLists.txt
 # exit 0 added explicitly for clean exit from the script else cmake fails
 echo "exit 0" >> builds.sh
 sh builds.sh cmake make
-make
-make test
+make %{?_smp_mflags}
+make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -52,6 +52,8 @@ make test
 %{_lib64dir}/libbackward.so
 
 %changelog
+*    Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6-1
+-    Automatic Version Bump
 *    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5-1
 -    Automatic Version Bump
 *    Tue Nov 20 2018 Sujay G <gsujay@vmware.com> 1.4-3

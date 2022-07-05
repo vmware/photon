@@ -1,14 +1,14 @@
 Summary:	Library that Implements a typesafe callback system for standard C++.
 Name:		libsigc++
 Version:	3.0.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://libsigc.sourceforge.net
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version}.tar.xz
-%define sha1    libsigc=cdf724ac91e4b41fb8b7539b6bd6360cb1bcfe43
+%define sha512  libsigc=b84ae7da6708e02302d08e295d6a566f12fb2c6f0d02f811661a0a541d7969e96a1e920218394dd109b3f362d102f2956aa968539710fa180d7d97e9676fb83d
 BuildRequires:  mm-common
 BuildRequires:  libxslt
 BuildRequires:  doxygen
@@ -20,7 +20,7 @@ It also contains adaptor classes for connection of dissimilar callbacks,
 and has an ease of use unmatched by other C++ callback libraries.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./autogen.sh --prefix=%{_prefix}
@@ -28,7 +28,7 @@ and has an ease of use unmatched by other C++ callback libraries.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} check
@@ -46,6 +46,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.0.4-3
+-   Bump version as a part of libxslt upgrade
 *   Tue Apr 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-2
 -   Fix build errors
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.4-1

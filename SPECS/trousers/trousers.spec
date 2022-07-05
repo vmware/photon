@@ -1,39 +1,39 @@
-Summary:    TCG Software Stack (TSS)
-Name:       trousers
-Version:    0.3.14
-Release:    5%{?dist}
-License:    BSD
-URL:        https://sourceforge.net/projects/trousers/
-Group:      System Environment/Security
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    %{name}-%{version}.tar.gz
-%define sha1 trousers=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
+Summary:        TCG Software Stack (TSS)
+Name:           trousers
+Version:        0.3.15
+Release:        1%{?dist}
+License:        BSD
+URL:            https://sourceforge.net/projects/trousers/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha512  trousers=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
+Requires:       libtspi = %{version}-%{release}
 
-Patch0:     tcsd_fixes.patch
-Patch1:     trousers-0.3.14-fno-common.patch
-
-Requires:   libtspi = %{version}-%{release}
 %description
 Trousers is an open-source TCG Software Stack (TSS), released under
 the BSD License. Trousers aims to be compliant with the
 1.1b and 1.2 TSS specifications available from the Trusted Computing
 
-%package devel
-Summary:    The libraries and header files needed for TSS development.
-Requires:   libtspi = %{version}-%{release}
-%description devel
+%package        devel
+Summary:        The libraries and header files needed for TSS development.
+Requires:       libtspi = %{version}-%{release}
+
+%description    devel
 The libraries and header files needed for TSS development.
 
-%package -n libtspi
-Summary:    TSPI library
+%package -n     libtspi
+Summary:        TSPI library
+
 %description -n libtspi
 TSPI library
 
 %prep
-%autosetup -p1 -c %{name}-%{version}
+%autosetup
 
 %build
+sh bootstrap.sh
 %configure \
     --disable-static
 
@@ -92,6 +92,8 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 0.3.15-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.3.14-5
 -   Bump up release for openssl
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-4

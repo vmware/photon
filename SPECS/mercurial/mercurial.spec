@@ -2,21 +2,19 @@
 
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        5.8
+Version:        6.1.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
-%define sha1    %{name}=7ce13257550f9d22d483b42420ecf84b1b9ac3f4
-
+%define sha512  %{name}=644c65b2eadf3d4ea4b7c52188f548d86a584d0aa85615d872b05bf0eeee6f65d014934dda0e04c6820d0cf347f491386385e67c98839ada7b2b4038a1190d16
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
-
+BuildRequires:  python3-pip
 Requires:       python3
 
 %description
@@ -24,7 +22,7 @@ Mercurial is a distributed source control management tool similar to Git and Baz
 Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 ln -sf /usr/bin/python3 /usr/bin/python
@@ -61,6 +59,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1.1-1
+- Automatic Version Bump
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.8-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.7.1-1

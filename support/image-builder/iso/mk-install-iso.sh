@@ -1,21 +1,13 @@
-#! /bin/bash
-#################################################
-#       Title:  mk-install-iso                  #
-#        Date:  2014-11-26                      #
-#     Version:  1.0                             #
-#      Author:  dthaluru@vmware.com             #
-#     Options:                                  #
-#################################################
-#   Overview
-#       Generates a photon iso
-#   End
-#
+#!/bin/bash
 
 set -e
 set -x
 
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
+
+# need to be changed when there is a python version change
+PY_VER="3.9"
 
 WORKINGDIR=$1
 shift 1
@@ -33,8 +25,7 @@ PACKAGES=$8
 PHOTON_DOCKER_IMAGE=$9
 
 rm -rf $WORKINGDIR/*
-mkdir -p $INITRD
-chmod 755 $INITRD
+mkdir -m 755 -p $INITRD
 
 tar -xf $SCRIPT_PATH/open_source_license.tar.gz -C $WORKINGDIR/
 cp $STAGE_PATH/NOTICE-Apachev2 $WORKINGDIR/
@@ -50,6 +41,8 @@ enabled=1
 skip_if_unavailable=True
 EOF
 
+# we need to remove repodir & use --setopt=reposdir option once we use
+# tdnf-3.2.x in Photon-3.0 docker images
 cat > ${WORKINGDIR}/tdnf.conf <<EOF
 [main]
 gpgcheck=0
@@ -60,17 +53,25 @@ EOF
 
 rpm --root $INITRD --initdb --dbpath /var/lib/rpm
 
-TDNF_CMD="tdnf install -y --releasever $PHOTON_RELEASE_VER --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
+TDNF_CMD="tdnf install -qy \
+          --releasever $PHOTON_RELEASE_VER \
+          --installroot $INITRD \
+          --rpmverbosity 10 \
+          -c ${WORKINGDIR}/tdnf.conf \
+          ${PACKAGES}"
 
 # run host's tdnf, if fails - try one from photon:latest docker image
-$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
+$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 
 # 3. finalize initrd system (mk-finalize-system.sh)
 chroot ${INITRD} /usr/sbin/pwconv
 chroot ${INITRD} /usr/sbin/grpconv
-chroot ${INITRD} /bin/systemd-machine-id-setup
+
+# Workaround Failed to generate randomized machine ID: Function not implemented
+chroot ${INITRD} /bin/systemd-machine-id-setup || chroot ${INITRD} date -Ins | md5sum | cut -f1 -d' ' > /etc/machine-id
+
 echo "LANG=en_US.UTF-8" > $INITRD/etc/locale.conf
 echo "photon-installer" > $INITRD/etc/hostname
 # locales/en_GB should be moved to glibc main package to make it working
@@ -89,10 +90,10 @@ cp -r $SCRIPT_PATH/BUILD_DVD/isolinux $SCRIPT_PATH/BUILD_DVD/boot ${WORKINGDIR}/
 # efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
 
 EFI_IMAGE=boot/grub2/efiboot.img
-EFI_FOLDER=`readlink -f ${STAGE_PATH}/efiboot`
+EFI_FOLDER=$(readlink -f ${STAGE_PATH}/efiboot)
 dd if=/dev/zero of=${WORKINGDIR}/${EFI_IMAGE} bs=3K count=1024
 mkdosfs ${WORKINGDIR}/${EFI_IMAGE}
-mkdir $EFI_FOLDER
+mkdir -p $EFI_FOLDER
 mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
 mv ${WORKINGDIR}/boot/efi/EFI $EFI_FOLDER/
 ls -lR $EFI_FOLDER
@@ -183,7 +184,7 @@ echo ${RPMS_PATH}
 #cp -r ${RPMS_PATH} ${WORKINGDIR}/
 (
 cd ${RPMS_PATH}
-mkdir ${WORKINGDIR}/RPMS
+mkdir -p ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
     cp --parent $rpm_name ${WORKINGDIR}/RPMS/
     chmod 644 ${WORKINGDIR}/RPMS/$rpm_name
@@ -204,7 +205,7 @@ createrepo --database ${WORKINGDIR}/RPMS
 repodatadir=${WORKINGDIR}/RPMS/repodata
 if [ -d $repodatadir ]; then
     pushd $repodatadir
-    metaDataFile=`find -type f -name "*primary.xml.gz"`
+    metaDataFile=$(find -type f -name "*primary.xml.gz")
     ln -sfv $metaDataFile primary.xml.gz
     popd
 fi
@@ -215,7 +216,8 @@ rm -rf ${INITRD}/LOGS
 find ${INITRD}/usr/lib/ -maxdepth 1 -mindepth 1 -type f | xargs -i sh -c "grep ELF {} >/dev/null 2>&1 && strip {} || :"
 
 rm -rf ${INITRD}/home/*         \
-        ${INITRD}/var/lib/rpm   \
+        ${INITRD}/var/lib/rpm*  \
+        ${INITRD}/var/lib/.rpm* \
         ${INITRD}/cache         \
         ${INITRD}/boot          \
         ${INITRD}/usr/include   \
@@ -238,13 +240,13 @@ rm -rf ${INITRD}/home/*         \
         ${INITRD}/usr/bin/systemd-nspawn        \
         ${INITRD}/usr/bin/systemd-inhibit       \
         ${INITRD}/usr/bin/systemd-studio-bridge \
-        ${INITRD}/usr/lib/python2.7/lib2to3     \
-        ${INITRD}/usr/lib/python2.7/lib-tk      \
-        ${INITRD}/usr/lib/python2.7/ensurepip   \
-        ${INITRD}/usr/lib/python2.7/distutils   \
-        ${INITRD}/usr/lib/python2.7/pydoc_data  \
-        ${INITRD}/usr/lib/python2.7/idlelib     \
-        ${INITRD}/usr/lib/python2.7/unittest    \
+        ${INITRD}/usr/lib/python${PY_VER}/lib2to3     \
+        ${INITRD}/usr/lib/python${PY_VER}/lib-tk      \
+        ${INITRD}/usr/lib/python${PY_VER}/ensurepip   \
+        ${INITRD}/usr/lib/python${PY_VER}/distutils   \
+        ${INITRD}/usr/lib/python${PY_VER}/pydoc_data  \
+        ${INITRD}/usr/lib/python${PY_VER}/idlelib     \
+        ${INITRD}/usr/lib/python${PY_VER}/unittest    \
         ${INITRD}/usr/lib/librpmbuild.so*       \
         ${INITRD}/usr/lib/libdb_cxx*            \
         ${INITRD}/usr/lib/libnss_compat*        \

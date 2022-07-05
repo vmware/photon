@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.27
-Release:        2%{?dist}
+Version:        8.0.29
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=7e466bfcdc78bb019fd23cb7b7ae76c8a5f4f816
+%define         sha512 mysql-boost=fd67f306ef8be60b4010e34e8ccc2c26577256200c183d71149743eeb5c038fd72adde107bfee34abd7df318902db6f94646a482f9f29a8396a6d57014b81b8a
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -17,6 +17,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  protobuf-devel
 Requires:       protobuf
+Requires:       %{name}-icu-data-files = %{version}-%{release}
 Patch0:         0001-mysql-compatibility-with-openssl-3.0.patch
 
 %description
@@ -26,8 +27,14 @@ MySQL is a free, widely used SQL engine. It can be used as a fast database as we
 Summary:        Development headers for mysql
 Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 Development headers for developing applications linking to maridb
+
+%package        icu-data-files
+Summary:        MySQL packaging of ICU data files
+
+%description    icu-data-files
+This package contains ICU data files needed by MySQL regular expressions.
 
 %prep
 %autosetup -p1 %{name}-boost-%{version}
@@ -35,7 +42,7 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_73_0 \
+      -DWITH_BOOST=boost/boost_1_77_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -57,7 +64,7 @@ make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-%doc LICENSE  README router/LICENSE.router router/README.router
+%doc LICENSE README router/LICENSE.router router/README.router
 %{_libdir}/plugin/*
 %{_libdir}/*.so.*
 %{_libdir}/mysqlrouter/*.so
@@ -78,7 +85,18 @@ make test %{?_smp_mflags}
 %{_includedir}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
 
+%files icu-data-files
+%defattr(-, root, root, -)
+%doc LICENSE README
+%{_libdir}/private/icudt69l
+%{_libdir}/private/icudt69l/unames.icu
+%{_libdir}/private/icudt69l/brkitr
+
 %changelog
+*   Mon May 02 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.29-1
+-   Upgrade version to 8.0.29 to fix bunch of CVE's
+*   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.28-1
+-   Upgrade version to 8.0.28 to fix bunch of CVE's
 *   Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.27-2
 -   openssl 3.0.0 compatibility
 *   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1

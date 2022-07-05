@@ -1,18 +1,21 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv3+
-URL:            http://www.gnu.org/software/guile/
-Source0:        ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
-%define sha1    guile=4e4a5b1d1ccfaee887dc4ff63c088e9452715ab2
+URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://ftp.gnu.org/gnu/guile/%{name}-%{version}.tar.gz
+%define sha512  %{name}=ad11885ffeb7655ef6c8543e67233992dc37bdcf91ed82188e6a144169c6b7d4e31cf7a6d01509c573d00904cb002719b851f71cdf1359a86de401daf613d773
+
 BuildRequires:  libltdl-devel
 BuildRequires:  libunistring-devel
 BuildRequires:  gc-devel
 BuildRequires:  libffi-devel
+
 Requires:       libltdl
 Requires:       libunistring
 Requires:       gc
@@ -37,21 +40,25 @@ The package contains libraries and header files for
 developing applications that use guile.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-static
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-rm %{buildroot}%{_libdir}/*.scm
-rm %{buildroot}%{_infodir}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+rm %{buildroot}%{_libdir}/*.scm \
+   %{buildroot}%{_infodir}/*
 
 %check
-make  %{?_smp_mflags} check
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%if 0%{?with_check}
+make %{?_smp_mflags} check
+%endif
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -71,17 +78,19 @@ make  %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
--       Automatic Version Bump
-*       Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.13-3
--       Bump to build with latest libffi
-*       Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
--       Adding glibc-iconv to Requires section
-*       Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
--       Bumped to latest version 2.0.13 to handle CVE-2016-8606
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
--	GA - Bump release of all rpms
-*	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
--	Initial build. First version
+* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-2
+- Bump version as a part of libffi upgrade
+* Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.13-3
+- Bump to build with latest libffi
+* Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
+- Adding glibc-iconv to Requires section
+* Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
+- Bumped to latest version 2.0.13 to handle CVE-2016-8606
+* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
+- GA - Bump release of all rpms
+* Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
+- Initial build. First version

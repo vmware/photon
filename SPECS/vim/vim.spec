@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3428
-Release:        3%{?dist}
+Version:        8.2.5037
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=4711feb7d73d6c4ca159e6f8c7d275e5449e15aa
+%define sha512  %{name}=e58354c8bbaddb8fb9654d796471c830ac6172cec8015082a9a06b78b8034d028e4fdf3b24de9954412c08f0631747f997eadc4b0fc9aa178e65ebcd5c68a4c9
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -75,6 +75,7 @@ fi
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/vim*/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/vim*/colors/desert.vim
+%exclude %{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/compiler/*
 %{_datarootdir}/vim/vim*/delmenu.vim
 %{_datarootdir}/vim/vim*/evim.vim
@@ -96,6 +97,7 @@ fi
 %{_datarootdir}/vim/vim*/vimrc_example.vim
 %{_datarootdir}/vim/vim*/print/*
 %{_datarootdir}/vim/vim*/scripts.vim
+%{_datarootdir}/vim/%{maj_ver}/import/dist/vimhelp.vim
 %{_datarootdir}/vim/vim*/spell/*
 %{_datarootdir}/vim/vim*/syntax/*
 %exclude %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -151,8 +153,8 @@ fi
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/vimrc
 %{_datarootdir}/vim/vim*/syntax/syntax.vim
-%{_datarootdir}/vim/vim*/rgb.txt
 %{_datarootdir}/vim/vim*/colors/desert.vim
+%{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/defaults.vim
 %{_datarootdir}/vim/vim*/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -167,6 +169,18 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Jun 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5037-1
+- Update to 8.2.5037 to fix CVE-2022-1927
+* Fri Jun 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5024-1
+- Update to 8.2.5024 to fix several CVEs
+* Wed May 18 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4925-1
+- Update to 8.2.4925 to fix several CVEs
+* Tue Apr 26 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4827-1
+- Update to 8.2.4827
+* Wed Apr 06 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4647-1
+- Update to 8.2.4647
+* Tue Feb 22 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4436-1
+- Update to 8.2.4436
 * Thu Dec 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-3
 - Enable skip_defaults_vim in vimrc
 * Tue Nov 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-2

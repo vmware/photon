@@ -1,7 +1,18 @@
-diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/admin/usermanage.te selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/admin/usermanage.te
---- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/admin/usermanage.te	2020-10-06 10:38:22.928488793 +0530
-+++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/admin/usermanage.te	2020-10-06 10:46:10.840511258 +0530
-@@ -330,6 +330,8 @@ allow passwd_t self:netlink_selinux_sock
+From e3406f832df6d545cb3ea72b01e6ea4864ee18ac Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:13:41 +0530
+Subject: [PATCH 01/20] admin_usermanage
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/admin/usermanage.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/admin/usermanage.te b/policy/modules/admin/usermanage.te
+index 6640310..4d1e878 100644
+--- a/policy/modules/admin/usermanage.te
++++ b/policy/modules/admin/usermanage.te
+@@ -331,6 +331,8 @@ allow passwd_t self:netlink_selinux_socket create_socket_perms;
  
  allow passwd_t crack_db_t:dir list_dir_perms;
  read_files_pattern(passwd_t, crack_db_t, crack_db_t)
@@ -9,4 +20,7 @@ diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modul
 +read_lnk_files_pattern(passwd_t, crack_db_t, crack_db_t)
  
  kernel_read_kernel_sysctls(passwd_t)
- kernel_getattr_proc(passwd_t)
+ 
+-- 
+2.35.1
+

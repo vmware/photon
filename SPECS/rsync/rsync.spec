@@ -1,17 +1,14 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.2.3
-Release:        3%{?dist}
+Version:        3.2.4
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha1    rsync=00823f43901e7da39f3f0daf20ec9efae47e959e
+%define sha512  rsync=96318e2754fbddf84d16df671c721e577766969dfa415925c4dc1be2e4e60a51246623747a8aec0c6e9c0824e6aa7335235ccd07f3d6fd901f8cf28e2d6e91b6
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Patch0:         0001-rsync-ssl-Verify-the-hostname-in-the-certificate-whe.patch
-
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
 BuildRequires:  lz4-devel
@@ -20,7 +17,11 @@ Requires:       zlib
 Requires:       systemd
 
 %description
-Rsync is a fast and extraordinarily versatile file copying tool. It can copy locally, to/from another host over any remote shell, or to/from a remote rsync daemon. It offers a large number of options that control every aspect of its behavior and permit very flexible specification of the set of files to be copied. It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination. Rsync is widely used for backups and mirroring and as an improved copy command for everyday use.
+Rsync is a fast and extraordinarily versatile file copying tool.
+It can copy locally, to/from another host over any remote shell, or to/from a remote rsync daemon.
+It offers a large number of options that control every aspect of its behavior and permit very flexible specification of the set of files to be copied.
+It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination.
+Rsync is widely used for backups and mirroring and as an improved copy command for everyday use.
 
 %prep
 %autosetup
@@ -54,6 +55,7 @@ make %{?_smp_mflags} check
 %post
 /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %exclude %{_libdir}/debug
@@ -63,7 +65,10 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
+
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.2.3-3
 -   Bump up release for openssl
 *   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.2.3-2

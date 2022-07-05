@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.11.4
+Version:         1.13.4
 Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
@@ -9,7 +9,7 @@ Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{na
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
-%define sha1 elixir=751d81a636e9dda05476c10c42bff220cd8d5895
+%define sha512   elixir=cd3a28cd227bf60f09500563b7ad4700b2688e0361f975268d5fa81b530aee80ed4f8640335bf08a8c544a2f5d79dbf96c97f281bd3bf4582466a73a9d2edbec
 BuildRequires:   git
 BuildRequires:   sed
 BuildRequires:   erlang
@@ -23,15 +23,15 @@ As Erlang, it is a functional language built to support distributed,
 fault-tolerant, non-stop applications with hot code swapping.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup
 
 %build
 export LANG="en_US.UTF-8"
-make compile
+make compile %{?_smp_mflags}
 
 %check
 export LANG="en_US.UTF-8"
-make test
+make test %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/%{_datadir}/%{name}/%{version}
@@ -49,6 +49,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.13.4-1
+-   Automatic Version Bump
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.11.4-1
 -   Automatic Version Bump
 *   Mon Dec 21 2020 Sujay G <gsujay@vmware.com> 1.10.4-3

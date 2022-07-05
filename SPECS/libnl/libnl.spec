@@ -1,20 +1,20 @@
-Summary:      Netlink Protocol Library Suite
-Name:         libnl
-Version:      3.5.0
-Release:      2%{?dist}
-License:      LGPLv2+
-Group:        System Environment/Libraries
-URL:          https://github.com/thom311/libnl
-Source0:      https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
-%define   sha1 libnl=54c476a3103add175a6a055fcf45c0a29d2c0948
+Summary:       Netlink Protocol Library Suite
+Name:          libnl
+Version:       3.6.0
+Release:       1%{?dist}
+License:       LGPLv2+
+Group:         System Environment/Libraries
+URL:           https://github.com/thom311/libnl
+Source0:       https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
+%define sha512 libnl=7d1190ce94f43f5b18b1f7909221ca034d4ea5c8ed5735dbd27224d03e7f95d3c4e8ccdb611e33b58007729a21bfc0e23adc8758b112c712355664d87a81ce1b
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-BuildRequires:  glib-devel
-BuildRequires:  dbus-devel
+BuildRequires: glib-devel
+BuildRequires: dbus-devel
 
-Requires:   glib
-Requires:   dbus
+Requires:      glib
+Requires:      dbus
 
 %description
 The libnl suite is a collection of libraries providing APIs to netlink protocol
@@ -23,22 +23,22 @@ kernel and user space processes. It was designed to be a more flexible successor
 to ioctl to provide mainly networking related kernel configuration and monitoring
 interfaces.
 
-%package devel
-Summary:    Libraries and headers for the libnl
-Requires:   libnl
+%package       devel
+Summary:       Libraries and headers for the libnl
+Requires:      libnl
 
-%description devel
+%description   devel
 Headers and static libraries for the libnl
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %check
 make %{?_smp_mflags} check
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1
+- Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 3.5.0-2
 - Use autosetup and ldconfig scriptlets
 * Wed May 06 2020 Susant Sahani <ssahani@vmware.com> 3.5.0-1

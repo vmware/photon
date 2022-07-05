@@ -1,7 +1,18 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te	2020-07-31 14:06:22.844347051 +0530
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te	2020-07-31 14:10:42.272360109 +0530
-@@ -186,6 +186,12 @@
+From 16b57c6f7550cdd24668cf7efff3092306d93198 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:40:42 +0530
+Subject: [PATCH 12/20] system fstool
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/fstools.te | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/policy/modules/system/fstools.te b/policy/modules/system/fstools.te
+index 0085819..14e20a4 100644
+--- a/policy/modules/system/fstools.te
++++ b/policy/modules/system/fstools.te
+@@ -185,6 +185,12 @@ ifdef(`distro_redhat',`
  	')
  ')
  
@@ -14,3 +25,6 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  optional_policy(`
  	amanda_rw_dumpdates_files(fsadm_t)
  	amanda_append_log_files(fsadm_t)
+-- 
+2.35.1
+

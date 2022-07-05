@@ -1,33 +1,33 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-Summary:     Git extension for versioning large files
-Name:        git-lfs
-Version:     2.13.3
-Release:     2%{?dist}
-URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
-Source0:     %{name}-%{version}.tar.gz
-License:     MIT
-Group:       System Environment/Programming
-%define sha1 %{name}=6f1dec9f66fe3acab25aedb2b2628cbe88ed53fd
-Vendor:      VMware, Inc.
+Summary:       Git extension for versioning large files
+Name:          git-lfs
+Version:       3.1.4
+Release:       1%{?dist}
+URL:           https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
+Source0:       %{name}-%{version}.tar.gz
+License:       MIT
+Group:         System Environment/Programming
+%define sha512 %{name}=ff62e19532ec09d71e241ffb9b6a0ed91a76cbe1fe32a88a6e3679e15cf97b09bcfdb5fc1aa0c1a9984bc888c88be87940bd7044d68102eadf93cb68dc5e9c1c
+Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildRequires: go
 BuildRequires: which
 BuildRequires: rubygem-ronn
 BuildRequires: tar
 BuildRequires: git
-Requires: git
+Requires:      git
 
 %description
 Git LFS is a command line extension and specification for managing large files with Git
 
 %prep
-%setup -q
+%autosetup
 
 %build
 make %{?_smp_mflags}
 export PATH=$PATH:%{gemdir}/bin
-make man
+make man %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.4-1
+-   Automatic Version Bump
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.13.3-2
 -   Bump up version to compile with new go
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.3-1
@@ -62,5 +64,5 @@ rm -rf %{buildroot}
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-2
 -   Bump up version to compile with new go
-* Fri Sep 18 2020 Him Kalyan Bordoloi <bordoloih@vmware.com>  2.12.0-1
-- Initial release.
+*   Fri Sep 18 2020 Him Kalyan Bordoloi <bordoloih@vmware.com>  2.12.0-1
+-   Initial release.

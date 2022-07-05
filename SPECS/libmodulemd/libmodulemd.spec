@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib    ;print(get_python_lib())")}
-
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.13.0
@@ -9,6 +7,7 @@ URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.xz
 %define sha1    %{name}-%{version}=e83886f374922ecf6fa728c6c588d697d0748b99
 
@@ -24,6 +23,7 @@ BuildRequires:  gobject-introspection-devel
 BuildRequires:  python3-pygobject
 BuildRequires:  python3-pycodestyle
 BuildRequires:  python3-autopep8
+BuildRequires:  python3-macros
 BuildRequires:  gtk-doc
 BuildRequires:  libyaml-devel
 BuildRequires:  file-devel
@@ -44,8 +44,10 @@ It contains the libraries and header files.
 %autosetup -p1 -n modulemd-%{version}
 
 %build
-%meson -Ddeveloper_build=false -Dwith_py2=false \
-      -Dwith_manpages=disabled -Dwith_docs=false
+%meson -Dwith_py2=false \
+      -Dwith_manpages=disabled \
+      -Dwith_docs=false
+
 %meson_build
 
 %install

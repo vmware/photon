@@ -1,5 +1,5 @@
 Name:           cloud-init
-Version:        21.4
+Version:        22.2
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -9,61 +9,62 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 %{name}=3f32b123af1fdcf07ce99db6a1ace5094708c1f2
+%define sha512  %{name}=07fec2f1d6eab20a1161672bb339a0c6b2826540bcb03936f95458b179fcb1b3142773c9a4038fe02b30bb05a5ca48a4153b6b0f59015b43bd6c6602832f9d6f
 
-Patch0:     cloud-init-azureds.patch
-Patch1:     ds-identify.patch
-Patch2:     ds-vmware-photon.patch
-Patch3:     cloud-cfg.patch
+Patch0: cloud-init-azureds.patch
+Patch1: ds-identify.patch
+Patch2: ds-vmware-photon.patch
+Patch3: cloud-cfg.patch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  systemd
-BuildRequires:  dbus
-BuildRequires:  python3-ipaddr
-BuildRequires:  iproute2
-BuildRequires:  automake
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-six
-BuildRequires:  python3-requests
-BuildRequires:  python3-PyYAML
-BuildRequires:  python3-urllib3
-BuildRequires:  python3-chardet
-BuildRequires:  python3-certifi
-BuildRequires:  python3-idna
-BuildRequires:  python3-jinja2
-BuildRequires:  systemd-rpm-macros
-BuildRequires:  python3-macros
+BuildRequires: python3
+BuildRequires: python3-libs
+BuildRequires: systemd
+BuildRequires: dbus
+BuildRequires: python3-ipaddr
+BuildRequires: iproute2
+BuildRequires: automake
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: python3-six
+BuildRequires: python3-requests
+BuildRequires: python3-PyYAML
+BuildRequires: python3-urllib3
+BuildRequires: python3-chardet
+BuildRequires: python3-certifi
+BuildRequires: python3-idna
+BuildRequires: python3-jinja2
+BuildRequires: systemd-rpm-macros
+BuildRequires: python3-macros
 
-%if 0%{?with_check:1}
-BuildRequires:  python3-pip
-BuildRequires:  python3-configobj
-BuildRequires:  python3-jsonpatch
-BuildRequires:  python3-pytest
+%if 0%{?with_check}
+BuildRequires: python3-pip
+BuildRequires: python3-configobj
+BuildRequires: python3-jsonpatch
+BuildRequires: python3-pytest
+BuildRequires: python3-jsonschema
 %endif
 
-Requires:   iproute2
-Requires:   systemd
-Requires:   (net-tools or toybox)
-Requires:   python3
-Requires:   python3-libs
-Requires:   python3-configobj
-Requires:   python3-prettytable
-Requires:   python3-requests
-Requires:   python3-PyYAML
-Requires:   python3-jsonpatch
-Requires:   python3-oauthlib
-Requires:   python3-jinja2
-Requires:   python3-markupsafe
-Requires:   python3-six
-Requires:   python3-setuptools
-Requires:   python3-xml
-Requires:   python3-jsonschema
-Requires:   python3-netifaces
-Requires:   dhcp-client
+Requires: iproute2
+Requires: systemd
+Requires: (net-tools or toybox)
+Requires: python3
+Requires: python3-libs
+Requires: python3-configobj
+Requires: python3-prettytable
+Requires: python3-requests
+Requires: python3-PyYAML
+Requires: python3-jsonpatch
+Requires: python3-oauthlib
+Requires: python3-jinja2
+Requires: python3-markupsafe
+Requires: python3-six
+Requires: python3-setuptools
+Requires: python3-xml
+Requires: python3-jsonschema
+Requires: python3-netifaces
+Requires: dhcp-client
 
-BuildArch:  noarch
+BuildArch: noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -71,6 +72,7 @@ need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
 %prep
+
 %autosetup -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
@@ -82,12 +84,12 @@ find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+con
 rm -rf %{buildroot}
 %py3_install -- --init-system=systemd
 
-python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+python3 tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
 %if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
-sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
@@ -95,7 +97,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/c
 mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 touch vd ud
 
 mkdir -p /usr/share/ca-certificates/
@@ -105,7 +107,7 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 conf_file='/etc/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
-%define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces
+%define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces responses pytest-mock
 
 pip3 install --upgrade %test_pkgs
 make check %{?_smp_mflags}
@@ -126,6 +128,7 @@ rm -rf %{buildroot}
 %systemd_postun %cl_services
 
 %files
+%defattr(-,root,root)
 %{_bindir}/*
 %license LICENSE
 %{python3_sitelib}/*
@@ -146,6 +149,10 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu May 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.2-1
+- Upgrade to v22.2
+* Thu Feb 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.1-1
+- Upgrade to v22.1
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.4-1
 - Upgrade to version 21.4
 * Wed Oct 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-2

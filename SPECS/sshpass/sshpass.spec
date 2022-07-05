@@ -1,30 +1,31 @@
-Summary:	Noninteractive ssh password provider 
-Name:		sshpass
-Version:	1.06
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://sourceforge.net/projects/sshpass/
-Source0:	http://downloads.sourceforge.net/project/sshpass/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 sshpass=633652e2160819ac7c7e1a351327027d2faa4fd6
-Group:		Applications/Networking
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Noninteractive ssh password provider
+Name:           sshpass
+Version:        1.09
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://sourceforge.net/projects/sshpass/
+Source0:        http://downloads.sourceforge.net/project/sshpass/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512  sshpass=9b4ba83ca4d34364e7c43e29f98493dc3d595d24dc68c2fe3c244600d92a0f8bc0a6a7f8f43d64c0b4d714eb196516f297d904fa66035a76dae89a3726c0f2ff
+Group:          Applications/Networking
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Requires:       openssh
 
 %description
-sshpass is a utility designed for running ssh using the mode referred to as "keyboard-interactive" password authentication, but in non-interactive mode. 
+sshpass is a utility designed for running ssh using the mode referred to as "keyboard-interactive" password authentication, but in non-interactive mode.
+
 %prep
-%setup -q
+%autosetup
 
 %build
-./configure --prefix=%{_prefix} 
+%configure
 make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make prefix=%{_prefix}	DESTDIR=%{buildroot} install
+make prefix=%{_prefix} %{?_smp_mflags} DESTDIR=%{buildroot} install
 
-%clean 
+%clean
 rm -rf %{buildroot}/*
 
 %files
@@ -34,13 +35,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1
 
 %changelog
+*       Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.09-1
+-       Automatic Version Bump
 *       Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.06-1
 -       Update to version 1.06
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.05-4
+*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.05-4
 -       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.05-3
--	GA - Bump release of all rpms
-*	Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 1.05-2
--	Add requires for openssh
-*	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.05-1
--	Initial version
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.05-3
+-       GA - Bump release of all rpms
+*       Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 1.05-2
+-       Add requires for openssh
+*       Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.05-1
+-       Initial version

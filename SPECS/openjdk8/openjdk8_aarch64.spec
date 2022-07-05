@@ -1,21 +1,21 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define _jdk_update 282
-%define _jdk_build b08
+%define _jdk_update 312
+%define _jdk_build b07
 %define _repo_ver aarch64-shenandoah-jdk8u%{_jdk_update}-%{_jdk_build}
 %define _url_src https://github.com/AdoptOpenJDK/openjdk-aarch64-jdk8u/
 
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.282
+Version:	1.8.0.312
 Release:	1%{?dist}
 License:	GNU GPL
-URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
+URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u-shenandoah/
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	%{_url_src}/archive/%{_repo_ver}.tar.gz
-%define sha1 %{_repo_ver}=4975feac2ca84d74ecd9f831c19208e4e5f780e7
+%define sha512  %{_repo_ver}=30d2e0b9014da99b35fd4f1ee00db04032e6772e2feff3ba0180095a3c68f15e60b4da9393f34c02d9a16d482db2a5cc555e61a59996269c1c4dafb94de63854
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:		sysctl-fix.patch
@@ -47,7 +47,6 @@ Requires:	libstdc++
 %description	-n openjre8
 It contains the libraries files for Java runtime environment
 
-
 %package	sample
 Summary:	Sample java applications.
 Group:          Development/Languages/Java
@@ -73,10 +72,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-aarch64-jdk8u-%{_repo_ver}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n openjdk-aarch64-jdk8u-%{_repo_ver}
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
@@ -249,6 +245,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
+-   Upgrade to version 1.8.0.312 (aarch64-shenandoah-jdk8u312-b07)
 *   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.282-1
 -   Version update
 *   Thu Oct 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.181-2

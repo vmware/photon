@@ -1,14 +1,14 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.3.2
-Release:    1%{?dist}
+Version:    2.3.3
+Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha1 talloc=3f2ce471d68d0806dd0910cbe97d9fea2f967288
+%define sha512 talloc=1e4b90769b9be72421d76bf9149fd0736f43d034b1573ab2dfb5cd613b4fb3fdf67d575f81789851787e1cbbc7353cdfc114cefbccb15fc0f39e222f40aff65f
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
 BuildRequires: python3-devel
@@ -42,7 +42,7 @@ Requires: python3-talloc = %{version}-%{release}
 Development libraries for python-talloc
 
 %prep
-%setup -q -n talloc-%{version}
+%autosetup -n talloc-%{version}
 
 %build
 %configure --bundled-libraries=NONE \
@@ -51,11 +51,11 @@ Development libraries for python-talloc
 make %{?_smp_mflags} V=1
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -96,6 +96,10 @@ make check
 %endif
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-2
+-   Bump version as a part of libxslt upgrade
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.3-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
 -   Automatic Version Bump
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4
@@ -114,4 +118,4 @@ make check
 *   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2
 -   Copy libraries and add a patch for path regarding %check
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 2.1.9-1
--   Initial packaging
+-   Initial packaging.

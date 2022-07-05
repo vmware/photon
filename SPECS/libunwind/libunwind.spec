@@ -1,11 +1,11 @@
 Summary:        Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:           libunwind
-Version:        1.5.0
+Version:        1.6.2
 Release:        1%{?dist}
 License:        X11
 URL:            http://www.nongnu.org/libunwind/
 Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
-%define sha1    libunwind=13a77366ca15155b4f0c3535ce235164d42dca27
+%define sha512    libunwind=1d17dfb14f99a894a6cda256caf9ec481c14068aaf8f3a85fa3befa7c7cca7fca0f544a91a3a7c2f2fc55bab19b06a67ca79f55ac9081151d94478c7f611f8f7
 Group:          Utilities/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,7 +26,7 @@ Requires:       %{name} = %{version}-%{release}
 This contains development tools and libraries for libunwind.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -34,7 +34,7 @@ This contains development tools and libraries for libunwind.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
 
 %files
@@ -48,6 +48,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1
 -   Automatic Version Bump
 *   Wed Jan 13 2021 Alexey Makhalov <amakhalov@vmware.com> 1.4.0-2

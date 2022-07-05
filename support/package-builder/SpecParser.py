@@ -281,7 +281,7 @@ class SpecParser(object):
         return False
 
     def _isChecksum(self, line):
-        if re.search('^%define *sha1', line, flags=re.IGNORECASE):
+        if re.search('^%define *sha*=*', line, flags=re.IGNORECASE):
             return True
         return False
 
@@ -478,13 +478,13 @@ class SpecParser(object):
             if sourceName.startswith(value[0]):
                 matchedSources.append(sourceName)
         if not matchedSources:
-            print("Error: Can not find match for sha1 " + value[0])
+            print("Error: Can not find match for checksum " + value[0])
             return False
         if len(matchedSources) > 1:
             print("Error: Too many matched Sources:" +
-                  ' '.join(matchedSources) + " for sha1 " + value[0])
+                  ' '.join(matchedSources) + " for checksum " + value[0])
             return False
-        pkg.checksums[sourceName] = value[1]
+        pkg.checksums[sourceName] = {words[1]: value[1]}
         return True
 
     def _isConditionalCheckMacro(self, line):

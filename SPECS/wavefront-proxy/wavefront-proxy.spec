@@ -1,11 +1,11 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
-Version:          9.2
+Version:          11.0
 Release:          1%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha1      wavefront=baec4ae6899fddf97ed855b93cfe62e2e6441057
+%define sha512    wavefront=b3ff90ee313e08db8108d541570bcbfcb2327b4558fe6ceb0a8655a1cfd669873cc66c38d50eb83cab6cae8bb3e4622b5cb91fe5bd4132308faf7e471d6e77fb
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -25,7 +25,7 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%setup -n wavefront-proxy-wavefront-%{version}
+%autosetup -n wavefront-proxy-proxy-%{version}
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -42,14 +42,13 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
-sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
 %if "%{_arch}" == "aarch64"
-mvn install -DskipTests
+mvn -f proxy clean install -DskipTests
 %else
-mvn install -DskipTests
+mvn -f proxy clean install -DskipTests
 %endif
 
 %install
@@ -61,7 +60,7 @@ install -m 644 -D pkg/etc/wavefront/wavefront-proxy/wavefront.conf.default %{bui
 install -m 755 -D pkg/usr/share/doc/wavefront-proxy/copyright %{buildroot}/%{_docdir}/%name/copyright
 install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D wavefront-proxy.service %{buildroot}/%{_unitdir}/wavefront-proxy.service
-install -m 755 -D proxy/docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
+install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
 %pre
 user="wavefront"
@@ -109,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 11.0-1
+- Automatic Version Bump
 * Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 9.2-1
 - Automatic Version Bump
 * Tue Jan 21 2020 Ankit Jain <ankitja@vmware.com> 4.39-2
@@ -134,4 +135,4 @@ rm -rf %{buildroot}/*
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
 - Remove shadow from requires and use explicit tools for post actions
 * Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
-- first version
+- first version.

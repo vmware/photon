@@ -1,16 +1,16 @@
 Summary:        Shared libraries, portable interface
 Name:           libtool
-Version:        2.4.6
-Release:        3%{?dist}
+Version:        2.4.7
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.gnu.org/software/libtool
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.xz
-%define sha1    libtool=3e7504b832eb2dd23170c91b6af72e15b56eb94e
+%define sha512    libtool=47f4c6de40927254ff9ba452612c0702aea6f4edc7e797f0966c8c6bf0340d533598976cdba17f0bdc64545572e71cd319bbb587aa5f47cd2e7c1d96f873a3da
 %description
-It wraps the complexity of using shared libraries in a 
+It wraps the complexity of using shared libraries in a
 consistent, portable interface.
 %package -n libltdl
 Summary:       Shared library files for %{name}
@@ -27,15 +27,17 @@ Requires:      libltdl = %{version}
 The libtool package contains the GNU libtool, a set of shell scripts which automatically configure UNIX and UNIX-like architectures to generically build shared libraries.
 Libtool provides a consistent, portable interface which simplifies the process of using shared libraries.
 This package contains static libraries and header files need for development.
+
 %prep
-%setup -q
+%autosetup
+
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-silent-rules
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}%{_infodir}
 
@@ -75,9 +77,11 @@ make %{?_smp_mflags} check
 
 %files -n libltdl
 %{_libdir}/libltdl.so.7
-%{_libdir}/libltdl.so.7.3.1
+%{_libdir}/libltdl.so.7.3.2
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.7-1
+-   Automatic Version Bump
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.6-3
 -   Move header file and source code to libltdl-devel package.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.6-2
@@ -85,4 +89,4 @@ make %{?_smp_mflags} check
 *   Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.6-1
 -   Updated to version 2.4.6
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.2-1
--   Initial build.  First version   
+-   Initial build.  First version

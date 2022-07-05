@@ -1,13 +1,11 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
-Version:        4.9.3
-Release:        4%{?dist}
+Version:        4.99.1
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
-Patch0:         CVE-2018-19519.patch
-Patch1:         CVE-2020-8037.patch
+%define sha512  tcpdump=53d31355e1a6ef5a65bb3bf72454169fc80adf973a327a5768840e6ccf0550fbeb3c8a41f959635076d871df0619680321910a3a97879607f481cdaa8b7ceda7
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,7 +18,7 @@ It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure
@@ -36,10 +34,13 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-%{_sbindir}/*
-%{_mandir}/man1/*
+%{_bindir}/tcpdump
+%{_bindir}/tcpdump.%{version}
+%{_mandir}/man1/tcpdump.1.gz
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 4.99.1-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
 -   Bump up release for openssl
 *   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-3
@@ -76,4 +77,4 @@ make %{?_smp_mflags} check
 *   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
 -   Upgrade version.
 *   Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1
--   Updating version to 4.7.3
+-   Updating version to 4.7.3.

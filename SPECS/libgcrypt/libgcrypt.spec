@@ -1,11 +1,11 @@
 Summary:        Crypto Libraries
 Name:           libgcrypt
-Version:        1.9.3
+Version:        1.10.1
 Release:        1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1    libgcrypt=6b18f453fee677078586279d96fb88e5df7b3f35
+%define sha512  libgcrypt=e5ca7966624fff16c3013795836a2c4377f0193dbb4ac5ad2b79654b1fa8992e17d83816569a402212dc8367a7980d4141f5d6ac282bae6b9f02186365b61f13
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 BuildRequires:  libgpg-error-devel
@@ -25,7 +25,7 @@ Requires:       libgpg-error-devel
 The package contains libraries and header files for developing applications that use libgcrypt.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 if [ %{_host} != %{_build} ] ; then
@@ -38,7 +38,7 @@ fi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm -rf %{buildroot}%{_infodir}
 
 %check
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.3-1
 -   Automatic Version Bump
 *   Tue Jul 28 2020 Ankit Jain <ankitja@vmware.com> 1.8.6-2
@@ -85,4 +87,4 @@ make %{?_smp_mflags} check
 *   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.6.5-1
 -   Upgrade to 1.6.5
 *   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.3-1
--   Initial build. First version
+-   Initial build. First version.

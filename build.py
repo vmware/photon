@@ -45,9 +45,11 @@ targetList = {
                 "check-kpartx", "check-sanity", "start-docker", "install-photon-docker-image",
                 "check-spec-files", "check-pyopenssl", "check-photon-installer"],
 
-        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs", "print-upward-deps", "pull-stage-rpms"]
+        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs",
+                "print-upward-deps", "pull-stage-rpms", "clean-stage-rpms"]
         }
 
+photonDir = os.path.dirname(os.path.realpath(__file__))
 curDir = os.getcwd()
 
 check_prerequesite = {
@@ -61,12 +63,12 @@ def vixdiskutil():
     check_prerequesite["vixdiskutil"] = True
     if not check_prerequesite["tools-bin"]:
         tools_bin()
-    if subprocess.Popen(["cd " + curDir + "/tools/src/vixDiskUtil && make"], shell=True).wait() != 0:
+    if subprocess.Popen(["cd " + photonDir + "/tools/src/vixDiskUtil && make"], shell=True).wait() != 0:
         raise Exception("Not able to make vixDiskUtil")
 
 def tools_bin():
     check_prerequesite["tools-bin"] = True
-    if not os.path.isdir(os.path.join(curDir, "tools/bin")):
+    if not os.path.isdir(os.path.join(photonDir, "tools/bin")):
         os.mkdir(os.path.join("tools","bin"))
 
 def contain():
@@ -74,9 +76,9 @@ def contain():
     if not check_prerequesite["tools-bin"]:
         tools_bin()
 
-    if subprocess.Popen(["gcc -O2 -std=gnu99 -Wall -Wextra " + curDir + \
-            "/tools/src/contain/*.c -o tools/bin/contain_unpriv && sudo install -o root -g root \
-            -m 4755 tools/bin/contain_unpriv tools/bin/contain"], shell=True).wait() != 0:
+    if subprocess.Popen(["gcc -O2 -std=gnu99 -Wall -Wextra " + photonDir + \
+            "/tools/src/contain/*.c -o "+ photonDir + "/tools/bin/contain_unpriv && sudo install -o root -g root \
+            -m 4755 " + photonDir + "/tools/bin/contain_unpriv " + photonDir + "/tools/bin/contain"], shell=True).wait() != 0:
         raise Exception("contain failed")
 
 
@@ -274,6 +276,20 @@ class Utilities:
         if len(notFound) > 0:
             self.logger.info("List of missing files: " + str(notFound))
 
+    def clean_stage_rpms(self):
+        keepFiles = self.specDepsObject.listRPMfilenames(True)
+        rpmpath = os.path.join(constants.rpmPath, constants.currentArch)
+        allFiles = [os.path.join(constants.currentArch, f) for f in os.listdir(rpmpath) if os.path.isfile(os.path.join(rpmpath, f))]
+        rpmpath = os.path.join(constants.rpmPath, "noarch")
+        allFiles.extend([os.path.join("noarch", f) for f in os.listdir(rpmpath) if os.path.isfile(os.path.join(rpmpath, f))])
+        removeFiles = list(set(allFiles) - set(keepFiles))
+        for f in removeFiles:
+            filePath = os.path.join(constants.rpmPath, f)
+            print("Removing {}".format(f))
+            try:
+                os.remove(filePath)
+            except Exception as error:
+                print("Error while removing file {0}: {1}".format(filePath, error))
 
 
 
@@ -387,15 +403,15 @@ class BuildEnvironmentSetup:
             os.mkdir(constants.logPath)
 
         if not os.path.isfile(Build_Config.stagePath + "/COPYING"):
-            CommandUtils.runCommandInShell("install -m 444 " + curDir + "/COPYING " + Build_Config.stagePath + "/COPYING")
+            CommandUtils.runCommandInShell("install -m 444 " + photonDir + "/COPYING " + Build_Config.stagePath + "/COPYING")
 
         if not os.path.isfile(Build_Config.stagePath + "/NOTICE-GPL2.0"):
-            CommandUtils.runCommandInShell("install -m 444 " + curDir + "/NOTICE-GPL2.0 " + Build_Config.stagePath + "/NOTICE-GPL2.0")
+            CommandUtils.runCommandInShell("install -m 444 " + photonDir + "/NOTICE-GPL2.0 " + Build_Config.stagePath + "/NOTICE-GPL2.0")
 
         if not os.path.isfile(Build_Config.stagePath + "/NOTICE-Apachev2"):
-            CommandUtils.runCommandInShell("install -m 444 " + curDir + "/NOTICE-Apachev2 " + Build_Config.stagePath + "/NOTICE-Apachev2")
+            CommandUtils.runCommandInShell("install -m 444 " + photonDir + "/NOTICE-Apachev2 " + Build_Config.stagePath + "/NOTICE-Apachev2")
         if not os.path.isfile(Build_Config.stagePath + "/EULA.txt"):
-            CommandUtils.runCommandInShell("install -m 444 " + curDir + "/EULA.txt " + Build_Config.stagePath + "/EULA.txt")
+            CommandUtils.runCommandInShell("install -m 444 " + photonDir + "/EULA.txt " + Build_Config.stagePath + "/EULA.txt")
 
     def create_photon_builder_image():
         # docker image with rpm preinstalled
@@ -450,7 +466,7 @@ class CleanUp:
     def clean_chroot():
         print("Cleaning chroot path...")
         if os.path.isdir(constants.buildRootPath):
-            if subprocess.Popen([curDir + "/support/package-builder/clean-up-chroot.py", constants.buildRootPath]).wait() != 0:
+            if subprocess.Popen([photonDir + "/support/package-builder/clean-up-chroot.py", constants.buildRootPath]).wait() != 0:
                 raise Exception("Not able to clean chroot")
 
     def removeUpwardDeps(pkg, display_option):
@@ -608,7 +624,7 @@ class RpmBuildTarget:
         else:
             ph_docker_image = "vmware/photon-build:rpm-ostree-aarch64-3.0"
         if not os.path.isfile(os.path.join(Build_Config.stagePath, "ostree-repo.tar.gz")):
-            process = subprocess.Popen([curDir + "/support/image-builder/ostree-tools/make-ostree-image.sh", curDir, Build_Config.stagePath,
+            process = subprocess.Popen([photonDir + "/support/image-builder/ostree-tools/make-ostree-image.sh", photonDir, Build_Config.stagePath,
                                                                                                                         ph_docker_image])
 
             retval = process.wait()
@@ -760,7 +776,7 @@ class CheckTools:
 
     def check_sanity():
         check_prerequesite["check-sanity"]=True
-        if subprocess.Popen([curDir + "/support/sanity_check.sh"], shell=True).wait() != 0:
+        if subprocess.Popen([photonDir + "/support/sanity_check.sh"], shell=True).wait() != 0:
             raise Exception("Not able to run script sanity_check.sh")
 
     def check_docker():
@@ -974,7 +990,7 @@ class BuildImage:
     def photon_docker_image():
         if not check_prerequesite["create-repo"]:
             RpmBuildTarget.create_repo()
-        if subprocess.Popen(["cd " + configdict["photon-path"] + ";sudo docker build --no-cache --tag photon-build " + curDir + "/support/dockerfiles/photon && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER="+constants.buildNumber + " -e PHOTON_RELEASE_VERSION="+constants.releaseVersion + " -v "+curDir+":/workspace photon-build ./support/dockerfiles/photon/make-docker-image.sh"], shell=True).wait():
+        if subprocess.Popen(["cd " + configdict["photon-path"] + ";sudo docker build --no-cache --tag photon-build " + photonDir + "/support/dockerfiles/photon && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER="+constants.buildNumber + " -e PHOTON_RELEASE_VERSION="+constants.releaseVersion + " -v "+photonDir+":/workspace photon-build ./support/dockerfiles/photon/make-docker-image.sh"], shell=True).wait():
             raise Exception("Not able to run photon-docker-image")
 
     def k8s_docker_images(self):
@@ -986,7 +1002,7 @@ class BuildImage:
             BuildImage.photon_docker_image()
         if not os.path.isdir(os.path.join(Build_Config.stagePath, "docker_images")):
             os.mkdir(os.path.join(Build_Config.stagePath, "docker_images"))
-        os.chdir(os.path.join(curDir, 'support/dockerfiles/k8s-docker-images'))
+        os.chdir(os.path.join(photonDir, 'support/dockerfiles/k8s-docker-images'))
         if subprocess.Popen(['./build-k8s-base-image.sh', constants.releaseVersion, constants.buildNumber, Build_Config.stagePath]).wait() == 0 and \
         subprocess.Popen(['./build-k8s-docker-images.sh', configdict["photon-build-param"]["photon-dist-tag"], constants.releaseVersion, constants.specPath, Build_Config.stagePath]).wait() == 0 and \
         subprocess.Popen(['./build-k8s-metrics-server-image.sh', configdict["photon-build-param"]["photon-dist-tag"], constants.releaseVersion, constants.specPath, Build_Config.stagePath]).wait() ==0 and \
@@ -1002,7 +1018,7 @@ class BuildImage:
 
         else:
             raise Exception("k8s-docker-images build failed")
-        os.chdir(curDir)
+        os.chdir(photonDir)
 
     def all_images(self):
         for img in self.ova_cloud_images:
@@ -1031,8 +1047,8 @@ def initialize_constants():
     global check_prerequesite
     check_prerequesite["initialize-constants"]=True
 
-    Build_Config.setStagePath(os.path.join(str(PurePath(configdict["photon-path"], configdict["stage-path"])), "stage"))
-    constants.setSpecPath(os.path.join(str(PurePath(configdict["photon-path"], configdict["spec-path"])), "SPECS"))
+    Build_Config.setStagePath(os.path.join(str(PurePath(configdict["photon-path"], configdict.get("stage-path", ""))), "stage"))
+    constants.setSpecPath(os.path.join(str(PurePath(configdict["photon-path"], configdict.get("spec-path", ""))), "SPECS"))
     Build_Config.setBuildThreads(configdict["photon-build-param"]["threads"])
     Build_Config.setPkgBuildType(configdict["photon-build-param"]["photon-build-type"])
     Build_Config.setPkgJsonInput(configdict.get("additional-path", {}).get("pkg-json-input", None))
@@ -1057,10 +1073,10 @@ def initialize_constants():
     constants.setBuildRootPath(os.path.join(Build_Config.stagePath ,"photonroot"))
     Build_Config.setGeneratedDataDir(os.path.join(Build_Config.stagePath ,"common/data"))
     constants.setTopDirPath("/usr/src/photon")
-    Build_Config.setCommonDir(os.path.join(curDir ,"common"))
-    Build_Config.setDataDir(os.path.join(curDir, "common/data"))
-    constants.setInputRPMSPath(configdict.get("input-rpms-path", os.path.join(curDir,"inputRPMS")))
-    Build_Config.setPullPublishRPMSDir(os.path.join(curDir, "support/pullpublishrpms"))
+    Build_Config.setCommonDir(os.path.join(photonDir ,"common"))
+    Build_Config.setDataDir(os.path.join(photonDir, "common/data"))
+    constants.setInputRPMSPath(os.path.abspath(configdict.get("input-rpms-path", os.path.join(photonDir,"inputRPMS"))))
+    Build_Config.setPullPublishRPMSDir(os.path.join(photonDir, "support/pullpublishrpms"))
     Build_Config.setPullPublishRPMS(os.path.join(Build_Config.pullPublishRPMSDir ,"pullpublishrpms.sh"))
     Build_Config.setPullPublishXRPMS(os.path.join(Build_Config.pullPublishRPMSDir ,"pullpublishXrpms.sh"))
     constants.setPackageWeightsPath(os.path.join(Build_Config.dataDir ,"packageWeights.json"))
@@ -1069,7 +1085,7 @@ def initialize_constants():
     Build_Config.setPkgToBeCopiedConfFile(configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file"))
     Build_Config.setDistributedBuildFile(os.path.join(Build_Config.dataDir, "distributed_build_options.json"))
     Builder.get_packages_with_build_options(configdict['photon-build-param']['pkg-build-options'])
-    Build_Config.setCommonDir(PurePath(curDir, "common", "data"))
+    Build_Config.setCommonDir(PurePath(photonDir, "common", "data"))
     constants.setStartSchedulerServer(configdict["photon-build-param"]['start-scheduler-server'])
     constants.setCompressionMacro(configdict["photon-build-param"]["compression-macro"])
     constants.initialize()
@@ -1079,13 +1095,13 @@ def set_default_value_of_config():
 
     global configdict
 
-    configdict["pull-sources-config"] = os.path.join(curDir , "support/package-builder/sources.conf")
+    configdict["pull-sources-config"] = os.path.join(photonDir , "support/package-builder/sources.conf")
     configdict.setdefault("additional-path", {}).setdefault("photon-cache-path", None)
     configdict["photon-build-param"]["input-photon-build-number"]=subprocess.check_output(["git rev-parse --short HEAD"], shell=True).decode('ASCII').rstrip()
     configdict.setdefault('additional-path', {}).setdefault('photon-sources-path', None)
     configdict.setdefault('additional-path', {}).setdefault('photon-publish-rpms-path', None)
     configdict.setdefault('additional-path', {}).setdefault('photon-publish-x-rpms-path', None)
-    configdict['photon-build-param']['pkg-build-options'] = curDir + "/common/data/" + configdict['photon-build-param']['pkg-build-options']
+    configdict['photon-build-param']['pkg-build-options'] = photonDir + "/common/data/" + configdict['photon-build-param']['pkg-build-options']
     configdict.setdefault("additional-path", {}).setdefault("conf-file", None)
     configdict.setdefault("photon-build-param", {}).setdefault("start-scheduler-server", False)
     configdict.setdefault("photon-build-param", {}).setdefault("base-commit", '')
@@ -1102,7 +1118,7 @@ def main():
 
     options = parser.parse_args()
 
-    if options.photonBranch is None and options.configPath is None:
+    if options.photonBranch is None and options.configPath is None and not os.path.isfile(os.path.join(curDir, "config.json")):
         raise Exception("Either specify branchName or configpath...")
 
     if options.photonBranch is not None and not os.path.isdir(os.path.join(curDir ,"photon-" + options.photonBranch)):
@@ -1111,7 +1127,9 @@ def main():
         print("Using already cloned repository...")
 
     if options.configPath is None:
-        options.configPath = str(PurePath(curDir, "photon-" + options.photonBranch, "config.json"))
+        options.configPath = os.path.join(curDir, "config.json")
+        if not os.path.isfile(options.configPath) or options.photonBranch:
+            options.configPath = str(PurePath(curDir, "photon-" + options.photonBranch, "config.json"))
 
     global configdict
     global check_prerequesite
@@ -1127,12 +1145,12 @@ def main():
     os.environ['PHOTON_BUILD_NUM']=configdict["photon-build-param"]["input-photon-build-number"]
 
 
-    if configdict["photon-path"] == "":
+    if configdict.get("photon-path", "") == "":
         configdict["photon-path"] = os.path.dirname(options.configPath)
 
 
     if 'INPUT_PHOTON_BUILD_NUMBER' in os.environ:
-        configdict["photon-build-param"]["input-photon-build-number"] = os.environ['IMPUT_PHOTON_BUILD_NUMBER']
+        configdict["photon-build-param"]["input-photon-build-number"] = os.environ['INPUT_PHOTON_BUILD_NUMBER']
 
     if 'BASE_COMMIT' in os.environ:
         configdict["photon-build-param"]["base-commit"] = os.environ['BASE_COMMIT']

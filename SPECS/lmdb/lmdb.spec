@@ -1,13 +1,13 @@
 Summary:       Lightning memory-mapped database
 Name:          lmdb
-Version:       0.9.28
+Version:       0.9.29
 Release:       1%{?dist}
 Group:         System/Libraries
 Vendor:        VMware, Inc.
 License:       OpenLDAP
 URL:           https://symas.com/lmdb
 Source0:       https://github.com/LMDB/lmdb/archive/LMDB_%{version}.tar.gz
-%define sha1 LMDB=2f111a96a70c02fe102e07837042549727ace9d8
+%define sha512 LMDB=a29e40b1a2f2ed542fb59b6dd92cf7f5f9ac603f74b1d2a66d143b65edf0324a03dc4a0a35657ba0992b00a3e9764e33af0dcc5ae8ae91c40c90c3b0581dade3
 Source1:       %{name}.pc
 Distribution:  Photon
 Requires:      lmdb-libs = %{version}-%{release}
@@ -16,23 +16,23 @@ Requires:      lmdb-libs = %{version}-%{release}
 An ultra-fast, ultra-compact, crash-proof key-value
 embedded data store.
 
-%package devel
-Summary:    Development files for lmdb
-Group:      Development/Libraries
-Requires:   lmdb = %{version}-%{release}
+%package       devel
+Summary:       Development files for lmdb
+Group:         Development/Libraries
+Requires:      lmdb = %{version}-%{release}
 
-%description devel
+%description   devel
 Development files for lmdb
 
-%package libs
-Summary:    Shared libraries for lmdb
-Group:      Development/Libraries
+%package       libs
+Summary:       Shared libraries for lmdb
+Group:         Development/Libraries
 
-%description libs
+%description   libs
 Shared libraries for lmdb
 
 %prep
-%setup -qn lmdb-LMDB_%{version}
+%autosetup -n lmdb-LMDB_%{version}
 
 %build
 cd libraries/liblmdb
@@ -40,7 +40,7 @@ make %{?_smp_mflags}
 
 %install
 cd libraries/liblmdb
-make prefix=%{_prefix} DESTDIR=%{buildroot} install
+make prefix=%{_prefix} DESTDIR=%{buildroot} %{?_smp_mflags} install
 mkdir -p %{buildroot}%{_docdir}/%{name}
 mkdir -p %{buildroot}%{_defaultlicensedir}/%{name}
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.29-1
+-  Automatic Version Bump
 *  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.9.28-1
 -  Automatic Version Bump
 *  Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 0.9.24-2

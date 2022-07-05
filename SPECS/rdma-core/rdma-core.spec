@@ -1,14 +1,13 @@
 %define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
-Version:        31.0
+Version:        40.0
 Release:        1%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 rdma=04dddde2ae0899be4d75cc34529fdcf6a035b27f
+%define sha512  rdma=d1e377f1db30deb44188b3d800973969d69b9b5a5d10f4ad4ac3398e9f19752a78f56d535266040b4f82185856b88e370eec2e4b877f896f25c95ffc5bea72b4
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -24,7 +23,7 @@ Requires:       systemd
 %description
 Userspace libraries and daemons for the Linux Kernel's drivers/infiniband subsystem.
 
-%package devel
+%package        devel
 Summary:        Libraries and headers for the rdma-core
 Requires:       %{name} = %{version}-%{release}
 Requires:       libibverbs = %{version}-%{release}
@@ -40,7 +39,8 @@ Provides:       librdmacm-devel = %{version}-%{release}
 Provides:       ibacm-devel = %{version}-%{release}
 Provides:       infiniband-diags-devel = %{version}-%{release}
 Provides:       libibmad-devel = %{version}-%{release}
-%description devel
+
+%description    devel
 Headers and static libraries for the rdma-core
 
 %package -n     libibverbs
@@ -48,6 +48,7 @@ Summary:        Library & drivers for direct userspace use of InfiniBand hardwar
 Requires:       %{name} = %{version}-%{release}
 Requires:       libmlx4 = %{version}-%{release}
 Requires:       libmlx5 = %{version}-%{release}
+
 %description -n libibverbs
 libibverbs is a library that allows userspace processes to use RDMA
 "verbs" as described in the InfiniBand Architecture Specification and
@@ -56,6 +57,7 @@ the RDMA Protocol Verbs Specification.
 %package -n     libibverbs-utils
 Summary:        Examples for the libibverbs library
 Requires:       libibverbs = %{version}-%{release}
+
 %description -n libibverbs-utils
 Useful libibverbs example programs such as ibv_devinfo, which
 displays information about RDMA devices.
@@ -63,6 +65,7 @@ displays information about RDMA devices.
 %package -n     libibmad
 Summary:        Libibmad runtime library
 Requires:       libibumad
+
 %description -n libibmad
 Libibmad provides low layer IB functions for use by the IB diagnostic
 and management programs. These include MAD, SA, SMP, and other basic IB
@@ -78,17 +81,20 @@ mainly by infiniband-diags.
 
 %package -n     libmlx4
 Summary:        MLX4 runtime library
+
 %description -n libmlx4
 This package contains the mlx4 runtime library.
 
 %package -n     libmlx5
 Summary:        MLX5 runtime library
+
 %description -n libmlx5
 This package contains the mlx5 runtime library.
 
 %package -n     ibacm
 Summary:        InfiniBand Communication Manager Assistant
 Requires:       %{name} = %{version}-%{release}
+
 %description -n ibacm
 The ibacm daemon helps reduce the load of managing path record lookups on
 large InfiniBand fabrics by providing a user space implementation of what
@@ -99,18 +105,21 @@ Summary:        InfiniBand Diagnostic Tools
 Requires:       perl
 Requires:       libibnetdisc
 Provides:       perl(IBswcountlimits)
+
 %description -n infiniband-diags
 It provides IB diagnostic tools.
 
 %package -n     iwpmd
 Summary:        Userspace iWarp Port Mapper daemon
 Requires:       %{name} = %{version}-%{release}
+
 %description -n iwpmd
 iwpmd provides a userspace service for iWarp drivers to claim
 tcp ports through the standard socket interface.
 
 %package -n     libibumad
 Summary:        OpenFabrics Alliance InfiniBand Userspace Management Datagram library
+
 %description -n libibumad
 libibumad provides the userspace management datagram (umad) library
 functions, which sit on top of the umad modules in the kernel. These
@@ -120,11 +129,13 @@ are used by the IB diagnostic and management tools, including OpenSM.
 Summary:        Userspace RDMA Connection Manager
 Group:          System/Libraries
 Requires:       %{name} = %{version}-%{release}
+
 %description -n librdmacm
 librdmacm provides a userspace RDMA Communication Management API.
 
 %package -n     librdmacm-utils
 Summary:        Examples for the librdmacm library
+
 %description -n librdmacm-utils
 Example test programs for the librdmacm library.
 
@@ -132,6 +143,7 @@ Example test programs for the librdmacm library.
 Summary:        Tools for using the InfiniBand SRP protocol devices
 Requires:       %{name} = %{version}-%{release}
 Provides:       srptools = %{version}-%{release}
+
 %description -n srp_daemon
 In conjunction with the kernel ib_srp driver, srp_daemon allows you to
 discover and use SCSI devices via the SCSI RDMA Protocol over InfiniBand.
@@ -139,6 +151,7 @@ discover and use SCSI devices via the SCSI RDMA Protocol over InfiniBand.
 %package -n     rdma-ndd
 Summary:        Daemon to manage RDMA Node Description
 Requires:       %{name} = %{version}-%{release}
+
 %description -n rdma-ndd
 rdma-ndd is a system daemon which watches for rdma device changes and/or
 hostname changes and updates the Node Description of the rdma devices based
@@ -146,12 +159,13 @@ on those changes.
 
 %package -n python3-pyverbs
 Summary:        Python3 API over IB verbs
+
 %description -n python3-pyverbs
 Pyverbs is a Cython-based Python API over libibverbs, providing an
 easy, object-oriented access to IB verbs.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 cmake \
@@ -498,6 +512,8 @@ cd build && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 40.0-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 31.0-1
 - Automatic Version Bump
 * Fri Nov 08 2019 Alexey Makhalov <amakhalov@vmware.com> 26.0-1

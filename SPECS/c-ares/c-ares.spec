@@ -1,15 +1,14 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.17.1
-Release:        2%{?dist}
+Version:        1.18.1
+Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    c-ares=431d5ff705db752f5d25e610827b7cb3653fc7ff
-Patch0:         CVE-2021-3672.patch
+%define sha512  c-ares=1276ec0799916019f8c0af6b55a139701bd15e0ca4a00811d07963893978bc96c107b980f0fd49f81aa70bc8b3b8cd671195ba357c390772d4c2c5643c50c5a5
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -68,6 +67,7 @@ rm -rf %{buildroot}
 %{_includedir}/ares.h
 %{_includedir}/ares_build.h
 %{_includedir}/ares_dns.h
+%{_includedir}/ares_nameser.h
 %{_includedir}/ares_rules.h
 %{_includedir}/ares_version.h
 %{_libdir}/*.so
@@ -75,6 +75,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/ares_*
 
 %changelog
+* Wed Apr 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.1-1
+- Version update to 1.18.1
 * Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.1-2
 - Fix CVE-2021-3672
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.1-1

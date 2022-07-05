@@ -1,30 +1,30 @@
-Summary:       Utility to send ICMP echo probes to network hosts
-Name:          fping
-Version:       5.0
-Release:       1%{?dist}
-License:       Charityware
-Group:         Productivity/Networking/Diagnostic
-Vendor:        VMware, Inc.
-Distribution:  Photon
-URL:           http://www.fping.org/
-Source0:       http://fping.org/dist/%{name}-%{version}.tar.gz
-%define sha1 fping=47da54ca4a35358c768497def0eace494be75770
-BuildRequires: autoconf
-BuildRequires: automake
+Summary:        Utility to send ICMP echo probes to network hosts
+Name:           fping
+Version:        5.1
+Release:        1%{?dist}
+License:        Charityware
+Group:          Productivity/Networking/Diagnostic
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            http://www.fping.org/
+Source0:        http://fping.org/dist/%{name}-%{version}.tar.gz
+%define sha512  fping=1a208da8dcd99093d0512af5d85ba5e7b5743ec97993d24c1fe612bb58d93090ac1ba0952f648aa075f16d390a77c4be65e394ae56dbede2a6914e0e8c68e2bd
+BuildRequires:  autoconf
+BuildRequires:  automake
 
 %description
 fping is a ping like program which uses the Internet Control Message Protocol
 (ICMP) echo request to determine if a target host is responding.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 ln -sf fping %{buildroot}%{_sbindir}/fping6
 rm -rf %{buildroot}%{_infodir}
 
@@ -39,6 +39,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man8/fping.8*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1-1
+- Automatic Version Bump
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0-1
 - Automatic Version Bump
 * Wed Jan 23 2019 Dweep Advani <dadvani@vmware.com> 4.1-1

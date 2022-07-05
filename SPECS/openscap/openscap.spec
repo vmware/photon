@@ -1,6 +1,6 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.3.5
+Version:        1.3.6
 Release:        3%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
@@ -9,15 +9,19 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    %{name}=77494383980082f8bc625a6e196a6760d30a5107
+%define sha512    %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 BuildRequires:  xmlsec1-devel
-BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
+BuildRequires:  swig
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
+BuildRequires:  XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  pcre-devel
 BuildRequires:  libacl-devel
-BuildRequires:  libselinux-devel libcap-devel
+BuildRequires:  libselinux-devel
+BuildRequires:  libcap-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
@@ -34,26 +38,26 @@ vulnerability and patch checking, technical control compliance activities, and s
 OpenSCAP has received a NIST certification for its support of SCAP 1.2.
 
 %package        devel
-Summary:        Development Libraries for openscap
+Summary:        Development Libraries for %{name}
 Group:          Development/Libraries
-Requires:       openscap = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       libxml2-devel
 
 %description    devel
-Header files for doing development with openscap.
+Header files for doing development with %{name}.
 
 %package        perl
-Summary:        openscap perl scripts
+Summary:        %{name} perl scripts
 Requires:       perl
-Requires:       openscap = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    perl
 Perl scripts.
 
 %package        python3
-Summary:        openscap python
+Summary:        %{name} python
 Group:          Development/Libraries
-Requires:       openscap = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    python3
 Python bindings.
@@ -62,32 +66,34 @@ Python bindings.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake \
--DCMAKE_BUILD_TYPE=Debug \
--DCMAKE_INSTALL_PREFIX=%{_prefix} \
--DCMAKE_INSTALL_LIBDIR:PATH=lib \
---enable-sce \
---enable-perl \
-..
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DENABLE_PERL=ON \
+    -DENABLE_SCE=ON
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 find %{buildroot} -name '*.la' -delete
+
+%if 0%{?_with_check}
+%check
+ctest -V %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-%exclude /usr/src/debug
+%exclude %{_usrsrc}/debug
 %exclude %{_libdir}/debug
 %{_bindir}/*
 %{_mandir}/man8/*
-%{_datadir}/openscap/*
-%{_libdir}/libopenscap_sce.so.*
-%{_libdir}/libopenscap.so.*
+%{_datadir}/%{name}/*
+%{_libdir}/lib%{name}_sce.so.*
+%{_libdir}/lib%{name}.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -105,6 +111,12 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.9/*
 
 %changelog
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-3
+- Fix build with latest cmake
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-2
+- Bump version as a part of libxslt upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.6-1
+- Automatic Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.5-3
 - Release bump up to use libxml2 2.9.12-1.
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.5-2

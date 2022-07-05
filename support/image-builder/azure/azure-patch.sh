@@ -59,7 +59,7 @@ export HISTSIZE=0
 # Added as a part of rpm db migration from BDB to sqlite
 # No harm in cross checking here
 if [ -f /var/lib/rpm/Packages ]; then
-  if ! rpm --rebuilddb; then
-    echo "WARNING: Failed rebuild rpmdb"
+  if ! rpmdb --rebuilddb; then
+    echo "WARNING: Failed rebuild rpmdb" 1>&2
   fi
 fi

@@ -1,15 +1,17 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
-Version:          8.16.1
-Release:          3%{?dist}
+Version:          8.17.1
+Release:          1%{?dist}
 URL:              http://www.sendmail.org/
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.%{version}.tar.gz
-%define sha1      sendmail.%{version}=748b6dfc47dfbb83ebfdd2e334c87032c4698eab
+
+Source0:          https://ftp.sendmail.org/sendmail.%{version}.tar.gz
+%define sha512    sendmail.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
 Patch0:           0001-sendmail-fix-compatibility-with-openssl-3.0.patch
+
 BuildRequires:	  systemd
 BuildRequires:    openldap
 BuildRequires:    openssl-devel
@@ -35,7 +37,7 @@ of email from systems to network and is not just a mail client.
 
 %build
 cat >> devtools/Site/site.config.m4 << "EOF"
-APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6')
+APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6 -DHASFLOCK=1')
 APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -ldb')
 APPENDDEF(`confINCDIRS', `-I/usr/include/sasl')
 APPENDDEF(`confLIBS', `-lresolv')
@@ -190,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*   Mon Apr 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-1
+-   Upgrade to v8.17.1 to address CVE-2021-3618
 *   Wed Apr 14 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.16.1-3
 -   openssl 3.0.0 compatibility
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.16.1-2

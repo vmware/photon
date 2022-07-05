@@ -3,19 +3,23 @@ Name:           cpio
 Version:        2.13
 Release:        6%{?dist}
 License:        GPLv3+
-URL:            http://www.gnu.org/software/cpio/
+URL:            http://www.gnu.org/software/cpio
 Group:          System Environment/System utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
-%define sha1    cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
+%define sha512  %{name}=459398e69f7f48201c04d1080218c50f75edcf114ffcbb236644ff6fcade5fcc566929bdab2ebe9be5314828d6902e43b348a8adf28351df978c8989590e93a3
+
 Patch0:         newca-new-archive-format.patch
 Patch1:         newca-large-files-support.patch
 Patch2:         cpio-2.12-gcc-10.patch
 Patch3:         cpio-CVE-2021-38185.patch
 Patch4:         cpio-CVE-2021-38185_2.patch
 Patch5:         cpio-CVE-2021-38185_3.patch
+
 BuildRequires:  lua
+
 Requires:       lua
 
 %description
@@ -35,24 +39,28 @@ These are the additional language files of cpio
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 %configure \
-        --enable-mt   \
-        --with-rmt=/usr/libexec/rmt
-make %{?_smp_mflags}
-makeinfo --html            -o doc/html      doc/cpio.texi
+        --enable-mt \
+        --with-rmt=%{_libexecdir}/rmt
+
+%make_build
+
+makeinfo --html -o doc/html doc/cpio.texi
 makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
-makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
+makeinfo --plaintext -o doc/cpio.txt doc/cpio.texi
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
-install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
-install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
-install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
+%make_install %{?_smp_mflags}
+install -v -m755 -d %{buildroot}%{_docdir}/%{name}-%{version}/html
+install -v -m644 doc/html/* %{buildroot}%{_docdir}/%{name}-%{version}/html
+install -v -m644 doc/cpio.{html,txt} %{buildroot}%{_docdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)

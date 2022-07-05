@@ -2,17 +2,19 @@
 
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
-Version:        2.0.31
-Release:        2%{?dist}
+Version:        2.0.32
+Release:        1%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
-%define sha1    OpenIPMI=5b9494e61d8fbcee05d6cea3c688f7f69fded4e7
+%define sha512  OpenIPMI=e409f32e6bbf26756338ada386fa394d48d734b4d6ba4beca700ce60bc3af3d0f41e972a328c4e076ae014f4fbd8598d05d3f879f9c6d76198e6ae1a2ba03e95
 Source1:        openipmi-helper
 Source2:        ipmi.service
+
 BuildRequires:  systemd
 BuildRequires:  perl
 BuildRequires:  popt-devel
@@ -22,6 +24,7 @@ BuildRequires:  swig
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3
+
 Requires:       systemd
 
 %description
@@ -86,6 +89,7 @@ This package contains a network IPMI listener.
     --with-perlinstall=%{perl_vendorarch}   \
     --with-python=/usr/bin/python3.9        \
     --with-pythoninstall=%{python3_sitelib}
+
 make %{?_smp_mflags}
 
 %install
@@ -105,7 +109,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ipmi.preset
 
 #The build VM does not support ipmi.
-#%check
+#%%check
 #make %{?_smp_mflags} check
 
 %preun
@@ -184,24 +188,26 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.31-2
--   Bump up release for openssl
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.31-1
--   Automatic Version Bump
-*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-4
--   Use python 3.9
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-3
--   openssl 1.1.1
-*   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-2
--   Use python 3.8
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-1
--   Build with python3
--   Mass removal python2
-*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.25-2
--   Added BuildRequires python2-devel
-*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.25-1
--   Upgrade to 2.0.25
-*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
--   openipmi-devel requires ncurses-devel
-*   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
--   Initial build.  First version
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.32-1
+- Automatic Version Bump
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.31-2
+- Bump up release for openssl
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.31-1
+- Automatic Version Bump
+* Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-4
+- Use python 3.9
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-3
+- openssl 1.1.1
+* Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-2
+- Use python 3.8
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-1
+- Build with python3
+- Mass removal python2
+* Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.25-2
+- Added BuildRequires python2-devel
+* Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.25-1
+- Upgrade to 2.0.25
+* Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
+- openipmi-devel requires ncurses-devel
+* Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
+- Initial build.  First version

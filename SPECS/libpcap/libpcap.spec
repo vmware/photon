@@ -1,14 +1,14 @@
-Summary:     C/C++ library for network traffic capture
-Name:        libpcap
-Version:     1.10.0
-Release:     1%{?dist}
-License:      BSD
-URL:          http://www.tcpdump.org
-Source0:      http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 libpcap=3d8c1843ae4ea0d7871c8689b58508406e5743c9
-Group:        Networking/Libraries
-Vendor:       VMware, Inc.
-Distribution: Photon
+Summary:       C/C++ library for network traffic capture
+Name:          libpcap
+Version:       1.10.1
+Release:       1%{?dist}
+License:       BSD
+URL:           http://www.tcpdump.org
+Source0:       http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+%define sha512 libpcap=56c314f19c2b857742bf8abcb1e78066986aaa95cec339b75a3c8b70a9fa2b5167da98708352f9ec97a1cea2700cfb4e040bda108d58ac46cec9b7deab88d171
+Group:         Networking/Libraries
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
 %description
 Libpcap provides a portable framework for low-level network
@@ -22,29 +22,28 @@ in each application.
 Install libpcap if you need to do low-level network traffic monitoring
 on your network.
 
-%package        devel
-Summary:        Development files for %{name}
-Requires:       %{name} = %{version}-%{release}
+%package       devel
+Summary:       Development files for %{name}
+Requires:      %{name} = %{version}-%{release}
 
-%description    devel
+%description   devel
 This package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %check
-make testprogs
+make testprogs %{?_smp_mflags}
 testprogs/opentest
 testprogs/findalldevstest
 
-
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -67,6 +66,8 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man7/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
+- Automatic Version Bump
 * Fri Feb 05 2021 Susant Sahani <ssahani@vmware.com> 1.10.0-1
 - Version bump
 * Mon Oct 14 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.9.1-1
@@ -85,4 +86,4 @@ make DESTDIR=%{buildroot} install
 * Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.7.2-1
 - Version upgrade to 1.7.2
 * Wed Jan 21 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.2-1
-- Initial build. First version
+- Initial build. First version.

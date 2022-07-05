@@ -1,6 +1,6 @@
 Summary:	Programs that show the differences between files or directories
 Name:		diffutils
-Version:	3.7
+Version:	3.8
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/diffutils
@@ -8,25 +8,23 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/diffutils/%{name}-%{version}.tar.xz
-%define sha1 diffutils=ad4e0a05ee2e7f5529db6cb84474f45e086e609b
+%define sha512  diffutils=279441270987e70d5ecfaf84b6285a4866929c43ec877e50f154a788858d548a8a316f2fc26ad62f7348c8d289cb29a09d06dfadce1806e3d8b4ea88c8b1aa7c
 BuildRequires:  coreutils
 Conflicts:      toybox < 0.8.2-2
 
 %description
-The Diffutils package contains programs that show the
-differences between files or directories.
+The Diffutils package contains programs that show the differences between files or directories.
+
 %prep
-%setup -q
+%autosetup
 sed -i 's:= @mkdir_p@:= /bin/mkdir -p:' po/Makefile.in.in
 
 %build
-
 %configure --disable-silent-rules
-
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name}
@@ -41,6 +39,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8-1
+-       Automatic Version Bump
 *       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7-1
 -       Automatic Version Bump
 *       Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.6-3

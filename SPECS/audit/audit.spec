@@ -3,10 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        3.0.1
-Release:        2%{?dist}
+Version:        3.0.8
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    %{name}=f69d52acc303bd3b38020a1bc9a1f792ebe79edb
+%define sha512    %{name}=9791dfac3e4d9f5cb2a6bb0d04717f93403957cf140d9a5b8beb9e97d15c0a8ed5534bb7781a6f1e70832319325f7f96dc2fcc59519fb00aa402415f8bd91fc5
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -148,6 +148,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1
+-   Automatic Version Bump
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.1-2
 -   Bump up version to compile with new go
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1

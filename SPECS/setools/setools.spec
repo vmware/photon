@@ -1,20 +1,21 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Policy analysis tools for SELinux
 Name:           setools
 Version:        4.4.0
 Release:        1%{?dist}
 License:        GPLv2, LGPLv2.1
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1    setools=5ee79d660076b5422f8cc4bfddb6f99edad944ca
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
+%define sha1    %{name}=5ee79d660076b5422f8cc4bfddb6f99edad944ca
+
 BuildRequires:  cython3
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  libselinux-devel
+
 Requires:       python3
 Requires:       libselinux
 Requires:       libsepol
@@ -26,7 +27,7 @@ Requires:       libsepol
 Policy analysis tools for SELinux
 
 %prep
-%setup -qn %{name}
+%autosetup -p1 -n %{name}
 sed -i "s/, 'networkx>=2.0'//" setup.py
 
 %build

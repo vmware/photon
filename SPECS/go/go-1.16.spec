@@ -11,22 +11,25 @@
 Summary:        Go
 Name:           go
 Version:        1.16.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha1    go=b3d00525ea5af180149fafca8da730c6f988f29f
+%define sha512  %{name}=ba90ce1f3faa39519eb5437009c4b710b493e42764a14b0821292a8a17b714fe5985ef20e6e3c340f71cb521ff63d45a23570d38fd752526a1262448c641d544
+
 Requires:       glibc
+
 %define ExtraBuildRequires go
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
-%setup -qn %{name}
+%autosetup -p1 -n %{name}
 
 %build
 export GOHOSTOS=linux
@@ -44,8 +47,7 @@ popd
 %install
 rm -rf %{buildroot}
 
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{goroot}
+mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
 
 cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
 
@@ -64,13 +66,13 @@ ln -sfv %{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
 ln -sfv %{goroot}/bin/go %{buildroot}%{_bindir}/go
 
 # ensure these exist and are owned
-mkdir -p %{buildroot}%{gopath}/src/github.com/
-mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
-mkdir -p %{buildroot}%{gopath}/src/code.google.com/
-mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
+mkdir -p %{buildroot}%{gopath}/src/github.com/ \
+         %{buildroot}%{gopath}/src/bitbucket.org/ \
+         %{buildroot}%{gopath}/src/code.google.com/ \
+         %{buildroot}%{gopath}/src/code.google.com/p/
 
-install -vdm755 %{buildroot}/etc/profile.d
-cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
+install -vdm755 %{buildroot}%{_sysconfdir}/profile.d
+cat >> %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
 export GOPATH=%{_datadir}/gocode
 export GOHOSTOS=linux
@@ -78,8 +80,8 @@ export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
 
-#chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-#%{_fixperms} %{buildroot}/*
+#chown -R root:root %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh
+#%%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -87,8 +89,8 @@ EOF
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
   #This is uninstall
-  rm /etc/profile.d/go-exports.sh
-  rm -rf /opt/%{name}
+  rm -rf %{_sysconfdir}/profile.d/go-exports.sh \
+         /opt/%{name}
   exit 0
 fi
 
@@ -98,28 +100,30 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %exclude %{goroot}/src/*.rc
-%exclude %{goroot}/include/plan9
-/etc/profile.d/go-exports.sh
+%exclude %dir %{goroot}/include/plan9
+%{_sysconfdir}/profile.d/go-exports.sh
 %{goroot}/*
 %{gopath}/src
-%exclude %{goroot}/src/pkg/debug/dwarf/testdata
-%exclude %{goroot}/src/pkg/debug/elf/testdata
+%exclude %dir %{goroot}/src/pkg/debug/dwarf/testdata
+%exclude %dir %{goroot}/src/pkg/debug/elf/testdata
 %ifarch aarch64
-%exclude %{goroot}/src/debug/dwarf/testdata
-%exclude %{goroot}/src/debug/elf/testdata
+%exclude %dir %{goroot}/src/debug/dwarf/testdata
+%exclude %dir %{goroot}/src/debug/elf/testdata
 %endif
 %{_bindir}/*
 
 %changelog
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
--   Update to 1.16.5
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
--   Update to 1.15.8
-*   Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1
--   Update to 1.15.6
-*   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
--   Fix glibc dependency on aarch64
-*   Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
--   Update to 1.14.8
-*   Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
--   Initial build for 1.14
+* Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.5-2
+- Fix binary path
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
+- Update to 1.16.5
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
+- Update to 1.15.8
+* Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1
+- Update to 1.15.6
+* Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
+- Fix glibc dependency on aarch64
+* Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
+- Update to 1.14.8
+* Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
+- Initial build for 1.14

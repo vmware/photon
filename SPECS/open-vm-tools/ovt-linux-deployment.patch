@@ -17,10 +17,10 @@ diff --git a/open-vm-tools/configure.ac b/open-vm-tools/configure.ac
 index 8a7932ec6..390e1eee9 100644
 --- a/open-vm-tools/configure.ac
 +++ b/open-vm-tools/configure.ac
-@@ -1493,6 +1493,10 @@ AM_CONDITIONAL(VGAUTH_USE_CXX, test "$with_icu" = "yes" -o "$use_xmlsec1" != "ye
- AM_CONDITIONAL(ENABLE_LIBAPPMONITOR, test "$enable_libappmonitor" = "yes")
+@@ -1722,6 +1722,10 @@
  AM_CONDITIONAL(ENABLE_SDMP, test "$enable_servicediscovery" = "yes")
- 
+ AM_CONDITIONAL(ENABLE_SALTMINION, test "$enable_saltminion" = "yes" -a \( "$arch" = "x64" \) )
+
 +if test "$enable_photon_gosc" = "yes"; then
 +   AC_DEFINE([PHOTON_GOSC])
 +fi
@@ -32,9 +32,9 @@ diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDep
 index 063c0b789..fa23bada9 100644
 --- a/open-vm-tools/libDeployPkg/linuxDeployment.c
 +++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
-@@ -687,13 +687,22 @@ GetPackageInfo(const char* packageName,
+@@ -686,13 +686,22 @@ GetPackageInfo(const char* packageName,
     close(fd);
- 
+
     // Create space and copy the command
 +#ifndef PHOTON_GOSC
     *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
@@ -45,7 +45,7 @@ index 063c0b789..fa23bada9 100644
        SetDeployError("Error allocating memory.");
        return FALSE;
     }
- 
+
 +#ifndef PHOTON_GOSC
     memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
 +#else
@@ -54,8 +54,8 @@ index 063c0b789..fa23bada9 100644
 +
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
- 
-@@ -1428,6 +1437,36 @@ Deploy(const char* packageName)
+
+@@ -1427,6 +1436,36 @@
        free(command);
        return DEPLOYPKG_STATUS_ERROR;
     } else {
@@ -92,6 +92,4 @@ index 063c0b789..fa23bada9 100644
        sLog(log_info, "Executing traditional GOSC workflow.");
        deploymentResult = ForkExecAndWaitCommand(command, true, NULL, 0);
        free(command);
--- 
-2.31.1
-
+--

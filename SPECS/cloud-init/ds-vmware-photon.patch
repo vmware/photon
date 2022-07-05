@@ -1,6 +1,6 @@
-From 2ea315fe4d3c6b5f2f01559b91713adf3358664c Mon Sep 17 00:00:00 2001
+From 487081b495fa67432b5100aaf8eac698caef9cac Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Wed, 25 Aug 2021 23:50:44 +0530
+Date: Thu, 17 Feb 2022 11:47:22 +0530
 Subject: [PATCH] Patch VMware DS to handle network settings from vmtoolsd
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
@@ -9,26 +9,26 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 125 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 22ca63de..24ec649f 100644
+index 6ef7c9d5..e886ea1e 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
-@@ -74,6 +74,7 @@ from cloudinit import dmi, log as logging
- from cloudinit import sources
- from cloudinit import util
- from cloudinit.subp import subp, ProcessExecutionError
+@@ -73,6 +73,7 @@ import netifaces
+ 
+ from cloudinit import dmi
+ from cloudinit import log as logging
 +from cloudinit.net import network_state
+ from cloudinit import sources, util
+ from cloudinit.subp import ProcessExecutionError, subp, which
  
- import netifaces
- 
-@@ -85,6 +86,7 @@ NOVAL = "No value found"
+@@ -83,6 +84,7 @@ NOVAL = "No value found"
  
  DATA_ACCESS_METHOD_ENVVAR = "envvar"
  DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
 +DATA_ACCESS_METHOD_VMTOOLSD = "vmtoolsd-guestinfo"
  
- VMWARE_RPCTOOL = find_executable("vmware-rpctool")
+ VMWARE_RPCTOOL = which("vmware-rpctool")
  REDACT = "redact"
-@@ -136,6 +138,106 @@ class DataSourceVMware(sources.DataSource):
+@@ -134,6 +136,106 @@ class DataSourceVMware(sources.DataSource):
          self.data_access_method = None
          self.vmware_rpctool = VMWARE_RPCTOOL
  
@@ -135,7 +135,7 @@ index 22ca63de..24ec649f 100644
      def _get_data(self):
          """
          _get_data loads the metadata, userdata, and vendordata from one of
-@@ -184,6 +286,24 @@ class DataSourceVMware(sources.DataSource):
+@@ -182,6 +284,24 @@ class DataSourceVMware(sources.DataSource):
                  if md or ud or vd:
                      self.data_access_method = DATA_ACCESS_METHOD_GUESTINFO
  
@@ -160,7 +160,7 @@ index 22ca63de..24ec649f 100644
          if not self.data_access_method:
              LOG.error("failed to find a valid data access method")
              return False
-@@ -191,7 +311,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -189,7 +309,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
  
          # Get the metadata.
@@ -170,7 +170,7 @@ index 22ca63de..24ec649f 100644
  
          # Get the user data.
          self.userdata_raw = ud
-@@ -206,8 +327,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -204,8 +325,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
@@ -180,7 +180,7 @@ index 22ca63de..24ec649f 100644
  
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -243,6 +363,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -241,6 +361,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_envvar_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_GUESTINFO:
              get_key_name_fn = get_guestinfo_key_name
@@ -190,5 +190,5 @@ index 22ca63de..24ec649f 100644
              return sources.METADATA_UNKNOWN
  
 -- 
-2.32.0
+2.35.1
 

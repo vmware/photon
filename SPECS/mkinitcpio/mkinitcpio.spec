@@ -1,14 +1,14 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    30
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=a1c8794c29b1da0811b5038dbcdb4a0b5d1e05cd
+%define sha512  mkinitcpio=0e0e8e7e656f07db2bf07a63f81e454e97dba6190d5822e7a1b90b8034caffb97473d6ffd6e8709669a00baa7ec9119abf023549395a206892c29472a6403b76
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc3
 BuildRequires: git
@@ -23,8 +23,7 @@ BuildArch:     noarch
 Multi-format archive and compression library
 
 %prep
-%setup -q
-%patch0 -p0
+%autosetup -p0
 
 %build
 
@@ -37,7 +36,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+make  %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,6 +49,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 30-2
+-   Bump version as a part of libxslt upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 30-1
 -   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 28-1

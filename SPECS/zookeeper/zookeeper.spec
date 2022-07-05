@@ -1,6 +1,6 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.7.0
+Version:          3.8.0
 Release:          1%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
@@ -8,7 +8,7 @@ Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source:           %{name}-%{version}.tar.gz
-%define sha1      zookeeper=21a0e591bb57d2e9b4964b820f799b2e3a67ed5e
+%define sha512    zookeeper=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
 Source1:          zookeeper.service
 Source2:          zkEnv.sh
 Patch0:           zkSever_remove_cygwin_cypath.patch
@@ -28,8 +28,7 @@ which make them brittle in the presence of change and difficult to manage.
 Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%setup -q -n apache-zookeeper-%{version}-bin
-%patch0 -p1
+%autosetup -p1 -n apache-zookeeper-%{version}-bin
 
 %install
 mkdir -p %{buildroot}%{_prefix}
@@ -88,6 +87,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Fri Apr 22 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
+-   Automatic Version Bump
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
 -   Automatic Version Bump
 *   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.8-1

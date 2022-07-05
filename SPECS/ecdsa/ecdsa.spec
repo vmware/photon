@@ -2,24 +2,20 @@
 
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
-Version:        0.16.1
+Version:        0.17.0
 Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
-
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
-%define         sha1 ecdsa=ec9fa2f821e0bdf0812dc0c94b92214212541fb6
-
+%define         sha512 ecdsa=23acf993ce4f7f832674a3b70ab870c20172816e27adc836d4c6a876e72a488a830895d63ab6af67cc7cbc83c71f7097d0d530bf67d24c84e69e9fa87031f6fd
 BuildArch:      noarch
-
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
-
 
 %description
 This is an easy-to-use implementation of ECDSA cryptography (Elliptic Curve
@@ -30,7 +26,7 @@ and signatures are very short, making them easy to handle and incorporate
 into other protocols.
 
 %prep
-%setup -q -n ecdsa-%{version}
+%autosetup -n ecdsa-%{version}
 
 %build
 python3 setup.py build
@@ -52,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.17.0-1
+-   Automatic Version Bump
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.16.1-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
@@ -69,4 +67,4 @@ python3 setup.py test
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.13-2
 -   GA - Bump release of all rpms
 *   Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 0.13-1
--   Initial build.  First version
+-   Initial build.  First version.

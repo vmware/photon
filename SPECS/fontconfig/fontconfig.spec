@@ -1,14 +1,14 @@
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
-Version:        2.13.93
-Release:        2%{?dist}
+Version:        2.14.0
+Release:        1%{?dist}
 License:        BSD/GPL
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/fontconfig/release/%{name}-%{version}.tar.gz
-%define sha1    fontconfig=792c094e528768b37f068a2c0a35c9dbfd02793f
+%define sha512  fontconfig=0ba2fc31057d7b2c6521cb850b413f337b0ae39b50cf0ed8d5360ec01e880e1f32489a0d31ea380770c238e217485cebbbb8bd92d42118bcc928aa7d08f7e651
 BuildRequires:  freetype2-devel
 BuildRequires:  libxml2
 BuildRequires:  expat-devel
@@ -22,12 +22,13 @@ removing a common source of configuration problems, perform font name substituti
 so that appropriate alternative fonts can be selected if fonts are missing,
 identify the set of fonts required to completely cover a set of languages.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	expat-devel
-Requires:	freetype2-devel
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       expat-devel
+Requires:       freetype2-devel
+
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -38,7 +39,7 @@ export PYTHON=python3
 %configure \
         --disable-docs \
 	--docdir=/usr/share/doc/%{name}-%{version} &&
-make
+make %{?_smp_mflags}
 
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
@@ -77,6 +78,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
+-   Automatic Version Bump
 *   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.93-2
 -   Add freetype2-devel requires for -devel subpackage.
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.93-1
@@ -88,4 +91,4 @@ make %{?_smp_mflags} -k check
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12.1-2
 -   Requires expat-devel
 *   Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1
--   Initial version
+-   Initial version.

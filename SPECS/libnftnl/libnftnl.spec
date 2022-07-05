@@ -1,13 +1,13 @@
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
-Version:        1.1.9
-Release:        2%{?dist}
+Version:        1.2.1
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 License:        GPLv2+
 URL:            http://netfilter.org/projects/libnftnl/
 Source0:        https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
-%define sha1 %{name}-%{version}=24d92a1b058f1cef749832ce3866ec4bf5ad1a64
+%define sha1 %{name}-%{version}=845691fd3cc834bc5fc3180a90bbc4b7747c9dff
 Distribution:   Photon
 
 BuildRequires:  libmnl-devel
@@ -28,13 +28,14 @@ Development files for %{name}
 
 %build
 %configure  --disable-static --disable-silent-rules --with-json-parsing
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %check
+# make doesn't support _smp_mflags
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot} -name '*.la' -delete
 
 %ldconfig_scriptlets
@@ -51,6 +52,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Wed Dec 22 2021 Susant sahani <ssahani@vmware.com> 1.2.1-1
+- Version bump
 * Tue Jul 27 2021 Susant sahani <ssahani@vmware.com> 1.1.9-2
 - Use ldconfig scriplets and switch autosetup
 * Sun Jan 24 2021 Susant sahani <ssahani@vmware.com> 1.1.9-1

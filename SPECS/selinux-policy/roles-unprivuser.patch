@@ -1,7 +1,18 @@
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te	2020-08-06 21:37:13.731801762 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te	2020-08-06 22:36:13.955979955 +0530
-@@ -154,144 +154,6 @@
+From 22602e3b32ba62668f73e498b05dcbe5b26f9f1f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:39:46 +0530
+Subject: [PATCH 11/20] roles unprivuser
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/roles/unprivuser.te | 127 -----------------------------
+ 1 file changed, 127 deletions(-)
+
+diff --git a/policy/modules/roles/unprivuser.te b/policy/modules/roles/unprivuser.te
+index 4bff8ff..b308872 100644
+--- a/policy/modules/roles/unprivuser.te
++++ b/policy/modules/roles/unprivuser.te
+@@ -167,133 +167,6 @@ optional_policy(`
  	vlock_run(user_t, user_r)
  ')
  
@@ -36,10 +47,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		games_role(user_r, user_t)
--	')
--
--	optional_policy(`
--		gift_role(user_r, user_t)
 -	')
 -
 -	optional_policy(`
@@ -101,13 +108,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -	optional_policy(`
 -		ssh_role_template(user, user_r, user_t)
 -	')
--	optional_policy(`
--		su_role_template(user, user_r, user_t)
--	')
--
--	optional_policy(`
--		sudo_role_template(user, user_r, user_t)
--	')
 -
 -	optional_policy(`
 -		systemd_systemctl_entrypoint(user_t)
@@ -146,3 +146,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  optional_policy(`
      vmtools_run_helper(user_t, user_r)
  ')
+-- 
+2.35.1
+

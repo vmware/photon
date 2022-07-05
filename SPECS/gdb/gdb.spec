@@ -1,16 +1,14 @@
 Summary:        C debugger
 Name:           gdb
-Version:        10.2
+Version:        11.2
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha1    gdb=1056e2743a825ecce46ec9eec37f0b357831012b
+%define sha512  gdb=07e9026423438049b11f4f784d57401ece4e940570f613bd6958b3714fe7fbc2c048470bcce3e7d7d9f93331cdf3881d30dcc964cb113a071143a02b28e5b127
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         gdb-7.12-pstack.patch
-Patch1:         0001-skip-inaccessible.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -30,9 +28,7 @@ GDB, the GNU Project debugger, allows you to see what is going on
 `inside' another program while it executes -- or what
 another program was doing at the moment it crashed.
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup
 
 %build
 mkdir build && cd build
@@ -43,7 +39,7 @@ mkdir build && cd build
 make %{?_smp_mflags}
 
 %install
-cd build && make DESTDIR=%{buildroot} install
+cd build && make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
 rm %{buildroot}%{_infodir}/dir
 rm %{buildroot}%{_libdir}/libctf-nobfd.a
@@ -78,6 +74,7 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %exclude %{_datadir}/locale
 %exclude %{_includedir}/*.h
 %{_includedir}/gdb/*.h
+%{_includedir}/sim/*.h
 %{_libdir}/*.so
 %{_infodir}/*.gz
 %{_datadir}/gdb/python/*
@@ -87,6 +84,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 11.2-1
+-   Automatic Version Bump
 *   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 10.2-1
 -   Automatic Version Bump
 *   Thu Jan 07 2021 Tapas Kundu <tkundu@vmware.com> 10.1-1

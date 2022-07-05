@@ -1,11 +1,11 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.2110.0
-Release:        2%{?dist}
+Version:        8.2202.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=ace7abb0946ecdf2946b6970e8a6fa4b946779fc
+%define sha512    rsyslog=b1c68099236cc0722f52822f8b46d7f2a4a023e0809907f2b0173d5593df3c6f914516310bd832ac028252fb2c467dc90756d4472950e4244f3919b328a8bd6e
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -91,6 +91,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 8.2202.0-1
+-   Automatic Version Bump
 *   Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2110.0-2
 -   Bump up release for openssl
 *   Fri Nov 12 2021 Tapas Kundu <tkundu@vmware.com> 8.2110.0-1

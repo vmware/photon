@@ -1,19 +1,22 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.2
+Version:        3.3
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    libsemanage=bc67f9118dcca5032919d25184899f9daf66b70b
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha1    %{name}=11f64c0651cde5d85b1dbbbc05491e95943643bb
+
 BuildRequires:  libselinux-devel = %{version}
 BuildRequires:  libsepol-devel = %{version}
+BuildRequires:  swig
 BuildRequires:  audit-devel
-BuildRequires:  python3-devel swig
+BuildRequires:  python3-devel
+
 Requires:       libselinux = %{version}
 Requires:       libsepol = %{version}
 Requires:       audit
@@ -53,21 +56,22 @@ The libsemanage-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
-make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
+make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=%{_bindir}/python3 pywrap
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" install %{_smp_mflags}
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" \
+     BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=%{_bindir}/python3 install install-pywrap \
+     %{_smp_mflags}
 
 # do not package ru man pages
 rm -rf %{buildroot}%{_mandir}/ru
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -91,6 +95,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
+- Upgrade v3.3
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
 - Automatic Version Bump
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1

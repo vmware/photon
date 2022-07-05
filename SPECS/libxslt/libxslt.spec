@@ -1,14 +1,15 @@
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.34
-Release:        4%{?dist}
+Version:        1.1.35
+Release:        1%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    libxslt=5b42a1166a1688207028e4a5e72090828dd2a61e
+Source0:        https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
+%define sha512  libxslt=9dd4a699235f50ae9b75b25137e387471635b4b2da0a4e4380879cd49f1513470fcfbfd775269b066eac513a1ffa6860c77ec42747168e2348248f09f60c8c96
+
 Requires:       libxml2-devel
 Requires:       libgcrypt
 BuildRequires:  libxml2-devel
@@ -58,12 +59,16 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
+%{_libdir}/cmake/libxslt/*
 %{_includedir}/*
 %{_docdir}/*
 %{_datadir}/aclocal/*
 %{_mandir}/man3/*
+%{_datadir}/gtk-doc/*
 
 %changelog
+*   Mon Jun 20 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.35-1
+-  Update to version 1.1.35
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.1.34-4
 -   Release bump up to use libxml2 2.9.12-1.
 *   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 1.1.34-3

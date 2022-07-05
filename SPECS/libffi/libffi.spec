@@ -1,16 +1,14 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
-Version:	3.3
+Version:	3.4.2
 Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
-%define sha1 %{name}=8df6cb570c8d6596a67d1c0773bf00650154f7aa
-
+%define sha512  %{name}=31bad35251bf5c0adb998c88ff065085ca6105cf22071b9bd4b5d5d69db4fadf16cadeec9baca944c4bb97b619b035bb8279de8794b922531fddeb0779eb7fb1
 Provides:	pkgconfig(libffi)
 
 %if %{with_check}
@@ -22,14 +20,15 @@ The libffi library provides a portable, high level programming interface
 to various calling conventions. This allows a programmer to call any
 function specified by a call interface description at run time.
 
-%package    devel
-Summary:    Header and development files for libffi
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files for libffi
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
@@ -69,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.2-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
 - Automatic Version Bump
 * Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-7
@@ -86,4 +87,4 @@ rm -rf %{buildroot}/*
 * Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
 - Updated to version 3.2.1
 * Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1
-- Initial build.	First version
+- Initial build. First version.

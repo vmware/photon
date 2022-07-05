@@ -1,20 +1,20 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.8.14
-Release:       1%{?dist}
+Version:       3.9.15
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1   rabbitmq=239a8274b5af7c75eccec0df22b3fc915302c6f1
+%define sha512 rabbitmq=614e0f39efb12e7098342cc0d4a69aa94cc62a71f19506aa14f00f6db66ad332e3e36bb46d9ac67880f3fa9a7c2b423a382f87b43ab052f12bfc022803e977f8
 Source1:       rabbitmq.config
 Requires:      erlang
 Requires:      erlang-sd_notify
 Requires:      /bin/sed
 Requires:      socat
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 BuildRequires: erlang
 BuildRequires: rsync
 BuildRequires: zip
@@ -30,16 +30,16 @@ BuildArch:     noarch
 rabbitmq messaging server
 
 %prep
-%setup -q
+%autosetup
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT \
-             PREFIX=%{_prefix} \
-             RMQ_ROOTDIR=/usr/lib/rabbitmq/
+make %{?_smp_mflags} install DESTDIR=%{buildroot} \
+                     PREFIX=%{_prefix} \
+                     RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
@@ -71,7 +71,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make tests
+make %{?_smp_mflags} tests
 
 %pre
 if ! getent group rabbitmq >/dev/null; then
@@ -96,7 +96,7 @@ chmod g+s /etc/rabbitmq
 %systemd_postun_with_restart %{name}.service
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -107,6 +107,12 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.9.15-2
+- Bump version as a part of libxslt upgrade
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.9.15-1
+- Automatic Version Bump
+* Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 3.8.14-2
+- Bump up version to use fips enable erlang.
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.8.14-1
 - Automatic Version Bump
 * Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1

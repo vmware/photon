@@ -2,17 +2,17 @@
 %global pamdir %{_lib}/security
 
 Name:           nss-pam-ldapd
-Version:        0.9.11
+Version:        0.9.12
 Release:        1%{?dist}
 Summary:        nsswitch module which uses directory servers
 License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
 Group:          System Environment/Security
-Vendor:         VMware, Inc
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-%{version}.tar.gz
-%define sha1 %{name}=fea1e4a536b5078df8133276d4db7b429418fe42
+%define sha512  %{name}=da154303ba2f86b8653d978acfbba4633d0190afd353b6a57386391078c531bf7b11195fbabbe53cf6f36545c6f1c71b9567fd042892a73251bf0016c5f018ee
 Source1:        nslcd.tmpfiles
 Source2:        nslcd.service
 
@@ -21,9 +21,9 @@ BuildRequires:  autoconf, automake
 BuildRequires:  Linux-PAM-devel
 %{?systemd_requires}
 
-Requires: openldap
-Requires: krb5
-Requires: Linux-PAM
+Requires:       openldap
+Requires:       krb5
+Requires:       Linux-PAM
 
 %description
 The nss-pam-ldapd daemon, nslcd, uses a directory server to look up name
@@ -41,11 +41,11 @@ autoreconf -f -i
 %make_build
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/{%{_libdir},%{_unitdir}}
 install -p -m644 %{SOURCE2} %{buildroot}/%{_unitdir}/
 
@@ -64,7 +64,6 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/%{_tmpfilesdir}/%{name}.conf
 %{_sbindir}/*
 %{nssdir}/*.so*
 %{pamdir}/pam_ldap.so
-%{_mandir}/*/*
 %attr(0600,root,root) %config(noreplace) /etc/nslcd.conf
 %attr(0644,root,root) %config(noreplace) %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/nslcd.service
@@ -94,5 +93,7 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+* Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.12-1
+- Automatic Version Bump
 * Wed Dec 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.9.11-1
 - Initial version

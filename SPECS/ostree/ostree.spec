@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha1    lib%{name}-%{version}=20bb1cb059928baddab91a25c360ff84413df1dd
+%define sha512  lib%{name}-%{version}=73d463e9cfaa027ac640051615b312c1800e71b2587e33cbae1e60356cb3c3f5d4afcda8ace680636ebd1d112061f2a8a7c25c46aa24a1b260244451157ffe8a
 Source1:        91-ostree.preset
 
 Patch0:         dualboot-support.patch
@@ -115,6 +115,7 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %systemd_postun_with_restart ostree-remount.service
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %doc README.md
 %{_bindir}/ostree
@@ -122,14 +123,14 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_datadir}/ostree
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_libdir}/systemd/system/ostree-finalize-staged.path
+%{_unitdir}/ostree-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
-%{_libdir}/systemd/system-generators/ostree-system-generator
-%{_libdir}/systemd/system-preset/91-ostree.preset
-%{_libdir}/systemd/system/ostree*.service
+%{_systemdgeneratordir}/ostree-system-generator
+%{_presetdir}/91-ostree.preset
+%{_unitdir}/ostree*.service
 %{_libdir}/ostree/ostree-prepare-root
 %{_libdir}/ostree/ostree-remount
-%{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
+%{_tmpfilesdir}/ostree-tmpfiles.conf
 %config(noreplace) %{_sysconfdir}/dracut.conf.d/ostree.conf
 %config(noreplace) %{_sysconfdir}/ostree-mkinitcpio.conf
 %{_mandir}/man1/ostree-admin*
@@ -138,11 +139,13 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
+%defattr(-,root,root)
 %{_sysconfdir}/ostree
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/OSTree-1.0.typelib
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -154,6 +157,7 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_mandir}/man5/*.gz
 
 %files grub2
+%defattr(-,root,root)
 %{_sysconfdir}/grub.d/*ostree
 %{_libexecdir}/libostree/grub2*
 

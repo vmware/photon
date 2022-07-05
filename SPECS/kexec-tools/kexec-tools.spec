@@ -1,12 +1,12 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
-Version:        2.0.22
+Version:        2.0.24
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
-%define sha1    kexec-tools=d23d055fb98f7fa68a2888b52f11530ba3b3a206
+%define sha512  kexec-tools=ef7cf78246e2d729d81a3649791a5a23c385353cc75cbe8ef279616329fdaccc876d614c7f51e1456822a13a11520296070d9897467d24310399909e049c3822
 Patch0:         kexec-tools-disable-test.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,15 +19,14 @@ Requires:       zlib
 kexec-tools allows booting of a linux kernel from the context of a running kernel using kernel's kexec feature
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure
-make
+make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %files
 %{_sbindir}/*
@@ -37,6 +36,8 @@ make install DESTDIR=%{buildroot}
 %doc TODO
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.24-1
+-   Automatic Version Bump
 *   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.22-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.21-1
@@ -54,4 +55,4 @@ make install DESTDIR=%{buildroot}
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
 -   GA - Bump release of all rpms
 *   Fri Feb 26 2016 Anish Swaminathan <anishs@vmware.com>  2.0.11-1
--   Initial version
+-   Initial version.

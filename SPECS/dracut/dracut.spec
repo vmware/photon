@@ -1,5 +1,5 @@
-%define dracutlibdir %{_prefix}/lib/dracut
-%define _unitdir /usr/lib/systemd/system
+%define dracutlibdir %{_libdir}/dracut
+%define _unitdir %{_libdir}/systemd/system
 
 Summary:        dracut to create initramfs
 Name:           dracut
@@ -11,8 +11,9 @@ License:        GPLv2+ and LGPLv2+
 URL:            https://dracut.wiki.kernel.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha1    %{name}=1c0eb80f930dc1e4baac1912239aee233a108bc3
+%define sha512  %{name}=2d2ea2889d9013bc94245bd7d1a2154f24d02bd9c2f7dbb28e5968e17d918e6598c68d85b0f551f968218980a80b19361ca0c9e8e94997ba54f4c09afcd6d866
 
 # Taken from https://www.gnu.org/licenses/lgpl-2.1.txt
 Source1:        lgpl-2.1.txt
@@ -24,7 +25,6 @@ Patch3:         lvm-no-read-only-locking.patch
 Patch4:         fix-hostonly.patch
 
 BuildRequires:  bash
-BuildRequires:  git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc3
@@ -66,41 +66,37 @@ cp %{SOURCE1} .
 make %{?_smp_mflags}
 
 %install
-rm -rf -- %{buildroot}
-make %{?_smp_mflags} install \
-     DESTDIR=%{buildroot} \
-     libdir=%{_prefix}/lib
+make %{?_smp_mflags} install DESTDIR=%{buildroot} libdir=%{_libdir}
 
 echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}/%{dracutlibdir}/dracut-version.sh
 
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni
-
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips \
+          %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni \
+          %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
 
 # we do not support dash in the initramfs
 rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash \
+          %{buildroot}/%{dracutlibdir}/modules.d/96securityfs \
+          %{buildroot}/%{dracutlibdir}/modules.d/97masterkey \
+          %{buildroot}/%{dracutlibdir}/modules.d/98integrity
 
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/96securityfs
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/97masterkey
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/98integrity
+mkdir -p %{buildroot}/boot/dracut \
+         %{buildroot}%{_localstatedir}/lib/dracut/overlay \
+         %{buildroot}%{_localstatedir}/log \
+         %{buildroot}%{_localstatedir}/opt/dracut/log \
+         %{buildroot}%{_sharedstatedir}/initramfs \
+         %{buildroot}%{_sbindir}
 
-mkdir -p %{buildroot}/boot/dracut
-mkdir -p %{buildroot}/var/lib/dracut/overlay
-mkdir -p %{buildroot}%{_localstatedir}/log
-mkdir -p %{buildroot}%{_localstatedir}/opt/dracut/log
 touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
 ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
-mkdir -p %{buildroot}%{_sharedstatedir}/initramfs
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-mkdir -p %{buildroot}%{_sbindir}
-ln -sr %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
+ln -srv %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
 
 %clean
 rm -rf -- %{buildroot}
@@ -120,8 +116,8 @@ rm -rf -- %{buildroot}
 %dir %{dracutlibdir}/modules.d
 %{dracutlibdir}/modules.d/*
 %exclude %{_libdir}/kernel
-/usr/lib/dracut/dracut-init.sh
-/usr/share/pkgconfig/dracut.pc
+%{_libdir}/dracut/dracut-init.sh
+%{_datadir}/pkgconfig/dracut.pc
 %{dracutlibdir}/dracut-functions.sh
 %{dracutlibdir}/dracut-functions
 %{dracutlibdir}/dracut-version.sh
@@ -159,56 +155,56 @@ rm -rf -- %{buildroot}
 
 %{_bindir}/dracut-catimages
 %dir /boot/dracut
-%dir /var/lib/dracut
-%dir /var/lib/dracut/overlay
+%dir %{_localstatedir}/lib/dracut
+%dir %{_localstatedir}/lib/dracut/overlay
 
 %changelog
-*   Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 055-1
--   Upgrade to version 055
-*   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
--   Added a command line option to manually override host_only
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
--   Adjust hostonly based on running environment
-*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
--   Remove fipsify support
-*   Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
--   Fixed hostonly setting logic to generate initrd properly
-*   Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
--   Fix mkitnird and lsinitrd
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
--   Use asciidoc3
-*   Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
--   Update to 050
-*   Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
--   Added fips module
-*   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3
--   systemd: install systemd-tty-ask-password-agent systemd-ask-password
-*   Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2
--   lvm.conf: Do not set read-only locking.
-*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 048-1
--   Version update
-*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
--   Fixed the log file directory structure
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
--   Requires coreutils/util-linux/findutils or toybox,
+* Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 055-1
+- Upgrade to version 055
+* Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
+- Added a command line option to manually override host_only
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
+- Adjust hostonly based on running environment
+* Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
+- Remove fipsify support
+* Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
+- Fixed hostonly setting logic to generate initrd properly
+* Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
+- Fix mkitnird and lsinitrd
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
+- Use asciidoc3
+* Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
+- Update to 050
+* Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
+- Added fips module
+* Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3
+- systemd: install systemd-tty-ask-password-agent systemd-ask-password
+* Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2
+- lvm.conf: Do not set read-only locking.
+* Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 048-1
+- Version update
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
+- Fixed the log file directory structure
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
+- Requires coreutils/util-linux/findutils or toybox,
     /bin/grep, /bin/sed
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 045-4
--   Add kmod-devel to BuildRequires
-*   Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
--   Fix dependency
-*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 045-2
--   Disable xattr for cp
-*   Wed Apr 12 2017 Chang Lee <changlee@vmware.com> 045-1
--   Updated to 045
-*   Wed Jan 25 2017 Harish Udaiya Kumar <hudaiyakumr@vmware.com> 044-6
--   Added the patch for bash 4.4 support.
-*   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
--   Add systemd initrd root device target to list of modules
-*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
--   GA - Bump release of all rpms
-*   Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
--   Fix incorrect systemd directory.
-*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
--   Updating Version.
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 045-4
+- Add kmod-devel to BuildRequires
+* Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
+- Fix dependency
+* Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 045-2
+- Disable xattr for cp
+* Wed Apr 12 2017 Chang Lee <changlee@vmware.com> 045-1
+- Updated to 045
+* Wed Jan 25 2017 Harish Udaiya Kumar <hudaiyakumr@vmware.com> 044-6
+- Added the patch for bash 4.4 support.
+* Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
+- Add systemd initrd root device target to list of modules
+* Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
+- GA - Bump release of all rpms
+* Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+- Fix incorrect systemd directory.
+* Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
+- Updating Version.

@@ -1,5 +1,5 @@
 Name:           dbus-broker
-Version:        29
+Version:        31
 Release:        1%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha1    dbus-broker=71ad06d15acec061a4c6beacda9c256234da8e50
+%define sha512  dbus-broker=22fd53cff84e48ae1c11303b5340e16dc9b7124c9e562174c1f0af465c55d69bb8b2768063de281f6f791442126a29ab864ad6b8acf110247a500f6425eae5d9
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -81,6 +81,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Thu May 26 2022 Susant Sahani <ssahani@vmware.com> 31-1
+- Update version
 * Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 29-1
 - Update version and switch to meson
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 28-1

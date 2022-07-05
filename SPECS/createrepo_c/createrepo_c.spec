@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=dab1acedd6b3f92bccf5448dee432b5ee1d1432f
+%define sha512  %{name}=78105c36bc75b5881ebafbec38a46063d46b9a8d7e26cd797bfd90af85534f1ef187d366b597b65798257e8236367507cec6487726b287d8d570a054fb31ba34
 
 BuildRequires:  cmake
 BuildRequires:  curl-devel
@@ -27,7 +27,7 @@ BuildRequires:  zchunk-devel
 
 Requires:       drpm
 Requires:       zchunk-libs
-%if %{with_check}
+%if 0%{?with_check}
 Requires:       libxml2
 %endif
 
@@ -57,18 +57,18 @@ sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %build
 mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DWITH_LIBMODULEMD=OFF ..
-make %{?_smp_mflags}
+cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} -DWITH_LIBMODULEMD=OFF ..
+%make_build
 
 %install
 cd build
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
-ln -sf %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
-ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
+%make_install %{?_smp_mflags}
+ln -sfv %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
+ln -sfv %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
+ln -sfv %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
