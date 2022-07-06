@@ -1,7 +1,7 @@
 Summary:        C library that provide processing for data in the UTF-8 encoding
 Name:           utf8proc
 Version:        2.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
@@ -24,23 +24,23 @@ The utf8proc-devel package contains libraries, header files and documentation
 for developing applications that use utf8proc.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-      -DCMAKE_BUILD_TYPE=Release        \
-      -DBUILD_SHARED_LIBS=ON            \
-      ..
-make %{?_smp_mflags}
+%cmake \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DBUILD_SHARED_LIBS=ON \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%cmake_install
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -48,20 +48,22 @@ make check %{?_smp_mflags}
 %files
 %defattr(-,root,root,-)
 %doc lump.md LICENSE.md NEWS.md README.md
-%{_lib64dir}/libutf8proc.so.*
+%{_libdir}/libutf8proc.so.*
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/utf8proc.h
-%{_lib64dir}/libutf8proc.so
-%{_lib64dir}/pkgconfig/libutf8proc.pc
+%{_libdir}/libutf8proc.so
+%{_libdir}/pkgconfig/libutf8proc.pc
 
 %changelog
-*       Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.0-1
--       Automatic Version Bump
-*       Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
--       Automatic Version Bump
-*       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
--       Automatic Version Bump
-*       Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
--       Initial Version.
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-2
+- Use cmake macros for build
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.0-1
+- Automatic Version Bump
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+- Automatic Version Bump
+* Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
+- Initial Version.
