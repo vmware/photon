@@ -1,14 +1,15 @@
 Summary:        linear algebra package
 Name:           lapack
 Version:        3.10.1
-Release:        1%{?dist}
-URL:            http://www.netlib.org/lapack/
+Release:        2%{?dist}
+URL:            http://www.netlib.org/lapack
 License:        BSD
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.netlib.org/%{name}/%{name}-%{version}.tar.gz
-%define         sha512 %{name}=0500bbbb48483208c0a35b74972ff0059c389da6032824a2079637266a99fa980882eedf7f1fc490219ee4ff27812ac8c6afe118e25f40a9c2387e7b997762fb
+%define sha512 %{name}=0500bbbb48483208c0a35b74972ff0059c389da6032824a2079637266a99fa980882eedf7f1fc490219ee4ff27812ac8c6afe118e25f40a9c2387e7b997762fb
 
 BuildRequires:  cmake
 BuildRequires:  gfortran
@@ -29,23 +30,18 @@ developing applications that use lapack.
 %autosetup
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%cmake \
       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-      -DCMAKE_BUILD_TYPE=Release        \
-      -DBUILD_SHARED_LIBS=ON            \
-      -DLAPACKE=ON                      \
-      ..
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DBUILD_SHARED_LIBS=ON \
+      -DLAPACKE=ON
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-mkdir %{buildroot}/%{_includedir}/lapacke
-mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
+%cmake_install
+mkdir %{buildroot}%{_includedir}/lapacke
+mv %{buildroot}%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 
 %ldconfig_scriptlets
 
@@ -66,6 +62,8 @@ mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.1-2
+- Use cmake macros for build
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.10.1-1
 - Automatic Version Bump
 * Wed Dec 15 2021 Nitesh Kumar <kunitesh@vmware.com> 3.9.1-2

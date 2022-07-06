@@ -4,14 +4,17 @@ Version:        1.9.4
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/open-source-parsers/jsoncpp
-Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=aed798e3d3214e4d3f996054e6c8a0a529afda69
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=46e92f9d41459ee4d4bc26521723becc0d5539e8bb6f315d1d4ab5d8a93cdb7834075182dc2df5b92812a9241dcc729ca9b4265a139db25aa9a7d96bafcf8362
+
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  python3-devel
+
 %description
 JsonCpp is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings.
 It can also preserve existing comment in unserialization/serialization steps, making it a convenient format to store user input files.
@@ -25,34 +28,40 @@ The package contains libraries and header files for
 developing applications that use jsoncpp.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-cmake \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DBUILD_SHARED_LIBS=ON \
-        -DJSONCPP_WITH_WARNING_AS_ERROR=OFF \
-        -DJSONCPP_WITH_PKGCONFIG_SUPPORT=ON \
-        -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF \
-        -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-        -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-        -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
-        -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
-        -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-        -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
-        -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
-        -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
-        -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
-        -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
-        -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
-        -GNinja
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_OBJECT_LIBS=OFF \
+    -DJSONCPP_WITH_WARNING_AS_ERROR=OFF \
+    -DJSONCPP_WITH_PKGCONFIG_SUPPORT=ON \
+    -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF \
+    -DPYTHON_EXECUTABLE=%{python3} \
+    -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
+    -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
+    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
+    -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
+    -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
+    -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
+    -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
+    -GNinja
+
+cd %{__cmake_builddir}
 %ninja_build
+
 %install
+cd %{__cmake_builddir}
 %ninja_install
 
+%if 0%{?with_check}
 %check
 %global _smp_mflags -j1
-ctest
+%ctest
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -67,7 +76,6 @@ ctest
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/*.so
-%{_libdir}/objects-Release/jsoncpp_object/*.o
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog

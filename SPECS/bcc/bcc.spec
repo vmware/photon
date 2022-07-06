@@ -18,7 +18,7 @@ Source1:        bcc-src-with-submodule-%{version}.tar.gz
 %define sha512  bcc-src-with-submodule=66a1ac0199e3e0405a795d0e4f0d7895a9df38260ac0d77e857a69c81457ff9976e1eb285fe49818a8e21461abd748c66837ce49cc9d3e0952278db92c611fb5
 
 BuildRequires:   bison
-BuildRequires:   cmake >= 2.8.7
+BuildRequires:   cmake
 BuildRequires:   flex
 BuildRequires:   make
 BuildRequires:   gcc

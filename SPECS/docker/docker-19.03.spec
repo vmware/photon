@@ -113,7 +113,7 @@ mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
 
 %build
-export GOPATH="$(pwd)"
+export GOPATH="${PWD}"
 export GO111MODULE=auto
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
@@ -156,10 +156,13 @@ popd
 
 # init
 pushd tini
-  cmake \
+%cmake \
     -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
-    -Dgit_version_check_ret=0 \
-    . && make tini-static && cp tini-static "$GOPATH/bin/docker-init"
+    -Dgit_version_check_ret=0
+
+cd %{__cmake_builddir}
+make tini-static %{?_smp_mflags}
+cp tini-static "$GOPATH/bin/docker-init"
 popd
 
 jq -n \

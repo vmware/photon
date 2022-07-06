@@ -24,24 +24,23 @@ but it also supports other popular programming languages such as C, Objective-C,
 %autosetup -p1
 
 %build
-mkdir -p build && cd build
-cmake -DLIBCLANG_BUILD_STATIC=ON \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DLLVM_ENABLE_PIC=OFF \
-      -DLLVM_BUILD_LLVM_DYLIB=OFF \
-      -DLLVM_BUILD_LLVM_C_DYLIB=OFF \
-      -DLLVM_ENABLE_TERMINFO=OFF \
-      -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-      ..
+%cmake -DLIBCLANG_BUILD_STATIC=ON \
+       -DBUILD_SHARED_LIBS=OFF \
+       -DLLVM_ENABLE_PIC=OFF \
+       -DLLVM_BUILD_LLVM_DYLIB=OFF \
+       -DLLVM_BUILD_LLVM_C_DYLIB=OFF \
+       -DLLVM_ENABLE_TERMINFO=OFF \
+       -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+       ..
 
-%make_build %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-%make_install %{?_smp_mflags}
+%cmake_install
 
 %if 0%{?with_check}
 %check
+cd %{__cmake_builddir}
 make %{?_smp_mflags} check
 %endif
 
