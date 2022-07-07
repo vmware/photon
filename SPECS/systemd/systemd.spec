@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        251
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
 %define sha512  %{name}=9a67136b1fc6600881b2b1a1d89185e5e48ab600a9226b1f27229f8d87c1afc9a1502095f2e26dff3bf0de8f4780293d6b3f78536357859cbfc4bec62d425125
+
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -264,6 +265,8 @@ CONFIGURE_OPTS=(
        -Dselinux=true
        -Dlibcurl=true
        -Dgnutls=true
+       -Ddefault-dns-over-tls=opportunistic
+       -Ddns-over-tls=true
        -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
@@ -300,7 +303,10 @@ CONFIGURE_OPTS=(
 sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}%{_systemd_util_dir}/network/99-default.link
-sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
+
+sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
@@ -665,6 +671,10 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 251-3
+- Enable dns-over-tls support
+- Enable default-dns-over-tls=opportunistic support
+- Disable DNSSEC & DNSOverTLS by default
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 251-2
 - Bump version as a part of libxslt upgrade
 * Tue May 24 2022 Susant Sahani <ssahani@vmware.com>  251-1
