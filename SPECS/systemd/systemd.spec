@@ -1,16 +1,16 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        247.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
-
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    %{name}=db23f9af9c9a8be0ab24d71d3747077d8b307c16
+%define sha512 %{name}=752d384a911ba20f8d2c01a02e13792f3b5e42ebee0f0167ffed1b53b2264de1228c93d01e31ee980a4830cb917ef9593099c63c00bdd3a888ea932c54e73b5a
+
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -265,6 +265,8 @@ CONFIGURE_OPTS=(
        -Dselinux=true
        -Dlibcurl=true
        -Dgnutls=true
+       -Ddefault-dns-over-tls=opportunistic
+       -Ddns-over-tls=true
        -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
@@ -296,7 +298,10 @@ CONFIGURE_OPTS=(
 sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}%{_systemd_util_dir}/network/99-default.link
-sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
+
+sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
@@ -661,6 +666,10 @@ rm -rf %{_systemd_util_dir}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-3
+- Enable dns-over-tls support
+- Enable default-dns-over-tls=opportunistic support
+- Disable DNSSEC & DNSOverTLS by default
 * Thu Feb 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-2
 - Add libgpg-error-devel to BuildRequires
 * Tue Jan 18 2022 Susant Sahani <ssahani@vmware.com>  247.11-1
