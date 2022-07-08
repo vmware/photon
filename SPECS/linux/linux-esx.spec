@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -1031,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Jul 11 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7
+-   Fix multiple issues in tarfs_lookup
 *   Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
 -   Add kernel as requires to hmacgen postun
 *   Tue Jul 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-5
