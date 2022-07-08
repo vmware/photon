@@ -2,16 +2,16 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.27.0
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=bad5831e23e35b3635ca75d3d67e74522f0d7dac
+%define sha512    sysdig=102150cc641165a6c18ce71e3c6148dc10700f614fec7e1909c29172e3cce02dfa16af56aabdcd420499d0aa89f90fee8f26d92a250b0a521d1b9d416c6a678f
 BuildArch:      x86_64
-Patch0:         0001-sysdig-Fix-build.patch
+Patch0:         get-lua-googletest-sources-from-photonstage.patch
 BuildRequires:  cmake
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
@@ -25,6 +25,7 @@ BuildRequires:  jq-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
 BuildRequires:  git
+BuildRequires:  net-tools
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
@@ -42,6 +43,7 @@ Requires:       protobuf
 %autosetup -p1
 
 %build
+export CFLAGS="-Wno-error=misleading-indentation"
 # fix for linux-4.9
 sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
 sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
@@ -90,6 +92,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 0.27.0-6
+-   fix build errors
 *   Tue Nov 16 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-5
 -   Bump up release for openssl
 *   Tue Nov 16 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-4
