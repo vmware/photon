@@ -18,7 +18,7 @@ BuildRequires:  python3-docutils
 BuildRequires:  binutils-devel
 
 %description
-This package contains the %{name}, which allows inspection and simple
+This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
 %prep
@@ -47,6 +47,6 @@ mv %{buildroot}/usr/man %{buildroot}%{_mandir}
 %{_mandir}
 
 %changelog
-* Tue Jul 5 2022 Benson Kwok <bkwok@vmware.com> 5.17-1
+* Fri Jul 8 2022 Benson Kwok <bkwok@vmware.com> 5.17-1
 - Initial version
 
