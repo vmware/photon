@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -11,9 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1 %{name}=ae8c52df28577b2c15cddee428e9773fbfeafa6e
+%define sha512  %{name}=85bf6c98b1d226019122226ca4761821c6d8b46c7c40b00b67a9279f3d1fc847ea4bdde2fddcdaa161aa577b86a495f5ad80f8736acd813ad74a366b9aeaaa89
 Source1:        https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
-%define sha1 container-selinux=30bd378d8bc8075642442a88d0447a937c074159
+%define sha512  container-selinux=8d85263599cf66b2d83e510ab75056d425ae5cd9b330c820d053e328575129ccca5320c92f29c8e0310d49b90261755567a28b93ae684f21f49698789ea6bf1b
 Source2:        build.conf
 Source3:        modules.conf
 
@@ -40,6 +40,10 @@ Patch19: authlogin.if-add-transition-rules-for-shadow.patch
 Patch20: allow-lvm_t-to-transit-to-unconfined_t.patch
 Patch21: fix-fc-conflicts.patch
 Patch22: fix-AVC-denials-based-on-package-test-results.patch
+Patch23: Fix-kubernetes-denials-for-K8-deployment.patch
+Patch24: Fix-bin-denials-for-K8-deployment-with-containerd.patch
+Patch25: Fix-etcd-denials-for-K8-deployment-with-containerd.patch
+Patch26: fix_systemd_gpt_denials.patch
 
 BuildArch:      noarch
 
@@ -116,6 +120,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Thu Sep 1 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-2
+- Added selinux policy for k8's deployment with containerd
 * Mon Mar 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-1
 - Upgrade to v36.5
 * Tue Mar 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.8-4
