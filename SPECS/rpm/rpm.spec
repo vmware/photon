@@ -7,7 +7,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -283,6 +283,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 4.14.3-3
+- version bump to build with zstd
 * Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-2
 - Remove unused macro files from /usr/lib/rpm
 * Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-1
