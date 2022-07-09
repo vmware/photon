@@ -1,0 +1,28 @@
+From 0fad3a386860525ea897af1715fe1eb0a3223cdc Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 18 May 2022 15:05:03 +0530
+Subject: [PATCH] libebt_nflog.c: initialize len & flag fields to 0
+
+This is needed by HCX team.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ extensions/libebt_nflog.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/extensions/libebt_nflog.c b/extensions/libebt_nflog.c
+index 9801f35..49affd3 100644
+--- a/extensions/libebt_nflog.c
++++ b/extensions/libebt_nflog.c
+@@ -55,6 +55,8 @@ static void brnflog_init(struct xt_entry_target *t)
+ 	struct ebt_nflog_info *info = (struct ebt_nflog_info *)t->data;
+ 
+ 	info->prefix[0]	= '\0';
++	info->len = 0;
++	info->flags = 0;
+ 	info->group	= EBT_NFLOG_DEFAULT_GROUP;
+ 	info->threshold = EBT_NFLOG_DEFAULT_THRESHOLD;
+ }
+-- 
+2.25.1
+

@@ -1,0 +1,185 @@
+commit 8712d38289a1c071de32b56323069d727eb8e708
+Author: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date:   Sun Jul 3 18:10:12 2022 +0530
+
+    Port HCX arptables_jf vlan code to iptables/xtables-arp
+    
+    Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+
+diff --git a/include/linux/netfilter_arp/arp_tables.h b/include/linux/netfilter_arp/arp_tables.h
+index bb1ec64..36478b6 100644
+--- a/include/linux/netfilter_arp/arp_tables.h
++++ b/include/linux/netfilter_arp/arp_tables.h
+@@ -55,6 +55,9 @@ struct arpt_arp {
+ 	__be16 arhrd, arhrd_mask;
+ 	__be16 arpro, arpro_mask;
+ 
++	/* VLAN. */
++	__be16 vlan, vlan_mask;
++
+ 	/* The protocol address length is only accepted if it is 4
+ 	 * so there is no use in offering a way to do filtering on it.
+ 	 */
+@@ -84,7 +87,8 @@ struct arpt_arp {
+ #define ARPT_INV_ARPHRD		0x0080	/* Invert the sense of ARP HRD. */
+ #define ARPT_INV_ARPPRO		0x0100	/* Invert the sense of ARP PRO. */
+ #define ARPT_INV_ARPHLN		0x0200	/* Invert the sense of ARP HLN. */
+-#define ARPT_INV_MASK		0x03FF	/* All possible flag bits mask. */
++#define ARPT_INV_VLAN		0x0400	/* Invert the sense of VLAN. */
++#define ARPT_INV_MASK		0x07FF	/* All possible flag bits mask. */
+ 
+ /* This structure defines each of the firewall rules.  Consists of 3
+    parts which are 1) general ARP header stuff 2) match specific
+diff --git a/iptables/xtables-arp.c b/iptables/xtables-arp.c
+index d3cb9df..8fbc22a 100644
+--- a/iptables/xtables-arp.c
++++ b/iptables/xtables-arp.c
+@@ -103,9 +103,12 @@ static const char cmdflags[] = { 'I', 'D', 'D', 'R', 'A', 'L', 'F', 'Z',
+ #define OPT_VIANAMEOUT	0x02000U
+ #define OPT_LINENUMBERS 0x04000U
+ #define OPT_COUNTERS	0x08000U
+-#define NUMBER_OF_OPT	16
++
++#define OPT_VLAN        0x10000U
++
++#define NUMBER_OF_OPT	17
+ static const char optflags[NUMBER_OF_OPT]
+-= { 'n', 's', 'd', 2, 3, 7, 8, 4, 5, 6, 'j', 'v', 'i', 'o', '0', 'c'};
++= { 'n', 's', 'd', 2, 3, 7, 8, 4, 5, 6, 'j', 'v', 'i', 'o', '0', 'c', 'Q'};
+ 
+ static struct option original_opts[] = {
+ 	{ "append", 1, 0, 'A' },
+@@ -138,6 +141,7 @@ static struct option original_opts[] = {
+ 	{ "match", 1, 0, 'm' },
+ 	{ "numeric", 0, 0, 'n' },
+ 	{ "out-interface", 1, 0, 'o' },
++	{ "vlan", 1, 0, 'Q' },
+ 	{ "verbose", 0, 0, 'v' },
+ 	{ "exact", 0, 0, 'x' },
+ 	{ "version", 0, 0, 'V' },
+@@ -174,19 +178,19 @@ static char commands_v_options[NUMBER_OF_CMD][NUMBER_OF_OPT] =
+ /* Well, it's better than "Re: Linux vs FreeBSD" */
+ {
+ 	/*     -n  -s  -d  -p  -j  -v  -x  -i  -o  -f  --line */
+-/*INSERT*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*DELETE*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*DELETE_NUM*/{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*REPLACE*/   {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*APPEND*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*LIST*/      {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*FLUSH*/     {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*ZERO*/      {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*NEW_CHAIN*/ {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*DEL_CHAIN*/ {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*SET_POLICY*/{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*CHECK*/     {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+-/*RENAME*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '}
++/*INSERT*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*DELETE*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*DELETE_NUM*/{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*REPLACE*/   {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*APPEND*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*LIST*/      {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*FLUSH*/     {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*ZERO*/      {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*NEW_CHAIN*/ {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*DEL_CHAIN*/ {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*SET_POLICY*/{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*CHECK*/     {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
++/*RENAME*/    {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '}
+ };
+ 
+ static int inverse_for_options[NUMBER_OF_OPT] =
+@@ -207,6 +211,7 @@ static int inverse_for_options[NUMBER_OF_OPT] =
+ /* -o */ ARPT_INV_VIA_OUT,
+ /*--line*/ 0,
+ /* -c */ 0,
++/* -Q */ ARPT_INV_VLAN,
+ };
+ 
+ /* A few hardcoded protocols for 'all' and in case the user has no
+@@ -238,6 +243,23 @@ static unsigned char msk_type_multicast[ETH_ALEN] = {1,0,0,0,0,0};
+ static unsigned char mac_type_broadcast[ETH_ALEN] = {255,255,255,255,255,255};
+ static unsigned char msk_type_broadcast[ETH_ALEN] = {255,255,255,255,255,255};
+ 
++#define SYS_NET_NETFILTER_ARP_VLAN "/proc/sys/net/netfilter/arp_vlan_netfilter"
++
++/*
++ * get /proc/sys value for net.netfilter.arp_vlan_netfilter
++ */
++static int get_arp_vlan_netfilter_flag()
++{
++    int vlan_enabled = 0;
++    if (access(SYS_NET_NETFILTER_ARP_VLAN, R_OK) == 0) {
++        // file exists
++        FILE *fp = fopen(SYS_NET_NETFILTER_ARP_VLAN, "r");
++        fscanf(fp, "%d", &vlan_enabled);
++        fclose(fp);
++    }
++    return vlan_enabled;
++}
++
+ /*
+  * put the mac address into 6 (ETH_ALEN) bytes
+  */
+@@ -472,6 +494,8 @@ exit_printhelp(void)
+ "				network interface name ([+] for wildcard)\n"
+ "  --out-interface -o [!] output name[+]\n"
+ "				network interface name ([+] for wildcard)\n"
++"  --vlan       -Q [!] vlan[/mask]\n"
++"                  vlan in packet header\n"
+ "  --jump	-j target\n"
+ "				target for rule (may load target extension)\n"
+ "  --match	-m match\n"
+@@ -920,6 +944,7 @@ int do_commandarp(struct nft_handle *h, int argc, char *argv[], char **table,
+ 	int invert = 0;
+ 	unsigned int nsaddrs = 0, ndaddrs = 0;
+ 	struct in_addr *saddrs = NULL, *daddrs = NULL;
++	const char *vlan = NULL;
+ 
+ 	int c, verbose = 0;
+ 	const char *chain = NULL;
+@@ -945,7 +970,7 @@ int do_commandarp(struct nft_handle *h, int argc, char *argv[], char **table,
+ 
+ 	opts = xt_params->orig_opts;
+ 	while ((c = getopt_long(argc, argv,
+-	   "-A:D:R:I:L::M:F::Z::N:X::E:P:Vh::o:p:s:d:j:l:i:vnt:m:c:",
++	   "-A:D:R:I:L::M:F::Z::N:X::E:P:Vh::o:p:s:d:j:l:i:vnt:m:c:Q:",
+ 					   opts, NULL)) != -1) {
+ 		switch (c) {
+ 			/*
+@@ -1261,7 +1286,11 @@ int do_commandarp(struct nft_handle *h, int argc, char *argv[], char **table,
+ 			}
+ 			printf("Bad argument `%s'\n", optarg);
+ 			exit_tryhelp(2);
+-
++		case 'Q':
++			check_inverse ( optarg, &invert, &optind, argc );
++			set_option ( &options, OPT_VLAN, &cs.arp.arp.invflags, invert );
++			vlan = argv[optind - 1];
++			break;
+ 		default:
+ 			if (cs.target) {
+ 				xtables_option_tpcall(c, argv,
+@@ -1299,7 +1328,20 @@ int do_commandarp(struct nft_handle *h, int argc, char *argv[], char **table,
+ 		parse_hostnetworkmask(dhostnetworkmask, &daddrs,
+ 				      &(cs.arp.arp.tmsk), &ndaddrs);
+ 
+-	if ((nsaddrs > 1 || ndaddrs > 1) &&
++        if (vlan && get_arp_vlan_netfilter_flag()) {
++          char *end = NULL;
++          long val = strtol(vlan, &end, 10);
++          if (*end != '\0') {
++            xtables_error(PARAMETER_PROBLEM, "vlan value has illegal chars");
++          }
++          if ((val < 0) || (val >= 4095)) {
++            xtables_error(PARAMETER_PROBLEM, "vlan value out of legal range");
++          }
++          cs.arp.arp.vlan = val;
++          cs.arp.arp.vlan_mask = 0xffff;
++        }
++
++        if ((nsaddrs > 1 || ndaddrs > 1) &&
+ 	    (cs.arp.arp.invflags & (ARPT_INV_SRCIP | ARPT_INV_TGTIP)))
+ 		xtables_error(PARAMETER_PROBLEM, "! not allowed with multiple"
+ 				" source or destination IP addresses");
