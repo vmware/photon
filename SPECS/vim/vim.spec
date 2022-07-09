@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.5151
+Version:        8.2.5164
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=5526e972c24997507489dce35ba118fb17abaf72
+%define sha1    %{name}=c4658f0781dbf13ac505ca841234b5fc9cf8a8e7
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -165,6 +165,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Sat Jul 09 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5164-1
+- Update to 8.2.5164 to fix CVE-2022-2207, CVE-2022-2210
 * Fri Jul 01 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5151-1
 - Update to 8.2.5151 to fix several CVEs
 * Tue Jun 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5037-1
