@@ -232,7 +232,7 @@ net.set_link_macaddr(ifname = interface_name, macaddr = mac_address)
 
 ### set_link_mode
 
-Set the mode (auto or manual) of the specifed interface.
+Set the mode (auto or manual) of the specified interface.
 
 **Syntax**
 ````
