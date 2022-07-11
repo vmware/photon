@@ -1,12 +1,18 @@
 diff --git a/lsinitrd.sh b/lsinitrd.sh
-index e13929ea..386265a5 100755
+index 39be169..386265a 100755
 --- a/lsinitrd.sh
 +++ b/lsinitrd.sh
-@@ -109,19 +109,7 @@ if [[ $1 ]]; then
+@@ -109,39 +109,7 @@ if [[ $1 ]]; then
          exit 1
      fi
  else
--    [[ -f /etc/machine-id ]] && read -r MACHINE_ID < /etc/machine-id
+-    if [[ -d /efi/Default ]] || [[ -d /boot/Default ]] || [[ -d /boot/efi/Default ]]; then
+-        MACHINE_ID="Default"
+-    elif [[ -f /etc/machine-id ]]; then
+-        read -r MACHINE_ID < /etc/machine-id
+-    else
+-        MACHINE_ID="Default"
+-    fi
 -
 -    if [[ -d /efi/loader/entries || -L /efi/loader/entries ]] \
 -        && [[ $MACHINE_ID ]] \
@@ -16,15 +22,29 @@ index e13929ea..386265a5 100755
 -        && [[ $MACHINE_ID ]] \
 -        && [[ -d /boot/${MACHINE_ID} || -L /boot/${MACHINE_ID} ]]; then
 -        image="/boot/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
--    else
+-    elif [[ -d /boot/efi/loader/entries || -L /boot/efi/loader/entries ]] \
+-        && [[ $MACHINE_ID ]] \
+-        && [[ -d /boot/efi/${MACHINE_ID} || -L /boot/efi/${MACHINE_ID} ]]; then
+-        image="/boot/efi/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
+-    elif [[ -f /lib/modules/${KERNEL_VERSION}/initrd ]]; then
+-        image="/lib/modules/${KERNEL_VERSION}/initrd"
+-    elif [[ -f /boot/initramfs-${KERNEL_VERSION}.img ]]; then
 -        image="/boot/initramfs-${KERNEL_VERSION}.img"
+-    elif [[ $MACHINE_ID ]] \
+-        && mountpoint -q /efi; then
+-        image="/efi/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
+-    elif [[ $MACHINE_ID ]] \
+-        && mountpoint -q /boot/efi; then
+-        image="/boot/efi/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
+-    else
+-        image=""
 -    fi
 +    image="/boot/initrd.img-${KERNEL_VERSION}"
  fi
  
  shift
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index 657e8b29..c1bcf197 100755
+index 657e8b2..c1bcf19 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
 @@ -1,5 +1,6 @@

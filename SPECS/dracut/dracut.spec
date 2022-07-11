@@ -1,9 +1,8 @@
-%define dracutlibdir %{_libdir}/dracut
-%define _unitdir %{_libdir}/systemd/system
+%define dracutlibdir %{_libdir}/%{name}
 
 Summary:        dracut to create initramfs
 Name:           dracut
-Version:        055
+Version:        057
 Release:        1%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
@@ -12,8 +11,8 @@ URL:            https://dracut.wiki.kernel.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha512  %{name}=2d2ea2889d9013bc94245bd7d1a2154f24d02bd9c2f7dbb28e5968e17d918e6598c68d85b0f551f968218980a80b19361ca0c9e8e94997ba54f4c09afcd6d866
+Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8acdc8db2233a9abbaeea218cc5b1be68c4985088995f42624750783f8d40ecbb7fa97ab4f6468f67c079c8418590ace317c143a92d9305640b48c7c0edd4089
 
 # Taken from https://www.gnu.org/licenses/lgpl-2.1.txt
 Source1:        lgpl-2.1.txt
@@ -21,13 +20,13 @@ Source1:        lgpl-2.1.txt
 Patch0:         Add-mkinitrd-support-to-dracut.patch
 Patch1:         disable-xattr.patch
 Patch2:         fix-initrd-naming-for-photon.patch
-Patch3:         lvm-no-read-only-locking.patch
 Patch4:         fix-hostonly.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc3
+BuildRequires:  systemd-rpm-macros
 
 Requires:       bash >= 4
 Requires:       (coreutils or toybox)
@@ -63,40 +62,40 @@ cp %{SOURCE1} .
            --libdir=%{_prefix}/lib \
            --disable-documentation
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot} libdir=%{_libdir}
+%make_install %{?_smp_mflags} libdir=%{_libdir}
 
-echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}/%{dracutlibdir}/dracut-version.sh
+echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips \
-          %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni \
-          %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips \
+          %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
+          %{buildroot}%{dracutlibdir}/modules.d/00bootchart
 
 # we do not support dash in the initramfs
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash \
-          %{buildroot}/%{dracutlibdir}/modules.d/96securityfs \
-          %{buildroot}/%{dracutlibdir}/modules.d/97masterkey \
-          %{buildroot}/%{dracutlibdir}/modules.d/98integrity
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
+          %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
+          %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
+          %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
-mkdir -p %{buildroot}/boot/dracut \
-         %{buildroot}%{_localstatedir}/lib/dracut/overlay \
+mkdir -p %{buildroot}/boot/%{name} \
+         %{buildroot}%{_sharedstatedir}/%{name}/overlay \
          %{buildroot}%{_localstatedir}/log \
-         %{buildroot}%{_localstatedir}/opt/dracut/log \
+         %{buildroot}%{_localstatedir}/opt/%{name}/log \
          %{buildroot}%{_sharedstatedir}/initramfs \
          %{buildroot}%{_sbindir}
 
-touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
-ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
+touch %{buildroot}%{_localstatedir}/opt/%{name}/log/%{name}.log
+ln -sfv %{_localstatedir}/opt/%{name}/log/%{name}.log %{buildroot}%{_localstatedir}/log/
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-ln -srv %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
+ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
 
 %clean
 rm -rf -- %{buildroot}
@@ -105,60 +104,62 @@ rm -rf -- %{buildroot}
 %defattr(-,root,root,0755)
 %{!?_licensedir:%global license %%doc}
 %license COPYING lgpl-2.1.txt
-%{_bindir}/dracut
+%{_bindir}/%{name}
 %{_bindir}/mkinitrd
 %{_bindir}/lsinitrd
 # compat symlink
-%{_sbindir}/dracut
-%{_datadir}/bash-completion/completions/dracut
+%{_sbindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/bash-completion/completions/lsinitrd
 %dir %{dracutlibdir}
 %dir %{dracutlibdir}/modules.d
 %{dracutlibdir}/modules.d/*
 %exclude %{_libdir}/kernel
-%{_libdir}/dracut/dracut-init.sh
-%{_datadir}/pkgconfig/dracut.pc
-%{dracutlibdir}/dracut-functions.sh
-%{dracutlibdir}/dracut-functions
-%{dracutlibdir}/dracut-version.sh
-%{dracutlibdir}/dracut-logger.sh
-%{dracutlibdir}/dracut-initramfs-restore
-%{dracutlibdir}/dracut-install
+%{_libdir}/%{name}/%{name}-init.sh
+%{_datadir}/pkgconfig/%{name}.pc
+%{dracutlibdir}/%{name}-functions.sh
+%{dracutlibdir}/%{name}-functions
+%{dracutlibdir}/%{name}-version.sh
+%{dracutlibdir}/%{name}-logger.sh
+%{dracutlibdir}/%{name}-initramfs-restore
+%{dracutlibdir}/%{name}-install
 %{dracutlibdir}/skipcpio
-%{dracutlibdir}/dracut-util
-%config(noreplace) %{_sysconfdir}/dracut.conf
-%dir %{_sysconfdir}/dracut.conf.d
-%dir %{dracutlibdir}/dracut.conf.d
-%dir %{_localstatedir}/opt/dracut/log
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/dracut/log/dracut.log
-%{_localstatedir}/log/dracut.log
+%{dracutlibdir}/%{name}-util
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%dir %{_sysconfdir}/%{name}.conf.d
+%dir %{dracutlibdir}/%{name}.conf.d
+%dir %{_localstatedir}/opt/%{name}/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/%{name}/log/%{name}.log
+%{_localstatedir}/log/%{name}.log
 %dir %{_sharedstatedir}/initramfs
-%{_unitdir}/dracut-shutdown.service
-%{_unitdir}/sysinit.target.wants/dracut-shutdown.service
-%{_unitdir}/dracut-cmdline.service
-%{_unitdir}/dracut-initqueue.service
-%{_unitdir}/dracut-mount.service
-%{_unitdir}/dracut-pre-mount.service
-%{_unitdir}/dracut-pre-pivot.service
-%{_unitdir}/dracut-pre-trigger.service
-%{_unitdir}/dracut-pre-udev.service
-%{_unitdir}/initrd.target.wants/dracut-cmdline.service
-%{_unitdir}/initrd.target.wants/dracut-initqueue.service
-%{_unitdir}/initrd.target.wants/dracut-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-pivot.service
-%{_unitdir}/initrd.target.wants/dracut-pre-trigger.service
-%{_unitdir}/initrd.target.wants/dracut-pre-udev.service
+%{_unitdir}/%{name}-shutdown.service
+%{_unitdir}/sysinit.target.wants/%{name}-shutdown.service
+%{_unitdir}/%{name}-cmdline.service
+%{_unitdir}/%{name}-initqueue.service
+%{_unitdir}/%{name}-mount.service
+%{_unitdir}/%{name}-pre-mount.service
+%{_unitdir}/%{name}-pre-pivot.service
+%{_unitdir}/%{name}-pre-trigger.service
+%{_unitdir}/%{name}-pre-udev.service
+%{_unitdir}/dracut-shutdown-onfailure.service
+%{_unitdir}/initrd.target.wants/%{name}-cmdline.service
+%{_unitdir}/initrd.target.wants/%{name}-initqueue.service
+%{_unitdir}/initrd.target.wants/%{name}-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-pivot.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-trigger.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-udev.service
 
 %files tools
 %defattr(-,root,root,0755)
-
-%{_bindir}/dracut-catimages
-%dir /boot/dracut
-%dir %{_localstatedir}/lib/dracut
-%dir %{_localstatedir}/lib/dracut/overlay
+%{_bindir}/%{name}-catimages
+%dir /boot/%{name}
+%dir %{_sharedstatedir}/%{name}
+%dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 057-1
+- Upgrade to v057
 * Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 055-1
 - Upgrade to version 055
 * Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
