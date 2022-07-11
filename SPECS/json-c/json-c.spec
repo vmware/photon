@@ -1,16 +1,15 @@
+%define timestamp 20220414
 Summary:       A JSON implementation in C
 Name:          json-c
-Version:       0.15
-Release:       4%{?dist}
+Version:       0.16
+Release:       1%{?dist}
 License:       MIT
 URL:           https://github.com/json-c/json-c/wiki
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
-
 Source0:       https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=35cb3ef403ff5e8905144978ea0a22c9151b63e6bf749a50ca63b3d9320e5018be18aef236490295388d1be2ead7fcf8946d248b28b7ca109a057daaaada2162
-
+%define sha512 %{name}-%{version}=eb16e3186a8d204a0ebd0a97d2a1a4b2ffbaf0f840fd8a8b6fb15af54293a4fd82740469f81e8ba12f03607654a8da6568e9ab80f9848bb66b17714ddcf0a0da
 BuildRequires: cmake
 
 %description
@@ -21,12 +20,11 @@ output them as JSON formatted strings and parse JSON formatted strings back into
 Summary:       Development libraries and header files for json-c
 Requires:      %{name} = %{version}-%{release}
 
-%description  devel
-The package contains libraries and header files for
-developing applications that use json-c.
+%description   devel
+The package contains libraries and header files for developing applications that use json-c.
 
 %prep
-%autosetup  -n %{name}-%{name}-%{version}-20200726 -p1
+%autosetup -n %{name}-%{name}-%{version}-%{timestamp} -p1
 
 %build
 %cmake \
@@ -40,7 +38,6 @@ developing applications that use json-c.
       -DDISABLE_WERROR:BOOL=ON \
       -DENABLE_RDRAND:BOOL=ON \
       -DENABLE_THREADING:BOOL=ON
-
 %cmake_build
 
 %install
@@ -66,6 +63,8 @@ make %{?_smp_mflags} check
 %{_libdir}/cmake/%{name}
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
+- Automatic Version Bump
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.15-4
 - Fix build with latest cmake
 * Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.15-3
