@@ -1,15 +1,15 @@
-Summary:    Modular initramfs image creation utility
-Name:       mkinitcpio
-Version:    30
-Release:    2%{?dist}
-License:    GPLv2
-URL:        https://projects.archlinux.org/mkinitcpio.git/
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
-Distribution:   Photon
-Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512  mkinitcpio=0e0e8e7e656f07db2bf07a63f81e454e97dba6190d5822e7a1b90b8034caffb97473d6ffd6e8709669a00baa7ec9119abf023549395a206892c29472a6403b76
-Patch0:     mkinitcpio-shutdown-ramfs.service.patch
+Summary:       Modular initramfs image creation utility
+Name:          mkinitcpio
+Version:       31
+Release:       1%{?dist}
+License:       GPLv2
+URL:           https://projects.archlinux.org/mkinitcpio.git/
+Group:         System Environment/Development
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
+%define sha512 mkinitcpio=9b30fb02b6470b6e6b54fb611b4b62f89fdaf71cefd8ee74d22253f3d240b9c17b570be766c3ab627fc67bf8aa0e2ccec747d19fa29d6e4f9dadaced61259c8b
+Patch0:        mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc3
 BuildRequires: git
 BuildRequires: python3
@@ -26,7 +26,6 @@ Multi-format archive and compression library
 %autosetup -p0
 
 %build
-
 for i in "hooks/*" ; do sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i; done
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
@@ -49,6 +48,8 @@ make  %{?_smp_mflags} DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 31-1
+-   Automatic Version Bump
 *   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 30-2
 -   Bump version as a part of libxslt upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 30-1
