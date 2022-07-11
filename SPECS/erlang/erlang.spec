@@ -1,38 +1,37 @@
 Name:          erlang
 Summary:       erlang
-Version:       23.3.2
-Release:       4%{?dist}
+Version:       24.3.4.5
+Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       ASL2.0
-URL:           http://erlang.com
+URL:           https://www.erlang.org
 
-Source0:       OTP-%{version}.tar.gz
-%define sha512  OTP=bb3dc1d827314b71f7e4da2082681e449859a69589d566a810baf554131e239ad3fe0555f352d69506467162016d6c6864abb20926843ee4da5876b26650810e
+Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
+%define sha512 OTP=7f9826be5d5afd9d9adaaebdb55165e536c5d2efaa4bbd11cb826bf255b2d89feac8abe5a805bf7ad717fdd0c1633ea2e12692366e2d38fcb8c3d0c452ae17cd
 
-Patch0:        0001-erlang-fix-vernemq-build-fail.patch
+Patch0: 0001-erlang-fix-vernemq-build-fail.patch
 
 Requires:     ncurses-libs
 
 BuildRequires: unzip
 BuildRequires: openssl-devel
+
 %description
-erlang programming language
+Erlang is a general-purpose programming language and runtime
+environment. Erlang has built-in support for concurrency, distribution
+and fault tolerance. Erlang is used in several large telecommunication
+systems from Ericsson.
 
 %prep
 %autosetup -p1 -n otp-OTP-%{version}
 
 %build
 export ERL_TOP="${PWD}"
-export CFLAGS="-Wno-error=implicit-function-declaration"
-
-sh ./otp_build autoconf
+export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 
 %configure \
-    --with-ssl=%{_libdir} \
-    --with-ssl-incl=%{_includedir}/openssl \
-    --with-ssl-rpath=%{_libdir} \
     --enable-dynamic-ssl-lib \
     --enable-fips
 
@@ -49,6 +48,8 @@ sh ./otp_build autoconf
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 24.3.4.5-1
+- Upgrade to v24.3.4.5
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-4
 - Fix binary path
 * Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 23.3.2-3

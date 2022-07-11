@@ -3,7 +3,7 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.10.6
+Version:       3.11.0
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -11,8 +11,8 @@ Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
-Source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=e43cebc07c3e58b9900e30425ea6a6c31d6f2b0ad38a920ccd249df599983126445fd2eb7084d6b38d014701e69475fa6261baa29b39579a063cded0336e109c
+Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 rabbitmq=141830314392a30c6b36ffc46224fd003513e97ef18f31d96180260ecee18818dc2e918e3179c0e24f156e4f0aeb46bbf3a3a77be60ed4a586aa6e1c55376637
 
 Source1:       rabbitmq.conf
 
@@ -30,7 +30,7 @@ BuildRequires: git
 BuildRequires: libxslt
 BuildRequires: xmlto
 BuildRequires: python3-xml
-BuildRequires: python3
+BuildRequires: python3-devel
 BuildRequires: elixir
 BuildRequires: systemd-rpm-macros
 
@@ -121,6 +121,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
+- Upgrade to v3.11.0
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.10.6-1
 - Automatic Version Bump
 * Wed Jun 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.15-3
