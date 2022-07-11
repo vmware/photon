@@ -1,11 +1,11 @@
 Summary:        A fast malloc tool for threads
 Name:           gperftools
-Version:        2.9.1
+Version:        2.10
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/gperftools/gperftools
 Source0:        https://github.com/gperftools/gperftools/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    gperftools=15354d240b39e1e6e34c1b4eef35a6a3df898fbf
+%define sha512  gperftools=81f3b913e76641c6e51cdfe741fd0028bf9237e3e0f3937ea692ff420c8d006ee01be220417833e55809514fb88eeb0b695fa0a2cac614e60234b8c019a6e92a
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -27,7 +27,7 @@ Group:          Development/Tools
 The contains gperftools package doc files.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -35,7 +35,7 @@ The contains gperftools package doc files.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -62,6 +62,8 @@ TCMALLOC_SAMPLE_PARAMETER=128 && make check
 %{_mandir}/man1/*
 
 %changelog
+*    Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10-1
+-    Automatic Version Bump
 *    Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.9.1-1
 -    Automatic Version Bump
 *    Fri Jul 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8-1
