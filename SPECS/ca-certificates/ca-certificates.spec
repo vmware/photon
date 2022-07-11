@@ -1,7 +1,7 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
-Version:             20210429
-Release:             2%{?dist}
+Version:             20220706
+Release:             1%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
 Group:               System Environment/Security
@@ -254,6 +254,8 @@ exit 0
 %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 20220706-1
+- Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 20210429-2
 - Fix binary path
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 20210429-1
