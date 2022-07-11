@@ -1,14 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source:         tuned-%{version}.tar.gz
+
+Source0: tuned-%{version}.tar.gz
 %define sha512  %{name}=64ed338398f7ae73cdf4de04ce24dec6869abf3f399459f13de792edfd965da4efdab0fb1337749556f2868d1769dcb55df9e13983d1e0bc2769fb5fc791cfb8
 
 Patch0:         remove_desktop_utils_dependency.patch
@@ -33,7 +33,7 @@ Requires:       irqbalance
 Requires:       systemd
 Requires:       virt-what
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
@@ -55,7 +55,7 @@ network and ATA harddisk devices are implemented.
 %package        utils-systemtap
 Summary:        Disk and net statistic monitoring systemtap scripts
 Group:          System/Base
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       systemtap
 
 %description    utils-systemtap
@@ -72,14 +72,14 @@ instead of fewer large ones).
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 # conditional support for grub2, grub2 is not available on all architectures
 # and tuned is noarch package, thus the following hack is needed
 mkdir -p %{buildroot}%{_datadir}/tuned/grub2
 mv %{buildroot}%{_sysconfdir}/grub.d/00_tuned %{buildroot}%{_datadir}/tuned/grub2/00_tuned
 rmdir %{buildroot}%{_sysconfdir}/grub.d
-mkdir -p %{buildroot}%{_var}/lib/tuned
-mkdir -p %{buildroot}%{_sysconfdir}/modprobe.d
+mkdir -p %{buildroot}%{_var}/lib/tuned \
+         %{buildroot}%{_sysconfdir}/modprobe.d
 touch %{buildroot}%{_sysconfdir}/modprobe.d/kvm.rt.tuned.conf
 
 #removing powertop2tuned as we do not have powertop for this.
@@ -141,6 +141,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.19.0-2
+- Bump version as a part of polkit upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.19.0-1
 - Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.18.0-1

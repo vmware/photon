@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.12
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -104,7 +104,6 @@ env NOCONFIGURE=1 ./autogen.sh
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/%{name}-host
 install -d %{buildroot}%{_bindir}/%{name}-server
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/%{name}-host
@@ -149,6 +148,8 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-8
+- Bump version as a part of polkit upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-7
 - Bump version as a part of libsolv upgrade
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-6

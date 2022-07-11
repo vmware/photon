@@ -1,6 +1,6 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
-Version:           0.120
+Version:           121
 Release:           1%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
@@ -8,20 +8,20 @@ License:           LGPLv2+
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Distribution:      Photon
 
-Source0:           https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha1       %{name}=75d5885251eef36b28851e095120bc1f60714160
+Source0: https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
 
 BuildRequires:     autoconf
+BuildRequires:     meson
 BuildRequires:     expat-devel
 BuildRequires:     glib-devel
-BuildRequires:     gobject-introspection
 BuildRequires:     intltool >= 0.40.0
-# polkit needs mozjs-78.X
-BuildRequires:     mozjs-devel >= 78.3.1
 BuildRequires:     Linux-PAM-devel
 BuildRequires:     systemd-devel
+BuildRequires:     duktape-devel
+BuildRequires:     gobject-introspection-devel
 
-Requires:          mozjs
+Requires:          duktape
 Requires:          expat
 Requires:          glib
 Requires:          Linux-PAM
@@ -43,16 +43,22 @@ Requires:          polkit = %{version}-%{release}
 header files and libraries for polkit
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-v.%{version}
 
 %build
-%configure --enable-libsystemd-login=yes \
-        --with-systemdsystemunitdir=%{_unitdir}
+%meson \
+    -D js_engine=duktape \
+	-D os_type=redhat \
+	-D authfw=pam \
+	-D examples=false \
+	-D introspection=true \
+	-D session_tracking=libsystemd-login \
+	-D tests=false
 
-make %{?_smp_mflags}
+%meson_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%meson_install
 find %{buildroot} -name '*.la' -delete
 install -vdm 755 %{buildroot}/etc/pam.d
 cat > %{buildroot}/etc/pam.d/polkit-1 << "EOF"
@@ -66,9 +72,6 @@ session  include        system-session
 # End /etc/pam.d/polkit-1
 EOF
 
-%check
-# Disable check. It requires dbus - not available in chroot/container.
-
 %pre
 getent group polkitd > /dev/null || groupadd -fg 27 polkitd &&
 getent passwd polkitd > /dev/null || \
@@ -77,18 +80,17 @@ getent passwd polkitd > /dev/null || \
 
 %post
 /sbin/ldconfig
+# The implied (systemctl preset) will fail and complain, but the macro hides
+# and ignores the fact.  This is in fact what we want, polkit.service does not
+# have an [Install] section and it is always started on demand.
+%systemd_post polkit.service
+
+%preun
+%systemd_preun polkit.service
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-    systemctl stop polkit
-    if getent passwd polkitd >/dev/null; then
-        userdel polkitd
-    fi
-    if getent group polkitd >/dev/null; then
-        groupdel polkitd
-    fi
-fi
+%systemd_postun_with_restart polkit.service
 
 %files
 %defattr(-,root,root)
@@ -104,15 +106,19 @@ fi
 %{_sysconfdir}/pam.d/polkit-1
 %{_sysconfdir}/polkit-1/rules.d/50-default.rules
 %{_datadir}/gettext/its
+%{_libdir}/girepository-1.0/*.typelib
+%{_datadir}/polkit-1/policyconfig-1.dtd
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}-1/
-%{_libdir}/lib%{name}-*.a
 %{_libdir}/lib%{name}-*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 121-1
+- Upgrade to v121
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.120-1
 - Bump version as a part of mozjs upgrade
 * Wed Apr 28 2021 Gerrit Photon <photon-checkins@vmware.com> 0.118-2
