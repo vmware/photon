@@ -1,14 +1,14 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
-Version:        1.0.0
-Release:        2%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
 URL:            https://github.com/gssapi/gss-ntlmssp
 Group:          Applications/System
 Source0:        https://github.com/gssapi/gss-ntlmssp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  gssntlmssp=f3dd83f067c5f139b2d5fbb8eecc12f84e16ae6e6010d078387fbab8aeae49d7a75d55e9438238ccc6b62db0370cd335a03331c24e656e2581261fe3ba8fcdbc
+%define sha512  gssntlmssp=6cd20542aa18dba6f2b777cea8f481e7d73eb1034e14c8aba4ce8984f138ba445a82547b10297ee99f7042920bd910ca10dd67692f3b242696fcc27dfcab123f
 
 Requires:      krb5
 Requires:      libtasn1
@@ -50,7 +50,7 @@ License: LGPLv3+
 Adds a header file with definition for custom GSSAPI extensions for NTLMSSP
 
 %prep
-%autosetup -p1
+%autosetup -n gss-ntlmssp-%{version}
 
 %build
 autoreconf -fiv
@@ -81,6 +81,8 @@ make %{?_smp_mflags} test_gssntlmssp
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
+-   Automatic Version Bump
 *   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.0.0-2
 -   Bump version as a part of libxslt upgrade
 *   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 1.0.0-1
