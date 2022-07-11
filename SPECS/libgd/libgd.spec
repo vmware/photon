@@ -1,14 +1,14 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
-Version:        2.3.2
-Release:        4%{?dist}
+Version:        2.2.3
+Release:        1%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.gz
-%define sha512  libgd=8295dfe1ef0a23aeb4d14cc6a2977ff3c6e3835e3f37f6a0eb13b313b5ab31a8751534473c34ac29ef18307611aa4df9f5421b9fd5b7cee650e197988ecdfdd9
+%define sha512  libgd=4aa65b42d2a07311281770fd4d9cb291eb2fbb411d1073f5b899b1c3bdfdc27adec7dddcfda9f135b82fa11e5f96e70b0b7eb34a4c9a4a500dd23070a96b32f6
 Patch0:         libgd-CVE-2021-38115.patch
 Patch1:         libgd-CVE-2021-40145.patch
 Patch2:         libgd-CVE-2021-40812.patch
@@ -64,6 +64,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.3-1
+-   Automatic Version Bump
 *   Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com>  2.3.2-4
 -   Version bump up to use libtiff 4.4.0
 *   Fri Sep 24 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.2-3
