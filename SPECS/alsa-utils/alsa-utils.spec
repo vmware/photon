@@ -1,14 +1,14 @@
 Summary:        ALSA Utilities
 Name:           alsa-utils
-Version:        1.2.4
-Release:        2%{?dist}
+Version:        1.2.7
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.alsa-project.org/files/pub/utils/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=13080abda55269513b3751044dac292d695e273073a62d74ed4a32c68f448a2b015fe16604650821a6398b6ef6a7b6008cb9f0b7fb7f4ee1fa2b4eb2dcf29770
+%define sha512  %{name}=1be8f617315193e6033653ac96a14bd1c3272cd9d8f3776cdb1357f35f5353652acd5975cfc5bd16278cd496f5bf409bb60432818a526282edad9a4c718a97c9
 
 Patch0:         ens1371.patch
 
@@ -37,6 +37,7 @@ The ALSA Utilities package contains various utilities which are useful for contr
 %install
 %make_install %{?_smp_mflags}
 install -dm 755 %{buildroot}%{_sharedstatedir}/alsa
+find %{buildroot} -name \*.la -delete
 
 %post
 alsactl init
@@ -50,9 +51,12 @@ alsactl -L store
 %{_localstatedir}/*
 %{_unitdir}/*
 %{_udevrulesdir}/*
+%{_libdir}/alsa-topology/libalsatplg_module_nhlt.so
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.7-1
+- Automatic Version Bump
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.4-2
 - Fix binary path
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
