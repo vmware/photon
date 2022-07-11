@@ -1,7 +1,7 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
-Version:    1.8.0
-Release:    2%{?dist}
+Version:    1.9.2
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 #%%https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=3d757198dbe680b010ed9233d73cbf3b4a150e6b07ef97d3e94f5fa0472a22b0b3800868634340fb413a18683ff95ff6a8f7fa51ace65d870651336479e32740
+%define sha512  %{name}-%{version}=d0fb157fbfc096fa9cfb4562e51fd4c3f4fa8788f72377c58b27df67c70073b787bba05e39809dcbe17532bb5b8e74b6d27c5e5b3d9af09bc9ce1a9b6aab9378
 
 BuildRequires:  systemd-devel
 BuildRequires:  glib-devel
@@ -68,6 +68,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/*
 
 %changelog
+* Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.2-1
+- Automatic Version Bump
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-2
 - Fix binary path
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
