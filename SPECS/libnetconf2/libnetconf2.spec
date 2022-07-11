@@ -1,14 +1,14 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        2.1.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=fd46a3c31a062324e6c9f2d66006ba8cd852ccb389bf8749d1d0d085b880409e1e373d1d1f2d79c1d88f5eaa72d56195889c07863d0eab1607da89484e21b86f
 
 BuildRequires:  cmake
@@ -32,7 +32,11 @@ libnetconf2 is a NETCONF library in C intended for building NETCONF clients and
 servers. NETCONF is the NETwork CONFiguration protocol introduced by IETF.
 
 %package devel
-Summary: Development libraries for libnetconf2
+Summary:    Development libraries for libnetconf2
+Requires: %{name} = %{version}-%{release}
+Requires:  libssh-devel
+Requires:  openssl-devel
+Requires:  libyang-devel
 
 %description devel
 Headers of libnetconf library.
@@ -46,7 +50,7 @@ Headers of libnetconf library.
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DENABLE_TESTS=ON \
     -DENABLE_TLS=ON \
-    -DENABLE_SSH=ON \
+    -DENABLE_SSH=ON
 
 %cmake_build
 
@@ -83,17 +87,21 @@ cd build
 %files
 %defattr(-,root,root)
 %license LICENSE
-%{_libdir}/%{name}.so*
+%{_libdir}/%{name}.so.*
 %exclude %dir %{_libdir}/debug
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/%{name}.so
 %{_includedir}/*.h
 %{_includedir}/%{name}/*.h
 %dir %{_includedir}/%{name}
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.7-3
+- Bump version as a part of libyang upgrade
+- Fix file packaging and spec issues
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.7-2
 - Fix cmocka dependency
 * Thu Mar 24 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.7-1
