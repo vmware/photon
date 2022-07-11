@@ -1,17 +1,15 @@
 Name:           cpulimit
-Version:        1.2
+Version:        2.8
 Release:        1%{?dist}
 Summary:        CPU Usage Limiter for Linux
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/System
 License:        GPLv2+
-URL:            https://github.com/opsengine/cpulimit
+URL:            https://sourceforge.net/projects/limitcpu
 
-Source0:        https://github.com/opsengine/cpulimit/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=50f6ab4dc7bffa09fa475b7554d518ec9d75ac325d7247a964b417feecbe466f61d217347513e6e6d111a43af61077a9c6e92b790c71e51c2e27c90fbfd43b1a
-
-Patch0: fix-include-warning-ifdef-macro-errors.patch
+Source0: https://sourceforge.net/projects/limitcpu/files/limitcpu/%{name}-%{version}.tar.gz
+%define sha512 %{name}=aeb121739a5dc9f94c6ddb0905ed05eb7d146c9d0e71c34ba46aad798bda2c30b7ccc548338b4c468f9885f09d97a4565c00199c8df6af74dc9b6f23940c540e
 
 BuildRequires:  glibc-devel
 
@@ -28,24 +26,25 @@ is able to adapt itself to the overall system load, dynamically and quickly.
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-install -Dp -m 755 src/%{name} %{buildroot}%{_bindir}/%{name}
-
-%if 0%{?with_check}
-%check
-cd tests && ./process_iterator_test
-%endif
+export PREFIX=%{buildroot}%{_prefix}
+%make_install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
 
+%ldconfig_scriptlets
+
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
+%{_mandir}/man1/*
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8-1
+- Automatic Version Bump
 * Mon May 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2-1
 - Upgrade to v1.2
 - Actual tag version is 0.2 but to maintain proper versioning, using 1.2
