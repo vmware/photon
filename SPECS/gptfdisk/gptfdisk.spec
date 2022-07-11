@@ -1,18 +1,20 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
-Version:        1.0.7
-Release:        3%{?dist}
+Version:        1.0.9
+Release:        1%{?dist}
 License:        GPLv2+
-URL:            http://sourceforge.net/projects/gptfdisk/
+URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://downloads.sourceforge.net/project/gptfdisk/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=8a2067523479e34c76392571692b36e6c9eadcd0aca979f1ba09904930ed92a709bfdcdfa3369230a5ab2b5a751682dc7fb4645fb5f7f1c361ee8d28e104214c
+Source0: http://downloads.sourceforge.net/project/gptfdisk/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=c2489ac7e196cb53b9fdb18d0e421571eca43c366de8922c5c7f550aadf192558e7af69b181c30747d6cf607c1670126223465eaa5e231cc589402d94a4e97a2
 
-Patch0:         gptfdisk-1.0.7-convenience-1.patch
-Patch1:         gptfdisk-Makefile.patch
+# Patch0 taken from:
+# http://ftp.oregonstate.edu/.1/blfs/conglomeration/gptfdisk/gptfdisk-1.0.9-convenience-1.patch
+Patch0: %{name}-%{version}-convenience-1.patch
+Patch1: gptfdisk-Makefile.patch
 
 BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
@@ -56,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-1
+- Upgrade to v1.0.9
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.7-3
 - Fix binary path
 * Fri Nov 19 2021 Oliver Kurth <okurth@vmware.com> 1.0.7-2
