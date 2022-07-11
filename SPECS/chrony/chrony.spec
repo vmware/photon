@@ -1,14 +1,15 @@
 Name:           chrony
 Version:        4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingPrograms
 URL:            https://chrony.tuxfamily.org
-Source0:        https://download.tuxfamily.org/chrony/chrony-%{version}.tar.gz
-%define sha512    %{name}=7f946b27de605b3ebea62cf23916dfad77c99e8b2338ba239ede6b8216ce436b3d4d87770f371c8d8e006507c51d5c831b51f067957abd2935adfdec3f5aa67d
+
+Source0: https://download.tuxfamily.org/chrony/chrony-%{version}.tar.gz
+%define sha512 %{name}=7f946b27de605b3ebea62cf23916dfad77c99e8b2338ba239ede6b8216ce436b3d4d87770f371c8d8e006507c51d5c831b51f067957abd2935adfdec3f5aa67d
 
 BuildRequires:  systemd
 BuildRequires:  libcap-devel
@@ -41,26 +42,28 @@ rm -f getdate.c
         --docdir=%{_docdir} \
         --with-ntp-era=$(date -d '1970-01-01 00:00:00+00:00' +'%s')
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,logrotate.d}
-mkdir -p %{buildroot}%{_localstatedir}/{lib,log}/chrony
-mkdir -p %{buildroot}%{_sysconfdir}/dhcp/dhclient.d
-mkdir -p %{buildroot}%{_libexecdir}
-mkdir -p %{buildroot}{%{_unitdir},%{_prefix}/lib/systemd/ntp-units.d}
+mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,logrotate.d} \
+         %{buildroot}%{_localstatedir}/{lib,log}/chrony \
+         %{buildroot}%{_sysconfdir}/dhcp/dhclient.d \
+         %{buildroot}%{_libexecdir} \
+         %{buildroot}{%{_unitdir},%{_libdir}/systemd/ntp-units.d}
 
 install -m 644 -p chrony.conf %{buildroot}%{_sysconfdir}/chrony.conf
 
 install -m 640 -p examples/chrony.keys.example \
         %{buildroot}%{_sysconfdir}/chrony.keys
+
 install -m 644 -p examples/chrony.logrotate \
         %{buildroot}%{_sysconfdir}/logrotate.d/chrony
 
 install -m 644 -p examples/chronyd.service \
         %{buildroot}%{_unitdir}/chronyd.service
+
 install -m 644 -p examples/chrony-wait.service \
         %{buildroot}%{_unitdir}/chrony-wait.service
 
@@ -69,14 +72,16 @@ cat > %{buildroot}%{_sysconfdir}/sysconfig/chronyd <<EOF
 OPTIONS=""
 EOF
 
-touch %{buildroot}%{_localstatedir}/lib/chrony/{drift,rtc}
+touch %{buildroot}%{_sharedstatedir}/chrony/{drift,rtc}
 
 echo 'chronyd.service' > \
-        %{buildroot}%{_prefix}/lib/systemd/ntp-units.d/50-chronyd.list
+        %{buildroot}%{_libdir}/systemd/ntp-units.d/50-chronyd.list
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags}
 make quickcheck %{?_smp_mflags}
+%endif
 
 %post
 %systemd_post chronyd.service chrony-wait.service
@@ -87,7 +92,11 @@ make quickcheck %{?_smp_mflags}
 %postun
 %systemd_postun_with_restart chronyd.service
 
+%clean
+rm -rf %{buildroot}
+
 %files
+%defattr(-,root,root)
 %license COPYING
 %doc FAQ NEWS README
 %config(noreplace) %{_sysconfdir}/chrony.conf
@@ -96,22 +105,24 @@ make quickcheck %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/sysconfig/chronyd
 %{_bindir}/chronyc
 %{_sbindir}/chronyd
-%{_prefix}/lib/systemd/ntp-units.d/*.list
+%{_libdir}/systemd/ntp-units.d/*.list
 %{_unitdir}/chrony*.service
 %{_mandir}/man[158]/%{name}*.[158]*
-%dir %attr(-,root,root) %{_localstatedir}/lib/chrony
-%ghost %attr(-,root,root) %{_localstatedir}/lib/chrony/drift
-%ghost %attr(-,root,root) %{_localstatedir}/lib/chrony/rtc
+%dir %attr(-,root,root) %{_sharedstatedir}/chrony
+%ghost %attr(-,root,root) %{_sharedstatedir}/chrony/drift
+%ghost %attr(-,root,root) %{_sharedstatedir}/chrony/rtc
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
-*  Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
--  Automatic Version Bump
-*  Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-4
--  Bump version as a part of nettle upgrade
-*  Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-3
--  Added requires
-*  Thu Nov 19 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-2
--  Make check fix
-*  Mon Jul 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.0-1
--  Initial version for Photon
+* Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2
+- Bump version as a part of nettle upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
+- Automatic Version Bump
+* Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-4
+- Bump version as a part of nettle upgrade
+* Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-3
+- Added requires
+* Thu Nov 19 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-2
+- Make check fix
+* Mon Jul 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.0-1
+- Initial version for Photon

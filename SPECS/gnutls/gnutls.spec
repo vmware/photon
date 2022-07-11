@@ -1,15 +1,16 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512  %{name}=38b488ca1223d9aa8fc25756df08db6f29aaf76fb5816fdeaa14bd89fb431a2e1c495fefc64094f726337d5b89e198146ec7dc22e9a1bca6841a9d881b0d99e6
+Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
+%define sha512 %{name}=38b488ca1223d9aa8fc25756df08db6f29aaf76fb5816fdeaa14bd89fb431a2e1c495fefc64094f726337d5b89e198146ec7dc22e9a1bca6841a9d881b0d99e6
+
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -43,7 +44,7 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 # check for trust store file presence
@@ -56,7 +57,7 @@ developing applications that use gnutls.
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
@@ -69,9 +70,11 @@ cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
+%if 0%{?with_check}
 %check
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 make check %{?_smp_mflags}
+%endif
 
 %ldconfig_scriptlets
 
@@ -95,6 +98,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.4-2
+- Bump version as a part of nettle upgrade
 * Mon May 09 2022 Gerrit Photon <photon-checkins@vmware.com> 3.7.4-1
 - Automatic Version Bump
 * Wed May 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-3

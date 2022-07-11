@@ -1,15 +1,15 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.86
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:         https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512   %{name}=487eae0afbc8bb3d5282a729ffb0cb2c9bdc7d8e46e2e8aa114cd7c5d82e0fd66f49926e7fa4028577548d6f57e8a865aca17f33963a589874584d608ab2deaf
+Source0: https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
+%define sha512 %{name}=487eae0afbc8bb3d5282a729ffb0cb2c9bdc7d8e46e2e8aa114cd7c5d82e0fd66f49926e7fa4028577548d6f57e8a865aca17f33963a589874584d608ab2deaf
 
 Patch0:         enable_dnssec.patch
 
@@ -32,11 +32,10 @@ Utilities that use DHCP protocol to query and remove a DHCP server's leases
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
-make -C contrib/lease-tools %{?_smp_mflags}
+%make_build
+%make_build -C contrib/lease-tools
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir} \
          %{buildroot}%{_sbindir} \
          %{buildroot}%{_mandir}/{man1,man8} \
@@ -74,8 +73,6 @@ install -m 644 contrib/lease-tools/dhcp_release6.1 %{buildroot}%{_mandir}/man1/d
 install -m 755 contrib/lease-tools/dhcp_lease_time %{buildroot}%{_bindir}/dhcp_lease_time
 install -m 644 contrib/lease-tools/dhcp_lease_time.1 %{buildroot}%{_mandir}/man1/dhcp_lease_time.1
 
-%post
-
 %clean
 rm -rf %{buildroot}
 
@@ -96,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.86-3
+- Bump version as a part of nettle upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.86-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.86-1
