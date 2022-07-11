@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.17.1
+Version:        2.17.2
 Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha512  openvswitch=55c7c4d01606aa30ab065e6d181441d0ec8608ccb7ab554fcf4c39494908a0cba0bf961a72b898ab938264e7f1015c2a6d01af20de958fbc698b34543c8ddf10
+%define sha512  openvswitch=e01e41ef2fea21afcc891b8ab0a773fe7c9adf873853e10926b8bde2fd970e12b354010687439238e8d80a87884f497f7396a4a1f2b179104e49e87c66cfc79e
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -144,6 +144,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb-server.5.gz
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.17.2-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.17.1-1
 -   Automatic Version Bump
 *   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.15.0-2
