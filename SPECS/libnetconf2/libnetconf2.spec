@@ -1,15 +1,15 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
-Version:        2.1.7
-Release:        3%{?dist}
+Version:        2.1.18
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=fd46a3c31a062324e6c9f2d66006ba8cd852ccb389bf8749d1d0d085b880409e1e373d1d1f2d79c1d88f5eaa72d56195889c07863d0eab1607da89484e21b86f
+Source0:        https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -18,6 +18,7 @@ BuildRequires:  libssh-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libyang-devel
 BuildRequires:  pcre2-devel
+BuildRequires:  Linux-PAM-devel
 
 Requires: pcre2
 Requires: libyang
@@ -99,6 +100,8 @@ cd build
 %dir %{_includedir}/%{name}
 
 %changelog
+* Mon Oct 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.18-1
+- Automatic Version Bump
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.7-3
 - Bump version as a part of libyang upgrade
 - Fix file packaging and spec issues
