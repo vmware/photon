@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -16,6 +16,7 @@ Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.t
 Source1:        macros.python
 
 Patch0:         cgi3.patch
+Patch1:         Handle-the-EPERM-error-gracefully-in-crypt.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -318,6 +319,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+* Wed Aug 10 2022 Piyush Gupta <gpiyush@vmware.com> 3.9.1-8
+- Handle EPERM error in crypt.py
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-7
 - Bump version as a part of libffi upgrade
 * Wed Feb 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-6
