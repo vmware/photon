@@ -1,15 +1,15 @@
-Summary:    Google's C++ gtest framework
-Name:       gtest
-Version:    1.11.0
-Release:    2%{?dist}
-License:    ASL 2.0
-URL:        https://github.com/google/googletest
-Group:      Development/Tools
-Vendor:     VMware, Inc.
+Summary:        Google's C++ gtest framework
+Name:           gtest
+Version:        1.12.1
+Release:        1%{?dist}
+License:        ASL 2.0
+URL:            https://github.com/google/googletest
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
-%define sha512  googletest=6fcc7827e4c4d95e3ae643dd65e6c4fc0e3d04e1778b84f6e06e390410fe3d18026c131d828d949d2f20dde6327d30ecee24dcd3ef919e21c91e010d149f3a28
+Source0:        https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
+%define sha512  googletest=a9104dc6c53747e36e7dd7bb93dfce51a558bd31b487a9ef08def095518e1296da140e0db263e0644d9055dbd903c0cb69380cb2322941dbfb04780ef247df9c
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -114,6 +114,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libgtest_main.a
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
+- Automatic Version Bump
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.11.0-2
 - Use cmake macros for build
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1
