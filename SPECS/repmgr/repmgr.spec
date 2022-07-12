@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
-Version:        5.3.1
-Release:        2%{?dist}
+Version:        5.3.2
+Release:        1%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org/
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://repmgr.org/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=1e6feae2668af9b28f68cac06e5d2d175b1df267397ed6a15587047311e55bc81391d08031b889105179a9e769c0703ae2c83c25501a178d7575cb4f6801d980
+%define sha512  %{name}=803f94ea99454f59cd753db4a8f64066f3988e347b5b8e3de08b941c09ac9128ba48beeecaface7a729b0b4f296ccb4470c18128fdd6c2e418e8e3fbbefcda1e
 
 BuildRequires:  postgresql-devel cpio
 
@@ -40,6 +40,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 5.3.2-1
+- Automatic Version Bump
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.1-2
 - Fix binary path
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.3.1-1
