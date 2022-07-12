@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
-Version:        5.8.0
-Release:        2%{?dist}
+Version:        5.18.0
+Release:        1%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
@@ -9,10 +9,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
-%define sha512  %{name}=11f2810402ecb83db204346c45ff9f7d643ff2390767794e311a06a10eb97118095e4c377d2b065be50611ec5fc82ac5cbc0a8c7122ee7e9820a2db4e9f177c1
+%define sha512  %{name}=47d035a33367edae7357e34c70bdb0fe9219231153fb4c4f418ed1462d137dd77338c12a199eb71cd70e88903e5fc11e1e4fb595c622183786e87346e2f65739
 
-BuildRequires:  gettext
-BuildRequires:  readline-devel
+BuildRequires: gettext
+BuildRequires: inih-devel
+BuildRequires: readline-devel
+BuildRequires: userspace-rcu-devel
+
+Requires: inih
+Requires: python3
+Requires: util-linux-libs
+Requires: userspace-rcu
 
 %description
 The xfsprogs package contains administration and debugging tools for the
@@ -52,7 +59,6 @@ make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
              PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install-dev %{?_smp_mflags}
 
-#find %{buildroot}/lib64/ -name '*.so' -delete
 find %{buildroot}%{_lib64dir} -name '*.la' -delete
 find %{buildroot}%{_lib64dir} -name '*.a' -delete
 
@@ -68,10 +74,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %doc %{_docdir}/%{name}-%{version}/*
 %{_sbindir}/*
-%{_lib64dir}/*/*.cron
+%{_libdir}/*/*.cron
 %{_mandir}/man2/*
 %{_mandir}/man8/*
 %{_mandir}/man5/*
+%{_datadir}/%{name}/mkfs/*.conf
 %exclude %{_docdir}/%{name}-%{version}/CHANGES.gz
 
 %files devel
@@ -85,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Jul 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.0-1
+- Automatic version bump
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.8.0-2
 - Fix binary path
 * Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 5.8.0-1
