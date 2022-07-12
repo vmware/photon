@@ -4,8 +4,8 @@
 
 Name:       raspberrypi-firmware
 Summary:    Raspberry Pi firmware
-Version:    1.20210303
-Release:    2%{?dist}
+Version:    1.20230106
+Release:    1%{?dist}
 License:    Broadcom Corporation and Raspberry Pi (Trading) Ltd
 URL:        https://github.com/raspberrypi/firmware
 Group:      System Environment/Boot
@@ -13,7 +13,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=5d4542b1f279f30302816542204f15658a3a43f169aea3508dcf963402a40c69c821f0c184183d4db93ebfe8ba8e1f19cfe765817945a2b340c069d1520af632
+%define sha512 %{name}=7ac48195062e57b0afe660d7ff31a1841565384accd487c8b9b7bbf32b88aff126b1d5e859d1b350b73e568d78ac58e58e447729387fb069aaf31c59006c72b5
 
 Source1:    rpi-config-txt.txt
 
@@ -63,7 +63,7 @@ Requires(post): (coreutils or coreutils-selinux or toybox)
 Extra Firmware files for Raspberry Pi 4
 
 %prep
-%autosetup -p1 -n firmware-%{version}
+%autosetup -p1
 
 %build
 
@@ -114,6 +114,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+* Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.20230106-1
+- Automatic Version Bump
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20210303-2
 - Fix requires
 * Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20210303-1
