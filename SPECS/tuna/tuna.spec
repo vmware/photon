@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           tuna
-Version:        0.17
+Version:        0.18
 Release:        1%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rt.wiki.kernel.org/index.php/Tuna
 Source:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.xz
-%define sha512  tuna=e04bb56415e702e888d7022342e34bdff19fe978e13793e737613baf48eadcd1b926d414ec8ba5205c9bea4622bf44b9b12e1fe33e1a89b467bd84e17c4643c4
+%define sha512  tuna=f05774a030f6b41a262fbe28fba2516763bddfdd1bd4ae1ed925cf3852397231af94571b857952466e87f73a33c4111afb53009faa8ed0fde12db4be1788ada7
 BuildArch:      noarch
 BuildRequires:  python3-devel, gettext
 Requires:       python3-ethtool
@@ -64,6 +64,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18-1
+- Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 0.17-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1
