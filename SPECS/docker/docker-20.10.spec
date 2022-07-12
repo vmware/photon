@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -326,6 +326,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rootlesskit-docker-proxy
 
 %changelog
+* Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-3
+- Bump up version to compile with new go
 * Tue May 24 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-2
 - Bump up version to compile with new go.
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-1
