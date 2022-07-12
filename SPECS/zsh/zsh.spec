@@ -1,6 +1,6 @@
 Summary:          Z shell
 Name:             zsh
-Version:          5.8.1
+Version:          5.9
 Release:          1%{?dist}
 License:          MIT
 URL:              http://zsh.org
@@ -8,10 +8,11 @@ Group:            System Environment/Shells
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha512    %{name}=f54a5a47ed15d134902613f6169c985680afc45a67538505e11b66b348fcb367145e9b8ae2d9eac185e07ef5f97254b85df01ba97294002a8c036fd02ed5e76d
-Source1:          zprofile.rhs
-Source2:          zshrc
+Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
+%define sha512 %{name}=d9138b7f379ad942a5f46819d2dd52d31f3a1129f2a0d1b53d4c5cd43c318b60396da6d37c57c477b8e958fb750209aca0ae93f8c9dd42ac958de006a0ff067e
+
+Source1: zprofile.rhs
+Source2: zshrc
 
 BuildRequires:    coreutils
 BuildRequires:    tar
@@ -45,7 +46,7 @@ mechanism, and more.
 Summary:          Zsh shell manual in html format
 Group:            System Environment/Shells
 
-%description      html
+%description html
 The %{name} shell is a command interpreter usable as an interactive login
 shell and as a shell script command processor.  Zsh resembles the ksh
 shell (the Korn shell), but includes many enhancements.  Zsh supports
@@ -88,7 +89,8 @@ install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.zshrc
 # This is just here to shut up rpmlint, and is very annoying.
 # Note that we can't chmod everything as then rpmlint will complain about
 # those without a she-bang line.
-for i in checkmail harden run-help zcalc zkbd; do
+for i in checkmail harden run-help zcalc zkbd \
+         test-repo-git-rebase-merge _path_files test-repo-git-rebase-apply; do
   sed -i -e 's!/usr/local/bin/zsh!%{_bindir}/zsh!' \
       %{buildroot}%{_datadir}/%{name}/%{version}/functions/$i
   chmod +x %{buildroot}%{_datadir}/%{name}/%{version}/functions/$i
@@ -142,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9-1
+- Upgrade to v5.9
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.8.1-1
 - Automatic Version Bump
 * Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 5.8-2
