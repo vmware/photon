@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -101,6 +101,9 @@ Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -297,7 +300,7 @@ Python programming language to use the interface to manipulate perf events.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M20
+%autopatch -p1 -m0 -M21
 
 %ifarch x86_64
 # VMW x86
@@ -673,6 +676,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jul 12 2022 Sharan Turlapati <sturlpati@vmware.com> 5.10.78-10
+- Allow PCI resets to be disabled from vfio_pci
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-9
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.78
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -80,6 +80,9 @@ Patch14: apparmor-af_unix-mediation.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -519,7 +522,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M20
+%autopatch -p1 -m0 -M21
 
 #VMW
 %autopatch -p1 -m55 -M56
@@ -745,6 +748,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Tue Jul 12 2022 Sharan Turlapati <sturlpati@vmware.com> 5.10.78-9
+- Allow PCI resets to be disabled from vfio_pci
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-8
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols
