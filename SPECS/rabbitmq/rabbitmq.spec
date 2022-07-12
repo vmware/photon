@@ -3,8 +3,8 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.9.15
-Release:       3%{?dist}
+Version:       3.10.6
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -12,7 +12,7 @@ License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
 Source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=614e0f39efb12e7098342cc0d4a69aa94cc62a71f19506aa14f00f6db66ad332e3e36bb46d9ac67880f3fa9a7c2b423a382f87b43ab052f12bfc022803e977f8
+%define sha512 rabbitmq=e43cebc07c3e58b9900e30425ea6a6c31d6f2b0ad38a920ccd249df599983126445fd2eb7084d6b38d014701e69475fa6261baa29b39579a063cded0336e109c
 
 Source1:       rabbitmq.conf
 
@@ -121,6 +121,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.10.6-1
+- Automatic Version Bump
 * Wed Jun 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.15-3
 - Fix binary path
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.9.15-2
