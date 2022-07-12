@@ -1,9 +1,9 @@
 %define debug_package %{nil}
-%global maj_ver vim82
+%global maj_ver vim90
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.5037
+Version:        9.0.1055
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=e58354c8bbaddb8fb9654d796471c830ac6172cec8015082a9a06b78b8034d028e4fdf3b24de9954412c08f0631747f997eadc4b0fc9aa178e65ebcd5c68a4c9
+%define sha512  %{name}=e06b1c3b411b3df0b9b02a9daadda20339eea25aadcef7d340de2468bc5defd71ff7684b4a0dd067145754d99e01ca06dfdb55fea24bf44a885c53dd73131bf3
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -169,6 +169,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 9.0.1055-1
+- Automatic Version Bump
 * Tue Jun 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5037-1
 - Update to 8.2.5037 to fix CVE-2022-1927
 * Fri Jun 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5024-1
