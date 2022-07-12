@@ -1,12 +1,12 @@
 Summary:       Application to detect if running in virtual machine
 Name:          virt-what
-Version:       1.22
+Version:       1.24
 Release:       1%{?dist}
 URL:           https://people.redhat.com/~rjones/virt-what/files/
 Source0:       https://people.redhat.com/~rjones/virt-what/files/%{name}-%{version}.tar.gz
 License:       GPLv2
 Group:         Applications/System
-%define sha512 %{name}=d430281edd9aaaa29f5475ab0a750ce0b2a3641fe5798769e38169e1c7879b2ee455f6c6c015cd069523045144ebcc3c4f58d205c4366b07721469a0aaa964d6
+%define sha512 %{name}=f6d14ea402f737ce45e67637076a5c11d3fcdbc64a738851fd0ffabec374074c7a9cf857719e0c8cad87b41fc4e78b825ebedafa6fa14e414a4068fca4f5d99c
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildRequires: gcc
@@ -35,6 +35,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/virt-what.1.gz
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.24-1
+- Automatic Version Bump
 * Thu Apr 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.22-1
 - Automatic Version Bump
 * Mon Apr 19 2021 Gerrit Photon <photon-checkins@vmware.com> 1.21-1
