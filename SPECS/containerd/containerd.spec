@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -114,6 +114,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.13-2
+- Bump up version to compile with new go
 *   Fri Jun 03 2022 Bo Gan <ganb@vmware.com> 1.4.13-1
 -   Upgrade to 1.4.13
 -   Fix CVE-2022-31030 with ExecSync API
