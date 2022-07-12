@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
-Version:        3.2
-Release:        2%{?dist}
+Version:        3.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=63165495e838871c7f42ac1a6229ec2404acfa7d42c7a0070c89cb38712ac933676930392b0a10cbdd6059910ae46129257b90135c5846e85142e786482fd75e
+%define sha512  %{name}=2988ccef62337dee0a22579868608b611ce17e2160358a9ba4cc3a353fd1e6b1fea87584ceeed885f986b1786aac1b681c71bdf6a48ed4953809093280b38c09
 
 Requires:       libevent
 Requires:       ncurses
@@ -43,6 +43,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_usrsrc}
 
 %changelog
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
+- Automatic Version Bump
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2-2
 - Fix binary path
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
