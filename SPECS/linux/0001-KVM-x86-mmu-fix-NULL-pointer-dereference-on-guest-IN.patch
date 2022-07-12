@@ -1,0 +1,70 @@
+From 705254d7f68c5307cb4ed4905f0011238500b30a Mon Sep 17 00:00:00 2001
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Fri, 20 May 2022 13:48:11 -0400
+Subject: [PATCH] KVM: x86/mmu: fix NULL pointer dereference on guest INVPCID
+
+[Upstream commit 9f46c187e2e680ecd9de7983e4d081c3391acc76]
+
+With shadow paging enabled, the INVPCID instruction results in a call
+to kvm_mmu_invpcid_gva.  If INVPCID is executed with CR0.PG=0, the
+invlpg callback is not set and the result is a NULL pointer dereference.
+Fix it trivially by checking for mmu->invlpg before every call.
+
+There are other possibilities:
+
+- check for CR0.PG, because KVM (like all Intel processors after P5)
+  flushes guest TLB on CR0.PG changes so that INVPCID/INVLPG are a
+  nop with paging disabled
+
+- check for EFER.LMA, because KVM syncs and flushes when switching
+  MMU contexts outside of 64-bit mode
+
+All of these are tricky, go for the simple solution.  This is CVE-2022-1789.
+
+[Ankit: Backported for v4.19 branch, added additional null pointer check
+took reference from Upstream commit 5efac0741ce238e0844d3f7af00198f81e84926a ]
+
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ arch/x86/kvm/mmu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/mmu.c b/arch/x86/kvm/mmu.c
+index 0cb82172c06c..e0b546896ebe 100644
+--- a/arch/x86/kvm/mmu.c
++++ b/arch/x86/kvm/mmu.c
+@@ -5453,6 +5453,9 @@ void kvm_mmu_invlpg(struct kvm_vcpu *vcpu, gva_t gva)
+ 	if (is_noncanonical_address(gva, vcpu))
+ 		return;
+ 
++	if (!mmu->invlpg)
++		return;
++
+ 	mmu->invlpg(vcpu, gva, mmu->root_hpa);
+ 
+ 	/*
+@@ -5482,14 +5485,16 @@ void kvm_mmu_invpcid_gva(struct kvm_vcpu *vcpu, gva_t gva, unsigned long pcid)
+ 	uint i;
+ 
+ 	if (pcid == kvm_get_active_pcid(vcpu)) {
+-		mmu->invlpg(vcpu, gva, mmu->root_hpa);
++		if (mmu->invlpg)
++			mmu->invlpg(vcpu, gva, mmu->root_hpa);
+ 		tlb_flush = true;
+ 	}
+ 
+ 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
+ 		if (VALID_PAGE(mmu->prev_roots[i].hpa) &&
+ 		    pcid == kvm_get_pcid(vcpu, mmu->prev_roots[i].cr3)) {
+-			mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
++			if (mmu->invlpg)
++				mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
+ 			tlb_flush = true;
+ 		}
+ 	}
+-- 
+2.23.1
+

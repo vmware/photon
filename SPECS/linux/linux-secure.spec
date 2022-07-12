@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -94,6 +94,9 @@ Patch67: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch68: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+# CVE-2022-1789
+Patch69: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -451,6 +454,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7
+- Backported the fix for CVE-2022-1789
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
 - Spec improvements
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-5

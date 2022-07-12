@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -227,6 +227,9 @@ Patch179: lockdown/security-Add-a-locked-down-LSM-hook.patch
 Patch180: lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
 Patch181: lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
 Patch182: lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
+
+# CVE-2022-1789
+Patch185: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -629,7 +632,7 @@ ApplyPatch "1" "13"
 %patch17 -p1
 %endif
 
-ApplyPatch "25" "182"
+ApplyPatch "25" "185"
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1045,6 +1048,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
+- Backported the fix for CVE-2022-1789
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-8
 - Spec improvements
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7

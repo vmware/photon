@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -402,6 +402,9 @@ Patch522: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch525: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# CVE-2022-1789
+Patch526: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
+
 # Update vmxnet3 driver to version 6
 Patch530: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
 Patch531: 0002-vmxnet3-prepare-for-version-6-changes.patch
@@ -525,7 +528,7 @@ ApplyPatch "1" "516"
 %patch520 -p1
 %endif
 
-ApplyPatch "521" "525"
+ApplyPatch "521" "526"
 
 # Update vmxnet3 driver to version 6
 ApplyPatch "530" "538"
@@ -759,6 +762,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
+-   Backported the fix for CVE-2022-1789
 * Tue Jul 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-8
 - Spec improvements
 * Mon Jul 11 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7

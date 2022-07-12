@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -143,6 +143,9 @@ Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch157: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# CVE-2022-1789
+Patch159: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
 # Fix for CVE-2021-4204
 Patch160: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
@@ -474,6 +477,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
+- Backported the fix for CVE-2022-1789
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7
 - Spec improvements
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
