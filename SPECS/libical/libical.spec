@@ -42,21 +42,20 @@ applications that use libical.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake -DENABLE_GTK_DOC=OFF \
-      -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-      -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-      -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
-      ..
-%make_build
+%cmake -DENABLE_GTK_DOC=OFF \
+       -DCMAKE_BUILD_TYPE=Debug \
+       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+       -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+       -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
+
+%cmake_build
 
 %install
-cd build
-%make_install %{?_smp_mflags}
+%cmake_install
 
 %if 0%{?with_check}
 %check
+cd %{__cmake_builddir}
 make test ARGS="-V" %{?_smp_mflags}
 %endif
 

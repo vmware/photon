@@ -70,9 +70,8 @@ errmsg for maridb
 rm -rf storage/tokudb/PerconaFT
 
 %build
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%cmake \
+      -DCMAKE_BUILD_TYPE=Release \
       -DINSTALL_DOCDIR=share/doc/mariadb-%{version} \
       -DINSTALL_DOCREADMEDIR=share/doc/mariadb-%{version} \
       -DINSTALL_MANDIR=share/man \
@@ -90,15 +89,15 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DWITH_EXTRA_CHARSETS=complex \
       -DWITH_EMBEDDED_SERVER=ON \
       -DSKIP_TESTS=ON \
-      -DTOKUDB_OK=0 \
-      ..
+      -DTOKUDB_OK=0
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
+
 mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sharedstatedir}/mysql
+
 mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb@.service \
     %{buildroot}%{_datadir}/systemd/mysql.service \
@@ -111,9 +110,9 @@ rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
-cd build
+cd %{__cmake_builddir}
 make test %{?_smp_mflags}
 %endif
 

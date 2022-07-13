@@ -1,16 +1,15 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        12.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    %{name}=00ca5a5e20b228df1022669a08d40ac3b5eef6c3
+%define sha512  %{name}=20acd58ea9a8a8f237dc7ade44702cf610c80f48d157f77a4f35cf210f4b89fa783e9e7bf747010a2ef921f8dc1658b63d3f3563c0e19c6019a3d9af41378a22
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -21,6 +20,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
 BuildRequires:  lua-devel
+BuildRequires:  ninja-build
 
 Requires:       lua
 Requires:       llvm = %{version}
@@ -49,25 +49,22 @@ Requires:       python3-six
 The package contains the LLDB Python3 module.
 
 %prep
-%autosetup -n %{name}-%{version}.src -p1
+%autosetup -p1 -n %{name}-%{version}.src
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_BUILD_TYPE=Release \
+%cmake -G Ninja\
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
       -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
-      -DLLVM_DIR=/usr/lib/cmake/llvm \
-      -DLLVM_BUILD_LLVM_DYLIB=ON .. \
-      -DLLDB_DISABLE_LIBEDIT:BOOL=ON
+      -DLLVM_DIR=%{_libdir}/cmake/llvm \
+      -DLLVM_BUILD_LLVM_DYLIB=ON \
+      -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python3_sitelib}/six.*
@@ -94,6 +91,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jul 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
+- Use cmake macros for build
 * Mon Nov 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3
 - Add lua to Requires
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2

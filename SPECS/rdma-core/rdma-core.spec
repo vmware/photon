@@ -1,4 +1,3 @@
-%define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        40.0
@@ -6,10 +5,12 @@ Release:        1%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
-Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  rdma=d1e377f1db30deb44188b3d800973969d69b9b5a5d10f4ad4ac3398e9f19752a78f56d535266040b4f82185856b88e370eec2e4b877f896f25c95ffc5bea72b4
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512  rdma=d1e377f1db30deb44188b3d800973969d69b9b5a5d10f4ad4ac3398e9f19752a78f56d535266040b4f82185856b88e370eec2e4b877f896f25c95ffc5bea72b4
+
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  libnl-devel
@@ -17,6 +18,7 @@ BuildRequires:  systemd-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-xml
 BuildRequires:  cython3
+
 Requires:       libnl
 Requires:       systemd
 
@@ -168,8 +170,8 @@ easy, object-oriented access to IB verbs.
 %autosetup -p1
 
 %build
-cmake \
-        -DCMAKE_BUILD_TYPE=Release \
+%cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
         -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
         -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
@@ -189,20 +191,25 @@ cmake \
         -DCMAKE_INSTALL_PERLDIR:PATH=%{perl_vendorlib} \
         -DCMAKE_INSTALL_PYTHON_ARCH_LIB:PATH=%{python3_sitearch} \
         -GNinja
+
+cd %{__cmake_builddir}
 %ninja_build
 
 %install
 # pandoc is not available - create missing prebuilt pandoc files.
-cat infiniband-diags/man/cmake_install.cmake | grep prebuilt | sed 's/^.*prebuilt\///;s/")//' | xargs -n1 -i touch buildlib/pandoc-prebuilt/{}
+cat %{__cmake_builddir}/infiniband-diags/man/cmake_install.cmake | grep prebuilt | sed 's/^.*prebuilt\///;s/")//' | xargs -n1 -i touch buildlib/pandoc-prebuilt/{}
 
+cd %{__cmake_builddir}
 %ninja_install
 
 # Remove init.d scripts
-rm -rf %{buildroot}/%{_sysconfdir}/rc.d
-rm -rf %{buildroot}/%{_sbindir}/srp_daemon.sh
+rm -rf %{buildroot}%{_sysconfdir}/rc.d \
+       %{buildroot}%{_sbindir}/srp_daemon.sh
 
+%if 0%{?with_check}
 %check
-cd build && make %{?_smp_mflags} check
+cd %{__cmake_builddir} && make %{?_smp_mflags} check
+%endif
 
 %post -n libibverbs -p /sbin/ldconfig
 %postun -n libibverbs -p /sbin/ldconfig
@@ -227,8 +234,8 @@ cd build && make %{?_smp_mflags} check
 
 %post
 # trigger udev update.
-/usr/bin/udevadm trigger --subsystem-match=infiniband --action=change || true
-/usr/bin/udevadm trigger --subsystem-match=infiniband_mad --action=change || true
+%{_bindir}/udevadm trigger --subsystem-match=infiniband --action=change || true
+%{_bindir}/udevadm trigger --subsystem-match=infiniband_mad --action=change || true
 
 #
 # ibacm
@@ -246,7 +253,7 @@ cd build && make %{?_smp_mflags} check
 %post -n srp_daemon
 %systemd_post srp_daemon.service
 # trigger udev update.
-/usr/bin/udevadm trigger --subsystem-match=infiniband_mad --action=change
+%{_bindir}/udevadm trigger --subsystem-match=infiniband_mad --action=change
 %preun -n srp_daemon
 %systemd_preun srp_daemon.service
 %postun -n srp_daemon

@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        12.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -15,6 +15,7 @@ BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
 BuildRequires:  python3
+BuildRequires:  ninja-build
 
 Requires:       libxml2
 
@@ -42,30 +43,31 @@ The libllvm package contains shared libraries for llvm
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
-mkdir -p build && cd build && \
-cmake -DCMAKE_INSTALL_PREFIX=/usr               \
-      -DLLVM_ENABLE_FFI:BOOL=ON                 \
-      -DCMAKE_BUILD_TYPE=Release                \
-      -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON           \
+%cmake -G Ninja \
+      -DCMAKE_INSTALL_PREFIX=%{_usr} \
+      -DBUILD_SHARED_LIBS:BOOL=OFF \
+      -DLLVM_PARALLEL_LINK_JOBS=1 \
+      -DLLVM_ENABLE_FFI:BOOL=ON \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
-      -DLLVM_INCLUDE_GO_TESTS=No                \
-      -DLLVM_ENABLE_RTTI:BOOL=ON                \
-      -Wno-dev ..
-make %{?_smp_mflags}
+      -DLLVM_INCLUDE_GO_TESTS=No \
+      -DLLVM_ENABLE_RTTI:BOOL=ON \
+      -Wno-dev
+
+%cmake_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%check
 %if 0%{?with_check}
+%check
 # deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
-cd build
+cd %{__cmake_builddir}
 make %{?_smp_mflags} check-llvm
 %endif
 
@@ -96,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
+- Use cmake macros for build
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3
 - Bump version as a part of libffi upgrade
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2

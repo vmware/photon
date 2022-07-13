@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        12.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -17,6 +17,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
+BuildRequires:  ninja-build
 
 Requires:       libstdc++-devel
 Requires:       ncurses
@@ -40,12 +41,13 @@ The clang-devel package contains libraries, header files and documentation for d
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
-CPPFLAGS="-Wno-dev"
-%cmake \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+%cmake -G Ninja \
+    -DLLVM_PARALLEL_LINK_JOBS=1 \
+    -DCMAKE_INSTALL_PREFIX=%{_usr} \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
-    -DBUILD_SHARED_LIBS=OFF
+    -DBUILD_SHARED_LIBS=OFF \
+    -Wno-dev
 
 %cmake_build
 
@@ -80,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
+- Further fixes to cmake macro usages
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3
 - Use cmake macros for build and install
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2
