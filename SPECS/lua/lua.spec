@@ -9,7 +9,7 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
@@ -17,15 +17,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=03c27684b9d5d9783fb79a7c836ba1cdc5f309cd
+%define sha512 %{name}-%{version}=af0c35d5ba00fecbb2dd617bd7b825edf7418a16a73076e04f2a0df58cdbf098dc3ff4402e974afd789eb5d86d2e12ec6df9c84b99b23656ea694a85f83bcd21
 
 %if 0%{?bootstrap}
 Source1:    http://www.lua.org/ftp/lua-%{bootstrap_version}.tar.gz
-%define sha1 %{name}-%{bootstrap_version}=f27d20d6c81292149bc4308525a9d6733c224fa5
+%define sha512 %{name}-%{bootstrap_version}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 %endif
 
 Patch0:     lua-%{version}-shared-library.patch
 Patch2:     CVE-2022-28805.patch
+Patch3:     CVE-2022-33099.patch
 
 %if 0%{?bootstrap}
 Patch1:     lua-%{bootstrap_version}-shared-library.patch
@@ -74,6 +75,7 @@ popd
 
 prep_lua_src %{PATCH0}
 prep_lua_src %{PATCH2}
+prep_lua_src %{PATCH3}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -152,6 +154,8 @@ make test %{?_smp_mflags}
 %{_libdir}/liblua.so
 
 %changelog
+* Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-3
+- Fix CVE-2022-33099
 * Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-2
 - Fix CVE-2022-28805
 * Thu Mar 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-1
