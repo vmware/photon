@@ -3,7 +3,7 @@
 Summary:    Programming language
 Name:       lua
 Version:    5.3.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    MIT
 URL:        http://www.lua.org
 Group:      Development/Tools
@@ -15,6 +15,7 @@ Source0:    http://www.lua.org/ftp/%{name}-%{version}.tar.gz
 
 Patch0:     %{name}-%{version}-shared_library-1.patch
 Patch1:     CVE-2022-28805.patch
+Patch2:     CVE-2022-33099.patch
 
 BuildRequires:  readline-devel
 
@@ -36,6 +37,7 @@ Static libraries and header files for the support library for lua
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
@@ -100,6 +102,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+* Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.4-3
+- Fix CVE-2022-33099
 * Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.4-2
 - Fix CVE-2022-28805
 * Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 5.3.4-1
