@@ -1,5 +1,5 @@
 Name:          crash
-Version:       7.2.9
+Version:       7.3.2
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
@@ -7,12 +7,12 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=20865107a4a2ffcb31d9b2f390f72e1dcc3a5dbc
+%define sha512 crash=3eeadce164fe0c65dfbefad56a6c25a58fe6fd518d0f0414a41cef147dad14877c40bb6c2fb92abdf16b641ad2c462bea0c3bd3d634b099c59fccc2c10f8dfab
 %define GCORE_VERSION	1.6.0
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha1 crash-gcore=ccea791bec2229bdf1d164bc6773d8ce5597024c
+%define sha512 crash-gcore=877cb46c54f9059ca0b89f793a0e907102db3921994fa676124bdd688f219a07761fffea6c3369fed836e7049b3611da164d780e7ba8741a4d0a30f7601290c2
 Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
-%define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
+%define sha512 gdb=02d9c62fa73bcb79138d14c7fc182443f0ca82d4545b4d260b67d3f0074ed75f899a657814a56727e601032a668b0ddd7b48aabd49215fc012eeea6077bca368
 Source3:       gcore_defs.patch
 License:       GPL
 BuildRequires: binutils
@@ -36,20 +36,21 @@ The core analysis suite is a self-contained tool that can be used to investigate
 This package contains libraries and header files need for development.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
+# Using autosetup is not feasible
 %setup -a 1
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
 cp %{SOURCE2} .
-make GDB=gdb-7.6 RPMPKG=%{version}-%{release}
+make GDB=gdb-7.6 RPMPKG=%{version}-%{release} %{?_smp_mflags}
 cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
-make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
+make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64 %{?_smp_mflags}
 %endif
 %ifarch aarch64
 patch -p1 < %{SOURCE3}
-make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
+make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64 %{?_smp_mflags}
 %endif
 
 %install
@@ -80,6 +81,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Wed Jul 13 2022 Ankit Jain <ankitja@vmware.com> 7.3.2-1
+-   Version update to 7.3.2
 *   Mon Nov 30 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.9-1
 -   Version update
 *   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-1
