@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -126,6 +126,9 @@ Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patc
 
 # Fix for CVE-2022-1972
 Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+
+#Fix for CVE-2022-21505
+Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -345,7 +348,7 @@ Python programming language to use the interface to manipulate perf events.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M107
+%autopatch -p1 -m100 -M108
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m120 -M121
@@ -739,6 +742,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-6
+- Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-5
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols

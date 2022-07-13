@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -134,6 +134,9 @@ Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patc
 
 # Fix for CVE-2022-1972
 Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+
+#Fix for CVE-2022-21505
+Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -274,7 +277,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M107
+%autopatch -p1 -m100 -M108
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -507,6 +510,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-5
+- Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-4
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols

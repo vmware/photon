@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -99,6 +99,8 @@ Patch104: 0001-debug-Lock-down-kgdb.patch
 Patch105: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 # Fix for CVE-2022-1972
 Patch106: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+# Fix for CVE-2022-21505
+Patch107: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -580,7 +582,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M106
+%autopatch -p1 -m100 -M107
 
 # RT
 %autopatch -p1 -m301 -M714
@@ -822,6 +824,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-6
+- Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-5
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols

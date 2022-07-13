@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.118
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -68,6 +68,9 @@ Patch106: 0001-debug-Lock-down-kgdb.patch
 Patch107: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
 # Fix for CVE-2022-1972
 Patch108: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
+
+#Fix for CVE-2022-21505
+Patch109: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -188,7 +191,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M108
+%autopatch -p1 -m100 -M109
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -354,6 +357,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-4
+- Fix for CVE-2022-21505
 * Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-3
 - Fix debug_package macro usage while adding vmlinux to debuginfo rpm
 * Wed Jun 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.118-2
