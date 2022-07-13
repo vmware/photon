@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -104,6 +104,9 @@ Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -300,7 +303,7 @@ Python programming language to use the interface to manipulate perf events.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M21
+%autopatch -p1 -m0 -M22
 
 %ifarch x86_64
 # VMW x86
@@ -676,6 +679,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jul 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-11
+- Add PCI quirk to allow multiple devices under the same virtual
+- PCI bridge to be put into separate IOMMU groups.
 * Tue Jul 12 2022 Sharan Turlapati <sturlpati@vmware.com> 5.10.78-10
 - Allow PCI resets to be disabled from vfio_pci
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-9

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.78
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -83,6 +83,9 @@ Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -525,7 +528,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M21
+%autopatch -p1 -m0 -M22
 
 #VMW
 %autopatch -p1 -m55 -M56
@@ -751,6 +754,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Wed Jul 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-11
+- Add PCI quirk to allow multiple devices under the same virtual
+- PCI bridge to be put into separate IOMMU groups.
 * Tue Jul 12 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.78-10
 - Enable nohz for idle=poll
 * Tue Jul 12 2022 Sharan Turlapati <sturlpati@vmware.com> 5.10.78-9
