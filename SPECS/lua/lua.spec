@@ -3,7 +3,7 @@
 Summary:    Programming language
 Name:       lua
 Version:    5.3.5
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    MIT
 URL:        http://www.lua.org
 Group:      Development/Tools
@@ -11,12 +11,13 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha1 %{name}=112eb10ff04d1b4c9898e121d6bdf54a81482447
+%define sha512 %{name}=4f9516acc4659dfd0a9e911bfa00c0788f0ad9348e5724fe8fb17aac59e9c0060a64378f82be86f8534e49c6c013e7488ad17321bafcc787831d3d67406bd0f4
 
 Patch0:     fix-version-string.patch
 Patch1:     %{name}-%{version}-shared_library-1.patch
 Patch2:     CVE-2019-6706.patch
 Patch3:     CVE-2022-28805.patch
+Patch4:     CVE-2022-33099.patch
 
 BuildRequires:  readline-devel
 
@@ -40,6 +41,7 @@ Static libraries and header files for the support library for lua
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
@@ -81,8 +83,8 @@ EOF
 rmdir %{buildroot}%{_libdir}/%{name}/%{major_version} \
       %{buildroot}%{_libdir}/%{name}
 
-%check
 %if 0%{?with_check}
+%check
 make test %{?_smp_mflags}
 %endif
 
@@ -104,6 +106,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+* Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.5-4
+- Fix CVE-2022-33099
 * Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.5-3
 - Fix CVE-2022-28805
 * Fri Oct 18 2019 Anish Swaminathan <anishs@vmware.com> 5.3.5-2
