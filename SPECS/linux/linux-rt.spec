@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.78
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -424,6 +424,9 @@ Patch712: 0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch713: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
+#Patch to enable nohz with idle=poll
+Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -531,7 +534,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m100 -M101
 
 # RT
-%autopatch -p1 -m301 -M713
+%autopatch -p1 -m301 -M714
 
 %autopatch -p1 -m1000 -M1006
 
@@ -748,6 +751,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Tue Jul 12 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.78-10
+- Enable nohz for idle=poll
 * Tue Jul 12 2022 Sharan Turlapati <sturlpati@vmware.com> 5.10.78-9
 - Allow PCI resets to be disabled from vfio_pci
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-8
