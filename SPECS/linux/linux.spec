@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -744,6 +744,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-10
+- .config: enable CONFIG_NET_ACT_SIMP
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-9
 - .config: enable CONFIG_X86_CPU_RESCTRL
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-8

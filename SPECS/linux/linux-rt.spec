@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -826,6 +826,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-10
+- .config: enable CONFIG_NET_ACT_SIMP
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-9
 - Enable cgroup v1 stats
 - .config: enable PERCPU_STATS
