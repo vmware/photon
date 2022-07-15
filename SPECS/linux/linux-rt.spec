@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -824,6 +824,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
+- Enable config options needed to build N3000 FPGA driver.
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-6
 - Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-5
