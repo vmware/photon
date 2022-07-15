@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.142
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -144,6 +144,7 @@ Patch80: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 # initialize MMCONFIG
 Patch85: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
 Patch86: 0001-MMIO_should_have_more_priority_then_IO.patch
+Patch87: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch90: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -331,7 +332,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m59 -M80
 
 %ifarch x86_64
-%autopatch -p1 -m85 -M86
+%autopatch -p1 -m85 -M87
 %endif
 
 %patch90 -p1
@@ -586,6 +587,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.142-3
+- Avoid extra scanning for peer host bridges when mmconfig is initialized.
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-2
 - Fix build with latest toolchain
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
