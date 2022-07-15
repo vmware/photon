@@ -1,7 +1,7 @@
 Summary:        SELinux policy core utilities
 Name:           selinux-python
 Version:        3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -20,6 +20,7 @@ Requires: libsemanage-python3 = %{version}
 Requires: libselinux-python3 = %{version}
 Requires: libsepol = %{version}
 Requires: libselinux = %{version}
+Requires: python3-audit
 
 %description
 The %{name} package contains the management tools use to manage an SELinux environment.
@@ -49,6 +50,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Fri Jul 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-3
+- Add python3-audit to Requires
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-2
 - Fix Requires
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
