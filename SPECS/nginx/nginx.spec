@@ -1,20 +1,23 @@
 %define njs_ver 0.2.1
+%define nginx_user %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.16.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD-2-Clause
-URL:            http://nginx.org/download/nginx-%{version}.tar.gz
+URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=77ce4d26481b62f7a9d83e399454df0912f01a4b
-Source1:        nginx.service
-Source2:        nginx-njs-%{njs_ver}.tar.gz
-%define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
+Source0:        http://nginx.org/download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=17e95b43fa47d4fef5e652dea587518e16ab5ec562c9c94355c356440166d4b6a6a41ee520d406e5a34791a327d2e3c46b3f9b105ac9ce07afdd495c49eca437
+
+Source1:        https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
+%define sha512  %{name}-njs=b924be63b3d8a996dfd5dd120a3103619c52a9193ca442a21f85f2d5e0a30690fa67401125e775cdf2127f659a61e34b8defe63f7fd33e318cca2a7f99c44154
+
+Source2:        %{name}.service
 
 Patch0:         nginx-CVE-2019-20372.patch
 Patch1:         0001-nginx-DNS-Resolver-Off-by-One-Heap-Write-in-ngx_reso.patch
@@ -25,16 +28,17 @@ BuildRequires:  pcre-devel
 BuildRequires:  which
 BuildRequires:  systemd-devel
 
+Requires: openssl
+Requires: pcre
+Requires: systemd
+
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+
 %description
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -p1
-
-pushd ..
-mkdir nginx-njs
-tar -C nginx-njs -xf %{SOURCE2}
-popd
+%autosetup -a0 -a1 -p1
 
 %build
 sh ./configure \
@@ -45,7 +49,7 @@ sh ./configure \
     --lock-path=/var/run/nginx.lock \
     --error-log-path=/var/log/nginx/error.log \
     --http-log-path=/var/log/nginx/access.log \
-    --add-module=../nginx-njs/njs-%{njs_ver}/nginx \
+    --add-module=njs-%{njs_ver}/nginx \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -53,17 +57,39 @@ sh ./configure \
     --with-http_auth_request_module \
     --with-http_sub_module \
     --with-http_stub_status_module \
-    --with-http_v2_module
+    --with-http_v2_module \
+    --user=%{nginx_user} \
+    --group=%{nginx_user}
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/nginx/log
+install -p -d -m 0700 %{buildroot}%{_sharedstatedir}/%{name}
 ln -sfv %{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
-install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
+install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+%clean
+rm -rf %{buildroot}
+
+%pre
+getent group %{nginx_user} > /dev/null || groupadd -r %{nginx_user}
+
+getent passwd %{nginx_user} > /dev/null || \
+  useradd -r -d %{_sharedstatedir}/nginx -g %{nginx_user} \
+    -s /sbin/nologin -c "Nginx web server" %{nginx_user}
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+%systemd_postun %{name}.service
+
+%post
+%systemd_post %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -84,11 +110,13 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
-%{_unitdir}/nginx.service
+%{_unitdir}/%{name}.service
 %dir %{_var}/opt/nginx/log
 %{_var}/log/nginx
 
 %changelog
+* Mon Jul 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.1-7
+- Fix sevice handling and run in nginx user context
 * Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.16.1-6
 - Fix for CVE-2021-3618
 * Thu Dec 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.16.1-5
