@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -459,6 +459,9 @@ Patch713: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch714: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
+#Backport hrtick changes
+Patch715: 0001-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -587,7 +590,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m100 -M107
 
 # RT
-%autopatch -p1 -m301 -M714
+%autopatch -p1 -m301 -M715
 
 %autopatch -p1 -m1000 -M1006
 
@@ -826,6 +829,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-11
+- Backport hrtick changes to fix lost timer wakeups
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-10
 - .config: enable CONFIG_NET_ACT_SIMP
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-9
