@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -80,6 +80,7 @@ Patch30: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch31: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch32: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch33: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch34: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
 Patch50: init-do_mounts-recreate-dev-root.patch
@@ -271,7 +272,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M20
 
 # VMW
-%autopatch -p1 -m30 -M33
+%autopatch -p1 -m30 -M34
 
 # -esx
 %autopatch -p1 -m50 -M92
@@ -510,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-6
+- Avoid TSC recalibration
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-5
 - Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-4

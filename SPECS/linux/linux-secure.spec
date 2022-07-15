@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.118
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -65,6 +65,7 @@ Patch21: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 #Secure:
 Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
@@ -198,7 +199,7 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M56
+%autopatch -p1 -m55 -M57
 %endif
 
 #Secure
@@ -360,6 +361,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-6
+- Avoid TSC recalibration
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-5
 - Fix for CVE-2022-21505
 * Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-4

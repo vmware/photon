@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.118
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -50,9 +50,10 @@ Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch57: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch58: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -188,7 +189,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m0 -M20
 
 # VMW
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m55 -M58
 
 # CVE
 %autopatch -p1 -m100 -M109
@@ -357,6 +358,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-5
+- Avoid TSC recalibration
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-4
 - Fix for CVE-2022-21505
 * Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-3

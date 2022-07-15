@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -82,6 +82,7 @@ Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # CVE:
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -579,7 +580,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M20
 
 #VMW
-%autopatch -p1 -m55 -M56
+%autopatch -p1 -m55 -M57
 
 # CVE
 %autopatch -p1 -m100 -M107
@@ -824,6 +825,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-8
+- Avoid TSC recalibration
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
 - Enable config options needed to build N3000 FPGA driver.
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-6
