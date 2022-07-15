@@ -1,12 +1,12 @@
 Name:           tuned
 Version:        2.15.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
+%define         sha512 tuned=67acdf10ecccd7910c4dcfd737610b4cb7651c7bf937bc0ed9c51869262d9f3a46f262d0b7636bc7a86a8abf579542a46f551e4f6c7561a061d8d58459be4589
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         bootloader-plugin-support-for-photon.patch
 Patch2:         tuned-fix-bug-in-sysctl-verify.patch
@@ -114,6 +114,7 @@ make test %{?_smp_mflags}
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
 %dir /etc/tuned
+%dir /var/lib/tuned
 %{_mandir}/man5/tuned*
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
@@ -140,6 +141,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 2.15.0-5
+-   Add /var/lib/tuned folder to rpm
 *   Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-4
 -   Bump up to build with updated dbus-python3
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-3
