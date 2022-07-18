@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -29,6 +29,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
+BuildRequires:  systemd-devel
 
 Requires:   krb5
 Requires:   libedit
@@ -38,6 +39,7 @@ Requires:   openssl
 Requires:   readline
 Requires:   tzdata
 Requires:   zlib
+Requires:   systemd
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -76,6 +78,8 @@ sh ./configure \
     --with-ldap \
     --with-libxml \
     --with-openssl \
+    --with-uuid=e2fs \
+    --with-systemd \
     --with-gssapi \
     --with-libedit-preferred \
     --with-readline \
@@ -182,6 +186,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/libpgtypes.a
 
 %changelog
+* Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 13.7-2
+- add uuid with e2fs and systemd to configuration
 * Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 13.7-1
 - Upgraded to version 13.7.
 * Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 13.6-1

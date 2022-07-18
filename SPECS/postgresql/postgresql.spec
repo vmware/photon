@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -26,6 +26,7 @@ BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
+BuildRequires:  systemd-devel
 
 Requires:       krb5
 Requires:       libedit
@@ -36,6 +37,7 @@ Requires:       readline
 Requires:       tzdata
 Requires:       zlib
 Requires:       lz4
+Requires:       systemd
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -72,6 +74,8 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libxml \
     --with-ssl=openssl \
     --with-lz4 \
+    --with-uuid=e2fs \
+    --with-systemd \
     --with-gssapi \
     --with-libedit-preferred \
     --with-readline \
@@ -174,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+* Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 14.4-2
+- add uuid with e2fs and systemd to configuration
 * Fri Jun 17 2022 Michael Paquier <mpaquier@vmware.com> 14.4-1
 - Upgraded to version 14.4.
 * Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 14.3-1
