@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        0.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -30,13 +30,11 @@ Requires:       iproute2
 Requires:       iptables
 Requires:       iputils
 Requires:       Linux-PAM
-Requires:       libtool
 Requires:       motd
 Requires:       net-tools
 Requires:       openssh
 Requires:       photon-release
 Requires:       photon-repos
-Requires:       pkg-config
 Requires:       procps-ng
 Requires:       rpm
 Requires:       rpm-plugin-systemd-inhibit
@@ -63,6 +61,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Mon Jul 18 2022 <okurth@vmware.com> 0.1-7
+- Remove pkg-config and libtool
 * Wed Oct 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.1-6
 - Add rpm-plugin-systemd-inhibit
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.1-5
