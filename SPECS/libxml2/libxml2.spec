@@ -3,7 +3,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-2
+- Bump version as a part of python3-lxml upgrade
 * Mon May 23 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.14-1
 - Version Upgrade to 2.9.14 to fix CVE-2022-29824
 * Fri Oct 29 2021 Nitesh Kumar <kunitesh@vmware.com> 2.9.12-1

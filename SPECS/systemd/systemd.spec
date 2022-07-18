@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        251
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -671,6 +671,8 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 251-4
+- Bump version as a part of python3-lxml upgrade
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 251-3
 - Enable dns-over-tls support
 - Enable default-dns-over-tls=opportunistic support
