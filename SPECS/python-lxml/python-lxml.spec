@@ -1,12 +1,13 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
-%define sha1    lxml=6511b71fe81067e6b8f2d38e3bc4363db580ec13
+%define sha512  lxml=dd0d421e10db6c9084cf5b2c04a4fc54d74bd62b4dfa83efcf92dd46cd1c5f043c47613521b2de04c450b83eb1161d197b017c53e615e5785e97e7afe106b6cf
+Patch0:         lxml-CVE-2022-2309.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libxslt
@@ -26,7 +27,7 @@ Requires:       python3-xml
 The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
 %prep
-%autosetup -n lxml-%{version}
+%autosetup -p1 -n lxml-%{version}
 
 %build
 python3 setup.py build
@@ -47,6 +48,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-2
+- Fix for CVE-2022-2309
 * Mon Jan 03 2022 Sujay G <gsujay@vmware.com> 4.7.1-1
 - Bump version to 4.7.1 to fix CVE-2021-43818
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.6.3-2
