@@ -1,0 +1,64 @@
+From 56521b07bebb33bee0a33dd9ee7987ae76e527d9 Mon Sep 17 00:00:00 2001
+From: Sharan Turlapati <sturlapati@vmware.com>
+Date: Mon, 11 Apr 2022 18:43:57 +0000
+Subject: [PATCH] utils.c: Add error handling for enabling HRTICK
+
+stalld allows the boost runtime that can be specified to be at a
+maximum of 1ms. At this granularity, the HZ tick will not be enough to
+make scheduling decisions at the needed time. Therefore HRTICK needs
+to be enabled to ensure that SCHED_DEADLINE tasks only run for a duration
+of "dl->runtime" and not end up overrunning their allowed bandwidth.
+
+Without HRTICK, the priority boosted task will potentially
+end up overrunning it's runtime bandwidth. stalld
+cannot reliably use SCHED_DEADLINE without enabling HRTICK.
+
+If HRTICK cannot be enabled for some reason, we should not be allowing
+stalld to run in a mode where it is doing priority boosting using
+SCHED_DEADLINE. Add the necessary code for this
+
+We also need to enable HRTICK only when stalld is using SCHED_DEADLINE.
+If stalld is using SCHED_FIFO for priority boosting, it mimics SCHED_DEADLINE
+using calls to nanosleep. The nanosleep system call sets up its own hrtimers
+independent of HRTICK.
+
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/utils.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/src/utils.c b/src/utils.c
+index b835c3c..589756f 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -1006,11 +1006,21 @@ int parse_args(int argc, char **argv)
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
+-	/*
+-	 * runtime is always < 1 ms, so enable hrtick. Unless config_log_only only is set.
+-	 */
+-	if (!config_log_only)
+-		setup_hr_tick();
++        /*
++         * Runtime is always < 1 ms, enable hrtick if we're not in logging only
++         * mode and if we'll be using SCHED_DEADLINE.
++         */
++        if (!config_log_only && !config_force_fifo) {
++            /*
++             * if HRTICK can't be enabled, then we can't do a reliable
++             * job of ensuring only runtime worth of bandwidth is allocated.
++             * Don't allow stalld to continue in this mode.
++             */
++            if (!setup_hr_tick()) {
++                log_msg("stalld can't enable HRTICK. stalld cannot run in this mode. Exiting..\n");
++                exit(EXIT_FAILURE);
++            }
++        }
+ 
+ 	return(0);
+ }
+-- 
+2.28.0
+
