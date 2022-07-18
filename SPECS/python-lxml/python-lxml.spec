@@ -2,13 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
-Version:        3.7.3
-Release:        3%{?dist}
+Version:        4.7.1
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
-Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
-%define         sha1 lxml=bce8b3101ed0de7440f00d7960a6a7a46ce50433
+Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
+%define         sha1 lxml=6511b71fe81067e6b8f2d38e3bc4363db580ec13
+Patch0:         lxml-CVE-2022-2309.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -21,7 +22,7 @@ Requires:       python2
 Requires:       libxslt
 
 %description
-The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API. 
+The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
 %package -n     python3-lxml
 Summary:        python-lxml
@@ -39,7 +40,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -q -n lxml-%{version}
+%autosetup -p1 -n lxml-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-1
+-   Upgrade to 4.7.1 and fix CVE-2022-2309
 *   Mon Aug 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-3
 -   set LC_ALL and LANGUAGE for the tests to pass
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-2
