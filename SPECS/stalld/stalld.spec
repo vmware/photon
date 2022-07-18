@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -23,6 +23,7 @@ Patch3:         0001-stalld-Assign-name-to-stalld-thread.patch
 Patch4:         0001-stalld-Fix-gcc-options-in-Makefile.patch
 Patch5:         0001-stalld-Fix-single-threaded-mode-starvation-threshold.patch
 Patch6:         0001-utils.c-Add-error-handling-for-enabling-HRTICK.patch
+Patch7:         0001-stalld-Fix-nr_periods-calculation-in-do_fifo_boost.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -36,8 +37,8 @@ such stalled threads is configurable by the user.
 
 %build
 make %{?_smp_mflags}
-# Add config granularity variable to service
-sed -i 's/.*$IP $VB/& $CG/' redhat/stalld.service
+# Add config granularity variable (CG) and FORCE_FIFO (FF) to service
+sed -i 's/.*$IP $VB/& $CG $FF/' redhat/stalld.service
 # bash rpm provides only /bin/bash and /bin is a symbolic link to /usr/bin
 sed -i 's/\/usr\/bin\/bash/\/bin\/bash/' scripts/throttlectl.sh
 
@@ -73,6 +74,9 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 1.14.1-3
+- Fix nr_periods calculation while boosting using SCHED_FIFO
+- Expose FORCE_FIFO as an option in the conf file
 * Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 1.14.1-2
 - Exit early if enabling HRTICK fails when using SCHED_DEADLINE
 * Tue Oct 12 2021 Keerthana K <keerthanak@vmware.com> 1.14.1-1

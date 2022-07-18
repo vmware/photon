@@ -1,0 +1,57 @@
+From 4f4f2534374d27f61fe5fe0f4e95927f877588a5 Mon Sep 17 00:00:00 2001
+From: Sharan Turlapati <sturlapati@vmware.com>
+Date: Fri, 24 Jun 2022 03:03:13 +0000
+Subject: [PATCH] stalld: Fix nr_periods calculation in do_fifo_boost()
+
+config_boost_duration is specified in the time unit of
+seconds where as config_dl_period is specified in nanoseconds.
+
+To obtain nr_periods using the above two values, the division
+must happen on the same time scale. Change the code for this to
+be the case.
+
+Avoid any potential overflow by using size_t as the datatype
+for nr_periods.
+
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/stalld.c | 4 ++--
+ src/stalld.h | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index a12a31f..3fb1ad4 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -1165,11 +1165,11 @@ int restore_policy(int pid, struct sched_attr *attr)
+  */
+ void do_fifo_boost(int pid, struct sched_attr *old_attr)
+ {
+-	int nr_periods = config_boost_duration / config_dl_period;
++	size_t nr_periods = (config_boost_duration * NS_PER_SEC) / config_dl_period;
+ 	struct timespec remainder_ts;
+ 	struct timespec runtime_ts;
+ 	struct timespec ts;
+-	int i;
++	size_t i;
+ 
+ 	/*
+ 	 * setup the runtime sleep
+diff --git a/src/stalld.h b/src/stalld.h
+index c0fdda6..f4bebe0 100644
+--- a/src/stalld.h
++++ b/src/stalld.h
+@@ -109,7 +109,8 @@ static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
+        return syscall (__NR_sched_getattr, pid , attr, size, flags);
+ }
+ 
+-#define NS_PER_SEC 1000000000
++#define NS_PER_SEC 1000000000uL
++
+ static inline void normalize_timespec(struct timespec *ts)
+ {
+         while (ts->tv_nsec >= NS_PER_SEC) {
+-- 
+2.23.3
+
