@@ -4,7 +4,7 @@
 Summary:	Apache Tomcat Connector
 Name:		httpd-mod_jk
 Version:	1.2.42
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org/connectors-doc
 Group:		Applications/System
@@ -51,6 +51,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
+* Mon Jul 18 2022 Nitesh Kumar <kunitesh@vmware.com> 1.2.42-4
+- Bump version as a part of httpd v2.4.54 upgrade
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.42-3
 - Bump version as a part of httpd upgrade
 * Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.2.42-2

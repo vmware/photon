@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.53
+Version:        2.4.54
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
@@ -9,9 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=cc064ed39f3845f2d35183b9b7cb638aa4cabfc9
+%define sha1    %{name}=ded4c0bc34f5bf3dc9981687e5284f5dc228f24b
 
-Patch0:         %{name}-%{version}-blfs_layout.patch
+Patch0:         %{name}-%{version}-blfs_layout-3.patch
 Patch1:         %{name}-uncomment-ServerName.patch
 
 BuildRequires:  openssl
@@ -182,6 +182,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Jul 18 2022 Nitesh Kumar <kunitesh@vmware.com> 2.4.54-1
+- Upgrade to v2.4.54 to fix bunch of CVEs
 * Mon Mar 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.53-1
 - Upgrade to v2.4.53 to fix bunch of CVEs
 * Thu Dec 23 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.52-1
