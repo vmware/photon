@@ -2,16 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
-Version:        4.2.5
-Release:        2%{?dist}
+Version:        4.7.1
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
-Source0:        https://lxml.de/files/lxml-%{version}.tgz
-%define sha512  lxml=4cf336d3e1471e8a26492760a143881517d12eb1c2dad82f8786540471bfabd68f8c795d97b7362166418c2be3c7996816638fdbd5a594536b9981478b90fdfe
-Patch0:         lxml-make-check-fix.patch
-Patch1:         lxml-CVE-2021-43818.patch
-Patch2:         lxml-CVE-2021-28957.patch
+Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
+%define sha512  lxml=dd0d421e10db6c9084cf5b2c04a4fc54d74bd62b4dfa83efcf92dd46cd1c5f043c47613521b2de04c450b83eb1161d197b017c53e615e5785e97e7afe106b6cf
+Patch0:         lxml-CVE-2022-2309.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -76,6 +74,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-1
+-   Upgrade to 4.7.1 and fix CVE-2022-2309
 *   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.2.5-2
 -   Bump version as a part of libxslt upgrade
 *   Mon Jun 13 2022 Harinadh D <hdommaraju@vmware.com> 4.2.5-1
