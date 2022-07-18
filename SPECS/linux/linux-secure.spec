@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.118
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -47,6 +47,7 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 
 #HyperV patches
 Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
@@ -361,6 +362,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
+- Enable cgroup v1 stats
+- .config: enable PERCPU_STATS
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-6
 - Avoid TSC recalibration
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-5

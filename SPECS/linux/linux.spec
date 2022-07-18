@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -79,6 +79,7 @@ Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 
 # ttyXRUSB support
 Patch10: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -743,6 +744,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-8
+- Enable cgroup v1 stats
+- .config: enable PERCPU_STATS
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
 - Avoid TSC recalibration
 * Wed Jul 13 2022 Srinidhi Rao <srinidhir@vmware.com> 5.10.118-6
