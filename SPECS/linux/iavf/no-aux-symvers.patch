@@ -1,0 +1,48 @@
+From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Date: Tue, 05 Jul 2022 10:00:00 -0700
+Subject: [PATCH] Do not package a separate symvers file for auxiliary module
+
+TODO: Merge the symbol information from building auxiliary.ko into the
+existing Module.symvers file, instead of packaging it separately.
+
+Also, skip moving auxiliary.ko to INSTALL_AUX_DIR, since both
+INSTALL_MOD_DIR and INSTALL_AUX_DIR are defined to be the same
+("extra") in linux* spec files.
+
+Skip installing auxiliary_bus.h from the iavf Makefile, since we
+have better control over this installation in the linux* spec files.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+
+diff -Naurp iavf-4.4.2-orig/src/common.mk iavf-4.4.2/src/common.mk
+--- iavf-4.4.2-orig/src/common.mk	2022-07-05 10:09:25.141401963 -0700
++++ iavf-4.4.2/src/common.mk	2022-07-05 12:28:56.773701356 -0700
+@@ -422,11 +422,11 @@ export INSTALL_AUX_DIR ?= updates/driver
+ # necessary to ensure the relevant files get put in place.
+ ifeq (${NEED_AUX_BUS},2)
+ define auxiliary_post_install
+-	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
++#	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
+ 	install -d ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}
+-	mv -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/auxiliary.ko \
+-	      ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
+-	install -D -m 644 linux/auxiliary_bus.h ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
++#	mv -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/auxiliary.ko \
++#	      ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
++#	install -D -m 644 linux/auxiliary_bus.h ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
+ endef
+ else
+ auxiliary_post_install =
+@@ -434,9 +434,9 @@ endif
+ 
+ ifeq (${NEED_AUX_BUS},2)
+ define auxiliary_post_uninstall
+-	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
++#	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
+ 	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
+-	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
++#	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
+ endef
+ else
+ auxiliary_post_uninstall =
