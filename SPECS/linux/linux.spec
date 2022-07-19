@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -24,7 +24,8 @@ Source3: https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.t
 %define sha512 ena_linux=3106ed2f098ae0963875443e6d6f96c6ccb6e379abd5616e8f4dd8c11f0adad45d2d2699729e658819b2141e87eff97517518b43b27ce94de1c0bf593ba77ad7
 
 Source4: config_aarch64
-Source6: pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source6: scriptlets.inc
 Source7: check_for_config_applicability.inc
 
 %global photon_checksum_generator_version 1.2
@@ -1050,6 +1051,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-12
+- Scriptlets fixes and improvements
 * Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-11
 - Revert napi reschedule on rx in vmxnet3 driver
 * Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-10

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -18,7 +18,8 @@ Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 
 Source1: config-esx
 Source2: initramfs.trigger
-Source3: pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source3: scriptlets.inc
 Source4: check_for_config_applicability.inc
 
 %global photon_checksum_generator_version 1.2
@@ -764,6 +765,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-13
+- Scriptlets fixes and improvements
 * Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-12
 - Revert napi reschedule on rx in vmxnet3 driver
 * Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-11
