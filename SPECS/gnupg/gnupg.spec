@@ -1,7 +1,7 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
 Version:	2.2.18
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
@@ -9,6 +9,7 @@ Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
 %define sha1 gnupg=2f95d6aa409f666c61c1526641fd609f1a50c4c4
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         CVE-2022-34903.patch
 BuildRequires:	zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
@@ -27,21 +28,19 @@ Requires:       libassuan >= 2.5.0
 Requires:       pinentry
 Provides:       gpg
 
-
 %description
 GnuPG is a complete and free implementation of the OpenPGP standard as defined
 by RFC4880 (also known as PGP). GnuPG allows to encrypt and sign your data and
-communication, features a versatile key management system as well as access 
-modules for all kinds of public key directories. GnuPG, also known as GPG, is 
+communication, features a versatile key management system as well as access
+modules for all kinds of public key directories. GnuPG, also known as GPG, is
 a command line tool with features for easy integration with other applications.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 
 %build
-./configure --prefix=%{_prefix}      \
-            --sysconfdir=%{_sysconfdir} \
-            --with-libusb=no
+%configure --with-libusb=no
 
 make
 %install
@@ -60,6 +59,8 @@ make DESTDIR=%{buildroot} install
 %exclude /usr/share/doc/*
 
 %changelog
+*   Tue Jul 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.2.18-2
+-   Fix CVE-2022-34903
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.18-1
 -   Upgrade to 2.2.18 to fix CVE-2019-14855
 *   Tue Jul 16 2019 Ashwin H <ashwinh@vmware.com> 2.2.17-1
