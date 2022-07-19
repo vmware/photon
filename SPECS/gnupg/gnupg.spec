@@ -1,14 +1,15 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
 Version:	2.2.18
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-%define sha1 gnupg=2f95d6aa409f666c61c1526641fd609f1a50c4c4
+%define sha512  gnupg=f1b75e420569982ab3b192fc52f8272c924e07c08ea3d93725f2ba3a25a96d8fedf2f32fabd51cbb978e18fb143c961b02cfaefdb7df0e8097d30a5736f992d2
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         CVE-2022-34903.patch
 BuildRequires:	zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
@@ -24,7 +25,6 @@ Requires:       libassuan >= 2.5.0
 Requires:       pinentry
 Provides:       gpg
 
-
 %description
 GnuPG is a complete and free implementation of the OpenPGP standard as defined
 by RFC4880 (also known as PGP). GnuPG allows to encrypt and sign your data and
@@ -33,14 +33,14 @@ modules for all kinds of public key directories. GnuPG, also known as GPG, is
 a command line tool with features for easy integration with other applications.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} check
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %exclude /usr/share/doc/*
 
 %changelog
+*   Tue Jul 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.2.18-3
+-   Fix CVE-2022-34903
 *   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.2.18-2
 -   Bump version as a part of libgcrypt upgrade
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.18-1
