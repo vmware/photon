@@ -661,10 +661,11 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
         KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 
+bldroot="${PWD}"
+
 %ifarch x86_64
 
 # build i40e module
-bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 # make doesn't support _smp_mflags
 make -C src KSRC=${bldroot} clean
@@ -715,10 +716,11 @@ install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
+bldroot="${PWD}"
+
 %ifarch x86_64
 
 # install i40e module
-bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
         INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \

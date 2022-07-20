@@ -568,8 +568,9 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
         KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
-# build i40e module
 bldroot="${PWD}"
+
+# build i40e module
 pushd ../i40e-%{i40e_version}
 # make doesn't support _smp_mflags
 make -C src KSRC=${bldroot} clean
@@ -636,8 +637,9 @@ install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 cp -v vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 %endif
 
-# install i40e module
 bldroot="${PWD}"
+
+# install i40e module
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
         INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install \

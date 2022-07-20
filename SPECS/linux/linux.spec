@@ -682,12 +682,13 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
 
 make -C tools perf PYTHON=python3 %{?_smp_mflags}
 
+bldroot="${PWD}"
+
 %ifarch x86_64
 #build turbostat and cpupower
 make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3 %{?_smp_mflags}
 
 # build ENA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C ${bldroot} M="${PWD}" VERBOSE=1 modules %{?_smp_mflags}
 popd
@@ -720,7 +721,6 @@ popd
 %endif
 
 #build photon-checksum-generator module
-bldroot="${PWD}"
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C ${bldroot} M="${PWD}" modules %{?_smp_mflags}
 popd
@@ -761,9 +761,10 @@ install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
+bldroot="${PWD}"
+
 %ifarch x86_64
 # install ENA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} \
             modules_install %{?_smp_mflags}
@@ -823,7 +824,9 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 
 #install photon-checksum-generator module
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+
+make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} \
+         modules_install %{?_smp_mflags}
 popd
 
 %ifarch aarch64
@@ -877,22 +880,31 @@ install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{
 install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
+# copy .config manually to be where it's expected to be
+cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
-cp arch/arm64/kernel/module.lds %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/arch/arm64/kernel/
+cp arch/arm64/kernel/module.lds \
+        %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/arch/arm64/kernel/
 %endif
 
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
-make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 %{?_smp_mflags}
-make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext %{?_smp_mflags}
+make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} \
+        perf_install PYTHON=python3 %{?_smp_mflags}
+
+make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} \
+        prefix=%{_prefix} PYTHON=python3 \
+        install-python_ext %{?_smp_mflags}
 
 %ifarch x86_64
-make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3 %{?_smp_mflags}
+make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} \
+        prefix=%{_prefix} mandir=%{_mandir} \
+        turbostat_install cpupower_install \
+        PYTHON=python3 %{?_smp_mflags}
 %endif
 
 %include %{SOURCE2}

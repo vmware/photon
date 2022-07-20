@@ -295,10 +295,11 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
         KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 
-#build photon-checksum-generator module
 bldroot="${PWD}"
+
+#build photon-checksum-generator module
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M="${PWD}" modules %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" modules %{?_smp_mflags}
 popd
 
 %define __modules_install_post \
@@ -329,10 +330,11 @@ install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
-#install photon-checksum-generator module
 bldroot="${PWD}"
+
+#install photon-checksum-generator module
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 popd
 
 %ifarch x86_64

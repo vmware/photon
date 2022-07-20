@@ -302,8 +302,9 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
             KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
-# build LKCM module
 bldroot="${PWD}"
+
+# build LKCM module
 pushd ../LKCM
 sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
 sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
@@ -342,8 +343,9 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
-# install LKCM module
 bldroot="${PWD}"
+
+# install LKCM module
 pushd ../LKCM
 make -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} \
             modules_install %{?_smp_mflags}
