@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source0:        photon-upgrade.sh
@@ -10,6 +10,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Requires:       tdnf
+Requires:       coreutils
+Requires:       gawk
+Requires:       sed
 
 %description
 Photon major upgrade scripts. Addresses 3.0 to 4.0 upgrades.
@@ -32,6 +35,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Thu Jul 21 2022 Dweep Advani <dadvani@vmware.com> 1.0-3
+- Added support for appliance upgrade use case
 * Fri Jan 14 2022 Dweep Advani <dadvani@vmware.com> 1.0-2
 - Updated for 4.0  release udpates
 * Mon Oct 12 2020 Dweep Advani <dadvani@vmware.com> 1.0-1
