@@ -1,18 +1,6 @@
 #! /bin/bash
-#################################################
-#       Title:  mk-install-iso                  #
-#        Date:  2014-11-26                      #
-#     Version:  1.0                             #
-#      Author:  dthaluru@vmware.com             #
-#     Options:                                  #
-#################################################
-#   Overview
-#       Generates a photon iso
-#   End
-#
 
-set -e
-set -x
+set -ex
 
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
@@ -60,12 +48,21 @@ clean_requirements_on_remove=true
 repodir=${WORKINGDIR}
 EOF
 
-rpm --root $INITRD --initdb --dbpath /var/lib/rpm
+rpmdb_init_cmd="rpm --root ${INITRD} --initdb --dbpath /var/lib/rpm"
+# PHOTON_BUILDER_TAG is exported from top level Makefile
+if [ "$(rpm -E %{_db_backend})" != "bdb" ]; then
+  rpmdb_init_cmd="docker run --rm -v ${INITRD}:${INITRD} ${PHOTON_BUILDER_TAG} /bin/bash -c \"${rpmdb_init_cmd}\""
+fi
 
-TDNF_CMD="tdnf install -y --releasever ${PHOTON_RELEASE_VERSION} --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
+if ! eval "${rpmdb_init_cmd}"; then
+  echo "ERROR: failed to initialize rpmdb" 1>&2
+  exit 1
+fi
+
+TDNF_CMD="tdnf install -y --releasever ${PHOTON_RELEASE_VERSION} --installroot $INITRD --rpmverbosity error -c ${WORKINGDIR}/tdnf.conf $PACKAGES"
 
 # run host's tdnf, if fails - try one from photon:latest docker image
-$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
+$TDNF_CMD || docker run --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 

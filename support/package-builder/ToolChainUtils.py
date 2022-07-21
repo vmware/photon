@@ -161,9 +161,15 @@ class ToolChainUtils(object):
 
         self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
-               chroot.getID() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
-        retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-        if retVal != 0:
+                chroot.getID() + " -D \'_dbpath /var/lib/rpm\' " + rpmFiles)
+
+        if constants.checkIfHostRpmNotUsable():
+            ph_builder_tag = os.environ["PHOTON_BUILDER_TAG"]
+            cmd = ("docker run --rm -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
+                   " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
+                   chroot.getID() + " " + ph_builder_tag + " /bin/bash -c \"" + cmd + "\"")
+
+        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
             self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")

@@ -69,3 +69,10 @@ PHOTON_DOCKER_PY_VER=2.3.0
 
 PHOTON_PKG_BLACKLIST_FILE=""
 PHOTON_REPO_TOOL?="createrepo"
+PHOTON_REPO_TOOL_OPT="--update"
+
+override PHOTON_DOCKER_IMAGE = "photon:3.0"
+PH_BUILDER_TAG := "photon_builder:3.0"
+ifndef PH3_DOCKER_IMG_URL
+PH3_DOCKER_IMG_URL := "https://github.com/vmware/photon-docker-image/raw/$(shell uname -m)/3.0-20220715/docker/photon-rootfs-3.0-8e54ea3e7.tar.gz"
+endif
