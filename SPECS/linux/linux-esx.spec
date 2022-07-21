@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -659,7 +659,7 @@ make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
         mandocs_install %{?_smp_mflags}
 
 install -Dvm 644 src/linux/auxiliary_bus.h \
-        %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+        %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
@@ -762,8 +762,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
-*   Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
--   Backported the fix for CVE-2022-1789
+* Thu Jul 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-10
+- Fix packaging of header file auxiliary_bus.h (part of ice and iavf drivers).
+* Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
+- Backported the fix for CVE-2022-1789
 * Tue Jul 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-8
 - Spec improvements
 * Mon Jul 11 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7
