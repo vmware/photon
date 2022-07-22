@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        15%{?kat_build:.kat}%{?dist}
+Release:        16%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -486,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 29 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 5.10.78-16
+- Enable CONFIG_CGROUP_BPF in config to run containers with cgroup v2
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-15
 - Reduce FIPS canister memory footprint by disabling CONFIG_KALLSYMS_ALL
 - Add only fips_canister-kallsyms to vmlinux instead of all symbols
