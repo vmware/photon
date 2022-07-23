@@ -1,0 +1,46 @@
+Summary:    Linux-native fakeroot using user namespaces
+Name:       rootlesskit
+Version:    1.0.1
+Release:    1%{?dist}
+Group:      Tools/Docker
+License:    Apache
+URL:        https://github.com/rootless-containers/rootlesskit
+Vendor:     VMware, Inc.
+Distribution: Photon
+
+Source0:    https://github.com/rootless-containers/rootlesskit/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a83a07b80f3b99329bab851eec2f2e388357b254817868d35904550fde84022a41245db290ab8a117cd631a8dda32606738528e9354c1dd5d46fbd824fa49112
+
+BuildRequires: go
+BuildRequires: git
+
+Requires: slirp4netns
+Requires: libslirp
+Requires: fuse
+
+Conflicts: docker-rootless < 20.10.14-4
+
+%description
+RootlessKit is a Linux-native implementation of "fake root" using user_namespaces(7).
+The purpose of RootlessKit is to run Docker and Kubernetes as an unprivileged user
+(known as "Rootless mode"), so as to protect the real root on the host from potential
+container-breakout attacks.
+
+%prep
+%autosetup -Sgit -p1
+
+%build
+%make_build
+
+%install
+export BINDIR=%{_bindir}
+%make_install
+
+%files
+%{_bindir}/%{name}
+%{_bindir}/%{name}-docker-proxy
+%{_bindir}/rootlessctl
+
+%changelog
+* Sun Jul 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-1
+- Initial version. Needed for docker-rootless.

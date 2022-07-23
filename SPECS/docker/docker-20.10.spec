@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -100,6 +100,8 @@ Summary:    Rootless support for Docker
 Requires:   slirp4netns
 Requires:   libslirp
 Requires:   fuse
+Requires:   rootlesskit
+Requires:   %{name} = %{version}-%{release}
 
 %description    rootless
 Rootless support for Docker.
@@ -188,10 +190,6 @@ jq -n \
   '.platform = $platform | .engine_image = $engine_image | .containerd_min_version = $containerd_min_ver | .runtime = $runtime' \
   > distribution_based_engine.json
 
-# docker-rootless
-export DOCKER_GITCOMMIT=%{DOCKER_ENGINE_GITCOMMIT}
-TMP_GOPATH="/go" %{_builddir}/moby-%{version}/src/github.com/docker/docker/hack/dockerfile/install/install.sh rootlesskit dynamic
-
 %install
 install -d -m755 %{buildroot}%{_mandir}/man1
 install -d -m755 %{buildroot}%{_mandir}/man5
@@ -245,8 +243,6 @@ install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
 # docker-rootless
 install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
 install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless-setuptool.sh %{buildroot}%{_bindir}/dockerd-rootless-setuptool.sh
-install -D -p -m 0755 /usr/local/bin/rootlesskit %{buildroot}%{_bindir}/rootlesskit
-install -D -p -m 0755 /usr/local/bin/rootlesskit-docker-proxy %{buildroot}%{_bindir}/rootlesskit-docker-proxy
 
 %pre engine
 if [ $1 -gt 0 ] ; then
@@ -322,10 +318,10 @@ rm -rf %{buildroot}/*
 %files rootless
 %{_bindir}/dockerd-rootless.sh
 %{_bindir}/dockerd-rootless-setuptool.sh
-%{_bindir}/rootlesskit
-%{_bindir}/rootlesskit-docker-proxy
 
 %changelog
+* Sat Jul 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-4
+- Move rootlesskit into a seperate package.
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-3
 - Bump up version to compile with new go
 * Tue May 24 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-2
