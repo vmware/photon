@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.14.2
+Version:        16.16.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=a1e29cc20ae957cc01f92fed0ea12a91cfd4b558
+%define         sha512 node=38dea34a56093b6454055b51a86808ed6173de089b9a337278a5f3278577edc393bde4bffccc467654e85fc7bbed03f7291d7d798a35151001582875141af654
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -69,6 +69,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 16.16.0-1
+-   Upgraded to 16.16.0.
 *   Tue Mar 22 2022 Piyush Gupta <gpiyush@vmware.com> 16.14.2-1
 -   Upgraded to 16.14.2.
 *   Tue Jan 18 2022 Piyush Gupta <gpiyush@vmware.com> 16.13.2-1
