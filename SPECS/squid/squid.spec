@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        5.0.5
-Release:        4%{?dist}
+Version:        5.6
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -9,8 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
-%define sha1 %{name}=5d4ad671377896a172adac30d98aed1c42bb47be
-Patch0:         0001-openssl-3.0.0-support.patch
+%define sha512 %{name}=940a4d21ea8e3384642951d80c501a192178d1220f06a59a7bc54ce86d49caea0a86b6e789e28bcb7125ffa2a564ca1aca886a96cccf6356314121a81f38221a
+
+Patch0:         squid-5.6-openssl3.patch
+
 Source1:        squid.sysconfig
 Source2:        squid.pam
 Source3:        squid.service
@@ -121,10 +123,10 @@ mkdir -p src/icmp/tests
 mkdir -p tools/squidclient/tests
 mkdir -p tools/tests
 
-make %{?_smp_mflags} DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
+%make_build DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 mkdir -p %{buildroot}%{_sysconfdir}/squid
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
@@ -214,6 +216,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Mon Jul 25 2022 Susant Sahani <ssahani@vmware.com> 5.6-1
+- Version bump.
 * Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0.5-4
 - Openssl 3.0.0 compatibility
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.5-3
