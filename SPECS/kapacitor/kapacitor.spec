@@ -1,17 +1,19 @@
-Name:           kapacitor
-Version:        1.5.1
-Release:        11%{?dist}
-Summary:        Open source framework for processing, monitoring, and alerting on time series data
-License:        MIT
-URL:            https://www.influxdata.com/time-series-platform/kapacitor
-Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=6de9a2c63936db23788396278a9faba7a4693274
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Group:          System/Monitoring
-BuildRequires:  go
-BuildRequires:  systemd
-Requires:       systemd
+Name:             kapacitor
+Version:          1.5.1
+Release:          12%{?dist}
+Summary:          Open source framework for processing, monitoring, and alerting on time series data
+License:          MIT
+URL:              https://www.influxdata.com/time-series-platform/kapacitor
+Source0:          https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
+%define sha1      %{name}=6de9a2c63936db23788396278a9faba7a4693274
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Group:            System/Monitoring
+BuildRequires:    go
+BuildRequires:    systemd
+Requires:         systemd
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
@@ -89,27 +91,29 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+* Mon Jul 25 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-12
+- Added Requires for useradd,userdel,groupadd,groupdel.
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-11
 - Bump up version to compile with new go
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-10
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-9
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-8
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-7
--   Bump up version to compile with new go
-*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.1-6
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.5.1-5
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.5.1-4
--   Bump up version to compile with go 1.13.5-2
-*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.5.1-3
--   Bump up version to compile with new go
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.5.1-2
--   Bump up version to compile with new go
-*   Fri Aug 17 2018 Keerthana K <keerthanak@vmware.com> 1.5.1-1
--   Upgraded to version 1.5.1
-*   Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
--   Initial kapacitor package for Photon.
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-10
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-9
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-8
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.1-7
+- Bump up version to compile with new go
+* Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.1-6
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.5.1-5
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.5.1-4
+- Bump up version to compile with go 1.13.5-2
+* Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.5.1-3
+- Bump up version to compile with new go
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.5.1-2
+- Bump up version to compile with new go
+* Fri Aug 17 2018 Keerthana K <keerthanak@vmware.com> 1.5.1-1
+- Upgraded to version 1.5.1
+* Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
+- Initial kapacitor package for Photon.
