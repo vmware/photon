@@ -1,23 +1,20 @@
-%define njs_ver 0.4.2
+%define njs_ver 0.7.5
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.19.3
-Release:        5%{?dist}
+Version:        1.22.0
+Release:        1%{?dist}
 License:        BSD-2-Clause
-URL:            http://nginx.org/download/nginx-%{version}.tar.gz
+URL:            https://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=3b50c30022aceb455da7a15616dc4bbff01eb511
+Source0:        http://nginx.org/download/%{name}-%{version}.tar.gz
+%define sha512  %{name}=074782dba9cd5f8f493fbb57e20bda6dc9171814d919a47ee9f825d93f12c9f9d496e25d063c983191b55ad6a236bcef252ce16ecc1d253dc8b23433557559b1
 Source1:        nginx.service
-Source2:        nginx-njs-%{njs_ver}.tar.gz
-%define sha1    nginx-njs=1927a613d0e5f3ef6fe3c0a6c8dbb06b39bb9c3c
-
-Patch0:         0001-nginx-DNS-Resolver-Off-by-One-Heap-Write-in-ngx_reso.patch
-Patch1:         nginx-CVE-2021-3618.patch
+Source2:        https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar.gz
+%define sha512  nginx-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -96,6 +93,9 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %{_var}/log/nginx
 
 %changelog
+* Tue Jul 19 2022 Harinadh D <hdommaraju@vmware.com> 1.22.0-1
+- Version update
+- security support is ended for 1.19 and till 1.21
 * Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.19.3-5
 - Fix for CVE-2021-3618
 * Thu Dec 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.19.3-4
