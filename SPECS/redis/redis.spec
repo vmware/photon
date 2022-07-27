@@ -1,6 +1,6 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    7.0.2
+Version:    7.0.4
 Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
@@ -8,8 +8,8 @@ Group:      Applications/Databases
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=bc8d679ecaad0220318b87be70476653f42b76815af61ff6f4e8885f5a5d17d41cea754fbf448f9e18e9a9f90227c5ac198fa9bc523370752f590ba01418a1b0
+Source0:    https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=748359ca515a203f541f7caba8a1396dac0421bd2159aa476b87e037745ab2f4edffc239c88be0e78e0bd0c39e7d9386667572e029f9cc5ea9e5b85e447ddf90
 
 Patch0:         %{name}-conf.patch
 
@@ -21,6 +21,7 @@ BuildRequires:  which
 BuildRequires:  tcl-devel
 
 Requires:   systemd
+Requires:   openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -30,7 +31,8 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %autosetup -p1
 
 %build
-make BUILD_TLS=yes %{?_smp_mflags}
+# %%make_build gets stuck for some unknown reason
+make %{?_smp_mflags} BUILD_TLS=yes
 
 %install
 %make_install PREFIX=%{buildroot}%{_usr} %{?_smp_mflags}
@@ -88,6 +90,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.4-1
+- Upgrade to v7.0.4, this also fixes CVE-2022-31144
 * Sat Jul 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.2-1
 - Upgrade to v7.0.2, this also fixes CVE-2022-33105
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-1
