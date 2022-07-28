@@ -1,4 +1,4 @@
-From 32aee6f0b4ae0fb0a7d08f70a0e3310a36035506 Mon Sep 17 00:00:00 2001
+From 009a1fc5cf8a63275a224dd895f7e1c5791d1f2b Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Thu, 18 Feb 2021 21:17:40 +0000
 Subject: [PATCH] FIPS:crypto:drbg: Jitterentropy RNG as the only RND source
@@ -17,42 +17,15 @@ using crypto_alloc_rng for "jitternetropy_rng".
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 ---
- crypto/drbg.c | 112 +++++++++++++++++++++++++++++++++-----------------
- crypto/ecc.c  |  26 +++++++++++-
- crypto/rng.c  |  27 +++++++++++-
- 3 files changed, 124 insertions(+), 41 deletions(-)
+ crypto/drbg.c | 93 +++++++++++++++++++++++++++++++++++++++------------
+ crypto/ecc.c  | 26 +++++++++++++-
+ 2 files changed, 97 insertions(+), 22 deletions(-)
 
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 73b36eef9107..c1ea37dc833f 100644
+index a4b5d6dbe99d..41ae214e6d18 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
-@@ -1084,9 +1084,22 @@ static void drbg_async_seed(struct work_struct *work)
- 
- 	mutex_lock(&drbg->drbg_mutex);
- 
--	ret = drbg_get_random_bytes(drbg, entropy, entropylen);
--	if (ret)
--		goto unlock;
-+	if (fips_enabled) {
-+		if(IS_ERR_OR_NULL(drbg->jent)) {
-+			pr_err("DRBG:Async Seed, non-existing jent\n");
-+			BUG();
-+			goto unlock;
-+		}
-+		ret = crypto_rng_get_bytes(drbg->jent,
-+					entropy,
-+					entropylen);
-+		if (ret)
-+			goto unlock;
-+	} else {
-+		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
-+		if (ret)
-+			goto unlock;
-+	}
- 
- 	/* Set seeded to false so that if __drbg_seed fails the
- 	 * next generate call will trigger a reseed.
-@@ -1117,7 +1131,7 @@ static void drbg_async_seed(struct work_struct *work)
+@@ -1125,7 +1125,7 @@ static int drbg_seed_from_random(struct drbg_state *drbg)
  static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  		     bool reseed)
  {
@@ -61,39 +34,49 @@ index 73b36eef9107..c1ea37dc833f 100644
  	unsigned char entropy[((32 + 16) * 2)];
  	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
  	struct drbg_string data1;
-@@ -1148,22 +1162,18 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1157,25 +1157,28 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  			entropylen = ((entropylen + 1) / 2) * 3;
  		BUG_ON((entropylen * 2) > sizeof(entropy));
  
--		/* Get seed from in-kernel /dev/urandom */
++
+ 		/* Get seed from in-kernel /dev/urandom */
+-		if (!rng_is_initialized())
+-			new_seed_state = DRBG_SEED_STATE_PARTIAL;
++		if (!rng_is_initialized()) {
++			if (fips_enabled && drbg->jent)
++				new_seed_state = DRBG_SEED_STATE_FULL;
++			else
++				new_seed_state = DRBG_SEED_STATE_PARTIAL;
++		}
+ 
 -		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
 -		if (ret)
 +		if (fips_enabled && !drbg->jent) {
 +			pr_err("DRBG: Jitter entropy source does not exist");
  			goto out;
--
++		}
+ 
 -		if (!drbg->jent) {
 -			drbg_string_fill(&data1, entropy, entropylen);
 -			pr_devel("DRBG: (re)seeding with %u bytes of entropy\n",
 -				 entropylen);
 -		} else {
 -			/* Get seed from Jitter RNG */
-+		}
 +jent_retry:
 +		if (fips_enabled) {
 +			/* Jitter RNG is present, Get seed from Jitter RNG */
  			ret = crypto_rng_get_bytes(drbg->jent,
 -						   entropy + entropylen,
 -						   entropylen);
-+						entropy,
-+						entropylen * 2);
++						   entropy,
++						   entropylen * 2);
  			if (ret) {
 -				pr_devel("DRBG: jent failed with %d\n", ret);
 +				pr_err("DRBG: jent failed with %d\n", ret);
  
  				/*
  				 * Do not treat the transient failure of the
-@@ -1178,15 +1187,49 @@
+@@ -1190,15 +1193,49 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  				 * However, we mandate that at least the first
  				 * seeding operation must succeed with the
  				 * Jitter RNG.
@@ -147,6 +130,33 @@ index 73b36eef9107..c1ea37dc833f 100644
  	}
  	list_add_tail(&data1.list, &seedlist);
  
+@@ -1413,9 +1450,23 @@ static int drbg_generate(struct drbg_state *drbg,
+ 		addtl = NULL;
+ 	} else if (rng_is_initialized() &&
+ 		   drbg->seeded == DRBG_SEED_STATE_PARTIAL) {
+-		len = drbg_seed_from_random(drbg);
+-		if (len)
+-			goto err;
++		if (fips_enabled) {
++			if (IS_ERR_OR_NULL(drbg->jent)) {
++				pr_err("DRBG:seed rand,non-existing jent\n");
++				BUG();
++				goto err;
++			}
++			len = crypto_rng_get_bytes(drbg->jent,
++						buf, buflen);
++			if (len)
++				goto err;
++			else
++				len = buflen;
++		} else {
++			len = drbg_seed_from_random(drbg);
++			if (len)
++				goto err;
++		}
+ 	}
+ 
+ 	if (addtl && 0 < addtl->len)
 diff --git a/crypto/ecc.c b/crypto/ecc.c
 index c80aa25994a0..d775a5dfb7be 100644
 --- a/crypto/ecc.c
@@ -199,5 +209,5 @@ index c80aa25994a0..d775a5dfb7be 100644
  	pk = ecc_alloc_point(ndigits);
  	if (!pk) {
 -- 
-2.28.0
+2.23.3
 
