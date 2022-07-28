@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.37.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -12,6 +12,7 @@ Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{v
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         fix_autogen_issue.patch
+Patch1:         OCSP_stapling_support.patch
 Requires:       glib
 Requires:       openssl
 Requires:       glibc
@@ -22,7 +23,6 @@ Requires:       ivykis
 Requires:       paho-c
 BuildRequires:  which
 BuildRequires:  git
-BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
@@ -35,7 +35,6 @@ BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
-Obsoletes:      eventlog
 
 %description
 The syslog-ng application is a flexible and highly scalable
@@ -62,7 +61,7 @@ needed to build applications using syslog-ng APIs.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-autoreconf -i
+autoreconf -i --force
 sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
@@ -166,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Jul 28 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-2
+-   add OCSP stapling support
 *   Thu Jun 09 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
 -   Bump version
 *   Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
