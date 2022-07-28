@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.118
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -232,8 +232,8 @@ done \
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
@@ -257,7 +257,7 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
+cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
 %if 0%{?__debug_package}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
@@ -265,7 +265,7 @@ install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{un
 ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 %endif
 
-cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
+cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet nvme_core.io_timeout=4294967295
 photon_linux=vmlinuz-%{uname_r}
@@ -282,18 +282,18 @@ EOF
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 # disable (JOBS=1) parallel build to fix this issue:
@@ -305,7 +305,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %post
 /sbin/depmod -a %{uname_r}
-ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
+ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
 /sbin/depmod -a %{uname_r}
@@ -323,7 +323,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-%config(noreplace) /boot/%{name}-%{uname_r}.cfg
+%config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
@@ -336,12 +336,12 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{uname_r}/*
+%{_defaultdocdir}/linux-%{uname_r}/*
 
 %files devel
 %defattr(-,root,root)
 %{_modulesdir}/build
-%{_usrsrc}/%{name}-headers-%{uname_r}
+%{_usrsrc}/linux-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
@@ -359,6 +359,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jul 28 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
+- Fix linux headers, doc folder and linux-<uname -r>.cfg names
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-6
 - Enable cgroup v1 stats
 - .config: enable PERCPU_STATS

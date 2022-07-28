@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -26,7 +26,7 @@ Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt67
-%define uname_r %{version}-%{rt_version}-%{release}-rt
+%define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
@@ -433,6 +433,9 @@ Patch618: 0318-rt-remove-extra-parameter-from-__trace_stack.patch
 # Keep rt_version matched up with this patch.
 Patch619: 0319-Linux-5.10.115-rt67-REBASE.patch
 
+#Ignore reading localversion-rt
+Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
+
 #Photon Specific Changes
 Patch700: 0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
@@ -551,6 +554,7 @@ Requires(postun):(coreutils or toybox)
 %description
 The Linux package contains the Linux kernel with RT (real-time)
 features.
+Built with rt patchset version %{rt_version}.
 %if 0%{?fips}
 This kernel is FIPS certified.
 %endif
@@ -722,8 +726,8 @@ done \
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
@@ -744,7 +748,7 @@ pushd ../iavf-%{iavf_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
     INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 install -Dvm 644 src/linux/auxiliary_bus.h \
-    %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+    %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
@@ -774,7 +778,7 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
+cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
 %if 0%{?__debug_package}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
@@ -782,7 +786,7 @@ install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{un
 ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 %endif
 
-cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
+cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet nosoftlockup intel_idle.max_cstate=0 mce=ignore_ce nowatchdog cpuidle.off=1 nmi_watchdog=0 audit=0
 photon_linux=vmlinuz-%{uname_r}
@@ -799,18 +803,18 @@ EOF
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
@@ -818,14 +822,14 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %post
 /sbin/depmod -a %{uname_r}
-ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
+ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-%config(noreplace) /boot/%{name}-%{uname_r}.cfg
+%config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
@@ -836,15 +840,19 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{uname_r}/*
+%{_defaultdocdir}/linux-%{uname_r}/*
 %{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_modulesdir}/build
-%{_usrsrc}/%{name}-headers-%{uname_r}
+%{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jul 28 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-15
+- Fix linux headers, doc folder and linux-<uname -r>.cfg names
+- Drop rt_version from uname_r
+- Patch to skip reading localversion-rt
 * Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-14
 - Update iavf driver to v4.4.2
 - Update ice driver to v1.8.3
