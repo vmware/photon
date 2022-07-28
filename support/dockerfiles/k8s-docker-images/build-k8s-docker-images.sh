@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -e
 
 DIST_TAG=$1
 DIST_VER=$2
@@ -7,9 +9,11 @@ STAGE_DIR=$4
 PH_BUILDER_TAG=$5
 ARCH=x86_64
 
-#
+source common.sh
+
+start_repo_server
+
 # Docker images for kubernetes artifacts
-#
 for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
     K8S_VER=`cat ${file} | grep "^Version:" | cut -d: -f2 | tr -d ' '`
     K8S_VER_REL=${K8S_VER}-`cat ${file} | grep "^Release:" | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
@@ -18,8 +22,7 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
     K8S_PAUSE_RPM=kubernetes-pause-${K8S_VER_REL}${DIST_TAG}.${ARCH}.rpm
     K8S_PAUSE_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_PAUSE_RPM}
 
-    if [ ! -f ${K8S_RPM_FILE} ]
-    then
+    if [ ! -f ${K8S_RPM_FILE} ]; then
         echo "Kubernetes RPM ${K8S_RPM_FILE} not found. Exiting.."
         exit 1
     fi
@@ -35,11 +38,18 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
     done
 
     mkdir -p tmp/k8s
-    cp ${K8S_RPM_FILE} tmp/k8s/
-    cp ${K8S_PAUSE_RPM_FILE} tmp/k8s/
+
+    cp ${K8S_RPM_FILE} \
+       ${K8S_PAUSE_RPM_FILE} \
+       tmp/k8s/
+
     pushd ./tmp/k8s
-    docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && \
-    rpm2cpio '${K8S_RPM}' | cpio -vid && rpm2cpio '${K8S_PAUSE_RPM}' | cpio -vid"
+    cmd="cd '${PWD}' && rpm2cpio '${K8S_RPM}' | cpio -vid && rpm2cpio '${K8S_PAUSE_RPM}' | cpio -vid"
+    if ! rpmSupportsZstd; then
+      docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
+    else
+      eval "${cmd}"
+    fi
     popd
 
     for K8S_BIN in ${K8S_BINS[*]}; do
@@ -51,10 +61,7 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
         mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/docker_images/
     done
 
-
-    #
     # K8S Pause container
-    #
     PAUSE_IMG_NAME=vmware/photon-${DIST_VER}-pause-amd64:v${K8S_VER}
     PAUSE_TAR_NAME=k8s-pause-v${K8S_VER_REL}.tar
 

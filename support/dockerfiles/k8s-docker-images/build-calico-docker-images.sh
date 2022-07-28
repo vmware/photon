@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
 
-source common.inc
+set -e
 
 DIST_TAG=$1
 DIST_VER=$2
@@ -9,9 +9,9 @@ STAGE_DIR=$4
 PH_BUILDER_TAG=$5
 ARCH=x86_64
 
-#
+source common.sh
+
 # Docker images for calico-node, calico-cni
-#
 CALICO_VER=`cat ${SPEC_DIR}/calico/calico.spec | grep Version: | cut -d: -f2 | tr -d ' '`
 CALICO_VER_REL=${CALICO_VER}-`cat ${SPEC_DIR}/calico/calico.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_RPM=calico-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -62,62 +62,52 @@ CALICO_K8S_POLICY_VER_REL=${CALICO_K8S_POLICY_VER}-`cat ${SPEC_DIR}/calico-k8s-p
 CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_K8S_POLICY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_K8S_POLICY_RPM}
 
-if [ ! -f ${CALICO_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_RPM_FILE} ]; then
     echo "Calico RPM ${CALICO_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_BGP_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_BGP_RPM_FILE} ]; then
     echo "Calico BGP RPM ${CALICO_BGP_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${GO_BGP_RPM_FILE} ]
-then
+if [ ! -f ${GO_BGP_RPM_FILE} ]; then
     echo "GoBGP RPM ${GO_BGP_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_BIRD_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_BIRD_RPM_FILE} ]; then
     echo "Calico BIRD RPM ${CALICO_BIRD_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CONFD_RPM_FILE} ]
-then
+if [ ! -f ${CONFD_RPM_FILE} ]; then
     echo "confd RPM ${CONFD_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_FELIX_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_FELIX_RPM_FILE} ]; then
     echo "Calico felix RPM ${CALICO_FELIX_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_LIBNET_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_LIBNET_RPM_FILE} ]; then
     echo "Calico libnetwork RPM ${CALICO_LIBNET_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_CNI_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_CNI_RPM_FILE} ]; then
     echo "Calico CNI RPM ${CALICO_CNI_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${K8S_CNI_RPM_FILE} ]
-then
+if [ ! -f ${K8S_CNI_RPM_FILE} ]; then
     echo "K8S CNI RPM ${K8S_CNI_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
-if [ ! -f ${CALICO_K8S_POLICY_RPM_FILE} ]
-then
+if [ ! -f ${CALICO_K8S_POLICY_RPM_FILE} ]; then
     echo "Calico k8s policy RPM ${CALICO_K8S_POLICY_RPM_FILE} not found. Exiting.."
     exit 1
 fi
@@ -142,18 +132,20 @@ if [[ ! -z "${CNI_IMG_ID}" ]]; then
 fi
 
 mkdir -p tmp/calico
-cp ${CALICO_RPM_FILE} tmp/calico/
-cp ${CALICO_BGP_RPM_FILE} tmp/calico/
-cp ${GO_BGP_RPM_FILE} tmp/calico/
-cp ${CALICO_BIRD_RPM_FILE} tmp/calico/
-cp ${CONFD_RPM_FILE} tmp/calico/
-cp ${CALICO_FELIX_RPM_FILE} tmp/calico/
-cp ${CALICO_LIBNET_RPM_FILE} tmp/calico/
-cp ${CALICO_CNI_RPM_FILE} tmp/calico/
-cp ${K8S_CNI_RPM_FILE} tmp/calico/
-cp ${CALICO_K8S_POLICY_RPM_FILE} tmp/calico/
+cp ${CALICO_RPM_FILE} \
+   ${CALICO_BGP_RPM_FILE} \
+   ${GO_BGP_RPM_FILE} \
+   ${CALICO_BIRD_RPM_FILE} \
+   ${CONFD_RPM_FILE} \
+   ${CALICO_FELIX_RPM_FILE} \
+   ${CALICO_LIBNET_RPM_FILE} \
+   ${CALICO_CNI_RPM_FILE} \
+   ${K8S_CNI_RPM_FILE} \
+   ${CALICO_K8S_POLICY_RPM_FILE} \
+   tmp/calico/
+
 pushd ./tmp/calico
-docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && \
+cmd="cd '${PWD}' && \
 rpm2cpio '${CALICO_RPM}' | cpio -vid && \
 rpm2cpio '${CALICO_BGP_RPM}' | cpio -vid && \
 rpm2cpio '${GO_BGP_RPM}' | cpio -vid && \
@@ -164,9 +156,15 @@ rpm2cpio '${CALICO_LIBNET_RPM}' | cpio -vid && \
 rpm2cpio '${CALICO_CNI_RPM}' | cpio -vid && \
 rpm2cpio '${K8S_CNI_RPM}' | cpio -vid && \
 rpm2cpio '${CALICO_K8S_POLICY_RPM}' | cpio -vid"
+
+if ! rpmSupportsZstd; then
+  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
+else
+  eval "${cmd}"
+fi
 popd
 
-setup_repo
+start_repo_server
 
 docker build --rm -t ${CALICO_NODE_IMG_NAME} -f Dockerfile.calico-node .
 docker save -o ${CALICO_NODE_TAR} ${CALICO_NODE_IMG_NAME}

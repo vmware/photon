@@ -8,7 +8,6 @@ sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), "su
 
 import docker
 import glob
-import io
 import json
 import subprocess
 import shutil
@@ -35,7 +34,7 @@ from subprocess import PIPE, Popen
 configdict = {}
 
 targetList = {
-    "image":["iso", "ami", "gce", "azure", "rpi", "ova", "ova_uefi", "all", "src-iso", "ls1012afrwy",
+    "image": ["iso", "ami", "gce", "azure", "rpi", "ova", "ova_uefi", "all", "src-iso", "ls1012afrwy",
             "photon-docker-image", "k8s-docker-images", "all-images", "minimal-iso", "rt-iso"],
 
     "rpmBuild": ["packages", "packages-minimal", "packages-initrd", "packages-docker",
@@ -43,7 +42,7 @@ targetList = {
             "ostree-repo", "generate-yaml-files", "create-repo", "distributed-build"],
 
     "buildEnvironment": ["packages-cached", "sources", "sources-cached", "publish-rpms", "publish-x-rpms",
-            "publish-rpms-cached", "publish-x-rpms-cached", "photon-stage","photon_builder_image"],
+            "publish-rpms-cached", "publish-x-rpms-cached", "photon-stage"],
 
     "cleanup": ["clean", "clean-install", "clean-chroot", "clean-stage-for-incremental-build"],
 
@@ -60,11 +59,11 @@ photonDir = os.path.dirname(os.path.realpath(__file__))
 curDir = os.getcwd()
 
 check_prerequesite = {
-        "vixdiskutil": False,
-        "tools-bin": False,
-        "contain": False,
-        "initialize-constants": False
-        }
+    "vixdiskutil": False,
+    "tools-bin": False,
+    "contain": False,
+    "initialize-constants": False
+}
 
 cmdUtils = CommandUtils()
 
@@ -965,17 +964,24 @@ class BuildImage:
         if check_prerequesite["photon-docker-image"]:
             return
 
+        img_fname = f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.tar.gz"
+        if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
+            check_prerequesite["photon-docker-image"] = True
+            print(f"{img_fname} already exists ...")
+            return
+
         RpmBuildTarget.create_repo()
 
         docker_file_dir = "support/dockerfiles/photon"
-        docker_file = docker_file_dir + "/Dockerfile"
-        docker_script = docker_file_dir + "/make-docker-image.sh"
+        docker_file = f"{docker_file_dir}/Dockerfile"
+        docker_script = f"{docker_file_dir}/make-docker-image.sh"
 
-        cmd = "cd " + photonDir
-        cmd += " && sudo docker build --no-cache --tag photon-build " + docker_file_dir
-        cmd += " && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER=" + constants.buildNumber
-        cmd += " -e PHOTON_RELEASE_VERSION=" + constants.releaseVersion
-        cmd += " -v " + photonDir + ":/workspace photon-build ./" + docker_script
+        cmd = f"cd {photonDir}"
+        cmd = f"sudo docker build --no-cache --tag photon-build {docker_file_dir}"
+        cmd += f" && sudo docker run --rm --privileged --net=host "
+        cmd += f" -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
+        cmd += f" -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
+        cmd += f" -v {photonDir}:/workspace photon-build {docker_script}"
 
         if subprocess.Popen([cmd], shell=True).wait():
             raise Exception("Not able to run photon-docker-image")

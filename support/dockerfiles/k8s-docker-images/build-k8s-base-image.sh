@@ -1,17 +1,16 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -e
 
 DIST_VER=$1
 BUILD_NUM=$2
 STAGE_DIR=$3
 
-#
 # Base docker image for kubernetes containers
-#
 PHOTON_ROOTFS_FILE=${STAGE_DIR}/photon-rootfs-${DIST_VER}-${BUILD_NUM}.tar.gz
 K8S_BASE_IMG_NAME=k8s-base-image:${DIST_VER}
 
-if [ ! -f ${PHOTON_ROOTFS_FILE} ]
-then
+if [ ! -f ${PHOTON_ROOTFS_FILE} ]; then
     echo "Photon rootfs file ${PHOTON_ROOTFS_FILE} not found. Exiting.."
     exit 1
 fi

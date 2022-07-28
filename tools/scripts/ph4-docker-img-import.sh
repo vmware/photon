@@ -27,6 +27,11 @@ if [ "${ret}" != "${img_url}" ]; then
     exit 1
   fi
 
+  if [ "$(rpm -E %{_db_backend})" = "sqlite" ]; then
+    echo "Host's rpm supports sqlite"
+    exit 0
+  fi
+
   if ! docker build --tag "${ph_builder_tag}" -f ${photon_builder_dockerfile} . 1>/dev/null; then
     echo "ERROR: failed to build ${ph_builder_tag} docker image" 1>&2
     exit 1

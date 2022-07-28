@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
 
-source common.inc
+set -e
 
 DIST_TAG=$1
 DIST_VER=$2
@@ -9,9 +9,9 @@ STAGE_DIR=$4
 PH_BUILDER_TAG=$5
 ARCH=x86_64
 
-#
+source common.sh
+
 # Docker image for kubernetes nginx ingress controller
-#
 NGINX_INC_VER=`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Version: | cut -d: -f2 | tr -d ' '`
 NGINX_INC_VER_REL=${NGINX_INC_VER}-`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 NGINX_INC_RPM=nginx-ingress-${NGINX_INC_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -35,10 +35,15 @@ fi
 mkdir -p tmp/nginxinc
 cp ${NGINX_INC_RPM_FILE} tmp/nginxinc/
 pushd ./tmp/nginxinc
-docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "cd '${PWD}' && rpm2cpio '${NGINX_INC_RPM}' | cpio -vid"
+cmd="cd '${PWD}' && rpm2cpio '${NGINX_INC_RPM}' | cpio -vid"
+if ! rpmSupportsZstd; then
+  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
+else
+  eval "${cmd}"
+fi
 popd
 
-setup_repo
+start_repo_server
 
 docker build --rm -t ${IMG_NAME} -f Dockerfile.nginx-ingress .
 docker save -o ${NGINX_INC_TAR} ${IMG_NAME}
