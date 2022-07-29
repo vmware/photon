@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -134,6 +134,9 @@ Patch111: 0010-RPS-flow-balance.patch
 Patch112: 0011-add-mss-clamp-support-to-gretap-baseimage.patch
 Patch113: 0012-set-max_mtu-as-IP_MAX_MTU.patch
 Patch114: 0013-set-max_mtu-as-IP_MAX_MTU_for_vlan.patch
+Patch115: 0014-iptunnel-mark-xfrm-multi-parts.patch
+Patch116: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
+Patch117: 0016-gre_tap-interface-mss_clamp-support.patch
 
 # Update vmxnet3 driver to version 6
 Patch120: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
@@ -457,6 +460,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 08 2022 Jonathan Shao <sjonathan@vmware.com> 4.19.247-11
+- Add HCX specific patches
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-10
 - Scriptlets fixes and improvements
 * Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-9
