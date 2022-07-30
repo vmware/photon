@@ -1,23 +1,23 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%define        with_boost     1
-%define        with_crash     1
-%define        with_docs      0
-%define        with_grapher   0
-%define        with_pie       1
-%define        with_rpm       0
-%define        with_sqlite    1
+%define with_boost     1
+%define with_crash     1
+%define with_docs      0
+%define with_grapher   0
+%define with_pie       1
+%define with_rpm       0
+%define with_sqlite    1
 
 Name:          systemtap
 Version:       4.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
-URL:           http://sourceware.org/systemtap/
-Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=f126888adda90a0ec57f43f9db20fde68c8ef356
+URL:           http://sourceware.org/systemtap
 License:       GPLv2+
+
+Source0:       http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8fb1fe5071ec99ce3c6bcf82afdc98a3e1abc0ea937f3019b225c3a1879ada30080740b1918a84c6db06fe1893e6d1e7dc84be26c7e597d7feda1efe11354e76
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -35,23 +35,28 @@ BuildRequires: nss
 BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-devel
-%if %with_boost
+
+%if 0%{?with_boost}
 BuildRequires: boost-devel
 %endif
-%if %with_crash
+
+%if 0%{?with_crash}
 BuildRequires: crash-devel
 BuildRequires: zlib-devel
 Requires:      crash
 %endif
+
 BuildRequires: pkg-config
-%if %with_rpm
+
+%if 0%{?with_rpm}
 BuildRequires: rpm-devel
 %endif
+
 Requires:      gcc
 Requires:      linux-devel
 Requires:      make
 Requires:      elfutils
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name}-runtime = %{version}-%{release}
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -60,14 +65,13 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 %description
 SystemTap is an instrumentation system for systems running Linux.
 Developers can write instrumentation scripts to collect data on
-the operation of the system.  The base systemtap package contains/requires
-the components needed to locally develop and execute systemtap scripts.
-
+the operation of the system.  The base %{name} package contains/requires
+the components needed to locally develop and execute %{name} scripts.
 
 %package initscript
 Group:         System/Tools
 Summary:       Systemtap Initscript
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      initscripts
 
 %description initscript
@@ -84,7 +88,7 @@ SystemTap runtime is the runtime component of an instrumentation system for syst
 %package sdt-devel
 Group:         System/Tools
 Summary:       Static probe support tools
-Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name} = %{version}-%{release}
 
 %description sdt-devel
 Support tools to allow applications to use static probes.
@@ -92,8 +96,8 @@ Support tools to allow applications to use static probes.
 %package server
 Group:         System/Tools
 Summary:       Instrumentation System Server
-Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      (coreutils or toybox)
 Requires:      nss
 Requires:      unzip
@@ -102,45 +106,44 @@ Requires:      gzip
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
 
-
 %prep
-%setup -q
+%autosetup -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
 %build
 %configure \
-%if %with_crash
-	--enable-crash \
+%if 0%{?with_crash}
+    --enable-crash \
 %else
-	--disable-crash \
+    --disable-crash \
 %endif
-	--disable-docs \
-%if %with_sqlite
-	--enable-sqlite \
+    --disable-docs \
+%if 0%{?with_sqlite}
+    --enable-sqlite \
 %else
-	--disable-sqlite \
+    --disable-sqlite \
 %endif
-%if %with_rpm
-	--with-rpm \
+%if 0%{?with_rpm}
+    --with-rpm \
 %else
-	--without-rpm \
+    --without-rpm \
 %endif
-%if %with_pie
-	--enable-pie \
+%if 0%{?with_pie}
+    --enable-pie \
 %else
-	--disable-pie \
+    --disable-pie \
 %endif
-	--disable-grapher \
-        --disable-virt \
-	--disable-silent-rules
+    --disable-grapher \
+    --disable-virt \
+    --disable-silent-rules
 
-make
+%make_build
+
 %install
-[ "%{buildroot}" != / ] && rm -rf ""
-%makeinstall
+%make_install %{?_smp_flags}
 
-mv %{buildroot}%{_datadir}/systemtap/examples examples
+mv %{buildroot}%{_datadir}/%{name}/examples examples
 
 find examples -type f -name '*.stp' -print0 | xargs -0 sed -i -r -e '1s@^#!.+stap@#!%{_bindir}/stap@'
 
@@ -148,22 +151,23 @@ chmod 755 %{buildroot}%{_bindir}/staprun
 
 install -c -m 755 stap-prep %{buildroot}%{_bindir}/stap-prep
 
+mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d/ \
+         %{buildroot}%{_sysconfdir}/%{name} \
+         %{buildroot}%{_sysconfdir}/%{name}/conf.d \
+         %{buildroot}%{_sysconfdir}/%{name}/script.d \
+         %{buildroot}%{_localstatedir}/cache/%{name} \
+         %{buildroot}%{_localstatedir}/run/%{name}
 
-mkdir -p %{buildroot}%{_sysconfdir}//rc.d/init.d/
-install -m 755 initscript/systemtap %{buildroot}%{_sysconfdir}/rc.d/init.d/
-mkdir -p %{buildroot}%{_sysconfdir}/systemtap
-mkdir -p %{buildroot}%{_sysconfdir}/systemtap/conf.d
-mkdir -p %{buildroot}%{_sysconfdir}/systemtap/script.d
-install -m 644 initscript/config.systemtap %{buildroot}%{_sysconfdir}/systemtap/config
-mkdir -p %{buildroot}%{_localstatedir}/cache/systemtap
-mkdir -p %{buildroot}%{_localstatedir}/run/systemtap
+install -m 755 initscript/%{name} %{buildroot}%{_sysconfdir}/rc.d/init.d/
+install -m 644 initscript/config.%{name} %{buildroot}%{_sysconfdir}/%{name}/config
 
-%if %with_docs
+%if 0%{?with_docs}
 mkdir docs.installed
-mv %{buildroot}%{_datadir}/systemtap/*.pdf docs.installed/
-mv %{buildroot}%{_datadir}/systemtap/tapsets docs.installed/
-%if %with_publican
-mv %{buildroot}%{_datadir}/systemtap/SystemTap_Beginners_Guide docs.installed/
+mv %{buildroot}%{_datadir}/%{name}/*.pdf \
+   %{buildroot}%{_datadir}/%{name}/tapsets \
+   docs.installed/
+%if 0%{?with_publican}
+mv %{buildroot}%{_datadir}/%{name}/SystemTap_Beginners_Guide docs.installed/
 %endif
 %endif
 
@@ -179,13 +183,17 @@ touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
 
+rm -rf %{buildroot}%{_mandir}/cs/
+
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
-[ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
+rm -rf "%{buildroot}"
 
 %pre
 getent group stap-server >/dev/null || groupadd -g 155 -r stap-server || groupadd -r stap-server
@@ -205,16 +213,16 @@ exit 0
 %post server
 if [ $1 -eq 1 ] ; then
   test -e %{_localstatedir}/log/stap-server/log || {
-  touch %{_localstatedir}/log/stap-server/log
-  chmod 664 %{_localstatedir}/log/stap-server/log
-  chown stap-server:stap-server %{_localstatedir}/log/stap-server/log
+    touch %{_localstatedir}/log/stap-server/log
+    chmod 664 %{_localstatedir}/log/stap-server/log
+    chown stap-server:stap-server %{_localstatedir}/log/stap-server/log
   }
 
-  if test ! -e ~stap-server/.systemtap/ssl/server/stap.cert; then
-	runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
+  if test ! -e ~stap-server/.%{name}/ssl/server/stap.cert; then
+    runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
 
-	%{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
-	%{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
+    %{_bindir}/stap-authorize-server-cert ~stap-server/.%{name}/ssl/server/stap.cert
+    %{_bindir}/stap-authorize-signing-cert ~stap-server/.%{name}/ssl/server/stap.cert
   fi
   /sbin/chkconfig --add stap-server
   exit 0
@@ -222,46 +230,46 @@ fi
 
 %preun server
 if [ $1 = 0 ] ; then
-	/sbin/service stap-server stop >/dev/null 2>&1
-	/sbin/chkconfig --del stap-server
+  /sbin/service stap-server stop >/dev/null 2>&1
+  /sbin/chkconfig --del stap-server
 fi
 exit 0
 
 %postun server
 if [ "$1" -ge "1" ] ; then
-	/sbin/service stap-server condrestart >/dev/null 2>&1 || :
+  /sbin/service stap-server condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post initscript
 if [ $1 -eq 1 ] ; then
-	/sbin/chkconfig --add systemtap
-	exit 0
+  /sbin/chkconfig --add %{name}
+  exit 0
 fi
 
 %preun initscript
 if [ $1 = 0 ] ; then
-	/sbin/service systemtap stop >/dev/null 2>&1
-	/sbin/chkconfig --del systemtap
+  /sbin/service %{name} stop >/dev/null 2>&1
+  /sbin/chkconfig --del %{name}
 fi
 exit 0
 
 %postun initscript
 if [ "$1" -ge "1" ] ; then
-	/sbin/service systemtap condrestart >/dev/null 2>&1 || :
+  /sbin/service %{name} condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post
 if [ $1 -eq 1 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+  (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+  (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+  (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+  (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %files -f %{name}.lang
@@ -272,52 +280,54 @@ fi
 %{_bindir}/stap-report
 %{_bindir}/stapsh
 %{_bindir}/stapbpf
-%dir %{_datadir}/systemtap
-%dir %{_datadir}/systemtap/runtime
-%{_datadir}/systemtap/runtime/*.h
-%{_datadir}/systemtap/runtime/*.c
-%{_datadir}/systemtap/runtime/transport
-%{_datadir}/systemtap/runtime/unwind
-%dir %{_datadir}/systemtap/runtime/linux
-%{_datadir}/systemtap/runtime/linux/*.c
-%{_datadir}/systemtap/runtime/linux/*.h
-%dir %attr(0775,root,stap-server) %{_datadir}/systemtap/runtime/linux/uprobes
-%{_datadir}/systemtap/runtime/linux/uprobes/*
-%dir %{_datadir}/systemtap/runtime/linux/uprobes2
-%{_datadir}/systemtap/runtime/linux/uprobes2/*
-%{_datadir}/systemtap/tapset
-%dir %{_datadir}/systemtap/runtime/softfloat
-%{_datadir}/systemtap/runtime/softfloat/*.h
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/runtime
+%{_datadir}/%{name}/runtime/*.h
+%{_datadir}/%{name}/runtime/*.c
+%{_datadir}/%{name}/runtime/transport
+%{_datadir}/%{name}/runtime/unwind
+%dir %{_datadir}/%{name}/runtime/linux
+%{_datadir}/%{name}/runtime/linux/*.c
+%{_datadir}/%{name}/runtime/linux/*.h
+%dir %attr(0775,root,stap-server) %{_datadir}/%{name}/runtime/linux/uprobes
+%{_datadir}/%{name}/runtime/linux/uprobes/*
+%dir %{_datadir}/%{name}/runtime/linux/uprobes2
+%{_datadir}/%{name}/runtime/linux/uprobes2/*
+%{_datadir}/%{name}/tapset
+%dir %{_datadir}/%{name}/runtime/softfloat
+%{_datadir}/%{name}/runtime/softfloat/*.h
 %{_mandir}/man1
 %{_mandir}/man3/stap*.3stap*
 %{_mandir}/man7/warning::symbols.7stap*
 %{_mandir}/man7/warning::buildid.7stap*
 %{_mandir}/man7/stappaths.7*
 %{_mandir}/man8/stapsh.8*
-%{_mandir}/man8/systemtap.8*
 %{_mandir}/man8/stapbpf.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
 
 %files initscript
 %defattr(-,root,root)
-%{_sysconfdir}/rc.d/init.d/systemtap
-%dir %{_sysconfdir}/systemtap
-%dir %{_sysconfdir}/systemtap/conf.d
-%dir %{_sysconfdir}/systemtap/script.d
-%config(noreplace) %{_sysconfdir}/systemtap/config
-%dir %{_localstatedir}/cache/systemtap
-%dir %{_localstatedir}/run/systemtap
+%{_sysconfdir}/rc.d/init.d/%{name}
+%dir %{_sysconfdir}/%{name}
+%dir %{_sysconfdir}/%{name}/conf.d
+%dir %{_sysconfdir}/%{name}/script.d
+%config(noreplace) %{_sysconfdir}/%{name}/config
+%dir %{_localstatedir}/cache/%{name}
+%dir %{_localstatedir}/run/%{name}
+%{_mandir}/man8/%{name}-service.8.gz
 
 %files runtime
 %defattr(-,root,root)
 %attr(4111,root,root) %{_bindir}/staprun
-%{_libexecdir}/systemtap/stapio
-%{_libexecdir}/systemtap/stap-env
-%{_libexecdir}/systemtap/stap-authorize-cert
-%if %with_crash
-%{_libdir}/systemtap/staplog.so*
+%{_libexecdir}/%{name}/stapio
+%{_libexecdir}/%{name}/stap-env
+%{_libexecdir}/%{name}/stap-authorize-cert
+
+%if 0%{?with_crash}
+%{_libdir}/%{name}/staplog.so*
 %endif
+
 %{_mandir}/man8/staprun.8*
 
 %files sdt-devel
@@ -329,11 +339,11 @@ fi
 %files server
 %defattr(-,root,root)
 %{_bindir}/stap-server
-%{_libexecdir}/systemtap/stap-serverd
-%{_libexecdir}/systemtap/stap-start-server
-%{_libexecdir}/systemtap/stap-stop-server
-%{_libexecdir}/systemtap/stap-gen-cert
-%{_libexecdir}/systemtap/stap-sign-module
+%{_libexecdir}/%{name}/stap-serverd
+%{_libexecdir}/%{name}/stap-start-server
+%{_libexecdir}/%{name}/stap-stop-server
+%{_libexecdir}/%{name}/stap-gen-cert
+%{_libexecdir}/%{name}/stap-sign-module
 %{_sysconfdir}/rc.d/init.d/stap-server
 %config(noreplace) %{_sysconfdir}/logrotate.d/stap-server
 %dir %{_sysconfdir}/stap-server
@@ -345,55 +355,56 @@ fi
 %{_mandir}/man7/error::*.7stap*
 %{_mandir}/man7/warning::debuginfo.7stap*
 %{_mandir}/man8/stap-server.8*
-%{_mandir}/man8/systemtap-service.8*
 
 %changelog
-*   Thu Nov 12 2020 Ankit Jain <ankitja@vmware.com> 4.4-1
--   Updated to version 4.4
-*   Wed Aug 19 2020 Ankit Jain <ankitja@vmware.com> 4.3-3
--   BuildRequires curl-devel, required by libdebuginfod.so
-*   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 4.3-2
--   Mass removal python2
-*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
--   Automatic Version Bump
-*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2
--   Added BuildRequires python2-devel
-*   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
--   Updated to version 4.0
-*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
--   Updated to version 3.3
-*   Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
--   Updated to version 3.2
-*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5
--   Fixed the log file directory structure
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-4
--   Remove shadow from requires and use explicit tools for post actions
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-3
--   Requires coreutils or toybox
-*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
--   systemtap-sdt-devel requires systemtap
-*   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1-1
--   Update to version 3.1
-*   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
--   add shadow to requires
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3
--   Use sqlite-{devel,libs}
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
--   Modified %check
-*   Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1
--   Updated version to 3.0
--   Removing patch to enable kernel (fix is present in upstream)
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
--   GA - Bump release of all rpms
-*   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
--   Added the patch to enable kernel building with Kernel 4.4
-*   Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3
--   Fixed the stap-prep script to be compatible with Photon
-*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
--   Fix for upgrade issues
-*   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1
--   Updated version to 2.9
-*   Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
--   Move dtrace to the main package.
-*   Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1
--   Initial build. First version
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.4-2
+- Bump version as a part of sqlite upgrade
+* Thu Nov 12 2020 Ankit Jain <ankitja@vmware.com> 4.4-1
+- Updated to version 4.4
+* Wed Aug 19 2020 Ankit Jain <ankitja@vmware.com> 4.3-3
+- BuildRequires curl-devel, required by libdebuginfod.so
+* Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 4.3-2
+- Mass removal python2
+* Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
+- Automatic Version Bump
+* Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2
+- Added BuildRequires python2-devel
+* Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
+- Updated to version 4.0
+* Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
+- Updated to version 3.3
+* Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
+- Updated to version 3.2
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5
+- Fixed the log file directory structure
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-4
+- Remove shadow from requires and use explicit tools for post actions
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-3
+- Requires coreutils or toybox
+* Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
+- systemtap-sdt-devel requires systemtap
+* Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1-1
+- Update to version 3.1
+* Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
+- add shadow to requires
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3
+- Use sqlite-{devel,libs}
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
+- Modified %check
+* Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1
+- Updated version to 3.0
+- Removing patch to enable kernel (fix is present in upstream)
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
+- GA - Bump release of all rpms
+* Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
+- Added the patch to enable kernel building with Kernel 4.4
+* Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3
+- Fixed the stap-prep script to be compatible with Photon
+* Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
+- Fix for upgrade issues
+* Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1
+- Updated version to 2.9
+* Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
+- Move dtrace to the main package.
+* Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1
+- Initial build. First version

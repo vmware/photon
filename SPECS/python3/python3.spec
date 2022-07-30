@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -13,6 +13,7 @@ Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha512  Python=b90029d6825751685983e9dcf0e0ec9e46f18e6c7d37b0dd7a245a94316f8c0090308ad7c2b2b49ed2514b0b909177231dd5bcad03031bf4624e37136fcf8019
+
 Source1:        macros.python
 
 Patch0:         cgi3.patch
@@ -186,20 +187,22 @@ fi
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
-find %{buildroot}%{_libdir} -name '*.pyc' -delete
-find %{buildroot}%{_libdir} -name '*.pyo' -delete
-find %{buildroot}%{_libdir} -name '*.o' -delete
-find %{buildroot}%{_libdir} -name '*__pycache__' -delete
+find %{buildroot}%{_libdir} \( -type f -name '*.pyc' -or \
+                               -type f -name '*.pyo' \
+                               -type f -name '*.o' \
+                               -type f -name '*__pycache__' \) -delete
 rm %{buildroot}%{_bindir}/2to3
-mkdir -p %{buildroot}%{_libdir}/rpm/macros.d
-install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
+mkdir -p %{buildroot}%{_rpmmacrodir}
+install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
 
+%if 0%{?__debug_package}
 %if 0%{?with_gdb_hooks}
   DirHoldingGdbPy=%{_libdir}/debug%{_libdir}
   mkdir -p %{buildroot}$DirHoldingGdbPy
   PathOfGdbPy=$DirHoldingGdbPy/libpython%{VER}.so.1.0-%{version}-%{release}.%{_arch}.debug-gdb.py
   cp Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
-%endif # with gdb_hooks
+%endif
+%endif
 
 %if 0%{?with_check}
 %check
@@ -316,9 +319,11 @@ rm -rf %{buildroot}/*
 
 %files macros
 %defattr(-, root, root, 755)
-%{_libdir}/rpm/macros.d/macros.python
+%{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Aug 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-9
+- Bump version as a part of sqlite upgrade
 * Wed Aug 10 2022 Piyush Gupta <gpiyush@vmware.com> 3.9.1-8
 - Handle EPERM error in crypt.py
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-7

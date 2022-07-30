@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.186
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
@@ -17,7 +17,7 @@ Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version
 Obsoletes:      libelf
 Obsoletes:      libelf-devel
 
-Requires:       elfutils-libelf = %{version}-%{release}
+Requires:       %{name}-libelf = %{version}-%{release}
 Requires:       glibc >= 2.7
 Requires:       bzip2-libs
 Requires:       libmicrohttpd
@@ -49,11 +49,11 @@ handling.
 Summary:    Development libraries to handle compiled objects.
 Group:      Development/Tools
 License:    GPLv2+ or LGPLv3+
-Requires:   elfutils = %{version}-%{release}
-Requires:   elfutils-libelf-devel = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}-libelf-devel = %{version}-%{release}
 
 %description devel
-The elfutils-devel package contains the libraries to create
+The %{name}-devel package contains the libraries to create
 applications for handling compiled objects.  libebl provides some
 higher-level ELF access functionality.  libdw provides access to
 the DWARF debugging information.  libasm provides a programmable
@@ -63,10 +63,10 @@ assembler interface.
 Summary:    Static archives to handle compiled objects.
 Group:      Development/Tools
 License:    GPLv2+ or LGPLv3+
-Requires:   elfutils-devel = %{version}-%{release}
+Requires:   %{name}-devel = %{version}-%{release}
 
 %description devel-static
-The elfutils-devel-static archive contains the static archives
+The %{name}-devel-static archive contains the static archives
 with the code the handle compiled objects.
 
 %package libelf
@@ -75,20 +75,20 @@ Group:      Development/Tools
 License:    GPLv2+ or LGPLv3+
 
 %description libelf
-The elfutils-libelf package provides a DSO which allows reading and
+The %{name}-libelf package provides a DSO which allows reading and
 writing ELF files on a high level.  Third party programs depend on
 this package to read internals of ELF files.  The programs of the
-elfutils package use it also to generate new ELF files.
+%{name} package use it also to generate new ELF files.
 
 %package libelf-devel
 Summary:    Development support for libelf
 Group:      Development/Tools
 License:    GPLv2+ or LGPLv3+
-Requires:   elfutils-libelf = %{version}-%{release}
+Requires:   %{name}-libelf = %{version}-%{release}
 Conflicts:  libelf-devel
 
 %description libelf-devel
-The elfutils-libelf-devel package contains the libraries to create
+The %{name}-libelf-devel package contains the libraries to create
 applications for handling compiled objects.  libelf allows you to
 access the internals of the ELF object file format, so you can see the
 different sections of an ELF file.
@@ -97,38 +97,37 @@ different sections of an ELF file.
 Summary:    Static archive of libelf
 Group:      Development/Tools
 License:    GPLv2+ or LGPLv3+
-Requires:   elfutils-libelf-devel = %{version}-%{release}
+Requires:   %{name}-libelf-devel = %{version}-%{release}
 Conflicts:  libelf-devel
 
 %description libelf-devel-static
-The elfutils-libelf-static package contains the static archive
+The %{name}-libelf-static package contains the static archive
 for libelf.
 
 %package libelf-lang
-Summary:    Additional language files for elfutils
+Summary:    Additional language files for %{name}
 Group:      Development/Tools
 Requires:   %{name}-libelf = %{version}-%{release}
 
 %description libelf-lang
-These are the additional language files of elfutils.
+These are the additional language files of %{name}.
 
 %prep
 %autosetup -p1
 
 %build
 %configure --program-prefix=%{_programprefix}
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_prefix}
 
-%makeinstall %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 chmod +x %{buildroot}%{_libdir}/lib*.so*
 { pushd %{buildroot}
   rm -f .%{_bindir}/eu-ld \
-        .%{_includedir}/elfutils/libasm.h \
+        .%{_includedir}/%{name}/libasm.h \
         .%{_libdir}/libasm.so \
         .%{_libdir}/libasm.a
   popd
@@ -136,8 +135,10 @@ chmod +x %{buildroot}%{_libdir}/lib*.so*
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -164,13 +165,13 @@ rm -rf %{buildroot}
 %files devel
 %defattr(-,root,root)
 %{_includedir}/dwarf.h
-%dir %{_includedir}/elfutils
-%{_includedir}/elfutils/elf-knowledge.h
-%{_includedir}/elfutils/libdw.h
-%{_includedir}/elfutils/libdwfl.h
-%{_includedir}/elfutils/known-dwarf.h
-%{_includedir}/elfutils/libdwelf.h
-%{_includedir}/elfutils/debuginfod.h
+%dir %{_includedir}/%{name}
+%{_includedir}/%{name}/elf-knowledge.h
+%{_includedir}/%{name}/libdw.h
+%{_includedir}/%{name}/libdwfl.h
+%{_includedir}/%{name}/known-dwarf.h
+%{_includedir}/%{name}/libdwelf.h
+%{_includedir}/%{name}/debuginfod.h
 %{_libdir}/libdw.so
 %{_libdir}/libdebuginfod.so
 %{_libdir}/pkgconfig/*.pc
@@ -192,7 +193,7 @@ rm -rf %{buildroot}
 %{_includedir}/libelf.h
 %{_includedir}/gelf.h
 %{_includedir}/nlist.h
-%{_includedir}/elfutils/version.h
+%{_includedir}/%{name}/version.h
 %{_libdir}/libelf.so
 
 %files libelf-devel-static
@@ -202,6 +203,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.186-2
+- Bump version as a part of sqlite upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.186-1
 - Automatic Version Bump
 * Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 0.183-2

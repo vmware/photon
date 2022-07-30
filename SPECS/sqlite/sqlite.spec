@@ -1,7 +1,8 @@
-%define sourcever 3350500
+%define sourcever 3390200
+
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.35.5
+Version:        3.39.2
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -10,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    %{name}=f6875472fc86c679400ede139d1dfc6937003abc
+%define sha512 %{name}=c16b50ade3c182d5473014ac0a51e2bb8a5cfc46e532c2bda77ae4d530336e2b57aa4f12dccb6aa2148d60e9289305bf20842ac95dc52f2d31df8eb5f0599de6
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -45,27 +46,26 @@ The sqlite3 library.
 %autosetup -p1 -n %{name}-autoconf-%{sourcever}
 
 %build
-%configure \
-    CFLAGS="%{optflags}                 \
-    -DSQLITE_ENABLE_FTS3=1              \
-    -DSQLITE_ENABLE_COLUMN_METADATA=1   \
-    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
-    -DSQLITE_SECURE_DELETE=1"           \
-    CXXFLAGS="%{optflags}"              \
-    --disable-static
+export CFLAGS="%{optflags} \
+           -DSQLITE_ENABLE_FTS3=1 \
+           -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+           -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
+           -DSQLITE_SECURE_DELETE=1"
 
-make %{?_smp_mflags}
+%configure --disable-static
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -D -m644 sqlite3.1 %{buildroot}/%{_mandir}/man1/sqlite3.1
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}/%{_infodir}
+%make_install %{?_smp_mflags}
+install -D -m644 sqlite3.1 %{buildroot}%{_mandir}/man1/sqlite3.1
+find %{buildroot}%{_libdir} -name '*.la' -delete
+rm -rf %{buildroot}%{_infodir}
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post libs
 /sbin/ldconfig
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.39.2-1
+- Upgrade to v3.39.2, this also fixes CVE-2021-20227
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.35.5-1
 - Automatic Version Bump
 * Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 3.33.0-1

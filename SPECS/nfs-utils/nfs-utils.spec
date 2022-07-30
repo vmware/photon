@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.1
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -10,6 +10,7 @@ Distribution:     Photon
 
 Source0:          https://sourceforge.net/projects/nfs/files/nfs-utils/%{version}/%{name}-%{version}.tar.gz
 %define sha512    %{name}=b0e6e454e644deeda770650818b9a52d4eeef6dc45740b17554d76efece96c1665b7a6f6494852e801997655de1ab72ffbb14e66ee213e8c4350a00dfba8c0f2
+
 Source1:          nfs-client.service
 Source2:          nfs-client.target
 Source3:          rpc-statd.service
@@ -42,6 +43,13 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 The %{name} package contains simple nfs client service.
+
+%package devel
+Summary: Development libraries and headers for %{name}
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+Development libraries and headers for %{name}
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
@@ -118,22 +126,25 @@ fi
 
 %files
 %defattr(-,root,root)
-%{_datadir}/*
-%{_sbindir}/*
-%{_sbindir}/*
-%{_sharedstatedir}/*
 %config(noreplace) %{_sysconfdir}/default/%{name}
 %config(noreplace) %{_sysconfdir}/exports
+%{_sbindir}/*
+%{_sharedstatedir}/*
 %{_unitdir}/*
-%{_libdir}/libnfsidmap.so.*
-%{_libdir}/libnfsidmap/*.so
 %{_presetdir}/50-nfs-server.preset
+%{_libdir}/libnfsidmap.so.*
 
+%files devel
+%defattr(-,root,root)
+%{_datadir}/*
 %{_includedir}/*
 %{_libdir}/libnfsidmap.so
+%{_libdir}/libnfsidmap/*.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-3
+- Bump version as a part of sqlite upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1

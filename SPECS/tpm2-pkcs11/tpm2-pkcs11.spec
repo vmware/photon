@@ -1,7 +1,7 @@
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
 Version:        1.6.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
@@ -59,20 +59,19 @@ Tools for TCG TPM2 PKCSv11 Software Stack
 %build
 sh ./bootstrap
 %configure --enable-unit
-make %{?_smp_mflags} PACKAGE_VERSION=%{version}
+%make_build PACKAGE_VERSION=%{version}
 
 cd tools
-python3 setup.py build
+%py3_build
 
 %install
-# make doesn't support _smp_mflags
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 rm %{buildroot}%{_libdir}/pkgconfig/tpm2-pkcs11.pc \
    %{buildroot}%{_libdir}/libtpm2_pkcs11.la
 
 cd tools
-python3 setup.py install --root=%{buildroot} --optimize=1 --skip-build
+%py3_install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -96,6 +95,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-4
+- Bump version as a part of sqlite upgrade
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-3
 - Fix cmocka dependency
 * Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.0-2

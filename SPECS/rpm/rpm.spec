@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -347,6 +347,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-2
+- Bump version as a part of sqlite upgrade
 * Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-1
 - Upgrade to v4.17.0
 - Migrate rpmdb location to /usr/lib/sysimage/rpm

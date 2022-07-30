@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         4%{?dist}
+Release:         5%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -10,6 +10,7 @@ Distribution:    Photon
 
 Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
 %define sha512   %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
+
 Patch0:          %{name}-fix-make-check.patch
 
 BuildRequires:   glib-devel
@@ -27,8 +28,8 @@ BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
 BuildRequires:   meson >= 0.50
-BuildRequires:   ninja-build
 BuildRequires:   gtk-doc
+BuildRequires:   cmake
 
 Requires:        libxml2
 Requires:        glib-networking
@@ -71,22 +72,19 @@ These are the additional language files of libsoup.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-meson --prefix=/usr -Dvapi=disabled -Dgtk_doc=true ..
-ninja
+%meson --auto-features=disabled -Dvapi=disabled -Dgtk_doc=true
+%meson_build
 
 %install
-pushd build
-DESTDIR=%{buildroot} ninja install
-popd
+%meson_install
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
-cd build
-ninja test
+%meson_test
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -107,6 +105,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-5
+- Bump version as a part of sqlite upgrade
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-4
 - Bump version as a part of httpd v2.4.54 upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2.72.0-3
