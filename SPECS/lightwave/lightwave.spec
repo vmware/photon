@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       25%{?dist}
+Release:       26%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -15,23 +15,24 @@ Patch0:     fix-python-include-path.patch
 Patch1:     log4j-security-fix.patch
 Patch2:     upgrade-jackson-jars-to-latest-to-fix-security-issue.patch
 
-Requires:      apache-tomcat >= 8.5.8
-Requires:      boost >= 1.66.0
-Requires:      commons-daemon >= 1.0.15
-Requires:      (coreutils >= 8.22 or toybox)
-Requires:      cyrus-sasl >= 2.1
-Requires:      e2fsprogs
-Requires:      gawk >= 4.1.3
-Requires:      krb5 >= 1.14
-Requires:      likewise-open >= 6.2.11.4
-Requires:      openjre8
-Requires:      openssl >= 1.0.2
-Requires:      (grep or toybox)
-Requires:      (procps-ng or toybox)
-Requires:      (findutils or toybox)
-Requires:      (sed or toybox)
-Requires:      lightwave-client = %{version}-%{release}
-Requires:      lightwave-server = %{version}-%{release}
+Requires: apache-tomcat >= 8.5.8
+Requires: boost >= 1.66.0
+Requires: commons-daemon >= 1.0.15
+Requires: (coreutils >= 8.22 or toybox)
+Requires: cyrus-sasl >= 2.1
+Requires: e2fsprogs
+Requires: gawk >= 4.1.3
+Requires: krb5 >= 1.14
+Requires: likewise-open >= 6.2.11.4
+Requires: openjre8
+Requires: openssl >= 1.0.2
+Requires: (grep or toybox)
+Requires: (procps-ng or toybox)
+Requires: (findutils or toybox)
+Requires: (sed or toybox)
+Requires: lightwave-client = %{version}-%{release}
+Requires: lightwave-server = %{version}-%{release}
+Requires: cmocka
 
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
@@ -50,7 +51,7 @@ BuildRequires: openssl-devel >= 1.0.2
 BuildRequires: python3-devel
 BuildRequires: python3-libs
 BuildRequires: sqlite-devel >= 3.14
-BuildRequires: cmocka >= 1.1
+BuildRequires: cmocka-devel >= 1.1
 BuildRequires: go
 BuildRequires: binutils
 
@@ -1178,6 +1179,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Mon Aug 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-26
+- Fix cmocka dependency
 * Thu Jun 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-25
 - Add few essential tools to Requires
 * Wed Jun 01 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-24
