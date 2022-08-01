@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        4.16
-Release:        4%{?dist}
+Version:        4.17
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.squid-cache.org/Versions/v4/%{name}-%{version}.tar.xz
-%define sha1 %{name}=4ddc098b5f7c276d19134c7c3b247cdb51d1c88d
+%define sha512 %{name}=cea36de10f128f5beb51bdc89604c16af3a820a5ac27284b2aa181ac87144930489688e1d85ce357fe1ed8a4e96e300277b95034a2475cbf86c9d6923ddf7c0a
 
 Source1:        squid.sysconfig
 Source2:        squid.pam
@@ -17,7 +17,8 @@ Source3:        squid.service
 Source4:        cache_swap.sh
 Source5:        squid.logrotate
 
-Patch0:         0001-openssl-3.0.0-support.patch
+Patch0:         openssl-3.0.0-support.patch
+Patch1:         CVE-2021-46784.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -215,6 +216,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Mon Aug 01 2022 Susant Sahani <ssahani@vmware.com> 4.17-1
+- Version update and fix CVE-2021-46784
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16-4
 - Bump version as a part of rpm upgrade
 * Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.16-3
