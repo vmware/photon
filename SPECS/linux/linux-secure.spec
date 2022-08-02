@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -155,6 +155,7 @@ Patch135: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch136: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch137: 0008-vmxnet3-update-to-version-7.patch
 Patch138: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch139: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patchset to fix Panic due to nested priority inheritance in sched_deadline
 Patch140: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
@@ -455,6 +456,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-9
+- Revert napi reschedule on rx in vmxnet3 driver
 * Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
 - Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7

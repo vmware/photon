@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -427,6 +427,7 @@ Patch545: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch546: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch547: 0008-vmxnet3-update-to-version-7.patch
 Patch548: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patches for i40e driver
 Patch801: 0001-Add-support-for-gettimex64-interface.patch
@@ -535,7 +536,7 @@ ApplyPatch "521" "526"
 ApplyPatch "530" "538"
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "540" "548"
+ApplyPatch "540" "549"
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -763,6 +764,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-12
+- Revert napi reschedule on rx in vmxnet3 driver
 * Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-11
 - Fix BUG_ON for deboosted tasks
 * Thu Jul 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-10

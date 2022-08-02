@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -171,6 +171,7 @@ Patch175: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
 Patch176: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch177: 0008-vmxnet3-update-to-version-7.patch
 Patch178: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch179: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patchset to fix Panic due to nested priority inheritance in sched_deadline
 Patch180: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
@@ -275,9 +276,7 @@ ApplyPatch "0" "160"
 ApplyPatch "161" "169"
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "170" "178"
-
-ApplyPatch "180" "184"
+ApplyPatch "170" "184"
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -478,6 +477,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-10
+- Revert napi reschedule on rx in vmxnet3 driver
 * Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
 - Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
