@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20210817
+Version:	20220802
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=172339aee56dddd1680393bb2845eb86df9c5315
+%define sha512  linux=434105c1242d958768a02180611df6bc15f3748797f0160699b71c2e0ed2002a01fa24c9c5e63d35b3f459de4c594e7571063b053366cf58c3e2636a1f62206b
 # To avoid unused file spec check
 Source1:        generate-linux-firmware-tarball.sh
 BuildArch:	noarch
@@ -36,6 +36,11 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Tue Aug 02 2022 Alexey Makhalov <amakhalov@vmware.com> 20220802-1
+-   Added amdgpu vega10 firmware.
+-   Deprecated NXP firmware.
+-   Use "set -e" for error checking.
+-   Fix nonfree firmware location (branch name).
 *   Tue Aug 17 2021 Ajay Kaher <akaher@vmware.com> 20210817-1
 -   Updated to fix rpi wi-fi issue
 *   Tue Feb 09 2021 Ankit Jain <ankitja@vmware.com> 20210209-1

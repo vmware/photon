@@ -1,12 +1,12 @@
 #! /bin/sh
 
+set -e
 
 DATE_TAG=`date "+%Y%m%d"`
 DST=linux-firmware-$DATE_TAG
 mkdir $DST
 
-git clone https://github.com/RPi-Distro/firmware-nonfree.git --depth=1
-git clone https://github.com/NXP/qoriq-engine-pfe-bin.git --depth=1
+git clone https://github.com/RPi-Distro/firmware-nonfree.git --branch buster --depth=1
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git --depth=1
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git --depth=1
 # ICE driver firmware
@@ -39,15 +39,6 @@ cp linux-firmware/rtl_nic/rtl8168f-2.fw $DST/rtl_nic/
 wget -P $DST/mrvl/ https://downloads.dell.com/FOLDER04270570M/1/pcie8897_uapsta.bin
 cp linux-firmware/LICENCE.Marvell $DST/
 
-# NXP ls10XXa FRWY requires:
-cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/
-cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_tmu_ls1012a.elf $DST/
-cp qoriq-engine-pfe-bin/NXP-Binary-EULA.txt $DST/
-mkdir -p $DST/ath10k/QCA9377
-cp -a linux-firmware/ath10k/QCA9377/hw1.0 $DST/ath10k/QCA9377/
-mkdir -p $DST/ath10k/QCA6174
-cp -a linux-firmware/ath10k/QCA6174/hw2.1 $DST/ath10k/QCA6174/
-
 # Compulab Fitlet2 requires:
 mkdir $DST/i915
 cp linux-firmware/i915/bxt_dmc_ver1_07.bin $DST/i915/
@@ -77,5 +68,9 @@ cp linux-firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt $DST/brcm/
 cp wireless-regdb/regulatory.db $DST/
 cp wireless-regdb/regulatory.db.p7s $DST/
 cp wireless-regdb/LICENSE $DST/LICENSE.wireless-regdb
+
+# AMD GPU firmware:
+mkdir $DST/amdgpu
+cp -a linux-firmware/amdgpu/vega10* $DST/amdgpu
 
 tar -czvf $DST.tar.gz $DST
