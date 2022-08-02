@@ -1,7 +1,6 @@
-%global commit 7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d
 Summary:        Dynamic Kernel Module Support
 Name:           dkms
-Version:        2.8.4
+Version:        3.0.10
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://linux.dell.com/dkms/
@@ -9,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
-%define sha1    dkms=68d8b6b410a9204f54dc95b643d54ecb7c72acca
+%define sha512  dkms=b271453497a004177137e972cb45cacb2dd3ac124a1fd2526218cf690f5ce77250195e73b6f9c75de4661a718d928e546bd85770ab98c2fd9af44fe777492ad7
 BuildArch:      noarch
 BuildRequires:  systemd
 Requires:       systemd
@@ -22,7 +21,7 @@ Dynamic Kernel Module Support (DKMS) is a program/framework that enables generat
 The concept is to have DKMS modules automatically rebuilt when a new kernel is installed.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 # no /usr/bin/bash in photon os
@@ -30,14 +29,14 @@ The concept is to have DKMS modules automatically rebuilt when a new kernel is i
 sed -i 's/\/usr\/bin\/bash/\/bin\/bash/g' kernel_install.d_dkms
 
 %install
-make install-redhat-systemd DESTDIR=%{buildroot} \
+make install-redhat DESTDIR=%{buildroot} \
     SBIN=%{buildroot}%{_sbindir} \
     VAR=%{buildroot}%{_localstatedir}/lib/%{name} \
     MAN=%{buildroot}%{_mandir}/man8 \
     ETC=%{buildroot}%{_sysconfdir}/%{name} \
     BASHDIR=%{buildroot}%{_sysconfdir}/bash_completion.d \
     LIBDIR=%{buildroot}%{_prefix}/lib/%{name} \
-    SYSTEMD=%{buildroot}%{_unitdir}
+    SYSTEMD=%{buildroot}%{_unitdir} %{?_smp_mflags}
 
 install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
 echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms.preset
@@ -54,21 +53,19 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/bash_completion.d/dkms
-%{_sysconfdir}/%{name}/framework.conf
-%{_sysconfdir}/%{name}/template-dkms-mkrpm.spec
-%{_sysconfdir}/%{name}/template-dkms-redhat-kmod.spec
-%{_sysconfdir}/%{name}/kernel_install.d_dkms
-%{_sysconfdir}/kernel/postinst.d/dkms
-%{_sysconfdir}/%{name}/sign_helper.sh
-%{_sysconfdir}/kernel/prerm.d/dkms
+%config(noreplace) %{_sysconfdir}/%{name}/framework.conf
+%{_sysconfdir}/kernel/install.d/%{name}
+%{_sysconfdir}/kernel/postinst.d/%{name}
+%{_sysconfdir}/kernel/prerm.d/%{name}
 %{_libdir}/systemd/system/dkms.service
 %{_libdir}/systemd/system-preset/50-dkms.preset
 %{_libdir}/%{name}/*
 %{_sbindir}/dkms
 %{_mandir}/man8/dkms.8.gz
-%{_localstatedir}/lib/dkms/dkms_dbversion
 
 %changelog
+*   Fri Jan 20 2023 Alexey Makhalov <amakhalov@vmware.com> 3.0.10-1
+-   Version update
 *   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.8.4-1
 -   Automatic Version Bump
 *   Mon Jan 18 2021 Ajay Kaher <akaher@vmware.com> 2.8.2-2
