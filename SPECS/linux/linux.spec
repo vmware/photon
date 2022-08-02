@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -192,6 +192,7 @@ Patch140: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
 Patch141: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch142: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch143: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -1048,6 +1049,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-10
+- Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
 - Backported the fix for CVE-2022-1789
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-8

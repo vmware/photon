@@ -1,0 +1,49 @@
+From e007f938b513ffc81cda079adddf92781e2c92c6 Mon Sep 17 00:00:00 2001
+From: Juri Lelli <juri.lelli@redhat.com>
+Date: Thu, 14 Jul 2022 17:19:08 +0200
+Subject: [PATCH] sched/deadline: Fix BUG_ON condition for deboosted tasks
+
+commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
+
+Tasks the are being deboosted from SCHED_DEADLINE might enter
+enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
+since they are not boosted anymore, the if (is_dl_boosted()) branch is
+not taken, but the else if (!dl_prio) is and inside this one we
+BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
+otherwise we had entered the if branch above. Long story short, the
+current condition doesn't make sense and always leads to triggering of a
+BUG.
+
+Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
+to be present, but additional flags are not a problem.
+
+Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
+Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+[Ankit: Regenerated the patch for v4.19]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/sched/deadline.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 29ed5d8d30d6..bb638cf27b9f 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1522,7 +1522,10 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags)
+ 		 * the throttle.
+ 		 */
+ 		p->dl.dl_throttled = 0;
+-		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
++		if (!(flags & ENQUEUE_REPLENISH))
++			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
++					     task_pid_nr(p));
++
+ 		return;
+ 	}
+ 
+-- 
+2.23.1
+

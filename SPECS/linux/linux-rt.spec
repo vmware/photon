@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.247
-Release:        8%{?kat_build:.%kat}%{?dist}
+Release:        9%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -154,6 +154,7 @@ Patch130: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
 Patch131: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch132: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch133: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch134: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -850,6 +851,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+* Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
+- Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
 - Backported the fix for CVE-2022-1789
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7

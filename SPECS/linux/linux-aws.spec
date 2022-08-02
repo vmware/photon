@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -177,6 +177,7 @@ Patch180: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
 Patch181: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch182: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch183: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch184: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -276,7 +277,7 @@ ApplyPatch "161" "169"
 # Update vmxnet3 driver to version 7
 ApplyPatch "170" "178"
 
-ApplyPatch "180" "183"
+ApplyPatch "180" "184"
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -477,6 +478,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9
+- Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
 - Backported the fix for CVE-2022-1789
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-7

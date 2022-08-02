@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -265,6 +265,7 @@ Patch375: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
 Patch376: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch377: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch378: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch379: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # vmw_pvscsi
 Patch381: 0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
@@ -762,6 +763,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-11
+- Fix BUG_ON for deboosted tasks
 * Thu Jul 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.247-10
 - Fix packaging of header file auxiliary_bus.h (part of ice and iavf drivers).
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-9

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.247
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -161,6 +161,7 @@ Patch140: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
 Patch141: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch142: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch143: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -454,6 +455,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 02 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-8
+- Fix BUG_ON for deboosted tasks
 * Tue Jul 12 2022 Ankit Jain <ankitja@vmware.com> 4.19.247-7
 - Backported the fix for CVE-2022-1789
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-6
