@@ -1,11 +1,11 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.22.3
-Release:         2%{?dist}
+Version:         1.23.3
+Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512   telegraf=bf89da72ad77a2759fb54938a4f59f9ef39d32ecf56681f5f66d3dfd60f9c7844a176dfd8958a83bae3be7f930be2a011f48a36ce892d4cf8c3fca0da142ae6f
+%define sha512   telegraf=6b8ef947a1ff5d1e0780045960b965fe01448840ed4f844630790c5ccb42422c0594273aa2801fafa30b8226c63b202ceb6cc14b89f8355290e37b6750e13d07
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512   telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -58,7 +58,8 @@ pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
 popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
-make %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make
 popd
 
 %install
@@ -98,6 +99,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Tue Aug 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.3-1
+-   Update to version 1.23.3
 *   Tue May 31 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.3-2
 -   Bump up version to compile with new go
 *   Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.3-1
