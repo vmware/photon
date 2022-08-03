@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -11,27 +11,44 @@ Distribution:   Photon
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
 %define sha512  %{name}=96318e2754fbddf84d16df671c721e577766969dfa415925c4dc1be2e4e60a51246623747a8aec0c6e9c0824e6aa7335235ccd07f3d6fd901f8cf28e2d6e91b6
 
+Patch0: CVE-2022-29154-1.patch
+Patch1: CVE-2022-29154-2.patch
+
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
 BuildRequires:  lz4-devel
 BuildRequires:  systemd-devel
+BuildRequires:  xxhash-devel
 
+Requires:       xxhash
 Requires:       lz4
 Requires:       zlib
 Requires:       systemd
 
 %description
 Rsync is a fast and extraordinarily versatile file copying tool.
-It can copy locally, to/from another host over any remote shell, or to/from a remote rsync daemon.
-It offers a large number of options that control every aspect of its behavior and permit very flexible specification of the set of files to be copied.
-It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination.
-Rsync is widely used for backups and mirroring and as an improved copy command for everyday use.
+It can copy locally, to/from another host over any remote shell,
+or to/from a remote rsync daemon.
+It offers a large number of options that control every aspect of its
+behavior and permit very flexible specification of the set of files
+to be copied. It is famous for its delta-transfer algorithm, which
+reduces the amount of data sent over the network by sending only the
+differences between the source files and the existing files in the
+destination.
+Rsync is widely used for backups and mirroring and as an improved
+copy command for everyday use.
 
 %prep
 %autosetup -p1
 
 %build
-%configure --with-included-zlib=no --disable-xxhash --disable-zstd
+%configure \
+    --with-included-zlib=no \
+    --enable-xxhash \
+    --enable-zstd \
+    --enable-lz4 \
+    --enable-ipv6
+
 %make_build
 
 %install
@@ -44,10 +61,10 @@ cat << EOF >> %{buildroot}%{_unitdir}/rsyncd.service
 [Unit]
 Description=Rsync Server
 After=local-fs.target
-ConditionPathExists=/etc/rsyncd.conf
+ConditionPathExists=%{_sysconfdir}/rsyncd.conf
 
 [Service]
-ExecStart=%{_bindir}/rsync --daemon --no-detach
+ExecStart=%{_bindir}/%{name} --daemon --no-detach
 
 [Install]
 WantedBy=multi-user.target
@@ -71,6 +88,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.4-3
+- Fix CVE-2022-29154
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.4-2
 - Fix binary path
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
