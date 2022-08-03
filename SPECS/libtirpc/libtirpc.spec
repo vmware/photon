@@ -1,9 +1,10 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha1    libtirpc=d85717035cb9bd6c45557a1eb1351d3af9a69ff7
+%define sha512  libtirpc=392f391f9fc1bd68d81dc44e4058831a64b32790b5c8c37338b0ab416fad2ae4d16389e632596734dba09780347918cc65c6f134e0c1afd09e81ec250785ed23
+Patch0:         CVE-2021-46828.patch
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -35,16 +36,16 @@ Requires:   krb5-devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
+%configure
 sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 
 %post
 /sbin/ldconfig
@@ -67,6 +68,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Wed Aug 3 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.4-2
+-   Fix CVE-2021-46828
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.4-1
 -   Update to version 1.1.4
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-7
