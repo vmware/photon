@@ -74,7 +74,6 @@
   "python2": 3,
   "mc": 3,
   "libunistring": 3,
-  "libdb": 3,
   "krb5": 3,
   "gperftools": 3,
   "gobject-introspection": 3,

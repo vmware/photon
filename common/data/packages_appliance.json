@@ -49,7 +49,6 @@
         "cpio",
         "gzip",
         "vim",
-        "libdb",
         "tdnf",
         "rsyslog",
         "audit",

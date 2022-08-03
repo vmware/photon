@@ -143,7 +143,7 @@ EOF
     fi
     CANISTER_TARBALL_VERSION="$CANISTER_SOURCE_VERSION-$KERNEL_VERSION"
     wget https://packages.vmware.com/photon/photon_sources/1.0/linux-$version.tar.xz -P $SPECDIR/
-    
+
     grep "Source.*:" $SPECPATH | awk '{print $2}' | while read -r line ; do
        if [[ $line =~ "tar" ]]; then
           if [[ $line =~ "%{" ]]; then
@@ -289,7 +289,7 @@ function prepare_buildenv() {
   run "Copy sources from $SPECDIR" docker cp $SPECDIR/. $CONTAINER:/usr/src/photon/SOURCES
   local br=`sed -n 's/^BuildRequires://p' $SPECPATH | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g'`
   if [ "$br" != "" ]; then
-    run "Install build requirements" in_sandbox tdnf install -y $br glibc-tools zlib-devel bzip2 bzip2-devel gettext util-linux util-linux-devel flex-devel readline-devel popt-devel nspr-devel texinfo lua-devel python3-xml libselinux glibc-iconv gmp-devel mpfr-devel sqlite nss nss-devel elfutils-devel libpipeline libdb-devel cpio
+    run "Install build requirements" in_sandbox tdnf install -y $br glibc-tools zlib-devel bzip2 bzip2-devel gettext util-linux util-linux-devel flex-devel readline-devel popt-devel nspr-devel texinfo lua-devel python3-xml libselinux glibc-iconv gmp-devel mpfr-devel sqlite nss nss-devel elfutils-devel libpipeline cpio
   fi
 }
 
