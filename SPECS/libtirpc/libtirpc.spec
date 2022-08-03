@@ -1,12 +1,13 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.0.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha1    libtirpc=8da1636f98b5909c0d587e7534bc1e91f5c1a970
 Patch0:         libtirpc-1.0.1-bindrsvport-blacklist.patch
 Patch1:         libtirpc-CVE-2017-8779.patch
 Patch2:		libtirpc-CVE-2018-14621.patch
+Patch3:         libtirpc-CVE-2021-46828.patch
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -42,9 +43,10 @@ This package includes header files and libraries necessary for developing progra
 %patch0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
-./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
+%configure
 sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 
 make %{?_smp_mflags}
@@ -72,6 +74,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Wed Aug 3 2022 Shivani Agarwal <shivania2@vmware.com> 1.0.1-9
+-   Fix CVE-2021-46828
 *   Fri Nov 30 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.0.1-8
 -   Apply patch for CVE-2018-14621
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-7
