@@ -151,7 +151,20 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 	n_entries = data->d_size / sizeof (Elf64_Rela);
 
 	/* Extend output canister_relocs table by n_entries */
-	canister_relocs = (struct _relocation *)realloc(canister_relocs, (n_relocs + n_entries) * sizeof (struct _relocation));
+	{
+		size_t size;
+		struct _relocation *_canister_relocs;
+
+		size = (size_t)(n_relocs + n_entries) * sizeof(struct _relocation);
+
+		_canister_relocs = (struct _relocation *)realloc(canister_relocs, size);
+		if (!_canister_relocs) {
+			free(canister_relocs);
+			error("%s: realloc of canister_relocs failed", __func__);
+		}
+		canister_relocs = _canister_relocs;
+	}
+
 	r = &canister_relocs[n_relocs];
 	n_relocs += n_entries;
 

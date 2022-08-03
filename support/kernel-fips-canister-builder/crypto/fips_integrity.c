@@ -23,6 +23,8 @@
 #define FIPS_CANISTER_VERSION "LKCM 4.0.1"
 #define FIPS_KERNEL_VERSION "5.10.4-4"
 
+#define RUNTIME_HMAC_SIZE	32
+
 static unsigned char *canister;
 /* Set at canister creation time by final linking */
 extern const int canister_size;
@@ -256,7 +258,7 @@ quit:
 static int __init fips_integrity_check (void)
 {
 	int err;
-	unsigned char runtime_hmac[32];
+	unsigned char runtime_hmac[RUNTIME_HMAC_SIZE];
 	struct crypto_shash *tfm = NULL;
 	struct shash_desc *shash;
 	/* HMAC key. Same key as we used at canister build time. */
@@ -306,10 +308,13 @@ free_tfm:
 
 	{
 		int i;
-		unsigned char linebuf[32 * 2 + 1];
-		for (i = 0; i < 32; i++)
+		unsigned char linebuf[(RUNTIME_HMAC_SIZE * 2) + 1];
+
+		for (i = 0; i < RUNTIME_HMAC_SIZE; i++)
 			snprintf(&linebuf[i * 2], 3, "%02x", runtime_hmac[i]);
-		linebuf[sizeof(linebuf)] = 0;
+
+		linebuf[sizeof(linebuf) - 1] = '\0';
+
 		printk("FIPS canister HMAC: %s\n", linebuf);
 	}
 
