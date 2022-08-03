@@ -757,9 +757,14 @@ class CheckTools:
             raise Exception("texinfo not present")
 
     def check_sanity():
-        check_prerequesite["check-sanity"]=True
-        if subprocess.Popen([photonDir + "/support/sanity_check.sh"], shell=True).wait():
+        if check_prerequesite["check-sanity"]:
+            return
+
+        script = photonDir + "/tools/scripts/sanity_check.sh"
+        if subprocess.Popen([script], shell=True).wait():
             raise Exception("Not able to run script sanity_check.sh")
+
+        check_prerequesite["check-sanity"] = True
 
     def check_docker():
         if not glob.glob(Build_Config.dockerEnv) and shutil.which('docker') is None:
