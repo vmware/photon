@@ -647,7 +647,7 @@ check-kpartx:
 	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
 
 check-sanity:
-	@$(SRCROOT)/support/sanity_check.sh
+	@$(SRCROOT)/tools/scripts/sanity_check.sh
 	@echo ""
 
 install-photon-docker-image: photon-docker-image
