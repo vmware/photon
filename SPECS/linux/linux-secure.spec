@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.118
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -109,6 +109,16 @@ Patch112: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
 
 # CVE-2022-2588
 Patch113: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
+
+# Fix for CVE-2022-0500
+Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
+Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
+Patch116: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
+Patch117: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
+Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
+Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
+Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
+Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -220,7 +230,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M113
+%autopatch -p1 -m100 -M121
 
 # crypto
 %autopatch -p1 -m500 -M506
@@ -375,6 +385,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.118-10
+- Backport fixes for CVE-2022-0500
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-9
 - Scriptlets fixes and improvements
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-8

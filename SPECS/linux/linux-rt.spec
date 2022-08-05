@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        18%{?kat_build:.kat}%{?dist}
+Release:        19%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -117,11 +117,21 @@ Patch111: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
 # CVE-2022-2588
 Patch112: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
+# Fix for CVE-2022-0500
+Patch113: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
+Patch114: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
+Patch115: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
+Patch116: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
+Patch117: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
+Patch118: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
+Patch119: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
+Patch120: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
 # Allow PCI resets to be disabled from vfio_pci module
-Patch120: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
-Patch121: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+Patch201: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -610,10 +620,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M112
+%autopatch -p1 -m100 -M120
 
 # Allow PCI resets to be disabled from vfio_pci module
-%autopatch -p1 -m120 -M121
+%autopatch -p1 -m200 -M201
 
 # RT
 %autopatch -p1 -m301 -M716
@@ -865,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.118-19
+- Backport fixes for CVE-2022-0500
 * Wed Aug 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-18
 - Scriptlets fixes and improvements
 * Wed Aug 10 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-17
