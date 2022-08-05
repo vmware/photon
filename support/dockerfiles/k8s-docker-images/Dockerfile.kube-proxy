@@ -2,7 +2,9 @@
 
 FROM photon:3.0
 
-RUN tdnf install -y ebtables iptables iproute2 shadow socat --refresh
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y ebtables iptables iproute2 shadow socat --refresh
+
 ADD tmp/k8s/usr/bin/kube-proxy /usr/bin/kube-proxy
 RUN ln -s /usr/bin/kube-proxy /usr/local/bin/kube-proxy
 
