@@ -971,17 +971,24 @@ class BuildImage:
         if check_prerequesite["photon-docker-image"]:
             return
 
+        img_fname = f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.tar.gz"
+        if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
+            check_prerequesite["photon-docker-image"] = True
+            print(f"{img_fname} already exists ...")
+            return
+
         RpmBuildTarget.create_repo()
 
         docker_file_dir = "support/dockerfiles/photon"
-        docker_file = docker_file_dir + "/Dockerfile"
-        docker_script = docker_file_dir + "/make-docker-image.sh"
+        docker_file = f"{docker_file_dir}/Dockerfile"
+        docker_script = f"{docker_file_dir}/make-docker-image.sh"
 
-        cmd = "cd " + photonDir
-        cmd += " && sudo docker build --no-cache --tag photon-build " + docker_file_dir
-        cmd += " && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER=" + constants.buildNumber
-        cmd += " -e PHOTON_RELEASE_VERSION=" + constants.releaseVersion
-        cmd += " -v " + photonDir + ":/workspace photon-build ./" + docker_script
+        cmd = f"cd {photonDir}"
+        cmd = f"sudo docker build --no-cache --tag photon-build {docker_file_dir}"
+        cmd += f" && sudo docker run --rm --privileged --net=host "
+        cmd += f" -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
+        cmd += f" -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
+        cmd += f" -v {photonDir}:/workspace photon-build {docker_script}"
 
         if subprocess.Popen([cmd], shell=True).wait():
             raise Exception("Not able to run photon-docker-image")
