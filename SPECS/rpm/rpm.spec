@@ -1,43 +1,42 @@
 %define rpmhome %{_libdir}/rpm
 
-Summary:        Package manager
-Name:           rpm
-Version:        4.17.1
-Release:        2%{?dist}
-License:        GPLv2+
-URL:            http://rpm.org
-Group:          Applications/System
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Summary:    Package manager
+Name:       rpm
+Version:    4.17.1
+Release:    3%{?dist}
+License:    GPLv2+
+URL:        http://rpm.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution: Photon
 
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
+Source0:    https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=d0429510140f25a25b6c9441abe2027d27c485bbd4969752f69e1c843435c9508b9f85e5bb68085dd64b7da533801aa5c04d8c9d962e08d2ddd3199d0265cc85
 
-Source1:        brp-strip-debug-symbols
-Source2:        brp-strip-unneeded
-Source3:        macros
-Source4:        macros.php
-Source5:        macros.perl
-Source6:        macros.vpath
-Source7:        macros.ldconfig
-Source8:        rpmdb-rebuild.sh
-Source9:        rpmdb-migrate.sh
-Source10:       rpmdb-rebuild.service
-Source11:       rpmdb-migrate.service
-Source12:       rpm.conf
-Source13:       lock.c
+Source1:    macros
+Source2:    macros.php
+Source3:    macros.perl
+Source4:    macros.vpath
+Source5:    macros.ldconfig
+Source6:    rpmdb-rebuild.sh
+Source7:    rpmdb-migrate.sh
+Source8:    rpmdb-rebuild.service
+Source9:    rpmdb-migrate.service
+Source10:   rpm.conf
+Source11:   lock.c
 
-Patch0:         rpmdb-rename-dir.patch
-Patch1:         silence-warning.patch
-Patch2:         sync-buf-cache.patch
-Patch3:         wait-for-lock.patch
-Patch4:         migrate-rpmdb.patch
+Patch0:     rpmdb-rename-dir.patch
+Patch1:     silence-warning.patch
+Patch2:     sync-buf-cache.patch
+Patch3:     wait-for-lock.patch
+Patch4:     migrate-rpmdb.patch
+Patch5:     fix-race-condition-in-brp-strip.patch
 
-Requires:       bash
-Requires:       zstd-libs
-Requires:       lua
-Requires:       openssl >= 1.1.1
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:   bash
+Requires:   zstd-libs
+Requires:   lua
+Requires:   openssl >= 1.1.1
+Requires:   %{name}-libs = %{version}-%{release}
 
 BuildRequires:  pandoc-bin
 BuildRequires:  systemd-devel
@@ -62,70 +61,70 @@ BuildRequires:  python3-setuptools
 RPM package manager
 
 %package devel
-Summary:        Libraries and header files for rpm
-Provides:       pkgconfig(rpm)
-Requires:       %{name} = %{version}-%{release}
-Requires:       zstd-devel
+Summary:    Libraries and header files for rpm
+Provides:   pkgconfig(rpm)
+Requires:   %{name} = %{version}-%{release}
+Requires:   zstd-devel
 
 %description devel
 Static libraries and header files for the support library for rpm
 
 %package libs
-Summary:    Libraries for rpm
-Requires:   nss-libs
-Requires:   popt
-Requires:   libgcc
-Requires:   libcap
-Requires:   zlib
-Requires:   bzip2-libs
-Requires:   elfutils-libelf
-Requires:   xz-libs
-Requires:   zstd-libs
-Requires:   (toybox or coreutils-selinux)
-Requires:   (toybox or findutils)
-Requires:   (toybox or sed)
+Summary:  Libraries for rpm
+Requires: nss-libs
+Requires: popt
+Requires: libgcc
+Requires: libcap
+Requires: zlib
+Requires: bzip2-libs
+Requires: elfutils-libelf
+Requires: xz-libs
+Requires: zstd-libs
+Requires: (toybox or coreutils-selinux)
+Requires: (toybox or findutils)
+Requires: (toybox or sed)
 Conflicts:  libsolv < 0.7.19
 
-%description    libs
+%description  libs
 Shared libraries librpm and librpmio
 
 %package build
-Requires:   perl
-Requires:   lua
-Requires:   %{name}-devel = %{version}-%{release}
-Requires:   elfutils-libelf
-Requires:   cpio
-Requires:   systemd-rpm-macros
-Requires:   python3-macros
-Requires:   dwz
-Requires:   debugedit
-Summary:    Binaries, scripts and libraries needed to build rpms.
+Requires: perl
+Requires: lua
+Requires: %{name}-devel = %{version}-%{release}
+Requires: elfutils-libelf
+Requires: cpio
+Requires: systemd-rpm-macros
+Requires: python3-macros
+Requires: dwz
+Requires: debugedit
+Summary:  Binaries, scripts and libraries needed to build rpms.
 
 %description build
 Binaries, libraries and scripts to build rpms.
 
 %package lang
-Summary:    Additional language files for rpm
-Group:      Applications/System
-Requires:   %{name} = %{version}-%{release}
+Summary:  Additional language files for rpm
+Group:    Applications/System
+Requires: %{name} = %{version}-%{release}
 
 %description lang
 These are the additional language files of rpm.
 
 %package -n python3-rpm
-Summary:    Python 3 bindings for rpm.
-Group:      Development/Libraries
-Requires:   python3
-Requires:   python3-setuptools
+Summary:  Python 3 bindings for rpm.
+Group:    Development/Libraries
+Requires: python3
+Requires: python3-setuptools
 
 %description -n python3-rpm
 Python3 rpm.
 
 %package plugin-systemd-inhibit
-Summary:    Rpm plugin for systemd inhibit functionality
-Requires:   rpm-libs = %{version}-%{release}
-Requires:   dbus
-Requires:   systemd
+Summary:  Rpm plugin for systemd inhibit functionality
+Requires: rpm-libs = %{version}-%{release}
+Requires: dbus
+Requires: systemd
 
 %description plugin-systemd-inhibit
 This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
@@ -142,25 +141,25 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 sh autogen.sh --noconfigure
 %configure \
-    CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
-        --disable-dependency-tracking \
-        --disable-static \
-        --enable-python \
-        --with-cap \
-        --with-vendor=vmware \
-        --disable-silent-rules \
-        --enable-zstd \
-        --without-archive \
-        --enable-sqlite \
-        --enable-bdb-ro \
-        --enable-plugins \
-        --with-crypto=openssl \
-        --with-lua \
-        --enable-nls
+  CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
+    --disable-dependency-tracking \
+    --disable-static \
+    --enable-python \
+    --with-cap \
+    --with-vendor=vmware \
+    --disable-silent-rules \
+    --enable-zstd \
+    --without-archive \
+    --enable-sqlite \
+    --enable-bdb-ro \
+    --enable-plugins \
+    --with-crypto=openssl \
+    --with-lua \
+    --enable-nls
 
 %make_build %{?_smp_mflags}
 
-gcc -Wall -o lock %{SOURCE13}
+gcc -Wall -o lock %{SOURCE11}
 chmod 700 lock
 
 pushd python
@@ -183,22 +182,20 @@ ln -sfv %{_bindir}/find-debuginfo %{buildroot}%{rpmhome}/find-debuginfo.sh
 
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/rpm
-install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
-install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -vm644 %{SOURCE2} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE3} %{buildroot}%{rpmhome}/macros.d
 install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
 install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE6} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE7} %{buildroot}%{rpmhome}/macros.d
-install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm
-install -vm755 %{SOURCE9} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE6} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE7} %{buildroot}%{_libdir}/rpm
 
 mkdir -p %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE10} %{buildroot}/%{_unitdir}
-install -vm644 %{SOURCE11} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE8} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE9} %{buildroot}/%{_unitdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-install -vm644 %{SOURCE12} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
+install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
 mv lock %{buildroot}%{_libdir}/rpm
 
 pushd python
@@ -214,14 +211,14 @@ if [ -d %{_sharedstatedir}/rpm ]; then
   mkdir -p %{_libdir}/sysimage/rpm
   rpmdb_files=$(find %{_sharedstatedir}/rpm -maxdepth 1 -type f | sed 's|^/var/lib/rpm/||g' | sort)
   for fn in ${rpmdb_files[@]}; do
-    ln -sfr %{_sharedstatedir}/rpm/${fn} %{_libdir}/sysimage/rpm/${fn}
+  ln -sfr %{_sharedstatedir}/rpm/${fn} %{_libdir}/sysimage/rpm/${fn}
   done
 fi
 
 %posttrans libs
 if [ -f %{_sharedstatedir}/rpm/Packages ]; then
   if [ -x %{_bindir}/systemctl ]; then
-    systemctl --no-reload preset rpmdb-rebuild || :
+  systemctl --no-reload preset rpmdb-rebuild || :
   fi
   nohup bash %{rpmhome}/rpmdb-rebuild.sh &>/dev/null &
 fi
@@ -347,6 +344,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-3
+- Cleanup macros file
+- Remove redundant brp-strip-debug-symbols script
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-2
 - Bump version as a part of sqlite upgrade
 * Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-1
@@ -419,7 +419,7 @@ rm -rf %{buildroot}
 - Update to 4.13.0
 * Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22
 - Do not allow -debuginfo to own directories to avoid conflicts with
-    filesystem package and between each other. Patch applied
+  filesystem package and between each other. Patch applied
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-21
 - rpm-libs requires nss-libs, xz-libs and bzip2-libs.
 * Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20

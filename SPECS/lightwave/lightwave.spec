@@ -1,14 +1,14 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       23%{?dist}
+Release:       24%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/vmware/lightwave
 Distribution:  Photon
 
-Source0:       https://github.com/vmware/lightwave/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/vmware/lightwave/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=8afe786efea02333d7045779584038cbf627d5a7f3d49aed4f0b850df4ce564e40f3ac27722b84ea835a24ac2b9fbebb071326804b4bca11d3272ea438935b4b
 
 Patch0:        lightwave_build_with_python3.patch
@@ -1110,25 +1110,15 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_includedir}/gssapi_creds_plugin.h
 
 %{_lib64dir}/libcdcjni.a
-%{_lib64dir}/libcdcjni.la
 %{_lib64dir}/libvecsjni.a
-%{_lib64dir}/libvecsjni.la
 %{_lib64dir}/libheartbeatjni.a
-%{_lib64dir}/libheartbeatjni.la
 %{_lib64dir}/libvmafdclient.a
-%{_lib64dir}/libvmafdclient.la
 %{_lib64dir}/libvmafcfgapi.a
-%{_lib64dir}/libvmafcfgapi.la
 %{_lib64dir}/libvmeventclient.a
-%{_lib64dir}/libvmeventclient.la
 %{_lib64dir}/libvmcaclient.a
-%{_lib64dir}/libvmcaclient.la
 %{_lib64dir}/libvmdirclient.a
-%{_lib64dir}/libvmdirclient.la
 %{_lib64dir}/libvmdnsclient.a
-%{_lib64dir}/libvmdnsclient.la
 %{_lib64dir}/libvmcommon.a
-%{_lib64dir}/libvmcommon.la
 
 %{_includedir}/oidc.h
 %{_includedir}/oidc_types.h
@@ -1149,10 +1139,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %exclude %{_bindir}/vmdirclienttest
 %exclude %{_bindir}/*test
 
-%exclude %{_lib64dir}/*.la
 %exclude %{_lib64dir}/*.a
 %exclude %{_lib64dir}/sasl2/*.a
-%exclude %{_lib64dir}/sasl2/*.la
 %exclude %{_lib64dir}/libcommonunittests.*
 %exclude %{_lib64dir}/libmisctests.*
 %exclude %{_lib64dir}/libmultitenancytests.*
@@ -1174,6 +1162,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-24
+- Remove .la files
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-23
 - Bump version as a part of sqlite upgrade
 * Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-22

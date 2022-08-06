@@ -1,56 +1,61 @@
-Summary:	GNU Unicode string library
-Name:		libunistring
-Version:	1.0
-Release: 	1%{?dist}
-License:	LGPLv3+
-Url:		http://www.gnu.org/software/libunistring/
-Source0:	http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
-%define sha512  libunistring=70d5ad82722844dbeacdfcb4d7593358e4a00a9222a98537add4b7f0bf4a2bb503dfb3cd627e52e2a5ca1d3da9e5daf38a6bd521197f92002e11e715fb1662d1
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    GNU Unicode string library
+Name:       libunistring
+Version:    1.0
+Release:    2%{?dist}
+License:    LGPLv3+
+URL:        http://www.gnu.org/software/libunistring
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
+%define sha512 %{name}=70d5ad82722844dbeacdfcb4d7593358e4a00a9222a98537add4b7f0bf4a2bb503dfb3cd627e52e2a5ca1d3da9e5daf38a6bd521197f92002e11e715fb1662d1
+
 %description
 libunistring is a library that provides functions for manipulating Unicode strings and for manipulating C strings according to the Unicode standard.
 
 %package devel
-Summary:	Development libraries and header files for libunistring
-Requires:	libunistring
+Summary:    Development libraries and header files for libunistring
+Requires:   libunistring
 
 %description devel
 The package contains libraries and header files for
 developing applications that use libunistring.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
-rm %{buildroot}%{_infodir}/*
+%make_install %{?_smp_mflags}
+
+rm -f %{buildroot}%{_infodir}/* \
+    %{buildroot}%{_libdir}/*.la
 
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_docdir}/%{name}/*
-%{_libdir}/*.a
-%{_libdir}/*.la
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.a
+%{_docdir}/%{name}/*
 %{_includedir}/*.h
 %{_includedir}/unistring/*.h
 %{_libdir}/*.so
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2
+- Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0-1
 - Automatic Version Bump
 * Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 0.9.10-1

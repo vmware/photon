@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -39,7 +39,12 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  dejagnu
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools, python3-xml
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+
+%if 0%{?with_check}
+BuildRequires: python3-pip
+%endif
 
 %description
 AppArmor is a file and network mandatory access control
@@ -75,11 +80,11 @@ confinement policies when running virtual hosts in the webserver
 by using the changehat abilities exposed through libapparmor.
 
 %package        profiles
-Summary:        AppArmor profiles that are loaded into the apparmor kernel module
+Summary:        AppArmor profiles that are loaded into the %{name} kernel module
 License:        GNU LGPL v2.1
 Group:          Productivity/Security
-Requires:       apparmor-parser = %{version}-%{release}
-Requires:       apparmor-abstractions = %{version}-%{release}
+Requires:       %{name}-parser = %{version}-%{release}
+Requires:       %{name}-abstractions = %{version}-%{release}
 
 %description    profiles
 This package contains the basic AppArmor profiles.
@@ -101,11 +106,11 @@ SubDomain.
 Summary:        AppArmor abstractions and directory structure
 License:        GNU LGPL v2.1
 Group:          Productivity/Security
-Requires:       apparmor-parser = %{version}-%{release}
+Requires:       %{name}-parser = %{version}-%{release}
 
 %description    abstractions
 AppArmor abstractions (common parts used in various profiles) and
-the /etc/apparmor.d/ directory structure.
+the /etc/%{name}.d/ directory structure.
 
 %package -n     pam_apparmor
 Summary:        PAM module for AppArmor change_hat
@@ -126,30 +131,30 @@ License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       libapparmor = %{version}-%{release}
 Requires:       audit
-Requires:       apparmor-abstractions = %{version}-%{release}
+Requires:       %{name}-abstractions = %{version}-%{release}
 
 %description    utils
 This package contains programs to help create and manage AppArmor
 profiles.
 
-%package -n     python3-apparmor
+%package -n     python3-%{name}
 Summary:        Python 3 interface for libapparmor functions
 License:        GNU LGPL v2.1
 Group:          Development/Libraries/Python
 Requires:       libapparmor = %{version}-%{release}
 Requires:       python3
 
-%description -n python3-apparmor
+%description -n python3-%{name}
 This package provides the python3 interface to AppArmor. It is used for python
 applications interfacing with AppArmor.
 
-%package -n     perl-apparmor
+%package -n     perl-%{name}
 Summary:        AppArmor module for perl.
 License:        GNU LGPL v2.1
 Group:          Development/Libraries/Perl
 Requires:       libapparmor = %{version}-%{release}
 
-%description -n perl-apparmor
+%description -n perl-%{name}
 This package contains the AppArmor module for perl.
 
 %prep
@@ -158,71 +163,88 @@ This package contains the AppArmor module for perl.
 %build
 #Building libapparmor
 cd ./libraries/libapparmor
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
 /sbin/ldconfig
 sh ./autogen.sh
+
 %configure \
- --with-perl \
- --with-python
-make %{?_smp_mflags}
+    --with-perl \
+    --with-python
+
+%make_build
+
 #Building Binutils
 cd ../../binutils/
-make %{?_smp_mflags}
+%make_build
+
 #Building parser
 cd ../parser
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
-export LIBRARY_PATH="$LIBRARY_PATH:/usr/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
+export LIBRARY_PATH="$LIBRARY_PATH:%{_libdir}"
 echo $LD_LIBRARY_PATH
 echo $LIBRARY_PATH
-make %{?_smp_mflags}
+%make_build
+
 #Building Utilities
 cd ../utils
-make %{?_smp_mflags}
+%make_build
+
 #Building Apache mod_apparmor
 cd ../changehat/mod_apparmor
-make %{?_smp_mflags}
+%make_build
+
 #Building PAM AppArmor
 cd ../pam_apparmor
-make %{?_smp_mflags}
+%make_build
+
 #Building Profiles
 cd ../../profiles
-make %{?_smp_mflags}
+%make_build
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python3.9/site-packages
-export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.9
+pip3 install pyflakes
+export PYTHONPATH=%{python3_sitelib}
+export PYTHON=%{python3}
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
+
 cd ./libraries/libapparmor
 make check %{?_smp_mflags}
+
 cd ../../binutils/
 make check %{?_smp_mflags}
+
 cd ../utils
 make check %{?_smp_mflags}
 
 %install
-export PYTHONPATH=/usr/lib/python3.9/site-packages
-export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.9
+export PYTHONPATH=%{python3_sitelib}
+export PYTHON=%{python3}
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
+
 cd libraries/libapparmor
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
+
 cd ../../binutils/
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
+
 cd ../parser
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 cd ../utils
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+%make_install %{?_smp_mflags}
+
 cd ../changehat/mod_apparmor
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
+
 cd ../pam_apparmor
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
+
 cd ../../profiles
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -237,7 +259,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %files -n libapparmor-devel
 %defattr(-,root,root)
 %{_libdir}/libapparmor.a
-%{_libdir}/libapparmor.la
 %{_libdir}/libapparmor.so
 %{_libdir}/pkgconfig/libapparmor.pc
 %dir %{_includedir}/aalogparse
@@ -260,74 +281,74 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files profiles
 %defattr(-,root,root,755)
-%dir %{_sysconfdir}/apparmor.d/apache2.d
-%config(noreplace) %{_sysconfdir}/apparmor.d/apache2.d/phpsysinfo
-%config(noreplace) %{_sysconfdir}/apparmor.d/bin.*
-%config(noreplace) %{_sysconfdir}/apparmor.d/sbin.*
-%config(noreplace) %{_sysconfdir}/apparmor.d/usr.*
-%config(noreplace) %{_sysconfdir}/apparmor.d/local/*
-%config(noreplace) %{_sysconfdir}/apparmor.d/samba-bgqd
-%dir %{_datadir}/apparmor
-%{_datadir}/apparmor/extra-profiles/*
+%dir %{_sysconfdir}/%{name}.d/apache2.d
+%config(noreplace) %{_sysconfdir}/%{name}.d/apache2.d/phpsysinfo
+%config(noreplace) %{_sysconfdir}/%{name}.d/bin.*
+%config(noreplace) %{_sysconfdir}/%{name}.d/sbin.*
+%config(noreplace) %{_sysconfdir}/%{name}.d/usr.*
+%config(noreplace) %{_sysconfdir}/%{name}.d/local/*
+%config(noreplace) %{_sysconfdir}/%{name}.d/samba-bgqd
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/extra-profiles/*
 
 %files parser
 %defattr(755,root,root,755)
 /sbin/apparmor_parser
 /sbin/rcapparmor
-/lib/apparmor/rc.apparmor.functions
-/lib/apparmor/apparmor.systemd
+/lib/%{name}/rc.%{name}.functions
+/lib/%{name}/%{name}.systemd
 %{_bindir}/aa-exec
 %{_bindir}/aa-enabled
-%attr(644,root,root) %{_unitdir}/apparmor.service
-%dir %{_sysconfdir}/apparmor
-%dir %{_sysconfdir}/apparmor.d
-%config(noreplace) %{_sysconfdir}/apparmor/parser.conf
-%{_localstatedir}/lib/apparmor
-%doc %{_mandir}/man5/apparmor.d.5.gz
-%doc %{_mandir}/man5/apparmor.vim.5.gz
-%doc %{_mandir}/man7/apparmor.7.gz
+%attr(644,root,root) %{_unitdir}/%{name}.service
+%dir %{_sysconfdir}/%{name}
+%dir %{_sysconfdir}/%{name}.d
+%config(noreplace) %{_sysconfdir}/%{name}/parser.conf
+%{_localstatedir}/lib/%{name}
+%doc %{_mandir}/man5/%{name}.d.5.gz
+%doc %{_mandir}/man5/%{name}.vim.5.gz
+%doc %{_mandir}/man7/%{name}.7.gz
 %doc %{_mandir}/man8/apparmor_parser.8.gz
 %doc %{_mandir}/man1/aa-enabled.1.gz
 %doc %{_mandir}/man1/aa-exec.1.gz
 %doc %{_mandir}/man2/aa_stack_profile.2.gz
 
 %preun parser
-%systemd_preun apparmor.service
+%systemd_preun %{name}.service
 
 %post parser
-%systemd_post apparmor.service
+%systemd_post %{name}.service
 
 %postun parser
-%systemd_postun_with_restart apparmor.service
+%systemd_postun_with_restart %{name}.service
 
 %files abstractions
 %defattr(644,root,root,755)
-%dir %{_sysconfdir}/apparmor.d/abstractions
-%config(noreplace) %{_sysconfdir}/apparmor.d/abstractions/*
-%config(noreplace) %{_sysconfdir}/apparmor.d/lsb_release
-%config(noreplace) %{_sysconfdir}/apparmor.d/nvidia_modprobe
-%dir %{_sysconfdir}/apparmor.d/disable
-%dir %{_sysconfdir}/apparmor.d/local
-%dir %{_sysconfdir}/apparmor.d/tunables
-%dir %{_sysconfdir}/apparmor.d/abi
-%config(noreplace) %{_sysconfdir}/apparmor.d/php-fpm
-%config(noreplace) %{_sysconfdir}/apparmor.d/tunables/*
-%config(noreplace) %{_sysconfdir}/apparmor.d/abi/*
+%dir %{_sysconfdir}/%{name}.d/abstractions
+%config(noreplace) %{_sysconfdir}/%{name}.d/abstractions/*
+%config(noreplace) %{_sysconfdir}/%{name}.d/lsb_release
+%config(noreplace) %{_sysconfdir}/%{name}.d/nvidia_modprobe
+%dir %{_sysconfdir}/%{name}.d/disable
+%dir %{_sysconfdir}/%{name}.d/local
+%dir %{_sysconfdir}/%{name}.d/tunables
+%dir %{_sysconfdir}/%{name}.d/abi
+%config(noreplace) %{_sysconfdir}/%{name}.d/php-fpm
+%config(noreplace) %{_sysconfdir}/%{name}.d/tunables/*
+%config(noreplace) %{_sysconfdir}/%{name}.d/abi/*
 %exclude %{_datadir}/locale
 
 %files utils
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/apparmor/easyprof.conf
-%config(noreplace) %{_sysconfdir}/apparmor/logprof.conf
-%config(noreplace) %{_sysconfdir}/apparmor/notify.conf
-%config(noreplace) %{_sysconfdir}/apparmor/severity.db
+%config(noreplace) %{_sysconfdir}/%{name}/easyprof.conf
+%config(noreplace) %{_sysconfdir}/%{name}/logprof.conf
+%config(noreplace) %{_sysconfdir}/%{name}/notify.conf
+%config(noreplace) %{_sysconfdir}/%{name}/severity.db
 %{_sbindir}/aa-*
 %{_sbindir}/apparmor_status
 %{_bindir}/aa-easyprof
 %{_bindir}/aa-features-abi
-%{_datadir}/apparmor/easyprof/
-%dir %{_datadir}/apparmor
-%{_datadir}/apparmor/apparmor.vim
+%{_datadir}/%{name}/easyprof/
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/%{name}.vim
 %doc %{_mandir}/man1/aa-features-abi.1.gz
 %doc %{_mandir}/man2/aa_change_profile.2.gz
 %doc %{_mandir}/man5/logprof.conf.5.gz
@@ -339,17 +360,19 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %defattr(-,root,root,755)
 /lib/security/pam_apparmor.so
 
-%files -n python3-apparmor
+%files -n python3-%{name}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
-%files -n perl-apparmor
+%files -n perl-%{name}
 %defattr(-,root,root)
 %{perl_vendorarch}/auto/LibAppArmor/
 %{perl_vendorarch}/LibAppArmor.pm
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-3
+- Remove .la files
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 3.0.4-2
 - Bump version as a part of httpd v2.4.54 upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.4-1

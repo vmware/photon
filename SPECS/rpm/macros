@@ -1,15 +1,7 @@
-#
-#   System settings
-#
+# System settings
 %_topdir            /usr/src/photon
-#
-#   Build flags
-#
-#%_optflags_i686    -march=i486 -mtune=i686 -O2 -pipe
-#%_optflags_x86_64  -march=x86-64 -mtune=generic -O2 -pipe -fno-strict-aliasing
-#
-#   Some standard locations
-#
+
+# Some standard locations
 %_sysconfdir        /etc
 %_lib               /usr/lib
 %_lib64             /usr/lib64
@@ -32,28 +24,10 @@
 
 %__tar              /bin/tar --no-same-owner
 
-
-#############################################################################
-# Perl specific macros, no longer part of rpm >= 4.15
-%perl_vendorarch %(eval "`perl -V:installvendorarch`"; echo $installvendorarch)
-%perl_vendorlib  %(eval "`perl -V:installvendorlib`"; echo $installvendorlib)
-%perl_archlib    %(eval "`perl -V:installarchlib`"; echo $installarchlib)
-%perl_privlib    %(eval "`perl -V:installprivlib`"; echo $installprivlib)
-#############################################################################
-
 %_enable_debug_packages 1
 %_include_minidebuginfo 1
 %_use_internal_dependency_generator 1
 %_build_id_links alldebug
-
-%__os_install_post    \
-    %{_rpmconfigdir}/brp-compress \
-    %{_rpmconfigdir}/brp-strip %{__strip} \
-    %{_rpmconfigdir}/brp-strip-debug-symbols %{__strip} \
-    %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump} \
-    %{_rpmconfigdir}/brp-strip-unneeded %{__strip} \
-    %{_rpmconfigdir}/brp-strip-static-archive %{__strip} \
-%{nil}
 
 %install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
 %%install\

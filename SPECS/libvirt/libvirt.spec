@@ -29,7 +29,7 @@ BuildRequires:  libxslt
 BuildRequires:  lvm2
 BuildRequires:  meson
 BuildRequires:  ninja-build
-BuildRequires:  parted
+BuildRequires:  parted-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
 BuildRequires:  readline-devel

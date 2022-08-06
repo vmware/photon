@@ -1,7 +1,7 @@
 Summary:        Glib interfaces to D-Bus API
 Name:           dbus-glib
 Version:        0.112
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        AFL and GPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -27,7 +27,7 @@ The D-Bus GLib package contains GLib interfaces to the D-Bus API.
 Summary:    Libraries and headers for the D-Bus GLib bindings
 Requires:   glib-devel
 Requires:   dbus-devel
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Headers and static libraries for the D-Bus GLib bindings
@@ -40,13 +40,13 @@ Headers and static libraries for the D-Bus GLib bindings
   --disable-static \
   --disable-gtk-doc
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} check
 %endif
 
@@ -58,7 +58,6 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/bash_completion.d/*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.la
 %{_libexecdir}/*
 %{_mandir}/man1/*
 %{_datadir}/gtk-doc/*
@@ -70,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.112-3
+- Remove .la files
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.112-2
 - Bump version as a part of libffi upgrade
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.112-1

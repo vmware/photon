@@ -1,21 +1,19 @@
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            System Environment/Libraries
-URL:              http://sourceforge.net/projects/cracklib
+URL:              https://github.com/cracklib/cracklib
 License:          GPL
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:        %{name}-%{version}.tar.gz
+Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}-%{version}=76d701ee521ae35b4cbab406f23a15c84937bb06d3c3747ca8ef2584a41074fc00309a676ec37ebd5b32930163213365cf508d47f614cfccea38e1ba6babb2ff
 
-Source1:        %{name}-words-%{version}.gz
+Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
 %define sha512  %{name}-words-%{version}=1fa34b0a2e16d6906982b248f1757bf5bf8154d8d7e8bab94a4ac25080c41434d3828a2c8dd5065e9be586f36480ab70375f09e0bb64eb495d96a460619e2bae
 
-BuildRequires:    python3
-BuildRequires:    python3-libs
 BuildRequires:    python3-devel
 BuildRequires:    python3-setuptools
 BuildRequires:    python3-xml
@@ -111,13 +109,15 @@ export CFLAGS="%{optflags}"
 %make_build
 
 pushd python
-python3 setup.py build
+%py3_build
 popd
 
 %install
 %make_install %{?_smp_mflags}
-chmod 755 ./util/%{name}-format
-chmod 755 ./util/%{name}-packer
+rm -f %{buildroot}%{_libdir}/*.la
+
+chmod 755 ./util/%{name}-format \
+          ./util/%{name}-packer
 
 if [ %{_host} = %{_build} ]; then
   export PATH=./util:$PATH
@@ -130,7 +130,7 @@ ln -sv %{name}-format %{buildroot}%{_sbindir}/mkdict
 ln -sv %{name}-packer %{buildroot}%{_sbindir}/packer
 
 pushd python
-python3 setup.py install --skip-build --root %{buildroot}
+%py3_install
 popd
 
 %if 0%{?with_check}
@@ -168,9 +168,9 @@ ln -sf empty.pwi %{_datadir}/%{name}/pw_dict.pwi
 %postun
 /sbin/ldconfig
 [ $1 = 0 ] || exit 0
-rm -f %{_datadir}/%{name}/pw_dict.hwm
-rm -f %{_datadir}/%{name}/pw_dict.pwd
-rm -f %{_datadir}/%{name}/pw_dict.pwi
+rm -f %{_datadir}/%{name}/pw_dict.hwm \
+      %{_datadir}/%{name}/pw_dict.pwd \
+      %{_datadir}/%{name}/pw_dict.pwi
 
 %files
 %defattr(-,root,root)
@@ -183,7 +183,6 @@ rm -f %{_datadir}/%{name}/pw_dict.pwi
 %doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
-%{_libdir}/libcrack.la
 
 %files -n python3-%{name}
 %defattr(-,root,root)
@@ -199,6 +198,8 @@ rm -f %{_datadir}/%{name}/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-2
+- Remove .la files
 * Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
 - Automatic Version Bump
 * Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10

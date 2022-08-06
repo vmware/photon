@@ -1,9 +1,10 @@
 %global aprver  1
+%global __brp_remove_la_files %{nil}
 
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
@@ -14,7 +15,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=daa140c83c7e2c45c3980d9dc81d34fa662bebd050653562c39572d0ddf2eaedb71767c518a59d77f59db9b32e00221ef48b9f72ec3666c4521dd511969f3706
 
 %if 0%{?with_check}
-Patch0:         apr-skip-getservbyname-test.patch
+Patch0: apr-skip-getservbyname-test.patch
 %endif
 
 %description
@@ -31,7 +32,7 @@ It contains the libraries and header files to create applications.
 
 %build
 %configure \
-        --with-installbuilddir=%{_libdir}/apr/build-%{aprver} \
+        --with-installbuilddir=%{_libdir}/%{name}/build-%{aprver} \
         --with-devrandom=/dev/urandom \
         CC=gcc CXX=g++
 
@@ -52,23 +53,21 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/%{name}/*
 %{_libdir}/%{name}.exp
-%{_libdir}/libapr*.so*
+%{_libdir}/libapr*.so.*
 %exclude %dir %{_libdir}/debug
-%exclude %{_libdir}/*.la
-%exclude %{_libdir}/*.a
-%exclude %{_libdir}/*.so
-%exclude %{_libdir}/pkgconfig
 %{_bindir}/*
 
-%files  devel
+%files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/*.la
 %{_libdir}/*.a
+%{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-4
+- Don't remove .la files, needed during subversion build
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-3
 - Fix binary path
 * Tue Feb 16 2021 Ankit Jain <ankitja@vmware.com> 1.7.0-2

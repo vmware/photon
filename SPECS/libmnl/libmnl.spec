@@ -1,7 +1,7 @@
 Summary:       A minimalistic user-space library oriented to Netlink developers.
 Name:          libmnl
 Version:       1.0.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       LGPLv2.1+
 URL:           http://netfilter.org/projects/libmnl
 Group:         System Environment/libraries
@@ -52,10 +52,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/libmnl.so
-%{_libdir}/libmnl.la
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-2
+- Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
 - Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 1.0.4-4

@@ -1,14 +1,15 @@
 Summary:      Provides API to packets queued by kernel packet filter
 Name:         libnetfilter_queue
 Version:      1.0.5
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      GPLv2
 URL:          http://www.netfilter.org/projects/libnetfilter_queue/index.html
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
+
 Source0:      http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_queue=799e991428e14d65a5dc44d914e9af10a80a3526
+%define sha512  %{name}=732a44b602e5efaa4f5582ea25ff8f5ec8f4dca5c0e725cd93fe2d441db80416b25c6018147be90acb262d7428eb5b21b3f7b5920e612d115061ec6a19d67f85
 
 BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
@@ -36,10 +37,10 @@ developing applications that use %{name}.
 
 %build
 %configure --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 %ldconfig_scriptlets
 
@@ -51,9 +52,10 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-3
+- Remove .la files
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 1.0.5-2
 - Use autosetup and ldconfig scriptlets
 * Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1

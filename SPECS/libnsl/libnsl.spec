@@ -1,7 +1,7 @@
 Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/libnsl
@@ -37,25 +37,26 @@ This package includes header files and libraries necessary for developing progra
 %build
 autoreconf -fi
 %configure $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}")
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 
 %files devel
+%{_libdir}/*.so
 %{_includedir}/rpcsvc/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.a
-%{_libdir}/*.la
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-2
+- Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
 - Automatic Version Bump
 * Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.0-1

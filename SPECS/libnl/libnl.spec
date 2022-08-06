@@ -1,20 +1,21 @@
 Summary:       Netlink Protocol Library Suite
 Name:          libnl
 Version:       3.7.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       LGPLv2+
 Group:         System Environment/Libraries
 URL:           https://github.com/thom311/libnl
-Source0:       https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
-%define sha512 libnl=80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+Source0: https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
+%define sha512 %{name}=80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
 
 BuildRequires: glib-devel
 BuildRequires: dbus-devel
 
-Requires:      glib
-Requires:      dbus
+Requires: glib
+Requires: dbus
 
 %description
 The libnl suite is a collection of libraries providing APIs to netlink protocol
@@ -23,25 +24,27 @@ kernel and user space processes. It was designed to be a more flexible successor
 to ioctl to provide mainly networking related kernel configuration and monitoring
 interfaces.
 
-%package       devel
+%package devel
 Summary:       Libraries and headers for the libnl
-Requires:      libnl
+Requires:      %{name} = %{version}-%{release}
 
-%description   devel
+%description devel
 Headers and static libraries for the libnl
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %ldconfig_scriptlets
 
@@ -55,13 +58,14 @@ make %{?_smp_mflags} check
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libnl/*
+%{_libdir}/%{name}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2
+- Remove .la files
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 3.7.0-1
 - Version update
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1

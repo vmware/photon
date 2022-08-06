@@ -1,7 +1,7 @@
 Summary:    RELP Library
 Name:       librelp
 Version:    1.10.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv3+
 URL:        http://www.librelp.com
 Group:      System Environment/Libraries
@@ -64,16 +64,17 @@ make check %{?_smp_mflags}
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_libdir}/*.la
-%{_libdir}/*.a
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.a
 %{_includedir}/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-4
+- Remove .la files
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-3
 - Bump version as a part of gnutls upgrade
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.0-2

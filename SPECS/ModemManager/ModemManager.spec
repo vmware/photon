@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -57,12 +57,15 @@ It contains the libraries and header files for %{name}
 %make_build
 
 %install
-make DESTDIR=%{buildroot} UDEV_BASE_DIR=%{_libdir}/udev install %{?_smp_mflags}
+%make_install UDEV_BASE_DIR=%{_libdir}/udev %{?_smp_mflags}
 
 %if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
 %endif
+
+%clean
+rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -73,7 +76,7 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.ModemManager1.conf
 %{_bindir}/mmcli
 %{_sbindir}/%{name}
-%{_libdir}/libmm-glib.so*
+%{_libdir}/*.so.*
 %{_libdir}/girepository-1.0/%{name}-1.0.typelib
 %{_libdir}/%{name}/*
 %{_unitdir}/%{name}.service
@@ -88,15 +91,17 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %files devel
+%{_libdir}/*.so
 %{_includedir}/%{name}/*
 %{_includedir}/libmm-glib/*
 %{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/pkgconfig/mm-glib.pc
-%{_libdir}/libmm-glib.la
 %{_datadir}/%{name}/fcc-unlock.available.d/*
 %{_datadir}/%{name}/connection.available.d/*
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.10-2
+- Remove .la files
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.10-1
 - Automatic Version Bump
 * Wed Jun 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.6-3

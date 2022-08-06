@@ -1,15 +1,15 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
+Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
 
 Requires:       apr
 Requires:       apr-util
@@ -18,7 +18,6 @@ Requires:       cyrus-sasl
 Requires:       utf8proc
 
 BuildRequires:  apr-devel
-BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  libtool
@@ -33,14 +32,16 @@ The Apache version control system.
 
 %package        devel
 Summary:        Header and development files for mesos
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 subversion-devel package contains header files, libraries.
 
 %package        perl
 Summary:        Allows Perl scripts to directly use Subversion repositories.
 Requires:       perl
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
+
 %description    perl
 Provides Perl (SWIG) support for Subversion version control system.
 
@@ -48,10 +49,11 @@ Provides Perl (SWIG) support for Subversion version control system.
 %autosetup -p1
 
 %build
-%configure --disable-static \
-           --with-apache-libexecdir \
-           --with-serf=%{_prefix} \
-           --with-lz4=internal
+%configure \
+   --disable-static \
+   --with-apache-libexecdir \
+   --with-serf=%{_prefix} \
+   --with-lz4=internal
 
 %make_build
 
@@ -81,25 +83,24 @@ userdel test -r -f
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
 %{_mandir}/man[158]/*
-%{_datadir}/locale/*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
 %{_datadir}/pkgconfig/*.pc
 %exclude %dir %{_libdir}/debug
 
 %files perl
 %defattr(-,root,root)
-%{perl_sitearch}/SVN
-%{perl_sitearch}/auto/SVN
 %{_libdir}/libsvn_swig_perl*so*
 %{_libdir}/perl5/*
 %{_mandir}/man3/SVN*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-4
+- Remove .la files
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-3
 - Bump version as a part of sqlite upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-2

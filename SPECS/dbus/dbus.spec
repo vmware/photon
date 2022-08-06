@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -31,19 +31,22 @@ Requires:       expat-devel
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
-    --enable-libaudit=no --enable-selinux=no \
+    --enable-libaudit=no \
+    --enable-selinux=no \
     --with-console-auth-dir=/run/console
 
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_lib}
+
+rm -f %{buildroot}%{_libdir}/*.la
 
 %check
 make %{?_smp_mflags} check
@@ -68,11 +71,12 @@ make %{?_smp_mflags} check
 %dir %{_libdir}/dbus-1.0
 %{_libdir}/dbus-1.0/include/
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-2
+- Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
 - Automatic Version Bump
 * Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 1.13.20-1

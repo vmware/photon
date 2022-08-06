@@ -1,7 +1,9 @@
+%define guile_major_ver 2.2
+
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv3+
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
@@ -44,16 +46,17 @@ developing applications that use guile.
 
 %build
 %configure --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-rm %{buildroot}%{_libdir}/*.scm \
-   %{buildroot}%{_infodir}/*
+rm -f %{buildroot}%{_libdir}/*.scm \
+      %{buildroot}%{_infodir}/* \
+      %{buildroot}%{_libdir}/*.la
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} check
 %endif
 
@@ -66,18 +69,19 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 %{_libdir}/guile/*
 %{_mandir}/man1/*
-%{_datadir}/aclocal/*.m4
-%{_datadir}/guile/*
-%{_libdir}/*.la
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/guile/2.2/*.h
-%{_includedir}/guile/2.2/libguile/*.h
+%{_datadir}/aclocal/*.m4
+%{_includedir}/guile/%{guile_major_ver}/*.h
+%{_includedir}/guile/%{guile_major_ver}/libguile/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/guile/*
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-3
+- Remove .la files
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-2
 - Bump version as a part of libffi upgrade
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1

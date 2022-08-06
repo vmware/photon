@@ -3,21 +3,21 @@ Name:           nss
 Version:        3.78
 Release:        2%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{name}-%{version}.tar.gz
+URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
+Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
 
-Patch0:         %{name}-%{version}-standalone-1.patch
+Patch0: %{name}-%{version}-standalone-1.patch
 
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
 
-Requires:       nspr
-Requires:       %{name}-libs = %{version}-%{release}
+Requires: nspr
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 The Network Security Services (NSS) package is a set of libraries
@@ -56,8 +56,7 @@ export NS_USE_GCC=1
 %endif
 
 cd %{name}
-# make doesn't support _smp_mflags
-make VERBOSE=1 BUILD_OPT=1 \
+make %{?_smp_mflags} VERBOSE=1 BUILD_OPT=1 \
     NSPR_INCLUDE_DIR=%{_includedir}/nspr \
     USE_SYSTEM_ZLIB=1 \
     ZLIB_LIBS=-lz \
@@ -115,11 +114,13 @@ sudo -u test ./all.sh && userdel test -r -f
 %exclude %{_libdir}/libsoftokn3.chk
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %files libs
+%defattr(-,root,root)
 %{_libdir}/libfreeblpriv3.so
 %{_libdir}/libfreeblpriv3.chk
 %{_libdir}/libnss3.so

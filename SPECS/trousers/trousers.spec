@@ -1,14 +1,14 @@
 Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
-URL:            https://sourceforge.net/projects/trousers/
+URL:            https://sourceforge.net/projects/trousers
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
+Source0:        https://sourceforge.net/projects/trousers/files/trousers/0.3.15/%{name}-%{version}.tar.gz
 %define sha512  %{name}=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
 
 Requires:       libtspi = %{version}-%{release}
@@ -54,17 +54,6 @@ if [ $1 -eq 1 ]; then
   fi
 fi
 
-%postun
-if [ $1 -eq 0 ]; then
-  # this is delete operation
-  if getent passwd tss >/dev/null; then
-    userdel tss
-  fi
-  if getent group tss >/dev/null; then
-    groupdel tss
-  fi
-fi
-
 %post -n libtspi -p /sbin/ldconfig
 %postun -n libtspi -p /sbin/ldconfig
 
@@ -79,7 +68,6 @@ fi
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libtspi.la
 %{_libdir}/libtspi.so
 %{_libdir}/libtspi.so.1
 %{_mandir}/man3
@@ -91,6 +79,8 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-3
+- Remove .la files
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-2
 - Fix binary path
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 0.3.15-1

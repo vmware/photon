@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.65
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -40,26 +40,26 @@ use in Bluetooth applications.
 
 %build
 %configure \
-	--enable-tools \
-	--enable-library \
-	--enable-usb \
-	--enable-threads \
-	--enable-monitor \
-	--enable-obex \
-	--enable-systemd \
-	--enable-experimental \
-	--enable-deprecated \
-	--disable-cups
-make %{?_smp_mflags}
+    --enable-tools \
+    --enable-library \
+    --enable-usb \
+    --enable-threads \
+    --enable-monitor \
+    --enable-obex \
+    --enable-systemd \
+    --enable-experimental \
+    --enable-deprecated \
+    --disable-cups
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -69,21 +69,23 @@ make %{?_smp_mflags} -k check
 %{_libexecdir}/bluetooth/bluetoothd
 %{_datadir}/zsh/site-functions/_bluetoothctl
 %{_libdir}/*.so.*
-%{_libdir}/libbluetooth.la
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
-%{_libdir}/systemd/system/bluetooth.service
+%{_unitdir}/bluetooth.service
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
 %doc COPYING TODO
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/bluetooth/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/man/*
 
 %changelog
+* Sun Sep 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.65-2
+- Remove .la files
 * Fri Sep 16 2022 Nitesh Kumar <kunitesh@vmware.com> 5.65-1
 - Version upgrade to v5.65
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.64-1

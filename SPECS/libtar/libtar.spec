@@ -1,16 +1,19 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        5%{?dist}
-URL:            https://github.com/tklauser/libtar/archive/v1.2.20.tar.gz
+Release:        6%{?dist}
+URL:            https://github.com/tklauser/libtar
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        libtar-%{version}.tar.gz
-%define         sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
+
+Source0: https://github.com/tklauser/libtar/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=11a12695abf4f9668801d24b7b552daed1219b2f395c09818d15e16721f7136d63aa0c09e442401e4fedbf7335748f0dc46f8da21b94b36595910b2fe44d4aea
+
 Patch0:         libtar-gen-debuginfo.patch
-patch1:         libtar-CVE-2013-4420.patch
+Patch1:         libtar-CVE-2013-4420.patch
+
 Provides:       libtar.so.0()(64bit)
 
 %description
@@ -19,7 +22,7 @@ libtar is a library for manipulating tar files from within C programs.
 %package        devel
 Summary:        Development files for libtar
 Group:          Development/Libraries
-Requires:       libtar = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The litar-devel package contains libraries and header files for
@@ -34,14 +37,10 @@ autoreconf -iv
 
 %build
 %configure CFLAGS="%{optflags}" STRIP=/bin/true --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-chmod +x %{buildroot}/%{_libdir}/libtar.so.*
-
-#%%check
-#Commented out %check due to no test existence
+%make_install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -56,9 +55,10 @@ chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 %{_includedir}/*
 %{_mandir}/man3/*
 %{_libdir}/libtar.so
-%{_libdir}/libtar.la
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.20-6
+- Remove .la files
 * Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-5
 - Fix CVE-2013-4420
 * Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4

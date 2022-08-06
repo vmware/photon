@@ -1,14 +1,16 @@
 Summary:       User-space access to Linux Kernel SCTP
 Name:          lksctp-tools
 Version:       1.0.19
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       LGPL
 Group:         System Environment/Libraries
 URL:           http://lksctp.sourceforge.net
-Source0:       %{name}-%{version}.tar.gz
 Vendor:        VMware, Inc.
 Distribution:  Photon
-%define sha1   lksctp-tools=d410a596485c38464177a38ae7c7081444e6589e
+
+Source0: https://github.com/sctp/lksctp-tools/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e56a4b00206acfb88cab1b8fc7424a1a4996f67ef925c29a97395c44c57f2cbcb3fc36ec2648f5e5a5ce29d8d61ee1f7a5e7869e6bbd68bff85590b6ec521883
+
 BuildRequires: gcc
 BuildRequires: libtool
 BuildRequires: automake
@@ -37,15 +39,15 @@ Requires:      %{name} = %{version}-%{release}
 Documents pertaining to LKSCTP & SCTP in general
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -i
 %configure --enable-shared --enable-static
-make
+%make_build
 
 %install
-make install DESTDIR=%{buildroot}
+%make_install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -69,7 +71,6 @@ rm -rf %{buildroot}
 %{_libdir}/libsctp.so
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/libsctp.a
-%{_libdir}/libsctp.la
 %{_datadir}/%{name}/*
 %{_mandir}/*
 
@@ -78,6 +79,8 @@ rm -rf %{buildroot}
 %doc doc/*.txt
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.19-2
+- Remove .la files
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.0.19-1
 - Automatic Version Bump
 * Mon Jun 15 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.0.18-2

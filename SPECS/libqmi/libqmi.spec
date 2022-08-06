@@ -1,7 +1,7 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libqmi
 Version:        1.30.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -59,18 +59,20 @@ make %{?_smp_mflags} check
 %{_bindir}/qmicli
 %{_bindir}/qmi-network
 %{_bindir}/qmi-firmware-update
-%{_libdir}/libqmi-glib.so*
+%{_libdir}/libqmi-glib.so.*
 %{_mandir}/man1/*
 %{_datadir}/bash-completion/*
 %exclude %dir %{_libdir}/debug
 
 %files devel
+%{_libdir}/*.so
 %{_includedir}/libqmi-glib/*
 %{_libdir}/pkgconfig/qmi-glib.pc
-%{_libdir}/libqmi-glib.la
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.30.4-3
+- Remove .la files
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.30.4-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.30.4-1

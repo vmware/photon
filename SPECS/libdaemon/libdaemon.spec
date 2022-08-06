@@ -1,14 +1,16 @@
 Summary:      Lightweight C library that eases the writing of UNIX daemons
 Name:         libdaemon
 Version:      0.14
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      LGPL 2.1+
 URL:          http://0pointer.de/lennart/projects/libdaemon
-Source0:      http://0pointer.de/lennart/projects/libdaemon/%{name}-%{version}.tar.gz
-%define sha1 libdaemon=78a4db58cf3a7a8906c35592434e37680ca83b8f
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
+
+Source0:      http://0pointer.de/lennart/projects/libdaemon/%{name}-%{version}.tar.gz
+%define sha512  %{name}=a96b25c09bd63cc192c1c5f8b5bf34cc6ad0c32d42ac14b520add611423b6ad3d64091a47e0c7ab9a94476a5e645529abccea3ed6b23596567163fba88131ff2
+
 %description
 The libdaemon package is a lightweight C library that eases the writing of UNIX daemons.
 
@@ -24,12 +26,11 @@ developing applications that use libdaemon.
 %autosetup -p1
 
 %build
-%configure  \
-    --disable-lynx
-make %{?_smp_mflags}
+%configure --disable-lynx
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %ldconfig_scriptlets
 
@@ -44,11 +45,12 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 %dir %{_includedir}/libdaemon
 %{_includedir}/libdaemon/*.h
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.14-3
+- Remove .la files
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 0.14-2
 - Use autosetup and ldconfig scriptlets
 * Tue Dec 08 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.14-1

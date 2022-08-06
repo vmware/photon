@@ -2,7 +2,7 @@ Summary:    The Automated Text and Program Generation Tool
 Name:       autogen
 Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/autogen
 Group:      System Environment/Tools
@@ -16,8 +16,6 @@ BuildRequires:  guile-devel
 BuildRequires:  gc-devel
 BuildRequires:  which
 BuildRequires:  libffi-devel
-#BuildRequires: libunistring-devel
-#BuildRequires: libltdl-devel
 
 Requires:   libffi
 Requires:   guile
@@ -40,8 +38,8 @@ Libopts is very powerful command line option parser.
 Summary:    Development files for libopts
 License:    LGPLv3+
 Group:      Development/Libraries
-Requires:   %{name}
-Requires:   %{name}-libopts
+Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}-libopts = %{version}-%{release}
 
 %description libopts-devel
 This package contains development files for libopts.
@@ -52,13 +50,15 @@ This package contains development files for libopts.
 %build
 %configure --disable-dependency-tracking
 # TODO: try to remove CFLAGS on next version update
-make %{?_smp_mflags} CFLAGS="-g -O2 -Wno-format-contains-nul -fno-strict-aliasing -Wno-error=format-overflow"
+%make_build CFLAGS="-g -O2 -Wno-format-contains-nul -fno-strict-aliasing -Wno-error=format-overflow"
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-%check
+rm -f %{buildroot}%{_libdir}/*.la
+
 %if 0%{?with_check}
+%check
 make check %{?_smp_mflags}
 %endif
 
@@ -87,9 +87,10 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/autoopts-config.1.gz
 %{_mandir}/man3/*
 %{_libdir}/*.a
-%{_libdir}/*.la
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-5
+- Remove .la files
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-4
 - Bump version as a part of libffi upgrade
 * Mon Sep 28 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.18.16-3
