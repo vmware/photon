@@ -487,38 +487,39 @@ all-images: check-tools check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAG
 		--img-name=ova_uefi
 
 photon-docker-image: check-tools $(PHOTON_PACKAGES)
-	@$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
-	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
-	sudo docker run \
-		--rm \
-		--privileged \
-		--net=host \
-		-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
-		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
-		-v `pwd`:/workspace \
-		photon-build \
-		./support/dockerfiles/photon/make-docker-image.sh
+	@if [ -f $(PHOTON_STAGE)/photon-rootfs-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).tar.gz ]; then \
+		echo "Photon docker image already present, not creating again..."; \
+	else \
+		$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR) && \
+		sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon && \
+		sudo docker run \
+			--rm \
+			--privileged \
+			--net=host \
+			-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
+			-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
+			-v `pwd`:/workspace \
+			photon-build \
+			./support/dockerfiles/photon/make-docker-image.sh; \
+	fi
 
 k8s-docker-images: photon-docker-image check-tools $(PHOTON_PACKAGES)
-	mkdir -p $(PHOTON_STAGE)/docker_images && \
-	cd ./support/dockerfiles/k8s-docker-images && \
-	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE)  && \
-	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-metrics-server-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-k8s-coredns-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-flannel-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-calico-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-heapster-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-wavefront-proxy-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
+	mkdir -p $(PHOTON_STAGE)/docker_images && cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE) && \
+	for script_fn in build-k8s-docker-images.sh build-k8s-metrics-server-image.sh \
+					build-k8s-coredns-image.sh build-k8s-dns-docker-images.sh \
+					build-k8s-dns-docker-images.sh build-k8s-dashboard-docker-images.sh \
+					build-flannel-docker-image.sh build-calico-docker-images.sh \
+					build-k8s-heapster-image.sh build-k8s-nginx-ingress.sh \
+					build-wavefront-proxy-docker-image.sh; do \
+		./$$script_fn $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE); \
+	done
 
 ostree-repo: check-tools $(PHOTON_PACKAGES)
-	@echo "Creating OSTree repo from local RPMs in ostree-repo.tar.gz..."
 	@if [ -f $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
 		echo "ostree-repo.tar.gz already present, not creating again..."; \
 	else \
+		echo "Creating OSTree repo from local RPMs in ostree-repo.tar.gz..."; \
 		$(SRCROOT)/support/image-builder/ostree-tools/make-ostree-image.sh $(SRCROOT) $(PHOTON_DOCKER_IMAGE); \
 	fi
 #===============================================================================
