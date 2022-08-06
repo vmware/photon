@@ -11,14 +11,14 @@ PHOTON_ROOTFS_FILE=${STAGE_DIR}/photon-rootfs-${DIST_VER}-${BUILD_NUM}.tar.gz
 K8S_BASE_IMG_NAME=k8s-base-image:${DIST_VER}
 
 if [ ! -f ${PHOTON_ROOTFS_FILE} ]; then
-    echo "Photon rootfs file ${PHOTON_ROOTFS_FILE} not found. Exiting.."
-    exit 1
+  echo "Photon rootfs file ${PHOTON_ROOTFS_FILE} not found. Exiting.."
+  exit 1
 fi
 
-IMG_ID=`docker images -q ${K8S_BASE_IMG_NAME} 2> /dev/null`
+IMG_ID=$(docker images -q ${K8S_BASE_IMG_NAME} 2> /dev/null)
 if [[ ! -z "${IMG_ID}" ]]; then
-    echo "Removing image ${K8S_BASE_IMG_NAME}"
-    docker rmi -f ${K8S_BASE_IMG_NAME}
+  echo "Removing image ${K8S_BASE_IMG_NAME}"
+  docker rmi -f ${K8S_BASE_IMG_NAME}
 fi
 
 mkdir -p tmp/k8sbase

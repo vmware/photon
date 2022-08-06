@@ -12,10 +12,11 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for kubernetes-dashboard
-K8S_DASH_VER=`cat ${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec | grep Version: | cut -d: -f2 | tr -d ' '`
-K8S_DASH_VER_REL=${K8S_DASH_VER}-`cat ${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+fn="${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec"
+K8S_DASH_VER=$(get_spec_ver "${fn}")
+K8S_DASH_VER_REL=${K8S_DASH_VER}-$(get_spec_rel "${fn}")
 K8S_DASH_RPM=kubernetes-dashboard-${K8S_DASH_VER_REL}${DIST_TAG}.${ARCH}.rpm
-K8S_DASH_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_DASH_RPM}
+K8S_DASH_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${K8S_DASH_RPM}
 K8S_DASH_TAR=kubernetes-dashboard-v${K8S_DASH_VER_REL}.tar
 
 if [ ! -f ${K8S_DASH_RPM_FILE} ]; then
@@ -25,7 +26,7 @@ fi
 
 IMG_NAME=vmware/photon-${DIST_VER}-kubernetes-dashboard-amd64:v${K8S_DASH_VER}
 
-IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
+IMG_ID=$(docker images -q ${IMG_NAME} 2> /dev/null)
 if [[ ! -z "${IMG_ID}" ]]; then
   echo "Removing image ${IMG_NAME}"
   docker rmi -f ${IMG_NAME}
@@ -50,11 +51,11 @@ fi
 mkdir -p img
 
 cp -pr usr/bin/dashboard \
-       opt/k8dashboard/* \
-       "${basedir}"/Dockerfile.kubernetes-dashboard \
-       "${basedir}"/stage-rpms-tdnf.conf \
-       "${basedir}"/tmp/stage-rpms.repo \
-       img/
+     opt/k8dashboard/* \
+     "${basedir}"/Dockerfile.kubernetes-dashboard \
+     "${basedir}"/stage-rpms-tdnf.conf \
+     "${basedir}"/tmp/stage-rpms.repo \
+     img/
 
 pushd img
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.kubernetes-dashboard .

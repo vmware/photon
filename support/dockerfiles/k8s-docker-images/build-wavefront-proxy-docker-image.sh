@@ -12,24 +12,24 @@ ARCH=noarch
 source common.sh
 
 # Docker image for wavefront-proxy
-WAVEFRONT_PROXY_VER=`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep Version: | cut -d: -f2 | tr -d ' '`
-WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+fn="${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec"
+WAVEFRONT_PROXY_VER=$(get_spec_ver "${fn}")
+WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-$(get_spec_rel "${fn}")
 WAVEFRONT_PROXY_RPM=wavefront-proxy-${WAVEFRONT_PROXY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 WAVEFRONT_PROXY_RPM_FILE=${STAGE_DIR}/RPMS/${ARCH}/${WAVEFRONT_PROXY_RPM}
 WAVEFRONT_PROXY_TAR=wavefront-proxy-v${WAVEFRONT_PROXY_VER_REL}.tar
 
-if [ ! -f ${WAVEFRONT_PROXY_RPM_FILE} ]
-then
-    echo "wavefront-proxy RPM ${WAVEFRONT_PROXY_RPM_FILE} not found. Exiting.."
-    exit 1
+if [ ! -f ${WAVEFRONT_PROXY_RPM_FILE} ]; then
+  echo "wavefront-proxy RPM ${WAVEFRONT_PROXY_RPM_FILE} not found. Exiting.."
+  exit 1
 fi
 
 IMG_NAME=vmware/photon-${DIST_VER}-wavefront-proxy:v${WAVEFRONT_PROXY_VER}
 
-IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
+IMG_ID=$(docker images -q ${IMG_NAME} 2> /dev/null)
 if [[ ! -z "${IMG_ID}" ]]; then
-    echo "Removing image ${IMG_NAME}"
-    docker rmi -f ${IMG_NAME}
+  echo "Removing image ${IMG_NAME}"
+  docker rmi -f ${IMG_NAME}
 fi
 
 mkdir -p tmp/wavefront-proxy
