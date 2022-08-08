@@ -178,12 +178,14 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 find %{buildroot}%{_libdir} -name '*.o' -delete
 rm %{buildroot}%{_bindir}/2to3
 
-%if 0%{?with_gdb_hooks:1}
+%if 0%{?__debug_package}
+%if 0%{?with_gdb_hooks}
   DirHoldingGdbPy=%{_libdir}/debug%{_libdir}
   mkdir -p %{buildroot}$DirHoldingGdbPy
   PathOfGdbPy=$DirHoldingGdbPy/libpython%{VER}.so.1.0-%{version}-%{release}.%{_arch}.debug-gdb.py
   cp Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
-%endif # with gdb_hooks
+%endif
+%endif
 
 %check
 %if 0%{?with_check}

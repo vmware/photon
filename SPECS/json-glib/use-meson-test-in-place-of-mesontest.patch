@@ -1,0 +1,50 @@
+From 5398b760255ee9be463df2dcc0b38adeb850501c Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 9 Aug 2022 12:20:50 +0530
+Subject: [PATCH] Use `meson test` in place of `mesontest`
+
+mesontest was removed in meson-0.48.x
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ README.md | 2 +-
+ configure | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index 24d68ec..97589d9 100644
+--- a/README.md
++++ b/README.md
+@@ -43,7 +43,7 @@ To build JSON-GLib just run:
+ ```sh
+   $ meson _build .
+   $ ninja -C _build
+-  $ mesontest -C _build
++  $ meson test -C _build
+   $ sudo ninja -C _build install
+ ```
+ 
+diff --git a/configure b/configure
+index 5fe09a6..6ddeca8 100755
+--- a/configure
++++ b/configure
+@@ -52,7 +52,6 @@ sanitycheck() {
+ }
+ 
+ sanitycheck MESON 'meson'
+-sanitycheck MESONTEST 'mesontest'
+ sanitycheck NINJA 'ninja' 'ninja-build'
+ 
+ enable_docs='-Ddocs=false'
+@@ -118,7 +117,7 @@ install:
+ 	DESTDIR="\$(DESTDIR)" ${NINJA} ${NINJA_OPT} install
+ 
+ check:
+-	${MESONTEST} ${NINJA_OPT}
++	meson test ${NINJA_OPT}
+ END
+ 
+ echo "Summary:"
+-- 
+2.25.1
+

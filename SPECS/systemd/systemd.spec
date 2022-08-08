@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          42%{?dist}
+Release:          43%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -68,6 +68,7 @@ Patch46:          systemd-239-CVE-2021-33910.patch
 Patch47:          systemd-239-CVE-2020-13529.patch
 Patch48:          bus-socket-Fix-line_begins-to-accept-word-matching-f.patch
 Patch49:          sd-bus-make-bus_slot_disconnect-also-unref-the-slot-object.patch
+Patch50:          meson-debug.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -333,6 +334,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Tue Aug 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 239-43
+- meson: rename -Ddebug to -Ddebug-extra
 * Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 239-42
 - Disable DNSSEC & DNSOverTLS by default
 * Tue Jun 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 239-41

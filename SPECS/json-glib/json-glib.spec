@@ -1,15 +1,17 @@
-Summary:    	Library providing serialization and deserialization support for the JSON format
-Name:       	json-glib
-Version:    	1.4.4
-Release:    	1%{?dist}
-License:    	LGPLv2+
-Group:      	Development/Libraries
-URL:        	http://live.gnome.org/JsonGlib
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Library providing serialization and deserialization support for the JSON format
+Name:           json-glib
+Version:        1.4.4
+Release:        2%{?dist}
+License:        LGPLv2+
+Group:          Development/Libraries
+URL:            http://live.gnome.org/JsonGlib
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
-%define sha1 %{name}=d9b6d58c0a5b45aa86fbf0da31c65c19254edf96
+Source0: http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
+%define sha512 %{name}=cf56a99dce3938b5c0075810f105719836fac65392da33a49b26ebf33aee1fab89ca9fac58059a2008d688ecc75a3e524de60621a5b027d566963541f38b971f
+
+Patch0: use-meson-test-in-place-of-mesontest.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -18,14 +20,13 @@ BuildRequires:  gobject-introspection-devel
 BuildRequires:  glib-devel
 BuildRequires:  libtool
 BuildRequires:  which
-BuildRequires:	meson
-BuildRequires:	python2
-BuildRequires:	python2-libs
+BuildRequires:  meson
+BuildRequires:  python3-devel
 BuildRequires:  gtk-doc
 
-Requires:	glib
+Requires:   glib
 
-Provides:	pkgconfig(json-glib-1.4)
+Provides:   pkgconfig(json-glib-1.4)
 
 %description
 JSON-GLib is a library providing serialization and deserialization
@@ -37,7 +38,7 @@ Summary:    Header files for the json-glib library
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   glib-devel
-Requires:  gobject-introspection-devel
+Requires:   gobject-introspection-devel
 
 %description devel
 Header files for the json-glib library.
@@ -46,22 +47,17 @@ Header files for the json-glib library.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-%configure \
-    --enable-gtk-doc
+%configure --enable-gtk-doc
 
-%{__make} %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
-
-%{__make} install \
-    DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %find_lang json-glib-1.0
 
 %check
-sed -i 's/mesontest/meson test/g' Makefile
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}
@@ -70,7 +66,7 @@ rm -rf %{buildroot}
 %postun -p /sbin/ldconfig
 
 %files -f json-glib-1.0.lang
-#%%defattr(-, root, root)
+%defattr(-, root, root)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/json-glib-format
 %attr(755,root,root) %{_bindir}/json-glib-validate
@@ -79,7 +75,7 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_libdir}/libjson-glib-1.0.so.*.*.*
 
 %files devel
-#%%defattr(-, root, root)
+%defattr(-, root, root)
 %{_libdir}/libjson-glib-1.0.so
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
@@ -90,6 +86,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Tue Aug 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2
+- Fix meson test usages
 * Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.4.4-1
 - Updated package to version 1.4.4
 * Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1
@@ -103,4 +101,4 @@ rm -rf %{buildroot}
 * Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
 - Added more requirements for devel subpackage.
 * Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
-- Added Provides:	pkgconfig(json-glib-1.0)
+- Added Provides:   pkgconfig(json-glib-1.0)
