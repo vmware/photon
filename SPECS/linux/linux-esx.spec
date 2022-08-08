@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        16%{?kat_build:.kat}%{?dist}
+Release:        17%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -36,7 +36,8 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
-Source3:        pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 
@@ -486,6 +487,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-17
+- Scriptlets fixes and improvements
 * Fri Jul 29 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 5.10.78-16
 - Enable CONFIG_CGROUP_BPF in config to run containers with cgroup v2
 * Wed Jun 29 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-15

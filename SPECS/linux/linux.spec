@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -46,7 +46,8 @@ Source3:    https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version
 Source5:    https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
 %define sha512 DCAP=79d0b4aba102559bed9baf9fe20917e9781a22d742fa52b49b2c1a00c452a452796e6ce1a92bad80d6e6fc92ad71fa72ee02c1b65a59bddbb562aaaad4b2d8b2
 
-Source6:        pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
 %define i40e_version 2.15.9
@@ -679,6 +680,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-13
+- Scriptlets fixes and improvements
 * Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 5.10.78-12
 - Enable CONFIG_CGROUP_BPF in config to run containers with cgroup v2
 * Wed Jul 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-11

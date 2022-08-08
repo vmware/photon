@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.78
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -23,7 +23,8 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar
 
 Source1:    config-aws
 Source2:    initramfs.trigger
-Source3:    pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source3:    scriptlets.inc
 Source4:    check_for_config_applicability.inc
 
 # common
@@ -346,6 +347,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-9
+- Scriptlets fixes and improvements
 * Thu Jul 28 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-8
 - Fix linux headers, doc folder and linux-<uname -r>.cfg names
 * Fri Jun 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-7

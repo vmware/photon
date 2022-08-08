@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.78
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,8 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar
 
 Source1:    config-rt
 Source2:    initramfs.trigger
-Source4:    pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source4:    scriptlets.inc
 Source5:    check_for_config_applicability.inc
 
 %define i40e_version 2.15.9
@@ -758,6 +759,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-15
+- Scriptlets fixes and improvements
 * Wed Aug 03 2022 Keerthana K <keerthanak@vmware.com> 5.10.78-14
 - Fix linux headers, doc folder and linux-<uname -r>.cfg names
 - Drop rt_version from uname_r
