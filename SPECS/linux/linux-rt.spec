@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        17%{?kat_build:.kat}%{?dist}
+Release:        18%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -31,9 +31,11 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha512 linux=5ce0746c3b519abe9e20d1c80264a6a8e49bc18907cc0712fd0520f8e74806028a1b3929da636d6ab88b195895f1873122122b1506b7047c37ba30ed22b357f1
+
 Source1:    config-rt
 Source2:    initramfs.trigger
-Source4:    pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source4:    scriptlets.inc
 Source5:    check_for_config_applicability.inc
 
 %define i40e_version 2.15.9
@@ -863,6 +865,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-18
+- Scriptlets fixes and improvements
 * Wed Aug 10 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-17
 - Correct SPEC file to autopatch vfio_pci patches
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-16

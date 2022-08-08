@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.118
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -23,9 +23,11 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha512 linux=5ce0746c3b519abe9e20d1c80264a6a8e49bc18907cc0712fd0520f8e74806028a1b3929da636d6ab88b195895f1873122122b1506b7047c37ba30ed22b357f1
+
 Source1:        config-secure
 Source2:        initramfs.trigger
-Source3:        pre-preun-postun-tasks.inc
+# contains pre, postun, filetriggerun tasks
+Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
 %if 0%{?fips}
@@ -373,6 +375,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.118-9
+- Scriptlets fixes and improvements
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-8
 - Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-7
