@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.247
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -103,6 +103,13 @@ Patch49: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch50: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+# CVE-2022-2586
+Patch51: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to.patch
+Patch52: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch53: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -765,6 +772,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-14
+- Fix for CVE-2022-2586 and CVE-2022-2588
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-13
 - Scriptlets fixes and improvements
 * Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-12

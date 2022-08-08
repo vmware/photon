@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.247
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -91,6 +91,13 @@ Patch65: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch66: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+# CVE-2022-2586
+Patch67: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to.patch
+Patch68: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch69: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -478,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-13
+- Fix for CVE-2022-2586 and CVE-2022-2588
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-12
 - Scriptlets fixes and improvements
 * Wed Aug 03 2022 Keerthana K <keerthanak@vmware.com> 4.19.247-11

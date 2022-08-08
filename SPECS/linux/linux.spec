@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.247
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -233,6 +233,13 @@ Patch182: lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.p
 
 # CVE-2022-1789
 Patch185: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
+
+# CVE-2022-2586
+Patch186: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to.patch
+Patch187: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch188: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -635,7 +642,7 @@ ApplyPatch "1" "13"
 %patch17 -p1
 %endif
 
-ApplyPatch "25" "185"
+ApplyPatch "25" "188"
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1051,6 +1058,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-13
+- Fix for CVE-2022-2586 and CVE-2022-2588
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-12
 - Scriptlets fixes and improvements
 * Tue Aug 02 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.247-11
