@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -12,9 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=860f88886809ae8bfc86afa462536811c347a2a1
+%define sha512  Python=f4f3879881f260f58dbb041fb0f2f210d4b70b02a739e41e50e6fea67d31855a7a29ce4ebef66bfde3d0edf54b946a48f78490f986da965357b835d4dbb3f414
 Source1:        pip-setuptools-whl.tar.gz
-%define sha1    pip-setuptools-whl=1e932912469c04ed2188d638b68ba4a2eb210510
+%define sha512  pip-setuptools-whl=82becf78541bf82029b53f14e17c433f69788ecf1b5de2d988fb75dd016c6a370af5f613f0e600d409a68bd4a1195008924ba839bb0365950b80d0812e70bc2d
 
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
@@ -33,6 +33,7 @@ Patch13:        CVE-2022-0391-1.patch
 Patch14:        CVE-2022-0391-2.patch
 Patch15:        CVE-2021-3737-1.patch
 Patch16:        CVE-2021-3737-2.patch
+Patch17:        CVE-2021-3733.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -290,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Fri Aug 05 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-19
+- Fix CVE-2021-3733
 * Fri Mar 18 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-18
 - Fix CVE-2021-3737
 * Wed Feb 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-17
