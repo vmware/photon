@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        15%{?kat_build:.kat}%{?dist}
+Release:        16%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -103,6 +103,17 @@ Patch105: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patc
 Patch106: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 # Fix for CVE-2022-21505
 Patch107: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
+
+#Fix for CVE-2022-2585
+Patch108: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
+
+#Fix for CVE-2022-2586
+Patch109: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+Patch110: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
+Patch111: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch112: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -597,7 +608,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M107
+%autopatch -p1 -m100 -M112
 
 # RT
 %autopatch -p1 -m301 -M716
@@ -849,6 +860,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-16
+- Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Thu Jul 28 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-15
 - Fix linux headers, doc folder and linux-<uname -r>.cfg names
 - Drop rt_version from uname_r

@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -131,6 +131,17 @@ Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Fix for CVE-2022-21505
 Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
+
+#Fix for CVE-2022-2585
+Patch109: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
+
+#Fix for CVE-2022-2586
+Patch110: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+Patch111: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
+Patch112: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch113: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -352,7 +363,7 @@ Python programming language to use the interface to manipulate perf events.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M108
+%autopatch -p1 -m100 -M113
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m120 -M121
@@ -757,6 +768,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-12
+- Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Mon Jul 18 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-11
 - Update iavf driver to v4.4.2
 - Update ice driver to v1.8.3

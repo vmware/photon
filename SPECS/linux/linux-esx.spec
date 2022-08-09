@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -144,6 +144,17 @@ Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Fix for CVE-2022-21505
 Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
+
+#Fix for CVE-2022-2585
+Patch109: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
+
+#Fix for CVE-2022-2586
+Patch110: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+Patch111: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
+Patch112: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-2588
+Patch113: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -290,7 +301,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M108
+%autopatch -p1 -m100 -M113
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -535,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-12
+- Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Fri Jul 29 2022 Ankit Jain <ankitja@vmware.com> 5.10.118-11
 - tarfs: fix error for empty tar archive
 * Tue Jul 26 2022 Ankit Jain <ankitja@vmware.com> 5.10.118-10
