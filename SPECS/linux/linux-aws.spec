@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.321
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -201,6 +201,12 @@ Patch158:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2021-20322
 Patch159:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
+
+#Fix CVE-2022-2586
+Patch160:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+
+#Fix CVE-2022-2588
+Patch161:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -411,6 +417,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch155 -p1
 %patch158 -p1
 %patch159 -p1
+%patch160 -p1
+%patch161 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -558,6 +566,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3
+-   Fix for CVE-2022-2586 and CVE-2022-2588
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-2
 -   Fix for CVE-2021-20322
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-1

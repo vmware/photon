@@ -1,0 +1,122 @@
+From 057ea2263b545ac2a90e168879cb9cfe4c348657 Mon Sep 17 00:00:00 2001
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Date: Tue, 26 Jul 2022 14:30:27 -0300
+Subject: [PATCH] netfilter: nf_tables: do not allow SET_ID to refer to
+ another table
+
+ When doing lookups for sets on the same batch by using its ID, a set from a
+ different table can be used.
+
+ Then, when the table is removed, a reference to the set may be kept after
+ the set is freed, leading to a potential use-after-free.
+
+ When looking for sets by ID, use the table that was used for the lookup by
+ name, and only return sets belonging to that same table.
+
+ This fixes CVE-2022-2586, also reported as ZDI-CAN-17470.
+
+ Reported-by: Team Orca of Sea Security (@seasecresponse)
+ Fixes: 958bee14d071 ("netfilter: nf_tables: use new transaction infrastructure to handle sets")
+ Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+ Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ include/net/netfilter/nf_tables.h | 3 +++
+ net/netfilter/nf_tables_api.c     | 5 ++++-
+ net/netfilter/nft_dynset.c        | 2 +-
+ net/netfilter/nft_lookup.c        | 2 +-
+ 4 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 91e395fd0a65..c5fb1a8c0e88 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -338,6 +338,7 @@ void nft_unregister_set(struct nft_set_ops *ops);
+  *
+  *	@list: table set list node
+  *	@bindings: list of set bindings
++ *	@table: table this set belongs to
+  * 	@name: name of the set
+  * 	@ktype: key type (numeric type defined by userspace, not used in the kernel)
+  * 	@dtype: data type (verdict or numeric type defined by userspace)
+@@ -359,6 +360,7 @@ void nft_unregister_set(struct nft_set_ops *ops);
+ struct nft_set {
+ 	struct list_head		list;
+ 	struct list_head		bindings;
++	struct nft_table                *table;
+ 	char				name[NFT_SET_MAXNAMELEN];
+ 	u32				ktype;
+ 	u32				dtype;
+@@ -393,6 +395,7 @@ static inline struct nft_set *nft_set_container_of(const void *priv)
+ struct nft_set *nf_tables_set_lookup(const struct nft_table *table,
+ 				     const struct nlattr *nla, u8 genmask);
+ struct nft_set *nf_tables_set_lookup_byid(const struct net *net,
++					  const struct nft_table *table,
+ 					  const struct nlattr *nla, u8 genmask);
+
+ static inline unsigned long nft_set_gc_interval(const struct nft_set *set)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 0aad9b8466aa..a47672f1f523 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2476,6 +2476,7 @@ struct nft_set *nf_tables_set_lookup(const struct nft_table *table,
+ }
+
+ struct nft_set *nf_tables_set_lookup_byid(const struct net *net,
++					  const struct nft_table *table,
+ 					  const struct nlattr *nla,
+ 					  u8 genmask)
+ {
+@@ -2487,6 +2488,7 @@ struct nft_set *nf_tables_set_lookup_byid(const struct net *net,
+ 			struct nft_set *set = nft_trans_set(trans);
+
+ 			if (id == nft_trans_set_id(trans) &&
++			    set->table == table &&
+ 			    nft_active_genmask(set, genmask))
+ 				return set;
+ 		}
+@@ -2953,6 +2955,7 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
+ 	}
+
+ 	INIT_LIST_HEAD(&set->bindings);
++	set->table = table;
+ 	set->ops   = ops;
+ 	set->ktype = ktype;
+ 	set->klen  = desc.klen;
+@@ -3697,7 +3700,7 @@ static int nf_tables_newsetelem(struct net *net, struct sock *nlsk,
+ 				   genmask);
+ 	if (IS_ERR(set)) {
+ 		if (nla[NFTA_SET_ELEM_LIST_SET_ID]) {
+-			set = nf_tables_set_lookup_byid(net,
++			set = nf_tables_set_lookup_byid(net, ctx.table,
+ 					nla[NFTA_SET_ELEM_LIST_SET_ID],
+ 					genmask);
+ 		}
+diff --git a/net/netfilter/nft_dynset.c b/net/netfilter/nft_dynset.c
+index 5c25ffec2755..7d8da6d180ce 100644
+--- a/net/netfilter/nft_dynset.c
++++ b/net/netfilter/nft_dynset.c
+@@ -135,7 +135,7 @@ static int nft_dynset_init(const struct nft_ctx *ctx,
+ 				   genmask);
+ 	if (IS_ERR(set)) {
+ 		if (tb[NFTA_DYNSET_SET_ID])
+-			set = nf_tables_set_lookup_byid(ctx->net,
++			set = nf_tables_set_lookup_byid(ctx->net, ctx->table,
+ 							tb[NFTA_DYNSET_SET_ID],
+ 							genmask);
+ 		if (IS_ERR(set))
+diff --git a/net/netfilter/nft_lookup.c b/net/netfilter/nft_lookup.c
+index 8166b6994cc7..650fefdad545 100644
+--- a/net/netfilter/nft_lookup.c
++++ b/net/netfilter/nft_lookup.c
+@@ -74,7 +74,7 @@ static int nft_lookup_init(const struct nft_ctx *ctx,
+ 	set = nf_tables_set_lookup(ctx->table, tb[NFTA_LOOKUP_SET], genmask);
+ 	if (IS_ERR(set)) {
+ 		if (tb[NFTA_LOOKUP_SET_ID]) {
+-			set = nf_tables_set_lookup_byid(ctx->net,
++			set = nf_tables_set_lookup_byid(ctx->net, ctx->table,
+ 							tb[NFTA_LOOKUP_SET_ID],
+ 							genmask);
+ 		}
+--
+2.17.1
+

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.321
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -104,6 +104,12 @@ Patch64:        CVE-2021-33909.patch
 # Fix CVE-2019-18885
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+
+#Fix CVE-2022-2586
+Patch67:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+
+#Fix CVE-2022-2588
+Patch68:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -299,6 +305,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
+%patch68 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -511,6 +519,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3
+-   Fix for CVE-2022-2586 and CVE-2022-2588
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-2
 -   Fix for CVE-2021-20322
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-1
