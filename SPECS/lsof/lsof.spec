@@ -1,14 +1,15 @@
-Summary:	List Open Files
-Name:		lsof
-Version:	4.91
-Release:	1%{?dist}
-License:	BSD
-URL:		https://people.freebsd.org/~abe/
-Group:		System Environment/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://fossies.org/linux/misc/%{name}_%{version}.tar.bz2
-%define sha1 lsof=da6f9883d00f200671f6e47cf838bb9b6b9c6f01
+Summary:        List Open Files
+Name:           lsof
+Version:        4.91
+Release:        2%{?dist}
+License:        BSD
+URL:            https://people.freebsd.org/~abe/
+Group:          System Environment/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://fossies.org/linux/misc/%{name}_%{version}.tar.bz2
+Patch0:         crash-fix-for-print-endpoint-unaccepted-socket-with-E-option.patch
+%define sha512  %{name}=49f811941dd6303f7cb0655fddb8b1177af5d1b18f2bd1edfab09d2c128aea73daecf09c7a5375979c66ba764c88a6e70c9086b55c3634e3be01ab1aa12e9f92
 BuildRequires:	libtirpc-devel
 Requires:	libtirpc
 
@@ -16,8 +17,11 @@ Requires:	libtirpc
 Contains programs for generating Makefiles for use with Autoconf.
 
 %prep
-%setup -q -n %{name}_%{version} 
+# Using autosetup is not feasible
+%setup -q -n %{name}_%{version}
 tar -xf %{name}_%{version}_src.tar
+cd %{name}_%{version}_src
+%patch0 -p1
 
 %build
 cd %{name}_%{version}_src
@@ -37,9 +41,11 @@ install -v -m 0644 lsof.8 %{buildroot}%{_mandir}/man8
 %{_mandir}/man8/*
 
 %changelog
-*       Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.91-1
--       Update to version 4.91
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.89-2
--	GA - Bump release of all rpms
-*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 4.89-1
--	Initial build.
+* Wed Jul 27 2022 Nitesh Kumar <kunitesh@vmware.com> 4.91-2
+- Patched to fix lsof+E crash
+* Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.91-1
+- Update to version 4.91
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.89-2
+- GA - Bump release of all rpms
+* Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 4.89-1
+- Initial build.

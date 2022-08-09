@@ -1,0 +1,76 @@
+From 6c269b9784ba343442bbfaa5c63ba0c608cccca9 Mon Sep 17 00:00:00 2001
+From: Masatake YAMATO <yamato@redhat.com>
+Date: Mon, 25 Nov 2019 00:29:41 +0900
+Subject: [PATCH] [linux] fix a crash when printing the endpoint for unaccepted
+ unix socket with +E option
+
+Close #74 reported by @jolmg.
+
+When printing the end point of the unix domain socket whose counter part is not
+accepted yet by server side, lsof with +E option crashed with NULL pointer
+dereference.
+
+Signed-off-by: Masatake YAMATO <yamato@redhat.com>
+---
+ 00DIST                 |  4 ++++
+ dialects/linux/dsock.c | 16 ++++++++--------
+ 2 files changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/00DIST b/00DIST
+index ea4c375..9686abf 100644
+--- a/00DIST
++++ b/00DIST
+@@ -4883,5 +4883,9 @@ Supplement	Regenerated the 4.04 distribution to correct a non-
+ 		endpoint processing bug. Masatake YAMATO <yamato@redhat.com>
+ 		supplied the fixes.
+ 
++                [linux] fix a crash when printing the endpoint for unaccepted
++		unix socket with +E option.
++		This closes the github issue #74 reported by @jolmg.
++
+ Vic Abell <abe@purdue.edu>
+ March 26, 2018
+diff --git a/dialects/linux/dsock.c b/dialects/linux/dsock.c
+index 0df77b1..a6db687 100644
+--- a/dialects/linux/dsock.c
++++ b/dialects/linux/dsock.c
+@@ -1110,15 +1110,15 @@ process_uxsinfo(f)
+ 			if (tp->icons) {
+ 			    if (tp->icstat) {
+ 				p = tp->icons;
+-				while (p != tp) {
+-				    if (p && p->inode)
++				while (p && p != tp) {
++				    if (p->inode)
+ 					prt_uxs(p, 1);
+ 				    p = p->icons;
+ 				}
+ 			    } else {
+-				for (p = tp->icons; !p->icstat; p = p->icons)
++				for (p = tp->icons; p && !p->icstat; p = p->icons)
+ 				    ; /* DO NOTHING */
+-				if (p->icstat && p->inode)
++				if (p && p->inode)
+ 				    prt_uxs (p, 1);
+ 			    }
+ 			}
+@@ -1142,15 +1142,15 @@ process_uxsinfo(f)
+ 			if (tp->icons) {
+ 			    if (tp->icstat) {
+ 				p = tp->icons;
+-				while (p != tp) {
+-				    if (p  && p->inode)
++				while (p && p != tp) {
++				    if (p->inode)
+ 					prt_uxs(p, 0);
+ 				    p = p->icons;
+ 				}
+ 			    } else {
+-				for (p = tp->icons; !p->icstat; p = p->icons)
++				for (p = tp->icons; p && !p->icstat; p = p->icons)
+ 				    ; /* DO NOTHING */
+-				if (p->icstat && p->inode)
++				if (p && p->inode)
+ 				    prt_uxs(p, 0);
+ 			    }
+ 			}
