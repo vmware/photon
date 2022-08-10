@@ -76,3 +76,11 @@ PH_BUILDER_TAG := "photon_builder:3.0"
 ifndef PH3_DOCKER_IMG_URL
 PH3_DOCKER_IMG_URL := "https://github.com/vmware/photon-docker-image/raw/$(shell uname -m)/3.0-20220715/docker/photon-rootfs-3.0-8e54ea3e7.tar.gz"
 endif
+
+ifndef BUILD_SRC_RPM
+BUILD_SRC_RPM := 1
+endif
+
+ifndef BUILD_DBGINFO_RPM
+BUILD_DBGINFO_RPM := 1
+endif

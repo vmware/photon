@@ -1,3 +1,4 @@
+import os
 import platform
 
 from Logger import Logger
@@ -36,6 +37,18 @@ class constants(object):
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
     hostRpmIsNotUsable = -1
+
+    ph_builder_tag = ""
+    if "PHOTON_BUILDER_TAG" in os.environ:
+        ph_builder_tag = os.environ["PHOTON_BUILDER_TAG"]
+
+    buildSrcRpm = 0
+    if "PH_BUILD_SRC_RPM" in os.environ:
+        buildSrcRpm = int(os.environ["PH_BUILD_SRC_RPM"])
+
+    buildDbgInfoRpm = 0
+    if "PH_BUILD_DBGINFO_RPM" in os.environ:
+        buildDbgInfoRpm = int(os.environ["PH_BUILD_DBGINFO_RPM"])
 
     noDepsPackageList = [
         "texinfo",

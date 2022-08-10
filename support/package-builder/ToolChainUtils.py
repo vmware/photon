@@ -164,10 +164,9 @@ class ToolChainUtils(object):
                 chroot.getID() + " -D \'_dbpath /var/lib/rpm\' " + rpmFiles)
 
         if constants.checkIfHostRpmNotUsable():
-            ph_builder_tag = os.environ["PHOTON_BUILDER_TAG"]
             cmd = ("docker run --rm -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
                    " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
-                   chroot.getID() + " " + ph_builder_tag + " /bin/bash -c \"" + cmd + "\"")
+                   chroot.getID() + " " + constants.ph_builder_tag + " /bin/bash -c \"" + cmd + "\"")
 
         if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
             self.logger.debug("Command Executed:" + cmd)

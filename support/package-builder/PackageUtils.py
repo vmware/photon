@@ -26,7 +26,16 @@ class PackageUtils(object):
         self.nodepsRPMPackageOptions = "--nodeps"
 
         self.rpmbuildBinary = "rpmbuild"
-        self.rpmbuildBuildallOption = "-ba --clean"
+        self.rpmbuildBuildallOption = "--clean"
+
+        if constants.buildSrcRpm:
+            self.rpmbuildBuildallOption = f"-ba {self.rpmbuildBuildallOption}"
+        else:
+            self.rpmbuildBuildallOption = f"-bb {self.rpmbuildBuildallOption}"
+
+        if not constants.buildDbgInfoRpm:
+            self.rpmbuildBuildallOption = "-D \"debug_package %{nil}\" " + f"{self.rpmbuildBuildallOption}"
+
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildCheckOption = "-bi --clean"
         self.queryRpmPackageOptions = "-qa"
@@ -139,7 +148,7 @@ class PackageUtils(object):
             if self.CheckForDbgSymbols(RpmsToCheck):
                 raise Exception("Rpm sanity check error")
 
-            logmsg = package + " build done - RPMs : [ " + logmsg + " ]\n"
+            logmsg = package + " build done - RPMs : [ " + logmsg + "]\n"
             self.logger.info(logmsg)
         except Exception as e:
             self.logger.error("Failed while building rpm:" + package)
