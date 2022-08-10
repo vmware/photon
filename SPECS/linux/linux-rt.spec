@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        16%{?kat_build:.kat}%{?dist}
+Release:        17%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -610,6 +610,9 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %autopatch -p1 -m100 -M112
 
+# Allow PCI resets to be disabled from vfio_pci module
+%autopatch -p1 -m120 -M121
+
 # RT
 %autopatch -p1 -m301 -M716
 
@@ -860,6 +863,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 10 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.118-17
+- Correct SPEC file to autopatch vfio_pci patches
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.118-16
 - Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Thu Jul 28 2022 Keerthana K <keerthanak@vmware.com> 5.10.118-15
