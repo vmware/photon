@@ -3,7 +3,7 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -11,10 +11,11 @@ Distribution:   Photon
 URL:        https://github.com/vmware/photon-os-installer
 
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}=0f1164e8eef1fa76990346f22d281e36964404f5
+%define sha512 %{name}=3a7567802a6b94cf9e51fcaaab5d2dbfbc42cd1d92427a2b0739a9df9994df01a2eb81e3133832fd39d575376ecf859451a8a3049d6993a42861544de9b4f3fe
 
 Patch0:     error_screen_selectdisk.patch
 Patch1:     fix-installroot-commands.patch
+Patch2:     0001-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -46,6 +47,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Fri Aug 05 2022 Ankit Jain <ankitja@vmware.com> 2.0-3
+- Added refresh_devices in retries if mount fails
 * Wed Dec 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-2
 - Fix tdnf installroot commands
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-1
