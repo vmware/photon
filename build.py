@@ -1098,10 +1098,15 @@ def initialize_constants():
     Build_Config.setCommonDir(PurePath(photonDir, "common", "data"))
     constants.setStartSchedulerServer(configdict["photon-build-param"]['start-scheduler-server'])
     constants.setCompressionMacro(configdict["photon-build-param"]["compression-macro"])
+
     constants.phBuilderTag = configdict["photon-build-param"]["ph-builder-tag"]
+
+    constants.buildSrcRpm = int(configdict["photon-build-param"]["build-src-rpm"])
+    constants.buildDbgInfoRpm = int(configdict["photon-build-param"]["build-dbginfo-rpm"])
+
     constants.initialize()
 
-    check_prerequesite["initialize-constants"]=True
+    check_prerequesite["initialize-constants"] = True
 
 
 def set_default_value_of_config():
@@ -1230,6 +1235,12 @@ def main():
 
     if "PH_DOCKER_IMAGE_URL" in os.environ:
         configdict["photon-build-param"]["ph-docker-image-url"] = os.environ["PH_DOCKER_IMAGE_URL"]
+
+    if "BUILD_SRC_RPM" in os.environ:
+        configdict["photon-build-param"]["build-src-rpm"] = int(os.environ["BUILD_SRC_RPM"])
+
+    if "BUILD_DBGINFO_RPM" in os.environ:
+        configdict["photon-build-param"]["build-dbginfo-rpm"] = int(os.environ["BUILD_DBGINFO_RPM"])
 
     initialize_constants()
 

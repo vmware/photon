@@ -42,6 +42,8 @@ class constants(object):
     hostRpmIsNotUsable = False
     hostRpmIsNotUsable = -1
     phBuilderTag = ""
+    buildSrcRpm = 0
+    buildDbgInfoRpm = 0
 
     noDepsPackageList = [
         "texinfo",
