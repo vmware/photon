@@ -1,13 +1,12 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
-Version:        4.7.1
-Release:        2%{?dist}
+Version:        4.9.1
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
-%define sha512  lxml=dd0d421e10db6c9084cf5b2c04a4fc54d74bd62b4dfa83efcf92dd46cd1c5f043c47613521b2de04c450b83eb1161d197b017c53e615e5785e97e7afe106b6cf
-Patch0:         lxml-CVE-2022-2309.patch
+%define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libxslt
@@ -48,6 +47,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Aug 08 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-1
+- Upgrade to 4.9.1
 * Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-2
 - Fix for CVE-2022-2309
 * Mon Jan 03 2022 Sujay G <gsujay@vmware.com> 4.7.1-1
