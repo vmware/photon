@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://photon.org
 Group:         System Environment/Base
@@ -22,7 +22,7 @@ Set of scripts and tools to get compatbility with other distributions.
 It includes: rc.status, startproc, killproc, checkproc, ifup and ifdown.
 
 %prep
-%autosetup -p0
+%autosetup -p1
 
 %build
 %make_build
@@ -40,10 +40,14 @@ ln -sfv sysctl.d/99-compat.conf %{buildroot}%{_sysconfdir}/sysctl.conf
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/sysctl.d/*.conf
+%{_sysconfdir}/sysctl.conf
+%{_sysconfdir}/rc.status
 %{_sbindir}/*
 
 %changelog
+* Thu Aug 04 2022 Ankit Jain <ankitja@vmware.com> 0.1-3
+- preserve the configuartion
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.1-2
 - Fix binary path
 * Thu Feb 18 2021 Ankit Jain <ankitja@vmware.com> 0.1-1
