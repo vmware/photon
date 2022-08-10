@@ -12,8 +12,11 @@
             "ph-docker-img-url" : "https://github.com/vmware/photon-docker-image/raw/ARCH/4.0-20220715/docker/photon-rootfs-4.0-fe8804ac9.tar.gz",
             "ph-builder-tag" : "photon_builder:4.0",
 
-            "target": "iso",
-            "compression-macro": "w19.zstdio"
+            "build-src-rpm" : true,
+            "build-dbginfo-rpm" : true,
+
+            "target" : "iso",
+            "compression-macro" : "w19.zstdio"
     },
     "photon-path" : "",
     "stage-path" : "" ,

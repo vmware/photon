@@ -40,6 +40,8 @@ class constants(object):
     currentArch = buildArch
     hostRpmIsNotUsable = -1
     phBuilderTag = ""
+    buildSrcRpm = 0
+    buildDbgInfoRpm = 0
 
     noDepsPackageList = [
         "texinfo",
