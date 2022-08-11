@@ -9,8 +9,8 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.22.4
-Release:        6%{?dist}
+Version:        1.23.9
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -18,7 +18,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        kubernetes-%{version}.tar.gz
-%define sha512  kubernetes-%{version}.tar.gz=b2b8060d031dac83c65e634ad14b804010036a7d74161dd37349f39974d862b10b48423c2dcb4e9ca9e775c94dbe9595d49e57c98a2e6a8d8335cb235ba342e0
+%define sha512  kubernetes-%{version}.tar.gz=e5e46e68c90f6374e4b97424b088ed5b3d494a60bfd753a88cafed59d51d6696260d2be279631eab52f73b9f5444511609aaf950c51c73dfc77cba174943f37f
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 Source2:        kubelet.service
@@ -30,7 +30,7 @@ BuildRequires:  which
 
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.0.4
+Requires:       etcd >= 3.5.0
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -234,6 +234,8 @@ fi
 %endif
 
 %changelog
+* Wed Aug 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.9-1
+- Update to version 1.23.9
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-6
 - Bump up version to compile with new go
 * Wed Mar 23 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-5

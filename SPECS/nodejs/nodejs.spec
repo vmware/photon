@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        17.3.1
+Version:        18.6.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=4633cab33d954833bcd20b5f0f0ca114ab5c99ab
+%define         sha512 node=a325c714b570d1f378933894bdb1808d3f8cca1e461b1e00da4c8fd32eedc7b8e9b3f06cefcd7a5a6fea0ea90c63a1f775cadeec5d4933b5eda172b6e5568d75
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -28,7 +28,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -p1 -n node-v%{version}
+%autosetup -p1 -n node-%{version}
 
 %build
 sh configure --prefix=%{_prefix}
@@ -66,6 +66,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Aug 09 2022 Shivani Agarwal <shivania2@vmware.com> 18.6.0-1
+-   Update to version 18.6.0
 *   Tue Mar 08 2022 Piyush Gupta <gpiyush@vmware.com> 17.3.1-1
 -   Update to version 17.3.1, fixes CVE-2021-44531,44532,44533, CVE-2022-28421.
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.1.0-1
