@@ -1,23 +1,27 @@
-%global security_hardening nopie
-%define debug_package %{nil}
-%define __os_install_post %{nil}
+%global security_hardening  nopie
+%define debug_package       %{nil}
+%define __os_install_post   %{nil}
 
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
-Version:        1.3.1
-Release:        3%{?dist}
+Version:        2.2.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/edgexfoundry/edgex-go/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=5d83179ef71d56b658c7f632a1225284dd0abc096f59b744f477e80c324854ec0d6173bc8af4138385a5a9dda5ed408b7c41b9c6bfa853d255eb14ab52141b46
-Source1:        %{name}-template.service
+
+Source0:    https://github.com/edgexfoundry/edgex-go/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=446f34753fe095049095f3525d77b0b1b1cc3b04f22c9955c6a5262908526547e84ba48581dc3ca67c47a65d029291a204c9ca88cc791a136245915e5623fece
+
+Source1:    %{name}-template.service
+
 BuildRequires:  go
 BuildRequires:  make
 BuildRequires:  systemd-devel
 BuildRequires:  zeromq-devel
+
 Requires:       systemd
 Requires:       zeromq
 Requires:       redis
@@ -35,7 +39,7 @@ EdgeX Foundry Go Services:
 - sys-mgmt-agent
 
 %prep
-%autosetup -p1 -c -T -a 0 -n src/github.com/edgexfoundry
+%autosetup -p1 -c -T -a0 -n src/github.com/edgexfoundry
 mv %{_builddir}/src/github.com/edgexfoundry/%{name}-go-%{version} %{_builddir}/src/github.com/edgexfoundry/%{name}-go
 
 %build
@@ -60,8 +64,8 @@ install -d -m755 %{buildroot}%{_unitdir}
 
 # install binary
 for srv in core-command core-data core-metadata \
-           security-proxy-setup security-secrets-setup security-secretstore-setup \
-           support-logging support-notifications support-scheduler \
+           security-proxy-setup security-secretstore-setup \
+           support-notifications support-scheduler \
            sys-mgmt-agent; do
 
   install -p -m755 cmd/${srv}/${srv} %{buildroot}%{_bindir}/%{name}-${srv}
@@ -98,6 +102,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_unitdir}/%{name}-core-data.service
 %{_var}/log/*
 
 %changelog
+* Sun Aug 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.0-1
+- Upgrade to v2.2.0
 * Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1-3
 - Bump version as a part of redis upgrade
 * Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1-2
