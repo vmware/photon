@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        22.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -15,14 +15,13 @@ Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
+Patch4: cc_set_hostname_fix.patch
 
-BuildRequires: python3
-BuildRequires: python3-libs
-BuildRequires: systemd
+BuildRequires: python3-devel
+BuildRequires: systemd-devel
 BuildRequires: dbus
 BuildRequires: python3-ipaddr
 BuildRequires: iproute2
-BuildRequires: automake
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
 BuildRequires: python3-six
@@ -48,7 +47,6 @@ Requires: iproute2
 Requires: systemd
 Requires: (net-tools or toybox)
 Requires: python3
-Requires: python3-libs
 Requires: python3-configobj
 Requires: python3-prettytable
 Requires: python3-requests
@@ -72,19 +70,18 @@ need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
 %prep
-
 %autosetup -p1
 
-find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
+find systemd -name "cloud*.service*" | \
+    xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
 %py3_build
 
 %install
-rm -rf %{buildroot}
 %py3_install -- --init-system=systemd
 
-python3 tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
+%{python3} tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
 %if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
@@ -92,20 +89,20 @@ python3 tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/clou
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
-mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
+mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
+         %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
 mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
-%check
 %if 0%{?with_check}
+%check
 touch vd ud
 
-mkdir -p /usr/share/ca-certificates/
-crt_file='/usr/share/ca-certificates/cloud-init-ca-certs.crt'
+mkdir -p %{_datadir}/ca-certificates/
+crt_file='%{_datadir}/ca-certificates/cloud-init-ca-certs.crt'
 echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 
-conf_file='/etc/ca-certificates.conf'
-echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
+conf_file='%{_sysconfdir}/ca-certificates.conf'
 
 %define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces responses pytest-mock
 
@@ -149,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Sat Aug 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.2-2
+- Fix hostname setting issue
 * Fri Jul 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.2-1
 - Upgrade to v22.2.2 to fix CVE-2022-2084
 * Thu May 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.2-1
