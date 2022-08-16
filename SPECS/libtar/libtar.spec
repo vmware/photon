@@ -1,20 +1,24 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        5%{?dist}
-URL:            https://github.com/tklauser/libtar/archive/v1.2.20.tar.gz
+Release:        6%{?dist}
+URL:            http://repo.or.cz/libtar.git
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        libtar-%{version}.tar.gz
-%define         sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
-
+Source0:        http://repo.or.cz/libtar.git/snapshot/refs/tags/%{name}-%{version}.tar.gz
+%define sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
 Patch0:         libtar-gen-debuginfo.patch
-Patch1:         libtar-CVE-2013-4420.patch
+Patch1:         libtar-1.2.11-missing-protos.patch
+Patch2:         libtar-1.2.11-mem-deref.patch
+Patch3:         libtar-1.2.20-fix-resource-leaks.patch
+Patch4:         libtar-1.2.20-no-static-buffer.patch
+Patch5:         libtar-CVE-2013-4420.patch
+Patch6:         libtar-CVE-2021-33643-CVE-2021-33644.patch
+Patch7:         libtar-CVE-2021-33645-CVE-2021-33646.patch
 
-Provides:       libtar.so.0()(64bit)
+BuildRequires:  libtool
 
 %description
 libtar is a library for manipulating tar files from within C programs.
@@ -22,26 +26,29 @@ libtar is a library for manipulating tar files from within C programs.
 %package        devel
 Summary:        Development files for libtar
 Group:          Development/Libraries
-Requires:       libtar = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The litar-devel package contains libraries and header files for
 developing applications that use libtar.
 
 %prep
-# Using autosetup is not feasible
-%setup
-%patch0
-%patch1 -p1
+%autosetup -n %{name}-%{version} -p1
+# set correct version for .so files
+%global ltversion %(echo %{version} | tr '.' ':')
+sed -i 's/-rpath $(libdir)/-rpath $(libdir) -version-number %{ltversion}/' lib/Makefile.in
 autoreconf -iv
 
 %build
 %configure CFLAGS="%{optflags}" STRIP=/bin/true --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-chmod +x %{buildroot}%{_libdir}/libtar.so.*
+%make_install
+chmod +x %{buildroot}/%{_libdir}/libtar.so.*
+
+#%%check
+#Commented out %check due to no test existence
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -56,9 +63,12 @@ chmod +x %{buildroot}%{_libdir}/libtar.so.*
 %{_includedir}/*
 %{_mandir}/man3/*
 %{_libdir}/libtar.so
-%{_libdir}/libtar.la
+%exclude %{_libdir}/libtar.la
 
 %changelog
+* Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 1.2.20-6
+- fix CVE-2021-33643 CVE-2021-33644 CVE-2021-33645 CVE-2021-33646
+- fix multiple memory leak related issues
 * Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-5
 - Fix CVE-2013-4420
 * Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4
