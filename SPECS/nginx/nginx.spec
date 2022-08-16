@@ -1,46 +1,51 @@
-%define njs_ver 0.7.5
+%define njs_ver     0.7.5
+%define nginx_user  %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            https://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://nginx.org/download/%{name}-%{version}.tar.gz
+Source0: http://nginx.org/download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=074782dba9cd5f8f493fbb57e20bda6dc9171814d919a47ee9f825d93f12c9f9d496e25d063c983191b55ad6a236bcef252ce16ecc1d253dc8b23433557559b1
-Source1:        nginx.service
-Source2:        https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar.gz
-%define sha512  nginx-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
+
+Source1: https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar.gz
+%define sha512 %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
+
+Source2: %{name}.service
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
 BuildRequires:  systemd-devel
 
+Requires: openssl
+Requires: pcre
+Requires: systemd
+
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+
 %description
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -p1
-pushd ..
-mkdir -p nginx-njs
-tar -C nginx-njs -xf %{SOURCE2}
-popd
+%autosetup -a0 -a1 -p1
 
 %build
 sh ./configure \
-    --prefix=%{_sysconfdir}/nginx \
-    --sbin-path=%{_sbindir}/nginx \
-    --conf-path=/etc/nginx/nginx.conf \
-    --pid-path=/var/run/nginx.pid \
-    --lock-path=/var/run/nginx.lock \
-    --error-log-path=/var/log/nginx/error.log \
-    --http-log-path=/var/log/nginx/access.log \
-    --add-module=../nginx-njs/njs-%{njs_ver}/nginx \
+    --prefix=%{_sysconfdir}/%{name} \
+    --sbin-path=%{_sbindir}/%{name} \
+    --conf-path=/etc/%{name}/%{name}.conf \
+    --pid-path=/var/run/%{name}.pid \
+    --lock-path=/var/run/%{name}.lock \
+    --error-log-path=/var/log/%{name}/error.log \
+    --http-log-path=/var/log/%{name}/access.log \
+    --add-module=njs-%{njs_ver}/%{name} \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -48,26 +53,39 @@ sh ./configure \
     --with-http_auth_request_module \
     --with-http_sub_module \
     --with-http_stub_status_module \
-    --with-http_v2_module
+    --with-http_v2_module \
+    --user=%{nginx_user} \
+    --group=%{nginx_user}
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
-install -vdm755 %{buildroot}%{_var}/opt/nginx/log
-ln -sfv %{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
-install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
+install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
+install -p -d -m 0700 %{buildroot}%{_sharedstatedir}/%{name}
+ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
+install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+%clean
+rm -rf %{buildroot}
+
+%pre
+getent group %{nginx_user} > /dev/null || groupadd -r %{nginx_user}
+
+getent passwd %{nginx_user} > /dev/null || \
+  useradd -r -d %{_sharedstatedir}/nginx -g %{nginx_user} \
+    -s /sbin/nologin -c "Nginx web server" %{nginx_user}
 
 %post
-%systemd_post nginx.service
+%systemd_post %{name}.service
 
 %postun
-%systemd_postun nginx.service
+%systemd_postun %{name}.service
 
 %preun
-%systemd_preun nginx.service
+%systemd_preun %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -79,8 +97,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %config(noreplace) %{_sysconfdir}/%{name}/koi-win
 %config(noreplace) %{_sysconfdir}/%{name}/mime.types
 %config(noreplace) %{_sysconfdir}/%{name}/mime.types.default
-%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf
-%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf.default
 %config(noreplace) %{_sysconfdir}/%{name}/scgi_params
 %config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
@@ -88,11 +106,13 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/nginx.service
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
-%{_unitdir}/nginx.service
-%dir %{_var}/opt/nginx/log
-%{_var}/log/nginx
+%{_unitdir}/%{name}.service
+%dir %{_var}/opt/%{name}/log
+%{_var}/log/%{name}
 
 %changelog
+* Tue Aug 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.22.0-2
+- Fix sevice handling and run in nginx user context
 * Tue Jul 19 2022 Harinadh D <hdommaraju@vmware.com> 1.22.0-1
 - Version update
 - security support is ended for 1.19 and till 1.21
