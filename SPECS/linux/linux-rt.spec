@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.247
-Release:        13%{?kat_build:.%kat}%{?dist}
+Release:        14%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -864,6 +864,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 16 2022 Shivani Agarwal <shivania2@vmware.com> 4.19.247-14
+- .config: Enable MPLS and other routing related options, namely,
+- CGROUP_BPF, XFRM_INTERFACE, NETFILTER_XT_TARGET_NOTRACK
+- NET_ACT_BPF, MPLS_ROUTING, MPLS_IPTUNNEL, LWTUNNEL, LWTUNNEL_BPF, PPP
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-13
 - Fix for CVE-2022-2586 and CVE-2022-2588
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-12
