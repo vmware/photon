@@ -1,0 +1,34 @@
+diff -up libtar-1.2.11/lib/append.c.foo libtar-1.2.11/lib/append.c
+--- libtar-1.2.11/lib/append.c.foo	2003-01-07 02:40:59.000000000 +0100
++++ libtar-1.2.11/lib/append.c	2008-04-03 15:08:07.000000000 +0200
+@@ -13,6 +13,8 @@
+ #include <internal.h>
+ 
+ #include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <sys/param.h>
+diff -up libtar-1.2.11/lib/output.c~ libtar-1.2.11/lib/output.c
+--- libtar-1.2.11/lib/output.c~	2008-04-03 15:11:07.000000000 +0200
++++ libtar-1.2.11/lib/output.c	2008-04-03 15:11:07.000000000 +0200
+@@ -13,6 +13,7 @@
+ #include <internal.h>
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <pwd.h>
+ #include <grp.h>
+ #include <time.h>
+diff -up libtar-1.2.11/lib/wrapper.c~ libtar-1.2.11/lib/wrapper.c
+--- libtar-1.2.11/lib/wrapper.c~	2008-04-03 15:11:28.000000000 +0200
++++ libtar-1.2.11/lib/wrapper.c	2008-04-03 15:11:28.000000000 +0200
+@@ -13,6 +13,7 @@
+ #include <internal.h>
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <sys/param.h>
+ #include <dirent.h>
+ #include <errno.h>

@@ -1,6 +1,8 @@
---- lib/Makefile.in	2013-10-09 16:59:44.000000000 +0000
-+++ lib/Makefile.in.1	2017-04-25 07:08:57.225642841 +0000
-@@ -20,7 +20,7 @@
+diff --git a/lib/Makefile.in b/lib/Makefile.in
+index 60acbe6..e500515 100644
+--- a/lib/Makefile.in
++++ b/lib/Makefile.in
+@@ -20,7 +20,7 @@ SHELL           = @SHELL@
  
  ### Installation programs and flags
  INSTALL		= @INSTALL@
@@ -9,9 +11,11 @@
  INSTALL_DATA	= @INSTALL_DATA@
  LN_S		= @LN_S@
  MKDIR		= @MKDIR@
---- libtar/Makefile.in	2013-10-09 16:59:44.000000000 +0000
-+++ libtar/Makefile.in.1	2017-04-25 07:06:50.598826545 +0000
-@@ -20,7 +20,7 @@
+diff --git a/libtar/Makefile.in b/libtar/Makefile.in
+index 7c6f1bc..80bb8d9 100644
+--- a/libtar/Makefile.in
++++ b/libtar/Makefile.in
+@@ -20,7 +20,7 @@ SHELL           = @SHELL@
  
  ### Installation programs and flags
  INSTALL		= @INSTALL@
