@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.7
-Release:        2%{?dist}
+Version:        13.8
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha512  postgresql=9254f21519c8d4e926f70082503bb5593c91064a3d2a4ea18ac503dfd9aa94751d6f01ce00fca9fec9b2b7af40caf8d0951b661dd8be4d6aa87c1e35b6fa7a41
+%define sha512  postgresql=3b39448b291342a5e9b610d410c222aeb85f8acf95632e73e138ae316133af3dadc795a6e706f6447f543cf10df3c786da4f1afa1d91489b50eb77e2d9ed5d84
 
 # Macros to be used for installation paths.
 %global pgmajorversion 13
@@ -186,6 +186,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/libpgtypes.a
 
 %changelog
+* Tue Aug 16 2022 Julien Rouhaud <jrouhaud@vmware.com> 13.8-1
+- Upgraded to version 13.8.
 * Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 13.7-2
 - add uuid with e2fs and systemd to configuration
 * Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 13.7-1

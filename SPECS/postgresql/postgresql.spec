@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        14.4
-Release:        2%{?dist}
+Version:        14.5
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha512  postgresql=dd2f80248684e331d2ffb1e26cd2a285df1fb18710807a0c31aedabf917912ce9267f8ca26318e5371d916c6fe476f8a17886d82d3ff86a974e6f24c19a6aafb
+%define sha512  postgresql=3051c5ab729f6a55952c6108098b022517398b1de64f7fefbdd6c806c7e2eb0637d00f3c98a6203c5bee654656528c4ff3530db5a69470e7888864c77900178a
 
 # Common libraries needed
 BuildRequires:  diffutils
@@ -178,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+* Tue Aug 16 2022 Julien Rouhaud <jrouhaud@vmware.com> 14.5-1
+- Upgraded to version 14.5.
 * Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 14.4-2
 - add uuid with e2fs and systemd to configuration
 * Fri Jun 17 2022 Michael Paquier <mpaquier@vmware.com> 14.4-1
