@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.321
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -167,6 +167,8 @@ Patch124:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 
 #Fix CVE-2022-2588
 Patch125:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
+# Fix for CVE-2021-4197
+Patch126:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -355,6 +357,7 @@ popd
 %patch123 -p1
 %patch124 -p1
 %patch125 -p1
+%patch126 -p1
 
 #CVE
 
@@ -479,6 +482,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4
+-   Fix for CVE-2021-4197
 *   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3
 -   Fix for CVE-2022-2586 and CVE-2022-2588
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-2

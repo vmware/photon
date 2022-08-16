@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.321
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -171,6 +171,8 @@ Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2021-20322
 Patch124:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
+# Fix for CVE-2021-4197
+Patch125:       0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -349,6 +351,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch120 -p1
 %patch123 -p1
 %patch124 -p1
+%patch125 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -519,6 +522,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4
+-   Fix for CVE-2021-4197
 *   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3
 -   Fix for CVE-2022-2586 and CVE-2022-2588
 *   Tue Jul 05 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-2
