@@ -1,18 +1,19 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha1    gnutls=5de5d25534ee5910ea9ee6aaeeb6af1af4350c1e
+%define sha512  gnutls=0fe801f03676c3bd970387f94578c8be7ba6030904989e7d21dffdc726209bab44c8096fbcb6d51fed2de239537bd00df2338ee9c8d984a1c386826b91062a95
 
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Patch0:         gnutls-3.6.9-default-priority.patch
+Patch1:         CVE-2022-2509.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -48,6 +49,7 @@ developing applications that use gnutls.
 
 %prep
 %autosetup -p1
+autoreconf -fiv
 
 %build
 # check for trust store file presence
@@ -102,6 +104,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Aug 08 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-3
+-   Fix CVE CVE-2022-2509
 *   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-2
 -   Bump version as a part of nettle upgrade
 *   Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-1
