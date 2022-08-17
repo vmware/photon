@@ -220,7 +220,7 @@ function post_upgrade_remove_pkgs() {
 
   for p in $pkgs; do
     if rpm -q --quiet $p; then
-      if ! ${TDNF} -q -y remove $p; then
+      if ! ${TDNF} -q '--disablerepo=*' -y remove $p; then
         rc=$?
         err_rm_pkg_list="$err_rm_pkg_list $p"
         echo -e "Warning: Could not remove deprecated package '$p' post upgrade, error code: $rc."
@@ -241,6 +241,11 @@ function fix_post_upgrade_config() {
   echo "Fixing PAM config post upgrade."
   ${SED} -i -E 's/pam_tally2?.so/pam_faillock.so/' /etc/pam.d/*
   ${SED} -i -E 's/pam_cracklib.so/pam_pwquality.so/' /etc/pam.d/*
+  echo "Fixing unsupported FipsMode config in sshd_config post upgrade."
+  ${SED} -i -E 's/^(\s*FipsMode\s+yes\s*)$/#\1/' /etc/ssh/sshd_config /etc/ssh/ssh_config
+  if ${SYSTEMCTL} status sshd | grep -q 'Active: active (running)'; then
+    ${SYSTEMCTL} restart sshd
+  fi
   echo "Setting $python_link."
   test -e $python_link || ln -s python3 $python_link
 }
