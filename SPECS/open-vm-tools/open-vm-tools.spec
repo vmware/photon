@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -21,6 +21,7 @@ Source3:        vgauthd.service
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+Patch1:     CVE-2022-31676.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -150,6 +151,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+* Wed Aug 17 2022 Shivani Agarwal <shivania2@vmware.com> 11.3.5-3
+- Fix CVE-2022-31676
 * Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-2
 - Remove cloud-init from Requires
 * Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-1
@@ -169,7 +172,7 @@ fi
 - https://github.com/vmware/open-vm-tools/commit/26b9edbeb79d1c67b9ae73a0c97c48999c1fb503
 * Thu Sep 26 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-3
 - Added requires xmlsec1
-* Wed Sep 15 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
+* Sun Sep 15 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
 - Fix memory leak issues in vix.
 * Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
 - Updating version to 10.3.10
