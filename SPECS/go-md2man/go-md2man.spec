@@ -1,12 +1,12 @@
 %define gopath_comp github.com/cpuguy83/go-md2man
 Summary:        Converts markdown into roff (man pages)
 Name:           go-md2man
-Version:        2.0.1
-Release:        4%{?dist}
+Version:        2.0.2
+Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/cpuguy83/go-md2man
 Source0:        https://github.com/cpuguy83/go-md2man/archive/%{name}-%{version}.tar.gz
-%define sha512    go-md2man=293141da791cddd56e9b92d936cbd6105675e8c1ebf6fa95e79a3651ff28d050596b31d48256414e2a8e70d8054ee163885808635b8bb029ec49f5f81678d390
+%define sha512  go-md2man=c81edfdc0b6647ef699cc908a1a7038d98da34df6d48b223b83a0699de91a7e322e70d67645acf1fc848918f4c1ea310160c7ccb75e6f97b53af7103c7aa18b3
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,19 +41,21 @@ install -v -m644 -D -t %{buildroot}%{_docdir}/licenses/%{name} LICENSE.md
 %{_docdir}/licenses/%{name}
 
 %changelog
+* Wed Nov 30 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 2.0.1-4
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 2.0.1-3
 - Bump up version to compile with new go
-*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 2.0.1-2
--   Bump up version to compile with new go
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.1-1
--   Automatic Version Bump
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 2.0.0-4
--   Bump up version to compile with new go
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 2.0.0-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 2.0.0-2
--   Bump up version to compile with new go
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
--   Initial packaging for go-md2man for containerd
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 2.0.1-2
+- Bump up version to compile with new go
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.1-1
+- Automatic Version Bump
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 2.0.0-4
+- Bump up version to compile with new go
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 2.0.0-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 2.0.0-2
+- Bump up version to compile with new go
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
+- Initial packaging for go-md2man for containerd
