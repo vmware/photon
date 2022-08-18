@@ -6,12 +6,12 @@
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.8.3
-Release:        4%{?dist}
+Version:        1.10.0
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/v1.9.3.tar.gz/%{name}-%{version}.tar.gz
-%define sha512  %{name}=2cc2754e9e626d40a2101f17744e8c57bd6d469eacbb4cfee965c2bf485156ae91f4cc99f8e63b5641163e8716c9614b6f9481fb91acb96e62951044bdac1fa8
+%define sha512  %{name}=ddec7ee0139105f417249756133d0384d28cd7f6960183644dfb26d6dfba43a80d461da65040f160a8a7e38785bfdc9f458b2bab2fe8ce82635e8dd0dd42a467
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,26 +58,26 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
-* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-4
+* Thu Nov 03 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.0-1
+- Version upgrade to v1.10.0
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-3
 - Bump up version to compile with new go
-*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-3
--   Bump up version to compile with new go
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.3-2
--   Bump up version to compile with new go
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
--   Automatic Version Bump
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.7.1-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.7.1-2
--   Bump up version to compile with new go
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.1-1
--   Automatic Version Bump
-*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
--   Automatic Version Bump
-*   Sun Sep 22 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
--   Fix compilation issue (do not compile mholt/caddy).
-*   Sun Sep 23 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
--   Fix compilation issue.
--   aarch64 support.
-*   Fri Aug 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-1
--   Initial version of coredns 1.2.0.
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.3-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.7.1-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.7.1-2
+- Bump up version to compile with new go
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.1-1
+- Automatic Version Bump
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+- Automatic Version Bump
+* Sun Sep 22 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
+- Fix compilation issue (do not compile mholt/caddy).
+* Sun Sep 23 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
+- Fix compilation issue.
+- aarch64 support.
+* Fri Aug 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-1
+- Initial version of coredns 1.2.0.
