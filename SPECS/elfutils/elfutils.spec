@@ -3,16 +3,16 @@
 
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
-Version:        0.186
-Release:        2%{?dist}
+Version:        0.187
+Release:        1%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=c9180b27ec62935f18b9431268d176f6023d1bb938731d2af6e7626ae460af6608a70ba68483aa1ec7e6cb0fa0528b661ca8b68bc4f58ea8e18af527c5950c78
+Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=a9b9e32b503b8b50a62d4e4001097ed2721d3475232a6380e6b9853bd1647aec016440c0ca7ceb950daf1144f8db9814ab43cf33cc0ebef7fc91e9e775c9e874
 
 Obsoletes:      libelf
 Obsoletes:      libelf-devel
@@ -125,7 +125,8 @@ mkdir -p %{buildroot}%{_prefix}
 %make_install %{?_smp_mflags}
 
 chmod +x %{buildroot}%{_libdir}/lib*.so*
-{ pushd %{buildroot}
+{
+  pushd %{buildroot}
   rm -f .%{_bindir}/eu-ld \
         .%{_includedir}/%{name}/libasm.h \
         .%{_libdir}/libasm.so \
@@ -181,6 +182,7 @@ rm -rf %{buildroot}
 %{_mandir}/man7/debuginfod-client-config.7.gz
 
 %files devel-static
+%defattr(-,root,root)
 %{_libdir}/libdw.a
 
 %files libelf
@@ -203,6 +205,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.187-1
+- Upgrade to v0.187
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.186-2
 - Bump version as a part of sqlite upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.186-1
