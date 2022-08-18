@@ -5,10 +5,15 @@ Description=Stall Monitor
 Type=simple
 # Type=forking
 EnvironmentFile=/etc/sysconfig/stalld
+ExecStartPre=/usr/bin/throttlectl off
 
-#In case the regex passed to IT or IP includes C escape sequences,
-#use ${IT} or ${IP} instead of $IT or $IP
-ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
+# In case the regex passed to IT or IP includes C escape sequences,
+# use ${IT} or ${IP} instead of $IT or $IP
+ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $CG $FF
+ExecStopPost=/usr/bin/throttlectl on
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=10
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

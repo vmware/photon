@@ -1,7 +1,7 @@
-From ad1e4e0523fee87bb450101d2aa280b7bd1be0aa Mon Sep 17 00:00:00 2001
+From 5646b4b90e3985740278322d693b1da6f6782808 Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Wed, 2 Jun 2021 18:59:31 -0700
-Subject: [PATCH] stalld: Add error handling for thread creation failure
+Subject: [PATCH 2/6] stalld: Add error handling for thread creation failure
 
 stalld creates a separate monitoring thread for every CPU that needs
 to be monitored for starvation (in aggressive mode) or every CPU that
@@ -21,17 +21,20 @@ them).
 
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 [ Srivatsa: Added commit message ]
+[sshedi: port fix to stalld-1.17.1]
+
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  src/stalld.c | 32 ++++++++++++++++++++++++++++++--
  1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/src/stalld.c b/src/stalld.c
-index 6338605..8b6c455 100644
+index 7a93d7c..9c5d9d7 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1394,6 +1394,9 @@ void *cpu_main(void *data)
+@@ -1392,6 +1392,9 @@ void *cpu_main(void *data)
  	int nothing_to_do = 0;
  	int retval;
  
@@ -39,9 +42,9 @@ index 6338605..8b6c455 100644
 +		log_msg("Started monitoring thread for CPU %d\n", cpu->id);
 +
  	while (cpu->thread_running && running) {
- 
  		int old_config_buffer_size;
-@@ -1487,6 +1490,8 @@ skipped:
+ 		int alloc_failed = 0;
+@@ -1483,6 +1486,8 @@ skipped:
  		 */
  		if (!config_aggressive && nothing_to_do == 10) {
  			cpu->thread_running=0;
@@ -50,7 +53,7 @@ index 6338605..8b6c455 100644
  			pthread_exit(NULL);
  		}
  
-@@ -1508,6 +1513,8 @@ static const char *join_thread(pthread_t *thread)
+@@ -1504,6 +1509,8 @@ static const char *join_thread(pthread_t *thread)
  void aggressive_main(struct cpu_info *cpus, int nr_cpus)
  {
  	int i;
@@ -59,7 +62,7 @@ index 6338605..8b6c455 100644
  
  	for (i = 0; i < nr_cpus; i++) {
  		if (!should_monitor(i))
-@@ -1515,7 +1522,17 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1511,7 +1518,17 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
  
  		cpus[i].id = i;
  		cpus[i].thread_running = 1;
@@ -78,7 +81,7 @@ index 6338605..8b6c455 100644
  	}
  
  	for (i = 0; i < nr_cpus; i++) {
-@@ -1536,6 +1553,8 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1532,6 +1549,8 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  	int has_busy_cpu;
  	int retval;
  	int i;
@@ -87,7 +90,7 @@ index 6338605..8b6c455 100644
  
  	buffer = malloc(config_buffer_size);
  	if (!buffer)
-@@ -1628,7 +1647,16 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1622,7 +1641,16 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  			if (check_might_starve_tasks(cpu)) {
  				cpus[i].id = i;
  				cpus[i].thread_running = 1;
@@ -106,5 +109,5 @@ index 6338605..8b6c455 100644
  		}
  
 -- 
-2.28.0
+2.38.1
 

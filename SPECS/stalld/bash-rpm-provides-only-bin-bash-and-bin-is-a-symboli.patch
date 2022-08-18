@@ -1,0 +1,24 @@
+From a33b577e1c64c4a32a1cbcbeac35815e444f17f5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 16 Nov 2022 18:25:10 +0530
+Subject: [PATCH] bash rpm provides only /bin/bash and /bin is a symbolic link
+ to /usr/bin
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ scripts/throttlectl.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/throttlectl.sh b/scripts/throttlectl.sh
+index a01ba14..4737bee 100755
+--- a/scripts/throttlectl.sh
++++ b/scripts/throttlectl.sh
+@@ -1,4 +1,4 @@
+-#!/usr/bin/bash
++#!/bin/bash
+ 
+ # This script is called to either turn off or turn on RT throttling
+ # The 'off' argument causes the current values of the throttling
+-- 
+2.38.1
+

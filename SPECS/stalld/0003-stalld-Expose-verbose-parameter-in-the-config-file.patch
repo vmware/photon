@@ -1,7 +1,7 @@
-From 02f35db65d4472bbbc1ae113e9d7b16309897da5 Mon Sep 17 00:00:00 2001
+From 9383780c100a9f7dcb1b21cd17271d5740e866c0 Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Mon, 28 Jun 2021 19:35:03 -0700
-Subject: [PATCH] stalld: Expose verbose parameter in the config file
+Subject: [PATCH 3/6] stalld: Expose verbose parameter in the config file
 
 Expose the verbose parameter to the stalld config file so that it can
 be used by the stalld service as well.
@@ -20,7 +20,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  4 files changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/redhat/stalld.conf b/redhat/stalld.conf
-index db82c5a..936d73b 100644
+index 40d212f..9820910 100644
 --- a/redhat/stalld.conf
 +++ b/redhat/stalld.conf
 @@ -60,3 +60,9 @@ FG=--foreground
@@ -47,10 +47,10 @@ index e0eb4b7..b1988cc 100644
  CPUSchedulingPolicy=fifo
  CPUSchedulingPriority=10
 diff --git a/src/stalld.c b/src/stalld.c
-index 8b6c455..a353918 100644
+index 9c5d9d7..65d75b0 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -967,14 +967,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
+@@ -955,14 +955,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
  	struct task_info *task;
  	int i;
  
@@ -67,7 +67,7 @@ index 8b6c455..a353918 100644
  	}
  
  	return;
-@@ -1641,7 +1641,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1635,7 +1635,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  			}
  
  			if (config_verbose)
@@ -77,10 +77,10 @@ index 8b6c455..a353918 100644
  
  			if (check_might_starve_tasks(cpu)) {
 diff --git a/src/utils.c b/src/utils.c
-index 5be12c0..b835c3c 100644
+index 82be2c9..e920cb2 100644
 --- a/src/utils.c
 +++ b/src/utils.c
-@@ -796,12 +796,12 @@ static void parse_cpu_list(char *cpulist)
+@@ -856,12 +856,12 @@ static void parse_cpu_list(char *cpulist)
  
  		if (cpu == end_cpu) {
  			if (config_verbose)
@@ -96,5 +96,5 @@ index 5be12c0..b835c3c 100644
  			}
  		}
 -- 
-2.28.0
+2.38.1
 
