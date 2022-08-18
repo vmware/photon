@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
-Version:        5.2.5
-Release:        2%{?dist}
+Version:        5.4.0
+Release:        1%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
-%define sha512  %{name}=7443674247deda2935220fbc4dfc7665e5bb5a260be8ad858c8bd7d7b9f0f868f04ea45e62eb17c0a5e6a2de7c7500ad2d201e2d668c48ca29bd9eea5a73a3ce
+%define sha512  %{name}=29b2cd25bb5b234b329ffe9547692d2c29be393db9d8d4ce70a66dfdaebd54433e79a89d80c57e58cd4559c3c68b9845507d5fedf3eec1c528a81e3d9ddbd811
 
 Requires:       xz-libs = %{version}-%{release}
 
@@ -89,7 +89,7 @@ make %{?_smp_mflags} check
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
 %{_mandir}/man1/*
-%exclude %{_mandir}/de/man1/*
+%exclude %{_mandir}/*/man1/*
 
 %files devel
 %{_includedir}/lzma.h
@@ -105,6 +105,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 22 2022 Oliver Kurth <okurth@vmware.com> 5.4.0-1
+- Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.2.5-2
 - Fix binary path
 * Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2.5-1

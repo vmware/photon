@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -223,6 +223,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 2.06-5
+- bump version as a part of xz upgrade
 * Tue Dec 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-4
 - Fix CVE-2022-2601
 * Thu Jun 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-3

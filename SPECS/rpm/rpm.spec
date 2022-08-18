@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -349,6 +349,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Jan 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-4
+- Bump version as part of xz upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.18.0-3
 - Bump up due to change in elfutils
 * Fri Jan 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.18.0-2

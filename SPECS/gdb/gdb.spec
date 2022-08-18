@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
@@ -145,6 +145,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+* Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 11.2-5
+- bump version as a part of xz upgrade
 * Wed Dec 07 2022 Shivani Agarwal <shivania2@vmware.com> 11.2-4
 - Bump version as a part of python upgrade
 * Fri Dec 02 2022 Srinidhi Rao <srinidhir@vmware.com> 11.2-3

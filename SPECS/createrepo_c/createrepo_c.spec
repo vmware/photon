@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ URL:            https://github.com/rpm-software-management/createrepo_c
 Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=54a2cc7c7cd3f3b9a0c23cd8c136ae1331e7fa7cc995189088e7e6f2276c78b2b84e21c2a2b93f4528b5e9e4018dd6525262c8aaba3bc8a1412a51dfafd101f7
 
+BuildRequires:  bzip2-devel
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -65,9 +66,9 @@ sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %install
 %cmake_install
-ln -sfv %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
-ln -sfv %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
-ln -sfv %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
+ln -sfv createrepo_c %{buildroot}%{_bindir}/createrepo
+ln -sfv mergerepo_c %{buildroot}%{_bindir}/mergerepo
+ln -sfv modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
 rm -rf %{buildroot}
@@ -86,6 +87,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 0.20.1-3
+- bump version as a part of xz upgrade
+- add bzip2-devel to build requires
+- relative symlinks
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-2
 - Bump version as a part of rpm upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-1

@@ -3,7 +3,7 @@
 Summary:    Cross-platform make system
 Name:       cmake
 Version:    3.25.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
 Group:      Development/Tools
@@ -72,6 +72,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 3.25.1-2
+- bump version as a part of xz upgrade
 * Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.25.1-1
 - Upgrade to v3.25.1
 * Wed Sep 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.24.1-1

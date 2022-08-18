@@ -1,7 +1,7 @@
 Summary:        FSArchiver - Filesystem Archiver for Linux
 Name:           fsarchiver
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-2.0
 URL:            http://www.fsarchiver.org
 Group:          Applications/System
@@ -55,6 +55,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
+* Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 0.8.6-2
+- bump version as part of xz upgrade
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.6-1
 - Automatic Version Bump
 * Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.5-2

@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -75,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 1.15.2-2
+- bump version as part of xz upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.2-1
 - Version bump
 * Sat Oct 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.0-1

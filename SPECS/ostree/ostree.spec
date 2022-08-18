@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2022.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -167,6 +167,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 2022.5-3
+- Bump version as a part of xz upgrade
 * Fri Dec 23 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2022.5-2
 - Bump version as a part of mkinitcpio upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-1

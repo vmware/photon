@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -77,7 +77,6 @@ BuildRequires:  python3-jinja2
 BuildRequires:  shadow
 BuildRequires:  util-linux-devel
 BuildRequires:  XML-Parser
-BuildRequires:  xz
 BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
 BuildRequires:  photon-release
@@ -676,6 +675,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Jan 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-5
+- bump version as part of xz upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 252.4-4
 - Bump up due to change in elfutils
 * Tue Jan 03 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 252.4-3
