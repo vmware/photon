@@ -1,12 +1,12 @@
 %define debug_package %{nil}
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.13.0
-Release:        6%{?dist}
+Version:        0.20.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha512  flannel=19f532965b8aaf89e930b01264f73fced7cacb3175d5e086908830f32f9d0298630aea734da6b400105d2dc4e2ef047768331fae3e70bd8a83ee4d64972cd918
+%define sha512  flannel=624a293607d3d4d5e53b41b5fd26a416f8499a763f8cfbe39c79796644a56d5eb3605664592d15eddde519f2dba55da241889be159644bbe40e78ae72ed5a43b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -93,39 +93,41 @@ GOPATH=%{_builddir} make test %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+* Wed Nov 30 2022 Gerrit Photon <photon-checkins@vmware.com> 0.20.0-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.13.0-6
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 0.13.0-5
 - Bump up version to compile with new go
-*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 0.13.0-4
--   Bump up version to compile with new go
-*   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 0.13.0-3
--   Bump up version to compile with new glibc
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 0.13.0-2
--   Bump up version to compile with new go
-*   Tue Feb 09 2021 Prashant S Chauhan<psinghchauha@vmware.com> 0.13.0-1
--   Update to version 0.13.0
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 0.12.0-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 0.12.0-2
--   Bump up version to compile with new go
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.0-1
--   Automatic Version Bump
-*   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
--   Flannel 0.9.1.
-*   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
--   Flannel 0.9.0.
-*   Fri Sep 01 2017 Chang Lee <changlee@vmware.com> 0.8.0-2
--   Fixed %check according to version upgrade
-*   Tue Aug 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-1
--   Flannel 0.8.0 and systemd service file.
-*   Fri May 05 2017 Chang Lee <changlee@vmware.com> 0.7.1-1
--   Updated to version 0.7.1
-*   Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 0.7.0-1
--   Updated to version 0.7.0
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.5-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.5.5-1
--   Upgraded to version 0.5.5
-*   Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.2-1
--   Add flannel package to photon.
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 0.13.0-4
+- Bump up version to compile with new go
+* Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 0.13.0-3
+- Bump up version to compile with new glibc
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 0.13.0-2
+- Bump up version to compile with new go
+* Tue Feb 09 2021 Prashant S Chauhan<psinghchauha@vmware.com> 0.13.0-1
+- Update to version 0.13.0
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 0.12.0-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 0.12.0-2
+- Bump up version to compile with new go
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.0-1
+- Automatic Version Bump
+* Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
+- Flannel 0.9.1.
+* Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
+- Flannel 0.9.0.
+* Fri Sep 01 2017 Chang Lee <changlee@vmware.com> 0.8.0-2
+- Fixed %check according to version upgrade
+* Tue Aug 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-1
+- Flannel 0.8.0 and systemd service file.
+* Fri May 05 2017 Chang Lee <changlee@vmware.com> 0.7.1-1
+- Updated to version 0.7.1
+* Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 0.7.0-1
+- Updated to version 0.7.0
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.5-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.5.5-1
+- Upgraded to version 0.5.5
+* Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.2-1
+- Add flannel package to photon.
