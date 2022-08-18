@@ -1,15 +1,15 @@
 Summary:          NFS client utils
 Name:             nfs-utils
-Version:          2.6.1
-Release:          3%{?dist}
+Version:          2.6.2
+Release:          1%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          https://sourceforge.net/projects/nfs/files/nfs-utils/%{version}/%{name}-%{version}.tar.gz
-%define sha512    %{name}=b0e6e454e644deeda770650818b9a52d4eeef6dc45740b17554d76efece96c1665b7a6f6494852e801997655de1ab72ffbb14e66ee213e8c4350a00dfba8c0f2
+Source0: https://sourceforge.net/projects/nfs/files/nfs-utils/%{version}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=60ef0dc1842fe751c142313d41e3494a0d2bd8db4b859e970456b711688a606938273f3b43fe66ba9725e0b4e7dc7301e7358504b2f1d2da60cbd3b9f171c103
 
 Source1:          nfs-client.service
 Source2:          nfs-client.target
@@ -91,7 +91,6 @@ install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
 install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
 install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
 install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
-find %{buildroot}%{_libdir} -name '*.la' -delete
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable nfs-server.service" > %{buildroot}%{_presetdir}/50-nfs-server.preset
 
@@ -131,8 +130,11 @@ fi
 %{_sbindir}/*
 %{_sharedstatedir}/*
 %{_unitdir}/*
-%{_presetdir}/50-nfs-server.preset
 %{_libdir}/libnfsidmap.so.*
+%{_libexecdir}/nfsrahead
+%{_presetdir}/50-nfs-server.preset
+%{_udevrulesdir}/99-nfs.rules
+%attr(0600,root,root) %config(noreplace) %{_libdir}/modprobe.d/50-nfs.conf
 
 %files devel
 %defattr(-,root,root)
@@ -143,6 +145,8 @@ fi
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.2-1
+- Upgrade to v2.6.2
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-3
 - Bump version as a part of sqlite upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-2
