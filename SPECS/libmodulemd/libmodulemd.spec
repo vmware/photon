@@ -1,15 +1,15 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
-Version:        2.13.0
-Release:        2%{?dist}
+Version:        2.14.0
+Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.xz
-%define sha512  %{name}-%{version}=b2a4fa4120d4dca714ef724a9e8f805d4f8a306a950e670f86f6184467c070ddb93360fff3bb079eb3a442b52024fe796ceb1195800d62bbb1f5cb67f8889e05
+Source0: https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=8c48995aa6a9c6370a07a6887c7237614c502e335173dcba004037ffa41c8fbca8bdf36dfd59ba7d1d125dff6c8722ddc924e14173e3995e147c01a39c6f0ed1
 
 BuildRequires:  meson
 BuildRequires:  clang-devel
@@ -22,7 +22,6 @@ BuildRequires:  gobject-introspection-devel
 BuildRequires:  python3-pygobject
 BuildRequires:  python3-pycodestyle
 BuildRequires:  python3-autopep8
-BuildRequires:  python3-macros
 BuildRequires:  gtk-doc
 BuildRequires:  libyaml-devel
 BuildRequires:  file-devel
@@ -44,7 +43,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files.
 
 %prep
-%autosetup -p1 -n modulemd-%{version}
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
 %meson \
@@ -78,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-1
+- Upgrade to v2.14.0
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.0-2
 - Bump version as a part of clang upgrade
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 2.13.0-1

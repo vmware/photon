@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2021.5
-Release:        5%{?dist}
+Version:        2022.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha512 lib%{name}-%{version}=73d463e9cfaa027ac640051615b312c1800e71b2587e33cbae1e60356cb3c3f5d4afcda8ace680636ebd1d112061f2a8a7c25c46aa24a1b260244451157ffe8a
+%define sha512 lib%{name}-%{version}=39abd076491ebab5cd6e23bff6ce0a346fe8d1e6a372abb42626ef5a8643411070b272637513b37393dc37af9b8eaaa42c19e2f1c16b98d441358c2046653654
 
 Source1:        91-%{name}.preset
 
@@ -50,6 +50,7 @@ Requires: libassuan
 Requires: gpgme
 Requires: python3-gobject-introspection
 Requires: libselinux
+Requires: fuse
 
 %description
 OSTree is a tool for managing bootable, immutable, versioned
@@ -70,7 +71,8 @@ The %{name}-libs provides shared libraries for %{name}.
 %package devel
 Summary:    Development headers for %{name}
 Group:      Development/Libraries
-Requires:   %{name}-libs
+Requires:   %{name}-libs = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package includes the header files for the %{name} library.
@@ -103,7 +105,7 @@ env NOCONFIGURE=1 ./autogen.sh
 %install
 %make_install %{?_smp_mflags}
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-%{name}.preset
-install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
+install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 
 %post
 %systemd_post %{name}-remount.service
@@ -113,6 +115,9 @@ install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
 
 %postun
 %systemd_postun_with_restart %{name}-remount.service
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -162,6 +167,8 @@ install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-1
+- Upgrade to v2022.5
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-5
 - Bump version as a part of libsoup upgrade
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-4

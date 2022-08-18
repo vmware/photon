@@ -1,7 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.14.2
-Release:        3%{?dist}
+Version:        1.14.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=cbed7b6ab551366cc9cf9b5e8ac90cfc7395f6e79a1b44b1dcbf1e3ed6edcc644a339cca4efb4560d139355a893d00b6ac1b2e7116478f5bff3c8bfa5fdeb950
+%define sha512 %{name}-%{version}=9dda5067142b04e46e8ee344a47df21dae89a9c26e91588fc92bcbaee5291348a38ee79a5e807d7a8cba6cb13af78985e8b2e9b23d7f9eabecd0123459c43935
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -77,6 +77,9 @@ pip3 install pygpgme xattr
 %ctest
 %endif
 
+%clean
+rm -rf %{buildroot}/*
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -97,6 +100,8 @@ pip3 install pygpgme xattr
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-1
+- Upgrade to v1.14.5
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-3
 - Fix build with latest cmake
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-2
