@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
-Version:        5.18.0
-Release:        2%{?dist}
+Version:        6.0.0
+Release:        1%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
@@ -9,12 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
-%define sha512  %{name}=47d035a33367edae7357e34c70bdb0fe9219231153fb4c4f418ed1462d137dd77338c12a199eb71cd70e88903e5fc11e1e4fb595c622183786e87346e2f65739
+%define sha512  %{name}=a3ddccdea1129038420d933f1e9ae8f9e75b3ad59fd0fe4c61b7a4dc6145f47b4262f68aefc3216d37cc33ee5643cd6f260ec83cd39d6b61a1cd046c03674ad8
 
 BuildRequires: gettext
 BuildRequires: inih-devel
 BuildRequires: readline-devel
 BuildRequires: userspace-rcu-devel
+BuildRequires: util-linux-devel
 
 Requires: inih
 Requires: python3
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 6.0.0-1
+- update to 6.0.0
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.18.0-2
 - Bump release as a part of readline upgrade
 * Mon Jul 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.0-1
