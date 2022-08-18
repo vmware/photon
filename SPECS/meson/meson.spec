@@ -1,22 +1,20 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        0.60.2
 Release:        1%{?dist}
 License:        ASL 2.0
-URL:            https://mesonbuild.com/
+URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Group:          Applications/System
-Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1    meson=fbde0ea162f4f272c7fe79f4030385e10d356f48
+
+Source0: https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ca4cf88f8ea9fb6220a6427e9a5bf7db716085917932c433f05362bfbf34ffb7ebc3350fe31f90f8e0c2f7326f1fff0628113480ca345b0ca25015b828487a0b
+
 BuildArch:      noarch
 
 BuildRequires:  gcc
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
@@ -43,19 +41,20 @@ the build system to actually start compiling code.
 %install
 %py3_install
 
-install -Dpm0644 data/macros.%{name} %{buildroot}%{_libdir}/rpm/macros.d/macros.%{name}
+install -Dpm0644 data/macros.%{name} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %check
 export MESON_PRINT_TEST_OUTPUT=1
 python3 ./run_tests.py
 
 %files
+%defattr(-,root,root)
 %license COPYING
 %{_bindir}/%{name}
 %{python3_sitelib}/mesonbuild/*
 %{python3_sitelib}/%{name}-*.egg-info/
 %{_mandir}/man1/%{name}.1*
-%{_libdir}/rpm/macros.d/macros.%{name}
+%{_rpmmacrodir}/macros.%{name}
 %dir %{_datadir}/polkit-1
 %dir %{_datadir}/polkit-1/actions
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy

@@ -1,9 +1,8 @@
 %global major_version 3
-%define rpm_macros_dir %{_libdir}/rpm/macros.d
 
-Summary:    Cmake
+Summary:    Cross-platform make system
 Name:       cmake
-Version:    3.23.2
+Version:    3.24.1
 Release:    1%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
@@ -11,33 +10,27 @@ Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=0925adf973d642fd76d4089b61b3882babb0a85050c4c57d5f5f3bd6b17564a9feb0beed236cd636e25f69072fa30b67ea3f80932380b6b6576f2dd78b8e6931
+Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=67bfafcf9ceba617d7ebbb0ac88b689a2d90ab51fea4a83bd073ee082fb55de8962ce7fb283f3db5f455d286f2199843ffa595a1de207d4fa3e4472d951eb289
 
-Source1:    macros.cmake
+Source1: macros.cmake
 
-BuildRequires:  ncurses-devel
-BuildRequires:  xz
-BuildRequires:  xz-devel
-BuildRequires:  curl
-BuildRequires:  curl-devel
-BuildRequires:  expat-libs
-BuildRequires:  expat-devel
-BuildRequires:  zlib
-BuildRequires:  zlib-devel
-BuildRequires:  libarchive
-BuildRequires:  libarchive-devel
-BuildRequires:  bzip2
-BuildRequires:  bzip2-devel
-BuildRequires:  libgcrypt-devel
-BuildRequires:  (toybox or coreutils)
+BuildRequires: ncurses-devel
+BuildRequires: xz-devel
+BuildRequires: curl-devel
+BuildRequires: expat-devel
+BuildRequires: zlib-devel
+BuildRequires: libarchive-devel
+BuildRequires: bzip2-devel
+BuildRequires: libgcrypt-devel
+BuildRequires: (toybox or coreutils)
 
-Requires:       libgcrypt
-Requires:       ncurses
-Requires:       expat
-Requires:       zlib
-Requires:       libarchive
-Requires:       bzip2
+Requires: libgcrypt
+Requires: ncurses
+Requires: expat
+Requires: zlib
+Requires: libarchive
+Requires: bzip2
 
 %description
 CMake is an extensible, open-source system that manages the build process in an
@@ -59,9 +52,9 @@ operating system and in a compiler-independent manner.
 %install
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
-install -Dpm0644 %{SOURCE1} %{buildroot}%{rpm_macros_dir}/macros.%{name}
-sed -i -e "s|@@CMAKE_VERSION@@|%{version}|" -e "s|@@CMAKE_MAJOR_VERSION@@|%{major_version}|" %{buildroot}%{rpm_macros_dir}/macros.%{name}
-touch -r %{SOURCE1} %{buildroot}%{rpm_macros_dir}/macros.%{name}
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+sed -i -e "s|@@CMAKE_VERSION@@|%{version}|" -e "s|@@CMAKE_MAJOR_VERSION@@|%{major_version}|" %{buildroot}%{_rpmmacrodir}/macros.%{name}
+touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %if 0%{?with_check}
 %check
@@ -77,9 +70,11 @@ make %{?_smp_mflags} test
 %{_bindir}/*
 %{_usr}/doc/%{name}-*/*
 %{_datadir}/aclocal/*
-%{_libdir}/rpm/macros.d/macros.cmake
+%{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Wed Sep 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.24.1-1
+- Upgrade to v3.24.1
 * Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.23.2-1
 - Upgrade to v3.23.2
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.18.3-4

@@ -1,4 +1,4 @@
-%global security_hardening  nopie
+%global security_hardening nopie
 %define debug_package       %{nil}
 %define __os_install_post   %{nil}
 

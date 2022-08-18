@@ -6,11 +6,10 @@ License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
-Group:          Applications/System
 Distribution:   Photon
 
-Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512  %{name}=1e4b82cbbfbf7ed10856084b35f35cc9d1da2c78e9adb1e32407744e215b1797fd84b2a0f90493d16175267889aac57f45a424864eda5b34107367066a987460
+Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
+%define sha512 %{name}=1e4b82cbbfbf7ed10856084b35f35cc9d1da2c78e9adb1e32407744e215b1797fd84b2a0f90493d16175267889aac57f45a424864eda5b34107367066a987460
 
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
@@ -114,6 +113,7 @@ install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 
 %files
+%defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/%{name}/
 %{_libdir}/*.so.1*
@@ -133,6 +133,7 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 %{_mandir}/man8/%{name}*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -140,10 +141,12 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %files host
+%defattr(-,root,root)
 %{_bindir}/rpm-ostree-host/mk-ostree-host.sh
 %{_bindir}/rpm-ostree-host/function.inc
 
 %files repo
+%defattr(-,root,root)
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
