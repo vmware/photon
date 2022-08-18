@@ -1,6 +1,6 @@
 Summary:        Bluetooth utilities
 Name:           bluez
-Version:        5.64
+Version:        5.65
 Release:        1%{?dist}
 License:        GPLv2+
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.bluez.org
 Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha512    %{name}=f11f9974b29c5c6fce3890d7e42425c1cb02e42c1b8f49c5cc4b249234e67b64317d0e5e82721e2fbf1b53269c8569a9c869d59ce42b5e927f6622f0753e53cd
+%define sha512    %{name}=c20c09a1a75053c77d73b3ce15ac7fd321eb6df5ca1646d57c6848b87c0c9957908bc17dd928da4ef2aacfc8667877cbc7511c1ba43db839bfa9bf1fb8269907
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -84,6 +84,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Fri Sep 16 2022 Nitesh Kumar <kunitesh@vmware.com> 5.65-1
+- Version upgrade to v5.65
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.64-1
 - Automatic Version Bump
 * Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 5.63-1
