@@ -14,6 +14,7 @@ Options:
 -n: Output file name. Will be default if not specified.
 -o: Output directory. Will be default if not specified.
 -R: Disable replace flag (replace flag is on by default)
+-d: Use file contents as description field for livepatch module.
 --export-debuginfo: Saves debug files after module is built.
 -h/--help: Prints help message and exits
 
@@ -39,9 +40,14 @@ Build module for Photon 3.0 aws flavor, with a set name and a set output directo
     auto_livepatch.sh -k 4.19.245-5.ph3-aws -p example.patch -n klp_module.ko -o livepatch_dir
 
 
+Build module with description field
+
+    auto_livepatch.sh -p example_patch -d description.txt
+
+
 Photon 4.0 rt flavor - All options set
 
-    auto_livepatch.sh -p example_patches/example.patch -k 5.10.118-rt67-3.ph4-rt -o test_dir -n test -R --export-debuginfo
+    auto_livepatch.sh -p example_patches/example.patch -k 5.10.118-rt67-3.ph4-rt -o test_dir -n test -d description.txt -R --export-debuginfo
 
 ****** gen_livepatch.sh ******
 
@@ -56,6 +62,7 @@ Options:
 -n: Output file name. Will be default if not specified.
 -o: Output directory. Will be default if not specified.
 -R: Disable replace flag (replace flag is on by default)
+-d: Use file contents as description field for livepatch module.
 --export-debuginfo: Saves debug files after module is built.
 -h/--help: Prints help message and exits
 
@@ -76,9 +83,14 @@ Multiple patches.
     gen_livepatch.sh -p example1.patch example2.patch ... exampleN.patch
 
 
+Build module with description field
+
+    auto_livepatch.sh -p example_patch -d description.txt
+
+
 Native module - All options set.
 
-    gen_livepatch.sh -p example_patches/example.patch -o test_dir -n test -R --export-debuginfo
+    gen_livepatch.sh -p example_patches/example.patch -o test_dir -n test -d description.txt -R --export-debuginfo
 
 
 Specify kernel version (will fail if Photon versions don't match)
