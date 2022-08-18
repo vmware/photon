@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
-Version:        0.16.0
-Release:        7%{?dist}
+Version:        0.20.1
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
 Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=78105c36bc75b5881ebafbec38a46063d46b9a8d7e26cd797bfd90af85534f1ef187d366b597b65798257e8236367507cec6487726b287d8d570a054fb31ba34
+%define sha512  %{name}=54a2cc7c7cd3f3b9a0c23cd8c136ae1331e7fa7cc995189088e7e6f2276c78b2b84e21c2a2b93f4528b5e9e4018dd6525262c8aaba3bc8a1412a51dfafd101f7
 
 BuildRequires:  cmake
 BuildRequires:  curl-devel
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-1
+- Upgrade to v0.20.1
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-7
 - Bump version as a part of sqlite upgrade
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-6

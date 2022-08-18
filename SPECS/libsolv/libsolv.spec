@@ -1,6 +1,6 @@
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.7.20
+Version:        0.7.22
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
@@ -8,8 +8,8 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=be810a78543509c60fe9be9310cc84b6c75e671b77929a1f914f51d4b3b2364e68398794d4648da46691cde7e5aab3cf57d18969c31f1003692080dc1982e955
+Source0: https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=be375e9cd60728683d08587abd5405eb9b8522dff092c76eabec8d5f1608225335639b2b247429619df1b5c493d1edbd5ad4f14755cb6e2eb120f0ba162e3bb5
 
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
@@ -76,6 +76,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-1
+- Upgrade to v0.7.22
 * Wed Jul 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.20-1
 - Upgrade to v0.7.20
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-4

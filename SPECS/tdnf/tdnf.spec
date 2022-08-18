@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -229,6 +229,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.2-2
+- Bump version as a part of libsolv upgrade
 * Tue Sep 13 2022 Oliver Kurth <okurth@vmware.com> 3.3.2-1
 - update to 3.3.2 for the --alldeps option
 * Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-4
