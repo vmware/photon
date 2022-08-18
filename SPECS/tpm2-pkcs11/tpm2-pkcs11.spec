@@ -1,17 +1,15 @@
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
-Version:        1.6.0
-Release:        4%{?dist}
+Version:        1.8.0
+Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/tpm2-software/tpm2-pkcs11/releases/download/1.6.0/%{name}-%{version}.tar.gz
-%define sha512  tpm2=418fc74db897c5ca2e44d91e9dcb926bbd8009d66f4a31ca72d1fb6f76ee21c36b033750b15921098828ce605ecea1e45e084236db675fcdc56c391dd29f2999
-
-Patch0:         0001-openssl-3.0.0-compatibility.patch
+Source0: https://github.com/tpm2-software/tpm2-pkcs11/releases/download/1.6.0/%{name}-%{version}.tar.gz
+%define sha512 tpm2=006943b3853dc80e44d2322ea0278d6a9f2139c3b3e2a2c5f33436d479d698c5b9d685fb1166d22562bcf3d52edb1075efe7592c27a8c3a0cd05356cab3c9874
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -30,6 +28,11 @@ BuildRequires:  python3-PyYAML
 BuildRequires:  python3-pyasn1-modules
 BuildRequires:  cmocka-devel
 BuildRequires:  dbus
+BuildRequires:  tpm2-pytss
+
+%if 0%{?with_check}
+BuildRequires: python3-pip
+%endif
 
 Requires:   openssl
 Requires:   tpm2-tools
@@ -37,6 +40,7 @@ Requires:   tpm2-tss
 Requires:   tpm2-abrmd
 Requires:   libyaml
 Requires:   sqlite-libs
+Requires:   tpm2-pytss
 
 %description
 OSS implementation of the TCG TPM2 PKCSv11 Software Stack
@@ -58,7 +62,10 @@ Tools for TCG TPM2 PKCSv11 Software Stack
 
 %build
 sh ./bootstrap
-%configure --enable-unit
+
+%configure \
+    --enable-unit
+
 %make_build PACKAGE_VERSION=%{version}
 
 cd tools
@@ -67,8 +74,7 @@ cd tools
 %install
 %make_install %{?_smp_mflags}
 
-rm %{buildroot}%{_libdir}/pkgconfig/tpm2-pkcs11.pc \
-   %{buildroot}%{_libdir}/libtpm2_pkcs11.la
+rm %{buildroot}%{_libdir}/pkgconfig/tpm2-pkcs11.pc
 
 cd tools
 %py3_install
@@ -95,6 +101,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com>  1.8.0-1
+- Upgrade to v1.8.0
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-4
 - Bump version as a part of sqlite upgrade
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-3

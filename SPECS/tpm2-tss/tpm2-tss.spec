@@ -1,15 +1,15 @@
 Summary:    OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:       tpm2-tss
 Version:    3.2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD 2-Clause
 URL:        https://github.com/tpm2-software/tpm2-tss
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:      https://github.com/tpm2-software/tpm2-tss/releases/download/3.2.0/%{name}-%{version}.tar.gz
-%define sha512    %{name}=cabb411f074dfa94919ba914849aac77a0ac2f50622e28a1406cf575369148774748e0e2b7a7c566ec83561a96d4b883bac5a3b1763f4cf48668a0c5d68c0a23
+Source0: https://github.com/tpm2-software/tpm2-tss/releases/download/3.2.0/%{name}-%{version}.tar.gz
+%define sha512 %{name}=cabb411f074dfa94919ba914849aac77a0ac2f50622e28a1406cf575369148774748e0e2b7a7c566ec83561a96d4b883bac5a3b1763f4cf48668a0c5d68c0a23
 
 BuildRequires:  openssl-devel
 BuildRequires:  shadow
@@ -61,20 +61,19 @@ fi
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/udev/rules.d/tpm-udev.rules
-%{_libdir}/*.so.0.0.0
-%{_libdir}/*.so.1.0.0
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/tss2/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
-%{_libdir}/*.so.0
-%{_libdir}/*.so.1
 %{_mandir}/man3
 %{_mandir}/man7
 
 %changelog
+* Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-3
+- Fix library files packaging
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-2
 - Remove .la files
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
