@@ -1,6 +1,6 @@
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
-Version:        40.0
+Version:        42.0
 Release:        1%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  rdma=d1e377f1db30deb44188b3d800973969d69b9b5a5d10f4ad4ac3398e9f19752a78f56d535266040b4f82185856b88e370eec2e4b877f896f25c95ffc5bea72b4
+%define sha512  rdma=9e497d3a23bcd72828a717b59016fe25c88b4ec389e166936410c53dac0c6d6d2f45a76eaec18383ab3ca1a11d1b978b19247a3b7cfb121047d3891288a8c38e
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -519,6 +519,8 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 42.0-1
+- Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 40.0-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 31.0-1
