@@ -5,12 +5,12 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-%{version}.tar.gz
-%define sha1 Module-Install=6c77b2ec0cd84e07d7c7ae03d1cfa5c21d758f81
+%define sha512  Module-Install=68a255402c98955cfcb5a8a99555fe511b89d5fccf96ee1c498cab347c8945f3abe53485ea936f7419420d9c7beb52c861516f4cfd299812cebf80eab50fa5ba
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -26,14 +26,14 @@ manner with ExtUtils::MakeMaker, and will run on any Perl installation
 version 5.005 or newer.
 
 %prep
-%setup -q -n Module-Install-%{version}
+%autosetup -n Module-Install-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name .packlist -exec rm -f {} \;
 rm -rf %{buildroot}/blib/lib/auto/share/dist/Module-Install/dist_file.txt
 %{_fixperms} %{buildroot}/*
@@ -49,6 +49,8 @@ make %{?_smp_mflags} test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.19-3
+-   Perl version upgrade to 5.36.0
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.19-2
 -   Rebuilding for perl 5.30.1
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.19-1
@@ -63,4 +65,3 @@ make %{?_smp_mflags} test AUTOMATED_TESTING=1
 -   Upgrade version to 1.16
 *   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
 -   Initial version.
-

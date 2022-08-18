@@ -2,12 +2,12 @@
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
 Version:        1.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-%{version}.tar.gz
-%define sha1 YAML=c26817f95201c98bbd07f497e7ccc0ad9e0cc67d
+%define sha512 YAML=f73f2d9f3cd96edeb05ec098c859755dd6b80bf1a00049f8de2889ebbf4f41df9fcc1540116afa8648e965a0b780d993f256af2c5ffc03a9f1ba7df1f0cc8941
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -28,14 +28,14 @@ For information on the YAML syntax, please refer to the YAML
 specification.
 
 %prep
-%setup -q -n YAML-%{version}
+%autosetup -n YAML-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make  %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
@@ -83,6 +83,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.30-2
+-   Perl version upgrade to 5.36.0
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.30-1
 -   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.26-1

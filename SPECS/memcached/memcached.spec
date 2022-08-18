@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 License:        BSD
 Group:          Applications/System
@@ -80,5 +80,7 @@ useradd -r -g %{name} -d /run/%{name} -s /sbin/nologin -c "Memcached daemon" %{n
 %{_includedir}/%{name}/*
 
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.6.15-2
+- Rebuild for perl version upgrade to 5.36.0
 * Tue Jun 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.15-1
 - Initial packaging for Photon OS.

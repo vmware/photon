@@ -5,12 +5,12 @@
 Summary:       "Common sense" Perl defaults
 Name:          perl-common-sense
 Version:       3.75
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPL+ or Artistic
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/common-sense
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
-%define sha1 common-sense=4657dab4ffaae0bdafb9f4ec71f9b73e0c746da0
+%define sha512 common-sense=cb6034d9ff721a4122e0215db8ad5279ec4b189c3364593d427d70a1e84a1583a0e1447e276aa9a4fcaeb2f9d47a465a5bc4c0f842c803d3ddf91755311f4af4
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildRequires: perl
@@ -37,10 +37,7 @@ It's supposed to be mostly the same, with much lower memory usage, as:
 	no warnings qw(exec newline unopened);
 
 %prep
-%setup -q -n common-sense-%{version}
-
-# Specify POD encoding
-%patch1
+%autosetup -n common-sense-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
@@ -48,7 +45,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make pure_install DESTDIR=%{buildroot}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name .packlist -exec rm -f {} \;
 %{_fixperms} %{buildroot}
 
@@ -56,7 +53,7 @@ find %{buildroot} -type f -name .packlist -exec rm -f {} \;
 pod2man sense.pod > %{buildroot}%{_mandir}/man3/common::sense.3pm
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}
@@ -68,14 +65,15 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.75-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.74-3
--   Consuming perl version upgrade of 5.28.0
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.74-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.74-1
--   Upgraded to version 3.74
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 3.73-1
--   Initial version.
-
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.75-2
+- Perl version upgrade to 5.36.0
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.75-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.74-3
+- Consuming perl version upgrade of 5.28.0
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.74-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.74-1
+- Upgraded to version 3.74
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 3.73-1
+- Initial version.

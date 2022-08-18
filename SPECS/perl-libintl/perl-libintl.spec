@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:       Internationalization library for Perl, compatible with gettext
 Name:          perl-libintl
-Version:       1.31
-Release:       1%{?dist}
+Version:       1.32
+Release:       2%{?dist}
 License:       LGPLv2+
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/libintl-perl/
 Source:        https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
-%define sha1 libintl-perl=de7b5c21bd95189769c113d34f5b1a1a72c3a71e
+%define sha512 libintl-perl=fca6c8863dfd36c7604bc80a401e825eb707bc75016521c09006c34c170a41b009d30ec93d7e2a7f61caa1dbdf0333511c3d515d4fdc0fea32242eca68a7e35d
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Requires:      perl
@@ -19,9 +19,8 @@ The package libintl-perl is an internationalization library for Perl that
 aims to be compatible with the Uniforum message translations system as
 implemented for example in GNU gettext.
 
-
 %prep
-%setup -q -n libintl-perl-%{version}
+%autosetup -n libintl-perl-%{version}
 find -type f -exec chmod -x {} \;
 find lib/Locale gettext_xs \( -name '*.pm' -o -name '*.pod' \) \
     -exec sed -i -e '/^#! \/bin\/false/d' {} \;
@@ -31,13 +30,13 @@ perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f \( -name .packlist -o \
 			-name '*.bs' -size 0 \) -exec rm -f {} ';'
 chmod -R u+w %{buildroot}/*
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %files
 %{perl_vendorlib}/Locale/
@@ -45,6 +44,10 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.32-2
+-   Rebuild for perl version upgrade to 5.36.0
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
+-   Automatic Version Bump
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
 -   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.29-1
@@ -57,4 +60,3 @@ make test
 -   Upgraded to version 1.24
 *   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.23-1
 -   Initial version.
-

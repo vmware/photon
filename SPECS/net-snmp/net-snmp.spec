@@ -129,7 +129,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
-* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.3-1
+* Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.3-1
 - Automatic Version Bump
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9-4
 - Fix binary path

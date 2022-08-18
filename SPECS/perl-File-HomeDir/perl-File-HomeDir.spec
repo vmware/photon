@@ -1,12 +1,12 @@
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
-Version:        1.004
-Release:        2%{?dist}
+Version:        1.006
+Release:        1%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
 Source0:        https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-%{version}.tar.gz
-%define sha1 File-HomeDir=7d2ceddfd2f331cc1ac0dc160b0d4a91302ee418
+%define sha512  File-HomeDir=1ea90d68ed059ef5e890f6afb1280673dd5a597956f282c4ae8b4471c1751aa3cb2fcbe9caa6b2976937d11fd7233aa85a2dea611f87c79e0ddd1a501ceb890d
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -21,18 +21,18 @@ Requires:       perl-File-Which
 File::HomeDir is a module for locating the directories that are "owned" by a user (typicaly your user) and to solve the various issues that arise trying to find them consistently across a wide variety of platforms.
 
 %prep
-%setup -q -n File-HomeDir-%{version}
+%autosetup -n File-HomeDir-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %files
 %{perl_vendorlib}/File/HomeDir.pm
@@ -58,13 +58,15 @@ make test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
-*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.004-2
--   Rebuilding for perl 5.30.1
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.004-1
--   Update to version 1.004
-*   Tue Aug 08 2017 Chang Lee <changlee@vmware.com> 1.00-3
--   Add perl-File-Which for make check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
--   GA - Bump release of all rpms
-*   Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
--   Initial version.
+* Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.006-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.004-2
+- Rebuilding for perl 5.30.1
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.004-1
+- Update to version 1.004
+* Tue Aug 08 2017 Chang Lee <changlee@vmware.com> 1.00-3
+- Add perl-File-Which for make check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
+- GA - Bump release of all rpms
+* Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
+- Initial version.

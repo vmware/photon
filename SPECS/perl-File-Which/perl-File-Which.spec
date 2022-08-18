@@ -1,12 +1,12 @@
 Summary:        File-Which
 Name:           perl-File-Which
-Version:        1.23
+Version:        1.27
 Release:        1%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
-%define sha1 File-Which=3a1b54e0a4e470e62958749cffcf87bad027bfb4
+%define sha512  File-Which=8a6164c4af915e93924b1d62864e492b1c5067856e505c50b9a5cce0600d73bdcda5f7e35a9f37134d9e89949b45bbd0a5426cb56121604aea1a3cfe48d55e5c
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -32,31 +32,32 @@ File::Which finds the full or relative paths to executable programs on
     does not provide it, install App::pwhich which provides a command line
     interface to this API.
 %prep
-%setup -q -n File-Which-%{version}
+%autosetup -n File-Which-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %files
 %{perl_vendorlib}/*
 %{perl_vendorlib}/File/Which.pm
 %{_mandir}/man3/File::Which.3.gz
 
-
 %changelog
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
--   Update to version 1.22
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
--   GA - Bump release of all rpms
-*   Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
--   Initial version.
+*  Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
+-  Automatic Version Bump
+*  Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
+-  Automatic Version Bump
+*  Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
+-  Update to version 1.22
+*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
+-  GA - Bump release of all rpms
+*  Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
+-  Initial version.

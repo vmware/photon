@@ -6,12 +6,12 @@
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
 Version:        0.4231
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
 Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-%{version}.tar.gz
-%define sha1 Module-Build=7ab592964c75c59603f2ea0009c785b8f16a61e8
+%define sha512 Module-Build=ee1dc18a7df3fe67e7f954d5e1e071aa0a6f5bce6783b768bceb01f071e64ac8be63f410c932c7c16764e5d4f52fc664ce11a12f26f6afc75a26f79883efad70
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -23,7 +23,7 @@ Module::Build is a system for building, testing, and installing Perl
 modules. It is meant to be an alternative to ExtUtils::MakeMaker.
 
 %prep
-%setup -q -n Module-Build-%{version}
+%autosetup -n Module-Build-%{version}
 
 %build
 perl Build.PL installdirs=vendor
@@ -45,6 +45,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.4231-2
+-   Perl upgrade to 5.36.0
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4231-1
 -   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.4224-1
@@ -57,4 +59,3 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 -   Upgraded to version 0.4216
 *   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.4214-1
 -   Initial version.
-

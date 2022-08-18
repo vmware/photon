@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -564,6 +564,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/%{name}/plpython3.so
 
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 14.5-6
+- Perl version upgrade to 5.36.0
 * Fri Dec 02 2022 Srinidhi Rao <srinidhir@vmware.com> 14.5-5
 - Bump version as a part of systemtap upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 14.5-4

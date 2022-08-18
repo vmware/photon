@@ -1,7 +1,7 @@
 Summary:        The package automatically configure source code
 Name:           autoconf
 Version:        2.71
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.gnu.org/software/autoconf
 Group:          System Environment/Base
@@ -43,6 +43,8 @@ make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 %{_datarootdir}/autoconf/*
 
 %changelog
+* Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 2.71-2
+- Rebuild with perl 5.36.0
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.71-1
 - Automatic Version Bump
 * Sun Nov 15 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-9

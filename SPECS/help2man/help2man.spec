@@ -1,7 +1,7 @@
 Name:       help2man
 Summary:    Create simple man pages from --help output
 Version:    1.48.5
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        https://www.gnu.org/software/help2man
 Group:      System Environment/Base
@@ -47,5 +47,7 @@ make install_l10n DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.48.5-2
+- Rebuild for perl version upgrade to 5.36.0
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.48.5-1
 - Intial version. Needed for rpm-4.17.0

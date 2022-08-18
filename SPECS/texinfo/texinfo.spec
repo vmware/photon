@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        6.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
@@ -54,6 +54,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 6.8-2
+-   Rebuild for perl version upgrade to 5.36.0
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.8-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Dweep Advani <dadvani@vmware.com> 6.5-3

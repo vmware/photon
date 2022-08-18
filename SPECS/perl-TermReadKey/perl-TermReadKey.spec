@@ -1,6 +1,6 @@
 Name:          perl-TermReadKey
 Version:       2.38
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       TermReadKey Perl module
 License:       GPL+ or Artistic
 Group:         Development/Perl
@@ -36,5 +36,7 @@ perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.38-2
+- Perl version upgrade to 5.36.0
 * Tue May 24 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.38-1
 - perl-TermReadKey initial build

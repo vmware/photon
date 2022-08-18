@@ -1,14 +1,14 @@
 Summary:        Crypt::SSLeay - OpenSSL support for LWP
 Name:           perl-Crypt-SSLeay
 Version:        0.72
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://search.cpan.org/dist/Crypt-SSLeay/
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://search.cpan.org/CPAN/authors/id/N/NA/NANIS/Crypt-SSLeay-%{version}.tar.gz
-%define sha1    Crypt-SSLeay=1b39920947c33a88b19a9c8e61ccb135b56091f8
+%define sha512  Crypt-SSLeay=af7a2878df94e116e9aad9a0f028f2e4f89074aaf31672915162f86e55211632d65c1cb00f3ebd25644d77adf8eecdd244dba6a004d93ab90289ab34fe4caaf4
 
 Requires:       perl
 Requires:       openssl
@@ -50,19 +50,21 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-7
--   Bump up release for openssl
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-6
--   openssl 1.1.1
-*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.72-5
--   Rebuilding for perl 5.30.1
-*   Tue Nov 20 2018 Dweep Advani <dadvani@vmware.com> 0.72-4
--   Reverting to 0.72 as 0.73_06 is still a DEV version
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.73_06-1
--   Update version to 0.73_06
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.72-3
--   Remove BuildArch
-*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.72-2
--   Fix arch
-*   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.72-1
--   Initial version.
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.72-8
+- Perl version upgrade to 5.36.0
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-7
+- Bump up release for openssl
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-6
+- openssl 1.1.1
+* Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.72-5
+- Rebuilding for perl 5.30.1
+* Tue Nov 20 2018 Dweep Advani <dadvani@vmware.com> 0.72-4
+- Reverting to 0.72 as 0.73_06 is still a DEV version
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.73_06-1
+- Update version to 0.73_06
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.72-3
+- Remove BuildArch
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.72-2
+- Fix arch
+* Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.72-1
+- Initial version.

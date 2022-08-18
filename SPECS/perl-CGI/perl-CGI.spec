@@ -2,13 +2,13 @@
 
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
-Version:        4.50
+Version:        4.54
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
 URL:            http://search.cpan.org/dist/CGI
-%define sha1 CGI=a048f3489267384d9b015b6d112c7f15509e98c7
+%define sha512  CGI=be7ecdd9eab81ad95d527aac2f10ef7a15322675fe002558c6ab4951f496a8964025b7d0426241fb3f61aba103964a40f99acc05a39c84a2434f70d90ac47be6
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -38,7 +38,7 @@ CGI.pm performs very well in in a vanilla CGI.pm environment and also comes
 with built-in support for mod_perl and mod_perl2 as well as FastCGI.
 
 %prep
-%setup -q -n CGI-%{version}
+%autosetup -n CGI-%{version}
 iconv -f iso8859-1 -t utf-8 < Changes > Changes.1
 mv Changes.1 Changes
 sed -i 's?usr/bin perl?usr/bin/perl?' t/init.t
@@ -49,7 +49,7 @@ perl Makefile.PL INSTALLDIRS=vendor
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name .packlist -delete
 %{_fixperms} %{buildroot}/*
 
@@ -69,6 +69,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
+*   Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 4.54-1
+-   Automatic Version Bump
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 4.50-1
 -   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.40-1

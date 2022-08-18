@@ -1,12 +1,12 @@
 Summary:        Monitoring plugins are used to monitor status of hosts and services on the network
 Name:           monitoring-plugins
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-3.0
 Group:          Development/Tools
 URL:            https://github.com/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}
-%define sha1 monitoring-plugins=dbc4c6601c3afe246a13da836d541a315950dde4
+%define sha512 monitoring-plugins=6cf51c86d72e49b6ff5e7de65ecf20fff546870ee24469c37a08bfc2f5461ebcfb69af2d84ff7e15d5590ae107ebba3ee2d32c5bab9895033bba3f1689209f0c
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  autoconf
@@ -25,7 +25,7 @@ current status of hosts and services on your network. Each plugin is a
 stand alone command line tool that provides a specific type to check.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 bash tools/setup
 %configure
 
@@ -33,7 +33,7 @@ bash tools/setup
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
@@ -44,7 +44,8 @@ rm -rf %{buildroot}
 %{_prefix}/share/locale/fr
 %{_prefix}/share/locale/de
 
-
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.3.1-2
+- Rebuild for perl version upgrade to 5.36.0
 * Tue May 11 2021 Sharan Turlapati <sturlapati@vmware.com> 2.3.1-1
 - Initial version of monitoring-plugins for Photon

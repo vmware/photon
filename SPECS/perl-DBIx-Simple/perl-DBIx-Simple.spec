@@ -2,12 +2,12 @@
 Summary:        Easy-to-use OO interface to DBI
 Name:           perl-DBIx-Simple
 Version:        1.37
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain
 Group:          Development/Libraries
 
 Source0:        https://cpan.metacpan.org/authors/id/J/JU/JUERD/DBIx-Simple-%{version}.tar.gz
-%define sha1 DBIx-Simple=7ca4c4ed5c1b6a8f32734e7d5692750b4e01aa17
+%define sha512 DBIx-Simple=f79b26bf52db33629950bc95f6c17dd13a2af135deeaf6ff5b0570ad852911fd0d27196636e605a93e9b3d740699110f2ece7abc24fcbbfd08a2f3ddce5d65b0
 
 URL:            http://search.cpan.org/dist/DBIx-Simple/
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.37-4
+- Perl version upgrade to 5.36.0
 * Wed Apr 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.37-3
 - Fixed build issues after upgrading rpm version
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.37-2

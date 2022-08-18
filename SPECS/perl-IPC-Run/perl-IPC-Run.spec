@@ -1,6 +1,6 @@
 Summary:        system() and background procs w/ piping, redirs, ptys (Unix, Win32)
 Name:           perl-IPC-Run
-Version:        20200505.0
+Version:        20220807.0
 Release:        1%{?dist}
 URL:            https://metacpan.org/pod/IPC::Run
 License:        The Perl 5 License (Artistic 1 & GPL 1)
@@ -8,7 +8,7 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         https://cpan.metacpan.org/authors/id/T/TO/TODDR/IPC-Run-%{version}.tar.gz
-%define sha1    IPC-Run=297d6410a91f6dc466543476bea743a9b21df2e9
+%define sha512  IPC-Run=ddfd0ceb78bd56c8c95a0a293a59d605959ba8d1b161a2c5959ac185c18fffa5cf047c3448d3b83a2733aa1372550f93d74d86eb05d49748f789fa46282694aa
 
 BuildArch:      noarch
 Requires:       perl
@@ -21,21 +21,21 @@ supported and may be mixed. Likewise, functional and OO API styles are
 both supported and may be mixed.
 
 %prep
-%setup -q -n IPC-Run-%{version}
+%autosetup -n IPC-Run-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 # Remove anything related to Win32.  Note that there are required for the
 # tests.
 find %{buildroot} -name '*Win32*' -delete
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %files
 %{perl_vendorlib}/IPC/Run.pm
@@ -48,5 +48,7 @@ make test
 %{_mandir}/man3/IPC::Run::Timer.3.gz
 
 %changelog
-*   Thu Feb 25 2021 Michael Paquier <mpaquier@vmware.com> 20200505.0-1
--   Initial version
+* Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 20220807.0-1
+- Automatic Version Bump
+* Thu Feb 25 2021 Michael Paquier <mpaquier@vmware.com> 20200505.0-1
+- Initial version

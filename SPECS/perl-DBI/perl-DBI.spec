@@ -13,14 +13,14 @@
 Summary:        A database access API for perl
 Name:           perl-DBI
 Version:        1.643
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://dbi.perl.org/
 # The source tarball must be repackaged to remove the DBI/FAQ.pm, since the
 # license is not a FSF free license.
 Source0:        https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
-%define sha1 DBI=fdbe7a86873eed196be5f9753aabed5c1e22f2cb
+%define sha512  DBI=03812f3eb1e43c8290dadb8cb14bbced9ec6e237228ea2a2ba91f22e52143906a91a7e82945dab30b1d1b9fc925073721111adafd9a09fac070808ab88f908b8
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  perl
@@ -33,7 +33,7 @@ functions, variables and conventions that provide a consistent
 database interface independent of the actual database being used.
 
 %prep
-%setup -q -n DBI-%{version}
+%autosetup -n DBI-%{version}
 for F in lib/DBD/Gofer.pm; do
     iconv -f ISO-8859-1 -t UTF-8 < "$F" > "${F}.utf8"
     touch -r "$F" "${F}.utf8"
@@ -75,13 +75,13 @@ fi
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
 find %{buildroot} -type f -name '*.bs' -empty -exec rm -f {} ';'
 %{_fixperms} '%{buildroot}'/*
 
 %check
-make test
+make %{?_smp_mflags} test
 
 %files
 %{_bindir}/dbipro*
@@ -94,6 +94,8 @@ make test
 %{_mandir}/man3/*.3*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.643-2
+-   Perl version uprade to 5.36.0
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.643-1
 -   Automatic Version Bump
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.641-2

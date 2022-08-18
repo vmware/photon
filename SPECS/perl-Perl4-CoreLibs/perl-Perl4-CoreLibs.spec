@@ -2,14 +2,14 @@
 Summary:        Core Perl4 Libs
 Name:           perl-Perl4-CoreLibs
 Version:        0.004
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-1.0+ or Artistic
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://search.cpan.org/dist/Perl4-CoreLibs/
 Source0:        https://cpan.metacpan.org/authors/id/Z/ZE/ZEFRAM/%{cpan_name}-%{version}.tar.gz
-%define sha1    %{cpan_name}=2f510e41e5c216f1379e35d808de9d5151e49331
+%define sha512  %{cpan_name}=71083f1640e95559ee4bc5a7f1bbe6beacec048a073e211ab7f6ee4de26463f6ae3d87e99e00a41ea8f2f93a5e96367bafe907ef3367e400de35123c22eb7b88
 BuildArch:      noarch
 BuildRequires:  perl
 BuildRequires:  perl-Module-Build
@@ -57,7 +57,7 @@ core versions of these libraries emit a deprecation warning when loaded.
 The CPAN version does not emit such a warning.
 
 %prep
-%setup -q -n %{cpan_name}-%{version}
+%autosetup -n %{cpan_name}-%{version}
 
 %build
 perl Build.PL installdirs=vendor
@@ -74,6 +74,8 @@ perl Build.PL installdirs=vendor
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.004-3
+-   Perl version upgrade to 5.36.0
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.004-2
 -   Rebuilding for perl 5.30.1
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.004-1
