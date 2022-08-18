@@ -1,21 +1,22 @@
-Summary:                Wayland Compositor Infrastructure
-Name:                   wayland
-Version:                1.20.0
-Release:                1%{?dist}
-License:                MIT
-URL:                    http://wayland.freedesktop.org/
-Group:                  System Environment/Libraries
-Source0:                https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
-%define sha512          wayland=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
-Vendor:                 VMware, Inc.
-Distribution:           Photon
+Summary:    Wayland Compositor Infrastructure
+Name:       wayland
+Version:    1.20.0
+Release:    2%{?dist}
+License:    MIT
+URL:        http://wayland.freedesktop.org
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution: Photon
 
-BuildRequires:          libxml2-devel
-BuildRequires:          meson
-BuildRequires:          ninja-build
-BuildRequires:          libffi-devel
-BuildRequires:          expat-devel
-BuildRequires:          libxslt-devel
+Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
+%define sha512 %{name}=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
+
+BuildRequires: libxml2-devel
+BuildRequires: meson
+BuildRequires: ninja-build
+BuildRequires: libffi-devel
+BuildRequires: expat-devel
+BuildRequires: libxslt-devel
 
 %description
 Wayland is a protocol for a compositor to talk to its clients as well as a C library implementation of that protocol. The compositor can be a standalone display server running on Linux kernel modesetting and evdev input devices, an X application, or a Wayland client itself. The clients can be traditional applications, X servers (rootless or fullscreen) or other display servers.
@@ -69,12 +70,13 @@ CONFIGURE_OPTS=(
 
 %install
 %meson_install
-find %{buildroot} -name \*.la -delete
 
 %ldconfig_scriptlets
 
+%if 0%{?with_check}
 %check
 %meson_test
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -84,15 +86,15 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/wayland-scanner
-%{_includedir}/wayland-*.h
-%{_libdir}/pkgconfig/wayland-*.pc
+%{_bindir}/%{name}-scanner
+%{_includedir}/%{name}-*.h
+%{_libdir}/pkgconfig/%{name}-*.pc
 %{_libdir}/libwayland-*.so
-%{_datadir}/aclocal/wayland-scanner.m4
-%dir %{_datadir}/wayland
-%{_datadir}/wayland/wayland-scanner.mk
-%{_datadir}/wayland/wayland.xml
-%{_datadir}/wayland/wayland.dtd
+%{_datadir}/aclocal/%{name}-scanner.m4
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/%{name}-scanner.mk
+%{_datadir}/%{name}/%{name}.xml
+%{_datadir}/%{name}/%{name}.dtd
 
 %files -n libwayland-client
 %defattr(-,root,root)
@@ -115,5 +117,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.20.0-2
+- Bump version as a part of libxslt upgrade
 * Tue Jun 14 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-1
 - Initial build. First version

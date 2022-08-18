@@ -1,15 +1,15 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha512  %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
+Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
+%define sha512 %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig
@@ -31,6 +31,15 @@ BuildRequires:  cmake
 
 Requires:       curl
 Requires:       popt
+Requires:       libxml2
+Requires:       libxslt
+Requires:       libselinux
+Requires:       libcap
+Requires:       openssl
+Requires:       libgcrypt
+Requires:       libacl
+Requires:       pcre-libs
+Requires:       xmlsec1
 
 %description
 SCAP is a multi-purpose framework of specifications that supports automated configuration,
@@ -58,6 +67,7 @@ Perl scripts.
 Summary:        %{name} python
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       python3
 
 %description    python3
 Python bindings.
@@ -77,11 +87,10 @@ Python bindings.
 
 %install
 %cmake_install
-find %{buildroot} -name '*.la' -delete
 
 %if 0%{?_with_check}
 %check
-ctest -V %{?_smp_mflags}
+%ctest
 %endif
 
 %files
@@ -111,6 +120,8 @@ ctest -V %{?_smp_mflags}
 %{_libdir}/python3.9/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-6
+- Bump version as a part of libxslt upgrade
 * Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-5
 - Bump version as a part of rpm upgrade
 * Wed Jun 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-4

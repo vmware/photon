@@ -1,23 +1,28 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        2.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL-2.0 and LGPL-2.1
-
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
-%define sha512  trace-cmd=a37390e7ad29c9e7a97e5e7792505fe96a3802d6ea103e7c0f362a7b8cc29a102d483ec1a883b632fd9e0e7297f17866ae5eac59c825f08a8068b431a8f819e1
-Patch1:         0001-trace-cmd-Add-option-to-poll-trace-buffers.patch
+
+Source0: https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
+%define sha512 %{name}=a37390e7ad29c9e7a97e5e7792505fe96a3802d6ea103e7c0f362a7b8cc29a102d483ec1a883b632fd9e0e7297f17866ae5eac59c825f08a8068b431a8f819e1
+
+Patch0: 0001-trace-cmd-Add-option-to-poll-trace-buffers.patch
+
 BuildRequires:  audit-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  gcc
-Requires:       audit python3 traceevent-plugins
+
+Requires: audit
+Requires: python3
+Requires: traceevent-plugins
 
 %description
 trace-cmd is a user-space command line tool that makes it convenient to use
@@ -37,18 +42,16 @@ in the traceevent/ directory.
 %autosetup -p1 -n %{name}-v%{version}
 
 %build
-make %{?_smp_mflags} \
-	prefix=%{_prefix} etcdir=%{_sysconfdir} DESTDIR=%{buildroot}
+%make_build
 
 %install
-make %{?_smp_mflags} install\
-	             prefix=%{_prefix} etcdir=%{_sysconfdir} DESTDIR=%{buildroot}
+%make_install %{?_smp_mflags} prefix=%{_prefix} etcdir=%{_sysconfdir}
 
 %clean
 rm -rf %{buildroot}
 
-%post   -p /sbin/ldconfig
-%post   -n traceevent-plugins -p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%post -n traceevent-plugins -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
 %postun -n traceevent-plugins -p /sbin/ldconfig
@@ -56,14 +59,16 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %doc COPYING COPYING.LIB README
-%{_bindir}/trace-cmd
-%{_sysconfdir}/bash_completion.d/trace-cmd.bash
+%{_bindir}/%{name}
+%{_sysconfdir}/bash_completion.d/%{name}.bash
 
 %files -n traceevent-plugins
 %defattr(-,root,root)
 %{_libdir}/traceevent/plugins
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9-4
+- Bump version as a part of libxslt upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9-3
 - Bump version as a part of libxslt upgrade
 * Tue Nov 02 2021 Sharan Turlapati <sturlapati@vmware.com> 2.9-2

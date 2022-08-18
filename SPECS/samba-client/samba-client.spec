@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -14,9 +14,6 @@ Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
 Source1:        smb.conf.vendor
 
 Patch0:         rename_dcerpc_to_smbdcerpc_%{version}.patch
-
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
 
 %define samba_ver %{version}-%{release}
 
@@ -40,7 +37,7 @@ BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 
-Requires:      samba-client-libs = %{samba_ver}
+Requires:      %{name}-libs = %{samba_ver}
 Requires:      libtirpc
 Requires:      python3
 Requires:      libarchive
@@ -53,6 +50,11 @@ Requires:      lmdb
 Requires:      openldap
 Requires:      perl-Parse-Yapp
 Requires:      dbus
+Requires:      libtalloc
+Requires:      ncurses-libs
+Requires:      popt
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -64,19 +66,19 @@ and Windows networking to Linux clients.
 For a more detailed description of Samba, check the Web page https://www.Samba.org/
 
 # Samba Client Libaries
-%package -n samba-client-libs
+%package -n %{name}-libs
 Summary: Samba client libraries
 
-%description -n samba-client-libs
+%description -n %{name}-libs
 The samba-client-libs package contains internal libraries needed by the
 SMB/CIFS clients.
 
 # Samba Client Devel
-%package -n samba-client-devel
+%package -n %{name}-devel
 Summary: Developer tools for Samba-Client libraries
-Requires: samba-client = %{samba_ver}
+Requires: %{name} = %{samba_ver}
 
-%description -n samba-client-devel
+%description -n %{name}-devel
 The samba-client-devel package contains the header files and libraries needed
 to develop programs.
 
@@ -91,7 +93,7 @@ This package includes the wbclient library.
 %package -n libwbclient-devel
 Summary:        Libraries and Header Files to Develop Programs with wbclient Support
 Group:          Development/Libraries/C and C++
-Requires:       libwbclient = %{version}
+Requires:       libwbclient = %{samba_ver}
 
 %description -n libwbclient-devel
 This package contains the static libraries and header files needed to
@@ -115,9 +117,9 @@ export LDFLAGS="-ltirpc"
         --with-sockets-dir=/run/samba \
         --with-modulesdir=%{_libdir}/samba \
         --with-pammodulesdir=%{_libdir}/security \
-        --with-lockdir=/var/lib/samba/lock \
-        --with-statedir=/var/lib/samba \
-        --with-cachedir=/var/lib/samba \
+        --with-lockdir=%{_sharedstatedir}/samba/lock \
+        --with-statedir=%{_sharedstatedir}/samba \
+        --with-cachedir=%{_sharedstatedir}/samba \
         --without-gettext \
         --without-ldb-lmdb \
         --without-lttng \
@@ -362,9 +364,9 @@ done
 %attr(0700,root,root) %dir /var/log/samba
 %ghost %dir /run/samba
 %ghost %dir /run/winbindd
-%dir /var/lib/samba
-%attr(700,root,root) %dir /var/lib/samba/private
-%dir /var/lib/samba/lock
+%dir %{_sharedstatedir}/samba
+%attr(700,root,root) %dir %{_sharedstatedir}/samba/private
+%dir %{_sharedstatedir}/samba/lock
 %attr(755,root,root) %dir %{_sysconfdir}/samba
 %config(noreplace) %{_sysconfdir}/samba/smb.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/samba
@@ -403,7 +405,7 @@ done
 %{_mandir}/man8/*
 
 # Client libraries
-%files -n samba-client-libs
+%files -n %{name}-libs
 %defattr(-,root,root,-)
 %{_libdir}/libdcerpc-binding.so.*
 %{_libdir}/libndr.so.*
@@ -526,7 +528,7 @@ done
 %{_libdir}/libdcerpc-server-core.*
 
 # Devel
-%files -n samba-client-devel
+%files -n %{name}-devel
 %{_includedir}/samba-4.0/libsmbclient.h
 %{_libdir}/libsmbclient.so
 %{_libdir}/libsmbdcerpc.so
@@ -561,6 +563,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.4-5
+- Bump version as a part of libxslt upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.4-4
 - Bump version as a part of gnutls upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.14.4-3

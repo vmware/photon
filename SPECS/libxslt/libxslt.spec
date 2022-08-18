@@ -1,19 +1,21 @@
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.35
-Release:        3%{?dist}
+Version:        1.1.37
+Release:        1%{?dist}
 License:        MIT
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
-%define sha512  %{name}=9dd4a699235f50ae9b75b25137e387471635b4b2da0a4e4380879cd49f1513470fcfbfd775269b066eac513a1ffa6860c77ec42747168e2348248f09f60c8c96
+Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4e7a57cbe02ceea34404213a88bdbb63a756edfab63063ce3979b670816ae3f6fb3637a49508204e6e46b936628e0a3b8b77e9201530a1184225bd68da403b25
 
 Requires:       libxml2
 Requires:       libgcrypt
+Requires:       libgpg-error
 
+BuildRequires:  automake >= 1.16.5
 BuildRequires:  libxml2-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error-devel
@@ -25,6 +27,8 @@ The libxslt package contains XSLT libraries used for extending libxml2 libraries
 Summary:        Development Libraries for libxslt
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       libxml2-devel
+
 %description devel
 Header files for doing development with libxslt.
 
@@ -33,6 +37,7 @@ Header files for doing development with libxslt.
 sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %build
+autoreconf -vfi
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
@@ -75,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.37-1
+- Upgrade to v1.1.37
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.35-3
 - Fix requires
 * Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.35-2

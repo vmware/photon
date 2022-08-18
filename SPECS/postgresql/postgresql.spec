@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -44,15 +44,15 @@ BuildRequires:  tcl-devel
 BuildRequires:  tzdata
 BuildRequires:  util-linux-libs
 BuildRequires:  zlib-devel
-Requires:       icu
-Requires:       libedit
-Requires:       libxml2
-Requires:       lz4
-Requires:       readline
-Requires:       systemd
-Requires:       tzdata
-Requires:       zlib
 
+Requires:   icu
+Requires:   libedit
+Requires:   libxml2
+Requires:   lz4
+Requires:   readline
+Requires:   systemd
+Requires:   tzdata
+Requires:   zlib
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -564,6 +564,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/%{name}/plpython3.so
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 14.5-4
+- Bump version as a part of libxslt upgrade
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 14.5-3
 - Bump version as a part of icu upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 14.5-2

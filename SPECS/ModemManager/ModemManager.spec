@@ -1,15 +1,15 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.freedesktop.org/software/ModemManager/%{name}-%{version}.tar.xz
-%define sha512  %{name}=4615ddb852b750ba0ca62224b669145a408a22b841937d42271638a73bf59dff5fb8b73553388afee8e7d2b2126c61f51af3f8fcb4475a2e2ea313d438443f9b
+Source0: https://www.freedesktop.org/software/ModemManager/%{name}-%{version}.tar.xz
+%define sha512 %{name}=4615ddb852b750ba0ca62224b669145a408a22b841937d42271638a73bf59dff5fb8b73553388afee8e7d2b2126c61f51af3f8fcb4475a2e2ea313d438443f9b
 
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
@@ -26,6 +26,8 @@ BuildRequires:  libxslt-devel
 BuildRequires:  dbus-devel
 %endif
 
+Requires:       systemd
+Requires:       glib
 Requires:       libgudev
 Requires:       libqmi
 Requires:       gobject-introspection
@@ -37,7 +39,7 @@ communicate with the actual device.
 
 %package        devel
 Summary:        Header and development files for %{name}
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       libqmi-devel
 Requires:       gobject-introspection-devel
 
@@ -65,7 +67,7 @@ make %{?_smp_mflags} check
 %endif
 
 %clean
-rm -rf %{buildroot}
+rm -rf %{buildroot}/*
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -91,6 +93,7 @@ rm -rf %{buildroot}
 %exclude %dir %{_libdir}/debug
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_includedir}/%{name}/*
 %{_includedir}/libmm-glib/*
@@ -100,6 +103,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/connection.available.d/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.10-3
+- Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.10-2
 - Remove .la files
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.10-1

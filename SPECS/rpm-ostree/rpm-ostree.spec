@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -57,6 +57,16 @@ BuildRequires:  libmodulemd-devel
 BuildRequires:  gpgme-devel
 
 Requires:       libcap
+Requires:       rpm-libs
+Requires:       sqlite-libs
+Requires:       systemd
+Requires:       gpgme
+Requires:       glib
+Requires:       json-c
+Requires:       polkit
+Requires:       libarchive
+Requires:       libmodulemd
+Requires:       libgcc
 Requires:       librepo
 Requires:       openssl
 Requires:       ostree
@@ -151,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-2
+- Bump version as a part of libxslt upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-1
 - Upgrade to v2022.13
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-8

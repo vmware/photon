@@ -1,14 +1,14 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.33
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://www.aleksey.com/xmlsec/
+Url:            http://www.aleksey.com/xmlsec
 
-Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
+Source0: http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6354554b5cdc0a1389f6991efeac919bea912330b36d3be3d3496d61331e9edd2771786d50d2571a439f62ccfc3bd32be0a50bb5a037c4993aac076ad94b46e8
 
 BuildRequires: libxml2-devel
@@ -49,7 +49,7 @@ Signatures and XML Encryption support.
 %make_install %{?_smp_mflags}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
+make -k check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/%{name}-config.1.gz
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.33-4
+- Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.33-3
 - Remove .la files
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.33-2

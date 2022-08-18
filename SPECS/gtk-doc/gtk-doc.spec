@@ -1,7 +1,7 @@
 Summary:    Program to generate documenation
 Name:       gtk-doc
 Version:    1.33.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/%{name}
 Group:      Development/Tools
@@ -15,7 +15,6 @@ BuildRequires:  docbook-xml >= 4.5
 BuildRequires:  docbook-xsl >= 1.78.1
 BuildRequires:  itstool >= 2.0.2
 BuildRequires:  libxslt-devel >= 1.1.28
-BuildRequires:  itstool
 BuildRequires:  which
 BuildRequires:  cmake
 BuildRequires:  check-devel
@@ -43,7 +42,7 @@ sh ./autogen.sh
 %make_build
 
 %install
-%make_install %{?_smp_mflags} DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir}
+%make_install %{?_smp_mflags}
 
 %check
 cd tests && make check-TESTS %{?_smp_mflags}
@@ -54,6 +53,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.33.2-3
+- Bump version as a part of libxslt upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.33.2-2
 - Bump version as a part of libxslt upgrade
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.33.2-1

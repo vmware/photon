@@ -1,15 +1,15 @@
-Summary:	Library that Implements a typesafe callback system for standard C++.
-Name:		libsigc++
-Version:	3.0.4
-Release:	4%{?dist}
-License:	LGPLv2+
-URL:		http://libsigc.sourceforge.net
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    Library that Implements a typesafe callback system for standard C++.
+Name:       libsigc++
+Version:    3.0.4
+Release:    5%{?dist}
+License:    LGPLv2+
+URL:        http://libsigc.sourceforge.net
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version}.tar.xz
-%define sha512  libsigc=b84ae7da6708e02302d08e295d6a566f12fb2c6f0d02f811661a0a541d7969e96a1e920218394dd109b3f362d102f2956aa968539710fa180d7d97e9676fb83d
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version}.tar.xz
+%define sha512 libsigc=b84ae7da6708e02302d08e295d6a566f12fb2c6f0d02f811661a0a541d7969e96a1e920218394dd109b3f362d102f2956aa968539710fa180d7d97e9676fb83d
 
 BuildRequires:  mm-common
 BuildRequires:  libxslt-devel
@@ -32,7 +32,7 @@ Development & header files for %{name}
 %autosetup -p1
 
 %build
-./autogen.sh --prefix=%{_prefix}
+sh ./autogen.sh --prefix=%{_prefix}
 %configure --disable-documentation
 %make_build
 
@@ -42,8 +42,8 @@ Development & header files for %{name}
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-5
+- Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-4
 - Remove .la files
 - Introduce devel sub package

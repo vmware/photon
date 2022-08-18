@@ -1,10 +1,10 @@
-%global _rabbit_libdir %{_libdir}/rabbitmq
-%global _rabbit_user rabbitmq
+%global _rabbit_libdir  %{_libdir}/rabbitmq
+%global _rabbit_user    rabbitmq
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.11.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -121,6 +121,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-2
+- Bump version as a part of libxslt upgrade
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
 - Upgrade to v3.11.0
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.10.6-1

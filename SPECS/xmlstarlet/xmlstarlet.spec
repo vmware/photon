@@ -1,20 +1,27 @@
 Summary:	Command Line XML Toolkit
 Name:   	xmlstarlet
 Version:	1.6.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:    	http://xmlstar.sourceforge.net/
 Group:  	Text Tools
 Vendor: 	VMware, Inc.
 Distribution:   Photon
-Source0:	http://downloads.sourceforge.net/xmlstar/%{name}-%{version}.tar.gz
-%define sha512  xmlstarlet=4228df812caec7059d7a76986c4d9a4262bd861cc53dca05f341ae6c062be05f1c39fc637918ab00f60f40587c6c556e3c9bfaf8a18b149e3c321a92214dbe8b
+
+Source0: http://downloads.sourceforge.net/xmlstar/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4228df812caec7059d7a76986c4d9a4262bd861cc53dca05f341ae6c062be05f1c39fc637918ab00f60f40587c6c556e3c9bfaf8a18b149e3c321a92214dbe8b
+
 #https://sourceforge.net/p/xmlstar/bugs/109/
 Patch0: 	xmlstarlet-1.6.1-nogit.patch
+
 BuildRequires:  gcc
-BuildRequires:  automake autoconf linux-api-headers diffutils
+BuildRequires:  automake
+BuildRequires:  autoconf
+BuildRequires:  linux-api-headers
+BuildRequires:  diffutils
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
+
 Requires:       libxml2
 Requires:       libxslt
 
@@ -31,15 +38,18 @@ commands.
 %build
 autoreconf -sif
 %configure \
-        --with-libxml-prefix=%{_prefix} \
-        --with-libxslt-prefix=%{_prefix}
-make %{?_smp_mflags}
+    --with-libxml-prefix=%{_prefix} \
+    --with-libxslt-prefix=%{_prefix}
+
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -fr %{buildroot}
@@ -52,6 +62,8 @@ rm -fr %{buildroot}
 %{_bindir}/xml
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-4
+- Bump version as a part of libxslt upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.1-3
 - Bump version as a part of libxslt upgrade
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.6.1-2

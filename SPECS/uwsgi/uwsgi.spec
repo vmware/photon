@@ -1,17 +1,19 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/unbit/uwsgi
-Source0:        http://projects.unbit.it/downloads/uwsgi-%{version}.tar.gz
-%define sha512  uwsgi=22677a8ad1ea886e1a3a153f486474ce064a55e5b12515322345116980f699f4e2e73267f991c300d904284e06f265ea821e71ba3c97832b6f25705475b498ff
+
+Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
+%define sha512 %{name}=22677a8ad1ea886e1a3a153f486474ce064a55e5b12515322345116980f699f4e2e73267f991c300d904284e06f265ea821e71ba3c97832b6f25705475b498ff
+
 Source1:        photon.ini
-Source2:        uwsgi.service
-Source3:        uwsgi.ini
+Source2:        %{name}.service
+Source3:        %{name}.ini
 
 BuildRequires:  python3-devel
 BuildRequires:  jansson-devel
@@ -48,6 +50,10 @@ Requires:       python3
 Requires:       ruby
 Requires:       util-linux
 Requires:       tcp_wrappers
+Requires:       libxml2
+Requires:       openssl
+Requires:       libcap
+Requires:       systemd
 
 %description
 The uWSGI project aims at developing a full stack for building hosting services.
@@ -94,20 +100,20 @@ cp -p %{SOURCE1} buildconf/
 %{__python3} uwsgiconfig.py --verbose --plugin plugins/python core
 
 %install
-install -d %{buildroot}%{_sysconfdir}/uwsgi.d
-install -d %{buildroot}%{_includedir}/uwsgi
-install -d %{buildroot}%{_libdir}/uwsgi
+install -d %{buildroot}%{_sysconfdir}/%{name}.d
+install -d %{buildroot}%{_includedir}/%{name}
+install -d %{buildroot}%{_libdir}/%{name}
 
-install -D -p -m 0755 uwsgi %{buildroot}%{_sbindir}/uwsgi
-install -p -m 0644 *.h %{buildroot}%{_includedir}/uwsgi
-install -p -m 0755 *_plugin.so %{buildroot}%{_libdir}/uwsgi
+install -D -p -m 0755 %{name} %{buildroot}%{_sbindir}/%{name}
+install -p -m 0644 *.h %{buildroot}%{_includedir}/%{name}
+install -p -m 0755 *_plugin.so %{buildroot}%{_libdir}/%{name}
 install -D -p -m 0644 uwsgidecorators.py %{buildroot}%{python3_sitelib}/uwsgidecorators.py
-install -D -p -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/uwsgi.ini
-install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/uwsgi.service
+install -D -p -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}.ini
+install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
 
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
-d /run/%{name} 0775 uwsgi uwsgi
+d /run/%{name} 0775 %{name} %{name}
 EOF
 
 %if 0%{?with_check}
@@ -115,123 +121,125 @@ EOF
 %endif
 
 %pre
-getent group uwsgi >/dev/null || groupadd -r uwsgi
-getent passwd uwsgi >/dev/null || \
-    useradd -c "uWSGI daemon user" -d /run/uwsgi -g %{name} \
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+    useradd -c "uWSGI daemon user" -d /run/%{name} -g %{name} \
         -s /sbin/nologin -M -r %{name}
 %post
-%systemd_post uwsgi.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun uwsgi.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun uwsgi.service
+%systemd_postun %{name}.service
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
-%{_sbindir}/uwsgi
-%config(noreplace) %{_sysconfdir}/uwsgi.ini
-%{_unitdir}/uwsgi.service
+%{_sbindir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}.ini
+%{_unitdir}/%{name}.service
 %{_tmpfilesdir}/%{name}.conf
-%dir %{_sysconfdir}/uwsgi.d
+%dir %{_sysconfdir}/%{name}.d
 %doc README
 %license LICENSE
 
 %files devel
 %defattr(-,root,root,-)
-%{_includedir}/uwsgi
+%{_includedir}/%{name}
 
 %files plugins
 %defattr(-,root,root,-)
-%{_libdir}/uwsgi/airbrake_plugin.so
-%{_libdir}/uwsgi/alarm_curl_plugin.so
-%{_libdir}/uwsgi/asyncio_plugin.so
-%{_libdir}/uwsgi/cache_plugin.so
-%{_libdir}/uwsgi/carbon_plugin.so
-%{_libdir}/uwsgi/cgi_plugin.so
-%{_libdir}/uwsgi/cheaper_backlog2_plugin.so
-%{_libdir}/uwsgi/cheaper_busyness_plugin.so
-%{_libdir}/uwsgi/clock_monotonic_plugin.so
-%{_libdir}/uwsgi/corerouter_plugin.so
-%{_libdir}/uwsgi/cplusplus_plugin.so
-%{_libdir}/uwsgi/curl_cron_plugin.so
-%{_libdir}/uwsgi/dumbloop_plugin.so
-%{_libdir}/uwsgi/dummy_plugin.so
-%{_libdir}/uwsgi/emperor_amqp_plugin.so
-%{_libdir}/uwsgi/fastrouter_plugin.so
-%{_libdir}/uwsgi/forkptyrouter_plugin.so
-%{_libdir}/uwsgi/echo_plugin.so
-%{_libdir}/uwsgi/graylog2_plugin.so
-%{_libdir}/uwsgi/http_plugin.so
-%{_libdir}/uwsgi/ldap_plugin.so
-%{_libdir}/uwsgi/lua_plugin.so
-%{_libdir}/uwsgi/logcrypto_plugin.so
-%{_libdir}/uwsgi/logfile_plugin.so
-%{_libdir}/uwsgi/logpipe_plugin.so
-%{_libdir}/uwsgi/logsocket_plugin.so
-%{_libdir}/uwsgi/nagios_plugin.so
-%{_libdir}/uwsgi/msgpack_plugin.so
-%{_libdir}/uwsgi/notfound_plugin.so
-%{_libdir}/uwsgi/pam_plugin.so
-%{_libdir}/uwsgi/ping_plugin.so
-%{_libdir}/uwsgi/pty_plugin.so
-%{_libdir}/uwsgi/rack_plugin.so
-%{_libdir}/uwsgi/rawrouter_plugin.so
-%{_libdir}/uwsgi/redislog_plugin.so
-%{_libdir}/uwsgi/router_access_plugin.so
-%{_libdir}/uwsgi/router_basicauth_plugin.so
-%{_libdir}/uwsgi/router_cache_plugin.so
-%{_libdir}/uwsgi/router_expires_plugin.so
-%{_libdir}/uwsgi/router_hash_plugin.so
-%{_libdir}/uwsgi/router_http_plugin.so
-%{_libdir}/uwsgi/router_memcached_plugin.so
-%{_libdir}/uwsgi/router_metrics_plugin.so
-%{_libdir}/uwsgi/router_radius_plugin.so
-%{_libdir}/uwsgi/router_redirect_plugin.so
-%{_libdir}/uwsgi/router_redis_plugin.so
-%{_libdir}/uwsgi/router_rewrite_plugin.so
-%{_libdir}/uwsgi/router_spnego_plugin.so
-%{_libdir}/uwsgi/router_static_plugin.so
-%{_libdir}/uwsgi/router_uwsgi_plugin.so
-%{_libdir}/uwsgi/router_xmldir_plugin.so
-%{_libdir}/uwsgi/rpc_plugin.so
-%{_libdir}/uwsgi/rrdtool_plugin.so
-%{_libdir}/uwsgi/rsyslog_plugin.so
-%{_libdir}/uwsgi/signal_plugin.so
-%{_libdir}/uwsgi/spooler_plugin.so
-%{_libdir}/uwsgi/sqlite3_plugin.so
-%{_libdir}/uwsgi/ssi_plugin.so
-%{_libdir}/uwsgi/sslrouter_plugin.so
-%{_libdir}/uwsgi/stats_pusher_file_plugin.so
-%{_libdir}/uwsgi/stats_pusher_socket_plugin.so
-%{_libdir}/uwsgi/stats_pusher_statsd_plugin.so
-%{_libdir}/uwsgi/symcall_plugin.so
-%{_libdir}/uwsgi/syslog_plugin.so
-%{_libdir}/uwsgi/systemd_logger_plugin.so
-%{_libdir}/uwsgi/tornado_plugin.so
-%{_libdir}/uwsgi/transformation_chunked_plugin.so
-%{_libdir}/uwsgi/transformation_gzip_plugin.so
-%{_libdir}/uwsgi/transformation_offload_plugin.so
-%{_libdir}/uwsgi/transformation_template_plugin.so
-%{_libdir}/uwsgi/transformation_tofile_plugin.so
-%{_libdir}/uwsgi/transformation_toupper_plugin.so
-%{_libdir}/uwsgi/tuntap_plugin.so
-%{_libdir}/uwsgi/ugreen_plugin.so
-%{_libdir}/uwsgi/webdav_plugin.so
-%{_libdir}/uwsgi/xattr_plugin.so
-%{_libdir}/uwsgi/xslt_plugin.so
-%{_libdir}/uwsgi/zabbix_plugin.so
-%{_libdir}/uwsgi/zergpool_plugin.so
+%{_libdir}/%{name}/airbrake_plugin.so
+%{_libdir}/%{name}/alarm_curl_plugin.so
+%{_libdir}/%{name}/asyncio_plugin.so
+%{_libdir}/%{name}/cache_plugin.so
+%{_libdir}/%{name}/carbon_plugin.so
+%{_libdir}/%{name}/cgi_plugin.so
+%{_libdir}/%{name}/cheaper_backlog2_plugin.so
+%{_libdir}/%{name}/cheaper_busyness_plugin.so
+%{_libdir}/%{name}/clock_monotonic_plugin.so
+%{_libdir}/%{name}/corerouter_plugin.so
+%{_libdir}/%{name}/cplusplus_plugin.so
+%{_libdir}/%{name}/curl_cron_plugin.so
+%{_libdir}/%{name}/dumbloop_plugin.so
+%{_libdir}/%{name}/dummy_plugin.so
+%{_libdir}/%{name}/emperor_amqp_plugin.so
+%{_libdir}/%{name}/fastrouter_plugin.so
+%{_libdir}/%{name}/forkptyrouter_plugin.so
+%{_libdir}/%{name}/echo_plugin.so
+%{_libdir}/%{name}/graylog2_plugin.so
+%{_libdir}/%{name}/http_plugin.so
+%{_libdir}/%{name}/ldap_plugin.so
+%{_libdir}/%{name}/lua_plugin.so
+%{_libdir}/%{name}/logcrypto_plugin.so
+%{_libdir}/%{name}/logfile_plugin.so
+%{_libdir}/%{name}/logpipe_plugin.so
+%{_libdir}/%{name}/logsocket_plugin.so
+%{_libdir}/%{name}/nagios_plugin.so
+%{_libdir}/%{name}/msgpack_plugin.so
+%{_libdir}/%{name}/notfound_plugin.so
+%{_libdir}/%{name}/pam_plugin.so
+%{_libdir}/%{name}/ping_plugin.so
+%{_libdir}/%{name}/pty_plugin.so
+%{_libdir}/%{name}/rack_plugin.so
+%{_libdir}/%{name}/rawrouter_plugin.so
+%{_libdir}/%{name}/redislog_plugin.so
+%{_libdir}/%{name}/router_access_plugin.so
+%{_libdir}/%{name}/router_basicauth_plugin.so
+%{_libdir}/%{name}/router_cache_plugin.so
+%{_libdir}/%{name}/router_expires_plugin.so
+%{_libdir}/%{name}/router_hash_plugin.so
+%{_libdir}/%{name}/router_http_plugin.so
+%{_libdir}/%{name}/router_memcached_plugin.so
+%{_libdir}/%{name}/router_metrics_plugin.so
+%{_libdir}/%{name}/router_radius_plugin.so
+%{_libdir}/%{name}/router_redirect_plugin.so
+%{_libdir}/%{name}/router_redis_plugin.so
+%{_libdir}/%{name}/router_rewrite_plugin.so
+%{_libdir}/%{name}/router_spnego_plugin.so
+%{_libdir}/%{name}/router_static_plugin.so
+%{_libdir}/%{name}/router_uwsgi_plugin.so
+%{_libdir}/%{name}/router_xmldir_plugin.so
+%{_libdir}/%{name}/rpc_plugin.so
+%{_libdir}/%{name}/rrdtool_plugin.so
+%{_libdir}/%{name}/rsyslog_plugin.so
+%{_libdir}/%{name}/signal_plugin.so
+%{_libdir}/%{name}/spooler_plugin.so
+%{_libdir}/%{name}/sqlite3_plugin.so
+%{_libdir}/%{name}/ssi_plugin.so
+%{_libdir}/%{name}/sslrouter_plugin.so
+%{_libdir}/%{name}/stats_pusher_file_plugin.so
+%{_libdir}/%{name}/stats_pusher_socket_plugin.so
+%{_libdir}/%{name}/stats_pusher_statsd_plugin.so
+%{_libdir}/%{name}/symcall_plugin.so
+%{_libdir}/%{name}/syslog_plugin.so
+%{_libdir}/%{name}/systemd_logger_plugin.so
+%{_libdir}/%{name}/tornado_plugin.so
+%{_libdir}/%{name}/transformation_chunked_plugin.so
+%{_libdir}/%{name}/transformation_gzip_plugin.so
+%{_libdir}/%{name}/transformation_offload_plugin.so
+%{_libdir}/%{name}/transformation_template_plugin.so
+%{_libdir}/%{name}/transformation_tofile_plugin.so
+%{_libdir}/%{name}/transformation_toupper_plugin.so
+%{_libdir}/%{name}/tuntap_plugin.so
+%{_libdir}/%{name}/ugreen_plugin.so
+%{_libdir}/%{name}/webdav_plugin.so
+%{_libdir}/%{name}/xattr_plugin.so
+%{_libdir}/%{name}/xslt_plugin.so
+%{_libdir}/%{name}/zabbix_plugin.so
+%{_libdir}/%{name}/zergpool_plugin.so
 
 %files python3-plugin
 %defattr(-,root,root,-)
-%{_libdir}/uwsgi/python_plugin.so
+%{_libdir}/%{name}/python_plugin.so
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.20-2
+- Bump version as a part of libxslt upgrade
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.20-1
 - uwsgi initial build
