@@ -1,19 +1,21 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=561522b06943f6d1c33bd78132db1f7020fc4fd1
+%define sha512  unbound=f4d26dca28dbcc33a5e65a55147fa01077c331292e88b6a87798cb6c3d4edb0515015d131fd893c92b74d22d9998a640f0adce404e6192d61ebe69a6a599287c
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Patch0:         0001-Fix-that-nxdomain-synthesis-does-not-happen-above-th.patch
+Patch1:         0001-unbound-Fix-for-CVE-2022-30698-and-CVE-2022-30699.patch
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -34,23 +36,23 @@ Group:      Documentation
 unbound dns server docs
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
     --with-conf-file=%{_sysconfdir}/%{name}/unbound.conf \
     --disable-static
 
-make
+make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name '*.la' -delete
 install -vdm755 %{buildroot}%{_unitdir}
 install -pm 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %pre
 getent group unbound >/dev/null || groupadd -r unbound
@@ -80,15 +82,16 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Thu Aug 18 2022 Srish S. <ssrish@vmware.com> 1.13.1-2
+-  Fix for CVE-2022-30698 and CVE-2022-30699
 *  Tue May 04 2021 Shreyas B. <shryasb@vmware.com> 1.13.1-1
 -  Update to version 1.13.1.
-*  Wed Feb 02 2021 Shreyas B. <shryasb@vmware.com> 1.8.0-5
+*  Tue Feb 02 2021 Shreyas B. <shryasb@vmware.com> 1.8.0-5
 -  Fix for CVE-2020-28935
 *  Sun May 24 2020 Shreyas B. <shryasb@vmware.com> 1.8.0-4
 -  Fix for CVE-2020-12662 & CVE-2020-12663
 *  Fri Dec 20 2019 Shreyas B. <shryasb@vmware.com> 1.8.0-3
--  Fix for vulnerability CVE-2019-18934 that can cause shell code
-execution after receiving a specially crafted answer.
+-  Fix for vulnerability CVE-2019-18934 that can cause shell code execution after receiving a specially crafted answer.
 *  Mon Oct 14 2019 Shreyas B. <shryasb@vmware.com> 1.8.0-2
 -  Fix for CVE-2019-16866.
 *  Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 1.8.0-1
