@@ -1,6 +1,6 @@
 Summary:       Tracks system calls that are made by a running process
 Name:          strace
-Version:       5.18
+Version:       5.19
 Release:       1%{?dist}
 License:       BSD
 URL:           https://strace.io/
@@ -8,7 +8,7 @@ Group:         Development/Debuggers
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha512 strace=99418b84a5e2049cb6fe32eed19ddcb61bbefb25220550c67d92cd7bc3d44ae5d87ac228b3e1c207166b9bfdae55c624a0f4e603004599fb7ea3143bbccc749e
+%define sha512 strace=1ea1c6e12d05bf145bc3c74f8d06b08dfc3eae3a5a21bfe8ab080053dc4c2da8a95be5956652ea62bb083462015a55f9bc1d1023919dcf2929a05211b7dde963
 BuildRequires: gcc gzip libacl-devel libaio-devel
 
 %description
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace-graph
 
 %changelog
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.19-1
+- Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.18-1
 - Automatic Version Bump
 * Tue Jan 12 2021 Susant Sahani <ssahani@vmware.com> 5.10-1
