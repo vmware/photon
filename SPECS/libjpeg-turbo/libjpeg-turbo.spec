@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
-Version:        2.1.3
-Release:        2%{?dist}
+Version:        2.1.4
+Release:        1%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha512  %{name}=975c9835de7d70c6c8c5a1959adfa18f7f956bc9946fde8f1b40c1d853245c38a3118ac06b93841ec3e90be6945c38d687d062b371496c2ee9b5638d7f60418d
+%define sha512  %{name}=511f065767c022da06b6c36299686fa44f83441646f7e33b766c6cfab03f91b0e6bfa456962184071dadaed4057ba9a29cba685383f3eb86a4370a1a53731a70
 
 %ifarch x86_64
 BuildRequires:  nasm
@@ -64,6 +64,8 @@ find %{buildroot} -name "*.la" -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.4-1
+- Automatic Version Bump
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.3-2
 - Fix build with latest cmake
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.3-1
