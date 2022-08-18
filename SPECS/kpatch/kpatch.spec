@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -20,6 +20,7 @@ Source5:        scripts/dockerfiles/Dockerfile.ph4
 BuildArch:      x86_64
 
 Patch0:         0001-Added-support-for-Photon-OS.patch
+Patch1:         0001-adding-option-to-set-description-field-of-module.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -113,6 +114,9 @@ cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 %{_sysconfdir}/auto_livepatch/dockerfiles/*
 
 %changelog
+* Mon Aug 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-2
+- Adding option both in kpatch-utils scripts and kpatch-build itself for
+- setting the description field of a livepatch module.
 * Tue Aug 9 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-1
 - Initial addition to photon. Modified from provided kpatch.spec on GitHub.
 - Also includes automated livepatch building subpackage as kpatch-utils.

@@ -9,11 +9,12 @@
 #       -R: Don't set replace flag for the livepatch module. Default is to set the flag.
 #       --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc.
 #       -h/--help: Prints help message
+#       -d: Use file contents as description field for livepatch module.
 #
 #
 # ex)
 #   With all options enabled, and multiple patches:
-#       gen_livepatch -k 4.19.247-2.ph3 -o my_dir -n my_livepatch.ko -p my_patch1.patch my_patch2.patch
+#       gen_livepatch -k 4.19.247-2.ph3 -o my_dir -n my_livepatch.ko -p my_patch1.patch my_patch2.patch -D description.txt -R --export-debuginfo
 # ex)
 #    All default settings. Must supply at least one patch file though. Builds a livepatch for the current kernel version
 #       gen_livepatch -p my_patch.patch
@@ -49,6 +50,7 @@ NON_REPLACE_FLAG=""
 EXPORT_DEBUGINFO=0
 DEBUGINFO_DIR="$BUILD_DIR/debuginfo"
 KPATCH_BUILDDIR="$HOME/.kpatch"
+DESC_FILE=""
 patches=()
 declare -A photon_version=(["4.19"]="3.0" ["5.10"]="4.0")
 
@@ -63,7 +65,7 @@ parse_args() {
     fi
 
     local flag=""
-    flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" )
+    flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" )
     while (( "$#" )); do
         if [[ $1 = -* ]]; then
             flag=$1
@@ -95,6 +97,10 @@ parse_args() {
                     ;;
                 -n)
                     LIVEPATCH_NAME=$1
+                    ;;
+                -d)
+                    DESC_FILE=$1
+                    [ -f "$DESC_FILE" ] || error "Description file does not exist"
                     ;;
                 esac
         fi
@@ -284,6 +290,7 @@ print_help() {
     echo -e "\t -R: Don't set the replace flag in the livepatch module. Replace flag is set by default."
     echo -e "\t --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc."
     echo -e "\t -h/--help: Print help message"
+    echo -e "\t -d: Use file contents as description field for livepatch module."
     exit "$1"
 }
 
@@ -393,6 +400,11 @@ kpatch_build() {
         skip_cleanup="--skip-cleanup"
     fi
 
+    local description_file=""
+    if [ -f "$DESC_FILE" ]; then
+        description_file="-D $DESC_FILE"
+    fi
+
     kpatch-build -v "$TEMP_DIR/$VMLINUX_PATH" \
             -s "$TEMP_DIR/rpmbuild/BUILD/linux-$LINUX_VERSION" \
             -c "$TEMP_DIR/rpmbuild/BUILD/linux-$LINUX_VERSION/.config" \
@@ -402,6 +414,7 @@ kpatch_build() {
             "${patches[@]}" \
             $NON_REPLACE_FLAG \
             $skip_cleanup \
+            $description_file \
             || error "Building livepatch module failed."
     echo "Livepatch module successfully built"
 
