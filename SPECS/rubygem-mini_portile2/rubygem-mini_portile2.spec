@@ -4,21 +4,21 @@
 
 Summary:        Simplistic port-like solution for developers
 Name:           rubygem-mini_portile2
-Version:        2.5.0
+Version:        2.8.0
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://rubygems.org/downloads/mini_portile2-%{version}.gem
-%define sha1    mini_portile2=9fbd2e4af6def403acb37ec39b4434ba8f5558f8
+%define sha512    mini_portile2=74eb55b15329d31b65d363ce2fda26b849d708bf77481acdf851bdf6c97a8c3f9676d5bebf46e9e3eeb55e0e243c8e995eda6952f51f54b846762ab0f65aa7df
 BuildRequires:  ruby
 Requires:       ruby
 %description
 Simplistic port-like solution for developers. It provides a standard and simplified way to compile against dependency libraries without messing up your system.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 %build
 
 %install
@@ -29,6 +29,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8.0-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 2.3.0-1

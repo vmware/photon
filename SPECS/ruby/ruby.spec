@@ -1,17 +1,20 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.7.1
-Release:        4%{?dist}
+Version:        3.1.2
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=4af568f5210379239531dbc54d35739f6ff7ab1d7ffcafc54fed2afeb2b30450d2df386504edf96a494465b3f5fd90cb030974668aa7a1fde5a6b042ea9ca858
+Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9155d1150398eaea7c9954af61ecf8dfdb885cfcf63a67bbcf6c92e282cd3ccac0ff9234d039286a9623297b65197441438c37f707e31d270ce2fe11e8f38a44
 
-Patch0:         0001-openssl-3.0.0-compatibility.patch
+Patch0:         re-enable_gem_extension_build_1.patch
+Patch1:         re-enable_gem_extension_build_2.patch
+Patch2:         re-enable_gem_extension_build_3.patch
+Patch3:         re-enable_gem_extension_build_4.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -73,9 +76,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/ri/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
-%{_mandir}/man5/*
 
 %changelog
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
+- Automatic Version Bump
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.1-4
 - Drop libdb support
 * Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-3

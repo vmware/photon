@@ -3,7 +3,7 @@
 %global gem_name async
 
 Name: rubygem-async
-Version:        1.26.2
+Version:        2.2.1
 Release:        1%{?dist}
 Summary:        Async provides a modern asynchronous I/O framework for Ruby, based on nio4r.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    async=e027ee1c36fca89b21084daf9bc5b2e2cf2e2711
+%define sha512    async=5a4654eeec8dbb092b4d3e6b425fe48ef818110710cd442f36e0e939d185d06aa7bf0d82e0eae690e26fa608ce853dab71d28c8f21a8a7dc80b9ebe9b60d26f3
 BuildRequires:  ruby >= 2.2.7
 
 Requires: rubygem-console >= 1.0.0, rubygem-console < 2.0.0
@@ -26,7 +26,7 @@ Async provides a modern asynchronous I/O framework for Ruby, based on nio4r.
 It implements the reactor pattern, providing both IO and timer based events.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -38,6 +38,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.1-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26.2-1
 -   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.20.1-1

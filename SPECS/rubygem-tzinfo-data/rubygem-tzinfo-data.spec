@@ -3,14 +3,16 @@
 %global gem_name tzinfo-data
 
 Name: rubygem-tzinfo-data
-Version:        1.2020.1
+Version:        1.2022.6
 Release:        1%{?dist}
 Summary:        data from the IANA Time Zone database packaged as Ruby modules
 Group:          Development/Languages
 License:        MIT
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/tzinfo-data-%{version}.gem
-%define sha1    tzinfo-data=ef368779f674bbdc4ea68f9c2e3fa2c49e847a2d
+%define sha512  tzinfo-data=fd3929465df1c6ee88133743c932f559995d6c6ac9317b5d044d1f24ab5b618f936ba4d6c9689198adffb8b8fea8f38faf85f644d4617d38665b95b6cc3129ed
 BuildRequires:  ruby
 Provides: rubygem-tzinfo-data = %{version}
 
@@ -19,7 +21,7 @@ TZInfo::Data contains data from the IANA Time Zone database packaged as
 Ruby modules for use with TZInfo.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2022.6-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2020.1-1
 -   Automatic Version Bump
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2018.5-1

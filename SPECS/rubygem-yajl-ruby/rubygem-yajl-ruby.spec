@@ -3,8 +3,8 @@
 %global gem_name yajl-ruby
 
 Name:           rubygem-yajl-ruby
-Version:        1.4.1
-Release:        2%{?dist}
+Version:        1.4.3
+Release:        1%{?dist}
 Summary:        Ruby C bindings to the excellent Yajl JSON stream-based parser library.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -13,11 +13,13 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/yajl-ruby-%{version}.gem
-%define sha512 yajl-ruby=24cd82380658d784bbf0a7a16d4048125cc5a856b0e0b4d3bdec29a550a9131d3959f9a75eba0d18d5db8d0a23158fb7ef6ea6f60d221a7bc3d8efc437d52df5
+%define sha512  yajl-ruby=8cfde677f11ad80a468dce7876b97aa87fa35d78fcd727d4542e00c09cc28d1cca3301cf7c4e1f773edf2192262ec8d6ffab93b11d488d2b048d8013f6c7645a
 
 BuildRequires:  ruby
 
-Provides: rubygem-yajl-ruby = %{version}
+Requires:       ruby
+
+Provides:       rubygem-yajl-ruby = %{version}
 
 %description
 Ruby C bindings to the excellent Yajl JSON stream-based parser library.
@@ -35,6 +37,8 @@ gem install -V --local --force --install-dir %{buildroot}%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.3-1
+- Automatic Version Bump
 * Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.1-2
 - Rebuilt using ruby-2.7.1
 * Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.4.1-1

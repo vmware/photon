@@ -4,13 +4,13 @@
 
 Name: rubygem-ronn
 Version:        0.7.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        manual authoring tool
 Group:          Development/Languages
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    ronn=e30936a7e93204a81dd84fc0bff283b645fa1c29
+%define sha512  ronn=885418c88d5a1073f9457ea11e29d82d3bb40ad12506589ccfab83ad447445e41282c9688aba5646082ae5ecc6a047fa9439ffae14561152fc61a136474f611c
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ruby
@@ -23,7 +23,7 @@ Requires:       rubygem-rdiscount
 Ronn converts textfiles to standard roff-formatted UNIX manpages or HTML
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -35,5 +35,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.7.3-2
+-   Version bump to build with new ruby
 *   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.7.3-1
 -   Initial build

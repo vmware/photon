@@ -4,13 +4,13 @@
 
 Name: rubygem-hpricot
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        a swift, liberal HTML parser with a fantastic library
 Group:          Development/Library
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    hpricot=87ce2c17960a5e1d7ceaa16d0591ca6a28379ce0
+%define sha512  hpricot=f0ea9168ae79d099cdb751dd5a205e0896dfb229759e499fff833e94209d1497aa97becb285176dcbcc1fee19bc11913ca3ac0d7a467067e5d837c1eb6e310ad
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ruby
@@ -20,7 +20,7 @@ Hpricot is a fast, flexible HTML parser written in C. It's designed to be
 very accommodating and to have a very helpful library
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -32,5 +32,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.8.6-2
+-   Version bump to build with new ruby
 *   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.6-1
 -   Initial build

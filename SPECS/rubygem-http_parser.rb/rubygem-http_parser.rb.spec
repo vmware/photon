@@ -3,8 +3,8 @@
 %global gem_name http_parser.rb
 
 Name: rubygem-http_parser.rb
-Version:        0.6.0
-Release:        2%{?dist}
+Version:        0.8.0
+Release:        1%{?dist}
 Summary:        Provides ruby bindings to http parser
 Group:          Development/Languages
 License:        MIT
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/http_parser.rb-%{version}.gem
-%define sha1    http_parser.rb=0d69273a2e74b82358b19f01632e06601732a64e
+%define sha512    http_parser.rb=228e8a617154411c43a548f10d2d8d2cae2d97970f621b4ef2955de94ed1943611cff22659cd75d63a09a0a02396993ab646ee29303d99856b46a80253a618c8
 BuildRequires:  ruby
 Provides: rubygem-http_parser.rb = %{version}
 
@@ -20,7 +20,7 @@ Provides: rubygem-http_parser.rb = %{version}
 Provides ruby bindings to http parser.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -32,6 +32,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.6.0-2
 -   rebuilt with ruby-2.7.1
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 0.6.0-1

@@ -2,8 +2,8 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name terminal-table
 Name:           rubygem-terminal-table
-Version:        1.8.0
-Release:        2%{?dist}
+Version:        3.0.2
+Release:        1%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:   Photon
 License:        BSD
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/terminal-table-%{version}.gem
-%define sha1    terminal-table=e5d8ae048471029bd8991152c7e8c20aafb8b935
+%define sha512    terminal-table=9d625a5903c7511f59f2e083ed2db72d337405019c41461b97590411a5028a061ce4a42eeb75c19b0e6deb2ef81f18ad80bb74d4ebdb9eca9ff6004631ddd994
 BuildRequires:  ruby
 Requires:       ruby
 Requires:       rubygem-unicode-display_width
@@ -20,7 +20,7 @@ Requires:       rubygem-unicode-display_width
 Simple, feature rich ascii table generation library
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 %install
@@ -31,6 +31,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.8.0-2
 -   Rebuilt using ruby-2.7.1
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.8.0-1
@@ -45,4 +47,3 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 -   GA - Bump release of all rpms
 *   Wed Nov 11 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-1
 -   Initial build
-

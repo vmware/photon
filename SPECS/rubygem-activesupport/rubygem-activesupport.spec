@@ -3,7 +3,7 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        6.0.3.3
+Version:        7.0.4
 Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
-%define sha1    activesupport=673e08bfcce6de903d0dfc4c0bb80f67b46c76d4
+%define sha512    activesupport=54859a1cccda0940a91be3be8a68087a4cb8ae6f5850dc3ae92bb79a722b04f34a5d9a61456146c2d7c994e95cd5f1b40c16766e0ef54828acc91edb5aba1d2b
 BuildRequires:  ruby
 
 %description
@@ -21,7 +21,7 @@ Rails framework. Rich support for multibyte strings, internationalization,
 time zones, and testing.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 7.0.4-1
+-   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.3-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.2-1

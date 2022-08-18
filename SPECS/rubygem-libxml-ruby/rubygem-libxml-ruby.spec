@@ -2,7 +2,7 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
 Name:           rubygem-libxml-ruby
-Version:        3.2.0
+Version:        3.2.4
 Release:        1%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
@@ -11,14 +11,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-%define sha1    libxml-ruby=dc4dba1a11af8854102f9455c65b63cb4e382df1
+%define sha512    libxml-ruby=0799249baa6d575f4fa9e000111a08a8f923221852f2169cf82586f377cdf0a8e13d772bde00296de30426a3a5eef568a23f91852d56f316dc9aa3cbabf8f911
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel
-Requires:       ruby >= 2.4.0
+Requires:       ruby
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 %prep
-%setup -q -c -T
+%autosetup -c -T
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
@@ -55,6 +55,8 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
 -   Automatic Version Bump
 *   Fri Nov 23 2018 Sujay G <gsujay@vmware.com> 3.1.0-2
@@ -75,4 +77,3 @@ rake test
 -   GA - Bump release of all rpms
 *   Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 2.8.0-1
 -   Initial build
-

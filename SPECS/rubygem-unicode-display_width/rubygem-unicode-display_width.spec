@@ -4,7 +4,7 @@
 
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
-Version:        1.7.0
+Version:        2.3.0
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        MIT
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/janlelis/unicode-display_width
 Source0:        http://rubygems.org/gems/unicode-display_width-%{version}.gem
-%define sha1    unicode-display_width=6d743a99b24181c979b99f09df161fb2a2d983bf
+%define sha512  unicode-display_width=5c8b5cad378baee9a449d1f06edccbea12f26f8d269ba39ef500dfc6bd5c0b478aa9e0a7262ac07ad3f3e75ee66bbcd4b2d450eae78ac67a3c912804ae9ae1ec
 BuildRequires:  ruby
 Requires:       ruby
 
@@ -20,7 +20,7 @@ Requires:       ruby
 Determines the monospace display width of a string in Ruby. Implementation based on EastAsianWidth.txt and other data, 100% in Ruby. Other than wcwidth(), which fulfills a similar purpose, it does not rely on the OS vendor to provide an up-to-date method for measuring string width.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -37,6 +37,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
 -   Automatic Version Bump
 *   Thu Nov 22 2018 Sujay G <gsujay@vmware.com> 1.4.0-2
