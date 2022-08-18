@@ -1,24 +1,19 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
-Version:         2.72.0
-Release:         5%{?dist}
+Version:         3.2.0
+Release:         1%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha512   %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
-
-Patch0:          %{name}-fix-make-check.patch
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
+%define sha512 %{name}=e4dc4cda297ec2c2e8ced82d141e00c186b552c9308eb0d05d55a1397de1b037d8fe053ea0ada12691ce7c0ff42c03f5f8177049005a1455cc3b0e1df77c99ea
 
 BuildRequires:   glib-devel
-BuildRequires:   gobject-introspection
 BuildRequires:   libxml2-devel
 BuildRequires:   intltool
-BuildRequires:   python3
-BuildRequires:   python3-libs
 BuildRequires:   python3-devel
 BuildRequires:   python3-tools
 BuildRequires:   glib-networking
@@ -28,14 +23,17 @@ BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
 BuildRequires:   meson >= 0.50
-BuildRequires:   gtk-doc
 BuildRequires:   cmake
+BuildRequires:   nghttp2-devel
+BuildRequires:   gobject-introspection-devel
+BuildRequires:   gnutls-devel
 
 Requires:        libxml2
 Requires:        glib-networking
 Requires:        sqlite-libs
 Requires:        libpsl
 Requires:        krb5
+Requires:        nghttp2
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -52,14 +50,6 @@ Requires:        libpsl-devel
 %description     devel
 Header files for libsoup.
 
-%package         doc
-Summary:         gtk-doc files for libsoup
-Group:           System Environment/Development
-Requires:        %{name} = %{version}-%{release}
-
-%description     doc
-gtk-doc files for libsoup.
-
 %package         lang
 Summary:         Additional language files for libsoup
 Group:           System Environment/Development
@@ -72,12 +62,14 @@ These are the additional language files of libsoup.
 %autosetup -p1
 
 %build
-%meson --auto-features=disabled -Dvapi=disabled -Dgtk_doc=true
+%meson \
+    --auto-features=disabled \
+    -D vapi=disabled
+
 %meson_build
 
 %install
 %meson_install
-%find_lang %{name}
 
 %if 0%{?with_check}
 %check
@@ -97,14 +89,13 @@ These are the additional language files of libsoup.
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
-%files doc
+%files lang
 %defattr(-,root,root)
-%{_datadir}/gtk-doc/html/*
-
-%files lang -f %{name}.lang
-%defattr(-,root,root)
+%{_datadir}/locale/*
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
+- Upgrade to v3.2.0
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-5
 - Bump version as a part of sqlite upgrade
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-4

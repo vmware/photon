@@ -1,15 +1,15 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2021.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha512  lib%{name}-%{version}=73d463e9cfaa027ac640051615b312c1800e71b2587e33cbae1e60356cb3c3f5d4afcda8ace680636ebd1d112061f2a8a7c25c46aa24a1b260244451157ffe8a
+Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
+%define sha512 lib%{name}-%{version}=73d463e9cfaa027ac640051615b312c1800e71b2587e33cbae1e60356cb3c3f5d4afcda8ace680636ebd1d112061f2a8a7c25c46aa24a1b260244451157ffe8a
 
 Source1:        91-%{name}.preset
 
@@ -80,7 +80,7 @@ Summary:    GRUB2 integration for OSTree
 Group:      Development/Libraries
 Requires:   grub2
 Requires:   grub2-efi
-Requires:   %{name}
+Requires:   %{name} = %{version}-%{release}
 
 %description grub2
 GRUB2 integration for OSTree
@@ -102,7 +102,6 @@ env NOCONFIGURE=1 ./autogen.sh
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-%{name}.preset
 install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
 
@@ -163,6 +162,8 @@ install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-5
+- Bump version as a part of libsoup upgrade
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-4
 - Bump version as a part of sqlite upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.5-3
