@@ -2,7 +2,10 @@ FROM k8s-base-image:4.0
 
 COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
 RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y openssl nginx shadow zlib-devel --refresh
-RUN useradd --system --no-create-home -U -s /bin/false nginx
+
+RUN nginx_usr="nginx" && \
+        getent passwd "${nginx_usr}" > /dev/null || \
+        useradd --system --no-create-home -U -s /bin/false "${nginx_usr}"
 
 # forward nginx access and error logs to stdout and stderr
 RUN ln -sf /proc/1/fd/1 /var/log/nginx/access.log && \
