@@ -1,7 +1,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.66.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -99,6 +99,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Fri Aug 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.66.0-13
+- Bump up version to compile with new go
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.66.0-12
 - Bump up version to compile with new go
 *   Sat May 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.66.0-11

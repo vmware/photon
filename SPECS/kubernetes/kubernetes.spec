@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -234,6 +234,8 @@ fi
 %endif
 
 %changelog
+* Thu Aug 25 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.9-2
+- Bump up version to compile with new go
 * Wed Aug 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.9-1
 - Update to version 1.23.9
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-6
