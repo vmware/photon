@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.21.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -72,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.21.2-3
+- Bump up version to compile with new go
 * Fri May 27 2022 Piyush Gupta <gpiyush@vmware.com> 1.21.2-2
 - Bump up version to compile with new go.
 * Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.21.2-1

@@ -1,7 +1,7 @@
 Summary:        Collection of kubernetes controllers for Calico
 Name:           kube-controllers
 Version:        3.6.1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/kube-controllers
 Source0:        %{name}-%{version}.zip
@@ -51,35 +51,37 @@ install kube-controllers/dist/check-status %{buildroot}%{_bindir}/
 %{_bindir}/check-status
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-16
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-15
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-14
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-13
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-12
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-11
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 3.6.1-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-9
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 3.6.1-8
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.6.1-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 3.6.1-6
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-5
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-4
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-3
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-2
--   Bump up version to compile with new go
-*   Fri Jun 28 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
--   kube-controllers initial version
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-17
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-16
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-15
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-14
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-13
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-12
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-11
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 3.6.1-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.1-9
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 3.6.1-8
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.6.1-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 3.6.1-6
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-5
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-4
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-3
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-2
+- Bump up version to compile with new go
+* Fri Jun 28 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
+- kube-controllers initial version

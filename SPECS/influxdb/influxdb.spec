@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        21%{?dist}
+Release:        22%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -230,45 +230,47 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-21
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-20
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-19
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-18
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-17
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-16
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-15
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-14
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-13
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.6.0-12
--   Bump up version to compile with new go
-*   Fri Dec 04 2020 HarinadhD <hdommaraju@vmware.com> 1.6.0-11
--   Bump up version to compile with new go
-*   Thu Dec 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-10
--   Fix for CVE-2019-20933
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.6.0-9
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.6.0-8
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-7
--   Bump up version to compile with go 1.13.3
-*   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-6
--   Build with go 1.13
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-5
--   Bump up version to compile with new go
-*   Fri Jan 25 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-4
--   Added make check.
-*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.6.0-3
--   Build using go 1.9.7
-*   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 1.6.0-2
--   Fix for aarch64
-*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
--   Initial influxdb package for Photon.
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-22
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-21
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-20
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-19
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-18
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-17
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-16
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-15
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-14
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-13
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.6.0-12
+- Bump up version to compile with new go
+* Fri Dec 04 2020 HarinadhD <hdommaraju@vmware.com> 1.6.0-11
+- Bump up version to compile with new go
+* Thu Dec 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-10
+- Fix for CVE-2019-20933
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.6.0-9
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.6.0-8
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-7
+- Bump up version to compile with go 1.13.3
+* Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-6
+- Build with go 1.13
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-5
+- Bump up version to compile with new go
+* Fri Jan 25 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-4
+- Added make check.
+* Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.6.0-3
+- Build using go 1.9.7
+* Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 1.6.0-2
+- Fix for aarch64
+* Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
+- Initial influxdb package for Photon.

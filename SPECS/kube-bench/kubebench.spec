@@ -1,7 +1,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.0.34
-Release:        13%{?dist}
+Release:        14%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
@@ -33,29 +33,31 @@ make tests %{?_smp_mflags}
     %{_bindir}/kube-bench
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-13
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-12
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-11
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-10
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-9
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-8
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-7
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-6
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-5
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.0.34-4
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.0.34-3
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.0.34-2
--   Bump up version to compile with go 1.13.3-2
-*   Wed Oct 30 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.34-1
--   Initial
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-14
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-13
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-12
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-11
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-10
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-9
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-8
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-7
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-6
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-5
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.0.34-4
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.0.34-3
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.0.34-2
+- Bump up version to compile with go 1.13.3-2
+* Wed Oct 30 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.34-1
+- Initial

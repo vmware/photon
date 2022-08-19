@@ -3,7 +3,7 @@
 Summary:     Git extension for versioning large files
 Name:        git-lfs
 Version:     2.12.0
-Release:     12%{?dist}
+Release:     13%{?dist}
 URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:     %{name}-%{version}.tar.gz
 License:     MIT
@@ -54,27 +54,29 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-12
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-11
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-10
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-9
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-8
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-7
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-6
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-5
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-4
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.12.0-3
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.12.0-2
--   Bump up version to compile with new go
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-13
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-12
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-11
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-10
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-9
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-8
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-7
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-6
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 2.12.0-5
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-4
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.12.0-3
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.12.0-2
+- Bump up version to compile with new go
 * Fri Sep 18 2020 Him Kalyan Bordoloi <bordoloih@vmware.com>  2.12.0-1
 - Initial release.

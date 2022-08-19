@@ -1,6 +1,6 @@
 Name:           consul
 Version:        1.9.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -90,59 +90,61 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.9.15-3
--   Bump up version to compile with new go
-*  Fri Mar 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.9.15-2
--  Bump up version to compile with new go.
-*  Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 1.9.15-1
--  Version upgrade 1.9.15 to fix CVE-2022-24687
-*  Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-3
--  Bump up version to compile with new go
-*  Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-2
--  Bump up version to compile with new go
-*  Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.17-1
--  Version upgrade 1.8.17 to fix CVE-2021-41805
-*  Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-5
--  Bump up version to compile with new go
-*  Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-4
--  Bump up version to compile with new go
-*  Mon Sep 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-3
--  Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698
-*  Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.14-2
--  Bump up version to compile with new go
-*  Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.14-1
--  Version upgrade to 1.8.14, fixes CVE-2021-32574
-*  Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.7.14-3
--  Bump up version to compile with new go
-*  Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.7.14-2
--  Bump up version to compile with new go
-*  Thu Apr 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.7.14-1
--  Upgrade to 1.7.14
-*  Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.7.11-2
--  Bump up version to compile with new go
-*  Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.11-1
--  Bump version to fix CVE-2020-28053
-*  Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.7.9-2
--  Bump up version to compile with new go
-*  Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.9-1
--  Upgrade to v1.7.9, fixes CVE-2020-25201
-*  Thu Oct 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.8-1
--  Upgrade to v1.7.8, fixes bunch of CVEs
-*  Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.7.1-3
--  Bump up version to compile with new go
-*  Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.7.1-2
--  Bump up version to compile with go 1.13.3-2
-*  Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
--  Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
-*  Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
--  Bump up version to compile with go 1.13.3
-*  Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-3
--  Bump up version to compile with new go
-*  Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
--  Applied patch for CVE-2018-19653
-*  Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
--  Upgraded to version 1.2.3
-*  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
--  Modify command line parameters in .service file.
-*  Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
--  Initial build. First version
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.9.15-4
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.9.15-3
+- Bump up version to compile with new go
+* Fri Mar 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.9.15-2
+- Bump up version to compile with new go.
+* Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 1.9.15-1
+- Version upgrade 1.9.15 to fix CVE-2022-24687
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-3
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.17-2
+- Bump up version to compile with new go
+* Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.17-1
+- Version upgrade 1.8.17 to fix CVE-2021-41805
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-5
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-4
+- Bump up version to compile with new go
+* Mon Sep 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.14-3
+- Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.14-2
+- Bump up version to compile with new go
+* Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.14-1
+- Version upgrade to 1.8.14, fixes CVE-2021-32574
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.7.14-3
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.7.14-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.7.14-1
+- Upgrade to 1.7.14
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.7.11-2
+- Bump up version to compile with new go
+* Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.11-1
+- Bump version to fix CVE-2020-28053
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.7.9-2
+- Bump up version to compile with new go
+* Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.9-1
+- Upgrade to v1.7.9, fixes CVE-2020-25201
+* Thu Oct 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.8-1
+- Upgrade to v1.7.8, fixes bunch of CVEs
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.7.1-3
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.7.1-2
+- Bump up version to compile with go 1.13.3-2
+* Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
+- Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-3
+- Bump up version to compile with new go
+* Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
+- Applied patch for CVE-2018-19653
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
+- Upgraded to version 1.2.3
+* Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
+- Modify command line parameters in .service file.
+* Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
+- Initial build. First version

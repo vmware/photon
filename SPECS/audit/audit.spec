@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        17%{?dist}
+Release:        18%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha512  audit=7d416aaa21c1a167f8e911ca82aecbaba804424f3243f505066c43ecc4a62a34feb2c27555e99d3268608404793dccca0f828c63670e3aa816016fb493f8174a
 Patch0:         detect_python2_audit.patch
@@ -163,75 +163,77 @@ mkdir -p /var/log/audit
 %{python3_sitelib}/*
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-17
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-16
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-15
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-14
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-13
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-12
--   Bump up version to compile with new go
-*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 2.8.5-11
--   Fix build with updated python symlink changes
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-9
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-8
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.8.5-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.8.5-6
--   Bump up version to compile with new go
-*   Wed Jun 17 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-5
--   Create /var/log/audit folder at %post time
-*   Wed Jun 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-4
--   Use /var/log/audit
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.8.5-3
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 2.8.5-2
--   Bump up version to compile with go 1.13.3
-*   Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
--   Updated to version 2.8.5.
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.8.4-4
--   Bump up version to compile with new go
-*   Sat Aug 10 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-3
--   Fixed the upgade failure due to empty /var/log/audit directory
-*   Fri May 03 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-2
--   Fixed type conflicts of log directory during upgrade
-*   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
--   Updated to version 2.8.4.
-*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
--   Fixed the log file directory structure
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
--   Disabled audit service by default
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2
--   Move python2 requires to python subpackage and added python3.
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.5-1
--   Version update.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-7
--   Moved man3 to devel subpackage.
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.5-6
--   Required krb5-devel.
-*   Fri Jul 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
--   Add gawk requirement.
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
--   Fixed logic to restart the active services after upgrade
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-3
--   GA - Bump release of all rpms
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-2
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.5-1
--   Upgrade to 2.5
-*   Fri Jan 29 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-4
--   Add directories for auditd service.
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-3
--   Change config file attributes.
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 2.4.4-2
--   Add systemd requirement.
-*   Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.4.4-1
--   Initial version
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-18
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-17
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-16
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-15
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-14
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-13
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-12
+- Bump up version to compile with new go
+* Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 2.8.5-11
+- Fix build with updated python symlink changes
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-9
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-8
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.8.5-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.8.5-6
+- Bump up version to compile with new go
+* Wed Jun 17 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-5
+- Create /var/log/audit folder at %post time
+* Wed Jun 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-4
+- Use /var/log/audit
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.8.5-3
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 2.8.5-2
+- Bump up version to compile with go 1.13.3
+* Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
+- Updated to version 2.8.5.
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.8.4-4
+- Bump up version to compile with new go
+* Sat Aug 10 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-3
+- Fixed the upgade failure due to empty /var/log/audit directory
+* Fri May 03 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-2
+- Fixed type conflicts of log directory during upgrade
+* Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
+- Updated to version 2.8.4.
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
+- Fixed the log file directory structure
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
+- Disabled audit service by default
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2
+- Move python2 requires to python subpackage and added python3.
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.5-1
+- Version update.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-7
+- Moved man3 to devel subpackage.
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.5-6
+- Required krb5-devel.
+* Fri Jul 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
+- Add gawk requirement.
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
+- Fixed logic to restart the active services after upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-3
+- GA - Bump release of all rpms
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-2
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.5-1
+- Upgrade to 2.5
+* Fri Jan 29 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-4
+- Add directories for auditd service.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-3
+- Change config file attributes.
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 2.4.4-2
+- Add systemd requirement.
+* Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.4.4-1
+- Initial version

@@ -1,7 +1,7 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
 Version:         1.23.3
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -99,51 +99,53 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
-*   Tue Aug 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.3-1
--   Update to version 1.23.3
-*   Tue May 31 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.3-2
--   Bump up version to compile with new go
-*   Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.3-1
--   Update to version 1.22.3
-*   Tue Apr 19 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.1-1
--   Update to version 1.22.1
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-5
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-4
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-3
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.20.3-2
--   Bump up version to compile with new go
-*   Tue Nov 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.20.3-1
--   Update to version 1.20.3
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-7
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-6
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-5
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-4
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.16.1-3
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.16.1-2
--   Bump up version to compile with new go
-*   Tue Nov 10 2020 Anisha Kumari <kanisha@vmware.com> 1.16.1-1
--   Bump up version to 1.16.1
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.4-2
--   Bump up version to compile with go 1.13.3-2
-*   Tue Feb 25 2020 Michelle Wang <michellew@vmware.com> 1.13.4-1
--   Bump up version to 1.13.4
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-3
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-2
--   Bump up version to compile with new go
-*   Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 1.10.0-1
--   Update to version 1.10.0
-*   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.7.4-1
--   Update version to 1.7.4 and its plugin version to 1.4.0.
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
--   Remove shadow from requires and use explicit tools for post actions
-*   Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.4-1
--   first version
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.3-2
+- Bump up version to compile with new go
+* Tue Aug 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.3-1
+- Update to version 1.23.3
+* Tue May 31 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.3-2
+- Bump up version to compile with new go
+* Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.3-1
+- Update to version 1.22.3
+* Tue Apr 19 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.1-1
+- Update to version 1.22.1
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-5
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-4
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.20.3-3
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.20.3-2
+- Bump up version to compile with new go
+* Tue Nov 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.20.3-1
+- Update to version 1.20.3
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-7
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-6
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-5
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-4
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.16.1-3
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.16.1-2
+- Bump up version to compile with new go
+* Tue Nov 10 2020 Anisha Kumari <kanisha@vmware.com> 1.16.1-1
+- Bump up version to 1.16.1
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.4-2
+- Bump up version to compile with go 1.13.3-2
+* Tue Feb 25 2020 Michelle Wang <michellew@vmware.com> 1.13.4-1
+- Bump up version to 1.13.4
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-3
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-2
+- Bump up version to compile with new go
+* Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 1.10.0-1
+- Update to version 1.10.0
+* Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.7.4-1
+- Update version to 1.7.4 and its plugin version to 1.4.0.
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
+- Remove shadow from requires and use explicit tools for post actions
+* Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.4-1
+- first version

@@ -7,7 +7,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        network-event-broker-%{version}.tar.gz
@@ -101,14 +101,16 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-5
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-3
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-2
--   Bump up version to compile with new go
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-6
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-5
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-3
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-2
+- Bump up version to compile with new go
 * Wed Dec 22 2021 Susant Sahani <ssahani@vmware.com> 0.2.1-1
 - Version bump and add groupadd and useradd to requires.
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 0.2-1

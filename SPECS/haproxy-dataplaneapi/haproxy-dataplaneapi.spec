@@ -11,7 +11,7 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        1.2.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
@@ -54,27 +54,29 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-12
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-11
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-10
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-9
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-8
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-7
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.5-6
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-5
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.5-4
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.2.5-3
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.2.5-2
--   Bump up version to compile with new go
-*   Mon Apr 20 2020 Andrew Kutz <akutz@vmware.com> 1.2.5-1
--   Add haproxy-dataplaneapi v1.2.5 package.
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-13
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-12
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-11
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-10
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.5-9
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-8
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-7
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.5-6
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.5-5
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.5-4
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.2.5-3
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.2.5-2
+- Bump up version to compile with new go
+* Mon Apr 20 2020 Andrew Kutz <akutz@vmware.com> 1.2.5-1
+- Add haproxy-dataplaneapi v1.2.5 package.

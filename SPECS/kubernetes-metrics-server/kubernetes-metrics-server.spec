@@ -1,7 +1,7 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.2.1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -56,35 +56,37 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-16
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-15
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-14
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-13
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-12
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-11
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.2.1-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-9
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.2.1-8
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.2.1-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.2.1-6
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.2.1-5
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.2.1-4
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.2.1-3
--   Bump up version to compile with new go
-*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 0.2.1-2
--   Fix CVE-2018-17846 and CVE-2018-17143
-*   Tue Jul 10 2018 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-1
--   kubernetes-metrics-server 0.2.1
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-17
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-16
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-15
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-14
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-13
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-12
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-11
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.2.1-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.2.1-9
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.2.1-8
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.2.1-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.2.1-6
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.2.1-5
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.2.1-4
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.2.1-3
+- Bump up version to compile with new go
+* Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 0.2.1-2
+- Fix CVE-2018-17846 and CVE-2018-17143
+* Tue Jul 10 2018 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-1
+- kubernetes-metrics-server 0.2.1

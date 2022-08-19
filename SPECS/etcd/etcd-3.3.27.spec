@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.3.27
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -86,13 +86,15 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-5
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-4
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-3
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-2
--   Bump up version to compile with new go
-*   Wed Jan 12 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.27-1
--   Package etcd 3.3.27
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-6
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-5
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-4
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-3
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.3.27-2
+- Bump up version to compile with new go
+* Wed Jan 12 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.27-1
+- Package etcd 3.3.27

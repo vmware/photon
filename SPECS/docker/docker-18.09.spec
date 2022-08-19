@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -291,43 +291,45 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-19
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-18
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-17
--   Bump up version to compile with new go
-*   Wed Feb 02 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-16
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 18.09.9-15
--   Version Bump to build with new version of cmake
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-14
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-13
--   Bump up version to compile with new go
-*   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-12
--   Fix CVE-2021-41089
-*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 18.09.9-11
--   Bump up version to compile with new glibc
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-9
--   Bump up version to compile with new go
-*   Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-8
--   Bump up version to compile with new go
-*   Mon May 10 2021 Bo Gan <ganb@vmware.com> 18.09.9-7
--   Relax containerd dependency
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 18.09.9-6
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 18.09.9-5
--   Bump up version to compile with new go
-*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 18.09.9-4
--   Requires: gawk
-*   Mon May 04 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
--   Bump up version to compile with go 1.13.3-2
-*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-2
--   Added Requires shadow
--   To fix docker run command, libseccomp >= 2.4.0
-*   Tue Oct 22 2019 Bo Gan <ganb@vmware.com> 18.09.9-1
--   Initial packaging for 18.09
--   Split daemon and cli into different RPMs
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-20
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-19
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-18
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-17
+- Bump up version to compile with new go
+* Wed Feb 02 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-16
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 18.09.9-15
+- Version Bump to build with new version of cmake
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-14
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-13
+- Bump up version to compile with new go
+* Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-12
+- Fix CVE-2021-41089
+* Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 18.09.9-11
+- Bump up version to compile with new glibc
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-9
+- Bump up version to compile with new go
+* Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-8
+- Bump up version to compile with new go
+* Mon May 10 2021 Bo Gan <ganb@vmware.com> 18.09.9-7
+- Relax containerd dependency
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 18.09.9-6
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 18.09.9-5
+- Bump up version to compile with new go
+* Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 18.09.9-4
+- Requires: gawk
+* Mon May 04 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
+- Bump up version to compile with go 1.13.3-2
+* Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-2
+- Added Requires shadow
+- To fix docker run command, libseccomp >= 2.4.0
+* Tue Oct 22 2019 Bo Gan <ganb@vmware.com> 18.09.9-1
+- Initial packaging for 18.09
+- Split daemon and cli into different RPMs

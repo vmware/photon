@@ -10,7 +10,7 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io
 Group:          Virtualization/Libraries
@@ -67,18 +67,20 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
-*   Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.3-1
--   Upgrde runc to fix CVE-2022-24769, CVE-2022-29162
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
--   Bump up version to compile with new go
-*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-1
--   Update to 1.0.3
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-11
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-10
--   Bump up version to compile with new go
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-2
+- Bump up version to compile with new go
+* Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.3-1
+- Upgrde runc to fix CVE-2022-24769, CVE-2022-29162
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
+- Bump up version to compile with new go
+* Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-1
+- Update to 1.0.3
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-11
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-10
+- Bump up version to compile with new go
 * Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.0.rc93-9
 - Fix for CVE-2021-43784.
 * Thu Nov 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.0.0.rc93-8

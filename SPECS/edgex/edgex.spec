@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        0.7.1
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -112,45 +112,47 @@ cp -a cmd/config-seed/res/properties %{buildroot}%{_datadir}/%{name}/config-seed
 %{_var}/log/*
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-19
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-18
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-17
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-16
--   Bump up version to compile with new go
-*   Wed Dec 22 2021 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-15
--   Bump up to use consul 1.8.17
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-14
--   Bump up version to compile with new go
-*   Wed Oct 27 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-13
--   Bump up version to compile with new go
-*   Tue Oct 26 2021 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-12
--   Bump up to use redis v6.0.16.
-*   Thu Sep 30 2021 Shreyas B. <shreyasb@vmware.com> 0.7.1-11
--   Bump up to use redis v6.0.15
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.7.1-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-9
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.7.1-8
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.7.1-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.7.1-6
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 0.7.1-5
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.7.1-4
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.7.1-3
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.7.1-2
--   Bump up version to compile with new go
-*   Wed Jan 16 2019 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-1
--   Version update. Use redis db.
-*   Wed Dec 05 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-2
--   Remove 'Requires: mongodb'. But edgex still depends on mongo.
-*   Fri Jul 06 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-1
--   Initial version
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-20
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-19
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-18
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-17
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.7.1-16
+- Bump up version to compile with new go
+* Wed Dec 22 2021 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-15
+- Bump up to use consul 1.8.17
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-14
+- Bump up version to compile with new go
+* Wed Oct 27 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-13
+- Bump up version to compile with new go
+* Tue Oct 26 2021 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-12
+- Bump up to use redis v6.0.16.
+* Thu Sep 30 2021 Shreyas B. <shreyasb@vmware.com> 0.7.1-11
+- Bump up to use redis v6.0.15
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.7.1-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-9
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.7.1-8
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.7.1-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.7.1-6
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 0.7.1-5
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.7.1-4
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.7.1-3
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.7.1-2
+- Bump up version to compile with new go
+* Wed Jan 16 2019 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-1
+- Version update. Use redis db.
+* Wed Dec 05 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-2
+- Remove 'Requires: mongodb'. But edgex still depends on mongo.
+* Fri Jul 06 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-1
+- Initial version

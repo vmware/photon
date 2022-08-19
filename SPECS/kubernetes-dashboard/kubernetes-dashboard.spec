@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -59,49 +59,51 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-16
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-15
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-14
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-13
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-12
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-11
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.10.1-10
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-9
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.10.1-8
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.10.1-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.10.1-6
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-5
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.10.1-4
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-3
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-2
--   Bump up version to compile with new go
-*    Wed Jan 23 2019 Keerthana K <keerthanak@vmware.com> 1.10.1-1
--    Updating kubernetes-dashboard to 1.10.1 for security fix
-*    Mon Jan 07 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.3-4
--    Added nodejs-9.11.2 dependency
-*    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.8.3-3
--    Adding BuildArch
-*    Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.8.3-2
--    Using sources instead of doing npm install.
-*    Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.3-1
--    kubernetes-dashboard 1.8.3
-*    Tue Apr 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.6.3-2
--    Fix build break in google-closure-library.
-*    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
--    kubernetes-dashboard 1.6.3.
-*    Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
--    Initial version of kubernetes-dashboard package for Photon.
+* Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-17
+- Bump up version to compile with new go
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-16
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-15
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-14
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-13
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-12
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-11
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.10.1-10
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-9
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.10.1-8
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.10.1-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.10.1-6
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-5
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.10.1-4
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-3
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-2
+- Bump up version to compile with new go
+* Wed Jan 23 2019 Keerthana K <keerthanak@vmware.com> 1.10.1-1
+- Updating kubernetes-dashboard to 1.10.1 for security fix
+* Mon Jan 07 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.3-4
+- Added nodejs-9.11.2 dependency
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.8.3-3
+- Adding BuildArch
+* Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.8.3-2
+- Using sources instead of doing npm install.
+* Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.3-1
+- kubernetes-dashboard 1.8.3
+* Tue Apr 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.6.3-2
+- Fix build break in google-closure-library.
+* Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
+- kubernetes-dashboard 1.6.3.
+* Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
+- Initial version of kubernetes-dashboard package for Photon.
