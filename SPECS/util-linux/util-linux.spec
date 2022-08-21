@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.36
-Release:        4%{?dist}
+Version:        2.38
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.xz
-%define sha512  %{name}=cbb4975da8d99a1edd45514171d59ea7b019ce0f77a81e88b447a733f725e91c53540d9dc78bc626dc011dca129b8b150aaf9e64ccf62a4202ae816581acf4fd
-
-Patch0:         CVE-2021-37600.patch
+%define sha512  %{name}=d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -67,7 +65,6 @@ autoreconf -fiv
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
 %make_install %{?_smp_mflags}
-chmod 644 %{buildroot}%{_docdir}/%{name}/getopt/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 
 %find_lang %{name}
@@ -93,7 +90,7 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
-%{_datadir}/doc/%{name}/getopt/*
+%{_docdir}/%{name}/getopt*
 
 %files libs
 %defattr(-,root,root)
@@ -112,6 +109,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.38-1
+- Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.36-4
 - Fix binary path
 * Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.36-3
