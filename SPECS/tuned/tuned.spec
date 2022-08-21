@@ -1,6 +1,6 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
-Version:        2.18.0
+Version:        2.19.0
 Release:        1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
@@ -9,7 +9,7 @@ URL:            https://github.com/redhat-performance/tuned
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         tuned-%{version}.tar.gz
-%define sha512  %{name}=9508bfad6502b7b9a72fb84d29308cbc10b3cb663b367c821e79ad4d57c2349086c199bf884440c46d230d08d0ad3df17d4f31ebdc03b68c7ba2695b6e18bcc9
+%define sha512  %{name}=64ed338398f7ae73cdf4de04ce24dec6869abf3f399459f13de792edfd965da4efdab0fb1337749556f2868d1769dcb55df9e13983d1e0bc2769fb5fc791cfb8
 
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         tuned-fix-bug-in-sysctl-verify.patch
@@ -141,6 +141,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.19.0-1
+- Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.18.0-1
 - Automatic Version Bump
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.15.0-2
