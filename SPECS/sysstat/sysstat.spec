@@ -1,6 +1,6 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        12.5.6
+Version:        12.6.0
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
@@ -8,7 +8,7 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha512  sysstat=f23fc68bce6609b0255aae0b71e0f3220a40ece4f445642c9c1e185bab1130e491e1a323d102e5fdc019e63923480f67143eab444036fafce0045c01e37890df
+%define sha512  sysstat=e85e4e46e9218ee3263cc287a7664997a8a71a5be0bef080b7930b83b94ce1b3b488acc399b5b981591cf1c4ff56b660b7aa0de8ba81306766f2bb30e136f348
 Patch0:         sysstat.sysconfig.in.patch
 BuildRequires:  cronie
 Requires:       cronie
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/systemd/system/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 12.6.0-1
+-   Automatic Version Bump
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 12.5.6-1
 -   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4.0-1
