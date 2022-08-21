@@ -1,17 +1,15 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
-Version:        5.12.0
-Release:        3%{?dist}
+Version:        5.19.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha512  %{name}=9249beb67b30ceef178b60b2b61a5e6c45277e747ae4c865e739b7ab84192549e8e94ebaee43c0a87c0291037746ffb6936346245220786e369201ee13d60fac
-
-Patch0:         replace_killall_by_pkill.patch
+Source0: http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
+%define sha512 %{name}=eb0fffb153f7cecc89b5573b7fc211d67fb1c06789fd3b0aec75ba5032521d53c51ccc52db7367e41397993df50244af84763b0b1d5a76d9dfccf013c010131b
 
 Provides:       iproute
 
@@ -30,8 +28,6 @@ you will need to install %{name}-devel.
 
 %prep
 %autosetup -p1
-sed -i /ARPD/d Makefile
-sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
 
 %build
@@ -45,16 +41,16 @@ export LIBDIR='%{_libdir}'
 
 %check
 %if 0%{?with_check}
-cd testsuite
+pushd testsuite
 # Fix linking issue in testsuite
 sed -i 's/<libnetlink.h>/\"..\/..\/include\/libnetlink.h\"/g' tools/generate_nlmsg.c
 sed -i 's/\"libnetlink.h\"/"..\/include\/libnetlink.h\"/g' ../lib/libnetlink.c
-cd tools
+pushd tools
 make %{?_smp_mflags}
-cd ..
+popd
 make %{?_smp_mflags}
 make alltests %{?_smp_mflags}
-cd ..
+popd
 %endif
 
 %ldconfig_scriptlets
@@ -75,6 +71,8 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.19.0-1
+- Upgrade to v5.19.0
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.12.0-3
 - Drop libdb support
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 5.12.0-2
