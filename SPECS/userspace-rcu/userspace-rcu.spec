@@ -1,11 +1,11 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
-Version:        0.13.1
+Version:        0.13.2
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/urcu/userspace-rcu/releases
 Source:         %{name}-%{version}.tar.gz
-%define sha512  userspace-rcu=6534b7c5246f23680abe3b5db244e37f2365bcf93be655701046ef69781dea26230e06ec61c49880ae3742d31ca1b8d6d57962f70e5835ff928bc8711c010c9d
+%define sha512  userspace-rcu=a59daf9908acad3bd21e36d90c831ec2df8259d29743fb86066a82433a4a228ae79ca3b66e12120c0e6cad651a1007e77d6ac23ab083c55ab9b283b7d36a3ddc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.13.2-1
+-   Automatic Version Bump
 *   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 0.13.1-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.1-1

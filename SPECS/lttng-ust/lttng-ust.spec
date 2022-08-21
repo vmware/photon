@@ -1,11 +1,11 @@
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
-Version:       2.12.5
+Version:       2.13.4
 Release:       1%{?dist}
 License:       GPLv2, LGPLv2.1 and MIT
 URL:           https://lttng.org/download/
 Source:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha512 lttng-ust=7c1e39964f8eeb70c64ddb13e38de5dfff1abf6d133f9ee4b7e92545c93ea152ab75e1d63e15f3358d43fca98f109045f260095f84a4c1d53d0afdd59d239f7b
+%define sha512 lttng-ust=1954c3a4b2600ce50a14b6d54407ad7897e159c662afe3fab724da24b7fccd81da72f0aff22878a5fbc3d262fd143be7d55a3de608925fff5f1dec5614831b74
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -60,6 +60,8 @@ rm -vf %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
+- Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.5-1
 - Automatic Version Bump
 - due to 2.13.* has issues with dotnet-runtime - https://github.com/dotnet/runtime/issues/57784
