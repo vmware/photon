@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -114,6 +114,9 @@ cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 %{_sysconfdir}/auto_livepatch/dockerfiles/*
 
 %changelog
+* Mon Aug 22 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-3
+- Fixed issue where auto_livepatch.sh keeps description file around
+- and alwasy copies into container.
 * Mon Aug 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-2
 - Adding option both in kpatch-utils scripts and kpatch-build itself for
 - setting the description field of a livepatch module.
