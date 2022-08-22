@@ -1,10 +1,10 @@
-%define njs_ver     0.7.2
+%define njs_ver     0.7.5
 %define nginx_user  %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.21.0
-Release:        2%{?dist}
+Version:        1.22.0
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -12,10 +12,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=1f0c790e5ba104278ef5fc357e60ba2fddd2d8abda1363e26b418324b050f0e9f4901ce23949adede699e9f1340e8480ad8a6c811b7420a74c8f5c101be8a7ad
+%define sha512 %{name}=074782dba9cd5f8f493fbb57e20bda6dc9171814d919a47ee9f825d93f12c9f9d496e25d063c983191b55ad6a236bcef252ce16ecc1d253dc8b23433557559b1
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=7ff9c8f4e8cf1a3aeb0f2ed9f37e2b3f4966812966d1aca17dae8b454dd7fa725ccdc631b7dc1f3434f588e589f4cd419b9e087f3c745cd6ca092a683c92d82f
+%define sha512 %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
 
 Source2: %{name}.service
 
@@ -110,6 +110,9 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Mon Aug 22 2022 Harinadh D <hdommaraju@vmware.com> 1.22.0-1
+- version update
+- security support is ended for version 1.21
 * Tue Aug 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.21.0-2
 - Fix sevice handling and run in nginx user context
 * Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.21.0-1
