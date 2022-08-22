@@ -54,6 +54,22 @@ DESC_FILE=""
 patches=()
 declare -A photon_version=(["4.19"]="3.0" ["5.10"]="4.0")
 
+# args
+#   1. string to match
+#   2. array values
+match_string_in_array() {
+    local string_to_match=$1
+    shift
+    while (( $# )); do
+        if [[ "$string_to_match" == "$1" ]]; then
+            return 0
+        fi
+        shift
+    done
+
+    return 1
+}
+
 # parse the command line arguments and fill in variables
 parse_args() {
     # just print help message if no arguments
@@ -71,7 +87,7 @@ parse_args() {
             flag=$1
 
             # check to make sure number of args are correct
-            if [[ ! "${flags[*]}" =~ "$flag" ]]; then
+            if ! match_string_in_array $flag ${flags[@]} ; then
                 error "Unknown option $flag"
             elif [[ $1 == -h || $1 == --help ]]; then
                 print_help 0

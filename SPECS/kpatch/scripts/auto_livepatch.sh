@@ -59,6 +59,23 @@ PATCH_DIR=$AUTO_LIVEPATCH_DIR/patches
 DOCKER_KPATCH_BUILDLOG=/root/.kpatch/build.log
 FAILED=0
 EXPORT_DEBUGINFO=0
+DESC_GIVEN=0
+
+# args
+#   1. string to match
+#   2. array values
+match_string_in_array() {
+    local string_to_match=$1
+    shift
+    while (( $# )); do
+        if [[ "$string_to_match" == "$1" ]]; then
+            return 0
+        fi
+        shift
+    done
+
+    return 1
+}
 
 # just get what we need for this script from the arguments.
 # do some error checking here so that it will error out before creating
@@ -76,7 +93,6 @@ parse_args() {
     mkdir -p $PATCH_DIR
     local flag=""
     local patch_given=0
-    local desc_given=0
     local flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" )
     local no_arg_flags=( "-R" "--export-debuginfo" "-h" "--help" )
     while (( "$#" )); do
@@ -84,16 +100,16 @@ parse_args() {
         if [[ $1 == -* ]]; then
             flag=$1
 
-            if [[ ! "${flags[*]}" =~ "$flag" ]]; then
+            if ! match_string_in_array $flag ${flags[@]}; then
                 error "Unknown option $flag"
             elif [[ $1 == -h || $1 == --help ]]; then
                 source gen_livepatch.sh
                 exit 0
             elif [[ $1 == --export-debuginfo ]]; then
                 EXPORT_DEBUGINFO=1
-            elif [[ ! "${no_arg_flags[*]}" =~ "$flag" && ($2 == -* || -z $2) ]]; then
+            elif ! match_string_in_array $flag ${no_arg_flags[@]} && [[ ($2 == -* || -z $2) ]]; then
                 error "$1 needs at least one argument"
-            elif  [[ $3 != -* && $flag != -p && -n $3 && ! "${no_arg_flags[*]}" =~ "$flag" ]]; then
+            elif  [[ $3 != -* && $flag != -p && -n $3 ]] && ! match_string_in_array $flag ${no_arg_flags[@]} ; then
                 error "$1 only takes one argument"
             fi
         else
@@ -110,7 +126,7 @@ parse_args() {
                     OUTPUT_DIR=$1
                     ;;
                 -d)
-                    desc_given=1
+                    DESC_GIVEN=1
                     cp "$1" "$AUTO_LIVEPATCH_DIR/description.txt" &> /dev/null || error "Description file $1 not found"
                 esac
         fi
@@ -133,7 +149,7 @@ parse_args() {
     fi
 
     #make sure description file is easily accessible
-    if [[ $desc_given -eq 1 ]]; then
+    if [[ $DESC_GIVEN -eq 1 ]]; then
         ARGS="$ARGS -d $DOCKER_BUILDDIR/description.txt"
     fi
 
@@ -182,7 +198,9 @@ config_container() {
     # copy all necessary files into docker container, put patches into patches folder
     $DOCKER exec -t "$DOCKER_CONTAINER_NAME" mkdir -p $DOCKER_LIVEPATCH_DIR || error
     $DOCKER cp $PATCH_DIR "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
-    $DOCKER cp "$AUTO_LIVEPATCH_DIR/description.txt" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
+    if [[ $DESC_GIVEN -eq 1 ]]; then
+        $DOCKER cp "$AUTO_LIVEPATCH_DIR/description.txt" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
+    fi
 }
 
 # prints error message and then exits
@@ -220,6 +238,9 @@ cleanup() {
     if [[ $FAILED == 1 ]]; then
         save_buildlog
     fi
+
+    # delete old description files
+    rm -f "$AUTO_LIVEPATCH_DIR/description.txt"
 
     echo "Cleaning up docker container:"
     docker rm -f "$DOCKER_CONTAINER_NAME" || error "Failed to delete existing docker container: $DOCKER_CONTAINER_NAME"
