@@ -1,15 +1,15 @@
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
-Version:        5.17
-Release:        2%{?dist}
+Version:        5.19
+Release:        1%{?dist}
 License:        GPLv2
 URL:            https://www.kernel.org/pub/software/network/ethtool
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.kernel.org/pub/software/network/%{name}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=c9677829e3ed1f373bd993f72c710293a6e987bbd19829d437a436f42cf4e7995ee70a7db3590b1499ff6aa29c26815f4d0a3e4798ffb6992ae3f52b079cd3ff
+Source0: https://www.kernel.org/pub/software/network/%{name}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=71103c6856a889161ef2bf81eadec69b2f3a84c94aa776d545f889dc1c55b91d566d3b7394dbd2cb70ed92ac19d5f26967b1f829c204f23831d1fb81a0464972
 
 BuildRequires:  libmnl-devel
 
@@ -44,9 +44,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_sbindir}/ethtool
 %{_datadir}/bash-completion/completions/ethtool
-%{_mandir}
+%{_mandir}/*
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.19-1
+- Upgrade to v5.19
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.17-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.17-1
