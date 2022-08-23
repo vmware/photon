@@ -1,6 +1,6 @@
 Name:           cloud-init
-Version:        22.2.2
-Release:        2%{?dist}
+Version:        22.3
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -9,13 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=18b75ebbb5e808e19df5ceddb6402cc881c33443fb169f736f54837254ba43836994f2392a26febbd8df3342b3467ee72759b6942cfeb96d07c0e452c11dd0bf
+%define sha512 %{name}=50675caf75d5b5535782b87d7bdefa92740f575bb82d86bf72ed696a00713da4c6e15f06b6001497e84f5ec11e0a90d7322d118cd5d931f57805af2ca43fc646
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
-Patch4: cc_set_hostname_fix.patch
+Patch4: cloud-init-interface-match-without-mac.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -41,6 +41,7 @@ BuildRequires: python3-configobj
 BuildRequires: python3-jsonpatch
 BuildRequires: python3-pytest
 BuildRequires: python3-jsonschema
+BuildRequires: python3-pyserial
 %endif
 
 Requires: iproute2
@@ -60,6 +61,7 @@ Requires: python3-setuptools
 Requires: python3-xml
 Requires: python3-jsonschema
 Requires: python3-netifaces
+Requires: python3-pyserial
 Requires: dhcp-client
 
 BuildArch: noarch
@@ -104,9 +106,10 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 
 conf_file='%{_sysconfdir}/ca-certificates.conf'
 
-%define test_pkgs pytest-metadata unittest2 mock attrs iniconfig httpretty netifaces responses pytest-mock
+%define pkglist1 pytest-metadata unittest2 mock attrs iniconfig
+%define pkglist2  httpretty netifaces responses pytest-mock
 
-pip3 install --upgrade %test_pkgs
+pip3 install --upgrade %{pkglist1} %{pkglist2}
 make check %{?_smp_mflags}
 %endif
 
@@ -134,6 +137,7 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/cloud
 %dir %{_sysconfdir}/cloud/templates
 %doc %{_sysconfdir}/cloud/cloud.cfg.d/README
+%doc %{_sysconfdir}/cloud/clean.d/README
 %{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
 %{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
@@ -146,6 +150,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Tue Aug 23 2022 Shivani Agarwal <shivania2@vmware.com> 22.3-1
+- Upgrade to v22.3
+- Add patch to fix interface matching when no MAC
 * Sat Aug 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.2-2
 - Fix hostname setting issue
 * Fri Jul 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.2-1
