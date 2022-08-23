@@ -1,0 +1,368 @@
+From 70ce64428119be5b21b188994b72f2ebb65a0c57 Mon Sep 17 00:00:00 2001
+From: James Falcon <james.falcon@canonical.com>
+Date: Tue, 30 Aug 2022 14:26:03 -0500
+Subject: [PATCH] Fix v2 interface matching when no MAC
+
+Commit af40478 added a regression. When parsing v2 config, matching can
+fail when no MAC is available. This commit fixes that behavior.
+
+LP: #1986551
+---
+ cloudinit/cmd/devel/net_convert.py            |   2 +-
+ cloudinit/distros/__init__.py                 |   4 +-
+ cloudinit/net/network_state.py                |  13 ++-
+ cloudinit/net/networkd.py                     |   6 +-
+ tests/unittests/conftest.py                   |  10 ++
+ .../cloud-init-encc000.2653.nmconnection      |  21 ++++
+ .../cloud-init-encc000.nmconnection           |  12 +++
+ .../cloud-init-zz-all-en.nmconnection         |  16 +++
+ .../cloud-init-zz-all-eth.nmconnection        |  16 +++
+ .../net/artifacts/no_matching_mac_v2.yaml     |  22 ++++
+ tests/unittests/net/test_net_rendering.py     | 101 ++++++++++++++++++
+ 11 files changed, 212 insertions(+), 11 deletions(-)
+ create mode 100644 tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.2653.nmconnection
+ create mode 100644 tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.nmconnection
+ create mode 100644 tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-en.nmconnection
+ create mode 100644 tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-eth.nmconnection
+ create mode 100644 tests/unittests/net/artifacts/no_matching_mac_v2.yaml
+ create mode 100644 tests/unittests/net/test_net_rendering.py
+
+diff --git a/cloudinit/cmd/devel/net_convert.py b/cloudinit/cmd/devel/net_convert.py
+index 50e268a293..269d72cd5a 100755
+--- a/cloudinit/cmd/devel/net_convert.py
++++ b/cloudinit/cmd/devel/net_convert.py
+@@ -140,7 +140,7 @@ def handle_args(name, args):
+         config = distro.renderer_configs.get("eni")
+     elif args.output_kind == "netplan":
+         r_cls = netplan.Renderer
+-        config = distro.renderer_configs.get("netplan")
++        config = distro.renderer_configs.get("netplan", {})
+         # don't run netplan generate/apply
+         config["postcmds"] = False
+         # trim leading slash
+diff --git a/cloudinit/distros/__init__.py b/cloudinit/distros/__init__.py
+index 8de3955e34..4a468cf8ca 100644
+--- a/cloudinit/distros/__init__.py
++++ b/cloudinit/distros/__init__.py
+@@ -16,7 +16,7 @@
+ import string
+ import urllib.parse
+ from io import StringIO
+-from typing import Any, Mapping, Optional, Type
++from typing import Any, Mapping, MutableMapping, Optional, Type
+ 
+ from cloudinit import importer
+ from cloudinit import log as logging
+@@ -79,7 +79,7 @@ class Distro(persistence.CloudInitPickleMixin, metaclass=abc.ABCMeta):
+     tz_zone_dir = "/usr/share/zoneinfo"
+     default_owner = "root:root"
+     init_cmd = ["service"]  # systemctl, service etc
+-    renderer_configs: Mapping[str, Mapping[str, Any]] = {}
++    renderer_configs: Mapping[str, MutableMapping[str, Any]] = {}
+     _preferred_ntp_clients = None
+     networking_cls: Type[Networking] = LinuxNetworking
+     # This is used by self.shutdown_command(), and can be overridden in
+diff --git a/cloudinit/net/network_state.py b/cloudinit/net/network_state.py
+index fd92bf0eb7..e4f7a7fdcb 100644
+--- a/cloudinit/net/network_state.py
++++ b/cloudinit/net/network_state.py
+@@ -796,7 +796,7 @@ def handle_wifis(self, command):
+             " netplan rendering support."
+         )
+ 
+-    def _v2_common(self, cfg):
++    def _v2_common(self, cfg) -> None:
+         LOG.debug("v2_common: handling config:\n%s", cfg)
+         for iface, dev_cfg in cfg.items():
+             if "set-name" in dev_cfg:
+@@ -813,10 +813,13 @@ def _v2_common(self, cfg):
+                     name_cmd.update({"address": dns})
+                 self.handle_nameserver(name_cmd)
+ 
+-                mac_address = dev_cfg.get("match", {}).get("macaddress")
+-                real_if_name = find_interface_name_from_mac(mac_address)
+-                if real_if_name:
+-                    iface = real_if_name
++                mac_address: Optional[str] = dev_cfg.get("match", {}).get(
++                    "macaddress"
++                )
++                if mac_address:
++                    real_if_name = find_interface_name_from_mac(mac_address)
++                    if real_if_name:
++                        iface = real_if_name
+ 
+                 self._handle_individual_nameserver(name_cmd, iface)
+ 
+diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
+index abfc1037ee..e0a5d84814 100644
+--- a/cloudinit/net/networkd.py
++++ b/cloudinit/net/networkd.py
+@@ -255,7 +255,7 @@ def _render_content(self, ns):
+                 self.parse_routes(route, cfg)
+ 
+             if ns.version == 2:
+-                name = iface["name"]
++                name: Optional[str] = iface["name"]
+                 # network state doesn't give dhcp domain info
+                 # using ns.config as a workaround here
+ 
+@@ -270,8 +270,8 @@ def _render_content(self, ns):
+                         if dev_cfg.get("set-name") == name:
+                             name = dev_name
+                             break
+-
+-                self.dhcp_domain(ns.config["ethernets"][name], cfg)
++                if name in ns.config["ethernets"]:
++                    self.dhcp_domain(ns.config["ethernets"][name], cfg)
+ 
+             ret_dict.update({link: cfg.get_final_conf()})
+ 
+diff --git a/tests/unittests/conftest.py b/tests/unittests/conftest.py
+index e265a285ca..1ab17e8b10 100644
+--- a/tests/unittests/conftest.py
++++ b/tests/unittests/conftest.py
+@@ -1,6 +1,7 @@
+ import builtins
+ import glob
+ import os
++from pathlib import Path
+ 
+ import pytest
+ 
+@@ -55,3 +56,12 @@ def fake_filesystem(mocker, tmpdir):
+             func = getattr(mod, f)
+             trap_func = retarget_many_wrapper(str(tmpdir), nargs, func)
+             mocker.patch.object(mod, f, trap_func)
++
++
++PYTEST_VERSION_TUPLE = tuple(map(int, pytest.__version__.split(".")))
++
++if PYTEST_VERSION_TUPLE < (3, 9, 0):
++
++    @pytest.fixture
++    def tmp_path(tmpdir):
++        return Path(tmpdir)
+diff --git a/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.2653.nmconnection b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.2653.nmconnection
+new file mode 100644
+index 0000000000..80483d4f00
+--- /dev/null
++++ b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.2653.nmconnection
+@@ -0,0 +1,21 @@
++# Generated by cloud-init. Changes will be lost.
++
++[connection]
++id=cloud-init encc000.2653
++uuid=116aaf19-aabc-50ea-b480-e9aee18bda59
++type=vlan
++interface-name=encc000.2653
++
++[user]
++org.freedesktop.NetworkManager.origin=cloud-init
++
++[vlan]
++id=2653
++parent=f869ebd3-f175-5747-bf02-d0d44d687248
++
++[ipv4]
++method=manual
++may-fail=false
++address1=10.245.236.14/24
++gateway=10.245.236.1
++dns=10.245.236.1;
+diff --git a/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.nmconnection b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.nmconnection
+new file mode 100644
+index 0000000000..3368388d4a
+--- /dev/null
++++ b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-encc000.nmconnection
+@@ -0,0 +1,12 @@
++# Generated by cloud-init. Changes will be lost.
++
++[connection]
++id=cloud-init encc000
++uuid=f869ebd3-f175-5747-bf02-d0d44d687248
++type=ethernet
++interface-name=encc000
++
++[user]
++org.freedesktop.NetworkManager.origin=cloud-init
++
++[ethernet]
+diff --git a/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-en.nmconnection b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-en.nmconnection
+new file mode 100644
+index 0000000000..16120bc179
+--- /dev/null
++++ b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-en.nmconnection
+@@ -0,0 +1,16 @@
++# Generated by cloud-init. Changes will be lost.
++
++[connection]
++id=cloud-init zz-all-en
++uuid=159daec9-cba3-5101-85e7-46d831857f43
++type=ethernet
++interface-name=zz-all-en
++
++[user]
++org.freedesktop.NetworkManager.origin=cloud-init
++
++[ethernet]
++
++[ipv4]
++method=auto
++may-fail=false
+diff --git a/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-eth.nmconnection b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-eth.nmconnection
+new file mode 100644
+index 0000000000..df44d546c8
+--- /dev/null
++++ b/tests/unittests/net/artifacts/no_matching_mac/etc/NetworkManager/system-connections/cloud-init-zz-all-eth.nmconnection
+@@ -0,0 +1,16 @@
++# Generated by cloud-init. Changes will be lost.
++
++[connection]
++id=cloud-init zz-all-eth
++uuid=23a83d8a-d7db-5133-a77b-e68a6ac61ec9
++type=ethernet
++interface-name=zz-all-eth
++
++[user]
++org.freedesktop.NetworkManager.origin=cloud-init
++
++[ethernet]
++
++[ipv4]
++method=auto
++may-fail=false
+diff --git a/tests/unittests/net/artifacts/no_matching_mac_v2.yaml b/tests/unittests/net/artifacts/no_matching_mac_v2.yaml
+new file mode 100644
+index 0000000000..f5fc5ef10a
+--- /dev/null
++++ b/tests/unittests/net/artifacts/no_matching_mac_v2.yaml
+@@ -0,0 +1,22 @@
++network:
++  version: 2
++  ethernets:
++    encc000: {}
++    zz-all-en:
++      match:
++        name: "en*"
++      dhcp4: true
++    zz-all-eth:
++      match:
++        name: "eth*"
++      dhcp4: true
++  vlans:
++    encc000.2653:
++      id: 2653
++      link: "encc000"
++      addresses:
++        - "10.245.236.14/24"
++      gateway4: "10.245.236.1"
++      nameservers:
++        addresses:
++          - "10.245.236.1"
+diff --git a/tests/unittests/net/test_net_rendering.py b/tests/unittests/net/test_net_rendering.py
+new file mode 100644
+index 0000000000..06feab8914
+--- /dev/null
++++ b/tests/unittests/net/test_net_rendering.py
+@@ -0,0 +1,101 @@
++"""Home of the tests for end-to-end net rendering
++
++Tests defined here should take a v1 or v2 yaml config as input, and verify
++that the rendered network config is as expected. Input files are defined
++under `tests/unittests/net/artifacts` with the format of
++
++<test_name><format>.yaml
++
++For example, if my test name is "test_all_the_things" and I'm testing a
++v2 format, I should have a file named test_all_the_things_v2.yaml.
++
++If a renderer outputs multiple files, the expected files should live in
++the artifacts directory under the given test name. For example, if I'm
++expecting NetworkManager to output a file named eth0.nmconnection as
++part of my "test_all_the_things" test, then in the artifacts directory
++there should be a
++`test_all_the_things/etc/NetworkManager/system-connections/eth0.nmconnection`
++file.
++
++To add a new nominal test, create the input and output files, then add the test
++name to the `test_convert` test along with it's supported renderers.
++
++Before adding a test here, check that it is not already represented
++in `unittests/test_net.py`. While that file contains similar tests, it has
++become too large to be maintainable.
++"""
++import glob
++from enum import Flag, auto
++from pathlib import Path
++
++import pytest
++
++from cloudinit import safeyaml
++from cloudinit.net.netplan import Renderer as NetplanRenderer
++from cloudinit.net.network_manager import Renderer as NetworkManagerRenderer
++from cloudinit.net.network_state import NetworkState, parse_net_config_data
++
++ARTIFACT_DIR = Path(__file__).parent.absolute() / "artifacts"
++
++
++class Renderer(Flag):
++    Netplan = auto()
++    NetworkManager = auto()
++    Networkd = auto()
++
++
++@pytest.fixture(autouse=True)
++def setup(mocker):
++    mocker.patch("cloudinit.net.network_state.get_interfaces_by_mac")
++
++
++def _check_netplan(
++    network_state: NetworkState, netplan_path: Path, expected_config
++):
++    if network_state.version == 2:
++        renderer = NetplanRenderer(config={"netplan_path": netplan_path})
++        renderer.render_network_state(network_state)
++        assert safeyaml.load(netplan_path.read_text()) == expected_config, (
++            f"Netplan config generated at {netplan_path} does not match v2 "
++            "config defined for this test."
++        )
++    else:
++        raise NotImplementedError
++
++
++def _check_network_manager(network_state: NetworkState, tmp_path: Path):
++    renderer = NetworkManagerRenderer()
++    renderer.render_network_state(
++        network_state, target=str(tmp_path / "no_matching_mac")
++    )
++    expected_paths = glob.glob(
++        str(ARTIFACT_DIR / "no_matching_mac" / "**/*.nmconnection"),
++        recursive=True,
++    )
++    for expected_path in expected_paths:
++        expected_contents = Path(expected_path).read_text()
++        actual_path = tmp_path / expected_path.split(
++            str(ARTIFACT_DIR), maxsplit=1
++        )[1].lstrip("/")
++        assert (
++            actual_path.exists()
++        ), f"Expected {actual_path} to exist, but it does not"
++        actual_contents = actual_path.read_text()
++        assert expected_contents.strip() == actual_contents.strip()
++
++
++@pytest.mark.parametrize(
++    "test_name, renderers",
++    [("no_matching_mac_v2", Renderer.Netplan | Renderer.NetworkManager)],
++)
++def test_convert(test_name, renderers, tmp_path):
++    network_config = safeyaml.load(
++        Path(ARTIFACT_DIR, f"{test_name}.yaml").read_text()
++    )
++    network_state = parse_net_config_data(network_config["network"])
++    if Renderer.Netplan in renderers:
++        _check_netplan(
++            network_state, tmp_path / "netplan.yaml", network_config
++        )
++    if Renderer.NetworkManager in renderers:
++        _check_network_manager(network_state, tmp_path)

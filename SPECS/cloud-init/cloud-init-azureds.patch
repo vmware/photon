@@ -1,32 +1,32 @@
 diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
-index d07dc3c0..c5d93a7d 100755
+index 56f44339..bf4398d9 100644
 --- a/cloudinit/sources/helpers/azure.py
 +++ b/cloudinit/sources/helpers/azure.py
 @@ -1,5 +1,6 @@
  # This file is part of cloud-init. See LICENSE file for license information.
  import base64
 +import configobj
+ import enum
  import json
  import logging
- import os
-@@ -19,6 +20,7 @@ from cloudinit import (
- from cloudinit import distros, subp, temp_utils, url_helper, util, version
+@@ -20,6 +21,7 @@ from xml.sax.saxutils import escape
+ from cloudinit import distros, dmi, subp, temp_utils, url_helper, util, version
  from cloudinit.reporting import events
  from cloudinit.settings import CFG_BUILTIN
 +from io import StringIO
  
  LOG = logging.getLogger(__name__)
  
-@@ -59,6 +61,8 @@ DEFAULT_REPORT_FAILURE_USER_VISIBLE_MESSAGE = (
+@@ -50,6 +52,8 @@ DEFAULT_REPORT_FAILURE_USER_VISIBLE_MESSAGE = (
      "for more information on remediation."
  )
  
 +NETWORKD_LEASES_DIR = '/run/systemd/netif/leases'
 +
-
+ 
  def azure_ds_telemetry_reporter(func):
      def impl(*args, **kwargs):
-@@ -942,6 +945,32 @@ class WALinuxAgentShim:
+@@ -956,6 +960,32 @@ class WALinuxAgentShim:
          report_diagnostic_event(msg, logger_func=LOG.debug)
          return goal_state
  
