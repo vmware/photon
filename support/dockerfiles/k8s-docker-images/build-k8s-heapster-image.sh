@@ -12,22 +12,22 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for heapster - kubernetes cluster monitoring tool.
-K8S_HEAPSTER_VER=`cat ${SPEC_DIR}/heapster/heapster.spec | grep Version: | cut -d: -f2 | tr -d ' '`
-K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-`cat ${SPEC_DIR}/heapster/heapster.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+fn="${SPEC_DIR}/heapster/heapster.spec"
+K8S_HEAPSTER_VER=$(get_spec_ver "${fn}")
+K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-$(get_spec_rel "${fn}")
 K8S_HEAPSTER_RPM=heapster-${K8S_HEAPSTER_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_HEAPSTER_RPM_FILE=${STAGE_DIR}/RPMS/${ARCH}/${K8S_HEAPSTER_RPM}
 
-if [ ! -f ${K8S_HEAPSTER_RPM_FILE} ]
-then
-    echo "Kubernetes HEAPSTER RPM ${K8S_HEAPSTER_RPM_FILE} not found. Exiting.."
-    exit 1
+if [ ! -f ${K8S_HEAPSTER_RPM_FILE} ]; then
+  echo "Kubernetes HEAPSTER RPM ${K8S_HEAPSTER_RPM_FILE} not found. Exiting.."
+  exit 1
 fi
 
 IMG_NAME=vmware/photon-${DIST_VER}-k8s-heapster-amd64:${K8S_HEAPSTER_VER}
-IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
+IMG_ID=$(docker images -q ${IMG_NAME} 2> /dev/null)
 if [[ ! -z "${IMG_ID}" ]]; then
-    echo "Removing image ${IMG_NAME}"
-    docker rmi -f ${IMG_NAME}
+  echo "Removing image ${IMG_NAME}"
+  docker rmi -f ${IMG_NAME}
 fi
 
 mkdir -p tmp/k8heapster

@@ -4,16 +4,20 @@ Version:        1.5.4
 Release:        7%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/cadvisor
-Source0:        https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
-%define sha512  heapster=9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
-Patch0:         go-27704.patch
-Patch1:         go-27842.patch
-%if %{with_check}
-Patch2:         make-check-failure.patch
-%endif
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
+
+Patch0: go-27704.patch
+Patch1: go-27842.patch
+
+%if 0%{?with_check}
+Patch2: make-check-failure.patch
+%endif
+
 BuildRequires:  go
 BuildRequires:  unzip
 
@@ -28,30 +32,33 @@ pushd vendor/golang.org/x/net
 %patch0 -p1
 %patch1 -p1
 popd
-%if %{with_check}
+
+%if 0%{?with_check}
 %patch2 -p1
 %endif
 
 %build
 export GO111MODULE=auto
-mkdir -p $GOPATH/src/k8s.io/heapster
-cp -r . $GOPATH/src/k8s.io/heapster
-cd $GOPATH/src/k8s.io/heapster
+mkdir -p $GOPATH/src/k8s.io/%{name}
+cp -r . $GOPATH/src/k8s.io/%{name}
+cd $GOPATH/src/k8s.io/%{name}
 %make_build
 
 %install
-cd $GOPATH/src/k8s.io/heapster
+cd $GOPATH/src/k8s.io/%{name}
 install -d -p %{buildroot}%{_bindir}
-install -p -m 0755 heapster %{buildroot}%{_bindir}
+install -p -m 0755 %{name} %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
 
+%if 0%{?with_check}
 %check
-cd $GOPATH/src/k8s.io/heapster
+cd $GOPATH/src/k8s.io/%{name}
 make test-unit %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
-%{_bindir}/heapster
+%{_bindir}/%{name}
 %{_bindir}/eventer
 
 %changelog
