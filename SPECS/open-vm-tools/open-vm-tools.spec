@@ -3,18 +3,20 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.0.5
-Release:        2%{?dist}
+Version:        12.1.0
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=c5503caa8a6d4a7e0a18066781448bba4a800288b1a0e788204d57faf039cddfd297e809e006a5d37e336ba96bfc42ec6d33ab540c0ce62dd59c8a946df8d6ed
-Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
+Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
+%define sha512 %{name}=9280decf20381de56174bfdbab9a86c525f992ce35eda499938c9b6b00e59a012a4410fd2972bbc52f8951bb071042cc7bf77fc1d687acc7980cc54a26461aed
+
+Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
+
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
@@ -22,7 +24,6 @@ Source3:        vgauthd.service
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
 Patch1:     gosc-root-password-update.patch
-Patch2:     CVE-2022-31676.patch
 
 %if "%{_arch}" == "aarch64"
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
@@ -63,18 +64,18 @@ Requires: systemd >= 239-23
 VMware virtualization user mode tools
 
 %package        devel
-Summary:        Header and development files for open-vm-tools
+Summary:        Header and development files for %{name}
 Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 It contains the libraries and header files to create applications.
 
 %package        sdmp
-Summary:        Service Discovery plugin for open-vm-tools
+Summary:        Service Discovery plugin for %{name}
 Requires:       %{name} = %{version}-%{release}
 
 %description    sdmp
-The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
+The "%{name}-sdmp" package contains a plugin for Service Discovery.
 
 %prep
 %autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
@@ -90,18 +91,18 @@ autoreconf -i
            --with-tirpc \
            --enable-servicediscovery
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 #collecting hacks to manually drop the vmhgfs module
-install -vdm 755 %{buildroot}/%{_unitdir}
-install -vdm 755 %{buildroot}/usr/share/open-vm-tools
-cp -r %{gosc_scripts} %{buildroot}/usr/share/open-vm-tools
+install -vdm 755 %{buildroot}%{_unitdir}
+install -vdm 755 %{buildroot}%{_datadir}/%{name}
+cp -r %{gosc_scripts} %{buildroot}%{_datadir}/%{name}
 install -p -m 644 %{SOURCE2} %{buildroot}/%{_unitdir}
 install -p -m 644 %{SOURCE3} %{buildroot}/%{_unitdir}
 
 cd %{name}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 rm -f %{buildroot}/sbin/mount.vmhgfs
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 find %{buildroot}/usr/lib/ -name '*.la' -delete
@@ -167,6 +168,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+* Sat Aug 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.1.0-1
+- Upgrade to v12.1.0
 * Wed Aug 17 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.5-2
 - Fix CVE-2022-31676
 * Thu May 26 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.5-1

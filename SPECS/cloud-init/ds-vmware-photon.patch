@@ -9,7 +9,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 125 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 6ef7c9d5..e886ea1e 100644
+index 80a01e89..9e4c70f1 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
 @@ -73,6 +73,7 @@ import netifaces
@@ -17,7 +17,7 @@ index 6ef7c9d5..e886ea1e 100644
  from cloudinit import dmi
  from cloudinit import log as logging
 +from cloudinit.net import network_state
- from cloudinit import sources, util
+ from cloudinit import net, sources, util
  from cloudinit.subp import ProcessExecutionError, subp, which
  
 @@ -83,6 +84,7 @@ NOVAL = "No value found"
@@ -189,6 +189,3 @@ index 6ef7c9d5..e886ea1e 100644
          else:
              return sources.METADATA_UNKNOWN
  
--- 
-2.35.1
-
