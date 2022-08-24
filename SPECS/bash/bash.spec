@@ -1,30 +1,30 @@
 Summary:        Bourne-Again SHell
 Name:           bash
-Version:        5.0
-Release:        3%{?dist}
+Version:        5.1.16
+Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha512  %{name}=bb4519f06e278f271d08722b531e49d2e842cc3e0b02a6b3eee422e2efcb5b6226111af43f5e5eae56beb85ac8bfebcd6a4aacbabb8f609e529aa4d571890864
-Source1:        bash_completion
+Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a32a343b6dde9a18eb6217602655f72c4098b0d90f04cf4e686fb21b81fc4ef26ade30f7226929fbb7c207cde34617dbad2c44f6103161d1141122bb31dc6c80
 
-Patch0:         bash-4.4.patch
-Patch1:         CVE-2019-18276.patch
+Source1: bash_completion
 
-Provides:       /bin/sh
-Provides:       /bin/bash
+Patch0: enable-SYS_BASHRC-SSH_SOURCE_BASHRC.patch
+
+Provides: /bin/sh
+Provides: /bin/bash
 
 BuildRequires:  readline
 
-Requires:       readline
-Requires(post):    /bin/grep
-Requires(post):    /usr/bin/cp
-Requires(postun):  /bin/grep
-Requires(postun):  /usr/bin/mv
+Requires:           readline
+Requires(post):     /bin/grep
+Requires(post):     /usr/bin/cp
+Requires(postun):   /bin/grep
+Requires(postun):   /usr/bin/mv
 
 %description
 The package contains the Bourne-Again SHell
@@ -151,13 +151,12 @@ cat > %{buildroot}%{_sysconfdir}/profile.d/bash_completion.sh << "EOF"
 # check for interactive bash and only bash
 if [ -n "$BASH_VERSION" -a -n "$PS1" ]; then
 
-# enable bash completion in interactive shells
-if ! shopt -oq posix; then
-  if [ -f %{_datadir}/bash-completion/bash_completion ]; then
-    . %{_datadir}/bash-completion/bash_completion
+  # enable bash completion in interactive shells
+  if ! shopt -oq posix; then
+    if [ -f %{_datadir}/bash-completion/bash_completion ]; then
+      . %{_datadir}/bash-completion/bash_completion
+    fi
   fi
-fi
-
 fi
 EOF
 
@@ -191,7 +190,7 @@ fi
 NORMAL="\[\e[0m\]"
 RED="\[\e[1;31m\]"
 GREEN="\[\e[1;32m\]"
-if [[ $EUID == 0 ]]; then
+if [[ $EUID = 0 ]]; then
   PS1="$RED\u [ $NORMAL\w$RED ]# $NORMAL"
 else
   PS1="$GREEN\u [ $NORMAL\w$GREEN ]\$ $NORMAL"
@@ -200,8 +199,9 @@ fi
 unset RED GREEN NORMAL
 
 if test -n "$SSH_CONNECTION" -a -z "$PROFILEREAD"; then
-     . %{_sysconfdir}/profile > /dev/null 2>&1
+  . %{_sysconfdir}/profile > /dev/null 2>&1
 fi
+
 # End /etc/bash.bashrc
 EOF
 
@@ -273,25 +273,25 @@ make NON_ROOT_USERNAME=nobody %{?_smp_mflags} check
 
 %post
 if [ $1 -eq 1 ]; then
-if [ ! -f "/root/.bash_logout" ]; then
-  cp %{_sysconfdir}/skel/.bash_logout /root/.bash_logout
-fi
+  if [ ! -f "/root/.bash_logout" ]; then
+    cp %{_sysconfdir}/skel/.bash_logout /root/.bash_logout
+  fi
 
-if [ ! -f %{_sysconfdir}/shells ]; then
-  echo "/bin/sh" >> %{_sysconfdir}/shells
-  echo "/bin/bash" >> %{_sysconfdir}/shells
-  echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
-  echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
-else
-  grep -q '^/bin/sh$' %{_sysconfdir}/shells || \
-      echo "/bin/sh" >> %{_sysconfdir}/shells
-  grep -q '^/bin/bash$' %{_sysconfdir}/shells || \
-      echo "/bin/bash" >> %{_sysconfdir}/shells
-  grep -q '^%{_bindir}/sh$' %{_sysconfdir}/shells || \
-      echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
-  grep -q '^%{_bindir}/bash$' %{_sysconfdir}/shells || \
-      echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
-fi
+  if [ ! -f %{_sysconfdir}/shells ]; then
+    echo "/bin/sh" >> %{_sysconfdir}/shells
+    echo "/bin/bash" >> %{_sysconfdir}/shells
+    echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
+    echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
+  else
+    grep -q '^/bin/sh$' %{_sysconfdir}/shells || \
+        echo "/bin/sh" >> %{_sysconfdir}/shells
+    grep -q '^/bin/bash$' %{_sysconfdir}/shells || \
+        echo "/bin/bash" >> %{_sysconfdir}/shells
+    grep -q '^%{_bindir}/sh$' %{_sysconfdir}/shells || \
+        echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
+    grep -q '^%{_bindir}/bash$' %{_sysconfdir}/shells || \
+        echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
+  fi
 fi
 
 %postun
@@ -301,23 +301,23 @@ if [ $1 -eq 0 ]; then
   fi
   if [ ! -x /bin/sh ]; then
     grep -v '^/bin/sh$'  %{_sysconfdir}/shells | \
-    grep -v '^/bin/sh$' > %{_sysconfdir}/shells.rpm && \
-    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
+        grep -v '^/bin/sh$' > %{_sysconfdir}/shells.rpm && \
+        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
   if [ ! -x /bin/bash ]; then
     grep -v '^/bin/bash$'  %{_sysconfdir}/shells | \
-    grep -v '^/bin/bash$' > %{_sysconfdir}/shells.rpm && \
-    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
+        grep -v '^/bin/bash$' > %{_sysconfdir}/shells.rpm && \
+        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
   if [ ! -x %{_bindir}/sh ]; then
     grep -v '^%{_bindir}/sh$'  %{_sysconfdir}/shells | \
-    grep -v '^%{_bindir}/sh$' > %{_sysconfdir}/shells.rpm && \
-    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
+        grep -v '^%{_bindir}/sh$' > %{_sysconfdir}/shells.rpm && \
+        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
   if [ ! -x %{_bindir}/bash ]; then
     grep -v '^%{_bindir}/bash$'  %{_sysconfdir}/shells | \
-    grep -v '^%{_bindir}/bash$' > %{_sysconfdir}/shells.rpm && \
-    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
+        grep -v '^%{_bindir}/bash$' > %{_sysconfdir}/shells.rpm && \
+        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
 fi
 
@@ -342,6 +342,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.16-1
+- Upgrade to v5.1.16
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.0-3
 - Fix binary path
 * Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0-2
