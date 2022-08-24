@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        251.3
-Release:        2%{?dist}
+Version:        251.4
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512  %{name}=fb5b8dc1742562ef95469e90d406cfb6dfcb337860ad1208b460414b88ff0565071bde797d195faa62761206abc881829de6b1009e5d727cad2dfe0764310d5f
+%define sha512  %{name}=7bbfadd80b88a4c3510a5e4e3572e4eab71dafbf6289da038e552988e09ee8da16da3c9bb8a4fbbde6c6236e0e3c352b0a33f9ee0b84f10241f3499383387738
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -673,6 +673,8 @@ rm -rf %{_libdir}/systemd/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Aug 24 2022 Susant Sahani <ssahani@vmware.com> 251.4-1
+- Version bump
 * Tue Jul 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 251.3-2
 - Add libgpg-error-devel to BuildRequires
 * Mon Jul 25 2022 Susant Sahani <ssahani@vmware.com> 251.3-1
