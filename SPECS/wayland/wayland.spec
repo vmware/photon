@@ -1,7 +1,7 @@
 Summary:                Wayland Compositor Infrastructure
 Name:                   wayland
 Version:                1.20.0
-Release:                1%{?dist}
+Release:                2%{?dist}
 License:                MIT
 URL:                    http://wayland.freedesktop.org/
 Group:                  System Environment/Libraries
@@ -115,5 +115,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Thu Aug 25 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-2
+- Bump up release version
 * Tue Jun 14 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-1
 - Initial build. First version
