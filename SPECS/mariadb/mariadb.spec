@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.8.3
+Version:          10.9.2
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -8,8 +8,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define sha512    %{name}=04d1bb47688963f66f267a5d3fbc2a8f8766956d47223a9e6b5803bd6649f02bdace1290c6c31fd704f95f6e7641dd65b6214d5701ee0c43d7b6e34028e8021b
+Source0: https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define sha512 %{name}=2ac411cf2748dad8269b4a09d5014044be187459efea99f47eb75c2fd910b3903d989c605854fa02bf9a5cf90a24f7b10330c10fdc03509dfa3464f24976d95e
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -24,6 +24,16 @@ BuildRequires:    libaio-devel
 BuildRequires:    gnutls-devel
 
 Conflicts:        mysql
+
+Requires: openssl
+Requires: systemd
+Requires: perl
+Requires: zlib
+Requires: libaio
+Requires: gnutls
+Requires: libxml2
+Requires: curl
+Requires: Linux-PAM
 
 %description
 MariaDB is a community developed fork from MySQL - a multi-user, multi-threaded
@@ -133,15 +143,6 @@ mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/de
 
 %postun server
 /sbin/ldconfig
-if [ $1 -eq 0 ]; then
-  if getent passwd mysql >/dev/null; then
-    userdel mysql
-  fi
-
-  if getent group mysql >/dev/null; then
-    groupdel mysql
-  fi
-fi
 %systemd_postun_with_restart mariadb.service
 
 %preun server
@@ -282,6 +283,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/provider_bzip2.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/hashicorp_key_management.cnf
 %dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
 %{_bindir}/mariadb-install-db
@@ -452,6 +454,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Aug 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.9.2-1
+- Upgrade to v10.9.2 to fix CVE-2022-32091
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.3-1
 - Upgrade to v10.8.3
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.2-1
