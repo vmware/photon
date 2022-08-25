@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.3.35
+Version:          10.3.36
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -8,8 +8,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha512 %{name}=9355de944eccef4e0bc01b19ffc3c0c72cf88befae7385c6f0ee1ea47dbd98d23f6bb46af9c140acc48d9d9613552870684bc0b7ca1f3cff1dc09c1a2c801573
+Source0: https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define sha512 %{name}=321b4c48fcea4413eb239c4904c806306de660f2844edfa1d2a2a15213db287070d0f923db976588dfe329559d565bd98bddef3aaf8f14502f8c3db2ee27757a
 
 Patch0: MDEV-25787-Bug-report-crash-on-SELECT-DISTINCT-thous.patch
 
@@ -27,6 +27,13 @@ BuildRequires:    ncurses-devel
 
 Conflicts:        mysql
 
+Requires: openssl
+Requires: systemd
+Requires: libxml2
+Requires: perl
+Requires: curl
+Requires: zlib
+
 %description
 MariaDB Server is one of the most popular database servers in the world.
 It’s made by the original developers of MySQL and guaranteed to stay open source.
@@ -36,33 +43,33 @@ It is an enhanced, drop-in replacement for MySQL.
 MariaDB is used because it is fast, scalable and robust, with a rich ecosystem of storage engines,
 plugins and many other tools make it very versatile for a wide variety of use cases.
 
-%package          server
-Summary:          MariaDB server
-Requires:         %{name}-errmsg = %{version}-%{release}
-Requires:         shadow
+%package server
+Summary:    MariaDB server
+Requires:   %{name}-errmsg = %{version}-%{release}
+Requires:   shadow
 
-%description      server
+%description server
 The MariaDB server and related files
 
-%package          server-galera
-Summary:          MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB
-Group:            Applications/Databases
-Requires:         %{name}-server = %{version}-%{release}
+%package    server-galera
+Summary:    MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB
+Group:      Applications/Databases
+Requires:   %{name}-server = %{version}-%{release}
 
-%description      server-galera
+%description server-galera
 MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB. It is available on Linux only, and only supports the XtraDB/InnoDB storage engines (although there is experimental support for MyISAM - see the wsrep_replicate_myisam system variable).
 
-%package          devel
-Summary:          Development headers for mariadb
-Requires:         %{name} = %{version}-%{release}
+%package devel
+Summary:    Development headers for mariadb
+Requires:   %{name} = %{version}-%{release}
 
-%description      devel
+%description devel
 Development headers for developing applications linking to maridb
 
-%package          errmsg
-Summary:          errmsg for mariadb
+%package errmsg
+Summary: errmsg for mariadb
 
-%description      errmsg
+%description errmsg
 errmsg for maridb
 
 %prep
@@ -94,11 +101,11 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DTOKUDB_OK=0 \
       ..
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd build
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 mkdir -p %{buildroot}%{_unitdir} \
          %{buildroot}%{_sharedstatedir}/mysql
@@ -113,8 +120,8 @@ rm %{buildroot}%{_sbindir}/rcmysql \
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
-%check
 %if 0%{?with_check}
+%check
 cd build
 make %{?_smp_mflags} test
 %endif
@@ -136,14 +143,6 @@ mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/de
 
 %postun server
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-  if getent passwd mysql >/dev/null; then
-    userdel mysql
-  fi
-  if getent group mysql >/dev/null; then
-    groupdel mysql
-  fi
-fi
 %systemd_postun_with_restart mariadb.service
 
 %preun server
@@ -378,6 +377,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Thu Aug 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.36-1
+- Upgrade to v10.3.36 to fix CVE-2022-32091
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.35-1
 - Upgrade to v10.3.35 to fix bunch of CVEs
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.34-1
