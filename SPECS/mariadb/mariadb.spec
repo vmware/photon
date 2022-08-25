@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.7.4
+Version:          10.7.5
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -8,8 +8,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha512 %{name}=17b616d410fbcd5d54c0e2b75c34239396eccce1346c2a049d369f9e90b709169724d09a0eb6749dc143057fa9abc72d972bf4bf48c6b5c656ee3a3bec5c15c5
+Source0: https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define sha512 %{name}=79694df58c49a4a078ea25a97737f25ef2e205c4d35c228031197279ac447abff69b15e7efba12f167dc3df2ea00fcd1f3fb5df1f1a22aed23e8b0f2c8bc5d48
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -24,6 +24,16 @@ BuildRequires:    libaio-devel
 BuildRequires:    gnutls-devel
 
 Conflicts:        mysql
+
+Requires: openssl
+Requires: systemd
+Requires: perl
+Requires: zlib
+Requires: libaio
+Requires: gnutls
+Requires: libxml2
+Requires: curl
+Requires: Linux-PAM
 
 %description
 MariaDB is a community developed fork from MySQL - a multi-user, multi-threaded
@@ -93,11 +103,11 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DTOKUDB_OK=0 \
       ..
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sharedstatedir}/mysql
 mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb@.service \
@@ -111,8 +121,8 @@ rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
-%check
 %if 0%{?with_check}
+%check
 cd build
 make test %{?_smp_mflags}
 %endif
@@ -134,15 +144,6 @@ mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/de
 
 %postun server
 /sbin/ldconfig
-if [ $1 -eq 0 ]; then
-  if getent passwd mysql >/dev/null; then
-    userdel mysql
-  fi
-
-  if getent group mysql >/dev/null; then
-    groupdel mysql
-  fi
-fi
 %systemd_postun_with_restart mariadb.service
 
 %preun server
@@ -452,6 +453,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Aug 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.5-1
+- Upgrade to v10.7.5 to fix CVE-2022-32091
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.4-1
 - Upgrade to v10.3.35 to fix bunch of CVEs
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.3-1
