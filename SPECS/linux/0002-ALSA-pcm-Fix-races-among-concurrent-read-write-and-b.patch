@@ -1,0 +1,51 @@
+From 2b382906b9549407b62e0b47668521f4d35c866e Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Fri, 13 May 2022 12:38:29 +0300
+Subject: [PATCH 2/5] ALSA: pcm: Fix races among concurrent read/write and
+ buffer changes
+
+commit dca947d4d26dbf925a64a6cfb2ddbc035e831a3d upstream.
+
+In the current PCM design, the read/write syscalls (as well as the
+equivalent ioctls) are allowed before the PCM stream is running, that
+is, at PCM PREPARED state.  Meanwhile, we also allow to re-issue
+hw_params and hw_free ioctl calls at the PREPARED state that may
+change or free the buffers, too.  The problem is that there is no
+protection against those mix-ups.
+
+This patch applies the previously introduced runtime->buffer_mutex to
+the read/write operations so that the concurrent hw_params or hw_free
+call can no longer interfere during the operation.  The mutex is
+unlocked before scheduling, so we don't take it too long.
+
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ankit: Backported for v4.9.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ sound/core/pcm_lib.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
+index a479f21f49c5..f880ec5ba228 100644
+--- a/sound/core/pcm_lib.c
++++ b/sound/core/pcm_lib.c
+@@ -1953,9 +1953,11 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
+ 		if (avail >= runtime->twake)
+ 			break;
+ 		snd_pcm_stream_unlock_irq(substream);
++		mutex_unlock(&runtime->buffer_mutex);
+ 
+ 		tout = schedule_timeout(wait_time);
+ 
++		mutex_lock(&runtime->buffer_mutex);
+ 		snd_pcm_stream_lock_irq(substream);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		switch (runtime->status->state) {
+-- 
+2.23.1
+

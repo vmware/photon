@@ -1,0 +1,191 @@
+From 2955ae56525d7899b857c0819b1501841212f6c3 Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Fri, 13 May 2022 12:38:32 +0300
+Subject: [PATCH 5/5] ALSA: pcm: Fix potential AB/BA lock with buffer_mutex and
+ mmap_lock
+
+commit bc55cfd5718c7c23e5524582e9fa70b4d10f2433 upstream.
+
+syzbot caught a potential deadlock between the PCM
+runtime->buffer_mutex and the mm->mmap_lock.  It was brought by the
+recent fix to cover the racy read/write and other ioctls, and in that
+commit, I overlooked a (hopefully only) corner case that may take the
+revert lock, namely, the OSS mmap.  The OSS mmap operation
+exceptionally allows to re-configure the parameters inside the OSS
+mmap syscall, where mm->mmap_mutex is already held.  Meanwhile, the
+copy_from/to_user calls at read/write operations also take the
+mm->mmap_lock internally, hence it may lead to a AB/BA deadlock.
+
+A similar problem was already seen in the past and we fixed it with a
+refcount (in commit b248371628aa).  The former fix covered only the
+call paths with OSS read/write and OSS ioctls, while we need to cover
+the concurrent access via both ALSA and OSS APIs now.
+
+This patch addresses the problem above by replacing the buffer_mutex
+lock in the read/write operations with a refcount similar as we've
+used for OSS.  The new field, runtime->buffer_accessing, keeps the
+number of concurrent read/write operations.  Unlike the former
+buffer_mutex protection, this protects only around the
+copy_from/to_user() calls; the other codes are basically protected by
+the PCM stream lock.  The refcount can be a negative, meaning blocked
+by the ioctls.  If a negative value is seen, the read/write aborts
+with -EBUSY.  In the ioctl side, OTOH, they check this refcount, too,
+and set to a negative value for blocking unless it's already being
+accessed.
+
+Reported-by: syzbot+6e5c88838328e99c7e1c@syzkaller.appspotmail.com
+Fixes: dca947d4d26d ("ALSA: pcm: Fix races among concurrent read/write and buffer changes")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/000000000000381a0d05db622a81@google.com
+Link: https://lore.kernel.org/r/20220330120903.4738-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[OP: backport to 4.14: adjusted context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ankit: Backported for v4.9.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ include/sound/pcm.h     |  1 +
+ sound/core/pcm.c        |  1 +
+ sound/core/pcm_lib.c    |  2 --
+ sound/core/pcm_native.c | 39 ++++++++++++++++++++++++++++++++-------
+ 4 files changed, 34 insertions(+), 9 deletions(-)
+
+diff --git a/include/sound/pcm.h b/include/sound/pcm.h
+index 19a1d7d99919..633e03da9375 100644
+--- a/include/sound/pcm.h
++++ b/include/sound/pcm.h
+@@ -394,6 +394,7 @@ struct snd_pcm_runtime {
+ 	wait_queue_head_t tsleep;	/* transfer sleep */
+ 	struct fasync_struct *fasync;
+ 	struct mutex buffer_mutex;	/* protect for buffer changes */
++	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
+ 
+ 	/* -- private section -- */
+ 	void *private_data;
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index 22cdd608aa9e..bfe32b92803d 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -1008,6 +1008,7 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
+ 
+ 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
+ 	mutex_init(&runtime->buffer_mutex);
++	atomic_set(&runtime->buffer_accessing, 0);
+ 
+ 	substream->runtime = runtime;
+ 	substream->private_data = pcm->private_data;
+diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
+index f880ec5ba228..a479f21f49c5 100644
+--- a/sound/core/pcm_lib.c
++++ b/sound/core/pcm_lib.c
+@@ -1953,11 +1953,9 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
+ 		if (avail >= runtime->twake)
+ 			break;
+ 		snd_pcm_stream_unlock_irq(substream);
+-		mutex_unlock(&runtime->buffer_mutex);
+ 
+ 		tout = schedule_timeout(wait_time);
+ 
+-		mutex_lock(&runtime->buffer_mutex);
+ 		snd_pcm_stream_lock_irq(substream);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		switch (runtime->status->state) {
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index f0f5512b15bf..9e5ce3320bf0 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -505,6 +505,24 @@ static inline void snd_pcm_timer_notify(struct snd_pcm_substream *substream,
+ #endif
+ }
+ 
++/* acquire buffer_mutex; if it's in r/w operation, return -EBUSY, otherwise
++ * block the further r/w operations
++ */
++static int snd_pcm_buffer_access_lock(struct snd_pcm_runtime *runtime)
++{
++	if (!atomic_dec_unless_positive(&runtime->buffer_accessing))
++		return -EBUSY;
++	mutex_lock(&runtime->buffer_mutex);
++	return 0; /* keep buffer_mutex, unlocked by below */
++}
++
++/* release buffer_mutex and clear r/w access flag */
++static void snd_pcm_buffer_access_unlock(struct snd_pcm_runtime *runtime)
++{
++	mutex_unlock(&runtime->buffer_mutex);
++	atomic_inc(&runtime->buffer_accessing);
++}
++
+ #if IS_ENABLED(CONFIG_SND_PCM_OSS)
+ #define is_oss_stream(substream)       ((substream)->oss.oss)
+ #else
+@@ -515,14 +533,16 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+ 	struct snd_pcm_runtime *runtime;
+-	int err = 0, usecs;
++	int err, usecs;
+ 	unsigned int bits;
+ 	snd_pcm_uframes_t frames;
+ 
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
+-	mutex_lock(&runtime->buffer_mutex);
++	err = snd_pcm_buffer_access_lock(runtime);
++	if (err < 0)
++		return err;
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_OPEN:
+@@ -618,7 +638,7 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 			substream->ops->hw_free(substream);
+ 	}
+  unlock:
+-	mutex_unlock(&runtime->buffer_mutex);
++	snd_pcm_buffer_access_unlock(runtime);
+ 	return err;
+ }
+ 
+@@ -650,7 +670,9 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
+-	mutex_lock(&runtime->buffer_mutex);
++	result = snd_pcm_buffer_access_lock(runtime);
++	if (result < 0)
++		return result;
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_SETUP:
+@@ -670,7 +692,7 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
+ 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+ 	pm_qos_remove_request(&substream->latency_pm_qos_req);
+  unlock:
+-	mutex_unlock(&runtime->buffer_mutex);
++	snd_pcm_buffer_access_unlock(runtime);
+ 	return result;
+ }
+ 
+@@ -1037,12 +1059,15 @@ static int snd_pcm_action_nonatomic(const struct action_ops *ops,
+ 	int res;
+ 
+ 	down_read(&snd_pcm_link_rwsem);
+-	mutex_lock(&substream->runtime->buffer_mutex);
++	res = snd_pcm_buffer_access_lock(substream->runtime);
++	if (res < 0)
++		goto unlock;
+ 	if (snd_pcm_stream_linked(substream))
+ 		res = snd_pcm_action_group(ops, substream, state, 0);
+ 	else
+ 		res = snd_pcm_action_single(ops, substream, state);
+-	mutex_unlock(&substream->runtime->buffer_mutex);
++	snd_pcm_buffer_access_unlock(substream->runtime);
++ unlock:
+ 	up_read(&snd_pcm_link_rwsem);
+ 	return res;
+ }
+-- 
+2.23.1
+

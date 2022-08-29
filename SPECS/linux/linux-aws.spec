@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.321
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -209,6 +209,12 @@ Patch160:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 Patch161:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2021-4197
 Patch162:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
+# Fix for CVE-2022-1048
+Patch163:        0001-ALSA-pcm-Fix-races-among-concurrent-hw_params-and-hw.patch
+Patch164:        0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
+Patch165:        0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
+Patch166:        0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
+Patch167:        0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -422,6 +428,11 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch160 -p1
 %patch161 -p1
 %patch162 -p1
+%patch163 -p1
+%patch164 -p1
+%patch165 -p1
+%patch166 -p1
+%patch167 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -569,6 +580,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
+-   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4
 -   Fix for CVE-2021-4197
 *   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3

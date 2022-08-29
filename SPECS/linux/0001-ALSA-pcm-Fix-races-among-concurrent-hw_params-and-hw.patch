@@ -1,0 +1,182 @@
+From c60e073c1c65e1b6532ed874fa19c357ce4c92d3 Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Fri, 13 May 2022 12:38:28 +0300
+Subject: [PATCH 1/5] ALSA: pcm: Fix races among concurrent hw_params and
+ hw_free calls
+
+commit 92ee3c60ec9fe64404dc035e7c41277d74aa26cb upstream.
+
+Currently we have neither proper check nor protection against the
+concurrent calls of PCM hw_params and hw_free ioctls, which may result
+in a UAF.  Since the existing PCM stream lock can't be used for
+protecting the whole ioctl operations, we need a new mutex to protect
+those racy calls.
+
+This patch introduced a new mutex, runtime->buffer_mutex, and applies
+it to both hw_params and hw_free ioctl code paths.  Along with it, the
+both functions are slightly modified (the mmap_count check is moved
+into the state-check block) for code simplicity.
+
+Reported-by: Hu Jiahui <kirin.say@gmail.com>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[OP: backport to 4.14: adjusted context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ankit: Backported for v4.9.y]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ include/sound/pcm.h     |  1 +
+ sound/core/pcm.c        |  2 ++
+ sound/core/pcm_native.c | 55 +++++++++++++++++++++++++++--------------
+ 3 files changed, 39 insertions(+), 19 deletions(-)
+
+diff --git a/include/sound/pcm.h b/include/sound/pcm.h
+index b1d3cce26ce2..19a1d7d99919 100644
+--- a/include/sound/pcm.h
++++ b/include/sound/pcm.h
+@@ -393,6 +393,7 @@ struct snd_pcm_runtime {
+ 	wait_queue_head_t sleep;	/* poll sleep */
+ 	wait_queue_head_t tsleep;	/* transfer sleep */
+ 	struct fasync_struct *fasync;
++	struct mutex buffer_mutex;	/* protect for buffer changes */
+ 
+ 	/* -- private section -- */
+ 	void *private_data;
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index 6ae28dcd7994..22cdd608aa9e 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -1007,6 +1007,7 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
+ 	init_waitqueue_head(&runtime->tsleep);
+ 
+ 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
++	mutex_init(&runtime->buffer_mutex);
+ 
+ 	substream->runtime = runtime;
+ 	substream->private_data = pcm->private_data;
+@@ -1038,6 +1039,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
+ 	substream->runtime = NULL;
+ 	if (substream->timer)
+ 		spin_unlock_irq(&substream->timer->lock);
++	mutex_destroy(&runtime->buffer_mutex);
+ 	kfree(runtime);
+ 	put_pid(substream->pid);
+ 	substream->pid = NULL;
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index a70026f42a31..2589fea7a4bc 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -505,33 +505,40 @@ static inline void snd_pcm_timer_notify(struct snd_pcm_substream *substream,
+ #endif
+ }
+ 
++#if IS_ENABLED(CONFIG_SND_PCM_OSS)
++#define is_oss_stream(substream)       ((substream)->oss.oss)
++#else
++#define is_oss_stream(substream)       false
++#endif
++
+ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+ 	struct snd_pcm_runtime *runtime;
+-	int err, usecs;
++	int err = 0, usecs;
+ 	unsigned int bits;
+ 	snd_pcm_uframes_t frames;
+ 
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_OPEN:
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (!is_oss_stream(substream) &&
++		    atomic_read(&substream->mmap_count))
++			err = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		err = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-#if IS_ENABLED(CONFIG_SND_PCM_OSS)
+-	if (!substream->oss.oss)
+-#endif
+-		if (atomic_read(&substream->mmap_count))
+-			return -EBADFD;
++	if (err)
++		goto unlock;
+ 
+ 	params->rmask = ~0U;
+ 	err = snd_pcm_hw_refine(substream, params);
+@@ -599,14 +606,19 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	if ((usecs = period_to_usecs(runtime)) >= 0)
+ 		pm_qos_add_request(&substream->latency_pm_qos_req,
+ 				   PM_QOS_CPU_DMA_LATENCY, usecs);
+-	return 0;
++	err = 0;
+  _error:
+-	/* hardware might be unusable from this time,
+-	   so we force application to retry to set
+-	   the correct hardware parameter settings */
+-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+-	if (substream->ops->hw_free != NULL)
+-		substream->ops->hw_free(substream);
++	if (err) {
++		/* hardware might be unusable from this time,
++		 * so we force application to retry to set
++		 * the correct hardware parameter settings
++		 */
++		snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
++		if (substream->ops->hw_free != NULL)
++			substream->ops->hw_free(substream);
++	}
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return err;
+ }
+ 
+@@ -638,22 +650,27 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (atomic_read(&substream->mmap_count))
++			result = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		result = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-	if (atomic_read(&substream->mmap_count))
+-		return -EBADFD;
++	if (result)
++		goto unlock;
+ 	if (substream->ops->hw_free)
+ 		result = substream->ops->hw_free(substream);
+ 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+ 	pm_qos_remove_request(&substream->latency_pm_qos_req);
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return result;
+ }
+ 
+-- 
+2.23.1
+

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.321
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -169,6 +169,12 @@ Patch124:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 Patch125:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2021-4197
 Patch126:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
+# Fix for CVE-2022-1048
+Patch127:        0001-ALSA-pcm-Fix-races-among-concurrent-hw_params-and-hw.patch
+Patch128:        0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
+Patch129:        0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
+Patch130:        0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
+Patch131:        0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -360,6 +366,11 @@ popd
 %patch126 -p1
 
 #CVE
+%patch127 -p1
+%patch128 -p1
+%patch129 -p1
+%patch130 -p1
+%patch131 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -482,6 +493,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
+-   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4
 -   Fix for CVE-2021-4197
 *   Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.321-3
