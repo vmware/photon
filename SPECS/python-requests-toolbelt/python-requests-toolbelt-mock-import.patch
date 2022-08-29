@@ -1,0 +1,236 @@
+From c53995d3ab349d519163328517a2c83f13bf62de Mon Sep 17 00:00:00 2001
+From: Florence Blanc-Renaud <flo@redhat.com>
+Date: Tue, 23 Mar 2021 17:49:04 +0100
+Subject: [PATCH] Switch to unittest.mock instead of mock
+
+mock is now part of the python standard library, and
+python-mock will be deprecated in Fedora34
+(see https://fedoraproject.org/wiki/Changes/DeprecatePythonMock)
+
+Follow the recommendation to use
+    from unittest import mock
+instead of
+    import mock
+and conditionalize the dependency.
+
+Signed-off-by: Florence Blanc-Renaud <flo@redhat.com>
+---
+ tests/test_appengine_adapter.py      | 5 ++++-
+ tests/test_auth.py                   | 5 ++++-
+ tests/test_downloadutils.py          | 5 ++++-
+ tests/test_dump.py                   | 5 ++++-
+ tests/test_multipart_decoder.py      | 5 ++++-
+ tests/test_proxy_digest_auth.py      | 5 ++++-
+ tests/test_socket_options_adapter.py | 5 ++++-
+ tests/test_source_adapter.py         | 5 ++++-
+ tests/test_ssladapter.py             | 5 ++++-
+ tests/test_user_agent.py             | 5 ++++-
+ tests/threaded/test_api.py           | 5 ++++-
+ tests/threaded/test_pool.py          | 5 ++++-
+ tests/threaded/test_thread.py        | 5 ++++-
+ 16 files changed, 57 insertions(+), 16 deletions(-)
+
+diff --git a/tests/test_appengine_adapter.py b/tests/test_appengine_adapter.py
+index 8cd802e..3451b4c 100644
+--- a/tests/test_appengine_adapter.py
++++ b/tests/test_appengine_adapter.py
+@@ -2,7 +2,10 @@
+ """Tests for the AppEngineAdapter."""
+ import sys
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ import requests
+ 
+diff --git a/tests/test_auth.py b/tests/test_auth.py
+index 9cc6d35..e633aa6 100644
+--- a/tests/test_auth.py
++++ b/tests/test_auth.py
+@@ -1,7 +1,10 @@
+ # -*- coding: utf-8 -*-
+ import requests
+ import unittest
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ 
+ from requests_toolbelt.auth.guess import GuessAuth, GuessProxyAuth
+ from . import get_betamax
+diff --git a/tests/test_downloadutils.py b/tests/test_downloadutils.py
+index 7058939..5fa9fba 100644
+--- a/tests/test_downloadutils.py
++++ b/tests/test_downloadutils.py
+@@ -8,7 +8,10 @@
+ import requests
+ from requests_toolbelt.downloadutils import stream
+ from requests_toolbelt.downloadutils import tee
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ 
+ from . import get_betamax
+diff --git a/tests/test_dump.py b/tests/test_dump.py
+index da51f45..9ee2b45 100644
+--- a/tests/test_dump.py
++++ b/tests/test_dump.py
+@@ -12,7 +12,10 @@
+ from requests_toolbelt._compat import HTTPHeaderDict
+ from requests_toolbelt.utils import dump
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ import requests
+ 
+diff --git a/tests/test_multipart_decoder.py b/tests/test_multipart_decoder.py
+index 68127db..e922918 100644
+--- a/tests/test_multipart_decoder.py
++++ b/tests/test_multipart_decoder.py
+@@ -2,7 +2,10 @@
+ import io
+ import sys
+ import unittest
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ import requests
+ from requests_toolbelt.multipart.decoder import BodyPart
+diff --git a/tests/test_proxy_digest_auth.py b/tests/test_proxy_digest_auth.py
+index 003816f..1ba9a71 100644
+--- a/tests/test_proxy_digest_auth.py
++++ b/tests/test_proxy_digest_auth.py
+@@ -2,7 +2,10 @@
+ """Test proxy digest authentication."""
+ 
+ import unittest
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ 
+ import requests
+ from requests_toolbelt.auth import http_proxy_digest
+diff --git a/tests/test_socket_options_adapter.py b/tests/test_socket_options_adapter.py
+index 7e264f8..5694bac 100644
+--- a/tests/test_socket_options_adapter.py
++++ b/tests/test_socket_options_adapter.py
+@@ -3,7 +3,10 @@
+ import contextlib
+ import socket
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import requests
+ from requests_toolbelt._compat import poolmanager
+ 
+diff --git a/tests/test_source_adapter.py b/tests/test_source_adapter.py
+index 688385a..cbfcbd8 100644
+--- a/tests/test_source_adapter.py
++++ b/tests/test_source_adapter.py
+@@ -1,6 +1,9 @@
+ # -*- coding: utf-8 -*-
+ from requests.adapters import DEFAULT_POOLSIZE, DEFAULT_POOLBLOCK
+-from mock import patch
++try:
++    from unittest.mock import patch
++except ImportError:
++    from mock import patch
+ from requests_toolbelt.adapters.source import SourceAddressAdapter
+ 
+ import pytest
+diff --git a/tests/test_ssladapter.py b/tests/test_ssladapter.py
+index 6b28ae2..51d16ed 100644
+--- a/tests/test_ssladapter.py
++++ b/tests/test_ssladapter.py
+@@ -1,5 +1,8 @@
+ # -*- coding: utf-8 -*-
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ import requests
+ import unittest
+diff --git a/tests/test_user_agent.py b/tests/test_user_agent.py
+index 7800339..53a4e5f 100644
+--- a/tests/test_user_agent.py
++++ b/tests/test_user_agent.py
+@@ -2,7 +2,10 @@
+ import unittest
+ import sys
+ 
+-from mock import patch
++try:
++    from unittest.mock import patch
++except ImportError:
++    from mock import patch
+ import pytest
+ 
+ from requests_toolbelt.utils import user_agent as ua
+diff --git a/tests/threaded/test_api.py b/tests/threaded/test_api.py
+index 678178b..0a882d8 100644
+--- a/tests/threaded/test_api.py
++++ b/tests/threaded/test_api.py
+@@ -1,6 +1,9 @@
+ """Module containing tests for requests_toolbelt.threaded API."""
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ 
+ from requests_toolbelt._compat import queue
+diff --git a/tests/threaded/test_pool.py b/tests/threaded/test_pool.py
+index 3e54b3c..fec2be7 100644
+--- a/tests/threaded/test_pool.py
++++ b/tests/threaded/test_pool.py
+@@ -5,7 +5,10 @@
+     import Queue as queue
+ import unittest
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import pytest
+ 
+ from requests_toolbelt.threaded import pool
+diff --git a/tests/threaded/test_thread.py b/tests/threaded/test_thread.py
+index fd7e96b..07b4b7c 100644
+--- a/tests/threaded/test_thread.py
++++ b/tests/threaded/test_thread.py
+@@ -7,7 +7,10 @@
+ import unittest
+ import uuid
+ 
+-import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ import requests.exceptions
+ 
+ from requests_toolbelt.threaded import thread
