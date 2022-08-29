@@ -1,9 +1,9 @@
 %global VER 7.1.0
-%global Patchlevel 35
+%global Patchlevel 47
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.0.35
+Version:        7.1.0.47
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -11,8 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org/
-Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha512  %{name}=89cd7bc99ee8bdbd6380324d7a3ab01326b11fa5d63f61b237e2012ba7fcbfe0ba43995a8128a90fa5276e81037ac938e2e06b6d0f5aa03aa2f7736c90f037b1
+Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
+%define sha512  %{name}=dae53c80b1fec69e8a570e82553197e2a9f3b1d0dd9b7cdf30e2731e044a83bef82912a5d339c0470d1e41bdf343f2cbd97376d2ef986d33c05bc6c87a705d0d
 Requires:       %{name}-libs%{?_isa}
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -172,6 +172,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Mon Aug 29 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.47-1
+-   Upgrade version to 7.1.0.47
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0.35-1
 -   Automatic Version Bump
 *   Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
