@@ -3,7 +3,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.9
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -35,6 +35,7 @@ Patch16:        CVE-2022-0391-1.patch
 Patch17:        CVE-2022-0391-2.patch
 Patch18:        CVE-2021-3737-1.patch
 Patch19:        CVE-2021-3737-2.patch
+Patch20:        CVE-2015-20107.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -166,6 +167,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 rm -r Lib/ensurepip/_bundled/*
 tar -xf %{SOURCE1} -C Lib/ensurepip/_bundled
@@ -289,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Mon Aug 29 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.9-13
+- Fix CVE-2015-20107
 * Fri Mar 18 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.9-12
 - Fix CVE-2021-3737
 * Thu Mar 03 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.9-11
