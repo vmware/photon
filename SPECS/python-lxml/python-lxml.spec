@@ -2,22 +2,27 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
-Version:        4.7.1
+Version:        4.9.1
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
-%define         sha1 lxml=6511b71fe81067e6b8f2d38e3bc4363db580ec13
-Patch0:         lxml-CVE-2022-2309.patch
+%define sha1    lxml=a954e6585f05cdb8782b546260d938fd26f50aee
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
+BuildRequires:  python-setuptools
 BuildRequires:  python-xml
 BuildRequires:  libxslt
 BuildRequires:  libxslt-devel
 BuildRequires:  cython
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-xml
+BuildRequires:  python3-setuptools
 Requires:       python2
 Requires:       libxslt
 
@@ -26,12 +31,6 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 
 %package -n     python3-lxml
 Summary:        python-lxml
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  libxslt
-BuildRequires:  libxslt-devel
-BuildRequires:  cython
 Requires:       libxslt
 Requires:       python3
 Requires:       python3-libs
@@ -77,6 +76,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 08 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-1
+-   Upgrade to 4.9.1
 *   Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-1
 -   Upgrade to 4.7.1 and fix CVE-2022-2309
 *   Mon Aug 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-3

@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -18,6 +18,8 @@ Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 Patch0:         0001-Work-around-lxml-API.patch
 Patch1:         libxml2-CVE-2022-23308.patch
 Patch2:         libxml2-CVE-2022-29824.patch
+Patch3:         libxml2-CVE-2022-2309-fix1.patch
+Patch4:         libxml2-CVE-2022-2309-fix2.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -111,6 +113,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+* Tue Aug 09 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.11-5
+- Fix for CVE-2022-2309
 * Mon May 23 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.11-4
 - Fix CVE-2022-29824
 * Thu Mar 10 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.11-3
