@@ -7,14 +7,14 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
+Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
 %define sha512 %{name}=726c72e2b920a43572d5ccc872411e1d89352ae49f0a9a2bea80a15cede65f55942224f373923bf0615c19328599191f617bb86a63c9075a8a9b1d4a038e7f0d
 
 Source1: macros
@@ -29,6 +29,9 @@ Patch2: Fix-OpenPGP-parsing-bugs.patch
 Patch3: Header-signatures-alone-are-not-sufficient.patch
 Patch4: CVE-2021-20266.patch
 Patch5: Fix-regression-reading-rpm-v3.patch
+Patch6: CVE-2021-3521-1.patch
+Patch7: CVE-2021-3521-2.patch
+Patch8: CVE-2021-3521-3.patch
 
 Requires: bash
 Requires: libdb
@@ -283,6 +286,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-4
+- Fix CVE-2021-3521
 * Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 4.14.3-3
 - version bump to build with zstd
 * Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-2
