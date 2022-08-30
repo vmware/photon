@@ -1,17 +1,19 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha512  %{name}=72c78d7fcb024393c1d15f2a1856608ae4460ba43cc5bbbb4c29b80508cae6cb822df4638029de2363437d110187e0a3cc19a7288c3b2f44b2f648399a028438
+Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
+%define sha512 %{name}=72c78d7fcb024393c1d15f2a1856608ae4460ba43cc5bbbb4c29b80508cae6cb822df4638029de2363437d110187e0a3cc19a7288c3b2f44b2f648399a028438
 
-Patch0:         default-priority.patch
+Patch0: default-priority.patch
+Patch1: CVE-2021-4209.patch
+Patch2: CVE-2022-2509.patch
 
 BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
@@ -70,8 +72,8 @@ cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} check
 %endif
 
@@ -101,6 +103,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-3
+- Fix CVE-2021-4209 & CVE-2022-2509
 * Wed Apr 27 2022 Susant Sahani <ssahani@vmware.com> 3.6.16-2
 - Disabled fips-140 mode.
 * Tue Apr 05 2022 Susant Sahani <ssahani@vmware.com> 3.6.16-1
