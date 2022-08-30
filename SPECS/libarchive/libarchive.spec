@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.3
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org
 Group:      System Environment/Development
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 %{name}=499a8f48a895faff4151d7398b24070d578f0b2e
+%define sha512 %{name}=9d12b47d6976efa9f98e62c25d8b85fd745d4e9ca7b7e6d36bfe095dfe5c4db017d4e785d110f3758f5938dad6f1a1b009267fd7e82cb7212e93e1aea237bab7
 
 Patch0:     libarchive-CVE-2018-1000877.patch
 Patch1:     libarchive-CVE-2018-1000878.patch
@@ -20,7 +20,13 @@ Patch5:     libarchive-CVE-2019-1000020.patch
 Patch6:     libarchive-CVE-2019-18408.patch
 Patch7:     libarchive-CVE-2019-19221.patch
 Patch8:     libarchive-CVE-2020-21674.patch
+Patch9:     libarchive-CVE-2021-23177.patch
+# Fix for CVE-2021-31566
+Patch10:    0001-archive_write_disk_posix-open-a-fd-when-processing-f.patch
+Patch11:    0002-archive_write_disk_posix-changes.patch
+Patch12:    0003-Do-not-follow-symlinks-when-processing-the-fixup-lis.patch
 
+BuildRequires:  automake
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 
@@ -39,14 +45,12 @@ It contains the libraries and header files to create applications
 %autosetup -p1
 
 %build
-export CFLAGS="%{optflags}"
+autoreconf -ifv
 %configure --disable-static
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -71,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Aug 30 2022 Ankit Jain <ankitja@vmware.com> 3.3.3-8
+- Fix for CVE-2021-23177, CVE-2021-31566
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.3-7
 - Exclude debug symbols properly
 * Mon Nov 02 2020 Ankit Jain <ankitja@vmware.com> 3.3.3-6

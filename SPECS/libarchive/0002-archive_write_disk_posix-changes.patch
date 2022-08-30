@@ -1,0 +1,102 @@
+From 9eabd1de4aa4c605cf8f04763c8854191837cc8a Mon Sep 17 00:00:00 2001
+From: Martin Matuska <martin@matuska.org>
+Date: Thu, 6 Jun 2019 15:12:11 +0200
+Subject: [PATCH 2/3] archive_write_disk_posix changes
+
+commit 6d5204058ed51e11588a438737e9033305cfd248 upstream
+
+- private file descriptor in _archive_write_disk_close()
+- use la_opendirat() in edit_deep_directories()
+[Ankit]:
+- use of la_opendirat() requires more commits
+ to be backported which is unrelated to CVE-2021-31566
+ So, skipped the use of la_opendirat() in edit_deep_directories()
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ libarchive/archive_write_disk_posix.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/libarchive/archive_write_disk_posix.c b/libarchive/archive_write_disk_posix.c
+index 97085fb..59a2b62 100644
+--- a/libarchive/archive_write_disk_posix.c
++++ b/libarchive/archive_write_disk_posix.c
+@@ -182,7 +182,6 @@ struct fixup_entry {
+ 	void			*mac_metadata;
+ 	int			 fixup; /* bitmask of what needs fixing */
+ 	char			*name;
+-	int			 fd;
+ };
+ 
+ /*
+@@ -2320,7 +2319,7 @@ _archive_write_disk_close(struct archive *_a)
+ {
+ 	struct archive_write_disk *a = (struct archive_write_disk *)_a;
+ 	struct fixup_entry *next, *p;
+-	int ret;
++	int fd, ret;
+ 
+ 	archive_check_magic(&a->archive, ARCHIVE_WRITE_DISK_MAGIC,
+ 	    ARCHIVE_STATE_HEADER | ARCHIVE_STATE_DATA,
+@@ -2331,14 +2330,15 @@ _archive_write_disk_close(struct archive *_a)
+ 	p = sort_dir_list(a->fixup_list);
+ 
+ 	while (p != NULL) {
++		fd = -1;
+ 		a->pst = NULL; /* Mark stat cache as out-of-date. */
+-		if (p->fd < 0 && p->fixup &
++		if (p->fixup &
+ 		    (TODO_TIMES | TODO_MODE_BASE | TODO_ACLS | TODO_FFLAGS)) {
+-			p->fd = open(p->name,
++			fd = open(p->name,
+ 			    O_WRONLY | O_BINARY | O_NOFOLLOW | O_CLOEXEC);
+ 		}
+ 		if (p->fixup & TODO_TIMES) {
+-			set_times(a, p->fd, p->mode, p->name,
++			set_times(a, fd, p->mode, p->name,
+ 			    p->atime, p->atime_nanos,
+ 			    p->birthtime, p->birthtime_nanos,
+ 			    p->mtime, p->mtime_nanos,
+@@ -2346,17 +2346,17 @@ _archive_write_disk_close(struct archive *_a)
+ 		}
+ 		if (p->fixup & TODO_MODE_BASE) {
+ #ifdef HAVE_FCHMOD
+-			if (p->fd >= 0)
+-				fchmod(p->fd, p->mode);
++			if (fd >= 0)
++				fchmod(fd, p->mode);
+ 			else
+ #endif
+ 			chmod(p->name, p->mode);
+ 		}
+ 		if (p->fixup & TODO_ACLS)
+-			archive_write_disk_set_acls(&a->archive, p->fd,
++			archive_write_disk_set_acls(&a->archive, fd,
+ 			    p->name, &p->acl, p->mode);
+ 		if (p->fixup & TODO_FFLAGS)
+-			set_fflags_platform(a, p->fd, p->name,
++			set_fflags_platform(a, fd, p->name,
+ 			    p->mode, p->fflags_set, 0);
+ 		if (p->fixup & TODO_MAC_METADATA)
+ 			set_mac_metadata(a, p->name, p->mac_metadata,
+@@ -2365,8 +2365,8 @@ _archive_write_disk_close(struct archive *_a)
+ 		archive_acl_clear(&p->acl);
+ 		free(p->mac_metadata);
+ 		free(p->name);
+-		if (p->fd >= 0)
+-			close(p->fd);	
++		if (fd >= 0)
++			close(fd);
+ 		free(p);
+ 		p = next;
+ 	}
+@@ -2502,7 +2502,6 @@ new_fixup(struct archive_write_disk *a, const char *pathname)
+ 	a->fixup_list = fe;
+ 	fe->fixup = 0;
+ 	fe->name = strdup(pathname);
+-	fe->fd = -1;
+ 	return (fe);
+ }
+ 
+-- 
+2.23.1
+
