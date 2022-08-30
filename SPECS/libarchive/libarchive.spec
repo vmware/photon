@@ -1,14 +1,14 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
-Version:    3.3.1
-Release:    7%{?dist}
+Version:    3.3.3
+Release:    1%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 libarchive=d5616f81804aba92547629c08a3ccff86c2844ae
+%define sha1 libarchive=499a8f48a895faff4151d7398b24070d578f0b2e
 Patch0:     libarchive-CVE-2018-1000877.patch
 Patch1:     libarchive-CVE-2018-1000878.patch
 Patch2:     libarchive-CVE-2018-1000879.patch
@@ -18,9 +18,16 @@ Patch5:     libarchive-CVE-2019-1000020.patch
 Patch6:     libarchive-CVE-2019-18408.patch
 Patch7:     libarchive-CVE-2019-19221.patch
 Patch8:     libarchive-CVE-2020-21674.patch
+Patch9:     libarchive-CVE-2021-23177.patch
+# Fix for CVE-2021-31566
+Patch10:    0001-archive_write_disk_posix-open-a-fd-when-processing-f.patch
+Patch11:    0002-archive_write_disk_posix-changes.patch
+Patch12:    0003-Do-not-follow-symlinks-when-processing-the-fixup-lis.patch
+
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 Requires:       xz-libs
+
 %description
 Multi-format archive and compression library
 
@@ -28,24 +35,14 @@ Multi-format archive and compression library
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%autosetup -p1
 
 %build
 export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix} --disable-static
-
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -72,6 +69,9 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Aug 30 2022 Ankit Jain <ankitja@vmware.com> 3.3.3-1
+-   Updated to v3.3.3
+-   Fix for CVE-2021-23177, CVE-2021-31566
 *   Mon Nov 02 2020 Ankit Jain <ankitja@vmware.com> 3.3.1-7
 -   Fix for CVE-2020-21674
 *   Wed Feb 05 2020 Ankit Jain <ankitja@vmware.com> 3.3.1-6
