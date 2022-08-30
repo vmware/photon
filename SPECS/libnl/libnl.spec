@@ -1,12 +1,12 @@
 Summary:       Netlink Protocol Library Suite
 Name:          libnl
-Version:       3.6.0
+Version:       3.7.0
 Release:       1%{?dist}
 License:       LGPLv2+
 Group:         System Environment/Libraries
 URL:           https://github.com/thom311/libnl
 Source0:       https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
-%define sha512 libnl=7d1190ce94f43f5b18b1f7909221ca034d4ea5c8ed5735dbd27224d03e7f95d3c4e8ccdb611e33b58007729a21bfc0e23adc8758b112c712355664d87a81ce1b
+%define sha512 libnl=80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
@@ -35,10 +35,10 @@ Headers and static libraries for the libnl
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 3.7.0-1
+- Version update
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1
 - Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 3.5.0-2
