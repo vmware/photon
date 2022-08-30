@@ -1,7 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
-Version:      4.4.2
-Release:      5%{?dist}
+Version:      4.4.3
+Release:      1%{?dist}
 License:      ISC
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
@@ -9,17 +9,13 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
-%define sha1  dhcp=cb4ba6617e1bc2e3cbf770be5c0443b1ad276db5
+%define sha512 dhcp=4472d6794af80b482560956cee6895889cc1aca39980f851faf56824627e95731f2983cf7c7454bc3decb0a12c874fcbd29bd6c5a9695412def6bc14c6df17e0
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service
 Source:       dhcrelay.service
 
-Patch0:       dhcp-nowplusinterval.patch
-Patch1:       dhcp-4.4.2-fno-common.patch
-Patch2:       dhcp-CVE-2021-25217.patch
-
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 
 %description
 The ISC DHCP package contains both the client and server programs for DHCP.
@@ -86,7 +82,7 @@ export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'  \
 make -j1
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}/dhclient-script
 
 mkdir -p %{buildroot}/%{_sysconfdir}/dhcp
@@ -168,6 +164,8 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 4.4.3-1
+- Version bump
 * Tue Nov 02 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-5
 - Add unit file dhcrelay.service
 * Tue Aug 24 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-4
