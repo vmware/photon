@@ -1,6 +1,6 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
-Version:        1.10.2
+Version:        1.11.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://ninja-build.org
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Group:          Development/Tools
 Distribution:   Photon
 Source0:        https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
-%define sha1    ninja-build=8d2e8c1c070c27fb9dc46b4a6345bbb1de7ccbaf
+%define sha512    ninja-build=9b9c8dae2251f9ddba50680911271b8504c292994fd90a0da94902f64c69a9edc72212217df5c651ddfc2f79c2ae03e84c99b805497dcd7497c53a1617de83e7
 Source1:        macros.ninja
 
 BuildRequires:  gcc
@@ -23,7 +23,7 @@ higher-level build system, and it is designed to run builds
 as fast as possible.
 
 %prep
-%setup -n ninja-%{version}
+%autosetup -n ninja-%{version} -p1
 
 %build
 
@@ -48,13 +48,13 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
-*   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 1.10.2-1
--   Automatic Version Bump
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
--   Automatic Version Bump
-*   Fri May 08 2020 Susant Sahani<ssahani@vmware.com> 1.10.0-1
--   Update to 1.10.0
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.2-2
--   Cross compilation support
-*   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 1.8.2-1
--   Initial packaging
+* Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.11.0-1
+- Version Bump
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
+- Automatic Version Bump
+* Fri May 08 2020 Susant Sahani<ssahani@vmware.com> 1.10.0-1
+- Update to 1.10.0
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.2-2
+- Cross compilation support
+* Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 1.8.2-1
+- Initial packaging
