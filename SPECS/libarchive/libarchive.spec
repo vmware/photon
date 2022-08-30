@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.4.3
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -20,6 +20,9 @@ Requires:       xz-libs
 Requires:       zstd
 Requires:       openssl >= 1.1.1
 
+Patch0:         libarchive-CVE-2021-23177.patch
+Patch1:         libarchive-CVE-2021-31566.patch
+
 %description
 Multi-format archive and compression library
 
@@ -33,14 +36,12 @@ It contains the libraries and header files to create applications
 %autosetup -p1
 
 %build
-export CFLAGS="%{optflags}"
+autoreconf -ifv
 %configure --disable-static
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -64,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Aug 30 2022 Ankit Jain <ankitja@vmware.com> 3.4.3-7
+- Fix for CVE-2021-23177, CVE-2021-31566
 * Wed Jun 15 2022 Harinadh D <hdommaraju@vmware.com> 3.4.3-6
 - Version bump up with zstd
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4.3-5
