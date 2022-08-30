@@ -1,4 +1,4 @@
-From 0fd09a9a3418124e59cded88699d4c6bcdb811b2 Mon Sep 17 00:00:00 2001
+From 5aa2f8098fa75e4086a3fa6cdbb04a14a3249020 Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Tue, 18 Sep 2018 18:33:06 -0700
 Subject: [PATCH] hwrng: rdrand - Add RNG driver based on x86 rdrand
@@ -12,14 +12,14 @@ virtual machines.
 
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- drivers/char/hw_random/Kconfig      | 14 +++++++
+ drivers/char/hw_random/Kconfig      | 14 ++++++
  drivers/char/hw_random/Makefile     |  1 +
- drivers/char/hw_random/rdrand-rng.c | 73 +++++++++++++++++++++++++++++++++++++
+ drivers/char/hw_random/rdrand-rng.c | 73 +++++++++++++++++++++++++++++
  3 files changed, 88 insertions(+)
  create mode 100644 drivers/char/hw_random/rdrand-rng.c
 
 diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index dac895d..e6d4fad 100644
+index dac895dc0..e6d4fad02 100644
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
 @@ -60,6 +60,20 @@ config HW_RANDOM_AMD
@@ -44,7 +44,7 @@ index dac895d..e6d4fad 100644
  	tristate "Atmel Random Number Generator support"
  	depends on ARCH_AT91 && HAVE_CLK && OF
 diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
-index e35ec3c..eda6b15 100644
+index e35ec3ce3..eda6b15b2 100644
 --- a/drivers/char/hw_random/Makefile
 +++ b/drivers/char/hw_random/Makefile
 @@ -8,6 +8,7 @@ rng-core-y := core.o
@@ -57,7 +57,7 @@ index e35ec3c..eda6b15 100644
  obj-$(CONFIG_HW_RANDOM_N2RNG) += n2-rng.o
 diff --git a/drivers/char/hw_random/rdrand-rng.c b/drivers/char/hw_random/rdrand-rng.c
 new file mode 100644
-index 0000000..a2011de
+index 000000000..0427f4d2d
 --- /dev/null
 +++ b/drivers/char/hw_random/rdrand-rng.c
 @@ -0,0 +1,73 @@
@@ -110,7 +110,7 @@ index 0000000..a2011de
 +{
 +	int err = -ENODEV;
 +
-+	if (!arch_has_random_seed() && !arch_has_random()) {
++	if (!static_cpu_has(X86_FEATURE_RDSEED) && !static_cpu_has(X86_FEATURE_RDRAND)) {
 +		pr_info(PFX "Cannot load module, as your CPU does not "
 +			    "support RDSEED or RDRAND instructions.\n");
 +		return err;
@@ -135,5 +135,5 @@ index 0000000..a2011de
 +MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support RDRAND/RDSEED");
 +MODULE_LICENSE("GPL");
 -- 
-2.7.4
+2.30.3
 

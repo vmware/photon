@@ -1,0 +1,20 @@
+From f0d99014e3dd9542fa47ea03e0d4cde570e34928 Mon Sep 17 00:00:00 2001
+From: Daniel Wagner <wagi@monom.org>
+Date: Sat, 13 Aug 2022 18:54:48 +0200
+Subject: [PATCH 342/342] Linux 4.19.255-rt113 REBASE
+
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..fdcd9167ca0b 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt113
+-- 
+2.37.1
+

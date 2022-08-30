@@ -11,14 +11,14 @@ transactions from the guest to abort.
 Tested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx.c | 43 +++++++++++++++++++++++++++++--------------
- 1 file changed, 29 insertions(+), 14 deletions(-)
+ arch/x86/kvm/vmx.c | 42 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 7372164b43f8..0b3dd65be00c 100644
+index f6fc2f1a2..c10a0fd39 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -2118,6 +2118,22 @@ static struct shared_msr_entry *find_msr_entry(struct vcpu_vmx *vmx, u32 msr)
+@@ -2177,6 +2177,23 @@ static struct shared_msr_entry *find_msr_entry(struct vcpu_vmx *vmx, u32 msr)
  	return NULL;
  }
  
@@ -38,10 +38,11 @@ index 7372164b43f8..0b3dd65be00c 100644
 +	}
 +	return ret;
 +}
++
  static void vmcs_clear(struct vmcs *vmcs)
  {
  	u64 phys_addr = __pa(vmcs);
-@@ -4319,20 +4335,10 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+@@ -4378,19 +4395,9 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  	default:
  	find_shared_msr:
  		msr = find_msr_entry(vmx, msr_index);
@@ -58,15 +59,13 @@ index 7372164b43f8..0b3dd65be00c 100644
 -			}
 -			break;
 -		}
--		ret = kvm_set_msr_common(vcpu, msr_info);
 +		if (msr)
 +			ret = vmx_set_guest_msr(vmx, msr, data);
 +		else
-+			ret = kvm_set_msr_common(vcpu, msr_info);
+ 			ret = kvm_set_msr_common(vcpu, msr_info);
  	}
  
- 	return ret;
-@@ -11396,6 +11402,15 @@ static void vmx_cpuid_update(struct kvm_vcpu *vcpu)
+@@ -11468,6 +11475,15 @@ static void vmx_cpuid_update(struct kvm_vcpu *vcpu)
  		nested_vmx_cr_fixed1_bits_update(vcpu);
  		nested_vmx_entry_exit_ctls_update(vcpu);
  	}
@@ -83,5 +82,5 @@ index 7372164b43f8..0b3dd65be00c 100644
  
  static void vmx_set_supported_cpuid(u32 func, struct kvm_cpuid_entry2 *entry)
 -- 
-2.17.1
+2.30.3
 

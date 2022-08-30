@@ -121,7 +121,7 @@ diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
 index 8e4eef73531a..5cea960f1535 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -1199,29 +1199,16 @@ u64 kvm_get_arch_capabilities(void)
+@@ -1197,29 +1197,15 @@ u64 kvm_get_arch_capabilities(void)
  		data |= ARCH_CAP_MDS_NO;
  
  	/*
@@ -141,7 +141,7 @@ index 8e4eef73531a..5cea960f1535 100644
 +	 * On TAA affected systems:
 +	 *      - nothing to do if TSX is disabled on the host.
 +	 *      - we emulate TSX_CTRL if present on the host.
-+	 *	  This lets the guest use VERW to clear CPU buffers.
++	 *        This lets the guest use VERW to clear CPU buffers.
  	 */
  	if (!boot_cpu_has(X86_FEATURE_RTM))
 -		data &= ~ARCH_CAP_TAA_NO;
@@ -150,12 +150,12 @@ index 8e4eef73531a..5cea960f1535 100644
  		data |= ARCH_CAP_TAA_NO;
 -	else if (data & ARCH_CAP_TSX_CTRL_MSR)
 -		data &= ~ARCH_CAP_MDS_NO;
- 
+-
 -	/* KVM does not emulate MSR_IA32_TSX_CTRL.  */
 -	data &= ~ARCH_CAP_TSX_CTRL_MSR;
- 	return data;
- }
+ 
+ 	/* Guests don't need to know "Fill buffer clear control" exists */
+ 	data &= ~ARCH_CAP_FB_CLEAR_CTRL;
  
 -- 
 2.17.1
-

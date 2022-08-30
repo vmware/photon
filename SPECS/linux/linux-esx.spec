@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.247
-Release:        14%{?kat_build:.kat}%{?dist}
+Version:        4.19.256
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=3bb04c32b4f6a2c1154852fd66c597ca36d85420b4155dfeff53f9ece27717df498f7bb1b13f4f981e320383d2dd6ee2d107e27c52bd94e1bed444866c8d61c1
+%define sha512 linux=b7fa316b8d4a3874372da50efce932bc174803ddb0a866936b4102eb04626b1a97de4ef12a88fb5daaa70b0fd0498d329a149edf3dca54c2bef26af64ea5789b
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -105,11 +105,7 @@ Patch49: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 Patch50: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # CVE-2022-2586
-Patch51: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to.patch
 Patch52: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
-
-# CVE-2022-2588
-Patch53: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -147,8 +143,6 @@ Patch90: tcp-inherit-TSQ-limit-from-root-namespace.patch
 Patch98: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100: 0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to perform continuous testing on RNG from Noise Source
-Patch101: 0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # Next 2 patches are about to be merged into stable
 Patch102: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -772,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1
+- Update to version 4.19.256
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-14
 - Fix for CVE-2022-2586 and CVE-2022-2588
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.247-13

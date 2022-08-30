@@ -21,17 +21,17 @@ value for issuing read and writes.
  1 file changed, 1 insertion(+)
 
 diff --git a/net/9p/client.c b/net/9p/client.c
-index 22c5517..6b67a52 100644
+index 98301add2..427ed9a4e 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
-@@ -957,6 +957,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+@@ -915,6 +915,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+ 	fid->mode = -1;
  	fid->uid = current_fsuid();
  	fid->clnt = clnt;
- 	fid->rdir = NULL;
 +	fid->iounit = 0;
- 	fid->fid = 0;
  
  	idr_preload(GFP_KERNEL);
+ 	spin_lock_irq(&clnt->lock);
 -- 
-1.8.5.6
+2.30.3
 
