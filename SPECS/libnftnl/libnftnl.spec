@@ -1,13 +1,13 @@
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
-Version:        1.2.1
+Version:        1.2.3
 Release:        1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 License:        GPLv2+
 URL:            http://netfilter.org/projects/libnftnl/
 Source0:        https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
-%define sha1 %{name}-%{version}=845691fd3cc834bc5fc3180a90bbc4b7747c9dff
+%define sha512 %{name}-%{version}=e2d16cbc062eb8900f0472abb8fe6b22910cc5a8efbb47445fe6ce6e2713a0637f74b46b2bf2031ba9ecb2e5eed932e3bbb49b015c7b7207591249de23d5149d
 Distribution:   Photon
 
 BuildRequires:  libmnl-devel
@@ -52,6 +52,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Tue Aug 30 2022 Susant sahani <ssahani@vmware.com> 1.2.3-1
+- Version bump
 * Wed Dec 22 2021 Susant sahani <ssahani@vmware.com> 1.2.1-1
 - Version bump
 * Tue Jul 27 2021 Susant sahani <ssahani@vmware.com> 1.1.9-2
