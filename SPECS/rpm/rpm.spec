@@ -1,17 +1,19 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+
+Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
+%define sha1 %{name}=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
 
 Source1:        macros
 Source2:        brp-strip-debug-symbols
@@ -23,6 +25,9 @@ Patch2:         Fix-OpenPGP-parsing-bugs.patch
 Patch3:         Header-signatures-alone-are-not-sufficient.patch
 Patch4:         CVE-2021-20266.patch
 Patch5:         Fix-regression-reading-rpm-v3.patch
+Patch6:         CVE-2021-3521-1.patch
+Patch7:         CVE-2021-3521-2.patch
+Patch8:         CVE-2021-3521-3.patch
 
 Requires:       bash
 Requires:       libdb
@@ -94,13 +99,16 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
+%setup -qn rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -265,6 +273,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-3
+- Fix CVE-2021-3521
 * Sun Sep 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-2
 - Remove 'file' from Requires
 * Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-1
