@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -42,6 +42,10 @@ Patch19: authlogin.if-add-transition-rules-for-shadow.patch
 Patch20: allow-lvm_t-to-transit-to-unconfined_t.patch
 Patch21: fix-fc-conflicts.patch
 Patch22: fix-AVC-denials-based-on-package-test-results.patch
+Patch23: Fix-kubernetes-denials-for-K8-deployment.patch
+Patch24: Fix-bin-denials-for-K8-deployment-with-containerd.patch
+Patch25: Fix-etcd-denials-for-K8-deployment-with-containerd.patch
+Patch26: fix_systemd_gpt_denials.patch
 
 BuildArch:      noarch
 
@@ -119,6 +123,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Fri Sep 16 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-3
+- Added selinux policy for k8's deployment with containerd
 * Fri Sep 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-2
 - Bump version and fix build failure after libsepol upgrade
 * Mon Mar 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-1

@@ -4,7 +4,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -69,7 +69,7 @@ export GOPATH="$(pwd)"
 # upstream versions. Typically, embargoed CVEs can cause those versions to be hiddden.
 export GO111MODULE=on
 cd src/%{gopath_comp}
-make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
+make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} BUILDTAGS='seccomp selinux apparmor' binaries man
 
 %install
 cd src/%{gopath_comp}
@@ -119,6 +119,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Aug 8 2022 Shivani Agarwal <shivania2@vmware.com> 1.6.6-3
+-   Enable selinux
 *   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
 -   Bump up version to compile with new go.
 *   Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.6.6-1
