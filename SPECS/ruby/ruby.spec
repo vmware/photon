@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=823b6b009a6e44fef27d2dacb069067fe355d5d8
+%define sha512  %{name}=037a5a0510d50b4da85f081d934b07bd6e1c9b5a1ab9b069b3d6eb131ee811351cf02b61988dda7d7aa248aec91612a58d00929d342f0b19ddd7302712caec58
 
 Patch0:         CVE-2020-25613.patch
 Patch1:         ruby-CVE-2021-31799.patch
+Patch2:         CVE-2022-28739.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -36,11 +37,11 @@ This is useful for object-oriented scripting.
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version} \
         --with-compress-debug-sections=no
-make %{?_smp_mflags} COPY="cp -p"
+%make_build COPY="cp -p"
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 
 %check
 chmod g+w . -R
@@ -66,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Sep 02 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-4
+- Fix CVE-2022-28739
 * Tue Jan 18 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-3
 - Fix CVE-2021-31799
 * Mon Nov 02 2020 Sujay G <gsujay@vmware.com> 2.5.8-2
