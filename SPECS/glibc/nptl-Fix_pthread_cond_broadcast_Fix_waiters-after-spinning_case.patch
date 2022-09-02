@@ -1,0 +1,32 @@
+From 99ea93ca31795469d2a1f1570f17a5c39c2eb7e2 Mon Sep 17 00:00:00 2001
+From: Martin Kuchta <martin.kuchta@netapp.com>
+Date: Mon, 27 Aug 2018 17:03:35 +0200
+Subject: [PATCH] pthread_cond_broadcast: Fix waiters-after-spinning case [BZ
+ #23538]
+
+Source: https://github.com/bminor/glibc/commit/99ea93ca31795469d2a1f1570f17a5c39c2eb7e2
+
+---
+ ChangeLog                  | 8 ++++++++
+ nptl/pthread_cond_common.c | 8 ++++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/nptl/pthread_cond_common.c b/nptl/pthread_cond_common.c
+index 8e425eb01ec..479e54febb4 100644
+--- a/nptl/pthread_cond_common.c
++++ b/nptl/pthread_cond_common.c
+@@ -405,8 +405,12 @@ __condvar_quiesce_and_switch_g1 (pthread_cond_t *cond, uint64_t wseq,
+ 	{
+ 	  /* There is still a waiter after spinning.  Set the wake-request
+ 	     flag and block.  Relaxed MO is fine because this is just about
+-	     this futex word.  */
+-	  r = atomic_fetch_or_relaxed (cond->__data.__g_refs + g1, 1);
++	     this futex word.
++
++	     Update r to include the set wake-request flag so that the upcoming
++	     futex_wait only blocks if the flag is still set (otherwise, we'd
++	     violate the basic client-side futex protocol).  */
++	  r = atomic_fetch_or_relaxed (cond->__data.__g_refs + g1, 1) | 1;
+ 
+ 	  if ((r >> 1) > 0)
+ 	    futex_wait_simple (cond->__data.__g_refs + g1, r, private);

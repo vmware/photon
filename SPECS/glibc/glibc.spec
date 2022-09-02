@@ -4,14 +4,14 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1    glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
+%define sha512    glibc=521f820953ff07c69ece4c2186f59fc061a7f9747932cd70ef2995c2b2deee76eeb6de700d85071cdca5949179aa8ccee75eda7feca1394121ec7b821ad0a3f3
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 # Patch is taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
@@ -47,6 +47,7 @@ Patch27:        0001-CVE-2020-29573.patch
 Patch28:        0002-CVE-2020-29573.patch
 Patch29:        CVE-2021-43396.patch
 Patch30:        nptl-Fix-pthread_rwlock-stalls.patch
+Patch31:        nptl-Fix_pthread_cond_broadcast_Fix_waiters-after-spinning_case.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -133,6 +134,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -335,6 +337,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.28-21
+-   fix pthread_cond_broadcast, pthread_cond_signal
 *   Tue Apr 19 2022 Alexey Makhalov <amakhalov@vmware.com> 2.28-20
 -   One more fix for rwlock stall
 *   Wed Feb 16 2022 Ajay Kaher <akaher@vmware.com> 2.28-19
