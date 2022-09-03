@@ -1,14 +1,14 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
-%define sha1 glib=c00e433c56e0ba3541abc5222aeca4136de10fb8
+%define sha512 glib=eedf65ec8e2fb5b9c6c7f96c69fe162db1b00a2b407a64219ba6c070a608804f361a69738a9fc93ff514896deea763e06ae0fcf12b3d1d1ef67d6f2c1a492413
 Patch0:         glib-CVE-2019-12450.patch
 Patch1:         glib-CVE-2019-13012.patch
 Patch2:         glib-CVE-2020-35457.patch
@@ -28,6 +28,7 @@ Patch13:        0010-gtlspassword-Forbid-very-long-TLS-passwords.patch
 Patch14:        0011-giochannel-Forbid-very-long-line-terminator-strings.patch
 Patch15:        0012-glib-Enable-g_memdup2-for-all-glib-version.patch
 Patch16:        glib-CVE-2021-28153.patch
+Patch17:        CVE-2021-3800.patch
 
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
@@ -75,9 +76,10 @@ Gsettings schemas compiling tool
 %build
 ./autogen.sh
 %configure --with-pcre=system
-make %{?_smp_mflags}
+%make_build
+
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -111,41 +113,43 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.58.0-8
--   Version Bump to build with new version of cmake
-*   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.0-7
--   Fix for CVE-2021-28153
-*   Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-6
--   Fix for CVE-2021-27218 and CVE-2021-27219
-*   Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-5
--   Fix for CVE-2020-35457
-*   Tue Jul 09 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-4
--   Fix for CVE-2019-13012
-*   Mon Jun 03 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-3
--   Fix for CVE-2019-12450
-*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
--   glib-devel requires python-xml.
-*   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
--   Update version to 2.58.0
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.52.1-2
--   Requires pcre-libs, BuildRequires libffi-devel.
-*   Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 2.52.1-1
--   Updated to version 2.52.1-1
-*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.48.2-2
--   Modified %check
-*   Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.2-1
--   Updated to version 2.48.2-1
-*   Thu Aug 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-3
--   Update glib require for devel to use the same version and release
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
--   GA - Bump release of all rpms
-*   Thu Apr 14 2016 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
--   Updated to version 2.47.6
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1
--   Updated to version 2.46.2
-*   Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3
--   Added glib-schemas package
-*   Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
--   Added more 'Provides: pkgconfig(...)' for base package
-*   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
--   Initial version
+* Fri Sep 02 2022 Harinadh D <hdommaraju@vmware.com> 2.58.0-9
+- fix CVE-2021-3800
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.58.0-8
+- Version Bump to build with new version of cmake
+* Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.0-7
+- Fix for CVE-2021-28153
+* Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-6
+- Fix for CVE-2021-27218 and CVE-2021-27219
+* Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-5
+- Fix for CVE-2020-35457
+* Tue Jul 09 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-4
+- Fix for CVE-2019-13012
+* Mon Jun 03 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-3
+- Fix for CVE-2019-12450
+* Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
+- glib-devel requires python-xml.
+* Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
+- Update version to 2.58.0
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.52.1-2
+- Requires pcre-libs, BuildRequires libffi-devel.
+* Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 2.52.1-1
+- Updated to version 2.52.1-1
+* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.48.2-2
+- Modified %check
+* Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.2-1
+- Updated to version 2.48.2-1
+* Thu Aug 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-3
+- Update glib require for devel to use the same version and release
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
+- GA - Bump release of all rpms
+* Thu Apr 14 2016 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
+- Updated to version 2.47.6
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1
+- Updated to version 2.46.2
+* Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3
+- Added glib-schemas package
+* Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
+- Added more 'Provides: pkgconfig(...)' for base package
+* Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
+- Initial version
