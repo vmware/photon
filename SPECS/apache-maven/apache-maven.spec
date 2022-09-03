@@ -1,27 +1,29 @@
+%define debug_package %{nil}
+
 Summary:    Apache Maven
 Name:       apache-maven
-Version:    3.6.3
-Release:    3%{?dist}
+Version:    3.8.6
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
-%define sha512  %{name}=14eef64ad13c1f689f2ab0d2b2b66c9273bf336e557d81d5c22ddb001c47cf51f03bb1465d6059ce9fdc2e43180ceb0638ce914af1f53af9c2398f5d429f114c
+Source0: https://github.com/apache/maven/archive/refs/tags/maven-%{version}.tar.gz
+%define sha512 maven=8bdd1bda0f7eccc866dc2f2036fb08f9b29ed86fc74ec2ddaf2653f06327e68b1536d2e913652bbe3c67779c090e0006f2f4746a4659e8865a8818c0cb1aa550
 
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
-BuildRequires: wget >= 1.15
+BuildRequires: wget
 
 Requires: openjre8
 Requires: /usr/bin/which
 
 %define ExtraBuildRequires apache-maven
 
-%define maven_prefix /var/opt/%{name}
+%define maven_prefix %{_var}/opt/%{name}
 %define maven_bindir %{maven_prefix}/bin
 %define maven_libdir %{maven_prefix}/lib
 
@@ -29,20 +31,19 @@ Requires: /usr/bin/which
 The Maven package contains binaries for a build system
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n maven-maven-%{version}
 
 %build
 
 %install
 MAVEN_DIST_DIR=%{buildroot}%{maven_prefix}
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
-sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 mkdir -p %{buildroot}%{_datadir}/java/maven \
          %{buildroot}%{_bindir}
 
-for jar in %{buildroot}/%{maven_libdir}/*.jar; do
+for jar in %{buildroot}%{maven_libdir}/*.jar; do
   jarname=$(basename $jar .jar)
   ln -sfv %{maven_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
 done
@@ -77,6 +78,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Sat Sep 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.6-1
+- Upgrade to v3.8.6
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-3
 - Fix binary path
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-2
