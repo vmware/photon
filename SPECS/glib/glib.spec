@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -28,6 +28,7 @@ Patch13:        0010-gtlspassword-Forbid-very-long-TLS-passwords.patch
 Patch14:        0011-giochannel-Forbid-very-long-line-terminator-strings.patch
 Patch15:        0012-glib-Enable-g_memdup2-for-all-glib-version.patch
 Patch16:        glib-CVE-2021-28153.patch
+Patch17:        CVE-2021-3800.patch
 
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
@@ -53,8 +54,6 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-BuildRequires:	python2 >= 2.7
-BuildRequires:	python2-libs >= 2.7
 Requires:	pcre-devel
 Requires:	python2
 Requires:	libffi-devel
@@ -89,10 +88,11 @@ Gsettings schemas compiling tool
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 ./autogen.sh
-./configure --prefix=/usr --with-pcre=system 
+%configure --prefix=/usr --with-pcre=system
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -100,7 +100,7 @@ make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/libglib-*.so.*
 %{_libdir}/libgthread-*.so.*
@@ -129,6 +129,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Fri Sep 02 2022 Harinadh D <hdommaraju@vmware.com> 2.58.3-5
+-   Fix for CVE-2021-3800
 *   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.3-4
 -   Fix for CVE-2021-28153
 *   Fri Feb 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.3-3
