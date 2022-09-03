@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -12,6 +12,7 @@ Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.b
 %define sha1    %{name}=823b6b009a6e44fef27d2dacb069067fe355d5d8
 
 Patch0:         CVE-2020-25613.patch
+Patch1:         CVE-2022-28739.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -67,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Sep 02 2022 Harinadh D <hdommaraju@vmware.com> 2.5.8-4
+- fix CVE-2022-28739
 * Tue Jun 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.5.8-3
 - Added --with-compress-debug-sections=no without it debugedit fails
 * Mon Nov 02 2020 Sujay G <gsujay@vmware.com> 2.5.8-2
