@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2ze
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -27,6 +27,8 @@ Patch6:         c_rehash.patch
 BuildRequires: zlib-devel
 %endif
 Requires:       bash glibc libgcc
+Provides:       libcrypto.so.1.0.2()(64bit)
+Provides:       libssl.so.1.0.2()(64bit)
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -145,6 +147,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Sep 01 2022 Tapas Kundu <tkundu@vmware.com> 1.0.2ze-3
+-   Provides libssl.so.1.0.2 and libcrypto.so.1.0.2
 *   Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2ze-2
 -   Fix CVE-2022-2068
 -   Format c_rehash.patch to resolve merge conflicts
