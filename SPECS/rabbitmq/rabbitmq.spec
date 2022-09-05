@@ -1,21 +1,23 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.8.9
-Release:       3%{?dist}
+Version:       3.10.7
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512  rabbitmq=11e041235280c23012d967c6dbd78d1fc95a312fe1acb3aa51a7ed8731cc8c26acbcd7272a8100b8a5d75f49d38466980be194c6013921b017ed6fd09eb5ee55
+%define sha512  rabbitmq=34b7d0cbc8dafe8d7394aa3f6002f19bceea30266dc19d00bff367ec526fa528c9a3eb4a6da5e6054454d361e7bf14adc6a88e4178dc2fa9bcd6425819cdeccb
 Source1:       rabbitmq.config
-Requires:      erlang
+Requires:      erlang >= 24
 Requires:      erlang-sd_notify
 Requires:      /bin/sed
 Requires:      socat
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 BuildRequires: erlang
+BuildRequires: python3
+BuildRequires: python3-xml
 BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: git
@@ -33,12 +35,10 @@ rabbitmq messaging server
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot} \
-                     PREFIX=%{_prefix} \
-                     RMQ_ROOTDIR=/usr/lib/rabbitmq/
+%make_install RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
@@ -106,6 +106,8 @@ rm -rf %{buildroot}
 /var/lib/*
 
 %changelog
+* Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 3.10.7-1
+- Version update
 * Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.8.9-3
 - Bump version as a part of libxslt upgrade
 * Thu Dec 16 2021 Nitesh Kumar <kunitesh@vmware.com> 3.8.9-2

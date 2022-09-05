@@ -1,16 +1,18 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
-Version:          1.12.0
+Version:          1.12.5
 Release:          1%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Source0:          https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1      vernemq=2983c3f1b92080e49467bb32b46b725df3e59c90
+%define sha512    vernemq=3e30e20745f7b53d015a2a0f5371d17ce0e002c041b85f80cdd1db4f40be648bb103bc1d484f494d1b79ecd0c99c2c915a8f909887f717a63b6c0d259ade7aab
 Source1:          %{name}_vendor-%{version}.tar.gz
-%define sha1      vernemq_vendor=8b07a79948f99d34f2f58723931745ea7ac839ea
+%define sha512    vernemq_vendor=20b95694449f44fb99f7b136176031ce7ccfc1359bc26f590ced3d0fd575aed405d0eb455c52c0ae0c14769594e0380200e8810b3779441b236c89704ed4df8e
 Source2:          vars.config
 Source3:          vernemq.service
 Patch0:           local_version.patch
+Patch1:           bump_plumtree.patch
+Patch2:           add_otp_25.patch
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -40,6 +42,8 @@ A high-performance, distributed MQTT message broker.
 # Using autosetup is not feasible
 %setup -D -b 1
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
@@ -113,6 +117,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+*   Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-1
+-   Use erlang/otp version 24
 *   Wed Jun 09 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-1
 -   Upgrade to 1.12.0 version
 -   Add Requires on useradd, groupadd for pre and userdel, groupdel for postun

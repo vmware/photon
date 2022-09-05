@@ -1,7 +1,7 @@
 Name:         erlang
 Summary:      erlang
-Version:      23.1
-Release:      4%{?dist}
+Version:      24.3.4.5
+Release:      1%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -9,12 +9,8 @@ License:      ASL2.0
 URL:          http://erlang.com
 
 Source0:      OTP-%{version}.tar.gz
-%define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
-
-Patch0:       erlang-CVE-2021-29221.patch
-
+%define sha512  OTP=7f9826be5d5afd9d9adaaebdb55165e536c5d2efaa4bbd11cb826bf255b2d89feac8abe5a805bf7ad717fdd0c1633ea2e12692366e2d38fcb8c3d0c452ae17cd
 Requires:   ncurses-libs
-
 BuildRequires: unzip
 %description
 erlang programming language
@@ -26,11 +22,10 @@ erlang programming language
 export ERL_TOP=${PWD}
 ./otp_build autoconf
 sh ./configure --disable-hipe --prefix=%{_prefix} --enable-fips
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install
 
 %files
 %defattr(-,root,root)
@@ -40,6 +35,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 24.3.4.5-1
+- Version update
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.1-4
 - Exclude debug symbols properly
 * Thu Dec 16 2021 Nitesh Kumar <kunitesh@vmware.com> 23.1-3
