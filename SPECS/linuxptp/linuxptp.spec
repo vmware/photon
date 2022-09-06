@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        3.1
-Release:        3%{?dist}
+Version:        3.1.1
+Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha1    linuxptp=9a3869dbd322252c9a6bc0dbdfe8941586810a7f
+%define sha512  linuxptp=c3c40987fe68480a8473097ebc3c506fb4f8f3b6456bbe637b2b3cb0b3e0182f1513b511fdc04b3607d5f7d8bd1bd22502bb86eb13f9fa4fa63a3331846b33ec
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        phc2sys
@@ -18,10 +18,6 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
-# Fix for CVE-2021-3570
-Patch0:         0001-Validate-the-messageLength-field-of-incoming-message.patch
-# Fix for CVE-2021-3571
-Patch1:         0002-tc-Fix-length-of-follow-up-message-of-one-step-sync.patch
 
 %description
 This software is an implementation of the Precision Time Protocol (PTP)
@@ -30,15 +26,13 @@ a robust implementation of the standard and to use the most relevant and modern
 Application Programming Interfaces (API) offered by the Linux kernel.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -n %{name}-%{version}
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-make prefix=%{buildroot}%{_prefix} mandir=%{buildroot}%{_mandir} install
+make install %{?_smp_mflags} prefix=%{buildroot}%{_prefix} mandir=%{buildroot}%{_mandir}
 mkdir -p %{buildroot}/etc/sysconfig/
 mkdir -p %{buildroot}/usr/lib/systemd/system/
 install -Dm 0644 configs/default.cfg %{buildroot}/%{_sysconfdir}/ptp4l.conf
@@ -91,8 +85,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nsm.8.gz
 %{_mandir}/man8/ts2phc.8.gz
 
-
 %changelog
+*   Tue Sep 06 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-1
+-   Update to version 3.1.1
 *   Tue Jul 06 2021 Vikash Bansal <bvikas@vmware.com> 3.1-3
 -   Fix for CVE-2021-3570 and CVE-2021-3571
 *   Wed Apr 14 2021 Vikash Bansal <bvikas@vmware.com> 3.1-2
