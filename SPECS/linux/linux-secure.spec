@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.321
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.326
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bbda736a8fae4bcc7808cb29cf09fcea22a1df0
+%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -165,8 +165,6 @@ Patch123:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
 #Fix CVE-2022-2586
 Patch124:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 
-#Fix CVE-2022-2588
-Patch125:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2021-4197
 Patch126:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
 # Fix for CVE-2022-1048
@@ -362,7 +360,6 @@ popd
 %patch122 -p1
 %patch123 -p1
 %patch124 -p1
-%patch125 -p1
 %patch126 -p1
 
 #CVE
@@ -493,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
+-   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
 -   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4

@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.321
-Release:        5%{?dist}
+Version:        4.9.326
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bbda736a8fae4bcc7808cb29cf09fcea22a1df0
+%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -144,8 +144,6 @@ Patch124:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
 #Fix CVE-2022-2586
 Patch125:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 
-#Fix CVE-2022-2588
-Patch126:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2021-4197
 Patch127:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
 # Fix for CVE-2022-1048
@@ -282,7 +280,6 @@ The Linux package contains the Linux kernel doc files
 %patch123 -p1
 %patch124 -p1
 %patch125 -p1
-%patch126 -p1
 %patch127 -p1
 %patch128 -p1
 %patch129 -p1
@@ -384,6 +381,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
+-   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
 -   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4

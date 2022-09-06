@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.321
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.326
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bbda736a8fae4bcc7808cb29cf09fcea22a1df0
+%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -107,9 +107,6 @@ Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 #Fix CVE-2022-2586
 Patch67:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
-
-#Fix CVE-2022-2588
-Patch68:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -314,7 +311,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -533,6 +529,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
+-   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
 -   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4

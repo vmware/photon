@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.321
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.326
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bbda736a8fae4bcc7808cb29cf09fcea22a1df0
+%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -205,8 +205,6 @@ Patch159:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
 #Fix CVE-2022-2586
 Patch160:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
 
-#Fix CVE-2022-2588
-Patch161:        0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2021-4197
 Patch162:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
 # Fix for CVE-2022-1048
@@ -426,7 +424,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch158 -p1
 %patch159 -p1
 %patch160 -p1
-%patch161 -p1
 %patch162 -p1
 %patch163 -p1
 %patch164 -p1
@@ -580,6 +577,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
+-   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
 -   Fix for CVE-2022-1048
 *   Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-4
