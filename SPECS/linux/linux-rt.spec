@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.256
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -160,6 +160,9 @@ Patch131: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
 Patch132: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
 Patch133: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
 Patch134: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+
+# Backport netfilter patch to allow checking if dst has xfrm attached
+Patch141: 0001-netfilter-nf_tables-rt-allow-checking-if-dst-has-xfr.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -855,6 +858,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 06 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.256-2
+- Backport netfilter patch to allow checking if dst has xfrm attached.
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1
 - Update to version 4.19.256
 * Tue Aug 16 2022 Shivani Agarwal <shivania2@vmware.com> 4.19.247-14
