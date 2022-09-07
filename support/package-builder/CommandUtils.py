@@ -1,9 +1,8 @@
-# pylint: disable=invalid-name,missing-docstring
-import subprocess
 import os
+import subprocess
+
 
 class CommandUtils:
-
     @staticmethod
     def findFile(filename, sourcePath):
         process = subprocess.Popen(["find", "-L", sourcePath, "-name", filename,
@@ -34,5 +33,9 @@ class CommandUtils:
                 logfile = os.devnull
             with open(logfile, "w") as f:
                 process = subprocess.Popen("%s" %cmd, shell=True, stdout=f, stderr=f)
-
         return process.wait()
+
+    @staticmethod
+    def runShellCmd(cmd):
+        if subprocess.Popen([cmd], shell=True).wait():
+            raise Exception(f"ERROR: {cmd} failed")

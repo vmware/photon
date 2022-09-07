@@ -3,4 +3,4 @@ ifndef CONF
 endif
 
 %:
-	@./build.py -c $(CONF) -t $@
+	@python3 build.py -c $(CONF) -t $@
