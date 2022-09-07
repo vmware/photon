@@ -6,7 +6,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -14,6 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
 %define sha512 openjdk-11.0=1bc7878ccb73e495907c02718573b63c88f61581340e8038ab4f0abf6161ac355d7a1a420de4949192b7df951cd39a1d890f251cba4647d8fd425c72d92d0164
+Patch0:         CVE-2022-34169.patch
 BuildArch:      aarch64
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -51,7 +52,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%autosetup -n openjdk-%{version}
+%autosetup -p1 -n openjdk-%{version}
 
 %build
 chmod a+x ./configur*
@@ -200,5 +201,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-2
+-   Fix for CVE-2022-34169.
 *   Mon Jun 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.12-1
 -   Initial build. First version
