@@ -16,6 +16,10 @@ Options:
 -R: Disable replace flag (replace flag is on by default)
 -d: Use file contents as description field for livepatch module.
 --export-debuginfo: Saves debug files after module is built.
+--rpm: Package the module inside of an rpm.
+--rpm-version: Set the version number for the rpm.
+--rpm-release: Set the release number for the rpm.
+--rpm-desc: Set a separate description for the rpm. Input is a file.
 -h/--help: Prints help message and exits
 
 ** Examples **
@@ -44,6 +48,9 @@ Build module with description field
 
     auto_livepatch.sh -p example_patch -d description.txt
 
+Package module as RPM
+
+    auto_livepatch.sh -p example_patch -d description.txt -k 5.10.118-3.ph3 --rpm --rpm-version 2 --rpm-release 3 --rpm-desc rpm_description.txt
 
 Photon 4.0 rt flavor - All options set
 
@@ -64,6 +71,10 @@ Options:
 -R: Disable replace flag (replace flag is on by default)
 -d: Use file contents as description field for livepatch module.
 --export-debuginfo: Saves debug files after module is built.
+--rpm: Package the module inside of an rpm.
+--rpm-version: Set the version number for the rpm.
+--rpm-release: Set the release number for the rpm.
+--rpm-desc: Set a separate description for the rpm. Input is a file.
 -h/--help: Prints help message and exits
 
 **Examples **
@@ -85,13 +96,15 @@ Multiple patches.
 
 Build module with description field
 
-    auto_livepatch.sh -p example_patch -d description.txt
+    gen_livepatch.sh -p example_patch -d description.txt
 
+Package module as RPM
+
+    gen_livepatch.sh -p example_patch -d description.txt -k 5.10.118-3.ph3 --rpm --rpm-version 2 --rpm-release 3 --rpm-desc rpm_description.txt
 
 Native module - All options set.
 
     gen_livepatch.sh -p example_patches/example.patch -o test_dir -n test -d description.txt -R --export-debuginfo
-
 
 Specify kernel version (will fail if Photon versions don't match)
 
