@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source0:        photon-upgrade.sh
@@ -35,6 +35,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Thu Sep 08 2022 Dweep Advani <dadvani@vmware.com> 1.0-5
+- Added feature to install all packages from provided repo
 * Wed Aug 17 2022 Dweep Advani <dadvani@vmware.com> 1.0-4
 - Comment out unsupported FipsMode in /etc/ssh/sshd_config
 * Thu Jul 21 2022 Dweep Advani <dadvani@vmware.com> 1.0-3
