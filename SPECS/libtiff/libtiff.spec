@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -11,6 +11,7 @@ Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff
 %define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
 Patch0:         CVE-2022-2056.patch
 Patch1:         CVE-2022-34526.patch
+Patch2:         CVE-2022-2953.patch
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  wget
 BuildRequires:  ca-certificates
@@ -32,10 +33,10 @@ It contains the libraries and header files to create applications
 sh autogen.sh
 %configure \
     --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -62,6 +63,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Thu Sep 08 2022 Anmol Jain <anmolja@vmware.com> 4.4.0-5
+-   Fix CVE-2022-2953
 *   Thu Aug 11 2022 Anmol Jain <anmolja@vmware.com> 4.4.0-4
 -   Fix CVE-2022-34526
 *   Mon Jul 11 2022 Shivani Agarwal <shivania2@vmware.com> 4.4.0-3
