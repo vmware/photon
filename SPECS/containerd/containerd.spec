@@ -1,23 +1,29 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 %define gopath_comp github.com/containerd/containerd
+
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512  containerd=f16f23384dbaa67075f2d35b7fc752938dd15601bbe3a919bc8eaa53fa1b2dea2e2d7f613a0f2f492910213dc2f7e96f0a1d38dde35bfb6d15f18167313f9817
+
+Source0: https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
+%define sha512 %{name}=f16f23384dbaa67075f2d35b7fc752938dd15601bbe3a919bc8eaa53fa1b2dea2e2d7f613a0f2f492910213dc2f7e96f0a1d38dde35bfb6d15f18167313f9817
+
 # Must be in sync with package version
 %define CONTAINERD_GITCOMMIT 10c12954828e7c7c9b6e0ea9b0c02b01407d3ae1
 
-Patch1:         containerd-service.patch
-Source2:        containerd-config.toml
-Source3:        disable-containerd-by-default.preset
+Source1:        containerd-config.toml
+Source2:        disable-containerd-by-default.preset
+
+Patch0:         containerd-service.patch
+Patch1:         build-bin-gen-manpages-instead-of-using-go-run.patch
+
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
@@ -26,6 +32,7 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  go >= 1.16
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
+
 Requires:       libseccomp
 Requires:       systemd
 # containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
@@ -55,6 +62,7 @@ Documentation for containerd.
 # Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
+%patch0 -p1 -d %{name}-%{version}
 %patch1 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
@@ -67,7 +75,7 @@ export GOPATH="$(pwd)"
 # Also, attempting to create go.mod and re-vendor would be wrong in this case,
 # as it could overwrite patches to vendor/, as well as fetching un-release
 # upstream versions. Typically, embargoed CVEs can cause those versions to be hiddden.
-export GO111MODULE=on
+export GO111MODULE=off
 cd src/%{gopath_comp}
 make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} BUILDTAGS='seccomp selinux apparmor' binaries man
 
@@ -75,8 +83,8 @@ make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} BUILDTA
 cd src/%{gopath_comp}
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
 install -v -m644 -D -t %{buildroot}%{_unitdir} containerd.service
-install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
-install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
+install -v -m644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/containerd/config.toml
+install -v -m644 -D %{SOURCE2} %{buildroot}%{_presetdir}/50-containerd.preset
 make %{?_smp_mflags} DESTDIR=%{buildroot} PREFIX=%{_prefix} install
 make %{?_smp_mflags} DESTDIR=%{buildroot} PREFIX=%{_prefix} install-man
 
@@ -119,6 +127,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Thu Sep 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.6.6-4
+-   Restore GO111MODULE to off.
 *   Mon Aug 8 2022 Shivani Agarwal <shivania2@vmware.com> 1.6.6-3
 -   Enable selinux
 *   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
