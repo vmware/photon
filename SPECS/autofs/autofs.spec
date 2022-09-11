@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
-Version:        5.1.7
+Version:        5.1.8
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
-%define sha1    %{name}=69ec5339ca9a7ec15f0a28e18f9c4e93906ffcd2
+%define sha512  %{name}=6ee6283c0977c82848a654dc24745ee687f6916de441c3688fa91f67ca7295e632ee3808cc2358984a4b9f19841e6e1a91ab48aad6341ac8e63827fe8c32d223
 Source1:        %{name}.service
 
 BuildRequires:  systemd
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/autofs.service
 
 %changelog
+* Thu Aug 25 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.1.8-1
+- Update version to 5.1.8
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.1.7-1
 - Automatic Version Bump
 * Mon Aug 10 2020 Shreyas B <shreyasb@vmware.com> 5.1.6-2
