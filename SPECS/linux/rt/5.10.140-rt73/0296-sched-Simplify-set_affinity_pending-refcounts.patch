@@ -1,0 +1,128 @@
+From 5e2fc92da21f41a619ca7d96834a3d4a831fefd5 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Tue, 8 Jun 2021 00:37:35 -0400
+Subject: [PATCH 296/319] sched: Simplify set_affinity_pending refcounts
+
+commit 50caf9c14b1498c90cf808dbba2ca29bd32ccba4 upstream.
+
+Now that we have set_affinity_pending::stop_pending to indicate if a
+stopper is in progress, and we have the guarantee that if that stopper
+exists, it will (eventually) complete our @pending we can simplify the
+refcount scheme by no longer counting the stopper thread.
+
+Fixes: 6d337eab041d ("sched: Fix migrate_disable() vs set_cpus_allowed_ptr()")
+Cc: stable@kernel.org
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lkml.kernel.org/r/20210224131355.724130207@infradead.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/sched/core.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 52b339b5df0da..829544748cbad 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1911,6 +1911,10 @@ struct migration_arg {
+ 	struct set_affinity_pending	*pending;
+ };
+ 
++/*
++ * @refs: number of wait_for_completion()
++ * @stop_pending: is @stop_work in use
++ */
+ struct set_affinity_pending {
+ 	refcount_t		refs;
+ 	unsigned int		stop_pending;
+@@ -2046,10 +2050,6 @@ static int migration_cpu_stop(void *data)
+ 	if (complete)
+ 		complete_all(&pending->done);
+ 
+-	/* For pending->{arg,stop_work} */
+-	if (pending && refcount_dec_and_test(&pending->refs))
+-		wake_up_var(&pending->refs);
+-
+ 	return 0;
+ }
+ 
+@@ -2248,12 +2248,16 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 			push_task = get_task_struct(p);
+ 		}
+ 
++		/*
++		 * If there are pending waiters, but no pending stop_work,
++		 * then complete now.
++		 */
+ 		pending = p->migration_pending;
+-		if (pending) {
+-			refcount_inc(&pending->refs);
++		if (pending && !pending->stop_pending) {
+ 			p->migration_pending = NULL;
+ 			complete = true;
+ 		}
++
+ 		task_rq_unlock(rq, p, rf);
+ 
+ 		if (push_task) {
+@@ -2262,7 +2266,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 		}
+ 
+ 		if (complete)
+-			goto do_complete;
++			complete_all(&pending->done);
+ 
+ 		return 0;
+ 	}
+@@ -2313,9 +2317,9 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 		if (!stop_pending)
+ 			pending->stop_pending = true;
+ 
+-		refcount_inc(&pending->refs); /* pending->{arg,stop_work} */
+ 		if (flags & SCA_MIGRATE_ENABLE)
+ 			p->migration_flags &= ~MDF_PUSH;
++
+ 		task_rq_unlock(rq, p, rf);
+ 
+ 		if (!stop_pending) {
+@@ -2331,12 +2335,13 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 			if (task_on_rq_queued(p))
+ 				rq = move_queued_task(rq, rf, p, dest_cpu);
+ 
+-			p->migration_pending = NULL;
+-			complete = true;
++			if (!pending->stop_pending) {
++				p->migration_pending = NULL;
++				complete = true;
++			}
+ 		}
+ 		task_rq_unlock(rq, p, rf);
+ 
+-do_complete:
+ 		if (complete)
+ 			complete_all(&pending->done);
+ 	}
+@@ -2344,7 +2349,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 	wait_for_completion(&pending->done);
+ 
+ 	if (refcount_dec_and_test(&pending->refs))
+-		wake_up_var(&pending->refs);
++		wake_up_var(&pending->refs); /* No UaF, just an address */
+ 
+ 	/*
+ 	 * Block the original owner of &pending until all subsequent callers
+@@ -2352,6 +2357,9 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 	 */
+ 	wait_var_event(&my_pending.refs, !refcount_read(&my_pending.refs));
+ 
++	/* ARGH */
++	WARN_ON_ONCE(my_pending.stop_pending);
++
+ 	return 0;
+ }
+ 
+-- 
+2.37.2
+
