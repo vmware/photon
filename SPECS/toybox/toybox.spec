@@ -1,6 +1,6 @@
 Name:           toybox
-Version:        0.8.6
-Release:        3%{?dist}
+Version:        0.8.8
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha512  %{name}=2d8f9cc3a6bd7ee5bd4bce77399916aa90cd8acb90448f4e1b79c605c7f854c19016f5eb3704f112855c8347e69f0f4dc42f9755dd2ec975ac7799d00bc597be
+%define sha512  %{name}=3ffe4de6b17770ad9c43f98f2c69a110f94e5a85da909f8f770bbc9abaff42a524237b4ffaaa8b9800c8d31f0a8b6d3521f03bfdd0d1260fa421ef2525a34290
 
 Patch0:         %{name}-change-toys-path.patch
 
@@ -22,7 +22,7 @@ BuildRequires:  zlib-devel
 Requires:       openssl
 Requires:       zlib
 
-Provides:   /bin/grep
+Provides:       /bin/grep
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -318,6 +318,10 @@ tests_to_run=$(echo  $tests_to_run | sed -e 's/pkill//g')
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/xxd
 
+%triggerpostun -- wget
+[ $2 -eq 0 ] || exit 0
+%mktoy /usr/bin/wget
+
 %triggerpostun -- which
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/which
@@ -539,6 +543,9 @@ tests_to_run=$(echo  $tests_to_run | sed -e 's/pkill//g')
 # vim-extra
 %ghost %{_bindir}/xxd
 
+# wget
+%ghost %{_bindir}/wget
+
 # which
 %ghost %{_bindir}/which
 
@@ -556,7 +563,6 @@ tests_to_run=$(echo  $tests_to_run | sed -e 's/pkill//g')
 %{_sbindir}/oneit
 %{_sbindir}/vconfig
 %{_bindir}/acpi
-%{_bindir}/catv
 %{_bindir}/count
 %{_bindir}/ftpget
 %{_bindir}/ftpput
@@ -576,6 +582,9 @@ tests_to_run=$(echo  $tests_to_run | sed -e 's/pkill//g')
 %doc README LICENSE
 
 %changelog
+* Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.8.8-1
+- Upgrade to 0.8.8
+- catv is removed, use 'cat -v' instead
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-3
 - Fix binary path
 * Sat Apr 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.6-2
