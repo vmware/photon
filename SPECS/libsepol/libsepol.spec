@@ -1,6 +1,6 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
-Version:        3.3
+Version:        3.4
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=a9e20d2a381e241689301f491049c961bb494f41
+%define sha512  %{name}=5e47e6ac626f2bfc10a9f2f24c2e66c4d7f291ca778ebd81c7d565326e036e821d3eb92e5d7540517b1c715466232a7d7da895ab48811d037ad92d423ed934b6
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -83,7 +83,7 @@ rm -rf %{buildroot}%{_mandir}/ru \
 
 %files utils
 %defattr(-,root,root)
-%{_bindir}/chkcon
+%{_bindir}/*
 %{_mandir}/man8/chkcon.8.gz
 
 %files
@@ -91,6 +91,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
+- Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
 - Upgrade v3.3
 * Tue Mar 08 2022 Alexey Makhalov <amakhalov@vmware.com> 3.2-2

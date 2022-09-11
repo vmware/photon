@@ -1,6 +1,6 @@
 Summary:        SELinux policy module utils
 Name:           semodule-utils
-Version:        3.3
+Version:        3.4
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=ec19f65e881d4b3822afe7ce723478cc442fb519
+%define sha512  %{name}=3a102eb83e1feff9796c4da572500be1e3a8a8bc8a7eed762ef4144761280f0513050c714aa287b1e4e67d2938f9f9a0ee5036762472d732eae0288b437cb7a9
 
 BuildRequires:  libsepol-devel = %{version}
 Requires:       libsepol = %{version}
@@ -42,6 +42,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/semodule_unpackage.8.gz
 
 %changelog
+* Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
+- Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
 - Upgrade v3.3
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1

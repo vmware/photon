@@ -1,6 +1,6 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.3
+Version:        3.4
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
@@ -9,16 +9,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=70128f2395fc86b09c57db979972b4823b35e614
+%define sha512  %{name}=7ffa6d2159d2333d836bde3f75dfc78a278283b66ae1e441c178371adb6f463aa6f2d62439079e2068d1135c39dd2b367b001d917c0bdc6871a73630919ef81e
+
+Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
 
 BuildRequires:  libsepol-devel = %{version}
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
 
 %define ExtraBuildRequires systemd-rpm-macros
 
-Requires:       pcre-libs
+Requires:       pcre2-libs
 # libselinux optionally uses libsepol by dlopen it.
 # libsepol really needed by highlevel SELinux packages
 # such as policycoreutils.
@@ -57,7 +59,7 @@ Summary:        Header files and libraries used to build SELinux
 Group:          Development/Libraries
 Requires:       libselinux = %{version}-%{release}
 Requires:       libsepol-devel = %{version}
-Requires:       pcre-devel
+Requires:       pcre2-devel
 Provides:       pkgconfig(libselinux)
 
 %description    devel
@@ -120,6 +122,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
+- Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
 - Upgrade v3.3
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1

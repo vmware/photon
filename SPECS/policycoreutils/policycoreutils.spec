@@ -1,6 +1,6 @@
 Summary:        SELinux policy core utilities
 Name:           policycoreutils
-Version:        3.3
+Version:        3.4
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=379cb6237cd96f0ad4cca73357d84e503b0d2a8e
+%define sha512  %{name}=ded0d6fb5e3f165a893ee42411ac82616ddf37a02acaca6a8437b8f10ea12e5594bbd7bc7e3ead12df00c018078950f3fbe55604c41b0554257c4ca18f55ebb6
 
 BuildRequires:  libsemanage-devel = %{version}
 
@@ -47,6 +47,8 @@ rm -rf %{buildroot}%{_datadir}/locale \
 %{_mandir}/man8/*
 
 %changelog
+* Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
+- Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
 - Upgrade v3.3
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
