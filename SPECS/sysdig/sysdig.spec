@@ -6,8 +6,8 @@
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.27.0
-Release:        7%{?kernelsubrelease}%{?dist}
+Version:        0.29.3
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -15,9 +15,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=102150cc641165a6c18ce71e3c6148dc10700f614fec7e1909c29172e3cce02dfa16af56aabdcd420499d0aa89f90fee8f26d92a250b0a521d1b9d416c6a678f
+%define sha512 %{name}=1dbe1195f245921c671ed2343325aee79fd0cde34681b9cab445135662d3ed7c84884e46b2270c0e868b5de1a3f2800b84e8bf9fcf0dfe581dd17e2e633f46d8
 
-Patch0: get-lua-googletest-sources-from-photonstage.patch
+Patch0:         get-googletest-sources-from-photonstage.patch
 
 BuildArch:      x86_64
 
@@ -57,11 +57,6 @@ that runs in your terminal
 
 %build
 export CFLAGS="-Wno-error=misleading-indentation"
-# fix for linux-4.9
-sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
-sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
-sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' userspace/libscap/scap_fds.c
-sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' userspace/libsinsp/CMakeLists.txt
 
 %cmake \
     -DUSE_BUNDLED_OPENSSL=OFF \
@@ -82,14 +77,12 @@ export KERNELDIR="%{_modulesdir}/build"
 export KERNELDIR="%{_modulesdir}/build"
 %cmake_install
 
-mv %{buildroot}%{_usrsrc}/%{name}* %{buildroot}%{_usrsrc}/%{name}-%{version}
-
 mkdir -p %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_usr}%{_sysconfdir}/bash_completion.d %{buildroot}%{_sysconfdir}
 rm -rf %{buildroot}%{_datadir}/zsh/
 
 mkdir -p %{buildroot}%{_modulesdir}/extra
-mv %{__cmake_builddir}/driver/%{name}-probe.ko %{buildroot}%{_modulesdir}/extra
+mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
 
 %clean
 rm -rf %{buildroot}/*
@@ -106,9 +99,11 @@ rm -rf %{buildroot}/*
 %{_bindir}
 %exclude %{_usrsrc}
 %{_datadir}
-%{_modulesdir}/extra/%{name}-probe.ko
+%{_modulesdir}/extra/scap.ko
 
 %changelog
+* Tue Aug 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.29.3-1
+- Update to latest version
 * Sat Jul 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.27.0-7
 - Use cmake macros for build
 * Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 0.27.0-6

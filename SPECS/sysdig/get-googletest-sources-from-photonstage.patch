@@ -1,18 +1,5 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5d7c1f5..3e47762 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -182,7 +182,7 @@ else()
-                         INSTALL_COMMAND "")		
- 		else()
- 		ExternalProject_Add(luajit
--			URL "http://download.draios.com/dependencies/LuaJIT-2.0.3.tar.gz"
-+			URL "https://packages.vmware.com/photon/photon_sources/1.0/LuaJIT-2.0.3.tar.gz"
- 			URL_MD5 "f14e9104be513913810cd59c8c658dc0"
- 			CONFIGURE_COMMAND ""
- 			BUILD_COMMAND ${CMD_MAKE}
 diff --git a/CMakeListsGtestInclude.cmake b/CMakeListsGtestInclude.cmake
-index 45ff47b..801a155 100644
+index 76c0f1b..801a155 100644
 --- a/CMakeListsGtestInclude.cmake
 +++ b/CMakeListsGtestInclude.cmake
 @@ -22,8 +22,8 @@ project(googletest-download NONE)
@@ -20,7 +7,7 @@ index 45ff47b..801a155 100644
  include(ExternalProject)
  ExternalProject_Add(googletest
 -  GIT_REPOSITORY    https://github.com/google/googletest.git
--  GIT_TAG           master
+-  GIT_TAG           main
 +  URL               https://packages.vmware.com/photon/photon_sources/1.0/googletest-release-1.12.1.tar.gz
 +  URL_MD5           e82199374acdfda3f425331028eb4e2a
    SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/googletest-src"

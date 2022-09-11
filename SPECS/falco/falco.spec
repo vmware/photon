@@ -2,7 +2,7 @@
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.32.0
+Version:        0.32.2
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=d7716507adcbdfeb79a6211c5de14e1c2300a97da3a8d30d25c1d954660ed1a5f1562e2866aabb5b8e9089606306b170e3b0f2f9175a2506bdea2d1a73c6ecd2
+%define sha512  %{name}=88a98e32285746c2c04bd640495c12a1114a511ef6a9ee276ddaf60ad441effffe8da4879442c82a7fbab76cbecb157bd2cddc01eaa17d3876eb1860e6ec6260
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
@@ -33,16 +33,6 @@ BuildRequires:  which
 BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
-
-%if 0%{?with_check}
-BuildRequires:  dkms
-BuildRequires:  xz-devel
-BuildRequires:  jq
-BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools
-BuildRequires:  unzip
-BuildRequires:  docker
-%endif
 
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
@@ -83,6 +73,7 @@ Falco lets you continuously monitor and detect container, application, host, and
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
     -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
@@ -125,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Thu Sep 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.32.2-1
+- Upgrade to v0.32.2
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.32.0-1
 - Upgrade to v0.32.0
 - Introduce devel sub package
