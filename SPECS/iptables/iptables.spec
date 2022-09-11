@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -17,7 +17,6 @@ Source4:        ip4save
 Source5:        ip6save
 
 Patch0:         libebt_nflog.c-initialize-len-flag-fields-to-0.patch
-Patch1:         iptables-xtables-arp-vlan.patch
 
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
@@ -43,8 +42,6 @@ It contains the libraries and header files to create applications.
 %package -n ebtables-nft
 Summary:    A filtering tool for a Linux-based bridging firewall.
 Requires:   %{name} = %{version}-%{release}
-
-Obsoletes:  ebtables
 
 %description -n ebtables-nft
 Ethernet bridge tables is a firewalling tool to transparently filter network
@@ -148,13 +145,18 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/%{name}/libebt*.so
 %{_libdir}/%{name}/libarpt_mangle.so
-%{_sbindir}/ebtables*
-%{_sbindir}/arptables*
+%{_sbindir}/ebtables-*
+%exclude %{_sbindir}/ebtables
+%{_sbindir}/arptables-*
+%exclude %{_sbindir}/arptables
+
 %{_sysconfdir}/ethertypes
 %{_mandir}/man8/ebtables-nft.8.gz
 %{_mandir}/man8/arptables*.gz
 
 %changelog
+* Wed Jul 13 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.3-6
+- Do not override legacy ebtables, arptables softlink
 * Tue May 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.3-5
 - Fix packaging to remove conflict with arptables package
 - Apply HCX team's patch to libebt_nflog.c, arptables
