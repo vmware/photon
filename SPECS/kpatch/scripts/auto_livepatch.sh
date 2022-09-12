@@ -13,6 +13,10 @@
 #   -d: Use file contents as description field for livepatch module.
 #   --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc.
 #   -h/--help: Prints help message
+#   --rpm: Package the kernel module as an rpm
+#   --rpm-version: Specify the version number of the rpm
+#   --rpm-release: Specify the release number of the rpm
+#   --rpm-desc: Specify the description file for the rpm. If not set, it will be the same as the module.
 #
 #
 # ex)
@@ -26,7 +30,7 @@ set -o pipefail
 
 # keeps track of what version of kpatch-utils this is
 # very important to know when to rebuild the docker images
-VERSION_TAG=2
+VERSION_TAG=3
 
 if [[ "$EUID" -ne 0 ]]; then
     echo "Please run as root user"
@@ -60,6 +64,7 @@ DOCKER_KPATCH_BUILDLOG=/root/.kpatch/build.log
 FAILED=0
 EXPORT_DEBUGINFO=0
 DESC_GIVEN=0
+RPM_DESC_GIVEN=0
 
 # args
 #   1. string to match
@@ -93,8 +98,8 @@ parse_args() {
     mkdir -p $PATCH_DIR
     local flag=""
     local patch_given=0
-    local flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" )
-    local no_arg_flags=( "-R" "--export-debuginfo" "-h" "--help" )
+    local flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
+    local no_arg_flags=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" )
     while (( "$#" )); do
         arg=$1
         if [[ $1 == -* ]]; then
@@ -128,11 +133,15 @@ parse_args() {
                 -d)
                     DESC_GIVEN=1
                     cp "$1" "$AUTO_LIVEPATCH_DIR/description.txt" &> /dev/null || error "Description file $1 not found"
+                    ;;
+                --rpm-desc)
+                    RPM_DESC_GIVEN=1
+                    cp "$1" "$AUTO_LIVEPATCH_DIR/rpm-description.txt" &> /dev/null || error "RPM description file $1 not found"
                 esac
         fi
 
         # pass all arguments except for output directory into docker container
-        if [[ $flag != "-o" ]] && [[ $flag != "-d" ]]; then
+        if [[ $flag != "-o" ]] && [[ $flag != "-d" ]] && [[ $flag != "--rpm-desc" ]]; then
             if [ -z "$ARGS" ]; then
                 ARGS="$arg"
             else
@@ -151,6 +160,10 @@ parse_args() {
     #make sure description file is easily accessible
     if [[ $DESC_GIVEN -eq 1 ]]; then
         ARGS="$ARGS -d $DOCKER_BUILDDIR/description.txt"
+    fi
+
+    if [[ $RPM_DESC_GIVEN -eq 1 ]]; then
+        ARGS="$ARGS --rpm-desc $DOCKER_BUILDDIR/rpm-description.txt"
     fi
 
     # output livepatch(es) to the same folder in the docker container
@@ -200,6 +213,10 @@ config_container() {
     $DOCKER cp $PATCH_DIR "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
     if [[ $DESC_GIVEN -eq 1 ]]; then
         $DOCKER cp "$AUTO_LIVEPATCH_DIR/description.txt" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
+    fi
+
+    if [[ $RPM_DESC_GIVEN -eq 1 ]]; then
+        $DOCKER cp "$AUTO_LIVEPATCH_DIR/rpm-description.txt" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
     fi
 }
 
