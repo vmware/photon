@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.78
-Release:        17%{?kat_build:.kat}%{?dist}
+Version:        5.10.83
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=3ec352e6d50480dddfa3fa903c37f72b1b027c541862182e910013c5d461431d4782fb4908c74513d20a4c093abf0318ca9a76bac6c1b56145d0fb21ad194169
+%define sha512 linux=63a4dd3dc72d55d02f6f50c12316e42b1bce45f90a0d704d76223c8ca75f66ebbbe17a7819cb1a6ff9a64844f92a84c4591096e230b363bcaf2b59c4f22ed278
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -487,6 +487,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-1
+- Update to version 5.10.83
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-17
 - Scriptlets fixes and improvements
 * Fri Jul 29 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 5.10.78-16

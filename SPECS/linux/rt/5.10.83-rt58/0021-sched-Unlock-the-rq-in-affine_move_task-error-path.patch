@@ -1,0 +1,34 @@
+From de128a4616d119b735346fa398d90dc0c41c96c9 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 9 Nov 2020 15:54:03 +0100
+Subject: [PATCH v4.9-rt 021/315] sched: Unlock the rq in affine_move_task()
+ error path
+
+Unlock the rq if returned early in the error path.
+
+Reported-by: Joe Korty <joe.korty@concurrent-rt.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/20201106203921.GA48461@zipoli.concurrent-rt.com
+---
+ kernel/sched/core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index a86fb72837cd..672be26b394b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2223,8 +2223,10 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+ 	 *
+ 	 * Either way, we really should have a @pending here.
+ 	 */
+-	if (WARN_ON_ONCE(!pending))
++	if (WARN_ON_ONCE(!pending)) {
++		task_rq_unlock(rq, p, rf);
+ 		return -EINVAL;
++	}
+ 
+ 	if (flags & SCA_MIGRATE_ENABLE) {
+ 
+-- 
+2.31.1
+

@@ -1,8 +1,8 @@
-From 84d74419e248496f20fc7f9fba07ee1497a278c6 Mon Sep 17 00:00:00 2001
+From 0463232ae4fd8bf045ce65769e7bf774f55b2ea7 Mon Sep 17 00:00:00 2001
 From: Aleksei Besogonov <cyberax@amazon.com>
 Date: Thu, 2 Nov 2017 02:55:51 +0000
-Subject: Not-for-upstream: PM / hibernate: Speed up hibernation by batching
- requests
+Subject: [PATCH] Not-for-upstream: PM / hibernate: Speed up hibernation by
+ batching requests
 
 Hibernate file reading and writing submits individual IO requests for
 each page of the data. This normally is not a big issue, however some
@@ -31,7 +31,7 @@ CR: https://cr.amazon.com/r/8297651/
  1 file changed, 201 insertions(+), 33 deletions(-)
 
 diff --git a/kernel/power/swap.c b/kernel/power/swap.c
-index c73f2e295167..1e8e9548a3b3 100644
+index 25e7cb96bb88..3314ceea60b1 100644
 --- a/kernel/power/swap.c
 +++ b/kernel/power/swap.c
 @@ -60,6 +60,11 @@ static bool clean_pages_on_decompress;
@@ -184,7 +184,7 @@ index c73f2e295167..1e8e9548a3b3 100644
  		bio_put(bio);
 @@ -301,6 +371,10 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  
- static blk_status_t hib_wait_io(struct hib_bio_batch *hb)
+ static int hib_wait_io(struct hib_bio_batch *hb)
  {
 +	if (hb->current_bio) {
 +		send_bio(hb, hb->current_bio);
@@ -370,5 +370,5 @@ index c73f2e295167..1e8e9548a3b3 100644
  		}
  		asked += i;
 -- 
-2.17.1
+2.23.3
 
