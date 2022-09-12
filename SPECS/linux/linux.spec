@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -680,6 +680,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Mon Sep 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-14
+- .config: Enable eBPF net packet filtering support.
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.78-13
 - Scriptlets fixes and improvements
 * Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 5.10.78-12
