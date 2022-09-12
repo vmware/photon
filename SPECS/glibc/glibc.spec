@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -48,6 +48,7 @@ Patch28:        0002-CVE-2020-29573.patch
 Patch29:        CVE-2021-43396.patch
 Patch30:        nptl-Fix-pthread_rwlock-stalls.patch
 Patch31:        nptl-Fix_pthread_cond_broadcast_Fix_waiters-after-spinning_case.patch
+Patch32:        CVE-2021-3999.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -135,6 +136,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -337,6 +339,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.28-22
+-   fix CVE-2021-3999
 *   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.28-21
 -   fix pthread_cond_broadcast, pthread_cond_signal
 *   Tue Apr 19 2022 Alexey Makhalov <amakhalov@vmware.com> 2.28-20
