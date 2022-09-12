@@ -63,6 +63,7 @@ targetList = {
     "rpmBuild": [
         "packages",
         "packages-minimal",
+        "packages-rt",
         "packages-initrd",
         "packages-docker",
         "updated-packages",
