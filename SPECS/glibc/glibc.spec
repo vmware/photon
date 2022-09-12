@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        27%{?dist}
+Release:        28%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -51,6 +51,7 @@ Patch33:        CVE-2021-38604.patch
 Patch34:        0001-socket_Add_the__sockaddr_un_set_function.patch
 Patch35:        CVE-2022-23218.patch
 Patch36:        CVE-2022-23219.patch
+Patch37:        CVE-2021-3999.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -142,6 +143,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -346,6 +348,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.26-28
+-   Fix CVE-2021-3999
 *   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.26-27
 -   Fix CVE-2022-23218, CVE-2022-23219
 *   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.26-26
