@@ -1,17 +1,20 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.58
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha1    bluez=f5f007eb18599ee2fdca113642e177ebab5a8e21
+%define sha512  %{name}=159b554e0afd56af5da6f8333383f2fdf96d77a0e82d762bf4b37786e7312b7e61fbbae0f18b26442a606e0a232f48e0f45a4b38b95de36c7daf384f582315a3
 
 Patch0:         bluez-CVE-2021-41229.patch
 Patch1:         bluez-CVE-2021-3658.patch
 Patch2:         bluez-CVE-2022-0204.patch
+Patch3:         bluez-CVE-2022-39176_39177-1.patch
+Patch4:         bluez-CVE-2022-39176_39177-2.patch
+Patch5:         bluez-CVE-2022-39176_39177-3.patch
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -85,6 +88,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Mon Sep 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-5
+- Patched to fix CVE-2022-39176, CVE-2022-39177
 * Tue Mar 22 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-4
 - Patched to fix CVE-2022-0204
 * Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-3
