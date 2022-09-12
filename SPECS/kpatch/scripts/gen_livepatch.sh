@@ -10,7 +10,10 @@
 #       --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc.
 #       -h/--help: Prints help message
 #       -d: Use file contents as description field for livepatch module.
-#
+#       --rpm: Package the kernel module as an rpm
+#       --rpm-version: Specify the version number of the rpm
+#       --rpm-release: Specify the release number of the rpm
+#       --rpm-desc: Specify the description file for the rpm. If not set, it will be the same as the module.
 #
 # ex)
 #   With all options enabled, and multiple patches:
@@ -51,6 +54,11 @@ EXPORT_DEBUGINFO=0
 DEBUGINFO_DIR="$BUILD_DIR/debuginfo"
 KPATCH_BUILDDIR="$HOME/.kpatch"
 DESC_FILE=""
+RPM_DESCFILE=""
+PACKAGE_AS_RPM=0
+RPM_VERSION=""
+RPM_RELEASE=""
+BUILD_RPM_SPECFILE=/etc/gen_livepatch/build-rpm.spec
 patches=()
 declare -A photon_version=(["4.19"]="3.0" ["5.10"]="4.0")
 
@@ -81,7 +89,7 @@ parse_args() {
     fi
 
     local flag=""
-    flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" )
+    flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
     while (( "$#" )); do
         if [[ $1 = -* ]]; then
             flag=$1
@@ -95,6 +103,8 @@ parse_args() {
                 NON_REPLACE_FLAG="-R"
             elif [[ $1 == --export-debuginfo ]]; then
                 EXPORT_DEBUGINFO=1
+            elif [[ $1 == --rpm ]]; then
+                PACKAGE_AS_RPM=1
             elif [[ $2 == -* || -z $2 ]]; then
                 error "$1 needs at least one argument"
             elif  [[ $3 != -* && $flag != -p && -n $3 ]]; then
@@ -116,7 +126,17 @@ parse_args() {
                     ;;
                 -d)
                     DESC_FILE=$1
-                    [ -f "$DESC_FILE" ] || error "Description file does not exist"
+                    [ -f "$DESC_FILE" ] || error "Module description file does not exist"
+                    ;;
+                --rpm-version)
+                    RPM_VERSION=$1
+                    ;;
+                --rpm-release)
+                    RPM_RELEASE=$1
+                    ;;
+                --rpm-desc)
+                    RPM_DESCFILE=$1
+                    [ -f "$RPM_DESCFILE" ] || error "RPM description file does not exist"
                     ;;
                 esac
         fi
@@ -145,6 +165,22 @@ parse_args() {
         echo "Output folder not specified, using default."
         echo "Outputting livepatches to: $DEFAULT_OUTPUT_FOLDER"
         OUTPUT_FOLDER="$DEFAULT_OUTPUT_FOLDER"
+    fi
+
+    if [[ -z "$RPM_VERSION" && "$PACKAGE_AS_RPM" == 1 ]]; then
+        echo "RPM version number not specified, setting to 1"
+        RPM_VERSION=1
+    fi
+
+    if [[ -z "$RPM_RELEASE" && "$PACKAGE_AS_RPM" == 1 ]]; then
+        echo "RPM release not specified, setting to 1"
+        RPM_RELEASE=1
+    fi
+
+    # if building an rpm, and rpm description is not specified, use the kernel module desc file if it is set
+    if [[ ! -z "$DESC_FILE" && "$PACKAGE_AS_RPM" == 1 && -z "$RPM_DESCFILE" ]]; then
+        echo "Separate RPM description not specified, using module description"
+        RPM_DESCFILE=$DESC_FILE
     fi
 
     # make sure output folder exists
@@ -307,6 +343,10 @@ print_help() {
     echo -e "\t --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc."
     echo -e "\t -h/--help: Print help message"
     echo -e "\t -d: Use file contents as description field for livepatch module."
+    echo -e "\t --rpm: Package the kernel module as an rpm"
+    echo -e "\t --rpm-version: Specify the version number of the rpm"
+    echo -e "\t --rpm-release: Specify the release number of the rpm"
+    echo -e "\t --rpm-desc: Specify the description file for the rpm. If not set, it will be the same as the module."
     exit "$1"
 }
 
@@ -453,9 +493,46 @@ kpatch_build() {
     fi
 }
 
+
+# function to package the required module inside of an rpm
+package_module_in_rpm() {
+    echo -e "\nPreparing to build rpm"
+
+    pushd "$TEMP_DIR" > /dev/null 2>&1 || error
+    # set up temporary rpm build environment
+    local rpmdir="%_topdir %(echo $PWD)/rpmbuild"
+    mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} || error
+    popd > /dev/null 2>&1 || error
+
+    cd "$STARTING_DIR" > /dev/null 2>&1 || error
+    mv "$OUTPUT_FOLDER"/"$LIVEPATCH_NAME".ko "$TEMP_DIR"/rpmbuild/SOURCES || error
+
+    # fill in needed info in spec file skeleton
+    local spec_file="$TEMP_DIR/rpmbuild/SPECS/build-rpm.spec"
+    cp "$BUILD_RPM_SPECFILE" "$spec_file" || error
+    sed -i "s/@@VERSION@@/$RPM_VERSION/g" "$spec_file" || error "Filling in RPM vesion for spec file skeleton failed"
+    sed -i "s/@@RELEASE@@/$RPM_RELEASE/g" "$spec_file" || error "Filling in RPM release for  spec file skeleton failed"
+    sed -i "s/@@LIVEPATCH_NAME@@/$LIVEPATCH_NAME/g" "$spec_file" || error "Filling in livepatch name for spec file skeleton failed"
+    sed -i "s/@@LINUX_VERSION@@/$KERNEL_VERSION_RELEASE_TAG/g" "$spec_file" || error "Filling in linux version for spec file skeleton failed"
+
+    if [ -f "$RPM_DESCFILE" ]; then
+        sed -i "s/@@DESCRIPTION@@/$(cat $RPM_DESCFILE)/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
+    else
+        sed -i "s/@@DESCRIPTION@@/Livepatch module for Linux $KERNEL_VERSION_RELEASE_TAG\n/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
+    fi
+
+    echo "Building rpm"
+    rpmbuild -bb $spec_file --define "$rpmdir" > /dev/null 2>&1 || error "Packaging kernel module as rpm failed"
+
+    # should only build for x86_64 arch but put a * there just in case
+    cp $TEMP_DIR/rpmbuild/RPMS/*/$LIVEPATCH_NAME*.rpm $OUTPUT_FOLDER || error "Current dir: $STARTING_DIR. Failed to save RPM to $OUTPUT_FOLDER"
+
+    echo "SUCCESS: Building rpm finished"
+}
+
 cleanup() {
     if [[ $GEN_LIVEPATCH_DEBUG != 1 ]]; then
-        rm -rf $TEMP_DIR
+        rm -rf $TEMP_DIR || error "Failed to delete temp dir: $TEMP_DIR"
     fi
 }
 
@@ -489,3 +566,7 @@ echo -e "\nAll sources ready, building livepatch module..."
 # cd back to starting directory so that patch file paths are correct
 cd "$STARTING_DIR" || error
 kpatch_build
+
+if [[ $PACKAGE_AS_RPM == 1 ]]; then
+    package_module_in_rpm
+fi
