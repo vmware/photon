@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.12.1
+Version:        2.13.3
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -10,49 +8,51 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=e728ea784c754d8e702068340247a6b08a632b1b
+Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
+%define sha512 %{name}=06d3e322980eb61b0f73b93b43d0bf3b5542feacbf11e8dc7862150f13bcc3c46d7f7a34ca1866cd6f4a09881e464a63714e9e645ca1367cee05dd192f375c4b
 
-Patch0:         Add-Photon-OS-tdnf-support.patch
+Source1: tdnf.py
 
-BuildArch:      noarch
+BuildArch: noarch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-resolvelib
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-resolvelib
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-jinja2
-Requires:       python3-PyYAML
-Requires:       python3-xml
-Requires:       python3-paramiko
-Requires:       python3-resolvelib
-
-%if %{with_check}
-BuildRequires:  python3-devel
-BuildRequires:  python3-pip
-BuildRequires:  python3-cryptography
-BuildRequires:  python3-PyYAML
-BuildRequires:  python3-jinja2
+%if 0%{?with_check}
+BuildRequires: python3-pip
+BuildRequires: python3-jinja2 >= 3.1.2
+BuildRequires: python3-PyYAML
+BuildRequires: python3-pytest
+BuildRequires: python3-cryptography
 %endif
+
+Requires: python3
+Requires: python3-jinja2 >= 3.1.2
+Requires: python3-PyYAML
+Requires: python3-xml
+Requires: python3-paramiko
+Requires: python3-resolvelib
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
 %autosetup -p1
+cp -vp %{SOURCE1} lib/%{name}/modules/
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-%{__rm} -rf %{buildroot}
-python3 setup.py install -O1 --skip-build --root "%{buildroot}"
+%py3_install
 
+%if 0%{?with_check}
 %check
-python3 setup.py test
+# make check is unstable at the moment
+#pip3 install pytest-forked
+#make tests-py3 %%{?_smp_mflags}
+%endif
 
 %files
 %defattr(-, root, root)
@@ -60,6 +60,10 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sat Sep 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.3-1
+- Upgrade to v2.13.3
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.27-1
+- Automatic Version Bump
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
 - Upgrade to v2.12.1 & fix tdnf module packaging
 * Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.11.1-1

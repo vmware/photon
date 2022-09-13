@@ -281,7 +281,7 @@ class SpecParser(object):
         return False
 
     def _isChecksum(self, line):
-        if re.search('^%define *sha1', line, flags=re.IGNORECASE):
+        if re.search('^%define *sha*=*', line, flags=re.IGNORECASE):
             return True
         return False
 
@@ -478,22 +478,21 @@ class SpecParser(object):
             if sourceName.startswith(value[0]):
                 matchedSources.append(sourceName)
         if not matchedSources:
-            print("Error: Can not find match for sha1 " + value[0])
+            print("Error: Can not find match for checksum " + value[0])
             return False
         if len(matchedSources) > 1:
             print("Error: Too many matched Sources:" +
-                  ' '.join(matchedSources) + " for sha1 " + value[0])
+                  ' '.join(matchedSources) + " for checksum " + value[0])
             return False
-        pkg.checksums[sourceName] = value[1]
+        pkg.checksums[sourceName] = {words[1]: value[1]}
         return True
 
     def _isConditionalCheckMacro(self, line):
         data = line.strip()
         words = data.split()
-        nrWords = len(words)
-        if nrWords != 2:
+        if len(words) != 2:
             return False
-        if words[0] != "%if" or words[1] != "%{with_check}":
+        if words[0] != "%if" or "with_check" not in words[1]:
             return False
         return True
 
@@ -504,13 +503,10 @@ class SpecParser(object):
     def _isConditionTrue(self, line):
         data = line.strip()
         words = data.split()
-        nrWords = len(words)
         # condition like %if a > b is not supported
-        if nrWords != 2:
+        if len(words) != 2:
             return True
-        if self._replaceMacros(words[1]) == "0":
-            return False
-        return True
+        return int(self._replaceMacros(words[1]))
 
     def _isConditionalMacroStart(self, line):
         return line.startswith("%if")

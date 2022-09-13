@@ -7,8 +7,9 @@ URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
 Distribution: Photon
+
 Source0:      http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
-%define sha1 gawk=87dfc1a72c2da51b4ebdafae221ba1d4a5a7b07e
+%define sha512  %{name}=794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
 
 Provides:   /bin/awk
 Provides:   /bin/gawk
@@ -27,7 +28,7 @@ The Gawk package contains programs for manipulating text files.
 %build
 %configure --disable-silent-rules
 
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
@@ -38,9 +39,11 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 sed -i 's/ pty1 / /' test/Makefile
 make %{?_smp_mflags} check
+%endif
 
 %ldconfig_scriptlets
 

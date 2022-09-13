@@ -1,2 +1,3 @@
-FROM photon:latest
+FROM photon:4.0
+
 RUN tdnf install -y rpm

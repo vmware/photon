@@ -1,20 +1,18 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.9.0
-Release:          3%{?dist}
+Version:          5.9.6
+Release:          1%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      %{name}=8bb52214f72f2571f55dababfe76ff97fd31ca1f
+%define sha512    %{name}=8efb7a55b074485b874e941e42462e97a404b4f84e2f90ed18ef66274731b22d167a571f6fd028dccc1f199f2e591c82616d0a832a5084e1981c6b867fe5bb6a
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
 Patch0:           strongswan-fix-make-check.patch
-Patch1:           CVE-2021-41990.patch
-Patch2:           CVE-2021-41991.patch
 %{?systemd_requires}
 
 %description
@@ -64,6 +62,12 @@ rm -rf %{buildroot}/*
 %{_unitdir}/strongswan.service
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.6-1
+- Automatic Version Bump
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.5-1
+- Automatic Version Bump
+* Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.9.0-4
+- Fix CVE-2021-45079
 * Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-3
 - Fix CVE-2021-41991 and CVE-2021-41990.
 * Wed Jun 09 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-2

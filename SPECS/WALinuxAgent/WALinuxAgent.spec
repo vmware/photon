@@ -1,6 +1,6 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.4.0.2
+Version:        2.7.3.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
@@ -8,35 +8,29 @@ Url:            https://github.com/Azure/WALinuxAgent
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=62b2819a63e615c8a9699685d6009820f025f212
+Source0: https://github.com/Azure/WALinuxAgent/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=c4cd310d591844ae9dd29f95e846532fb9771a0e1f546942160fe9dfe448e387090540f018688087ed10c8587a0bffbe73d33120732e35b01e0349e69e260eb6
 
-Patch0:         Add-PhotonOS-support.patch
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: systemd-devel
+BuildRequires: python3-distro
+BuildRequires: python3-macros
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  systemd
-BuildRequires:  python3-distro
-BuildRequires:  python3-macros
+Requires: python3
+Requires: python3-xml
+Requires: python3-pyasn1
+Requires: openssh
+Requires: openssl
+Requires: (util-linux or toybox)
+Requires: /bin/sed
+Requires: /bin/grep
+Requires: sudo
+Requires: iptables
+Requires: systemd
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-xml
-Requires:       python3-pyasn1
-Requires:       openssh
-Requires:       openssl
-Requires:       (util-linux or toybox)
-Requires:       /bin/sed
-Requires:       /bin/grep
-Requires:       sudo
-Requires:       iptables
-Requires:       systemd
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 The Windows Azure Linux Agent supports the provisioning and running of Linux
@@ -46,13 +40,11 @@ images that are built to run in the Windows Azure environment.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 
-%pre -p /bin/sh
-
 %build
-python3 setup.py build -b py3
+%py3_build
 
 %install
-python3 -tt setup.py build -b py3 install --prefix=%{_prefix} --lnx-distro='photonos' --root=%{buildroot} --force
+%{python3} setup.py install --skip-build install -O1 --lnx-distro='photonos' --root=%{buildroot}
 
 mkdir -p %{buildroot}%{_localstatedir}/log \
          %{buildroot}%{_localstatedir}/opt/waagent/log \
@@ -61,9 +53,6 @@ mkdir -p %{buildroot}%{_localstatedir}/log \
 mkdir -p -m 0700 %{buildroot}%{_sharedstatedir}/waagent
 touch %{buildroot}%{_localstatedir}/opt/waagent/log/waagent.log
 ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_localstatedir}/log/waagent.log
-
-%check
-python3 setup.py check && python3 setup.py test
 
 %post
 %systemd_post waagent.service
@@ -74,12 +63,16 @@ python3 setup.py check && python3 setup.py test
 %postun
 %systemd_postun_with_restart waagent.service
 
+%clean
+rm -rf %{buildroot}
+
 %files
+%defattr(-,root,root)
 %{_unitdir}/*
 %defattr(0644,root,root,0755)
 %attr(0755,root,root) %{_bindir}/waagent
 %attr(0755,root,root) %{_bindir}/waagent2.0
-%config %{_sysconfdir}/waagent.conf
+%config(noreplace) %{_sysconfdir}/waagent.conf
 %dir %{_localstatedir}/opt/waagent/log
 %{_localstatedir}/log/waagent.log
 %ghost %{_localstatedir}/opt/waagent/log/waagent.log
@@ -87,6 +80,10 @@ python3 setup.py check && python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri Aug 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-1
+- Upgrade to v2.7.3.0
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.1.0-1
+- Automatic Version Bump
 * Sat Nov 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.0.2-1
 - Upgrade to version 2.4.0.2
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.53.1-1
@@ -128,6 +125,6 @@ python3 setup.py check && python3 setup.py test
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
 - Removed redundant requires
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
-- Added sha1sum
+- Added sha512sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com
 - Initial packaging

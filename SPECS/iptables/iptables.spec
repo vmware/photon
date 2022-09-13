@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.8.7
-Release:        3%{?dist}
+Version:        1.8.8
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}-%{version}=05ef75415cb7cb7641f51d51e74f3ea29cc31ab1
+%define sha512  %{name}-%{version}=f21df23279a77531a23f3fcb1b8f0f8ec0c726bda236dd0e33af74b06753baff6ce3f26fb9fcceb6fada560656ba901e68fc6452eb840ac1b206bc4654950f59
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Jun 02 2022 Susant Sahani <ssahani@vmware.com> 1.8.8-1
+-   Updated to version
 *   Fri Jul 23 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-3
 -   Drop ip6tables.service
 *   Tue Mar 30 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-2

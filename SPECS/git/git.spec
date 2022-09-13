@@ -1,14 +1,14 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.31.1
-Release:        3%{?dist}
+Version:        2.35.4
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    %{name}=a66f98f88bf7734f8463446ac0735cee190da1dc
+%define sha512  %{name}=35207f7c73e5acce2f08475719e6e2329e86c6870b90d4d35c209ce9965e3a3252b2585758987bd4477b6c758cf0d4d4c333f92f19741c41c311610242dd68c3
 
 BuildRequires:  curl-devel
 BuildRequires:  python3
@@ -97,67 +97,71 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-*   Tue Sep 14 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.31.1-3
--   Compatibility for openssl 3.0.0
-*   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.31.1-2
--   Bump version as a part of rpm upgrade
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.31.1-1
--   Automatic Version Bump
-*   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3
--   Fix CVE-2021-21300
-*   Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-2
--   Fix build with new rpm
-*   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 2.30.0-1
--   Update version
-*   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.28.0-2
--   Compatibility for openssl 1.1.1
-*   Sun Aug 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.28.0-1
--   Automatic Version Bump
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.26.2-2
--   Build python3
-*   Tue May 19 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.26.2-1
--   Updated to version 2.26.2, fix CVE-2020-11008, CVE-2020-5260
-*   Mon Apr 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
--   Added patch, Fixes CVE-2020-5260
-*   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 2.26.0-1
--   Updated to version 2.26.0
-*   Tue Feb 12 2019 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.1-1
--   Updated to version 2.23.1 . Fixes CVE-2019-1348
-*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 2.19.0-3
--   Added Requires python2
-*   Thu Oct 04 2018 Dweep Advani <dadvani@vmware.com> 2.19.0-2
--   Using %configure and changing for perl upgrade
-*   Tue Oct 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.19.0-1
--   Update to latest version
-*   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.14.2-2
--   Excluded the perllocal.pod for aarch64.
-*   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
--   Updated to version 2.14.2, fix CVE-2017-14867
-*   Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
--   Fix make check with non-root mode.
-*   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
--   Mass removal python2 from requires.
-*   Mon Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
--   Update since perl version got updated.
-*   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
--   Updated to version 2.9.3
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.8.1-7
--   BuildRequires curl-devel.
-*   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 2.8.1-6
--   Add bash completion file
-*   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
--   Excluded the perllocal.pod log.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
--   GA - Bump release of all rpms
-*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
--   Fix if syntax
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
--   Handling the upgrade scenario.
-*   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
--   Updated to version 2.8.1
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
--   Updated to version 2.7.1
-*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
--   Add requires for perl-CGI.
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
--   Initial build. First version
+* Fri Jul 29 2022 Nitesh Kumar <kunitesh@vmware.com> 2.35.4-1
+- Minor version upgrade to address CVE-2022-29187
+* Tue May 10 2022 Nitesh Kumar <kunitesh@vmware.com> 2.35.2-1
+- Update version to address CVE-2022-24765
+* Tue Sep 14 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.31.1-3
+- Compatibility for openssl 3.0.0
+* Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.31.1-2
+- Bump version as a part of rpm upgrade
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.31.1-1
+- Automatic Version Bump
+* Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3
+- Fix CVE-2021-21300
+* Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-2
+- Fix build with new rpm
+* Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 2.30.0-1
+- Update version
+* Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.28.0-2
+- Compatibility for openssl 1.1.1
+* Sun Aug 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.28.0-1
+- Automatic Version Bump
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.26.2-2
+- Build python3
+* Tue May 19 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.26.2-1
+- Updated to version 2.26.2, fix CVE-2020-11008, CVE-2020-5260
+* Mon Apr 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
+- Added patch, Fixes CVE-2020-5260
+* Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 2.26.0-1
+- Updated to version 2.26.0
+* Tue Feb 12 2019 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.1-1
+- Updated to version 2.23.1 . Fixes CVE-2019-1348
+* Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 2.19.0-3
+- Added Requires python2
+* Thu Oct 04 2018 Dweep Advani <dadvani@vmware.com> 2.19.0-2
+- Using %configure and changing for perl upgrade
+* Tue Oct 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.19.0-1
+- Update to latest version
+* Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.14.2-2
+- Excluded the perllocal.pod for aarch64.
+* Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
+- Updated to version 2.14.2, fix CVE-2017-14867
+* Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
+- Fix make check with non-root mode.
+* Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
+- Mass removal python2 from requires.
+* Mon Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
+- Update since perl version got updated.
+* Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
+- Updated to version 2.9.3
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.8.1-7
+- BuildRequires curl-devel.
+* Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 2.8.1-6
+- Add bash completion file
+* Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
+- Excluded the perllocal.pod log.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
+- GA - Bump release of all rpms
+* Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
+- Fix if syntax
+* Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
+- Handling the upgrade scenario.
+* Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
+- Updated to version 2.8.1
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
+- Updated to version 2.7.1
+* Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
+- Add requires for perl-CGI.
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
+- Initial build. First version

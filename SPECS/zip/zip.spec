@@ -3,12 +3,10 @@ Name:         zip
 Version:      3.0
 Release:      3%{?dist}
 License:      BSD
-
 URL:          http://downloads.sourceforge.net/infozip
 Source0:      http://downloads.sourceforge.net/infozip/zip30.tar.gz
-%define       sha1 zip=c9f4099ecf2772b53c2dd4a8e508064ce015d182
+%define       sha512 zip=c1c3d62bf1426476c0f9919b568013d6d7b03514912035f09ee283226d94c978791ad2af5310021e96c4c2bf320bfc9d0b8f4045c48e4667e034d98197e1a9b3
 Patch0:       zip-passwd-as-stdin.patch
-
 Group:        SystemUtilities
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -17,12 +15,15 @@ Distribution: Photon
 The Zip package contains Zip utilities.
 
 %prep
-%setup -qn zip30
+%autosetup -p1 -n zip30
+
 %build
 make -f unix/Makefile generic_gcc %{?_smp_mflags}
+
 %install
 install -v -m755 -d %{buildroot}%{_bindir}
-make prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/share/man/man1 -f unix/Makefile install
+make %{?_smp_mflags} prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/share/man/man1 -f unix/Makefile install
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

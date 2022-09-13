@@ -1,6 +1,6 @@
 Summary:        A library which allows userspace access to USB devices
 Name:           libusb
-Version:        1.0.24
+Version:        1.0.26
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://sourceforge.net/projects/libusb/
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://downloads.sourceforge.net/libusb/libusb-%{version}.tar.bz2
-%define sha1 libusb=d8d614b538f7c953b6e3b73f1eea5dc70820a7e2
+%define sha512  libusb=fcdb85c98f21639668693c2fd522814d440972d65883984c4ae53d0555bdbdb7e8c7a32199cd4b01113556a1eb5be7841b750cc73c9f6bda79bfe1af80914e71
 BuildRequires:  systemd-devel
 Requires:       systemd
 
@@ -25,14 +25,14 @@ This package contains the header files, libraries and documentation needed to
 develop applications that use libusb.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure --disable-static
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 %check
 pushd tests
@@ -54,6 +54,8 @@ popd
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.26-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.0.24-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.23-1
@@ -69,5 +71,4 @@ popd
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.20-2
 -   GA - Bump release of all rpms
 *   Thu May 05 2016 Nick Shi <nshi@vmware.com> 1.0.20-1
--   Initial version
-
+-   Initial version.

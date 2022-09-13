@@ -1,36 +1,40 @@
-# -*- rpm-spec-*-
 %define _gnu %{nil}
 %define _programprefix eu-
-Summary:	A collection of utilities and DSOs to handle compiled objects
-Name:		elfutils
-Version:	0.183
-Release:	2%{?dist}
-License:	GPLv3+ and (GPLv2+ or LGPLv3+)
-Group:		Development/Tools
-URL:    	https://sourceware.org/elfutils
-Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=20227ae4cc7474de505ddf0f1f0b1b24ce5198e7
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Obsoletes:	libelf libelf-devel
-Requires:	elfutils-libelf = %{version}-%{release}
-Requires:	glibc >= 2.7
-Requires:	bzip2-libs
-Requires:	libmicrohttpd
-Requires:	curl
+
+Summary:        A collection of utilities and DSOs to handle compiled objects
+Name:           elfutils
+Version:        0.186
+Release:        2%{?dist}
+License:        GPLv3+ and (GPLv2+ or LGPLv3+)
+Group:          Development/Tools
+URL:            https://sourceware.org/elfutils
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=c9180b27ec62935f18b9431268d176f6023d1bb938731d2af6e7626ae460af6608a70ba68483aa1ec7e6cb0fa0528b661ca8b68bc4f58ea8e18af527c5950c78
+
+Obsoletes:      libelf
+Obsoletes:      libelf-devel
+
+Requires:       %{name}-libelf = %{version}-%{release}
+Requires:       glibc >= 2.7
+Requires:       bzip2-libs
+Requires:       libmicrohttpd
+Requires:       curl
 Requires:       libarchive
-# ExcludeArch: xxx
-BuildRequires:	gcc >= 4.1.2-33
-BuildRequires:	glibc >= 2.7
-BuildRequires:	bison >= 1.875
-BuildRequires:	flex >= 2.5.4a
-BuildRequires:	m4
-BuildRequires:	gettext
-BuildRequires:	bzip2-devel
-BuildRequires:	libmicrohttpd-devel
-BuildRequires:	curl-devel
-BuildRequires:	libarchive-devel
-BuildRequires:	sqlite-devel
+
+BuildRequires:  gcc >= 4.1.2-33
+BuildRequires:  glibc >= 2.7
+BuildRequires:  bison >= 1.875
+BuildRequires:  flex >= 2.5.4a
+BuildRequires:  m4
+BuildRequires:  gettext
+BuildRequires:  bzip2-devel
+BuildRequires:  libmicrohttpd-devel
+BuildRequires:  curl-devel
+BuildRequires:  libarchive-devel
+BuildRequires:  sqlite-devel
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -42,108 +46,105 @@ helper libraries which implement DWARF, ELF, and machine-specific ELF
 handling.
 
 %package devel
-Summary: Development libraries to handle compiled objects.
-Group: Development/Tools
-License: GPLv2+ or LGPLv3+
-Requires: elfutils = %{version}-%{release}
-Requires: elfutils-libelf-devel = %{version}-%{release}
+Summary:    Development libraries to handle compiled objects.
+Group:      Development/Tools
+License:    GPLv2+ or LGPLv3+
+Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}-libelf-devel = %{version}-%{release}
 
 %description devel
-The elfutils-devel package contains the libraries to create
+The %{name}-devel package contains the libraries to create
 applications for handling compiled objects.  libebl provides some
 higher-level ELF access functionality.  libdw provides access to
 the DWARF debugging information.  libasm provides a programmable
 assembler interface.
 
 %package devel-static
-Summary: Static archives to handle compiled objects.
-Group: Development/Tools
-License: GPLv2+ or LGPLv3+
-Requires: elfutils-devel = %{version}-%{release}
+Summary:    Static archives to handle compiled objects.
+Group:      Development/Tools
+License:    GPLv2+ or LGPLv3+
+Requires:   %{name}-devel = %{version}-%{release}
 
 %description devel-static
-The elfutils-devel-static archive contains the static archives
+The %{name}-devel-static archive contains the static archives
 with the code the handle compiled objects.
 
 %package libelf
-Summary: Library to read and write ELF files.
-Group: Development/Tools
-License: GPLv2+ or LGPLv3+
+Summary:    Library to read and write ELF files.
+Group:      Development/Tools
+License:    GPLv2+ or LGPLv3+
 
 %description libelf
-The elfutils-libelf package provides a DSO which allows reading and
+The %{name}-libelf package provides a DSO which allows reading and
 writing ELF files on a high level.  Third party programs depend on
 this package to read internals of ELF files.  The programs of the
-elfutils package use it also to generate new ELF files.
+%{name} package use it also to generate new ELF files.
 
 %package libelf-devel
-Summary: Development support for libelf
-Group: Development/Tools
-License: GPLv2+ or LGPLv3+
-Requires: elfutils-libelf = %{version}-%{release}
-Conflicts: libelf-devel
+Summary:    Development support for libelf
+Group:      Development/Tools
+License:    GPLv2+ or LGPLv3+
+Requires:   %{name}-libelf = %{version}-%{release}
+Conflicts:  libelf-devel
 
 %description libelf-devel
-The elfutils-libelf-devel package contains the libraries to create
+The %{name}-libelf-devel package contains the libraries to create
 applications for handling compiled objects.  libelf allows you to
 access the internals of the ELF object file format, so you can see the
 different sections of an ELF file.
 
 %package libelf-devel-static
-Summary: Static archive of libelf
-Group: Development/Tools
-License: GPLv2+ or LGPLv3+
-Requires: elfutils-libelf-devel = %{version}-%{release}
-Conflicts: libelf-devel
+Summary:    Static archive of libelf
+Group:      Development/Tools
+License:    GPLv2+ or LGPLv3+
+Requires:   %{name}-libelf-devel = %{version}-%{release}
+Conflicts:  libelf-devel
 
 %description libelf-devel-static
-The elfutils-libelf-static package contains the static archive
+The %{name}-libelf-static package contains the static archive
 for libelf.
 
 %package libelf-lang
-Summary: Additional language files for elfutils
-Group: Development/Tools
-Requires: %{name}-libelf = %{version}-%{release}
+Summary:    Additional language files for %{name}
+Group:      Development/Tools
+Requires:   %{name}-libelf = %{version}-%{release}
 
 %description libelf-lang
-These are the additional language files of elfutils.
+These are the additional language files of %{name}.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure --program-prefix=%{_programprefix}
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_prefix}
 
-%makeinstall
+%make_install %{?_smp_mflags}
 
-chmod +x %{buildroot}/usr/lib/lib*.so*
-# XXX Nuke unpackaged files
+chmod +x %{buildroot}%{_libdir}/lib*.so*
 { pushd %{buildroot}
-  rm -f .%{_bindir}/eu-ld
-  rm -f .%{_includedir}/elfutils/libasm.h
-  rm -f .%{_libdir}/libasm.so
-  rm -f .%{_libdir}/libasm.a
+  rm -f .%{_bindir}/eu-ld \
+        .%{_includedir}/%{name}/libasm.h \
+        .%{_libdir}/libasm.so \
+        .%{_libdir}/libasm.a
   popd
 }
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-%post libelf -p /sbin/ldconfig
-%postun libelf -p /sbin/ldconfig
+%ldconfig_scriptlets
+%ldconfig_scriptlets libelf
 
 %files
 %defattr(-,root,root)
@@ -164,19 +165,20 @@ rm -rf %{buildroot}
 %files devel
 %defattr(-,root,root)
 %{_includedir}/dwarf.h
-%dir %{_includedir}/elfutils
-%{_includedir}/elfutils/elf-knowledge.h
-%{_includedir}/elfutils/libdw.h
-%{_includedir}/elfutils/libdwfl.h
-%{_includedir}/elfutils/known-dwarf.h
-%{_includedir}/elfutils/libdwelf.h
-%{_includedir}/elfutils/debuginfod.h
+%dir %{_includedir}/%{name}
+%{_includedir}/%{name}/elf-knowledge.h
+%{_includedir}/%{name}/libdw.h
+%{_includedir}/%{name}/libdwfl.h
+%{_includedir}/%{name}/known-dwarf.h
+%{_includedir}/%{name}/libdwelf.h
+%{_includedir}/%{name}/debuginfod.h
 %{_libdir}/libdw.so
 %{_libdir}/libdebuginfod.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/elf_*.3*
 %{_mandir}/man3/debuginfod*.3*
 %{_mandir}/man8/debuginfod.8*
+%{_mandir}/man7/debuginfod-client-config.7.gz
 
 %files devel-static
 %{_libdir}/libdw.a
@@ -191,7 +193,7 @@ rm -rf %{buildroot}
 %{_includedir}/libelf.h
 %{_includedir}/gelf.h
 %{_includedir}/nlist.h
-%{_includedir}/elfutils/version.h
+%{_includedir}/%{name}/version.h
 %{_libdir}/libelf.so
 
 %files libelf-devel-static
@@ -201,6 +203,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.186-2
+- Bump version as a part of sqlite upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.186-1
+- Automatic Version Bump
 * Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 0.183-2
 - Added requires libarchive.
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.183-1
@@ -315,17 +321,17 @@ rm -rf %{buildroot}
   to make the D behavior the default when U is not specified.
 - ranlib: Support -D and -U flags with same meaning.
 - readelf: Improve output of -wline. Add support for printing SDT elf
-  notes.          Add printing of .gdb_index section. 	 Support for
+  notes.          Add printing of .gdb_index section.    Support for
   typed DWARF stack, call_site and entry_value.
 - strip: Add --reloc-debug-sections option.        Improved SHT_GROUP
   sections handling.
 * Tue Feb 15 2011  <drepper@gmail.com> 0.152-1
 - Various build and warning nits fixed for newest GCC and Autoconf.
 - libdwfl: Yet another prelink-related fix for another regression.
-  	 Look for Linux kernel images in files named with compression
+     Look for Linux kernel images in files named with compression
   suffixes.
 - elfcmp: New flag --ignore-build-id to ignore differing build ID
-  bits. 	New flag -l/--verbose to print all differences.
+  bits.     New flag -l/--verbose to print all differences.
 * Wed Jan 12 2011  <drepper@gmail.com> 0.151-1
 - libdwfl: Fix for more prelink cases with separate debug file.
 - strip: New flag --strip-sections to remove section headers entirely.
@@ -347,7 +353,7 @@ rm -rf %{buildroot}
   dwarf_offdie_types.        New functions dwarf_lineisa,
   dwarf_linediscriminator, dwarf_lineop_index.
 - libdwfl: Fixes in core-file handling, support cores from PIEs.
-  	 When working from build IDs, don't open a named file that
+     When working from build IDs, don't open a named file that
   mismatches.
 - readelf: Handle DWARF 4 formats.
 * Mon May  3 2010 Ulrich Drepper <drepper@redhat.com> 0.147-1
@@ -362,11 +368,11 @@ rm -rf %{buildroot}
 - Fix build with most recent glibc headers.
 - libelf: More robust to bogus section headers.
 - libdw: Fix CFI decoding.
-- libdwfl: Fix address bias returned by CFI accessors. 	 Fix core
+- libdwfl: Fix address bias returned by CFI accessors.   Fix core
   file module layout identification.
 - readelf: Fix CFI decoding.
 * Thu Jan 14 2010  <drepper@redhat.com> 0.144-1
-- libelf: New function elf_getphdrnum. 	Now support using more than
+- libelf: New function elf_getphdrnum.  Now support using more than
   65536 program headers in a file.
 - libdw: New function dwarf_aggregate_size for computing (constant)
   type        sizes, including array_type cases with nontrivial
@@ -392,13 +398,13 @@ rm -rf %{buildroot}
   Handle some new DWARF 3 expression operations previously omitted.
   Basic handling of some new encodings slated for DWARF
 * Thu Apr 23 2009 Ulrich Drepper <drepper@redhat.com> 0.141-1
-- libebl: sparc backend fixes; 	some more arm backend support
+- libebl: sparc backend fixes;  some more arm backend support
 - libdwfl: fix dwfl_module_build_id for prelinked DSO case;
-  fixes in core file support; 	 dwfl_module_getsym interface
+  fixes in core file support;    dwfl_module_getsym interface
   improved for non-address symbols
 - strip: fix infinite loop on strange inputs with -f
 - addr2line: take -j/--section=NAME option for binutils compatibility
-  	   (same effect as '(NAME)0x123' syntax already supported)
+       (same effect as '(NAME)0x123' syntax already supported)
 * Mon Feb 16 2009 Ulrich Drepper <drepper@redhat.com> 0.140-1
 - libelf: Fix regression in creation of section header
 - libdwfl: Less strict behavior if DWARF reader ist just used to
@@ -421,7 +427,7 @@ rm -rf %{buildroot}
 * Tue Aug 26 2008 Ulrich Drepper <drepper@redhat.com> 0.137-1
 - Minor fixes for unreleased 0.136 release.
 * Mon Aug 25 2008 Ulrich Drepper <drepper@redhat.com> 0.136-1
-- libdwfl: bug fixes; new segment interfaces;	 all the libdwfl-based
+- libdwfl: bug fixes; new segment interfaces;    all the libdwfl-based
  tools now support --core=COREFILE option
 * Mon May 12 2008 Ulrich Drepper <drepper@redhat.com> 0.135-1
 - libdwfl: bug fixes
@@ -453,12 +459,12 @@ rm -rf %{buildroot}
 - new option --archive-index (or -c); improved -n output for
 - core files, on many machines
 - libelf: new function elf_getdata_rawchunk, replaces gelf_rawchunk;
-	new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
+    new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
 - readelf, elflint: handle SHT_NOTE sections without requiring phdrs
 - elflint: stricter checks on debug sections
 - libdwfl: new functions dwfl_build_id_find_elf, dwfl_build_id_find_debu
-    ginfo,	 dwfl_module_build_id, dwfl_module_report_build_id;	 suppo
-    rt dynamic symbol tables found via phdrs;	 dwfl_standard_find_de
+    ginfo,   dwfl_module_build_id, dwfl_module_report_build_id;  suppo
+    rt dynamic symbol tables found via phdrs;    dwfl_standard_find_de
     buginfo now uses build IDs when available
 - unstrip: new option --list (or -n)
 - libebl: backend improvements for sparc, alpha, powerpc
@@ -468,7 +474,7 @@ rm -rf %{buildroot}
 * Wed Apr 18 2007 Ulrich Drepper <drepper@redhat.com> 0.127-1
 - libdw: new function dwarf_getsrcdirs
 - libdwfl: new functions dwfl_module_addrsym, dwfl_report_begin_add,
-	 dwfl_module_address_section
+     dwfl_module_address_section
 * Mon Feb  5 2007 Ulrich Drepper <drepper@redhat.com> 0.126-1
 - new program: ar
 * Mon Dec 18 2006 Ulrich Drepper <drepper@redhat.com> 0.125-1

@@ -1,15 +1,15 @@
-Summary:    Modular initramfs image creation utility
-Name:       mkinitcpio
-Version:    30
-Release:    1%{?dist}
-License:    GPLv2
-URL:        https://projects.archlinux.org/mkinitcpio.git/
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
-Distribution:   Photon
-Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=a1c8794c29b1da0811b5038dbcdb4a0b5d1e05cd
-Patch0:     mkinitcpio-shutdown-ramfs.service.patch
+Summary:       Modular initramfs image creation utility
+Name:          mkinitcpio
+Version:       31
+Release:       1%{?dist}
+License:       GPLv2
+URL:           https://projects.archlinux.org/mkinitcpio.git/
+Group:         System Environment/Development
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
+%define sha512 mkinitcpio=9b30fb02b6470b6e6b54fb611b4b62f89fdaf71cefd8ee74d22253f3d240b9c17b570be766c3ab627fc67bf8aa0e2ccec747d19fa29d6e4f9dadaced61259c8b
+Patch0:        mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc3
 BuildRequires: git
 BuildRequires: python3
@@ -23,11 +23,9 @@ BuildArch:     noarch
 Multi-format archive and compression library
 
 %prep
-%setup -q
-%patch0 -p0
+%autosetup -p0
 
 %build
-
 for i in "hooks/*" ; do sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i; done
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
@@ -37,7 +35,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+make  %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,6 +48,10 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 31-1
+-   Automatic Version Bump
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 30-2
+-   Bump version as a part of libxslt upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 30-1
 -   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 28-1

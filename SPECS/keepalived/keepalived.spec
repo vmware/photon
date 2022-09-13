@@ -1,14 +1,14 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
-Version:        2.2.2
-Release:        2%{?dist}
+Version:        2.2.7
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/acassen/keepalived/archive/keepalived-%{version}.tar.gz
-%define sha1    %{name}-%{version}=d6eb03ee8e54c8304ab3ec8b5c4a51975625c539
+%define sha512  %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
 Source1:        %{name}.service
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
@@ -76,7 +76,7 @@ fi
 %{_bindir}/genhash
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%{_sysconfdir}/%{name}/%{name}.conf.sample
 %{_datadir}/snmp/mibs/KEEPALIVED-MIB.txt
 %{_datadir}/snmp/mibs/VRRP-MIB.txt
 %{_datadir}/snmp/mibs/VRRPv3-MIB.txt
@@ -85,6 +85,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
+-   Automatic Version Bump
 *   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.2-2
 -   Bump up release for openssl
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1

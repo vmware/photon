@@ -1,11 +1,11 @@
 Name:           kapacitor
 Version:        1.5.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=79780718cc5f8d0ee60ef0558b7b50a2f6b43512
+%define sha512  %{name}=948d5a2a495ff05c10ca3a2a57dcdddba633579b096dc520e8575e0da46f0d5c0e6f961c9f97e6d1bce7dc695c178e4b9e04b201cec70db913943f601445bbcd
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Monitoring
@@ -17,7 +17,7 @@ Requires:       systemd
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 go env -w GO111MODULE=auto
@@ -25,7 +25,7 @@ cd ..
 mkdir -p build/src/github.com/influxdata/kapacitor
 mv %{name}-%{version}/* build/src/github.com/influxdata/%{name}
 cd build
-export GOPATH=`pwd`
+export GOPATH=$PWD
 cd src/github.com/influxdata/kapacitor
 go build ./cmd/kapacitor
 go build ./cmd/kapacitord
@@ -89,6 +89,8 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-3
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.9-2
 -   Bump up version to compile with new go
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.9-1

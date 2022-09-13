@@ -1,14 +1,15 @@
+%define timestamp 20220414
 Summary:       A JSON implementation in C
 Name:          json-c
-Version:       0.15
-Release:       3%{?dist}
+Version:       0.16
+Release:       1%{?dist}
 License:       MIT
 URL:           https://github.com/json-c/json-c/wiki
-Source0:       https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
-%define sha1   %{name}-%{version}=dd6473818fe66f16e747ae0df626a2e1559343b9
 Group:         System Environment/Base
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
+Source0:       https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=eb16e3186a8d204a0ebd0a97d2a1a4b2ffbaf0f840fd8a8b6fb15af54293a4fd82740469f81e8ba12f03607654a8da6568e9ab80f9848bb66b17714ddcf0a0da
 BuildRequires: cmake
 
 %description
@@ -19,41 +20,36 @@ output them as JSON formatted strings and parse JSON formatted strings back into
 Summary:       Development libraries and header files for json-c
 Requires:      %{name} = %{version}-%{release}
 
-%description  devel
-The package contains libraries and header files for
-developing applications that use json-c.
+%description   devel
+The package contains libraries and header files for developing applications that use json-c.
 
 %prep
-%autosetup  -n %{name}-%{name}-%{version}-20200726 -p1
-mkdir build
+%autosetup -n %{name}-%{name}-%{version}-%{timestamp} -p1
 
 %build
-pushd build
-%cmake .. \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix}  \
-      -DBUILD_STATIC_LIBS=OFF            \
-      -DCMAKE_BUILD_TYPE:STRING=RELEASE  \
-      -DCMAKE_C_FLAGS_RELEASE:STRING=""  \
-      -DDISABLE_BSYMBOLIC:BOOL=OFF       \
-      -DDISABLE_WERROR:BOOL=ON           \
-      -DENABLE_RDRAND:BOOL=ON            \
+%cmake \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+      -DBUILD_STATIC_LIBS=OFF \
+      -DCMAKE_BUILD_TYPE:STRING=RELEASE \
+      -DCMAKE_C_FLAGS_RELEASE:STRING="" \
+      -DDISABLE_BSYMBOLIC:BOOL=OFF \
+      -DDISABLE_WERROR:BOOL=ON \
+      -DENABLE_RDRAND:BOOL=ON \
       -DENABLE_THREADING:BOOL=ON
-
-make %{?_smp_mflags}
-popd
+%cmake_build
 
 %install
-pushd build
-make install DESTDIR=%{buildroot}
-popd
+%cmake_install
 
+%if 0%{?with_check}
 %check
-pushd build
 make %{?_smp_mflags} check
-popd
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -67,20 +63,23 @@ popd
 %{_libdir}/cmake/%{name}
 
 %changelog
-*  Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.15-3
--  Move from lib64 to lib
-*  Tue Sep 01 2020 Ankit Jain <ankitja@vmware.com> 0.15-2
--  Fix json-c packaging
-*  Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
--  Automatic Version Bump
-*  Fri May 15 2020 Ankit Jain <ankitja@vmware.com> 0.13.1-2
--  Fix for CVE-2020-12762
-*  Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 0.13.1-1
--  Updated package to version 0.13.1
-*  Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
--  Updated package to version 0.12.1
-*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12-2
--  GA - Bump release of all rpms
-*  Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 0.12-1
--  Initial build. First version
-
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
+- Automatic Version Bump
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.15-4
+- Fix build with latest cmake
+* Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.15-3
+- Move from lib64 to lib
+* Tue Sep 01 2020 Ankit Jain <ankitja@vmware.com> 0.15-2
+- Fix json-c packaging
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
+- Automatic Version Bump
+* Fri May 15 2020 Ankit Jain <ankitja@vmware.com> 0.13.1-2
+- Fix for CVE-2020-12762
+* Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 0.13.1-1
+- Updated package to version 0.13.1
+* Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
+- Updated package to version 0.12.1
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12-2
+- GA - Bump release of all rpms
+* Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 0.12-1
+- Initial build. First version

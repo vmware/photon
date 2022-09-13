@@ -1,15 +1,15 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/gptfdisk/
 Group:          System Environment/Filesystem and Disk management
-Vendor:	        VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/project/gptfdisk/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    gptfdisk=406ab2596e1911c916dce677ce7e903076d94c6d
+%define sha512  %{name}=8a2067523479e34c76392571692b36e6c9eadcd0aca979f1ba09904930ed92a709bfdcdfa3369230a5ab2b5a751682dc7fb4645fb5f7f1c361ee8d28e104214c
 
 Patch0:         gptfdisk-1.0.7-convenience-1.patch
 Patch1:         gptfdisk-Makefile.patch
@@ -36,25 +36,28 @@ classic fdisk program.
 
 %build
 sed -i 's|ncursesw/||' gptcurses.cc
-make %{?_smp_mflags} POPT=1
+%make_build POPT=1
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make %{?_smp_mflags} DESTDIR=%{buildroot} install POPT=1
+%make_install %{?_smp_mflags} POPT=1
+mv %{buildroot}/sbin %{buildroot}%{_usr}
+
 %{_fixperms} %{buildroot}/*
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/sbin/*
+%{_sbindir}/*
 %{_mandir}/man8/*
 
 %changelog
+* Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.7-3
+- Fix binary path
 * Fri Nov 19 2021 Oliver Kurth <okurth@vmware.com> 1.0.7-2
 - Build with -tinfo
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.0.7-1
@@ -72,4 +75,4 @@ rm -rf %{buildroot}/*
 * Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
 - Updated Version.
 * Thu Oct 30 2014 Divya Thaluru <dthaluru@vmware.com> 0.8.10-1
-- Initial build.	First version
+- Initial build.    First version

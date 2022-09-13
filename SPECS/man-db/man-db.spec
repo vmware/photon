@@ -1,35 +1,35 @@
-Summary:        Programs for finding and viewing man pages
-Name:           man-db
-Version:        2.9.3
-Release:        1%{?dist}
-License:        GPLv2+
-URL:            http://www.nongnu.org/man-db
-Group:          Applications/System
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Source0:        http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
-%define sha1    man-db=76ec7a9f5222fbd6fc5364929270a4790094a617
-Requires:       libpipeline
-Requires:       gdbm
-Requires:       xz
-Requires:       groff
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Summary:         Programs for finding and viewing man pages
+Name:            man-db
+Version:         2.10.2
+Release:         1%{?dist}
+License:         GPLv2+
+URL:             http://www.nongnu.org/man-db
+Group:           Applications/System
+Vendor:          VMware, Inc.
+Distribution:    Photon
+Source0:         http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
+%define sha512   man-db=5ad7a7b601aadf4d2d7cc068881fffe3d91dc85fcf4c17e66fbe6e2b04bb1c46f5ba5d4bc7f6ab3f39e00065be39061b101d3064c12b1e89f0fee61c088611bf
+Requires:        libpipeline
+Requires:        gdbm
+Requires:        xz
+Requires:        groff
+Requires(pre):   /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 %if %{with_check}
-BuildRequires:  shadow
+BuildRequires:   shadow
 %endif
-BuildRequires:  libpipeline-devel
-BuildRequires:  gdbm-devel
-BuildRequires:  xz
-BuildRequires:  groff
-BuildRequires:  systemd
-Requires:       systemd
+BuildRequires:   libpipeline-devel
+BuildRequires:   gdbm-devel
+BuildRequires:   xz
+BuildRequires:   groff
+BuildRequires:   systemd
+Requires:        systemd
 
 %description
 The Man-DB package contains programs for finding and viewing man pages.
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup -n %{name}-%{version}
 %build
 %configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
@@ -39,11 +39,10 @@ The Man-DB package contains programs for finding and viewing man pages.
     --with-vgrind=%{_bindir}/vgrind \
     --with-grap=%{_bindir}/grap \
     --disable-silent-rules
-
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
 
@@ -81,6 +80,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Tue Jun 07 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10.2-1
+-   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.3-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.0-1

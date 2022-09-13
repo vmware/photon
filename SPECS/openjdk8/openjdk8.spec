@@ -1,20 +1,21 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 265
+%define subversion 322
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.265
-Release:	2%{?dist}
+Version:	1.8.0.322
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
+# Generate Source using https://github.com/vmware/photon/tree/4.0/tools/script/generate_source_tarball_openjdk8.sh
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1 openjdk=d8dbb4e60a54e4099c27f558babed68b8ef06c65
+%define sha512  openjdk=d18a229e4ca79fae7d6c801a89caefd4571b711dbadf547737d77569358612298e360631b3bc9bf56e90423a09b88e1c27755463330e91f9ed16743c1606ce21
 Patch0:		Awt_build_headless_only.patch
-Patch1:		check-system-ca-certs-212-b04.patch
+Patch1:		check-system-ca-certs-x86.patch
 Patch2:		allow_using_system_installed_libjpeg.patch
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
@@ -45,7 +46,6 @@ Requires:	libstdc++
 %description	-n openjre8
 It contains the libraries files for Java runtime environment
 
-
 %package	sample
 Summary:	Sample java applications.
 Group:          Development/Languages/Java
@@ -71,10 +71,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n openjdk-%{version}
 
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
@@ -100,6 +97,9 @@ unset JAVA_HOME &&
 	--disable-zip-debug-info \
         --with-libjpeg=system
 
+export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+# using NUM_PROC instead of smp_mflags as -jN is not supported.
+# make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
     BUILD_HEADLESS_ONLY=1 \
@@ -110,10 +110,15 @@ make \
     CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
+    JOBS=${NUM_PROC} \
     SCTP_WERROR=
 
 %install
+export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+# using NUM_PROC instead of smp_mflags as -jN is not supported.
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
+	JOBS=${NUM_PROC} \
 	BUILD_HEADLESS_ONLY=yes \
 	OPENJDK_TARGET_OS=linux \
 	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -230,6 +235,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/clhsdb
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/hsdb
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
+%exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/*.debuginfo
 
 %files	-n openjre8
 %defattr(-,root,root)
@@ -261,6 +268,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
+-   Upgrade to version 1.8.0.322 (jdk8u322-b04)
+*   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
+-   Upgrade to version 1.8.0.312 (jdk8u312-ga)
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.265-2
 -   GCC-10 support.
 *   Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.265-1
@@ -289,7 +300,7 @@ rm -rf %{buildroot}/*
 -   Upgrade to version 1.8.0.222 b10 (jdk8u222-b10)
 -   Fix diff for TrustStoreManager.java in file check-system-ca-certs.patch to check-system-ca-certs-212-b04.patch.
 -   Replace check-system-ca-certs.patch with check-system-ca-certs-212-b04.patch to build x64-86 binary.
-*   Tue May 20 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
+*   Tue May 21 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
 -   Upgrade to version 1.8.0.212 b04
 -   Included fix for performance regression.
 *   Thu May 02 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1

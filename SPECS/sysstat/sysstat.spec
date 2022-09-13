@@ -1,6 +1,6 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        12.4.0
+Version:        12.5.6
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
@@ -8,18 +8,16 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=26ff80b7e60ad2e8699e00d940419e28d22503cf
-
+%define sha512  sysstat=f23fc68bce6609b0255aae0b71e0f3220a40ece4f445642c9c1e185bab1130e491e1a323d102e5fdc019e63923480f67143eab444036fafce0045c01e37890df
 Patch0:         sysstat.sysconfig.in.patch
-
 BuildRequires:  cronie
 Requires:       cronie
+
 %description
- The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.
+The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -31,7 +29,7 @@ Requires:       cronie
 make %{?_smp_mflags}
 
 %install
-make install
+make install %{?_smp_mflags}
 mkdir -p %{buildroot}/usr/lib/systemd/system/
 install -D -m 0644 %{_builddir}/%{name}-%{version}/sysstat.service %{buildroot}/usr/lib/systemd/system/
 install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-summary.timer %{buildroot}/usr/lib/systemd/system/
@@ -42,7 +40,7 @@ install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-collect.service 
 %find_lang %{name}
 
 %check
-make test
+make test %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -58,8 +56,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man*/*
 %{_libdir}/systemd/system/*
 
-
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 12.5.6-1
+-   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4.0-1
 -   Automatic Version Bump
 *   Mon Dec 16 2019 Shreyas B. <shreyasb@vmware.com> 12.2.0-1
@@ -85,4 +84,4 @@ rm -rf %{buildroot}/*
 *   Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.2.0-1
 -   Update to 11.2.0-1.
 *   Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 11.1.8-1
--   Initial build.  First version
+-   Initial build.  First version.

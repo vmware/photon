@@ -7,8 +7,10 @@ URL:            http://www.fsarchiver.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/fdupoux/fsarchiver/releases/download/%{version}/fsarchiver-%{version}.tar.gz
-%define sha1    fsarchiver=6048ffc284e5284556c292a7e733f0a677785377
+
+Source0:        https://github.com/fdupoux/fsarchiver/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=26a2d7a68d162aabb778b14f29c52cf8fbadb8147cf5eae592352a36fbf93cc45c08c241253bd8dfe8cd0b77d0f156afcc8d89e8d24a238fd4427cb479827f14
+
 BuildRequires:  xz-devel
 BuildRequires:  lzo-devel
 BuildRequires:  libgcrypt-devel
@@ -25,7 +27,7 @@ Fsarchiver is released under the GPL-v2 license.
 You should read the Quick start guide if you are using FSArchiver for the first time.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 #make some fixes required by glibc-2.28:
@@ -36,13 +38,16 @@ sed -i '/unistd/a #include <sys/sysmacros.h>' src/devinfo.c
     --disable-silent-rules \
     --disable-lz4 \
     --disable-zstd
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
+%if 0%{?with_check}
 make  %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)
@@ -50,11 +55,11 @@ make  %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.6-1
--   Automatic Version Bump
-*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.5-2
--   Fix compilation issue against glibc-2.28
-*   Mon Sep 17 2018 Sujay G <gsujay@vmware.com> 0.8.5-1
--   Bump to version 0.8.5
-*   Fri Apr 28 2017 Xiaolin Li <xiaolinl@vmware.com> 0.8.1-1
--   Initial build.
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.6-1
+- Automatic Version Bump
+* Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.5-2
+- Fix compilation issue against glibc-2.28
+* Mon Sep 17 2018 Sujay G <gsujay@vmware.com> 0.8.5-1
+- Bump to version 0.8.5
+* Fri Apr 28 2017 Xiaolin Li <xiaolinl@vmware.com> 0.8.1-1
+- Initial build.

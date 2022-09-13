@@ -1,6 +1,6 @@
 Summary:	Man pages
 Name:		man-pages
-Version:	5.11
+Version:	5.13
 Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
@@ -8,18 +8,22 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
-%define sha1    man-pages=3547c3fd8f2dedefd9fbf6021eae8ec990bb351a
+%define sha512  man-pages=494522bd1572111bcf23bbdd12965d2b80a892a759b8c25722b5fa1d41166f8befd753d2c4f7162cc077964120144b5f516e7820aa493234a77cd79e42a64d04
 BuildArch:	noarch
 
 %description
 The Man-pages package contains over 1,900 man pages.
 
 %prep
-%setup -q
+%autosetup
+
 %build
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{_smp_mflags} install
+# move /usr/local/share to /usr/share
+mv %{buildroot}/%{_prefix}/local/share %{buildroot}/%{_prefix}/
+
 #	The following man pages conflict with other packages
 rm -vf %{buildroot}%{_mandir}/man3/getspnam.3
 rm -vf %{buildroot}%{_mandir}/man5/passwd.5
@@ -38,6 +42,8 @@ rm -vf %{buildroot}%{_mandir}/man2/move_pages.2
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.13-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11-1
 -   Automatic Version Bump
 *   Wed Oct 21 2020 Sharan Turlapati <sturlapati@vmware.com> 5.08-3

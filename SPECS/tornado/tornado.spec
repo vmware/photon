@@ -1,29 +1,29 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-tornado
-Version:        6.0.4
+Version:        6.2
 Release:        1%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 License:        PSFL
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
 Source0:        https://pypi.python.org/packages/fa/14/52e2072197dd0e63589e875ebf5984c91a027121262aa08f71a49b958359/tornado-%{version}.tar.gz
-%define sha1 tornado=459ed424435090d66e54f66aa9191de2c5cb97cc
+%define sha512  tornado=157cbeee21bef29ac68b319329e7fc57db4c68dbb5a245e2171b7a28427ebbfe16b745e3bdbdec5912caae5eaa60c3cbbf8830c9c76fec5ffdf025e234468517
 
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python3
+BuildRequires:  python3 python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 
 %description
-
+Tornado is a Python web framework and asynchronous networking library
 
 %prep
-%setup -n tornado-%{version}
+%autosetup -n tornado-%{version}
 
 %build
 python3 setup.py build
@@ -36,6 +36,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2-1
+-   Automatic Version Bump
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.4-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 4.5.2-3

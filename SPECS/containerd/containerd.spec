@@ -3,30 +3,33 @@
 %define gopath_comp github.com/containerd/containerd
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.12
-Release:        1%{?dist}
+Version:        1.6.6
+Release:        2%{?dist}
 License:        ASL 2.0
-URL:            https://containerd.io/docs/
+URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1    containerd=23b7126e50df745e4b0b4b935dd1fab72d6fb4fa
-Source1:        containerd.service
+%define sha512  containerd=f16f23384dbaa67075f2d35b7fc752938dd15601bbe3a919bc8eaa53fa1b2dea2e2d7f613a0f2f492910213dc2f7e96f0a1d38dde35bfb6d15f18167313f9817
+# Must be in sync with package version
+%define CONTAINERD_GITCOMMIT 10c12954828e7c7c9b6e0ea9b0c02b01407d3ae1
+
+Patch1:         containerd-service.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
-
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
-BuildRequires:  go >= 1.10.7
+# Upstream is unhappy with 1.14. 1.13 or 1.15+ is OK
+BuildRequires:  go >= 1.16
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
-
 Requires:       libseccomp
 Requires:       systemd
 # containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
+# refer to v1.4.5/RUNC.md
 Requires:       runc >= 1.0.0-rc94
 
 %description
@@ -43,30 +46,39 @@ Extra binaries for containerd
 
 %package        doc
 Summary:        containerd
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    doc
 Documentation for containerd.
 
 %prep
-%autosetup -p1 -c
+# Using autosetup is not feasible
+%setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
+%patch1 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
+# We still have to use the GOPATH mode, as containerd only supports go.mod
+# starting 1.5.0+ However, this mode might be soon removed --
+# https://github.com/golang/go/wiki/GOPATH
+
+# Also, attempting to create go.mod and re-vendor would be wrong in this case,
+# as it could overwrite patches to vendor/, as well as fetching un-release
+# upstream versions. Typically, embargoed CVEs can cause those versions to be hiddden.
+export GO111MODULE=on
 cd src/%{gopath_comp}
-go mod init
-make %{?_smp_mflags} VERSION=%{version} binaries man
+make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
 
 %install
 cd src/%{gopath_comp}
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-install -v -m644 -D -t %{buildroot}%{_unitdir} %{SOURCE1}
+install -v -m644 -D -t %{buildroot}%{_unitdir} containerd.service
 install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
 install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
-make %{?_smp_mflags} DESTDIR=%{buildroot}%{_prefix} install
-make %{?_smp_mflags} DESTDIR=%{buildroot}%{_datadir} install-man
+make %{?_smp_mflags} DESTDIR=%{buildroot} PREFIX=%{_prefix} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} PREFIX=%{_prefix} install-man
 
 %post
 %systemd_post containerd.service
@@ -107,6 +119,10 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
+-   Bump up version to compile with new go.
+*   Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.6.6-1
+-   Update to version 1.6.6
 *   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4.12-1
 -   Upgrading to 1.4.12 to use latest runc.
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-2

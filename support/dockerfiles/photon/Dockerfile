@@ -1,8 +1,4 @@
-#
-# Ubuntu-Dev Dockerfile for building Linux Distribution.
-#
-
-FROM photon:latest
+FROM photon:4.0
 
 WORKDIR /workspace
 

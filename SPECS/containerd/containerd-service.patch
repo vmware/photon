@@ -1,0 +1,13 @@
+diff --git a/containerd.service b/containerd.service
+index d0f3be7..7bcc985 100644
+--- a/containerd.service
++++ b/containerd.service
+@@ -19,7 +19,7 @@ After=network.target local-fs.target
+ 
+ [Service]
+ ExecStartPre=-/sbin/modprobe overlay
+-ExecStart=/usr/local/bin/containerd
++ExecStart=/usr/bin/containerd
+ 
+ Type=notify
+ Delegate=yes

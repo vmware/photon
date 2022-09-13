@@ -1,14 +1,14 @@
 Summary:	Command Line XML Toolkit
 Name:   	xmlstarlet
 Version:	1.6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:    	http://xmlstar.sourceforge.net/
 Group:  	Text Tools
 Vendor: 	VMware, Inc.
 Distribution:   Photon
 Source0:	http://downloads.sourceforge.net/xmlstar/%{name}-%{version}.tar.gz
-%define sha1 xmlstarlet=87bb104f546caca71b9540807c5b2738944cb219
+%define sha512  xmlstarlet=4228df812caec7059d7a76986c4d9a4262bd861cc53dca05f341ae6c062be05f1c39fc637918ab00f60f40587c6c556e3c9bfaf8a18b149e3c321a92214dbe8b
 #https://sourceforge.net/p/xmlstar/bugs/109/
 Patch0: 	xmlstarlet-1.6.1-nogit.patch
 BuildRequires:  gcc
@@ -52,6 +52,8 @@ rm -fr %{buildroot}
 %{_bindir}/xml
 
 %changelog
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.1-3
+- Bump version as a part of libxslt upgrade
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.6.1-2
 - Release bump up to use libxml2 2.9.12-1.
 * Wed Aug 12 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.1-1

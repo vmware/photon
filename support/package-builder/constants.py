@@ -1,5 +1,7 @@
 import platform
+
 from Logger import Logger
+from CommandUtils import CommandUtils as cmdUtils
 
 class constants(object):
     specPath = ""
@@ -36,7 +38,10 @@ class constants(object):
     targetArch = platform.machine()
     crossCompiling = False
     currentArch = buildArch
-    hostRpmIsNotUsable = False
+    hostRpmIsNotUsable = -1
+    phBuilderTag = ""
+    buildSrcRpm = 0
+    buildDbgInfoRpm = 0
 
     noDepsPackageList = [
         "texinfo",
@@ -119,10 +124,11 @@ class constants(object):
         "automake",
         "openssl",
         "zstd",
-        "libdb",
-        "libgpg-error",
-        "libgcrypt",
-        "rpm"]
+        "rpm",
+        "dwz",
+        "debugedit",
+        "pandoc-bin",
+        "help2man"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -213,20 +219,17 @@ class constants(object):
         "openssl",
         "openssl-devel",
         "libcap",
-        "libdb",
-        "libdb-devel",
         "zstd",
         "zstd-libs",
         "zstd-devel",
         "lua",
         "lua-devel",
-        "libgpg-error",
-        "libgcrypt",
         "rpm",
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "cpio"]
+        "cpio",
+        "debugedit"]
 
     # List of packages that will be installed in addition for each
     # package to make check
@@ -263,14 +266,12 @@ class constants(object):
         "net-tools",
         "less",
         "iana-etc",
-        "libdb",
         "rpm-devel",
         "rpm",
         "libxml2",
         "python3-xml",
         "libacl",
         "tzdata",
-        "libgcrypt-devel",
         "Linux-PAM",
         "unzip",
         "systemd-devel",
@@ -321,13 +322,14 @@ class constants(object):
         "/bin/perl":"perl",
         "/bin/mergerepo":"createrepo_c",
         "/bin/modifyrepo":"createrepo_c",
-        "/bin/false":"coreutils",
-        "/bin/ln":"coreutils",
-        "/bin/chown":"coreutils",
-        "/bin/cp":"coreutils",
-        "/bin/rm":"coreutils",
-        "/bin/mv":"coreutils",
-        "/sbin/ldconfig":"glibc"
+        "/usr/bin/false":"coreutils",
+        "/usr/bin/ln":"coreutils",
+        "/usr/bin/chown":"coreutils",
+        "/usr/bin/cp":"coreutils",
+        "/usr/bin/rm":"coreutils",
+        "/usr/bin/mv":"coreutils",
+        "/sbin/ldconfig":"glibc",
+        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
     }
 
     @staticmethod
@@ -476,3 +478,24 @@ class constants(object):
                 k, v = m.split(' ', 1)
                 macros[k] = v
         return macros
+
+    def checkIfHostRpmNotUsable():
+        if constants.hostRpmIsNotUsable >= 0:
+            return constants.hostRpmIsNotUsable
+
+        # if rpm doesn't have zstd support
+        # if host rpm doesn't support sqlite backend db
+        cmds = [
+            "rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'",
+            "rpm -E %{_db_backend} | grep -qw 'sqlite'",
+        ]
+
+        for cmd in cmds:
+            if cmdUtils.runCommandInShell(cmd):
+                constants.hostRpmIsNotUsable = 1
+                break
+
+        if constants.hostRpmIsNotUsable < 0:
+            constants.hostRpmIsNotUsable = 0
+
+        return constants.hostRpmIsNotUsable

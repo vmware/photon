@@ -1,6 +1,6 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.3.0
+Version:        2.4.8
 Release:        1%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha1    %{name}=596a37d048b357a58990a538a8d83e2e38325122
+%define sha512    %{name}=d19b0d6469537aed20c54bd9cfa4089d39e4acaaddde57809de7c6aec55dc870677c02480e7f65dac5620bd5454b889370453613518f9da647c74a831a2a1b7b
 
 Requires:       expat-libs = %{version}-%{release}
 
@@ -45,6 +45,7 @@ The package contains expat doc files.
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
 	--disable-static
+
 make %{?_smp_mflags}
 
 %install
@@ -76,7 +77,7 @@ rm -rf %{buildroot}/*
 ## TODO: There's some change in man page build path according to release notes.
 ## https://github.com/libexpat/libexpat/blob/R_2_2_7/expat/Changes
 ## #158 #263  CMake: Build man page in PROJECT_BINARY_DIR not _SOURCE_DIR
-#%{_mandir}/man1/*
+#%%{_mandir}/man1/*
 
 %files devel
 %{_includedir}/*
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.8-1
+- Automatic Version Bump
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 - Automatic Version Bump
 * Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.9-3

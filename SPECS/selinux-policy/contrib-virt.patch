@@ -1,7 +1,18 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/virt.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/virt.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/virt.te	2020-04-24 07:44:30.745416186 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/virt.te	2020-04-23 22:59:49.529898366 +0000
-@@ -182,7 +182,7 @@
+From bc40e5d5a3a0d8b4910e93cf5a228e51c666ed15 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:30:58 +0530
+Subject: [PATCH 06/20] contrib virt
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/contrib/virt.te | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/policy/modules/contrib/virt.te b/policy/modules/contrib/virt.te
+index 340056b..66423fb 100644
+--- a/policy/modules/contrib/virt.te
++++ b/policy/modules/contrib/virt.te
+@@ -200,7 +200,7 @@ gen_tunable(virt_qemu_ga_read_nonsecurity_files, false)
  
  virt_domain_template(svirt)
  role system_r types svirt_t;
@@ -10,3 +21,6 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  
  virt_domain_template(svirt_tcg)
  role system_r types svirt_tcg_t;
+-- 
+2.35.1
+

@@ -1,16 +1,19 @@
 Summary:       ODBC driver manager
 Name:          freetds
-Version:       1.2.21
-Release:       1%{?dist}
+Version:       1.3.10
+Release:       2%{?dist}
 License:       GPLv2
-URL:           http://www.unixodbc.org/
+URL:           http://www.unixodbc.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.gz
-%define sha1   freetds=64757e8120fb1ba9492bf66753c816c73f66c085
+
+Source0: https://www.freetds.org/files/stable/%{name}-%{version}.tar.gz
+%define sha512 %{name}=3d656833dd3e0150bf1c343699aeb89f6cb30b357a86a2baf94ac9f53016a793c78b5dcabfdb357106a7736ceb8d1fd25d817fa0861a4209b8093e6a5065dcf1
+
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
+
 Requires:      gnutls
 Requires:      unixODBC
 
@@ -46,7 +49,7 @@ The freetds-doc package contains the userguide and reference of FreeTDS
 and can be installed even if FreeTDS main package is not installed
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -54,10 +57,11 @@ and can be installed even if FreeTDS main package is not installed
     --with-tdsver=auto \
     --with-unixodbc \
     --with-gnutls
-make
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 
@@ -103,9 +107,13 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
-*   Sat Apr 24 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.21-1
--   Automatic Version Bump
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.20-1
--   Automatic Version Bump
-*   Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
--   Adding package freetds
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-2
+- Bump version as a part of gnutls upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.10-1
+- Automatic Version Bump
+* Sat Apr 24 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.21-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.20-1
+- Automatic Version Bump
+* Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
+- Adding package freetds

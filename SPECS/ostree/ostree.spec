@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2021.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -9,8 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha1    lib%{name}-%{version}=20bb1cb059928baddab91a25c360ff84413df1dd
-Source1:        91-ostree.preset
+%define sha512  lib%{name}-%{version}=73d463e9cfaa027ac640051615b312c1800e71b2587e33cbae1e60356cb3c3f5d4afcda8ace680636ebd1d112061f2a8a7c25c46aa24a1b260244451157ffe8a
+
+Source1:        91-%{name}.preset
 
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
@@ -97,67 +98,73 @@ env NOCONFIGURE=1 ./autogen.sh
      --with-selinux \
      --enable-libsoup-client-certs
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} INSTALL="install -p -c" install
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
-install -D -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system-preset/91-ostree.preset
-install -vdm 755 %{buildroot}/etc/ostree/remotes.d
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-%{name}.preset
+install -vdm 755 %{buildroot}/etc/%{name}/remotes.d
 
 %post
-%systemd_post ostree-remount.service
+%systemd_post %{name}-remount.service
 
 %preun
-%systemd_preun ostree-remount.service
+%systemd_preun %{name}-remount.service
 
 %postun
-%systemd_postun_with_restart ostree-remount.service
+%systemd_postun_with_restart %{name}-remount.service
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %doc README.md
-%{_bindir}/ostree
+%{_bindir}/%{name}
 %{_bindir}/rofiles-fuse
-%{_datadir}/ostree
+%{_datadir}/%{name}
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_libdir}/systemd/system/ostree-finalize-staged.path
+%{_unitdir}/%{name}-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
-%{_libdir}/systemd/system-generators/ostree-system-generator
-%{_libdir}/systemd/system-preset/91-ostree.preset
-%{_libdir}/systemd/system/ostree*.service
-%{_libdir}/ostree/ostree-prepare-root
-%{_libdir}/ostree/ostree-remount
-%{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
-%config(noreplace) %{_sysconfdir}/dracut.conf.d/ostree.conf
-%config(noreplace) %{_sysconfdir}/ostree-mkinitcpio.conf
-%{_mandir}/man1/ostree-admin*
+%{_systemdgeneratordir}/%{name}-system-generator
+%{_presetdir}/91-%{name}.preset
+%{_unitdir}/%{name}*.service
+%{_libdir}/%{name}/%{name}-prepare-root
+%{_libdir}/%{name}/%{name}-remount
+%{_tmpfilesdir}/%{name}-tmpfiles.conf
+%config(noreplace) %{_sysconfdir}/dracut.conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}-mkinitcpio.conf
+%{_mandir}/man1/%{name}-admin*
 %{_libexecdir}/libostree/*
-%exclude %{_sysconfdir}/grub.d/*ostree
+%exclude %{_sysconfdir}/grub.d/*%{name}
 %exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
-%{_sysconfdir}/ostree
+%defattr(-,root,root)
+%{_sysconfdir}/%{name}
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/OSTree-1.0.typelib
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_prefix}/share/bash-completion/completions/ostree
-%{_datadir}/gtk-doc/html/ostree
+%{_datadir}/bash-completion/completions/%{name}
+%{_datadir}/gtk-doc/html/%{name}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
-%exclude %{_mandir}/man1/ostree-admin*
+%exclude %{_mandir}/man1/%{name}-admin*
 %{_mandir}/man1/*.gz
 %{_mandir}/man5/*.gz
 
 %files grub2
-%{_sysconfdir}/grub.d/*ostree
+%defattr(-,root,root)
+%{_sysconfdir}/grub.d/*%{name}
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-4
+- Bump version as a part of sqlite upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.5-3
 - Do not depend on icu and libpsl and libsoup will bring them
 * Fri Nov 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.5-2

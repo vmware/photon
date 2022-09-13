@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.33.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
-%define sha1    gtk-doc=d48fc5e2ca19eef9420732625cfd53e40b331baf
+%define sha512  gtk-doc=f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -32,7 +32,7 @@ The GTK-Doc package contains a code documenter. This is useful for extracting
 specially formatted comments from the code to create API documentation.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./autogen.sh
@@ -40,7 +40,7 @@ specially formatted comments from the code to create API documentation.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 
 %check
 cd tests && make check-TESTS
@@ -51,6 +51,8 @@ cd tests && make check-TESTS
 /usr/share/*
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.33.2-2
+-   Bump version as a part of libxslt upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.33.2-1
 -   Automatic Version Bump
 *   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.33.0-1

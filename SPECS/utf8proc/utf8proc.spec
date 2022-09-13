@@ -1,13 +1,12 @@
 Summary:        C library that provide processing for data in the UTF-8 encoding
 Name:           utf8proc
-Version:        2.6.1
-Release:        1%{?dist}
+Version:        2.7.0
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
-# Source0:  https://github.com/JuliaStrings/utf8proc/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=f21b3263081adfcbe102cfea8cd4cb02e71f0efc
+%define sha512  %{name}=29f7883de13302d609e8755872ed43174e70076e9681b4ac3f9b03e50295c45d9972c193bc81f94ad7e11e2d33a46cad5a30a80873173e6e1ae242101ebb3bed
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -25,23 +24,23 @@ The utf8proc-devel package contains libraries, header files and documentation
 for developing applications that use utf8proc.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-      -DCMAKE_BUILD_TYPE=Release        \
-      -DBUILD_SHARED_LIBS=ON            \
-      ..
-make %{?_smp_mflags}
+%cmake \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DBUILD_SHARED_LIBS=ON \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install
+%cmake_install
 
+%if 0%{?with_check}
 %check
-make check
+make check %{?_smp_mflags}
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -55,11 +54,16 @@ make check
 %defattr(-,root,root,-)
 %{_includedir}/utf8proc.h
 %{_libdir}/libutf8proc.so
+%{_libdir}/pkgconfig/libutf8proc.pc
 
 %changelog
-*       Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
--       Automatic Version Bump
-*       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
--       Automatic Version Bump
-*       Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
--       Initial Version.
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-2
+- Use cmake macros for build
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.0-1
+- Automatic Version Bump
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+- Automatic Version Bump
+* Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
+- Initial Version.

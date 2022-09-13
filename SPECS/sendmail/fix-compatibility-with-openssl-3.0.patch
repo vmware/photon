@@ -1,0 +1,122 @@
+From ffca6997a191a02ef41268d2979909286fe72bea Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sat, 12 Feb 2022 23:16:27 +0530
+Subject: [PATCH] fix compatibility with openssl 3.0
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ sendmail/tls.c | 88 +++++++++++++++++++++++---------------------------
+ 1 file changed, 40 insertions(+), 48 deletions(-)
+
+diff --git a/sendmail/tls.c b/sendmail/tls.c
+index e2cac76..b31844f 100644
+--- a/sendmail/tls.c
++++ b/sendmail/tls.c
+@@ -86,31 +86,26 @@ static DH *
+ get_dh512()
+ {
+ 	DH *dh = NULL;
+-#  if MTA_HAVE_DH_set0_pqg
+-	BIGNUM *dhp_bn, *dhg_bn;
+-#  endif
++	BIGNUM *p;
++	BIGNUM *g;
+ 
+-	if ((dh = DH_new()) == NULL)
+-		return NULL;
+-#  if MTA_HAVE_DH_set0_pqg
+-	dhp_bn = BN_bin2bn(dh512_p, sizeof (dh512_p), NULL);
+-	dhg_bn = BN_bin2bn(dh512_g, sizeof (dh512_g), NULL);
+-	if (dhp_bn == NULL || dhg_bn == NULL || !DH_set0_pqg(dh, dhp_bn, NULL, dhg_bn))  {
+-		DH_free(dh);
+-		BN_free(dhp_bn);
+-		BN_free(dhg_bn);
+-		return NULL;
+-	}
+-#  else
+-	dh->p = BN_bin2bn(dh512_p, sizeof(dh512_p), NULL);
+-	dh->g = BN_bin2bn(dh512_g, sizeof(dh512_g), NULL);
+-	if ((dh->p == NULL) || (dh->g == NULL))
+-	{
+-		DH_free(dh);
+-		return NULL;
+-	}
+-#  endif
+-	return dh;
++	dh = DH_new();
++	p = BN_bin2bn(dh512_p, sizeof(dh512_p), NULL);
++	g = BN_bin2bn(dh512_g, sizeof(dh512_g), NULL);
++
++    if (!dh || !p || !g)
++		goto err;
++
++    if (!DH_set0_pqg(dh, p, NULL, g))
++		goto err;
++
++ 	return dh;
++
++err:
++	DH_free(dh);
++	BN_free(p);
++	BN_free(g);
++	return NULL;
+ }
+ 
+ #  if 0
+@@ -155,32 +150,29 @@ get_dh2048()
+ 		0x6C,0x79,0xA2,0x83,
+ 		};
+ 	static unsigned char dh2048_g[]={ 0x02, };
++
+ 	DH *dh;
+-#  if MTA_HAVE_DH_set0_pqg
+-	BIGNUM *dhp_bn, *dhg_bn;
+-#  endif
+ 
+-	if ((dh=DH_new()) == NULL)
+-		return(NULL);
+-#  if MTA_HAVE_DH_set0_pqg
+-	dhp_bn = BN_bin2bn(dh2048_p, sizeof (dh2048_p), NULL);
+-	dhg_bn = BN_bin2bn(dh2048_g, sizeof (dh2048_g), NULL);
+-	if (dhp_bn == NULL || dhg_bn == NULL || !DH_set0_pqg(dh, dhp_bn, NULL, dhg_bn))  {
+-		DH_free(dh);
+-		BN_free(dhp_bn);
+-		BN_free(dhg_bn);
+-		return NULL;
+-	}
+-#  else
+-	dh->p=BN_bin2bn(dh2048_p,sizeof(dh2048_p),NULL);
+-	dh->g=BN_bin2bn(dh2048_g,sizeof(dh2048_g),NULL);
+-	if ((dh->p == NULL) || (dh->g == NULL))
+-	{
+-		DH_free(dh);
+-		return(NULL);
+-	}
+-#  endif
+-	return(dh);
++	BIGNUM *p;
++	BIGNUM *g;
++
++	dh = DH_new();
++	p = BN_bin2bn(dh2048_p,sizeof(dh2048_p),NULL);
++	g = BN_bin2bn(dh2048_g,sizeof(dh2048_g),NULL);
++
++    if (!dh || !p || !g)
++		goto err;
++
++    if (!DH_set0_pqg(dh, p, NULL, g))
++		goto err;
++
++    return(dh);
++
++err:
++	DH_free(dh);
++	BN_free(p);
++	BN_free(g);
++	return NULL;
+ }
+ # endif /* !NO_DH */
+ 
+-- 
+2.25.1
+

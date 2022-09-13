@@ -2,15 +2,15 @@
 
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
-Version:        0.9.8
-Release:        4%{?dist}
+Version:        1.0.5
+Release:        1%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        GPLv2
 URL:            https://netfilter.org/projects/nftables/
 Source0:        %{url}/files/%{name}-%{version}.tar.bz2
-%define sha1    nftables=c15ac5552959c8358975f6b3e15757841c6904c8
+%define sha512  %{name}=51cbf10579db7eed58f4358044840f2ce1bffe84533c5fb03e0ebcc702970856455576ac793169c94d38a9f8148e33631ad91444e54a8be189d93af7c27feb9a
 Source1:        nftables.service
 Source2:        nftables.conf
 Source3:        nft_ruleset_photon.nft
@@ -22,15 +22,17 @@ BuildRequires:  libmnl-devel
 BuildRequires:  gmp-devel
 BuildRequires:  readline-devel
 BuildRequires:  libnftnl-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  iptables-devel
 BuildRequires:  jansson-devel
 BuildRequires:  python3-devel
+BuildRequires:  libedit-devel
 
 Requires:       libmnl
 Requires:       gmp
 Requires:       readline
 Requires:       libnftnl
+Requires:       libedit
 Requires:       systemd
 Requires:       iptables
 Requires:       jansson
@@ -65,7 +67,7 @@ The nftables python module provides an interface to libnftables via ctypes.
 %build
 %configure --disable-silent-rules --with-xtables --with-json --disable-man-doc \
            --enable-python --with-python-bin=/usr/bin/python3
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
 %make_install
@@ -105,6 +107,7 @@ chmod 700  %{buildroot}/%{_sysconfdir}/nftables
 %{_libdir}/libnftables.so.*
 %{_unitdir}/nftables.service
 %{_datadir}/doc/nftables/examples/*
+%{_datadir}/nftables/*
 
 %files devel
 %defattr(-, root, root)
@@ -118,6 +121,12 @@ chmod 700  %{buildroot}/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.0.5-1
+- Version bump
+* Thu Jun 02 2022 Susant Sahani <ssahani@vmware.com> 1.0.3-1
+- Version bump
+* Wed Dec 22 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-1
+- Version bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-4
 - Use ldconfig scriptlets
 * Wed May 12 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-3

@@ -1,16 +1,23 @@
 Summary:       Linux Virtual Server administration
 Name:          ipvsadm
 Version:       1.31
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
 Source0:       https://www.kernel.org/pub/linux/utils/kernel/ipvsadm/%{name}-%{version}.tar.xz
-%define sha1 ipvsadm=ddb62a54944f3067f2b94a7e4de8c7b29cf535fb
-BuildRequires: which popt-devel libnl-devel
-Requires:      popt libnl
+%define sha512  %{name}=1c7187405771e702eff0009d688fa697375b833a486ff88b41a4a0dcfaa3e9884c7e3bc34375efea5f6a2d025847c9fac9fd6ba694ec3bf2fc9d357eef2cb631
+
+BuildRequires: which
+BuildRequires: popt-devel
+BuildRequires: libnl-devel
+
+Requires:      popt
+Requires:      libnl
+
 %description
 ipvsadm is used to setup, maintain, and inspect the virtual server
 table in the Linux kernel. The Linux Virtual Server can be used to
@@ -27,13 +34,15 @@ locality-based least-connection, locality-based least-connection with replicatio
 destination-hashing, and source-hashing).
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
+# make doesn't support _smp_mflags
 make
 
 %install
-make install BUILD_ROOT=%{buildroot} MANDIR=%{_mandir}
+# make doesn't support _smp_mflags
+make install BUILD_ROOT=%{buildroot} MANDIR=%{_mandir} SBIN=%{buildroot}%{_sbindir}
 
 %clean
 rm -rf %{buildroot}/*
@@ -41,13 +50,15 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-/sbin/*
+%{_sbindir}/*
 %{_mandir}/*
 
 %changelog
-*   Thu May 14 2020 Susant Sahani <ssahani@vmware.com> 1.31-1
--   Update to version 1.31
-*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.29-1
--   Upgrading to version 1.29
-*   Fri Nov 11 2016 Alexey Makhalov <amakhalov@vmware.com> 1.28-1
--   Initial build. First version
+* Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.31-2
+- Fix binary path
+* Thu May 14 2020 Susant Sahani <ssahani@vmware.com> 1.31-1
+- Update to version 1.31
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.29-1
+- Upgrading to version 1.29
+* Fri Nov 11 2016 Alexey Makhalov <amakhalov@vmware.com> 1.28-1
+- Initial build. First version

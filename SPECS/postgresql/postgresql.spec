@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        14.1
-Release:        3%{?dist}
+Version:        14.5
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=aacdb4fe70ed6de1b2f3ccbbc242e365c8da989b
+%define sha512  postgresql=3051c5ab729f6a55952c6108098b022517398b1de64f7fefbdd6c806c7e2eb0637d00f3c98a6203c5bee654656528c4ff3530db5a69470e7888864c77900178a
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 14
@@ -545,6 +545,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Thu Aug 11 2022 Julien Rouhaud <jrouhaud@vmware.com> 14.5-1
+-   Upgraded to version 14.5.
+*   Wed Jun 22 2022 Michael Paquier <mpaquier@vmware.com> 14.4-1
+-   Upgraded to version 14.4.
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.3-2
+-   Bump version as a part of libxslt upgrade
+*   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 14.3-1
+-   Upgraded to version 14.3.
+*   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 14.2-1
+-   Upgraded to version 14.2.
 *   Fri Nov 19 2021 Nitesh Kumar <kunitesh@vmware.com> 14.1-3
 -   Release bump up to use libxml2 2.9.12-1.
 *   Thu Nov 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 14.1-2

@@ -1,15 +1,14 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
-Version:        7.91
+Version:        7.92
 Release:        1%{?dist}
 License:        Nmap
 URL:            http://nmap.org/
 Source0:        https://nmap.org/dist/%{name}-%{version}.tar.bz2
-%define sha1 nmap=e72198f463ee9d557e4c5c9444cc5a0e5c36b00c
+%define sha512  nmap=7828367f9dc76ff4d1e8c821260e565fb0c3cb6aba0473d24759133a3006cdf2cb087574f0dd7d2ba47a63754ba4f72e0b78cdae1333a58f05c41d428b56ad59
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  e2fsprogs-devel
@@ -25,7 +24,6 @@ BuildRequires:  make
 BuildRequires:  openssh
 BuildRequires:  pcre-devel
 BuildRequires:  zlib-devel
-
 Requires:       libpcap
 Requires:       pcre
 Requires:       gnupg
@@ -64,7 +62,7 @@ uses.
             --enable-dbus
 
 %install
-make DESTDIR=%{buildroot} STRIP=true install
+make DESTDIR=%{buildroot} STRIP=true %{?_smp_mflags} install
 
 rm -f %{buildroot}%{_datadir}/ncat/ca-bundle.crt
 rmdir %{buildroot}%{_datadir}/ncat
@@ -85,5 +83,7 @@ rm -rf %{buildroot}%{_datadir}/man/
 %{_bindir}/ncat
 
 %changelog
+* Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 7.92-1
+- Automatic Version Bump
 * Wed Apr 28 2021 Susant Sahani <ssahani@vmware.com> 7.91-1
 - Initial rpm release

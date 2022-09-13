@@ -1,11 +1,11 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
-Version:        2.0.6
-Release:        3%{?dist}
+Version:        2.0.7
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha1 itstool=9a7a3cd6e33763f6f369a907e79da98cc47b86e7
+%define sha512  itstool=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,6 +38,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+*   Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.7-1
+-   Automatic Version Bump
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.0.6-3
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0.6-2

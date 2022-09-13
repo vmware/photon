@@ -1,16 +1,19 @@
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
-Version:        0.9.73
+Version:        0.9.75
 Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
-Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha1    libmicrohttpd=5ff80818bbe3f8984e49809f4efeb2c38c7be232
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  autoconf, automake, libtool
+Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
+%define sha512  %{name}=4dc62ed191342a61cc2767171bb1ff4050f390db14ef7100299888237b52ea0b04b939c843878fe7f5daec2b35a47b3c1b7e7c11fb32d458184fe6b19986a37c
+
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
 BuildRequires:  gnutls-devel
 
 Requires:       gnutls
@@ -24,23 +27,24 @@ Key features that distinguish libmicrohttpd from other projects are:
 Summary:        Development files for libmicrohttpd
 Requires:       %{name} = %{version}-%{release}
 Requires:       gnutls-devel
-%description devel
+
+%description    devel
 Development files for libmicrohttpd
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 autoreconf -fi
 %configure --disable-static --with-gnutls --enable-https=yes
-%make_build
+%make_build %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
-rm -f %{buildroot}%{_libdir}/*.la
-rm -f %{buildroot}%{_infodir}/dir
-rm -f %{buildroot}%{_bindir}/demo
+rm -f %{buildroot}%{_libdir}/*.la \
+      %{buildroot}%{_infodir}/dir \
+      %{buildroot}%{_bindir}/demo
 
 %ldconfig_scriptlets
 
@@ -58,6 +62,10 @@ rm -f %{buildroot}%{_bindir}/demo
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.75-2
+- Bump version as a part of gnutls upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.75-1
+- Automatic Version Bump
 * Thu Aug 05 2021 Susant Sahani <ssahani@vmware.com> 0.9.73-2
 - Modernize spec file. Use ldconfig scriptlets and autosetup
 * Sun Apr 25 2021 Gerrit Photon <photon-checkins@vmware.com> 0.9.73-1
@@ -69,4 +77,4 @@ rm -f %{buildroot}%{_bindir}/demo
 * Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.71-1
 - Automatic Version Bump
 * Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.9.70-1
-- Initial rpm release
+- Initial rpm release.

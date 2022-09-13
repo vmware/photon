@@ -1,12 +1,12 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.42
+Version:      	1.45
 Release:      	1%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha1 libgpg-error=5e620d71fc24d287a7ac2460b1d819074bb8b9bb
+%define sha512  libgpg-error=882f2dd617e89137d7a9d61b60488dac32321dd4fdb699e9687b6bd9380c056c027da502837f4482289c0fe00e7de01210e804428f05a0843ae2ca23fdcc6457
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -15,28 +15,30 @@ This is a library that defines common error values for all GnuPG
 components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
 pinentry, SmartCard Daemon and possibly more in the future.
 
-%package devel
+%package        devel
 Summary:	Libraries and header files for libgpg-error
 Requires:	%{name} = %{version}-%{release}
-%description devel
+
+%description    devel
 Static libraries and header files for the support library for libgpg-error
 
-%package lang
-Summary: Additional language files for libgpg-error
+%package        lang
+Summary:        Additional language files for libgpg-error
 Group:		Applications/System
-Requires: %{name} = %{version}-%{release}
-%description lang
+Requires:       %{name} = %{version}-%{release}
+
+%description    lang
 These are the additional language files of libgpg-error.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 
@@ -72,16 +74,18 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-*       Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.42-1
--       Automatic Version Bump
-*       Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.39-1
--       Automatic Version Bump
-*       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.38-1
--       Automatic Version Bump
-*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.32-1
--       Update to 1.32
-*	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
--	Upgraded to new version 1.27
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.45-1
+-   Automatic Version Bump
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.42-1
+-   Automatic Version Bump
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.39-1
+-   Automatic Version Bump
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.38-1
+-   Automatic Version Bump
+*   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.32-1
+-   Update to 1.32
+*   Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
+-   Upgraded to new version 1.27
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.21-3
 -   Added -lang subpackage
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
@@ -92,4 +96,3 @@ make %{?_smp_mflags} check
 -   Handled locale files with macro find_lang
 *   Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
 -   initial specfile.
-

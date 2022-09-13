@@ -1,0 +1,71 @@
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 574ca2021ad5..b422b07a788c 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -235,6 +235,12 @@ crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep)
+ crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep)
+ 	$(call if_changed_rule,as_o_S)
+ 
++crypto/x86-%.ii: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep)
++	$(call if_changed,cpp_i_c)
++
++crypto/x86-%.ii: arch/x86/crypto/%.S $(objtool_dep)
++	$(call if_changed,cpp_i_c)
++
+ lib-crypto-y := aes.o des.o sha256.o
+ CFLAGS_REMOVE_lib-crypto-aes.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ CFLAGS_REMOVE_lib-crypto-des.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+@@ -243,6 +249,9 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep)
+ 	$(call cmd,force_checksrc)
+ 	$(call if_changed_rule,cc_o_c)
+ 
++crypto/lib-crypto-%.ii: lib/crypto/%.c $(recordmcount_source) $(objtool_dep)
++	$(call if_changed,cpp_i_c)
++
+ lib-generic-y := sha1.o
+ CFLAGS_REMOVE_lib-generic-sha1.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ crypto/lib-generic-%.o: lib/%.c $(recordmcount_source) $(objtool_dep)
+@@ -255,17 +264,41 @@ CFLAGS_REMOVE_crypto_self_test.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/g
+ canister += fips_integrity.o
+ CFLAGS_REMOVE_fips_integrity.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ 
+-extra-y += $(canister)
++crypto/lib-generic-%.ii: lib/%.c $(recordmcount_source) $(objtool_dep)
++	$(call if_changed,cpp_i_c)
++
++%.ii: %.c $(recordmcount_source) $(objtool_dep)
++	$(call if_changed,cpp_i_c)
++
++canister-i = $(patsubst %.o,%.ii,$(canister))
++extra-y += config-usage-check $(canister)
+ $(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix crypto/lib-generic-,$(lib-generic-y)) $(addprefix $(obj)/,$(canister))
+ 	$(LD) -T $(obj)/canister_combine.lds -r $^ -o $@
+ 
++#CPP += -fdirectives-only -dD
++CPP += -dU
++quiet_cmd_conf_usage = GEN     $@
++cmd_conf_usage = cat $^ | grep "define CONFIG_" | sort -u > $@
++$(obj)/config-usage: $(patsubst %.o,%.ii,$(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix crypto/lib-generic-,$(lib-generic-y)) $(addprefix $(obj)/,$(canister)))
++	$(call if_changed,conf_usage)
++
++PHONY += config-usage-check
++
++
++$(obj)/config-usage-check: $(obj)/config-usage
++	$(eval DIFF := $(shell comm --nocheck-order -13 $(obj)/config-usage-ok $^ | awk '{print $$2}'))
++	@if [ -n "$(DIFF)" ]; then \
++		echo "Found suspicious use of CONFIG options in the canister: $(DIFF)"; \
++		exit 1; \
++	fi
++
+ hostprogs := gen_canister_relocs
+ HOSTLDLIBS_gen_canister_relocs = -lelf
+ HOSTCFLAGS_gen_canister_relocs = -g
+ 
+ quiet_cmd_gencr = GENCR   $@
+ cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds
+-$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
++$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs
+ 	$(call if_changed,gencr)
+ clean-files += $(src)/canister_relocs.c
+ targets += canister_relocs.o

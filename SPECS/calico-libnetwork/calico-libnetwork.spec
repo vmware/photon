@@ -1,15 +1,15 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/libnetwork-plugin
-Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-libnetwork=84acf59e8480e5e7fcefa7581fb156b76822ab36
-Source1:        glide-cache-for-calico-libnetwork-%{version}.tar.xz
-%define sha1 glide-cache-for-%{name}=67faf9f5502eb97dd51c2c36d31bbf3fdb465cf7
+Source0:       https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 calico-libnetwork=40b7b0962e58fced7a02fa743b0f92aae2c6d1e43046cd0d59153f4022ad22ca0b29ac3a9cbc6e67218a35dce3306a1a88194d22248a2f589ee385d0c1ce3852
+Source1:       glide-cache-for-calico-libnetwork-%{version}.tar.xz
+%define sha512 glide-cache-for-%{name}=6e852994910b3ab31dd453f641b939a10a9bdee4f7122445322a4ce4e6673d4a959b9e6a8fad050abe644e993d510a09e26975b47349521a4247f6d2f3dc274a
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
@@ -20,7 +20,7 @@ BuildRequires: go
 Docker libnetwork plugin for Calico.
 
 %prep
-%setup -q -n libnetwork-plugin-%{version}
+%autosetup -p1 -n libnetwork-plugin-%{version}
 
 %build
 export GO111MODULE=auto
@@ -42,20 +42,22 @@ CGO_ENABLED=0 go build -v -i -o dist/libnetwork-plugin -ldflags "-X main.VERSION
 
 %install
 pushd ${GOPATH}/src/github.com/projectcalico/libnetwork-plugin
-install -vdm 0755 %{buildroot}/usr/share/calico/docker
-install -vpm 0755 -t %{buildroot}/usr/share/calico/docker/ dist/libnetwork-plugin
+install -vdm 0755 %{buildroot}%{_datadir}/calico/docker
+install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ dist/libnetwork-plugin
 
 %files
 %defattr(-,root,root)
-/usr/share/calico/docker/libnetwork-plugin
+%{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.1.3-5
--   Bump up version to compile with new go
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.1.3-4
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.1.3-3
--   Bump up version to compile with new go
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-6
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.1.3-5
+- Bump up version to compile with new go
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.1.3-4
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.1.3-3
+- Bump up version to compile with new go
 * Mon Jan 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.1.3-2
 - Pass `--force` option to glide install to fix build error
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1

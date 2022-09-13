@@ -1,21 +1,22 @@
+%global debug_package %{nil}
+
 Name:           consul
-Version:        1.10.4
-Release:        1%{?dist}
+Version:        1.11.4
+Release:        2%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
-
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=217190fa919474ba18807f7ecdb41a131671ff09
+URL:            https://github.com/hashicorp/consul
+Source0:        https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}-%{version}=1928c91cfb316228f77472e488fc697a3d798d270b57dec36c13734045eb87fc57ee3c6eeb8be0cab3a4af6f5f733512cd972420a175e6d33df053f7679bddab
 Source1:        %{name}.service
 
-BuildRequires:  unzip
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  go
 BuildRequires:  ca-certificates
+
 Requires:       systemd
 
 %description
@@ -33,10 +34,8 @@ Consul provides several key features:
 
  * Multi-Datacenter - Consul is built to be datacenter aware, and can support any number of regions without complex configuration.
 
-%global debug_package %{nil}
-
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 go build -v -o %{name}
@@ -44,34 +43,34 @@ go build -v -o %{name}
 %install
 install -vdm 755 %{buildroot}%{_bindir}
 install %{name} %{buildroot}%{_bindir}
-chown -R root:root %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}.d
-install -vdm 755 %{buildroot}/usr/lib/systemd/system
-install -vdm 755 %{buildroot}/usr/lib/systemd/system
-install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/
-install -vdm 755 %{buildroot}/var/lib/%{name}
+install -vdm 755 %{buildroot}%{_unitdir}
+install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}
+install -vdm 755 %{buildroot}%{_sharedstatedir}/%{name}
 
 %pre
 if ! getent group %{name} >/dev/null; then
-    groupadd %{name}
+  groupadd %{name}
 fi
 if ! getent passwd %{name} >/dev/null; then
-    useradd -c "Consul Agent" -d /var/lib/%{name} -g %{name} -s /bin/false %{name}
+  useradd -c "Consul Agent" -d %{_sharedstatedir}/%{name} -g %{name} -s /bin/false %{name}
 fi
-exit 0
 
 %post
 /sbin/ldconfig
 %systemd_post %{name}.service
+if [ $1 -ge 1 ]; then
+  chown -PR %{name}:%{name} %{_sharedstatedir}/%{name}
+fi
 
 %postun
 if [ $1 -eq 0 ]; then
   # this is delete operation
   if getent passwd %{name} >/dev/null; then
-      userdel %{name}
+    userdel %{name}
   fi
   if getent group %{name} >/dev/null; then
-      groupdel %{name}
+    groupdel %{name}
   fi
 fi
 /sbin/ldconfig
@@ -85,46 +84,52 @@ fi
 rm -rf %{buildroot}
 
 %files
-%defattr(-,%{name},%{name})
+%defattr(-,root,root)
 %{_bindir}/%{name}
-/usr/lib/systemd/system/%{name}.service
-%dir /var/lib/%{name}
+%{_unitdir}/%{name}.service
 %dir %{_sysconfdir}/%{name}.d
+%dir %{_sharedstatedir}/%{name}
 
 %changelog
-*  Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.4-1
--  Version upgrade to 1.10.4, fixes CVE-2021-41805.
-*  Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
--  Version upgrade to 1.10.1, fixes CVE-2021-32574
-*  Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
--  Bump up version to compile with new go
-*  Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
--  Automatic Version Bump
-*  Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
--  Bump up version to compile with new go
-*  Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
--  Bump up version to compile with new go
-*  Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.1-1
--  Bump version to fix CVE-2020-28053
-*  Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.5-1
--  Upgrade to v1.8.5, fixes CVE-2020-25201
-*  Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.4-1
--  Automatic Version Bump
-*  Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
--  Automatic Version Bump
-*  Thu Jul 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-1
--  Upgrade to version 1.8.0
-*  Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
--  Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
-*  Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
--  Bump up version to compile with go 1.13.3
-*  Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-3
--  Bump up version to compile with new go
-*  Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
--  Applied patch for CVE-2018-19653
-*  Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
--  Upgraded to version 1.2.3
-*  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
--  Modify command line parameters in .service file.
-*  Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
--  Initial build. First version
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.11.4-2
+- Bump up version to compile with new go
+* Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.11.4-1
+- Upgradeto v1.11.4 & fix spec issues
+* Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.8-1
+- Version upgrade to 1.10.8, fixes CVE-2022-24687
+* Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.4-1
+- Version upgrade to 1.10.4, fixes CVE-2021-41805
+* Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+- Version upgrade to 1.10.1, fixes CVE-2021-32574
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
+- Bump up version to compile with new go
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
+- Bump up version to compile with new go
+* Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.1-1
+- Bump version to fix CVE-2020-28053
+* Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.5-1
+- Upgrade to v1.8.5, fixes CVE-2020-25201
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.4-1
+- Automatic Version Bump
+* Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
+- Automatic Version Bump
+* Thu Jul 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-1
+- Upgrade to version 1.8.0
+* Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
+- Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-3
+- Bump up version to compile with new go
+* Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
+- Applied patch for CVE-2018-19653
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
+- Upgraded to version 1.2.3
+* Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
+- Modify command line parameters in .service file.
+* Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
+- Initial build. First version

@@ -1,27 +1,27 @@
-Summary:  Tracks system calls that are made by a running process
-Name:     strace
-Version:  5.10
-Release:  1%{?dist}
-License:  BSD
-URL:      https://strace.io/
-Group:    Development/Debuggers
-Vendor:   VMware, Inc.
-Distribution: Photon
-Source0:  https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=8b5ced312f379806406a0ee6551fbe373c55e738
-
-BuildRequires:  gcc gzip libacl-devel libaio-devel
+Summary:       Tracks system calls that are made by a running process
+Name:          strace
+Version:       5.18
+Release:       1%{?dist}
+License:       BSD
+URL:           https://strace.io/
+Group:         Development/Debuggers
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
+%define sha512 strace=99418b84a5e2049cb6fe32eed19ddcb61bbefb25220550c67d92cd7bc3d44ae5d87ac228b3e1c207166b9bfdae55c624a0f4e603004599fb7ea3143bbccc749e
+BuildRequires: gcc gzip libacl-devel libaio-devel
 
 %description
 strace is a diagnostic, debugging and instructional userspace utility for Linux. It is
 used to monitor and tamper with interactions between processes and the Linux kernel,
 which include system calls, signal deliveries, and changes of process state.
 
-%package graph
-Summary:  strace graph
-Group:    System Environment/Security
-Requires: %{name} = %{version}-%{release}
-%description graph
+%package       graph
+Summary:       strace graph
+Group:         System Environment/Security
+Requires:      %{name} = %{version}-%{release}
+
+%description   graph
 The strace graph is perl script, It displays a graph of invoked subprocesses, and is
 useful for finding out what complex commands do
 
@@ -32,18 +32,15 @@ useful for finding out what complex commands do
 %ifarch aarch64
 %configure --disable-mpers
 %else
-%configure
+%configure --enable-mpers=check
 %endif
-
-# to resolve build issue with glibc-2.26
-sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
-sed -i 's/struct ucontext/ucontext_t/g' linux/arm/arch_sigreturn.c
 
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
+cp src/strace-graph %{buildroot}%{_bindir}/
 
 %check
 make -k check %{?_smp_mflags}
@@ -61,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace-graph
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.18-1
+- Automatic Version Bump
 * Tue Jan 12 2021 Susant Sahani <ssahani@vmware.com> 5.10-1
 - Version Bump
 * Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 4.21-2

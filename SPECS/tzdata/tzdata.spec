@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2020a
+Version:        2022a
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,25 +8,26 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1    tzdata=d9f29aab03246713e6c5b792f49871846b4cfeda
+%define sha512  tzdata=542e4559beac8fd8c4af7d08d816fd12cfe7ffcb6f20bba4ff1c20eba717749ef96e5cf599b2fe03b5b8469c0467f8cb1c893008160da281055a123dd9e810d9
 BuildArch:      noarch
+%define blddir  %{name}-%{version}
 
 %description
 Sources for time zone and daylight saving time data
-%define blddir      %{name}-%{version}
 
 %prep
 rm -rf %{blddir}
 install -vdm 755 %{blddir}
 cd %{blddir}
 tar xf %{SOURCE0} --no-same-owner
+
 %build
 %install
 cd %{blddir}
 ZONEINFO=%{buildroot}%{_datarootdir}/zoneinfo
 install -vdm 755 $ZONEINFO/{posix,right}
 for tz in etcetera southamerica northamerica europe africa antarctica  \
-    asia australasia backward pacificnew systemv; do
+    asia australasia backward; do
     zic -L /dev/null    -d $ZONEINFO        -y "sh yearistype.sh" ${tz}
     zic -L /dev/null    -d $ZONEINFO/posix  -y "sh yearistype.sh" ${tz}
     zic -L leapseconds  -d $ZONEINFO/right  -y "sh yearistype.sh" ${tz}
@@ -42,6 +43,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2022a-1
+-   Automatic Version Bump
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 2020a-1
 -   Automatic Version Bump
 *   Fri Oct 18 2019 Gerrit Photon <photon-checkins@vmware.com> 2019c-1
@@ -65,4 +68,4 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2016a-1
 -   Upgraded to version 2016a
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2013i-1
--   Initial build. First version
+-   Initial build. First version.

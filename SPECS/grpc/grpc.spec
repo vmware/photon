@@ -1,3 +1,6 @@
+%define re2_ver 2020-08-01
+%define abseil_ver 20200225.2
+
 Summary:        Google RPC
 Name:           grpc
 Version:        1.32.0
@@ -7,12 +10,16 @@ URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha1    grpc=5c5821d40bd1c9e73992867c260421b7b539fa7d
-Source1:        https://github.com/google/re2/archive/re2-2020-08-01.tar.gz
-%define sha1    re2=ac4796e631461c27cd05629097a6931c1d5b13a4
-Source2:        https://github.com/abseil/abseil-cpp/archive/abseil-cpp-20200225.2.tar.gz
-%define sha1    abseil=f8207455be29fa9b0fc80393f63df49a85212084
+%define sha512 %{name}=90136042327cea4e3680e19484f23cc00322914a7aae7987bf00b6e0901721d14c487555fdd94888192d6beb950172361ac57fbd02d43b40552f7ff5cac442ed
+
+Source1:        https://github.com/google/re2/archive/re2-%{re2_ver}.tar.gz
+%define sha512 re2=1ae261155a1eb96606788eb736faa4dc3240d85f47e3b4c412a4f85f7e4cc69f7c7cbab98397aaf725def1cbc9c5da2c679cfb5573a442d60897740766ae2967
+
+Source2:        https://github.com/abseil/abseil-cpp/archive/abseil-cpp-%{abseil_ver}.tar.gz
+%define sha512 abseil=75a607dee825e83c10dcd5e509515461f1b12c4aca861e4739ac4d41357b8e893dbfbe33873aa5c05463dde0891dedd7535af2ec59f173de29488e1b1321b335
+
 BuildRequires:  build-essential
 BuildRequires:  which
 BuildRequires:  c-ares-devel
@@ -20,6 +27,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  cmake
 BuildRequires:  gperftools-devel
 BuildRequires:  protobuf-devel >= 3.6.0
+
 Requires:       protobuf >= 3.6.0
 Requires:       protobuf-c
 Requires:       c-ares-devel
@@ -48,27 +56,26 @@ developing applications that use grpc.
 %setup -q
 # Using autosetup is not feasible
 %setup -q -T -D -a1 -a2
-mkdir -p cmake/build
 
 %build
-cd cmake/build
-cmake ../.. \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%cmake \
       -DBUILD_SHARED_LIBS=ON \
       -DgRPC_BUILD_TESTS=OFF \
       -DgRPC_ZLIB_PROVIDER=package \
       -DgRPC_SSL_PROVIDER=package \
       -DgRPC_PROTOBUF_PROVIDER=package \
       -DgRPC_CARES_PROVIDER=package \
-      -DABSL_ROOT_DIR=%{_builddir}/%{name}-%{version}/abseil-cpp-20200225.2 \
-      -DRE2_ROOT_DIR=%{_builddir}/%{name}-%{version}/re2-2020-08-01
-make  %{_smp_mflags} prefix=%{_prefix} libdir=%{_libdir}
+      -DABSL_ROOT_DIR=%{_builddir}/%{name}-%{version}/abseil-cpp-%{abseil_ver} \
+      -DRE2_ROOT_DIR=%{_builddir}/%{name}-%{version}/re2-%{re2_ver} \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+      -DCMAKE_BUILD_TYPE=Debug
+
+%cmake_build
 
 %install
-cd cmake/build
-make DESTDIR=%{buildroot} install %{_smp_mflags}
+%cmake_install
 # remove libre2 duplicates.
-rm -rf %{buildroot}/usr/lib64
+rm -rf %{buildroot}%{_lib64dir}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -87,10 +94,10 @@ rm -rf %{buildroot}/usr/lib64
 %{_libdir}/*.so
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-4
--   Bump up release for openssl
-*   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.32.0-3
--   Version bump up to build with latest protobuf
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-4
+- Bump up release for openssl
+* Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.32.0-3
+- Version bump up to build with latest protobuf
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-2
 - openssl 1.1.1
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.32.0-1

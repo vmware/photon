@@ -1,11 +1,11 @@
 Summary:       Enhanced seccomp library
 Name:          libseccomp
-Version:       2.5.1
+Version:       2.5.4
 Release:       1%{?dist}
 License:       LGPLv2
 Group:         System Environment/Libraries
 Source0:       https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1   libseccomp=89605d2d8e2e2f34e2d8e2ed7569eb1f7436fd21
+%define sha512   libseccomp=6b07e25e63fed380bfe1dc89b9336b68cc1828c8413b6574f191450b92503a9f0a904bb0d1b7c129de976cc421b4d3f28e19d953e2591fdcbf126f4755ec7aad
 Url:           https://github.com/seccomp/libseccomp/wiki
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -41,10 +41,10 @@ make V=1 %{?_smp_mflags}
 
 %install
 rm -rf "%{buildroot}"
-make V=1 DESTDIR="%{buildroot}" install
+make V=1 DESTDIR="%{buildroot}" %{?_smp_mflags} install
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -67,6 +67,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*  Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.4-1
+-  Automatic Version Bump
 *  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.5.1-1
 -  Automatic Version Bump
 *  Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 2.5.0-2

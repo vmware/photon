@@ -1,17 +1,19 @@
-Summary:	Google's C++ logging module
-Name:		glog
-Version:	0.4.0
-Release:	1%{?dist}
-License:	BSD
-URL:		https://github.com/google/glog
-Source0:	https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
-%define sha1 glog=0d79fb524591dee0f46213e9a23f609f74e0cbb2
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-BuildRequires:  autoconf
+Summary:    Google's C++ logging module
+Name:       glog
+Version:    0.6.0
+Release:    2%{?dist}
+License:    BSD
+URL:        https://github.com/google/glog
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=fd2c42583d0dd72c790a8cf888f328a64447c5fb9d99b2e2a3833d70c102cb0eb9ae874632c2732424cc86216c8a076a3e24b23a793eaddb5da8a1dc52ba9226
+
+BuildRequires:  build-essential
 BuildRequires:  automake
-BuildRequires:  make
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  libgcc
 BuildRequires:  libtool
@@ -19,30 +21,39 @@ BuildRequires:  libtool
 %description
 Google's C++ logging module
 
-%package devel
+%package        devel
 Summary:        glog devel
 Group:          Development/Tools
-%description devel
+
+%description    devel
 This contains development tools and libraries for glog.
 
-%package docs
+%package        docs
 Summary:        glog docs
 Group:          Development/Tools
-%description docs
+
+%description    docs
 The contains glog package doc files.
 
 %prep
-%setup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-./autogen.sh
-%configure \
-    --disable-silent-rules
-make %{?_smp_mflags}
+%cmake \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_BUILD_TYPE=Release
+
+%cmake_build
 
 %install
-make DESTDIR=%{buildroot} install
+%cmake_install
 find %{buildroot} -name '*.la' -delete
+
+%if 0%{?with_check}
+%check
+cd %{__cmake_builddir}
+make test %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
@@ -51,22 +62,25 @@ find %{buildroot} -name '*.la' -delete
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
-%{_libdir}/libglog.a
 %{_libdir}/libglog.so
 %{_libdir}/pkgconfig/libglog.pc
+%{_libdir}/cmake/glog/*.cmake
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/*
 
 %changelog
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.0-1
--   Automatic Version Bump
-*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.3.5-1
--   Update version to 0.3.5.
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.4-3
--   Use standard configure macros
-*   Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
--   Fix file paths
-*   Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.4-1
--   Initial version of glog for Photon.
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-2
+- Use cmake macros for build
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.6.0-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.0-1
+- Automatic Version Bump
+* Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.3.5-1
+- Update version to 0.3.5.
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.4-3
+- Use standard configure macros
+* Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
+- Fix file paths
+* Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.4-1
+- Initial version of glog for Photon.

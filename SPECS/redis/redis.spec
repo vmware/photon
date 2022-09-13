@@ -1,22 +1,27 @@
-Summary:	advanced key-value store
-Name:		redis
-Version:	6.2.6
-Release:	1%{?dist}
-License:	BSD
-URL:		http://redis.io/
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
+Summary:    advanced key-value store
+Name:       redis
+Version:    7.0.4
+Release:    1%{?dist}
+License:    BSD
+URL:        http://redis.io
+Group:      Applications/Databases
+Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=e9fb68dfcee194b438bd0af6e4cbc277a2a425e2
-Patch0:         redis-conf.patch
+
+Source0:    https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=748359ca515a203f541f7caba8a1396dac0421bd2159aa476b87e037745ab2f4edffc239c88be0e78e0bd0c39e7d9386667572e029f9cc5ea9e5b85e447ddf90
+
+Patch0:         %{name}-conf.patch
+
 BuildRequires:  gcc
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  make
 BuildRequires:  which
-BuildRequires:  tcl
 BuildRequires:  tcl-devel
-Requires:	systemd
+
+Requires:   systemd
+Requires:   openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -26,61 +31,72 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %autosetup -p1
 
 %build
-make BUILD_TLS=yes %{?_smp_mflags}
+# %%make_build gets stuck for some unknown reason
+make %{?_smp_mflags} BUILD_TLS=yes
 
 %install
-install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}/usr install %{?_smp_mflags}
+%make_install PREFIX=%{buildroot}%{_usr} %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
-mkdir -p %{buildroot}/var/lib/redis
-mkdir -p %{buildroot}/var/log
-mkdir -p %{buildroot}/var/opt/%{name}/log
-ln -sfv /var/opt/%{name}/log %{buildroot}/var/log/%{name}
-mkdir -p %{buildroot}/usr/lib/systemd/system
-cat << EOF >>  %{buildroot}/usr/lib/systemd/system/redis.service
+
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
+          %{buildroot}%{_var}/log \
+          %{buildroot}%{_var}/opt/%{name}/log \
+          %{buildroot}%{_unitdir}
+
+ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
+
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=Redis in-memory key-value database
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/redis-server /etc/redis.conf --daemonize no
-ExecStop=/usr/bin/redis-cli shutdown
-User=redis
-Group=redis
+ExecStart=%{_bindir}/%{name}-server %{_sysconfdir}/%{name}.conf --daemonize no
+ExecStop=%{_bindir}/%{name}-cli shutdown
+User=%{name}
+Group=%{name}
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
 %check
+%if 0%{?with_check}
 make check %{?_smp_mflags}
+%endif
 
 %pre
-getent group %{name} &> /dev/null || \
-groupadd -r %{name} &> /dev/null
+getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
+
 getent passwd %{name} &> /dev/null || \
 useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
--c 'Redis Database Server' %{name} &> /dev/null
-exit 0
+    -c 'Redis Database Server' %{name} &> /dev/null
 
 %post
 /sbin/ldconfig
-%systemd_post  redis.service
+%systemd_post %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart redis.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, redis, redis) /var/lib/redis
-%dir %attr(0750, redis, redis) /var/opt/%{name}/log
-%attr(0750, redis, redis) %{_var}/log/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_sharedstatedir}/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_var}/opt/%{name}/log
+%attr(0750, %{name}, %{name}) %{_var}/log/%{name}
 %{_bindir}/*
 %{_libdir}/systemd/*
-%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
+%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.4-1
+- Upgrade to v7.0.4, this also fixes CVE-2022-31144
+* Sat Jul 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.2-1
+- Upgrade to v7.0.2, this also fixes CVE-2022-33105
+* Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-1
+- Upgrade to v7.0.0
+- This fixes CVE-2022-24735, CVE-2022-24736
 * Thu Oct 21 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.6-1
 - Upgrade to v6.2.6 to fix following CVE's:
 - 2021-32672, 2021-41099, 2021-32762, 2021-32687
@@ -111,7 +127,7 @@ exit 0
 - Updated to version 5.0.5.
 * Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 4.0.11-1
 - Updated to version 4.0.11.
-* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.2.8-5
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.2.8-5
 - Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.8-4
 - Remove shadow from requires and use explicit tools for post actions

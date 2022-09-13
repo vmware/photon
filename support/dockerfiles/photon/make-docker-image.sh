@@ -42,20 +42,14 @@ tdnf --releasever ${PHOTON_RELEASE_VERSION} \
 
 actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
                         --disablerepo=* -q \
-                        list installed 2>/dev/null | cut -d' ' -f1))
+                        list installed 2>/dev/null | cut -d'.' -f1))
 
 expected_pkg_list=(
-  bash.$arch bzip2-libs.$arch ca-certificates.$arch
-  ca-certificates-pki.$arch curl.$arch curl-libs.$arch
-  e2fsprogs-libs.$arch elfutils-libelf.$arch expat.$arch
-  expat-libs.$arch filesystem.$arch glibc.$arch krb5.$arch
-  libcap.$arch libdb.$arch libgcc.$arch libgcrypt.$arch
-  libgpg-error.$arch libmetalink.$arch libsolv.$arch libssh2.$arch
-  lua.$arch ncurses-libs.$arch nspr.$arch nss-libs.$arch
-  openssl.$arch photon-release.noarch photon-repos.noarch popt.$arch
-  readline.$arch rpm-libs.$arch sqlite-libs.$arch tdnf.$arch
-  tdnf-cli-libs.$arch toybox.$arch xz-libs.$arch zlib.$arch
-  zstd-libs.$arch
+  bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
+  e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc krb5
+  libcap libgcc libsolv libssh2 libxml2 lua ncurses-libs nspr nss-libs
+  openssl photon-release photon-repos popt readline rpm-libs sqlite-libs
+  tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
 
 actual_pkg_count=${#actual_pkg_list[@]}
@@ -74,22 +68,20 @@ fi
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
+ln -sfr ${TEMP_CHROOT}/usr/lib/sysimage/rpm ${TEMP_CHROOT}/var/lib/rpm
+
 # cleanup anything not needed inside rootfs
 pushd $TEMP_CHROOT
-rm -rf usr/src/
-rm -rf home/*
-# rm -rf var/lib/yum/*
-rm -rf var/log/*
+rm -rf usr/src/ home/* var/log/* var/cache/tdnf/
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
-# clean up tdnf metadata
-rm -rf var/cache/tdnf/
-
-tar cpzf ../$ROOTFS_TAR_FILENAME .
+tar -I 'gzip -9' -cpf ../$ROOTFS_TAR_FILENAME .
 popd
 
-max_size=$(( 16 * 1024 * 1024 ))
+# expected size plus 2% wiggle room
+max_size=17313736
+
 actual_size=$(wc -c $ROOTFS_TAR_FILENAME | cut -d' ' -f1)
 if (( $actual_size > $max_size )); then
   echoerr "ERROR: docker image tarball size is bigger than expected"

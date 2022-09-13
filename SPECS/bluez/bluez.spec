@@ -1,25 +1,26 @@
 Summary:        Bluetooth utilities
 Name:           bluez
-Version:        5.58
-Release:        2%{?dist}
+Version:        5.64
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.bluez.org
 Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha1    %{name}=f5f007eb18599ee2fdca113642e177ebab5a8e21
-Patch0:         bluez-CVE-2021-41229.patch
+%define sha512    %{name}=f11f9974b29c5c6fce3890d7e42425c1cb02e42c1b8f49c5cc4b249234e67b64317d0e5e82721e2fbf1b53269c8569a9c869d59ce42b5e927f6622f0753e53cd
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
 BuildRequires:  systemd-devel
+BuildRequires:  python3-docutils
 
 Requires:       dbus
 Requires:       glib
 Requires:       libical
 Requires:       systemd
+Requires:       python3-docutils
 
 %description
 Utilities for use in Bluetooth applications.
@@ -83,8 +84,12 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.64-1
+- Automatic Version Bump
+* Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 5.63-1
+- Version upgrade to 5.63, Address CVE-2021-3658
 * Fri Dec 03 2021 Nitesh Kumar <kunitesh@vmware.com> 5.58-2
-- Patched to fix CVE-2021-41229.
+- Patched to fix CVE-2021-41229
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.58-1
 - Automatic Version Bump
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.56-1

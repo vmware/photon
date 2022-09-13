@@ -1,7 +1,18 @@
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te	2020-08-06 21:37:13.731801762 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te	2020-08-06 21:41:02.611813282 +0530
-@@ -351,108 +351,6 @@
+From 550e58085ae0d9792bdea52552cccc40a5a59fb3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:38:58 +0530
+Subject: [PATCH 10/20] roles staff
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/roles/staff.te | 94 -----------------------------------
+ 1 file changed, 94 deletions(-)
+
+diff --git a/policy/modules/roles/staff.te b/policy/modules/roles/staff.te
+index e819516..e9b5405 100644
+--- a/policy/modules/roles/staff.te
++++ b/policy/modules/roles/staff.te
+@@ -357,100 +357,6 @@ optional_policy(`
  	xserver_run(staff_t, staff_r)
  ')
  
@@ -28,10 +39,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		games_role(staff_r, staff_t)
--	')
--
--	optional_policy(`
--		gift_role(staff_r, staff_t)
 -	')
 -
 -	optional_policy(`
@@ -75,10 +82,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -	')
 -
 -	optional_policy(`
--		su_role_template(staff, staff_r, staff_t)
--	')
--
--	optional_policy(`
 -		systemd_systemctl_entrypoint(staff_t)
 -	')
 -
@@ -110,3 +113,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  tunable_policy(`selinuxuser_execmod',`
  	userdom_execmod_user_home_files(staff_t)
  ')
+-- 
+2.35.1
+

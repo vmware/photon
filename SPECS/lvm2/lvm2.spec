@@ -1,6 +1,6 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.03.11
+Version:        2.03.15
 Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
@@ -8,8 +8,7 @@ URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=9484fd277914a85f330b4067aa222ee13f061189
-Patch0:         lvm2-set-default-preferred_names.patch
+%define sha512  LVM2=ad3cc33b9d54eebcbb79ada71baa7fdf2e76eca01d593a6aaa3649ef9345dc2fa939f09598486520c0548afde5a7691af13a35d8c1d431e5bbe51c41bbe6c2e9
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -150,8 +149,7 @@ This package contains files needed to develop applications that use
 the device-mapper event library.
 
 %prep
-%setup -q -n LVM2.%{version}
-%patch0 -p1 -b .preferred_names
+%autosetup -n LVM2.%{version}
 
 %build
 %define _default_pid_dir /run
@@ -184,11 +182,11 @@ the device-mapper event library.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
-make install_system_dirs DESTDIR=%{buildroot}
-make install_systemd_units DESTDIR=%{buildroot}
-make install_systemd_generators DESTDIR=%{buildroot}
-make install_tmpfiles_configuration DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_system_dirs DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_units DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_generators DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_tmpfiles_configuration DESTDIR=%{buildroot} %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
@@ -274,7 +272,7 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %dir %{_sysconfdir}/lvm/cache
 %dir %{_sysconfdir}/lvm/archive
 /lib/udev/rules.d/11-dm-lvm.rules
-/lib/udev/rules.d/69-dm-lvm-metad.rules
+/lib/udev/rules.d/69-dm-lvm.rules
 %{_sbindir}/blkdeactivate
 %{_sbindir}/fsadm
 %{_sbindir}/lv*
@@ -287,7 +285,6 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %{_mandir}/man8/lv*
 %{_mandir}/man8/pv*
 %{_mandir}/man8/vg*
-%{_unitdir}/../system-generators/lvm2-activation-generator
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-*
 %{_libdir}/systemd/system-preset/50-lvm2.preset
@@ -300,6 +297,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.15-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.03.11-1
 -   Automatic Version Bump
 *   Tue Sep 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-2
@@ -342,5 +341,4 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 *   Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
 -   Packaging systemd service and configuration files
 *   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
--   Initial version
-
+-   Initial version.

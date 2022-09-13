@@ -1,30 +1,33 @@
-Summary:	Displays information about running processes
-Name:		psmisc
-Version:	23.3
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://psmisc.sourceforge.net/
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.xz
-%define sha1 psmisc=417f24fb15d7dd8967f2dd646b52b8685239a68d
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+Summary:        Displays information about running processes
+Name:           psmisc
+Version:        23.4
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://psmisc.sourceforge.net/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.xz
+%define sha512  psmisc=b05781fdb283a6f132bd385d64437f8080e6bc0e11cd2e3e02227678682bb67b3c89edec34a6d067d77312811d072dc60b47ebb32b168c4c69bbc36df643a471
+BuildRequires:  ncurses-devel
+Requires:       ncurses
+
 %description
-The Psmisc package contains programs for displaying information
-about running processes.
+The Psmisc package contains programs for displaying information about running processes.
+
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/fuser   %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/killall %{buildroot}/bin
+
 %find_lang %{name}
 
 %check
@@ -35,7 +38,10 @@ make %{?_smp_mflags} check
 /bin/*
 %{_bindir}/*
 %{_mandir}/*/*
+
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 23.4-1
+- Automatic Version Bump
 * Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 23.3-1
 - Automatic Version Bump
 * Tue Oct 2 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 23.2-2

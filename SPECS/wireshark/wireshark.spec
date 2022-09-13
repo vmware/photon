@@ -1,14 +1,15 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        3.6.0
-Release:        1%{?dist}
+Version:        3.6.2
+Release:        3%{?dist}
 License:        GPL+
-URL:            http://www.wireshark.org/
-Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha1 wireshark=98248f0e6c19408fbb796398f998cf90d7ed9ca6
+URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://wireshark.org/download/src/%{name}-%{version}.tar.xz
+%define sha512 %{name}=cd4a8077629632e9a924600f9af2ffd01917726fd64504d6f3b4a2a1cb5340c9c0bac23e4abab63743952a0a78efd2e09bb125b127d24e85eca6fa41928fd070
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -45,12 +46,14 @@ including a rich display filter language and the ability to view the
 reconstructed stream of a TCP session.
 
 %package devel
-Summary:Development headers and libraries for wireshark
-Requires: wireshark = %{version}-%{release} glibc-devel glib-devel
+Summary:    Development headers and libraries for %{name}
+Requires:   %{name} = %{version}-%{release}
+Requires:   glibc-devel
+Requires:   glib-devel
 
 %description devel
-The wireshark-devel package contains the header files, developer
-documentation, and libraries required for development of wireshark scripts
+The %{name}-devel package contains the header files, developer
+documentation, and libraries required for development of %{name} scripts
 and plugins.
 
 %global debug_package %{nil}
@@ -59,8 +62,6 @@ and plugins.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
 %cmake -G "Unix Makefiles" \
        -DCMAKE_INSTALL_PREFIX=%{_prefix} \
        -DDISABLE_WERROR=ON \
@@ -73,30 +74,39 @@ cd build
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-       ..
-       %{nil}
+        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+        -DCMAKE_BUILD_TYPE=Debug
 
-cmake --build ../build %{?_smp_mflags} --verbose
+%cmake_build
 
 %install
-DESTDIR=%{buildroot} cmake --install build
+%cmake_install
 
-rm -rf %{buildroot}%{_mandir}
-rm -rf %{buildroot}%{_docdir}
+rm -rf %{buildroot}%{_mandir} \
+       %{buildroot}%{_docdir}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*
-%{_datadir}/wireshark/*
+%{_libdir}/*.so.*
+%{_libdir}/%{name}/*
+%{_datadir}/%{name}/*
 
 %files devel
 %doc doc/README.* ChangeLog
-%{_includedir}/wireshark
+%{_includedir}/%{name}
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.2-3
+- Bump version as a part of gnutls upgrade
+* Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.2-2
+- Spec fixes to make it work with latest cmake
+* Fri Feb 25 2022 Susant Sahani <ssahani@vmware.com> 3.6.2-1
+- Update version and fix CVE
+* Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 3.6.1-1
+- Update version and fix CVE-2021-4185
 * Tue Nov 30 2021 Susant Sahani <ssahani@vmware.com> 3.6.0-1
 - Update version and fix CVE-2021-39922, CVE-2021-39923, CVE-2021-39929
 - CVE-2021-39924, CVE-2021-39925, CVE-2021-39926, CVE-2021-39922,

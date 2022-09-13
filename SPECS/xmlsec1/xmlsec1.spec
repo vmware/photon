@@ -1,14 +1,14 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
-Version:        1.2.32
-Release:        3%{?dist}
+Version:        1.2.33
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.aleksey.com/xmlsec/
 Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
-%define sha1 xmlsec1=01a5e0a1336a7d67ab21968098d2ae0045dafdbe
+%define sha512 xmlsec1=6354554b5cdc0a1389f6991efeac919bea912330b36d3be3d3496d61331e9edd2771786d50d2571a439f62ccfc3bd32be0a50bb5a037c4993aac076ad94b46e8
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
 BuildRequires: libxslt-devel
@@ -29,7 +29,6 @@ Requires: %{name} = %{version}-%{release}
 Requires: libxml2-devel
 Requires: libltdl-devel
 Requires: libxslt-devel
-
 
 %description devel
 Libraries, includes, etc. you can use to develop applications with XML Digital
@@ -54,7 +53,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 
 %files
 %defattr(-, root, root)
-
 %{_prefix}/lib/libxmlsec1.so.1
 %{_prefix}/lib/libxmlsec1.so.%{version}
 %{_prefix}/lib/libxmlsec1.so
@@ -68,7 +66,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 
 %files devel
 %defattr(-, root, root)
-
 %{_prefix}/bin/xmlsec1-config
 %{_prefix}/include/xmlsec1/xmlsec/*.h
 %{_prefix}/include/xmlsec1/xmlsec/nss/*.h
@@ -86,6 +83,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.33-2
+-   Bump version as a part of libxslt upgrade
+*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.33-1
+-   Automatic Version Bump
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.32-3
 -   Release bump up to use libxml2 2.9.12-1.
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.32-2

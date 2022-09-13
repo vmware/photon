@@ -3,28 +3,31 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        11.3.5
-Release:        6%{?dist}
+Version:        12.1.0
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 %{name}=842aa660b301aeb8d1fd18346fb14c0de74b9c95
+Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
+%define sha512 %{name}=9280decf20381de56174bfdbab9a86c525f992ce35eda499938c9b6b00e59a012a4410fd2972bbc52f8951bb071042cc7bf77fc1d687acc7980cc54a26461aed
+
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
-%define sha1 %{gosc_scripts}-%{gosc_ver}=eb90b74e9282bc5b80f1f8ae358cb7e9bfdda4cb
+%define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
+
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+Patch1:     gosc-root-password-update.patch
 
 %if "%{_arch}" == "aarch64"
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch1:     ovt-unknown-ioctl.patch
+Patch2:     ovt-unknown-ioctl.patch
 %endif
 
 BuildRequires:  glib-devel
@@ -61,18 +64,18 @@ Requires: systemd >= 239-23
 VMware virtualization user mode tools
 
 %package        devel
-Summary:        Header and development files for open-vm-tools
+Summary:        Header and development files for %{name}
 Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 It contains the libraries and header files to create applications.
 
 %package        sdmp
-Summary:        Service Discovery plugin for open-vm-tools
+Summary:        Service Discovery plugin for %{name}
 Requires:       %{name} = %{version}-%{release}
 
 %description    sdmp
-The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
+The "%{name}-sdmp" package contains a plugin for Service Discovery.
 
 %package        gosc
 Summary:        GOSC scripts
@@ -96,7 +99,7 @@ autoreconf -i
            --with-tirpc \
            --enable-servicediscovery
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 #collecting hacks to manually drop the vmhgfs module
@@ -107,13 +110,10 @@ install -p -m 644 %{SOURCE2} %{buildroot}/%{_unitdir}
 install -p -m 644 %{SOURCE3} %{buildroot}/%{_unitdir}
 
 cd %{name}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 find %{buildroot}%{_libdir} -name '*.la' -delete
-
-%check
-make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
@@ -145,6 +145,7 @@ fi
 %{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
 %{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
 %{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
+%{_libdir}/%{name}/plugins/vmsvc/libcomponentMgr.so
 %{_libdir}/%{name}/plugins/common/libhgfsServer.so
 %{_libdir}/%{name}/plugins/common/libvix.so
 %{_libdir}/%{name}/plugins/vmsvc/libappInfo.so
@@ -176,6 +177,16 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Sat Aug 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.1.0-1
+- Upgrade to v12.1.0
+* Wed Aug 17 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.5-2
+- Fix CVE-2022-31676
+* Thu May 26 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.5-1
+- Upgrade to version 12.0.5.
+* Mon May 9 2022 Shivani Agarwal <shivania2@vmware.com> 12.0.0-1
+- Upgrade to version 12.0.0
+* Mon Apr 25 2022 Shivani Agarwal <shivania2@vmware.com> 11.3.5-7
+- Update root password change command in gosc-scripts
 * Fri Nov 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-6
 - Workaround for "Unknown ioctl 1976" issue on aarch64
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.3.5-5

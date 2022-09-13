@@ -1,12 +1,14 @@
---- Makefile	2017-04-24 22:28:36.771244501 +0000
-+++ Makefile.1	2017-04-24 22:34:22.567394590 +0000
+diff --git a/Makefile b/Makefile
+index 49bfd68..891e045 100644
+--- a/Makefile
++++ b/Makefile
 @@ -1,4 +1,4 @@
 -CFLAGS=-D_GNU_SOURCE -Wall -O2
 +CFLAGS=-D_GNU_SOURCE -Wall -O2 -g
  PRG=proctools
  DIR=${DESTDIR}/sbin
  
-@@ -12,7 +12,7 @@
+@@ -12,7 +12,7 @@ clean:
  
  install:
  	install -dm 0755 $(DIR)

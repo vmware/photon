@@ -1,23 +1,24 @@
-Summary:	Connection pooler for PostgreSQL.
-Name:		pgbouncer
-Version:	1.15.0
-Release:	2%{?dist}
-License:	BSD
-URL:		https://wiki.postgresql.org/wiki/PgBouncer
-Source0:        https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
-%define sha1 pgbouncer=ea7e9dbcab178f439a0fa402a78a7f1e4f43e6d4
-Source1:        pgbouncer.service
-Group:		Application/Databases.
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:  libevent-devel
-BuildRequires:  openssl-devel
-BuildRequires:  systemd
-BuildRequires:  pkg-config
-Requires:		libevent
-Requires:		openssl
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Summary:          Connection pooler for PostgreSQL.
+Name:             pgbouncer
+Version:          1.17.0
+Release:          1%{?dist}
+License:          BSD
+URL:              https://wiki.postgresql.org/wiki/PgBouncer
+Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
+%define sha512    pgbouncer=5913ce542f0f694f114db8a2f339e536fb2b5887efb160b7ce3c708ae3d638bee95943104eafb9fbc4fc225649bd5625da2ccf1b56489afe33ebf8aacac48863
+Source1:          pgbouncer.service
+Group:            Application/Databases.
+Vendor:           VMware, Inc.
+Distribution:     Photon
+BuildRequires:    libevent-devel
+BuildRequires:    openssl-devel
+BuildRequires:    systemd
+BuildRequires:    pkg-config
+Requires:         libevent
+Requires:         openssl
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
@@ -80,6 +81,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
+-   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2
 -   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1

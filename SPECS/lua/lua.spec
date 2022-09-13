@@ -8,8 +8,8 @@
 
 Summary:        Programming language
 Name:           lua
-Version:        5.4.3
-Release:        2%{?dist}
+Version:        5.4.4
+Release:        3%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
@@ -17,20 +17,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=1dda2ef23a9828492b4595c0197766de6e784bc7
+%define sha512 %{name}-%{version}=af0c35d5ba00fecbb2dd617bd7b825edf7418a16a73076e04f2a0df58cdbf098dc3ff4402e974afd789eb5d86d2e12ec6df9c84b99b23656ea694a85f83bcd21
 
 %if 0%{?bootstrap}
 Source1:    http://www.lua.org/ftp/lua-%{bootstrap_version}.tar.gz
-%define sha1 %{name}-%{bootstrap_version}=f27d20d6c81292149bc4308525a9d6733c224fa5
+%define sha512 %{name}-%{bootstrap_version}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 %endif
 
-Patch0:	    lua-%{version}-shared-library.patch
+Patch0:     lua-%{version}-shared-library.patch
+Patch2:     CVE-2022-28805.patch
+Patch3:     CVE-2022-33099.patch
 
 %if 0%{?bootstrap}
 Patch1:     lua-%{bootstrap_version}-shared-library.patch
 %endif
-
-Patch2:     CVE-2021-43519.patch
 
 BuildRequires:  readline-devel
 
@@ -48,7 +48,7 @@ configuration, scripting, and rapid prototyping.
 
 %package devel
 Summary:    Development files for %{name}
-Requires:	%{name} = %{version}
+Requires:   %{name} = %{version}
 
 %description devel
 This package contains development files for %{name}.
@@ -75,6 +75,7 @@ popd
 
 prep_lua_src %{PATCH0}
 prep_lua_src %{PATCH2}
+prep_lua_src %{PATCH3}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -98,26 +99,26 @@ lua_make_install() {
       install
 }
 
-lua_make_install %{buildroot}/usr %{major_version} %{version}
+lua_make_install %{buildroot}%{_prefix} %{major_version} %{version}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 
 cat > %{buildroot}%{_libdir}/pkgconfig/lua.pc <<- "EOF"
-	V=%{major_version}
-	R=%{version}
-	prefix=/usr
-	INSTALL_BIN=${prefix}/bin
-	INSTALL_INC=${prefix}/include
-	INSTALL_LIB=${prefix}/lib
-	INSTALL_MAN=${prefix}/man/man1
-	exec_prefix=${prefix}
-	libdir=${exec_prefix}/lib
-	includedir=${prefix}/include
-	Name: Lua
-	Description: An Extensible Extension Language
-	Version: ${R}
-	Requires:
-	Libs: -L${libdir} -llua -lm
-	Cflags: -I${includedir}
+    V=%{major_version}
+    R=%{version}
+    prefix=%{_prefix}
+    INSTALL_BIN=${prefix}/bin
+    INSTALL_INC=${prefix}/include
+    INSTALL_LIB=${prefix}/lib
+    INSTALL_MAN=${prefix}/man/man1
+    exec_prefix=${prefix}
+    libdir=${exec_prefix}/lib
+    includedir=${prefix}/include
+    Name: Lua
+    Description: An Extensible Extension Language
+    Version: ${R}
+    Requires:
+    Libs: -L${libdir} -llua -lm
+    Cflags: -I${includedir}
 EOF
 
 rmdir %{buildroot}%{_libdir}/lua/%{major_version} %{buildroot}%{_libdir}/lua
@@ -125,18 +126,21 @@ rmdir %{buildroot}%{_libdir}/lua/%{major_version} %{buildroot}%{_libdir}/lua
 %if 0%{?bootstrap}
 pushd lua-%{bootstrap_version}
 mkdir -p %{buildroot}/installdir
-lua_make_install %{buildroot}/installdir/usr %{bootstrap_major_version} %{bootstrap_version}
-cp -a %{buildroot}/installdir/%{_libdir}/liblua.so.%{bootstrap_version} %{buildroot}%{_libdir}
-cp -a %{buildroot}/installdir/%{_libdir}/liblua.so.%{bootstrap_major_version} %{buildroot}%{_libdir}
+lua_make_install %{buildroot}/installdir%{_prefix} %{bootstrap_major_version} %{bootstrap_version}
+cp -a %{buildroot}/installdir%{_libdir}/liblua.so.%{bootstrap_version} \
+      %{buildroot}/installdir%{_libdir}/liblua.so.%{bootstrap_major_version} \
+      %{buildroot}%{_libdir}
 rm -rf %{buildroot}/installdir
 popd
 %endif
 
 %check
+%if 0%{?with_check}
 make test %{?_smp_mflags}
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -150,6 +154,12 @@ make test %{?_smp_mflags}
 %{_libdir}/liblua.so
 
 %changelog
+* Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-3
+- Fix CVE-2022-33099
+* Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-2
+- Fix CVE-2022-28805
+* Thu Mar 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-1
+- Upgrade to v5.4.4
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-2
 - Fix CVE-2021-43519
 * Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-1

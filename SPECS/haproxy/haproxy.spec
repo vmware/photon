@@ -1,16 +1,15 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.3.10
-Release:        3%{?dist}
+Version:        2.5.5
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha1    haproxy=dc1be47af0a661815efeb7c0fbaf04b0eabcfd83
-Patch0:         haproxy-CVE-2021-40346.patch
-Patch1:         0001-openssl-3.0.0-support.patch
+%define sha1    haproxy=a5fb147507f8c1f08b2aded0dc9c16baf1b5dc69
+
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -37,15 +36,15 @@ It contains the documentation and manpages for haproxy package.
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
         USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
-make %{?_smp_mflags} -C contrib/systemd
-sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
-sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
+make %{?_smp_mflags} -C admin/systemd
+sed -i s/"local\/"/""/g admin/systemd/haproxy.service
+sed -i "s/\/run/\/var\/run/g" admin/systemd/haproxy.service
 sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux-glibc install %{?_smp_mflags}
-install -vDm755 contrib/systemd/haproxy.service \
+install -vDm755 admin/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service
 install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/haproxy/haproxy.cfg
 
@@ -61,6 +60,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.5.5-1
+-   Upgrade to 2.5.5, Address CVE-2022-0711
 *   Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.10-3
 -   openssl 3.0.0
 *   Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.10-2

@@ -3,8 +3,8 @@
 %define _salttesting_ver 2016.5.11
 
 Name:           salt3
-Version:        3004
-Release:        2%{?dist}
+Version:        3005
+Release:        1%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -13,9 +13,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha1    salt=28cbec5244ec815e372bc4ce727cb0d768de861b
+%define sha512  salt=02620644513f64c701d3b3d3ecee75c024890e78a8feca2fe40e3d3c91a473ff8af0b9ee85abe82e73ac71ed3a2ec6de252c1ac120705d52729a1535773ba6b9
 Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-%{_salttesting_ver}.tar.gz
-%define         sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
+%define sha512  SaltTesting=5fc362ba6cf41efd0d3197c832f05b14267c9d92bbb0c34d872bd3ae1383996e0918dc6b01052076ecea70bbf4687fde3d5de2915aab7d07f961f2b6badac6ff
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service
@@ -177,14 +177,12 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-key.1.*
 %doc %{_mandir}/man1/salt-master.1.*
 %doc %{_mandir}/man1/salt-run.1.*
-%doc %{_mandir}/man1/salt-unity.1.*
 %doc %{_mandir}/man1/salt.1.*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%{_bindir}/salt-unity
 %config(noreplace) %{_unitdir}/salt-master.service
 %config(noreplace) %{_sysconfdir}/salt/master
 
@@ -303,6 +301,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Aug 23 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005-1
+- Update to version 3005
+* Tue Mar 29 2022 Kirill Ponomarev <kponomarev@vmware.com> 3004.1-1
+- Update to version 3004.1
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 3004-2
 - Bump version as a part of requests & chardet upgrade
 * Mon Oct 18 2021 Bryce Larson <brycel@vmware.com> 3004-1

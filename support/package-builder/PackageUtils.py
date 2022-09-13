@@ -25,7 +25,16 @@ class PackageUtils(object):
         self.nodepsRPMPackageOptions = "--nodeps"
 
         self.rpmbuildBinary = "rpmbuild"
-        self.rpmbuildBuildallOption = "-ba --clean"
+        self.rpmbuildBuildallOption = "--clean"
+
+        if constants.buildSrcRpm:
+            self.rpmbuildBuildallOption = f"-ba {self.rpmbuildBuildallOption}"
+        else:
+            self.rpmbuildBuildallOption = f"-bb {self.rpmbuildBuildallOption}"
+
+        if not constants.buildDbgInfoRpm:
+            self.rpmbuildBuildallOption = "-D \"debug_package %{nil}\" " + f"{self.rpmbuildBuildallOption}"
+
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildCheckOption = "-bi --clean"
         self.queryRpmPackageOptions = "-qa"
@@ -130,15 +139,60 @@ class PackageUtils(object):
         try:
             listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, specPath + specName,
                                                          logFilePath, package, version, macros)
-            logmsg = package + " build done - RPMs : [ "
+
+            logmsg = ""
+            RpmsToCheck = []
+            self.logger.debug("Checking for debug symbols in built rpms of: " + package)
             for f in listRPMFiles:
-                logmsg += (os.path.basename(f) + " ")
-            logmsg += "]\n"
+                f = os.path.basename(f)
+                logmsg += f + " "
+                if f.find("-debuginfo-") < 0:
+                    RpmsToCheck.append(f)
+
+            if self.CheckForDbgSymbols(RpmsToCheck):
+                raise Exception("Rpm sanity check error")
+
+            logmsg = package + " build done - RPMs : [ " + logmsg + "]\n"
             self.logger.info(logmsg)
         except Exception as e:
             self.logger.error("Failed while building rpm:" + package)
             raise e
         self.logger.debug("RPM build is successful")
+
+    """
+    Check for unintended debug symbols in rpm. If present, stop the build.
+    Upon rerun rpm won't be rebuilt but devs should carefully examine the faulty rpms.
+    """
+    def CheckForDbgSymbols(self, RpmsToCheck):
+        logs = ""
+        result_logs = ""
+        faulty_rpms = []
+        dbg_symbols_found = False
+        look_for = "/usr/lib/debug/.build-id"
+
+        def HandleLogs(log):
+            nonlocal logs
+            logs += log
+
+        for fn in RpmsToCheck:
+            logs = ""
+            rpm_full_path = constants.rpmPath + "/" + fn.split(".")[-2] + "/" + fn
+            cmd = self.rpmBinary + " -qlp " + rpm_full_path
+            CommandUtils.runCommandInShell(cmd, logfn=HandleLogs)
+            if look_for in logs:
+                result_logs += logs
+                faulty_rpms.append(rpm_full_path)
+                if not dbg_symbols_found:
+                    dbg_symbols_found = True
+
+        if dbg_symbols_found:
+            self.logger.error("Debug symbols found in following rpms:")
+            self.logger.error("\n".join(faulty_rpms))
+            self.logger.error(result_logs)
+            self.logger.error("Use 'rpm -qlp <rpm>' to know more on the issue\n")
+            return True
+
+        return False
 
     def findRPMFile(self, package,version="*",arch=None, throw=False):
         if not arch:
@@ -220,27 +274,27 @@ class PackageUtils(object):
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
         cmdUtils = CommandUtils()
-        # Fetch/verify sources if sha1 not None.
-        sha1 = SPECS.getData().getSHA1(package, version, source)
-        if sha1 is not None:
-            PullSources.get(package, source, sha1, constants.sourcePath,
+        # Fetch/verify sources if checksum not None.
+        checksum = SPECS.getData().getChecksum(package, version, source)
+        if checksum is not None:
+            PullSources.get(package, source, checksum, constants.sourcePath,
                             constants.getPullSourcesURLs(package), self.logger)
 
         sourcePath = cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
             sourcePath = cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
             if not sourcePath:
-                if sha1 is None:
-                    self.logger.error("No sha1 found or missing source for " + source)
-                    raise Exception("No sha1 found or missing source for " + source)
+                if checksum is None:
+                    self.logger.error("No checksum found or missing source for " + source)
+                    raise Exception("No checksum found or missing source for " + source)
                 else:
                     self.logger.error("Missing source: " + source +
                                       ". Cannot find sources for package: " + package)
                     raise Exception("Missing source")
         else:
-            if sha1 is None:
-                self.logger.error("No sha1 found for "+source)
-                raise Exception("No sha1 found")
+            if checksum is None:
+                self.logger.error("No checksum found for "+source)
+                raise Exception("No checksum found")
         if len(sourcePath) > 1:
             self.logger.error("Multiple sources found for source:" + source + "\n" +
                               ",".join(sourcePath) +"\nUnable to determine one.")
@@ -248,7 +302,7 @@ class PackageUtils(object):
         return sourcePath
 
     def _copySources(self, sandbox, listSourceFiles, package, version, destDir):
-        # Fetch and verify sha1 if missing
+        # Fetch and verify checksum if missing
         for source in listSourceFiles:
             sourcePath = self._verifyShaAndGetSourcePath(source, package, version)
             self.logger.debug("Copying... Source path :" + source +

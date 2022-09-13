@@ -1,6 +1,6 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
-Version:	2.3.0
+Version:	2.2.0
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
-%define sha1    kbd=1ebd128857e6dd097845a37324ffcb9ede8f457c
+%define sha512  kbd=5f407c20739487e423e8390e429d30838a1a69a0a50db083803ce56da919e25ce480b63fd1bcfac9eb362095f17e575783b09eaa55e26b442bfa3ed838e04f13
 Patch0:		kbd-2.0.4-backspace-1.patch
 BuildRequires:	check >= 0.9.4
 Conflicts:      toybox < 0.8.2-2
@@ -17,8 +17,7 @@ Conflicts:      toybox < 0.8.2-2
 The Kbd package contains key-table files, console fonts, and keyboard utilities.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //'  docs/man/man8/Makefile.in
 
@@ -30,7 +29,7 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ*
@@ -45,10 +44,6 @@ make %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.a
-%{_libdir}/*.la
-%{_libdir}/*.so.*
-%{_libdir}/*.so
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_datarootdir}/consolefonts/*
 %{_datarootdir}/consoletrans/*
@@ -57,6 +52,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
+-   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1

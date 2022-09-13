@@ -1,3 +1,9 @@
+"""
+Taken from: https://github.com/bkircher/python-rpm-spec
+
+https://github.com/bkircher/python-rpm-spec/blob/main/LICENSE
+"""
+
 """Python module for parsing RPM spec files.
 
 RPMs are build from a package's sources along with a spec file. The spec file controls how the RPM

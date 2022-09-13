@@ -1,15 +1,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.15.0
-Release:        2%{?dist}
+Version:        2.17.2
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1    openvswitch=f0f4d5201805c66bbfacd6be746e16f29a46d936
+%define sha512  openvswitch=e01e41ef2fea21afcc891b8ab0a773fe7c9adf873853e10926b8bde2fd970e12b354010687439238e8d80a87884f497f7396a4a1f2b179104e49e87c66cfc79e
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -46,23 +46,27 @@ Python 3 version.
 %package        devel
 Summary:        Header and development files for openvswitch
 Requires:       %{name} = %{version}
+
 %description    devel
 openvswitch-devel package contains header files and libs.
 
 %package        devel-static
 Summary:        Static libs for openvswitch
 Requires:       %{name} = %{version}
+
 %description    devel-static
 openvswitch-devel-static package contains static libs.
 
 %package        doc
 Summary:        Documentation for openvswitch
 Requires:       %{name} = %{version}-%{release}
+
 %description    doc
 It contains the documentation and manpages for openvswitch.
 
 %prep
 %autosetup -p1
+
 %build
 export PYTHON2=no
 
@@ -98,7 +102,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 
 %postun
 %systemd_postun %{name}.service
-
 
 %files
 %defattr(-,root,root)
@@ -139,9 +142,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man8/ovs-*.8.gz
 %{_mandir}/man8/vtep-ctl.8.gz
 %{_mandir}/man5/ovsdb-server.5.gz
-%{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.17.2-1
+-   Automatic Version Bump
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.17.1-1
+-   Automatic Version Bump
 *   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.15.0-2
 -   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
@@ -168,7 +174,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 *   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
 -   Update to OVS 2.8.2
 *   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
--   Fix CVE-2017-14970
+-   Fix CVE-2.17.14970
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-8
 -   Fix CVE-2017-9263
 *   Tue Sep 19 2017 Anish Swaminathan <anishs@vmware.com> 2.7.0-7

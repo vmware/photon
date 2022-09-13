@@ -36,6 +36,7 @@ spec:
                      python3-pyOpenSSL python3-pyparsing python3-requests python3-six \
                      util-linux rpm glibc-iconv findutils python3-pip git && \
                      pip3 install flask requests pyOpenSSL docker==2.3.0 && \
+                     pip3 install logging-formatter-anticrlf && \
                      chmod 755 /sys "]
       volumes:
       - name: photon

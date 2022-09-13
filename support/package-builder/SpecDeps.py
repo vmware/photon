@@ -147,19 +147,23 @@ class SpecDependencyGenerator(object):
 
         return sortedList
 
-    # Returns list of RPM names of all packages excluding -debuginfo and src.rpm
-    def listRPMfilenames(self):
+    # Returns list of RPM names of all packages excluding src.rpm
+    def listRPMfilenames(self, includeDebuginfoRPMs=False):
         output = []
         arch=constants.currentArch
         for base_package in SPECS.getData().getListPackages():
             for version in SPECS.getData().getVersions(base_package):
                 listRPMPackages = SPECS.getData().getRPMPackages(base_package, version)
                 for package in listRPMPackages:
-                    version = SPECS.getData(arch).getHighestVersion(package)
                     release = SPECS.getData(arch).getRelease(package, version)
                     buildarch=SPECS.getData(arch).getBuildArch(package, version)
                     filename = os.path.join(buildarch, package + "-" + version + "-" + release + "." + buildarch + ".rpm")
                     output.append(filename)
+                # TODO: support '%global debug_package %{nil}' parsing, to exclude such packages
+                if includeDebuginfoRPMs and SPECS.getData(arch).getBuildArch(base_package, version) == arch:
+                    filename = os.path.join(buildarch, base_package + "-debuginfo-" + version + "-" + release + "." + buildarch + ".rpm")
+                    output.append(filename)
+
         return output
 
     def process(self, inputType, inputValue, displayOption, outputFile=None):

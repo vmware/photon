@@ -1,14 +1,15 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        7.10.0
-Release:        1%{?dist}
+Version:        8.2.0
+Release:        3%{?dist}
 License:        LGPL
-URL:            http://libvirt.org/
-Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=fcaf7b763bf6e930d8b0a131b32752ebc2b8af9f
+URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
+%define sha512 %{name}=fbdc2953e86117643aafb3198a3d9327188d94abfd155eae4439ee0e722737a57ee44dbb2929746c0a28e10e275c35f4a8190e99668e4cba4025555358591544
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl
@@ -63,25 +64,26 @@ providers/hypervisors. For example, the command 'virsh list --all' can be used
 to list the existing virtual machines for any supported hypervisor
 (KVM, Xen, VMWare ESX, etc.) No need to learn the hypervisor specific tools.
 
-%package devel
+%package        devel
 Summary:        libvirt devel
 Group:          Development/Tools
 Requires:       %{name} = %{version}-%{release}
 Requires:       libtirpc-devel
-%description devel
+
+%description    devel
 This contains development tools and libraries for libvirt.
 
-%package docs
+%package        docs
 Summary:        libvirt docs
 Group:          Development/Tools
-%description docs
+
+%description    docs
 The contains libvirt package doc files.
 
 %prep
 %autosetup -p1
 
-sed -i -e 's/rst2html5.py/rst2html53.py/g' meson.build
-sed -i  '/rst2man/d' meson.build
+sed -i '/rst2man/d' meson.build
 
 %build
 CONFIGURE_OPTS=(
@@ -151,8 +153,10 @@ CONFIGURE_OPTS=(
 
 find %{buildroot} -name '*.la' -delete
 
+%if 0%{?with_check}
 %check
 %meson_test
+%endif
 
 %files
 %defattr(-,root,root)
@@ -178,22 +182,32 @@ find %{buildroot} -name '*.la' -delete
 %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/libvirt/qemu/networks/default.xml
 %{_sysconfdir}/logrotate.d/*
-%{_sysconfdir}/sysconfig/*
 
 %config(noreplace)%{_sysconfdir}/libvirt/*.conf
 %config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/libvirt/*
 %{_libdir}/libvirt*.so
 %{_libdir}/pkgconfig/libvirt*
 
 %files docs
+%defattr(-,root,root)
 %{_datadir}/doc/libvirt/*
 %{_datadir}/locale/*
 %{_datadir}/libvirt/test-screenshot.png
+%{_datadir}/libvirt/schemas/*.rng
 
 %changelog
+* Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.0-3
+- Bump version as a part of gnutls upgrade
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.2.0-2
+- Bump version as a part of libxslt upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 8.2.0-1
+- Automatic Version Bump
+* Thu Mar 17 2022 Nitesh Kumar <kunitesh@vmware.com> 7.10.0-2
+- Version Bump up to consume original python files from python-docutils
 * Thu Dec 02 2021 Susant Sahani <ssahani@vmware.com> 7.10.0-1
 - Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 7.5.0-2

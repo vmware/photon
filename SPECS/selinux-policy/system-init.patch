@@ -1,7 +1,19 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.fc
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.fc	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.fc	2020-04-22 08:46:51.931248145 +0000
-@@ -81,6 +81,15 @@
+From 35505f809b6e94ce31c3186b6742cce429e57b5e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:42:08 +0530
+Subject: [PATCH 14/20] system init
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/init.fc | 10 +++++++++
+ policy/modules/system/init.te | 41 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+)
+
+diff --git a/policy/modules/system/init.fc b/policy/modules/system/init.fc
+index 333c2d5..17af6cc 100644
+--- a/policy/modules/system/init.fc
++++ b/policy/modules/system/init.fc
+@@ -81,6 +81,15 @@ ifdef(`distro_gentoo', `
  /var/run/systemd/machine-id	--	gen_context(system_u:object_r:machineid_t,s0)
  /var/run/systemd/journal/dev-log    -s  gen_context(system_u:object_r:devlog_t,s0)
  
@@ -17,15 +29,16 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  ifdef(`distro_debian',`
  /var/run/hotkey-setup	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
  /var/run/kdm/.*		--	gen_context(system_u:object_r:initrc_var_run_t,s0)
-@@ -99,3 +108,4 @@
+@@ -99,3 +108,4 @@ ifdef(`distro_suse', `
  /var/run/sysconfig(/.*)?	gen_context(system_u:object_r:initrc_var_run_t,s0)
  ')
  /var/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
 +/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.te	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.te	2020-04-23 20:54:35.181095004 +0000
-@@ -408,6 +408,21 @@
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index a838cdd..9790e61 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -428,6 +428,21 @@ ifdef(`distro_gentoo',`
  	init_exec_rc(initrc_t)
  ')
  
@@ -47,7 +60,7 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  ifdef(`distro_redhat',`
  	fs_manage_tmpfs_files(init_t)
  	fs_manage_tmpfs_symlinks(init_t)
-@@ -703,6 +718,32 @@
+@@ -735,6 +750,32 @@ auth_rw_lastlog(init_t)
  auth_domtrans_chk_passwd(init_t)
  auth_manage_passwd(init_t)
  
@@ -80,3 +93,6 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  ifdef(`distro_redhat',`
      # it comes from setupr scripts used in systemd unit files
      # has been covered by initrc_t
+-- 
+2.35.1
+

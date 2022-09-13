@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.12
-Release:        3%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -10,7 +10,8 @@ Group:          Applications/System
 Distribution:   Photon
 
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    %{name}=3fff4e14849abde333e0fbfae6b7d9d41f698fda
+%define sha512  %{name}=1e4b82cbbfbf7ed10856084b35f35cc9d1da2c78e9adb1e32407744e215b1797fd84b2a0f90493d16175267889aac57f45a424864eda5b34107367066a987460
+
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
@@ -72,20 +73,20 @@ This tool takes a set of packages, and commits them to an OSTree
 repository.  At the moment, it is intended for use on build servers.
 
 %package devel
-Summary: Development headers for rpm-ostree
+Summary: Development headers for %{name}
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description devel
-Includes the header files for the rpm-ostree library.
+Includes the header files for the %{name} library.
 
 %package host
-Summary: File for rpm-ostree-host creation
+Summary: File for %{name}-host creation
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description host
-Includes the scripts for rpm-ostree host creation
+Includes the scripts for %{name} host creation
 
 %package repo
 Summary: File for Repo Creation to act as server
@@ -93,7 +94,7 @@ Group: Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description repo
-Includes the scripts for rpm-ostree repo creation to act as server
+Includes the scripts for %{name} repo creation to act as server
 
 %prep
 %autosetup -p1
@@ -101,16 +102,16 @@ Includes the scripts for rpm-ostree repo creation to act as server
 %build
 env NOCONFIGURE=1 ./autogen.sh
 %configure --disable-silent-rules --enable-gtk-doc
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
-install -d %{buildroot}%{_bindir}/rpm-ostree-host
-install -d %{buildroot}%{_bindir}/rpm-ostree-server
-install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/rpm-ostree-host
-install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/rpm-ostree-host
-install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
+install -d %{buildroot}%{_bindir}/%{name}-host
+install -d %{buildroot}%{_bindir}/%{name}-server
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/%{name}-host
+install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/%{name}-host
+install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 
 %files
 %{_bindir}/*
@@ -122,15 +123,14 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf
-%{_unitdir}/rpm-ostree-countme.timer
+%{_unitdir}/%{name}-countme.timer
 %{_libdir}/systemd/system/rpm-ostreed-automatic.timer
-%{_datadir}/bash-completion/completions/rpm-ostree
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/dbus-1/interfaces/org.projectatomic.rpmostree1.xml
 %{_datadir}/polkit-1/actions/org.projectatomic.rpmostree1.policy
-%{_mandir}/man1/rpm-ostree.1.gz
+%{_mandir}/man1/%{name}.1.gz
 %{_mandir}/man5/rpm-ostreed*
-%{_mandir}/man8/rpm-ostreed*
-%{_mandir}/man8/rpm-ostree*
+%{_mandir}/man8/%{name}*
 
 %files devel
 %{_libdir}/lib*.so
@@ -147,6 +147,12 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-6
+- Bump version as a part of sqlite upgrade
+* Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-5
+- Bump version as a part of rpm upgrade
+* Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2021.12-4
+- Bump version as a part of libxslt upgrade
 * Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.12-3
 - openssl 3.0.0 compatibility
 * Wed Oct 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-2

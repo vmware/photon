@@ -2,18 +2,17 @@
 
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
-Version:        1.9.14
+Version:        1.9.18
 Release:        1%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
-Distribution:   Discus
+Distribution:   Photon
 Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha1 haveged=66571ee9273dbb6152e829790753a0bbfdb95e71
+%define sha512  haveged=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
 Source1:        haveged.service
 Requires:       systemd
-
 BuildRequires:  systemd
 BuildRequires:  automake
 BuildRequires:  coreutils
@@ -36,37 +35,38 @@ HAVEGE collector. The haveged default is a 4kb data cache and a 16kb
 instruction cache. On machines with a cpuid instruction, haveged will
 attempt to select appropriate values from internal tables.
 
-%package devel
-Summary:   Headers and shared development libraries for HAVEGE algorithm
-Group:     Development/Libraries
-Requires:  haveged
+%package        devel
+Summary:        Headers and shared development libraries for HAVEGE algorithm
+Group:          Development/Libraries
+Requires:       haveged
 
-%description devel
+%description    devel
 Headers and shared object symbolic links for the HAVEGE algorithm
 
 %prep
-%setup -q
+%autosetup
 
 %build
 #autoreconf -fiv
 %configure
 #SMP build is not working
-#make %{?_smp_mflags}
+# make doesn't support _smp_mflags
 make
 
 %check
-make %{?_smp_mflags} check
-
+# make doesn't support _smp_mflags
+make check
 
 %install
 rm -rf %{buildroot}
+# make doesn't support _smp_mflags
 make install DESTDIR=%{buildroot} INSTALL="install -p"
 
 chmod 0644 COPYING README ChangeLog AUTHORS
 
 #Install systemd service file
 rm -rf %{buildroot}/etc/init.d
-pushd $RPM_BUILD_ROOT
+pushd %{buildroot}
 mkdir -p ./lib/systemd/system
 install -p -m644 %{SOURCE1} ./lib/systemd/system/haveged.service
 popd
@@ -104,8 +104,9 @@ rm -rf %{buildroot}
 %doc contrib/build/havege_sample.c
 %{_libdir}/*.so
 
-
 %changelog
+* Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.18-1
+- Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.14-1
 - Automatic Version Bump
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.13-1
@@ -129,7 +130,6 @@ rm -rf %{buildroot}
 - It introduces new macros - systemd_post, systemd_preun and systemd_postun;
 - which replace scriptlets from Fedora 18 and older
 - see https://fedoraproject.org/wiki/Packaging:ScriptletSnippets#Systemd
-
 * Tue Aug 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-1
 - Update to the version 1.5
 - Main new feature is a run time verification of the produced random numbers

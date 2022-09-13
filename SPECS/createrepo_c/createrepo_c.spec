@@ -1,15 +1,15 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        4%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=dab1acedd6b3f92bccf5448dee432b5ee1d1432f
+Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=78105c36bc75b5881ebafbec38a46063d46b9a8d7e26cd797bfd90af85534f1ef187d366b597b65798257e8236367507cec6487726b287d8d570a054fb31ba34
 
 BuildRequires:  cmake
 BuildRequires:  curl-devel
@@ -27,7 +27,7 @@ BuildRequires:  zchunk-devel
 
 Requires:       drpm
 Requires:       zchunk-libs
-%if %{with_check}
+%if 0%{?with_check}
 Requires:       libxml2
 %endif
 
@@ -56,34 +56,42 @@ sed -i 's|g_thread_init|//g_thread_init|'  src/modifyrepo_c.c
 sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %build
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DWITH_LIBMODULEMD=OFF ..
-make %{?_smp_mflags}
+%cmake \
+    -DWITH_LIBMODULEMD=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_BUILD_TYPE=Debug
+
+%cmake_build
 
 %install
-cd build
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
-ln -sf %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
-ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
+%cmake_install
+ln -sfv %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
+ln -sfv %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
+ln -sfv %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
 %{_bindir}/*
-%{_lib64dir}/*.so.*
+%{_libdir}/*.so.*
 %{_mandir}/*
 %exclude %{_libdir}/python*
 
 %files devel
 %defattr(-, root, root)
 %{_includedir}/*
-%{_lib64dir}/*.so
-%{_lib64dir}/pkgconfig/%{name}.pc
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-7
+- Bump version as a part of sqlite upgrade
+* Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-6
+- Bump version as a part of rpm upgrade
+* Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-5
+- Use cmake macros for build and install
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 0.16.0-4
 - Release bump up to use libxml2 2.9.12-1.
 * Tue Nov 16 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.16.0-3

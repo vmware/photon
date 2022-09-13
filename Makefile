@@ -1,5 +1,5 @@
 ifndef CONF
-	CONF := config.json
+	CONF := build-config.json
 endif
 
 %:

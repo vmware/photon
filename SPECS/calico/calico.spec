@@ -1,11 +1,11 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=55a9683f1a49d1ea3cba24bbd8a9cda266fb5cee
+Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  calico=94572f760a039a056f582e7a2078cf7e053f0c5b51a5665d2e2428f48b2745a3c66e341680d2cd76d53f2d4742aca7fbcac823b0fc7fbfee23be5d47b3ff53ce
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ BuildRequires:  make
 Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine.
 
 %prep
-%setup -n node-%{version}
+%autosetup -p1 -n node-%{version}
 
 %build
 mkdir -p dist
@@ -26,8 +26,8 @@ go build -v -i -o dist/calico-node cmd/calico-node/main.go
 %install
 install -vdm 755 %{buildroot}%{_bindir}
 install dist/calico-node %{buildroot}%{_bindir}/
-install -vdm 0755 %{buildroot}/usr/share/calico/docker/fs
-cp -r filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
+install -vdm 0755 %{buildroot}%{_datadir}/calico/docker/fs
+cp -r filesystem/etc %{buildroot}%{_datadir}/calico/docker/fs/
 cp -r filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
@@ -38,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 3.17.1-3
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 3.17.1-2
 -   Bump up version to compile with new go
 *   Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-1

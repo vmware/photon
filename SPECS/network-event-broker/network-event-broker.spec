@@ -6,12 +6,12 @@
 
 Summary:        Manages network configuration
 Name:           network-event-broker
-Version:        0.2
-Release:        1%{?dist}
+Version:        0.2.1
+Release:        2%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        network-event-broker-%{version}.tar.gz
-%define sha1 %{name}=13e6783b56c5f180c3e7f5d19503ea3def0422db
+URL:            https://github.com/vmware/%{name}
+Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=d51fa2df334a94a3761479a3e0a175026d8e9f17c8dfaa7b61a44cbfc42e9c486b853699a80947fe122afe49d158277be2bc281c35d30b9f485e6a6625356989
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,14 +19,16 @@ Distribution:   Photon
 BuildRequires:  go
 BuildRequires:  systemd-rpm-macros
 
-Requires:  systemd
+Requires:         systemd
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %global debug_package %{nil}
 
 %description
-A daemon configures network and executes scripts on network events such as
-systemd-networkd's DBus events, dhclient gains lease lease. It also watches
-when An address getting added/removed/modified, links added/removed.
+A daemon that configures the network and executes scripts on network events such as
+systemd-networkd's DBus events or dhclient gaining a lease. It also watches
+when an address gets added/removed/modified or links get added/removed.
 
 %prep -p exit
 %autosetup -p1 -n %{name}-%{version}
@@ -98,6 +100,10 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-2
+- Bump up version to compile with new go
+* Wed Dec 22 2021 Susant Sahani <ssahani@vmware.com> 0.2.1-1
+- Version bump and add groupadd and useradd to requires.
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 0.2-1
 - Version bump.
 * Wed Jun 30 2021 Susant Sahani <ssahani@vmware.com> 0.1-1

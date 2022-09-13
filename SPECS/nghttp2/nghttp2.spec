@@ -1,36 +1,35 @@
-Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
-Name:       nghttp2
-Version:    1.43.0
-Release:    1%{?dist}
-License:    MIT
-URL:        https://nghttp2.org
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:	https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 nghttp2=b9d846e53af53fc5814015c9d3d6c0d2c684c046
-
-BuildRequires: c-ares-devel
-BuildRequires: openssl-devel
-BuildRequires: systemd
-BuildRequires: zlib-devel
-BuildRequires: libxml2-devel
-BuildRequires: libevent-devel
-BuildRequires: jansson-devel
+Summary:        nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
+Name:           nghttp2
+Version:        1.47.0
+Release:        1%{?dist}
+License:        MIT
+URL:            https://nghttp2.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha512  nghttp2=ad6266a15789fec966db6be8ac0b9ee6cca257a3bb91fdd34a58acf0e472643a571941b5974d16c98f6ac5bfa6a03c4b70a6dff222fb0cd50909178b7e94ce48
+BuildRequires:  c-ares-devel
+BuildRequires:  openssl-devel
+BuildRequires:  systemd
+BuildRequires:  zlib-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  libevent-devel
+BuildRequires:  jansson-devel
 
 %description
 Implementation of the Hypertext Transfer Protocol version 2 in C.
 
-%package devel
-Summary: Header files for nghttp2
-#Requires: %{name}
-Requires: %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header files for nghttp2
+#Requires:      %{name}
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 These are the header files of nghttp2.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -41,7 +40,7 @@ These are the header files of nghttp2.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 rm %{buildroot}/%{_libdir}/*.la
 
 %files
@@ -58,6 +57,8 @@ rm %{buildroot}/%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.47.0-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.43.0-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.41.0-2
@@ -69,4 +70,4 @@ rm %{buildroot}/%{_libdir}/*.la
 *   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.33.0-1
 -   Upgrade to version 1.33.0
 *   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.23.1-1
--   First version
+-   First version.

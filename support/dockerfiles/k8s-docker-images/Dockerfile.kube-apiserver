@@ -1,8 +1,6 @@
 # Photon Base Build Container
 
-FROM photon:3.0
-
-MAINTAINER kulkarniv@vmware.com
+FROM photon:4.0
 
 ADD tmp/k8s/usr/bin/kube-apiserver /usr/bin/kube-apiserver
 

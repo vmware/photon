@@ -1,18 +1,16 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
-Version:       3.3.0
-Release:       3%{?dist}
+Version:       5.1.1
+Release:       1%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
-URL:           http://www.vmware.com
+URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/Sphinx-%{version}.tar.gz
-%define sha1   Sphinx=15924dc4fce887ce7d42900d82b77ada2c360ad8
+Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/Sphinx-%{version}.tar.gz
+%define sha512 Sphinx=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
 
-BuildRequires: python3
-BuildRequires: python3-libs
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-babel
@@ -33,9 +31,8 @@ BuildRequires: python3-sphinxcontrib-qthelp
 BuildRequires: python3-sphinxcontrib-htmlhelp
 BuildRequires: python3-sphinxcontrib-jsmath
 BuildRequires: python3-sphinxcontrib-serializinghtml
-BuildRequires: python3-packaging
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires: python3-pytest
 %endif
 
@@ -47,7 +44,6 @@ Requires:      python3-sphinxcontrib-jsmath
 Requires:      python3-sphinxcontrib-serializinghtml
 Requires:      python3-packaging
 Requires:      python3
-Requires:      python3-libs
 Requires:      python3-babel
 Requires:      python3-docutils
 Requires:      python3-jinja2
@@ -82,11 +78,14 @@ mv %{buildroot}%{_bindir}/sphinx-build %{buildroot}%{_bindir}/sphinx-build3
 mv %{buildroot}%{_bindir}/sphinx-autogen %{buildroot}%{_bindir}/sphinx-autogen3
 mv %{buildroot}%{_bindir}/sphinx-apidoc %{buildroot}%{_bindir}/sphinx-apidoc3
 
-%if 0%{?with_check:1}
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%if 0%{?with_check}
+%check
+pip3 install html5lib
+%pytest
 %endif
 
 %clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -97,6 +96,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-1
+- Upgrade to v5.1.1
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-3
 - Bump version as a part of python-babel upgrade
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-2

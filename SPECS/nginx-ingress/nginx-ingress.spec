@@ -1,60 +1,79 @@
+%global debug_package %{nil}
+
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
-Version:        1.11.1
-Release:        2%{?dist}
+Version:        2.3.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 nginx-ingress=c54bc93f8992a712a4c402cc43775a743694fce3
+Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  nginx-ingress=fd2877490c5fe3eba1946af9c4d675c60f7944bd0535f3e35814af3f3f4ccf2c935da22e32392a0f16c2d7cfb9902e1cfce3753a90ee603b3936e614bec706ee
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  go >= 1.7
+BuildRequires:  ca-certificates
+BuildRequires:  docker
+BuildRequires:  git
 
 %description
 This is an implementation of kubernetes ingress controller for NGINX.
 
 %prep
-%setup -n kubernetes-ingress-%{version}
+%autosetup -Sgit -n kubernetes-ingress-%{version}
 
 %build
 mkdir -p ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress
-cp -r * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
-pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
-CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress main.go
+cp -pr * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
 
+%make_build build TARGET=local \
+     GIT_TAG="v%{version}" \
+     VERSION="%{version}" \
+     GIT_COMMIT="979db22d8065b22fedb410c9b9c5875cf0a6dc66"
 
 %install
-pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
+topdir="${PWD}"
 install -vdm 755 %{buildroot}%{_bindir}
-install -vpm 0755 -t %{buildroot}%{_bindir} nginx-ingress
-install -vdm 0755 %{buildroot}/usr/share/nginx-ingress/docker
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version1/nginx.ingress.tmpl
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version1/nginx.tmpl
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version2/nginx.virtualserver.tmpl
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version2/nginx.transportserver.tmpl
+install -vpm 0755 -t %{buildroot}%{_bindir} %{name}
+install -vdm 0755 %{buildroot}%{_datadir}/%{name}/docker
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version1/nginx.ingress.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version1/nginx.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version2/nginx.virtualserver.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version2/nginx.transportserver.tmpl
 
 %files
 %defattr(-,root,root)
-%{_bindir}/nginx-ingress
-/usr/share/nginx-ingress/docker/nginx.*
+%{_bindir}/%{name}
+%{_datadir}/%{name}/docker/nginx.*
 
 %changelog
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.11.1-2
--   Bump up version to compile with new go
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.11.1-1
--   Automatic Version Bump
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.8.1-4
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.1-3
--   Bump up version to compile with new go
-*   Sun Nov 01 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.1-2
--   Added missing nginx.virtualserver.tmpl file
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
--   Automatic Version Bump
-*   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.0-1
--   Bumped up version to 1.3.0
-*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.1-1
--   Bumped up version to 1.1.1
-*   Mon Aug 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
--   K8S NGINX Ingress Controller for PhotonOS.
+* Mon Aug 08 2022 Harinadh D <hdommaraju@vmware.com> 2.3.0-1
+- Version update
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.11.1-3
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.11.1-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.11.1-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.8.1-4
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.1-3
+- Bump up version to compile with new go
+* Sun Nov 01 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.1-2
+- Added missing nginx.virtualserver.tmpl file
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
+- Automatic Version Bump
+* Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.0-1
+- Bumped up version to 1.3.0
+* Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.1-1
+- Bumped up version to 1.1.1
+* Mon Aug 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
+- K8S NGINX Ingress Controller for PhotonOS.

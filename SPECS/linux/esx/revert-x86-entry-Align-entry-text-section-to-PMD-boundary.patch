@@ -1,0 +1,81 @@
+From 2f7412ba9c6af5ab16bdbb4a3fdb1dcd2b4fd3c2 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 4 Dec 2017 15:07:46 +0100
+Subject: [PATCH] x86/entry: Align entry text section to PMD boundary
+
+The (irq)entry text must be visible in the user space page tables. To allow
+simple PMD based sharing, make the entry text PMD aligned.
+
+[Alexey] Reverting this commit.
+Idea of original commit is related to KPTI, with intention to
+map with userspace minimal possible .text section, when hardware
+allowes it (for example, if hardware does not support PCID, entire
+.text will be mapped).
+By reverting in, we stil do not map data/rodata to use userspace,
+but little increase "visible" .text area in addition to just entry
+code. There is no security risk of doing that. As a bonus, we reduce
+kernel size by 40%. 2MB aligning increases kernel .text size from
+6MB to 10MB, by adding padding between and after entry text.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: David Laight <David.Laight@aculab.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: Eduardo Valentin <eduval@amazon.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: aliguori@amazon.com
+Cc: daniel.gruss@iaik.tugraz.at
+Cc: hughd@google.com
+Cc: keescook@google.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/kernel/vmlinux.lds.S | 8 ++++++++
+ 1 file changed, 8 deletions(-)
+
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index d2a8b5a24a44..1e413a9326aa 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -66,9 +66,6 @@ jiffies_64 = jiffies;
+ 		__end_rodata_hpage_align = .;			\
+ 		__end_rodata_aligned = .;
+ 
+-#define ALIGN_ENTRY_TEXT_BEGIN	. = ALIGN(PMD_SIZE);
+-#define ALIGN_ENTRY_TEXT_END	. = ALIGN(PMD_SIZE);
+-
+ /*
+  * This section contains data which will be mapped as decrypted. Memory
+  * encryption operates on a page basis. Make this section PMD-aligned
+@@ -93,8 +90,6 @@ jiffies_64 = jiffies;
+ 		. = ALIGN(PAGE_SIZE);				\
+ 		__end_rodata_aligned = .;
+ 
+-#define ALIGN_ENTRY_TEXT_BEGIN
+-#define ALIGN_ENTRY_TEXT_END
+ #define BSS_DECRYPTED
+ 
+ #endif
+@@ -132,9 +127,7 @@ SECTIONS
+ 		CPUIDLE_TEXT
+ 		LOCK_TEXT
+ 		KPROBES_TEXT
+-		ALIGN_ENTRY_TEXT_BEGIN
+ 		ENTRY_TEXT
+-		ALIGN_ENTRY_TEXT_END
+ 		SOFTIRQENTRY_TEXT
+ 		STATIC_CALL_TEXT
+ 		*(.fixup)
+-- 
+2.11.0
+

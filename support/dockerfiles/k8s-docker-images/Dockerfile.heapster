@@ -1,7 +1,5 @@
 FROM k8s-base-image:4.0
 
-MAINTAINER kaushikk@vmware.com
-
 ADD tmp/k8heapster/usr/bin/heapster /heapster
 ADD tmp/k8heapster/usr/bin/eventer /eventer
 

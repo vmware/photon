@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.52
+Version:        2.4.54
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -9,12 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=6df2f9b30e89526f73449e4e1aa22450ff088408
+%define sha512  %{name}=228493b2ff32c4142c6e484d304f2ea12e467498605fe12adce2b61388d8efe7b2e96ae2fd0abd1dc88a5f12d625e007d8da0ae5628cff2a5272806754f41e18
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
-Patch0:         httpd-%{version}-blfs_layout.patch
-Patch1:         httpd-uncomment-ServerName.patch
+Patch0:         %{name}-%{version}-blfs_layout-3.patch
+Patch1:         %{name}-uncomment-ServerName.patch
 
 BuildRequires:  openssl >= 1.1.1
 BuildRequires:  openssl-devel >= 1.1.1
@@ -26,6 +26,7 @@ BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
 BuildRequires:  nghttp2-devel
+BuildRequires:  systemd-devel
 
 Requires:       nghttp2
 Requires:       pcre
@@ -34,7 +35,7 @@ Requires:       openssl >= 1.1.1
 Requires:       openldap
 Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides:       apache2
 
@@ -46,7 +47,7 @@ The Apache HTTP Server.
 %package devel
 Summary:    Header files for httpd
 Group:      Applications/System
-Requires:   httpd
+Requires:   %{name}
 
 %description devel
 These are the header files of httpd.
@@ -54,7 +55,7 @@ These are the header files of httpd.
 %package docs
 Summary:    Help files for httpd
 Group:      Applications/System
-Requires:   httpd
+Requires:   %{name}
 
 %description docs
 These are the help files of httpd.
@@ -75,15 +76,15 @@ sh ./configure --host=%{_host} --build=%{_build} \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
     --disable-dependency-tracking \
-    --prefix=%{_sysconfdir}/httpd \
+    --prefix=%{_sysconfdir}/%{name} \
     --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --sbindir=%{_sbindir} \
-    --sysconfdir=%{_confdir}/httpd/conf \
-    --datadir=%{_sysconfdir}/httpd \
+    --sysconfdir=%{_confdir}/%{name}/conf \
+    --datadir=%{_sysconfdir}/%{name} \
     --includedir=%{_includedir} \
     --libdir=%{_libdir} \
-    --libexecdir=%{_libdir}/httpd/modules \
+    --libexecdir=%{_libdir}/%{name}/modules \
     --localstatedir=%{_localstatedir} \
     --sharedstatedir=%{_sharedstatedir} \
     --mandir=%{_mandir} \
@@ -103,35 +104,35 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}/etc/httpd/logs
 
-cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
+install -vdm755 %{buildroot}%{_unitdir}
+install -vdm755 %{buildroot}/etc/%{name}/logs
+
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=The Apache HTTP Server
 After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/run/httpd/httpd.pid
-ExecStart=/usr/sbin/httpd -k start
-ExecStop=/usr/sbin/httpd -k stop
-ExecReload=/usr/sbin/httpd -k graceful
+PIDFile=/run/%{name}/%{name}.pid
+ExecStart=%{_sbindir}/%{name} -k start
+ExecStop=%{_sbindir}/%{name} -k stop
+ExecReload=%{_sbindir}/%{name} -k graceful
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
-install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
-echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-httpd.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
-ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
-ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
+ln -sfv %{_sbindir}/%{name} %{buildroot}%{_sbindir}/apache2
+ln -sfv /etc/%{name}/conf/%{name}.conf %{buildroot}/etc/%{name}/%{name}.conf
 
-mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
-cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
-d /run/httpd 0755 root root -
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
+d /run/%{name} 0755 root root -
 EOF
 
 %post
@@ -152,12 +153,12 @@ if [ $1 -eq 1 ]; then
   fi
 fi
 
-ln -sf /etc/httpd/conf/mime.types /etc/mime.types
-systemd-tmpfiles --create httpd.conf
-%systemd_post httpd.service
+ln -sf /etc/%{name}/conf/mime.types /etc/mime.types
+systemd-tmpfiles --create %{name}.conf
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun httpd.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
@@ -175,7 +176,7 @@ if [ $1 -eq 0 ]; then
     mv /etc/mime.types.orig /etc/mime.types
   fi
 fi
-%systemd_postun_with_restart httpd.service
+%systemd_postun_with_restart %{name}.service
 
 %files devel
 %defattr(-,root,root)
@@ -183,31 +184,31 @@ fi
 
 %files docs
 %defattr(-,root,root)
-%{_sysconfdir}/httpd/manual/*
+%{_sysconfdir}/%{name}/manual/*
 
 %files
 %defattr(-,root,root)
-%{_libdir}/httpd/*
+%{_libdir}/%{name}/*
 %{_bindir}/*
 %exclude %{_bindir}/apxs
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysconfdir}/httpd/html/index.html
-%{_sysconfdir}/httpd/cgi-bin/*
-%{_sysconfdir}/httpd/conf/extra
-%{_sysconfdir}/httpd/conf/original
-%config(noreplace) %{_sysconfdir}/httpd/conf/magic
-%{_sysconfdir}/httpd/conf/envvars
-%config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
-%{_sysconfdir}/httpd/conf/mime.types
-%{_sysconfdir}/httpd/error/*
-%{_sysconfdir}/httpd/icons/*
-%{_sysconfdir}/httpd/httpd.conf
-%{_libdir}/systemd/system/httpd.service
-%{_libdir}/systemd/system-preset/50-httpd.preset
-%{_libdir}/tmpfiles.d/httpd.conf
-%{_localstatedir}/log/httpd
+%{_sysconfdir}/%{name}/html/index.html
+%{_sysconfdir}/%{name}/cgi-bin/*
+%{_sysconfdir}/%{name}/conf/extra
+%{_sysconfdir}/%{name}/conf/original
+%config(noreplace) %{_sysconfdir}/%{name}/conf/magic
+%{_sysconfdir}/%{name}/conf/envvars
+%config(noreplace) %{_sysconfdir}/%{name}/conf/%{name}.conf
+%{_sysconfdir}/%{name}/conf/mime.types
+%{_sysconfdir}/%{name}/error/*
+%{_sysconfdir}/%{name}/icons/*
+%{_sysconfdir}/%{name}/%{name}.conf
+%{_unitdir}/%{name}.service
+%{_presetdir}/50-%{name}.preset
+%{_tmpfilesdir}/%{name}.conf
+%{_localstatedir}/log/%{name}
 
 %files tools
 %defattr(-,root,root)
@@ -215,6 +216,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.4.54-1
+- Upgrade to v2.4.54 to fix bunch of CVEs
+* Mon Mar 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.53-1
+- Upgrade to v2.4.53 to fix bunch of CVEs
 * Thu Dec 23 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.52-1
 - Upgrade to v2.4.52 to fix CVE-2021-44790
 * Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.51-3

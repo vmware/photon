@@ -1,13 +1,13 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.18.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          MIT
 URL:              https://github.com/influxdata/telegraf
 Source0:          https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1      telegraf=25acabe7bc84ec46c586006638c6656af3394624
+%define sha512    telegraf=48231f6c57c7d4294479aaaeedc9abfc86c3c1b35d294056050436d24ab884a027695c8228f9218b1cb5f9f6811f843ccd907a30d6959750109aec9a52da5df8
 Source1:          https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
-%define sha1      telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
+%define sha512    telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:          https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -28,7 +28,7 @@ the community can easily add support for collecting metrics from well known serv
 Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
 
 %prep
-%setup
+%autosetup -p1
 cat << EOF >>%{SOURCE2}
 [[outputs.wavefront]]
 host = "localhost"
@@ -51,7 +51,7 @@ pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
 popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
-make
+make %{_smp_mflags}
 popd
 
 %install
@@ -91,6 +91,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.2-3
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.2-2
 -   Bump up version to compile with new go
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1

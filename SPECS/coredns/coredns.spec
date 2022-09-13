@@ -7,11 +7,11 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.8.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
-URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
-Source0:        coredns-%{version}.tar.gz
-%define sha1 coredns=2ef062af4e250951420ccbdcad357ca28b433607
+URL:            https://github.com/%{name}/%{name}
+Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/v1.9.3.tar.gz/%{name}-%{version}.tar.gz
+%define sha512  %{name}=2cc2754e9e626d40a2101f17744e8c57bd6d469eacbb4cfee965c2bf485156ae91f4cc99f8e63b5641163e8716c9614b6f9481fb91acb96e62951044bdac1fa8
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,7 +23,7 @@ BuildRequires:  git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%setup -qn coredns-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 export ARCH=%{gohostarch}
@@ -33,9 +33,9 @@ export GOARCH=${ARCH}
 export GOHOSTARCH=${ARCH}
 export GOOS=linux
 export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
+export GOROOT=%{_libdir}/golang
+export GOPATH=%{_datadir}/gocode
+export GOBIN=%{_datadir}/gocode/bin
 export PATH=$PATH:$GOBIN
 mkdir -p ${GOPATH}/src/${PKG}
 cp -rf . ${GOPATH}/src/${PKG}
@@ -44,20 +44,22 @@ pushd ${GOPATH}/src/${PKG}
 # TODO: use prefetched tarball instead.
 sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
 sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
-make
+%make_build
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/coredns
+install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/%{name}
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_bindir}/coredns
+%{_bindir}/%{name}
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-3
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.3-2
 -   Bump up version to compile with new go
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1

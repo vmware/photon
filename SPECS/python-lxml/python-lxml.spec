@@ -1,13 +1,13 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python3-lxml
-Version:        4.6.1
+Version:        4.9.1
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
-%define sha1    lxml=0b46582a2da69151b9b792d118df7f44670b93ca
+%define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libxslt
@@ -16,6 +16,7 @@ BuildRequires:  cython3
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       libxslt
@@ -23,9 +24,8 @@ Requires:       libxslt
 %description
 The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
-
 %prep
-%setup -q -n lxml-%{version}
+%autosetup -p1 -n lxml-%{version}
 
 %build
 python3 setup.py build
@@ -36,7 +36,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %check
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
-make test
+make%{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}
@@ -46,6 +46,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-1
+-   Upgrade to version 4.9.1
+*   Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.6.1-2
+-   Bump version as a part of libxslt upgrade
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 4.6.1-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.5.2-1

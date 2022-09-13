@@ -1,15 +1,18 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         3%{?dist}
+Release:         5%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
+
 Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha1     libsoup=6aaed6b49b13e287b7c3bba546ba49fec4ea72a5
-Patch0:          libsoup-fix-make-check.patch
+%define sha512   %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
+
+Patch0:          %{name}-fix-make-check.patch
+
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
 BuildRequires:   libxml2-devel
@@ -25,8 +28,9 @@ BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
 BuildRequires:   meson >= 0.50
-BuildRequires:   ninja-build
 BuildRequires:   gtk-doc
+BuildRequires:   cmake
+
 Requires:        libxml2
 Requires:        glib-networking
 Requires:        sqlite-libs
@@ -68,22 +72,19 @@ These are the additional language files of libsoup.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-meson --prefix=/usr -Dvapi=disabled -Dgtk_doc=true ..
-ninja
+%meson --auto-features=disabled -Dvapi=disabled -Dgtk_doc=true
+%meson_build
 
 %install
-pushd build
-DESTDIR=%{buildroot} ninja install
-popd
+%meson_install
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
-cd build
-ninja test
+%meson_test
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -104,45 +105,49 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
-*   Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2.72.0-3
--   Improve Requires for main and -devel packages
--   Remove icu dependencies as it will be brought by libpsl
-*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-2
--   Release bump up to use libxml2 2.9.12-1.
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.72.0-1
--   Automatic Version Bump
-*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.71.1-1
--   Automatic Version Bump
-*   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.71.0-1
--   Update to version 2.71.0
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.64.0-3
--   Build with python3
--   Mass removal python2
-*   Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2
--   Fix Make check failures.
-*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 2.64.0-1
--   Update to 2.64.0
-*   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 2.57.1-4
--   Fix for CVE-2018-12910
-*   Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 2.57.1-3
--   CVE-2017-2885
-*   Fri Aug 11 2017 Chang Lee <changlee@vmware.com> 2.57.1-2
--   Added krb5-devel to BuildRequires for %check
-*   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.57.1-1
--   Upgrading to version 2.57.1
-*   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 2.53.90-3
--   Add sqlite-devel build deps
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
--   GA - Bump release of all rpms
-*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
--   Updated version.
-*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5
--   Moving static lib files to devel package.
-*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
--   Removing la files from packages.
-*   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
--   Addinf libxml2 to Requires
-*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
--   Exclude /usr/lib/debug
-*   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1
--   Initial build.  First version
+* Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-5
+- Bump version as a part of sqlite upgrade
+* Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-4
+- Bump version as a part of httpd v2.4.54 upgrade
+* Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2.72.0-3
+- Improve Requires for main and -devel packages
+- Remove icu dependencies as it will be brought by libpsl
+* Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-2
+- Release bump up to use libxml2 2.9.12-1.
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.72.0-1
+- Automatic Version Bump
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.71.1-1
+- Automatic Version Bump
+* Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.71.0-1
+- Update to version 2.71.0
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.64.0-3
+- Build with python3
+- Mass removal python2
+* Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2
+- Fix Make check failures.
+* Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 2.64.0-1
+- Update to 2.64.0
+* Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 2.57.1-4
+- Fix for CVE-2018-12910
+* Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 2.57.1-3
+- CVE-2017-2885
+* Fri Aug 11 2017 Chang Lee <changlee@vmware.com> 2.57.1-2
+- Added krb5-devel to BuildRequires for %check
+* Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.57.1-1
+- Upgrading to version 2.57.1
+* Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 2.53.90-3
+- Add sqlite-devel build deps
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
+- GA - Bump release of all rpms
+* Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
+- Updated version.
+* Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5
+- Moving static lib files to devel package.
+* Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
+- Removing la files from packages.
+* Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
+- Addinf libxml2 to Requires
+* Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
+- Exclude /usr/lib/debug
+* Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1
+- Initial build.  First version

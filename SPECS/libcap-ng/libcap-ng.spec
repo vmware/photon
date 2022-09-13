@@ -2,15 +2,15 @@
 
 Summary:        POSIX capability Library
 Name:           libcap-ng
-Version:        0.8.2
-Release:        2%{?dist}
+Version:        0.8.3
+Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha1    libcap-ng=8273804b128e7753ed94e782d36fc9178f0d454b
+%define sha512  libcap-ng=0ef9bc7bc6b7b59991f43b79aa6cde3e8d2c22c4b9ced2af8deae501e01d51e893033d109cb8aa0fdcba190140110993089245346334d7b114d18f1bb1b55b97
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  swig
@@ -39,16 +39,15 @@ Requires:       %{name} = %{version}-%{release}
 The libraries and header files needed for libcap_ng development.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
     --with-python3
-
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -77,6 +76,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.3-1
+- Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 0.8.2-2
 - Use autosetup and ldconfig scriptlets
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.2-1
@@ -102,4 +103,4 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.7-2
 - GA - Bump release of all rpms
 * Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
-- Initial version
+- Initial version.

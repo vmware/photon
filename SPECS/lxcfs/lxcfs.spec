@@ -1,15 +1,15 @@
-Summary:     Linux Containers File System
-Name:        lxcfs
-Version:     4.0.8
-Release:     1%{?dist}
-URL:         https://linuxcontainers.org/lxcfs/downloads/
-Source0:     %{name}-%{version}.tar.gz
-License:     LGPL 2.1+
-Group:       System Environment/Libraries
-%define sha1 %{name}=a3d56725f8f9997ba6663840a5802fad99a737d5
-Vendor:		 VMware, Inc.
+Summary:       Linux Containers File System
+Name:          lxcfs
+Version:       5.0.0
+Release:       1%{?dist}
+URL:           https://linuxcontainers.org/lxcfs/downloads/
+Source0:       %{name}-%{version}.tar.gz
+License:       LGPL 2.1+
+Group:         System Environment/Libraries
+%define sha512 %{name}=f6ab0feea862812dde08dd828cb7843820a27f56ec88ef1bf264e3fe585037b9327849e4a31c629f2712c861cdc80d59ea15c190d875d48b2d446fe15d9e57b8
+Vendor:        VMware, Inc.
 Distribution:  Photon
-BuildRequires: gcc
+BuildRequires: gcc meson python3-jinja2
 BuildRequires: libtool
 BuildRequires: fuse-devel
 BuildRequires: systemd
@@ -19,17 +19,14 @@ Requires:      fuse
 LXCFS is a simple userspace filesystem designed to work around some current limitations of the Linux kernel.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-%configure \
-	--with-init-script=systemd
-make %{?_smp_mflags}
+%meson
+%meson_build
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
-mkdir -p %{buildroot}/%{_sharedstatedir}/%{name}
+%meson_install
 
 %post
 %systemd_post lxcfs.service
@@ -45,16 +42,15 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%dir %{_sharedstatedir}/%{name}
 /lib/systemd/system/%{name}.service
 %{_bindir}/lxcfs
-%config(noreplace) %{_datarootdir}/lxc/config/common.conf.d/00-%{name}.conf
-%{_datarootdir}/%{name}/lxc.mount.hook
-%{_datarootdir}/%{name}/lxc.reboot.hook
-%{_libdir}/%{name}/liblxcfs.la
 %{_libdir}/%{name}/liblxcfs.so
+%{_datadir}/%{name}/*.hook
+%{_datadir}/lxc/config/common.conf.d/00-lxcfs.conf
 
 %changelog
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.0.0-1
+- Automatic Version Bump
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 4.0.8-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 4.0.7-1

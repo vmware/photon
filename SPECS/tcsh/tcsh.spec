@@ -1,18 +1,22 @@
-# Got the intial spec from Fedora and modified it
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
-Version:          6.22.04
+Version:          6.24.01
 Release:          1%{?dist}
 License:          BSD
-URL:              http://www.tcsh.org/
+URL:              http://www.tcsh.org
 Group:            System Environment/Shells
-Source:           http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
-%define sha1      tcsh=2724d287cf9bd3e4729502a15643fd78f49863d4
 Vendor:           VMware, Inc.
 Distribution:     Photon
+
+Source0:            http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
+%define sha512  %{name}=47425f9bc5ae3df163fe1c9f8a1b1a6c3893b186843d561fb7020c75561587286036cc679212f17fd0f760735d9e01da414e60a69db0ffcb74276f053ea80479
+
 Provides:         csh = %{version}
-Provides:         /bin/tcsh, /bin/csh
+Provides:         /bin/tcsh
+Provides:         /bin/csh
+
 BuildRequires:    ncurses-devel
+
 Requires:         ncurses
 Requires(post):   /bin/grep
 Requires(postun): (coreutils or toybox) /bin/grep
@@ -26,7 +30,7 @@ spelling correction, a history mechanism, job control and a C language
 like syntax.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
@@ -41,7 +45,7 @@ install -p -m 644 tcsh.man %{buildroot}%{_mandir}/man1/tcsh.1
 ln -sf tcsh %{buildroot}%{_bindir}/csh
 ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
 
-while read lang language ; do
+while read lang language; do
   dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
   if test -f nls/$language.cat ; then
     mkdir -p $dest
@@ -63,45 +67,47 @@ ru russian
 uk ukrainian
 _EOF
 
+%if 0%{?with_check}
 %check
 # tcsh expect nonroot user to run a tests
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test make check && userdel test -r -f
+%endif
 
 %clean
 rm -rf %{buildroot}
 
 %post
 if [ $1 -eq 1 ] ; then
-  if [ ! -f /etc/shells ]; then
-   echo "%{_bindir}/tcsh" >> /etc/shells
-   echo "%{_bindir}/csh"  >> /etc/shells
-   echo "/bin/tcsh" >> /etc/shells
-   echo "/bin/csh"  >> /etc/shells
+  if [ ! -f %{_sysconfdir}/shells ]; then
+    echo "%{_bindir}/tcsh" >> %{_sysconfdir}/shells
+    echo "%{_bindir}/csh" >> %{_sysconfdir}/shells
+    echo "/bin/tcsh" >> %{_sysconfdir}/shells
+    echo "/bin/csh" >> %{_sysconfdir}/shells
   else
-   grep -q '^%{_bindir}/tcsh$' /etc/shells || \
-   echo "%{_bindir}/tcsh" >> /etc/shells
-   grep -q '^%{_bindir}/csh$'  /etc/shells || \
-   echo "%{_bindir}/csh"  >> /etc/shells
-   grep -q '^/bin/tcsh$' /etc/shells || \
-   echo "/bin/tcsh" >> /etc/shells
-   grep -q '^/bin/csh$'  /etc/shells || \
-   echo "/bin/csh"  >> /etc/shells
+    grep -q '^%{_bindir}/tcsh$' %{_sysconfdir}/shells || \
+    echo "%{_bindir}/tcsh" >> %{_sysconfdir}/shells
+    grep -q '^%{_bindir}/csh$' %{_sysconfdir}/shells || \
+    echo "%{_bindir}/csh" >> %{_sysconfdir}/shells
+    grep -q '^/bin/tcsh$' %{_sysconfdir}/shells || \
+    echo "/bin/tcsh" >> %{_sysconfdir}/shells
+    grep -q '^/bin/csh$' %{_sysconfdir}/shells || \
+    echo "/bin/csh" >> %{_sysconfdir}/shells
   fi
 fi
 
 %postun
 if [ $1 -eq 0 ] ; then
   if [ ! -x %{_bindir}/tcsh ]; then
-   grep -v '^%{_bindir}/tcsh$'  /etc/shells | \
-   grep -v '^%{_bindir}/csh$' > /etc/shells.rpm && \
-   mv /etc/shells.rpm /etc/shells
+    grep -v '^%{_bindir}/tcsh$'  %{_sysconfdir}/shells | \
+    grep -v '^%{_bindir}/csh$' > %{_sysconfdir}/shells.rpm && \
+    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
   if [ ! -x /bin/tcsh ]; then
-   grep -v '^/bin/tcsh$'  /etc/shells | \
-   grep -v '^/bin/csh$' > /etc/shells.rpm && \
-   mv /etc/shells.rpm /etc/shells
+    grep -v '^/bin/tcsh$'  %{_sysconfdir}/shells | \
+    grep -v '^/bin/csh$' > %{_sysconfdir}/shells.rpm && \
+    mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
 fi
 
@@ -112,31 +118,35 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.22.04-1
--   Automatic Version Bump
-*   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 6.22.02-2
--   GCC-10 support.
-*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 6.22.02-1
--   Automatic Version Bump
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-4
--   Requires coreutils or toybox and /bin/grep
-*   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-3
--   Fix make check issues.
-*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2
--   Ensure non empty debuginfo
-*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1
--   Updated to version 6.20.00
-*   Tue Feb 07 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6
--   Added /bin/csh and /bin/tsch entries in /etc/shells
-*   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
--   tcsh.glibc-2.24.patch
-*   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
--   Fix calloc for gcc 5 optimization
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
--   GA - Bump release of all rpms
-*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
--   Fix for upgrade issues
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
--   Upgrade version
-*   Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
--   Initial build. First version
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.01-1
+- Automatic Version Bump
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.00-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.22.04-1
+- Automatic Version Bump
+* Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 6.22.02-2
+- GCC-10 support.
+* Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 6.22.02-1
+- Automatic Version Bump
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-4
+- Requires coreutils or toybox and /bin/grep
+* Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-3
+- Fix make check issues.
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2
+- Ensure non empty debuginfo
+* Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1
+- Updated to version 6.20.00
+* Tue Feb 07 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6
+- Added /bin/csh and /bin/tsch entries in /etc/shells
+* Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
+- tcsh.glibc-2.24.patch
+* Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
+- Fix calloc for gcc 5 optimization
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
+- GA - Bump release of all rpms
+* Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
+- Fix for upgrade issues
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
+- Upgrade version
+* Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
+- Initial build. First version
