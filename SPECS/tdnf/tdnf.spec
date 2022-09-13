@@ -1,15 +1,15 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.1
-Release:        4%{?dist}
+Version:        3.3.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=4c6756aa1778464e3d8eefe69271809f9b9b29ba4ab7756f6c230352f9bcc40eabc541f21f385adfc8d78420101411038e49cf56409ec889beac062571c21d5f
+Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=10efaa2762a3b7ab63541392041d60a094abbcc9fc8842f65b7c6eba2bd9dbd8ed0edd017266f365636a8c75414580993f8d4a7f5d6cb7b11f85db138c77b905
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -229,6 +229,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Sep 13 2022 Oliver Kurth <okurth@vmware.com> 3.3.2-1
+- update to 3.3.2 for the --alldeps option
 * Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-4
 - Bump version as a part of rpm upgrade
 * Mon Jun 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-3
