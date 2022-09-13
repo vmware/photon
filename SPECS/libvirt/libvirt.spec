@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        3.2.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -13,6 +13,7 @@ Patch3:         libvirt-CVE-2019-10161.patch
 patch4:         libvirt-CVE-2019-10167.patch
 patch5:         libvirt-3.2.0-CVE-2019-20485.patch
 patch6:         libvirt-CVE-2021-3631.patch
+patch7:         libvirt-CVE-2021-3975.patch
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -69,6 +70,7 @@ This contains development tools and libraries for libvirt.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %build
 sh configure \
     --disable-silent-rules \
@@ -124,6 +126,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Tue Sep 13 2022 Mukul Sikka <msikka@vmware.com> 3.2.0-10
+-   Fix for CVE-2021-3975
 *   Mon Jul 04 2022 Mukul Sikka <msikka@vmware.com> 3.2.0-9
 -   Fix for CVE-2021-3631
 *   Tue Apr 07 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 3.2.0-8
