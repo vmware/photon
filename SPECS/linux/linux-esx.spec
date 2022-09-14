@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -142,10 +142,15 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-4155
+Patch103: 0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+# Fix for CVE-2021-4204
+Patch104: 0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Next 2 patches are about to be merged into stable
-Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
+Patch106: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch107: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -277,10 +282,10 @@ The Linux package contains the Linux kernel doc files
 %patch90 -p1
 
 # CVE
-%autopatch -p1 -m100 -M102
+%autopatch -p1 -m100 -M105
 
 # mm and scsi fixes
-%autopatch -p1 -m103 -M104
+%autopatch -p1 -m106 -M107
 
 # crypto
 %autopatch -p1 -m500 -M506
@@ -502,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-6
+- Fix CVE-2021-4155 and CVE-2021-4204
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
 - crypto_self_test and broken kattest module enhancements
 - FIPS: Add module signing for crypto modules

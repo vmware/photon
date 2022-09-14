@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.83
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -96,10 +96,15 @@ Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-4155
+Patch102: 0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+# Fix for CVE-2021-4204
+Patch103: 0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Next 2 patches are about to be merged into stable
-Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
+Patch105: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch106: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -554,10 +559,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M101
+%autopatch -p1 -m100 -M104
 
 # mm and scsi fixes
-%autopatch -p1 -m103 -M104
+%autopatch -p1 -m105 -M106
 
 # RT
 %autopatch -p1 -m301 -M714
@@ -781,6 +786,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
+- Fix CVE-2021-4155 and CVE-2021-4204
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-4
 - crypto_self_test and broken kattest module enhancements
 * Tue Sep 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-3
