@@ -1,0 +1,346 @@
+From 01783c6dd3452b154755e9f821808c7fdb5309cf Mon Sep 17 00:00:00 2001
+From: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Date: Tue, 19 Oct 2021 13:27:10 +0100
+Subject: [PATCH] drm/i915: Flush TLBs before releasing backing store
+
+[ This patch is not yet in upstream ].
+
+We need to flush TLBs before releasing backing store otherwise userspace
+is able to encounter stale entries if a) it is not declaring GPU access to
+certain buffers and b) this GPU execution then races with the backing
+store release getting triggered asynchronously.
+
+Approach taken is to mark any buffer objects which were ever bound to the
+GPU and triggering a serialized TLB flush when their backing store is
+released.
+
+Alternatively the flushing could be done on VMA unbind, at which point we
+would be able to ascertain whether there is potential parallel GPU
+execution (which could race), but choice essentially boils down to paying
+the cost of TLB flushes maybe needlessly at VMA unbind time (when the
+backing store is not known to be definitely going away, so flushing not
+always required for safety), versus potentially needlessly at backing
+store relase time since at that point cannot tell whether there is a
+parallel GPU execution happening.
+
+Therefore simplicity of implementation has been chosen for now, with scope
+to benchmark and refine later as required.
+
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Reported-by: Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Jon Bloomfield <jon.bloomfield@intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ .../gpu/drm/i915/gem/i915_gem_object_types.h  |   1 +
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c     |  10 ++
+ drivers/gpu/drm/i915/gt/intel_gt.c            | 102 ++++++++++++++++++
+ drivers/gpu/drm/i915/gt/intel_gt.h            |   2 +
+ drivers/gpu/drm/i915/gt/intel_gt_types.h      |   2 +
+ drivers/gpu/drm/i915/i915_reg.h               |  11 ++
+ drivers/gpu/drm/i915/i915_vma.c               |   3 +
+ drivers/gpu/drm/i915/intel_uncore.c           |  26 ++++-
+ drivers/gpu/drm/i915/intel_uncore.h           |   2 +
+ 9 files changed, 155 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index d6711caa7f39..dbc88fc7136b 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -159,6 +159,7 @@ struct drm_i915_gem_object {
+ #define I915_BO_ALLOC_VOLATILE   BIT(1)
+ #define I915_BO_ALLOC_FLAGS (I915_BO_ALLOC_CONTIGUOUS | I915_BO_ALLOC_VOLATILE)
+ #define I915_BO_READONLY         BIT(2)
++#define I915_BO_WAS_BOUND_BIT    3
+ 
+ 	/*
+ 	 * Is the object to be mapped as read-only to the GPU
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+index f60ca6dc911f..27d24cb38c0d 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+@@ -10,6 +10,8 @@
+ #include "i915_gem_lmem.h"
+ #include "i915_gem_mman.h"
+ 
++#include "gt/intel_gt.h"
++
+ void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
+ 				 struct sg_table *pages,
+ 				 unsigned int sg_page_sizes)
+@@ -186,6 +188,14 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
+ 	__i915_gem_object_reset_page_iter(obj);
+ 	obj->mm.page_sizes.phys = obj->mm.page_sizes.sg = 0;
+ 
++	if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
++		struct drm_i915_private *i915 = to_i915(obj->base.dev);
++		intel_wakeref_t wakeref;
++
++		with_intel_runtime_pm_if_active(&i915->runtime_pm, wakeref)
++			intel_gt_invalidate_tlbs(&i915->gt);
++	}
++
+ 	return pages;
+ }
+ 
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+index 39b428c5049c..6615eb5147e2 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+@@ -26,6 +26,8 @@ void intel_gt_init_early(struct intel_gt *gt, struct drm_i915_private *i915)
+ 
+ 	spin_lock_init(&gt->irq_lock);
+ 
++	mutex_init(&gt->tlb_invalidate_lock);
++
+ 	INIT_LIST_HEAD(&gt->closed_vma);
+ 	spin_lock_init(&gt->closed_lock);
+ 
+@@ -661,3 +663,103 @@ void intel_gt_info_print(const struct intel_gt_info *info,
+ 
+ 	intel_sseu_dump(&info->sseu, p);
+ }
++
++struct reg_and_bit {
++	i915_reg_t reg;
++	u32 bit;
++};
++
++static struct reg_and_bit
++get_reg_and_bit(const struct intel_engine_cs *engine, const bool gen8,
++		const i915_reg_t *regs, const unsigned int num)
++{
++	const unsigned int class = engine->class;
++	struct reg_and_bit rb = { };
++
++	if (drm_WARN_ON_ONCE(&engine->i915->drm,
++			     class >= num || !regs[class].reg))
++		return rb;
++
++	rb.reg = regs[class];
++	if (gen8 && class == VIDEO_DECODE_CLASS)
++		rb.reg.reg += 4 * engine->instance; /* GEN8_M2TCR */
++	else
++		rb.bit = engine->instance;
++
++	rb.bit = BIT(rb.bit);
++
++	return rb;
++}
++
++void intel_gt_invalidate_tlbs(struct intel_gt *gt)
++{
++	static const i915_reg_t gen8_regs[] = {
++		[RENDER_CLASS]			= GEN8_RTCR,
++		[VIDEO_DECODE_CLASS]		= GEN8_M1TCR, /* , GEN8_M2TCR */
++		[VIDEO_ENHANCEMENT_CLASS]	= GEN8_VTCR,
++		[COPY_ENGINE_CLASS]		= GEN8_BTCR,
++	};
++	static const i915_reg_t gen12_regs[] = {
++		[RENDER_CLASS]			= GEN12_GFX_TLB_INV_CR,
++		[VIDEO_DECODE_CLASS]		= GEN12_VD_TLB_INV_CR,
++		[VIDEO_ENHANCEMENT_CLASS]	= GEN12_VE_TLB_INV_CR,
++		[COPY_ENGINE_CLASS]		= GEN12_BLT_TLB_INV_CR,
++	};
++	struct drm_i915_private *i915 = gt->i915;
++	struct intel_uncore *uncore = gt->uncore;
++	struct intel_engine_cs *engine;
++	enum intel_engine_id id;
++	const i915_reg_t *regs;
++	unsigned int num = 0;
++
++	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
++		return;
++
++	if (INTEL_GEN(i915) == 12) {
++		regs = gen12_regs;
++		num = ARRAY_SIZE(gen12_regs);
++	} else if (INTEL_GEN(i915) >= 8 && INTEL_GEN(i915) <= 11) {
++		regs = gen8_regs;
++		num = ARRAY_SIZE(gen8_regs);
++	} else if (INTEL_GEN(i915) < 8) {
++		return;
++	}
++
++	if (drm_WARN_ONCE(&i915->drm, !num,
++			  "Platform does not implement TLB invalidation!"))
++		return;
++
++	GEM_TRACE("\n");
++
++	assert_rpm_wakelock_held(&i915->runtime_pm);
++
++	mutex_lock(&gt->tlb_invalidate_lock);
++	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
++
++	for_each_engine(engine, gt, id) {
++		/*
++		 * HW architecture suggest typical invalidation time at 40us,
++		 * with pessimistic cases up to 100us and a recommendation to
++		 * cap at 1ms. We go a bit higher just in case.
++		 */
++		const unsigned int timeout_us = 100;
++		const unsigned int timeout_ms = 4;
++		struct reg_and_bit rb;
++
++		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
++		if (!i915_mmio_reg_offset(rb.reg))
++			continue;
++
++		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
++		if (__intel_wait_for_register_fw(uncore,
++						 rb.reg, rb.bit, 0,
++						 timeout_us, timeout_ms,
++						 NULL))
++			drm_err_ratelimited(&gt->i915->drm,
++					    "%s TLB invalidation did not complete in %ums!\n",
++					    engine->name, timeout_ms);
++	}
++
++	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
++	mutex_unlock(&gt->tlb_invalidate_lock);
++}
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.h b/drivers/gpu/drm/i915/gt/intel_gt.h
+index 9157c7411f60..d9a1168172ae 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt.h
+@@ -77,4 +77,6 @@ static inline bool intel_gt_is_wedged(const struct intel_gt *gt)
+ void intel_gt_info_print(const struct intel_gt_info *info,
+ 			 struct drm_printer *p);
+ 
++void intel_gt_invalidate_tlbs(struct intel_gt *gt);
++
+ #endif /* __INTEL_GT_H__ */
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt_types.h b/drivers/gpu/drm/i915/gt/intel_gt_types.h
+index 6d39a4a11bf3..78c061614d8b 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt_types.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt_types.h
+@@ -36,6 +36,8 @@ struct intel_gt {
+ 
+ 	struct intel_uc uc;
+ 
++	struct mutex tlb_invalidate_lock;
++
+ 	struct intel_gt_timelines {
+ 		spinlock_t lock; /* protects active_list */
+ 		struct list_head active_list;
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index ce8c91c5fdd3..12488996a7f4 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -2639,6 +2639,12 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+ #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1 << 28)
+ #define   GAMT_CHKN_DISABLE_I2M_CYCLE_ON_WR_PORT	(1 << 24)
+ 
++#define GEN8_RTCR	_MMIO(0x4260)
++#define GEN8_M1TCR	_MMIO(0x4264)
++#define GEN8_M2TCR	_MMIO(0x4268)
++#define GEN8_BTCR	_MMIO(0x426c)
++#define GEN8_VTCR	_MMIO(0x4270)
++
+ #if 0
+ #define PRB0_TAIL	_MMIO(0x2030)
+ #define PRB0_HEAD	_MMIO(0x2034)
+@@ -2728,6 +2734,11 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+ #define   FAULT_VA_HIGH_BITS		(0xf << 0)
+ #define   FAULT_GTT_SEL			(1 << 4)
+ 
++#define GEN12_GFX_TLB_INV_CR	_MMIO(0xced8)
++#define GEN12_VD_TLB_INV_CR	_MMIO(0xcedc)
++#define GEN12_VE_TLB_INV_CR	_MMIO(0xcee0)
++#define GEN12_BLT_TLB_INV_CR	_MMIO(0xcee4)
++
+ #define GEN12_AUX_ERR_DBG		_MMIO(0x43f4)
+ 
+ #define FPGA_DBG		_MMIO(0x42300)
+diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+index caa9b041616b..50a86fd89d00 100644
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -439,6 +439,9 @@ int i915_vma_bind(struct i915_vma *vma,
+ 		vma->ops->bind_vma(vma->vm, NULL, vma, cache_level, bind_flags);
+ 	}
+ 
++	if (vma->obj)
++		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
++
+ 	atomic_or(bind_flags, &vma->flags);
+ 	return 0;
+ }
+diff --git a/drivers/gpu/drm/i915/intel_uncore.c b/drivers/gpu/drm/i915/intel_uncore.c
+index 97ded2a59cf4..01849840ac56 100644
+--- a/drivers/gpu/drm/i915/intel_uncore.c
++++ b/drivers/gpu/drm/i915/intel_uncore.c
+@@ -694,7 +694,8 @@ void intel_uncore_forcewake_get__locked(struct intel_uncore *uncore,
+ }
+ 
+ static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
+-					 enum forcewake_domains fw_domains)
++					 enum forcewake_domains fw_domains,
++					 bool delayed)
+ {
+ 	struct intel_uncore_forcewake_domain *domain;
+ 	unsigned int tmp;
+@@ -709,7 +710,11 @@ static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 			continue;
+ 		}
+ 
+-		uncore->funcs.force_wake_put(uncore, domain->mask);
++		if (delayed &&
++		    !(domain->uncore->fw_domains_timer & domain->mask))
++			fw_domain_arm_timer(domain);
++		else
++			uncore->funcs.force_wake_put(uncore, domain->mask);
+ 	}
+ }
+ 
+@@ -730,7 +735,20 @@ void intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 		return;
+ 
+ 	spin_lock_irqsave(&uncore->lock, irqflags);
+-	__intel_uncore_forcewake_put(uncore, fw_domains);
++	__intel_uncore_forcewake_put(uncore, fw_domains, false);
++	spin_unlock_irqrestore(&uncore->lock, irqflags);
++}
++
++void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
++					enum forcewake_domains fw_domains)
++{
++	unsigned long irqflags;
++
++	if (!uncore->funcs.force_wake_put)
++		return;
++
++	spin_lock_irqsave(&uncore->lock, irqflags);
++	__intel_uncore_forcewake_put(uncore, fw_domains, true);
+ 	spin_unlock_irqrestore(&uncore->lock, irqflags);
+ }
+ 
+@@ -772,7 +790,7 @@ void intel_uncore_forcewake_put__locked(struct intel_uncore *uncore,
+ 	if (!uncore->funcs.force_wake_put)
+ 		return;
+ 
+-	__intel_uncore_forcewake_put(uncore, fw_domains);
++	__intel_uncore_forcewake_put(uncore, fw_domains, false);
+ }
+ 
+ void assert_forcewakes_inactive(struct intel_uncore *uncore)
+diff --git a/drivers/gpu/drm/i915/intel_uncore.h b/drivers/gpu/drm/i915/intel_uncore.h
+index c4b22d9d0b45..034f04e0de8b 100644
+--- a/drivers/gpu/drm/i915/intel_uncore.h
++++ b/drivers/gpu/drm/i915/intel_uncore.h
+@@ -211,6 +211,8 @@ void intel_uncore_forcewake_get(struct intel_uncore *uncore,
+ 				enum forcewake_domains domains);
+ void intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 				enum forcewake_domains domains);
++void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
++					enum forcewake_domains domains);
+ void intel_uncore_forcewake_flush(struct intel_uncore *uncore,
+ 				  enum forcewake_domains fw_domains);
+ 
+-- 
+2.32.0
+

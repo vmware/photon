@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.93
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -97,7 +97,9 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
-Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+Patch102: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-0330
+Patch103: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 # Next 2 patches are about to be merged into stable
 Patch105: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -555,7 +557,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M104
+%autopatch -p1 -m100 -M103
 
 # mm and scsi fixes
 %autopatch -p1 -m105 -M105
@@ -782,6 +784,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2
+- Fix CVE-2022-0330
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
 - Update to version 5.10.93
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5

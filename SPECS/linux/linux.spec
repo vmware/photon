@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.93
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -125,7 +125,9 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
-Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-0330
+Patch104: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 # Next 2 patches are about to be merged into stable
 Patch106: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -323,7 +325,7 @@ Python programming language to use the interface to manipulate perf events.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M105
+%autopatch -p1 -m100 -M104
 
 # mm and scsi fixes
 %autopatch -p1 -m106 -M106
@@ -693,6 +695,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2
+- Fix CVE-2022-0330
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
 - Update to version 5.10.93
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
