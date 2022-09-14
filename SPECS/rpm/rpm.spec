@@ -5,7 +5,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -21,13 +21,10 @@ Source3:        brp-strip-unneeded
 
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch1:         CVE-2021-20271.patch
-Patch2:         Fix-OpenPGP-parsing-bugs.patch
-Patch3:         Header-signatures-alone-are-not-sufficient.patch
-Patch4:         CVE-2021-20266.patch
-Patch5:         Fix-regression-reading-rpm-v3.patch
-Patch6:         CVE-2021-3521-1.patch
-Patch7:         CVE-2021-3521-2.patch
-Patch8:         CVE-2021-3521-3.patch
+Patch2:         Header-signatures-alone-are-not-sufficient.patch
+Patch3:         CVE-2021-20266.patch
+Patch4:         Fix-regression-reading-rpm-v3.patch
+Patch5:         CVE-2021-3521.patch
 
 Requires:       bash
 Requires:       libdb
@@ -106,9 +103,6 @@ Python3 rpm.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -273,6 +267,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-4
+- Remove pgp related fixes, it's not used by other distros
+- Further fixes to CVE-2021-3521
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-3
 - Fix CVE-2021-3521
 * Sun Sep 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-2
