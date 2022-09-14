@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.256
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -461,6 +461,12 @@ Patch506: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch509: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix for CVE-2022-39189
+Patch510: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
+
+# Fix for CVE-2022-36123
+Patch511: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
+
 #Patches for i40e driver
 Patch1500: 0001-Add-support-for-gettimex64-interface.patch
 
@@ -644,7 +650,7 @@ ApplyPatch "200" "234"
 %endif
 
 %ifarch x86_64
-ApplyPatch "281" "509"
+ApplyPatch "281" "515"
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1052,6 +1058,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2
+- Fix for CVE-2022-39189/2022-36123
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1
 - Update to version 4.19.256
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-13

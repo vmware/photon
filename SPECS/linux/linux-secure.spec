@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.256
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -101,6 +101,12 @@ Patch69: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
 # CVE-2022-2586
 Patch71: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# Fix for CVE-2022-39189
+Patch72: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
+
+# Fix for CVE-2022-36123
+Patch73: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -461,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2
+- Fix for CVE-2022-39189/2022-36123
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1
 - Update to version 4.19.256
 * Tue Aug 09 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-12

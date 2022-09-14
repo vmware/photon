@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.256
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -94,6 +94,12 @@ Patch66: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # CVE-2022-2586
 Patch68: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# Fix for CVE-2022-39189
+Patch69: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
+
+# Fix for CVE-2022-36123
+Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -479,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2
+- Fix for CVE-2022-36123/2022-39189
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1
 - Update to version 4.19.256
 * Fri Aug 05 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.247-13

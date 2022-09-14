@@ -1,0 +1,112 @@
+From 96e8fc5818686d4a1591bb6907e7fdb64ef29884 Mon Sep 17 00:00:00 2001
+From: Juergen Gross <jgross@suse.com>
+Date: Thu, 30 Jun 2022 09:14:39 +0200
+Subject: [PATCH] x86/xen: Use clear_bss() for Xen PV guests
+
+commit 96e8fc5818686d4a1591bb6907e7fdb64ef29884 upstream
+
+Instead of clearing the bss area in assembly code, use the clear_bss()
+function.
+
+This requires to pass the start_info address as parameter to
+xen_start_kernel() in order to avoid the xen_start_info being zeroed
+again.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+[Ashwin: Backported for v4.19.y]
+[Ashwin: Have handled hunk failure issues & applied this patch  on top
+         of eae446b7654f25b2ca42ed0de54d7005e126fdac]
+Link: https://lore.kernel.org/r/20220630071441.28576-2-jgross@suse.com
+---
+ arch/x86/include/asm/setup.h |  3 +++
+ arch/x86/kernel/head64.c     |  2 +-
+ arch/x86/xen/enlighten_pv.c  |  7 +++++--
+ arch/x86/xen/xen-head.S      | 11 +----------
+ 4 files changed, 10 insertions(+), 13 deletions(-)
+
+diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
+index ae13bc974..3957ba6f1 100644
+--- a/arch/x86/include/asm/setup.h
++++ b/arch/x86/include/asm/setup.h
+@@ -119,6 +119,9 @@ void *extend_brk(size_t size, size_t align);
+ 	RESERVE_BRK(name, sizeof(type) * entries)
+ 
+ extern void probe_roms(void);
++
++void clear_bss(void);
++
+ #ifdef __i386__
+ 
+ asmlinkage void __init i386_start_kernel(void);
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 90c2613af..f148de98e 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -379,7 +379,7 @@ int __init early_make_pgtable(unsigned long address)
+ 
+ /* Don't add a printk in there. printk relies on the PDA which is not initialized 
+    yet. */
+-static void __init clear_bss(void)
++void __init clear_bss(void)
+ {
+ 	memset(__bss_start, 0,
+ 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
+diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
+index 8f1ff8dad..f2ff5810a 100644
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -1196,14 +1196,17 @@ static void __init xen_domu_set_legacy_features(void)
+ }
+ 
+ /* First C function to be called on Xen boot */
+-asmlinkage __visible void __init xen_start_kernel(void)
++asmlinkage __visible void __init xen_start_kernel(struct start_info *si)
+ {
+ 	struct physdev_set_iopl set_iopl;
+ 	unsigned long initrd_start = 0;
+ 	int rc;
+ 
+-	if (!xen_start_info)
++	if (!si)
+ 		return;
++	clear_bss();
++
++	xen_start_info = si;
+ 
+ 	xen_domain_type = XEN_PV_DOMAIN;
+ 	xen_start_flags = xen_start_info->flags;
+diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+index 5077ead5e..11d739b75 100644
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -26,15 +26,6 @@ ENTRY(startup_xen)
+ 	UNWIND_HINT_EMPTY
+ 	cld
+ 
+-	/* Clear .bss */
+-	xor %eax,%eax
+-	mov $__bss_start, %_ASM_DI
+-	mov $__bss_stop, %_ASM_CX
+-	sub %_ASM_DI, %_ASM_CX
+-	shr $__ASM_SEL(2, 3), %_ASM_CX
+-	rep __ASM_SIZE(stos)
+-
+-	mov %_ASM_SI, xen_start_info
+ 	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
+ 
+ #ifdef CONFIG_X86_64
+@@ -50,7 +41,7 @@ ENTRY(startup_xen)
+ 	cdq
+ 	wrmsr
+ #endif
+-
++	mov %_ASM_SI, %_ASM_DI
+ 	jmp xen_start_kernel
+ END(startup_xen)
+ 	__FINIT
+-- 
+2.30.3
