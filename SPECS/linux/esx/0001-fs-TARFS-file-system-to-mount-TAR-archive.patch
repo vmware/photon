@@ -1,4 +1,4 @@
-From 99c81e3609ff822547c7ebd69a67975684e0e5b6 Mon Sep 17 00:00:00 2001
+From 6a6c8fc02dcf0b68b2bbc9734a3da8eebcade4c1 Mon Sep 17 00:00:00 2001
 From: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -28,10 +28,10 @@ Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
  fs/tarfs/Kconfig              |  18 +
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
- fs/tarfs/tarfs.h              | 175 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 408 ++++++++++++++++++++
+ fs/tarfs/tarfs.h              | 180 +++++++++
+ fs/tarfs/tarfs_file_dir_ops.c | 483 +++++++++++++++++++++++
  fs/tarfs/tarfs_inode.c        | 706 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1390 insertions(+)
+ 8 files changed, 1468 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -40,22 +40,22 @@ Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
  create mode 100644 fs/tarfs/tarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index cdfef82db7b5..c1cec07606ce 100644
+index f8c49af41138..9cd075475d2a 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -314,6 +314,7 @@ source "fs/erofs/Kconfig"
+@@ -290,6 +290,7 @@ source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
  source "fs/vtar/Kconfig"
  source "fs/vtarfs/Kconfig"
 +source "fs/tarfs/Kconfig"
-
+ 
  endif # MISC_FILESYSTEMS
-
+ 
 diff --git a/fs/Makefile b/fs/Makefile
-index bbc878f366f8..4189b5ab8c42 100644
+index 1adf9981a0ca..e9f161bb4357 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -140,3 +140,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+@@ -138,3 +138,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
  obj-$(CONFIG_VTARFS)		+= vtarfs/
@@ -177,10 +177,10 @@ index 000000000000..2a816e9ff7e1
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000000..d05f373413d4
+index 000000000000..bdae08ad68f3
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,180 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -317,10 +317,14 @@ index 000000000000..d05f373413d4
 +extern struct dentry *tarfs_lookup(struct inode *inode, struct dentry *dentry, unsigned int flags);
 +extern int tarfs_statfs(struct dentry * d, struct kstatfs *ks);
 +extern struct tarfs_entry *tarfs_find(struct tarfs_entry *entry, const char *dir_name, const char *base_name);
++extern sector_t tarfs_bmap(struct address_space *mapping, sector_t block);
++extern int tarfs_readpage(struct file *file, struct page *page);
 +
 +static const struct file_operations tarfs_file_operations = {
 +	.llseek		= generic_file_llseek,
 +	.read_iter	= tarfs_file_read_iter,
++	.mmap		= generic_file_mmap,
++	.fsync		= generic_file_fsync,
 +	.open		= generic_file_open,
 +	.release	= tarfs_file_release,
 +};
@@ -352,16 +356,17 @@ index 000000000000..d05f373413d4
 +};
 +
 +static const struct address_space_operations tarfs_ram_addr_ops = {
-+	.readpage       = simple_readpage,
++	.readpage	= tarfs_readpage,
++	.bmap		= tarfs_bmap,
 +};
 +
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..40f4041c202c
+index 000000000000..3c5597006649
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
-@@ -0,0 +1,408 @@
+@@ -0,0 +1,483 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -758,6 +763,81 @@ index 000000000000..40f4041c202c
 +	return (count - to_read);
 +}
 +EXPORT_SYMBOL_GPL(tarfs_file_read_iter);
++
++/**
++ * tarfs_get_block - locate buffer for given inode,block tuple
++ * @ip:		inode
++ * @block:	phy block
++ * @bp:		buffer skeleton
++ * @create:	%TRUE if blocks may be newly allocated.
++ *
++ * Description:
++ *   The tarfs_get_block function fills @bp with the right physical
++ *   block and device number to perform a lowlevel read/write on
++ *   it.
++ *
++ * Returns:
++ *   Zero on success, else a negativ error code (-EIO).
++ */
++static int tarfs_getblk(struct inode *inode, sector_t block, struct buffer_head *bp, int create)
++{
++	struct tarfs_entry *root = tarfs_get_first_entry(inode->i_sb);
++	struct tarfs_entry *entry;
++	sector_t blk_offset;
++
++	entry = tarfs_find_by_inode(root, inode->i_ino);
++	if (!entry)
++		return -EIO;
++	blk_offset = entry->data_offset / inode->i_sb->s_blocksize;
++	tarfs_debug("block=[%lld] [%lld] [%d] [%ld]",block, blk_offset, entry->data_offset, entry->data_size);
++	map_bh(bp, inode->i_sb, block + blk_offset);
++	return 0;
++}
++
++
++/**
++ * tarfs_readpage - read one page synchronously into the pagecache
++ * @file:	file context (unused)
++ * @page:	page frame to fill in.
++ *
++ * Description:
++ *   The tarfs_readpage routine reads @page synchronously into the
++ *   pagecache.
++ *
++ * Returns:
++ *   Zero on success, else a negative error code.
++ *
++ * Locking status:
++ *   @page is locked and will be unlocked.
++ */
++int tarfs_readpage(struct file *file, struct page *page)
++{
++	tarfs_debug("Readpage");
++	return block_read_full_page(page, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_readpage);
++
++/**
++ * tarfs_bmap - perform logical to physical block mapping
++ * @mapping:	logical to physical mapping to use
++ * @block:	logical block (relative to @mapping).
++ *
++ * Description:
++ *   tarfs_bmap find out the corresponding phsical block to the
++ *   @mapping, @block pair.
++ *
++ * Returns:
++ *   Physical block number on success, else Zero.
++ *
++ * Locking status:
++ *   We are under the bkl.
++ */
++sector_t tarfs_bmap(struct address_space *mapping, sector_t block)
++{
++	tarfs_debug("block=[%lld]",block);
++	return generic_block_bmap(mapping, block, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_bmap);
 +
 +/**
 + * @brief Releases a file handle.
@@ -1483,5 +1563,5 @@ index 000000000000..9297c1de7bca
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ashwin Dayanand Kamat <kashwindayan@vmware.com>");
 -- 
-2.30.0
+2.23.1
 
