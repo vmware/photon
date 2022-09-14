@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.93
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -132,6 +132,8 @@ Patch104: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 Patch105: 0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 # Fix for CVE-2022-0492
 Patch106: 0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+# Fix for CVE-2022-0435
+Patch107: 0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -329,7 +331,7 @@ Python programming language to use the interface to manipulate perf events.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M106
+%autopatch -p1 -m100 -M107
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -699,6 +701,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-5
+- Fix for CVE-2022-0435
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-4
 - Fix for CVE-2022-0492
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-3
