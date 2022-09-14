@@ -7,7 +7,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -25,13 +25,10 @@ Source5: macros.python3
 
 Patch0: find-debuginfo-do-not-generate-dir-entries.patch
 Patch1: CVE-2021-20271.patch
-Patch2: Fix-OpenPGP-parsing-bugs.patch
-Patch3: Header-signatures-alone-are-not-sufficient.patch
-Patch4: CVE-2021-20266.patch
-Patch5: Fix-regression-reading-rpm-v3.patch
-Patch6: CVE-2021-3521-1.patch
-Patch7: CVE-2021-3521-2.patch
-Patch8: CVE-2021-3521-3.patch
+Patch2: Header-signatures-alone-are-not-sufficient.patch
+Patch3: CVE-2021-20266.patch
+Patch4: Fix-regression-reading-rpm-v3.patch
+Patch5: CVE-2021-3521.patch
 
 Requires: bash
 Requires: libdb
@@ -286,6 +283,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-5
+- Further fixes to CVE-2021-3521
+- Remove pgp related fixes, it's not used by other distros
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-4
 - Fix CVE-2021-3521
 * Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 4.14.3-3
