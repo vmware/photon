@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.83
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.93
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 %{name}=63a4dd3dc72d55d02f6f50c12316e42b1bce45f90a0d704d76223c8ca75f66ebbbe17a7819cb1a6ff9a64844f92a84c4591096e230b363bcaf2b59c4f22ed278
+%define sha512 %{name}=a152188e394258d0694e7e47a05a109068492d985251f468f2b883881f1234f3fb269c9d5935e3299c7cc2bfb66cc7948e5d36f69700049580d4f9cf4ff1cc94
 
 Source1:    config_%{_arch}
 Source2:    initramfs.trigger
@@ -124,15 +124,11 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-4155
-Patch103: 0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 # Fix for CVE-2021-4204
-Patch104: 0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Next 2 patches are about to be merged into stable
 Patch106: 0001-mm-fix-panic-in-__alloc_pages.patch
-Patch107: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -330,7 +326,7 @@ Python programming language to use the interface to manipulate perf events.
 %autopatch -p1 -m100 -M105
 
 # mm and scsi fixes
-%autopatch -p1 -m106 -M107
+%autopatch -p1 -m106 -M106
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -697,6 +693,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+- Update to version 5.10.93
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
 - Fix CVE-2021-4155 and CVE-2021-4204
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-4

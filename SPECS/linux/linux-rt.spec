@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.83
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.93
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt58
+%define rt_version rt60
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=63a4dd3dc72d55d02f6f50c12316e42b1bce45f90a0d704d76223c8ca75f66ebbbe17a7819cb1a6ff9a64844f92a84c4591096e230b363bcaf2b59c4f22ed278
+%define sha512 linux=a152188e394258d0694e7e47a05a109068492d985251f468f2b883881f1234f3fb269c9d5935e3299c7cc2bfb66cc7948e5d36f69700049580d4f9cf4ff1cc94
 
 Source1:    config-rt
 Source2:    initramfs.trigger
@@ -96,15 +96,11 @@ Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-4155
-Patch102: 0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 # Fix for CVE-2021-4204
-Patch103: 0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Next 2 patches are about to be merged into stable
 Patch105: 0001-mm-fix-panic-in-__alloc_pages.patch
-Patch106: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -423,7 +419,7 @@ Patch612: 0312-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
 Patch613: 0313-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
 Patch614: 0314-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
 # Keep rt_version matched up with this patch.
-Patch615: 0315-Linux-5.10.83-rt58-REBASE.patch
+Patch615: 0315-Linux-5.10.90-rt60-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -562,7 +558,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m100 -M104
 
 # mm and scsi fixes
-%autopatch -p1 -m105 -M106
+%autopatch -p1 -m105 -M105
 
 # RT
 %autopatch -p1 -m301 -M714
@@ -786,6 +782,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+- Update to version 5.10.93
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
 - Fix CVE-2021-4155 and CVE-2021-4204
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-4
