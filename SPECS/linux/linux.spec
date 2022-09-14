@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.142
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -329,6 +329,15 @@ Requires:       python3
 %description python3-perf
 This package provides a module that permits applications written in the
 Python programming language to use the interface to manipulate perf events.
+
+%package -n bpftool
+Summary:    Inspection and simple manipulation of eBPF programs and maps
+Group:      Development/Libraries
+Requires:   linux-tools = %{version}-%{release}
+
+%description -n bpftool
+This package contains the bpftool, which allows inspection and simple
+manipulation of eBPF programs and maps.
 
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
@@ -650,6 +659,8 @@ make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
+make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
+
 %include %{SOURCE2}
 %include %{SOURCE6}
 
@@ -768,9 +779,16 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
+%files -n bpftool
+%defattr(-,root,root)
+%{_sbindir}/bpftool
+%{_datadir}/bash-completion/completions/bpftool
+
 %changelog
-*   Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
--   Update to version 5.10.142
+* Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.142-2
+- Add bpftool subpackage
+* Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
+- Update to version 5.10.142
 * Tue Aug 16 2022 srinidhira0 <srinidhir@vmware.com> 5.10.132-1
 - Update to version 5.10.132
 * Fri Aug 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.118-14
