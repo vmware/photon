@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.93
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -88,9 +88,11 @@ Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch104: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 # Fix for CVE-2022-22942
 Patch105: 0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
+# Fix for CVE-2022-0492
+Patch106: 0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
 # Next 2 patches are about to be merged into stable
-Patch106: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -183,10 +185,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M95
 
 # CVE
-%autopatch -p1 -m100 -M105
+%autopatch -p1 -m100 -M106
 
 # mm and scsi fixes
-%autopatch -p1 -m106 -M106
+%autopatch -p1 -m110 -M110
 
 # crypto
 %autopatch -p1 -m500 -M506
@@ -320,6 +322,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-4
+- Fix for CVE-2022-0492
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-3
 - Fix for CVE-2022-22942
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2

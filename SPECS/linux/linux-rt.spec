@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.93
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -102,9 +102,11 @@ Patch102: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch103: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 # Fix for CVE-2022-22942
 Patch104: 0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
+# Fix for CVE-2022-0492
+Patch105: 0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
 # Next 2 patches are about to be merged into stable
-Patch105: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -559,10 +561,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M104
+%autopatch -p1 -m100 -M105
 
 # mm and scsi fixes
-%autopatch -p1 -m105 -M105
+%autopatch -p1 -m110 -M110
 
 # RT
 %autopatch -p1 -m301 -M714
@@ -786,6 +788,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-4
+- Fix for CVE-2022-0492
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-3
 - Fix for CVE-2022-22942
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2
