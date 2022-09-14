@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.93
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -60,6 +60,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 Source17:       fips_canister-kallsyms
+Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 # common
@@ -339,6 +340,8 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    crypto/
 cp %{SOURCE17} crypto/
+# Patch canister wrapper
+patch -p1 < %{SOURCE18}
 # Change m to y for modules that are in the canister
 %include %{SOURCE5}
 %else
@@ -518,6 +521,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 15 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-7
+- Reduce kernel .data section by configuring smaller kernel log buffer (16)
+- Speedup algos registration in non-fips mode
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-6
 - vtarfs: fix multiple issues
 - tarfs: support for hardlink, fix uid/gid/mode issues
