@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.9
+Version:        3.1.10
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,7 +11,7 @@ URL:            https://github.com/vmware/tdnf
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=1c99017f0b9fd5ea919318086aa4e0bd9bcb512e7d660f47329cd8731931d736724d790ddcea817cbe144acb7279b83405d0a0b133417a08aecdf3f53fe6b380
+%define sha512  %{name}=dba96a9716f1d4bee2594c3a75f2d5f9712f2e6788962a58ad313bd80729bc7d7f99bcd33cad7cbe562f5c66718ddedbc6a65e6ac69f110cab8a16148bfb44e4
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -232,7 +232,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Tue Jun 14 2022 Oliver Kurth <okurth@vware.co> 3.1.9-1
+* Wed Sep 14 2022 Oliver Kurth <okurth@vmware.co> 3.1.10-1
+- update to 3.1.10 (add --alldeps option)
+* Tue Jun 14 2022 Oliver Kurth <okurth@vmware.co> 3.1.9-1
 - update to 3.1.9 (Check file from command line for "*.rpm" extension)
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.8-2
 - Exclude debug symbols properly
