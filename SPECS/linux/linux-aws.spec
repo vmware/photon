@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.326
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -213,6 +213,9 @@ Patch164:        0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
 Patch165:        0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
 Patch166:        0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
 Patch167:        0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
+
+# Fix for CVE-2022-3028
+Patch168:       0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -430,6 +433,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch165 -p1
 %patch166 -p1
 %patch167 -p1
+%patch168 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -577,6 +581,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Sep 14 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-2
+-   Fix for CVE-2022-3028
 *   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
 -   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5

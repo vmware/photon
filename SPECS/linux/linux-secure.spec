@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.326
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -173,6 +173,9 @@ Patch128:        0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
 Patch129:        0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
 Patch130:        0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
 Patch131:        0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
+
+# Fix for CVE-2022-3028
+Patch132:       0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -368,6 +371,7 @@ popd
 %patch129 -p1
 %patch130 -p1
 %patch131 -p1
+%patch132 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -490,6 +494,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 14 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-2
+-   Fix for CVE-2022-3028
 *   Tue Sep 06 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-1
 -   Update to version 4.9.326
 *   Mon Aug 29 2022 Ankit Jain <ankitja@vmware.com> 4.9.321-5
