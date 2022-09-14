@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.83
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -96,6 +96,10 @@ Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Next 2 patches are about to be merged into stable
+Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch104: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -552,6 +556,9 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %autopatch -p1 -m100 -M101
 
+# mm and scsi fixes
+%autopatch -p1 -m103 -M104
+
 # RT
 %autopatch -p1 -m301 -M714
 
@@ -770,6 +777,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-3
+- mm: fix percpu allocation for memoryless nodes
+- pvscsi: fix disk detection issue
 * Tue Sep 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-2
 - remove lvm in add-drivers list
 - lvm drivers are built as part of dm-mod
