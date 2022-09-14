@@ -482,9 +482,10 @@ class BuildEnvironmentSetup:
             os.makedirs(constants.prevPublishRPMRepo + "/noarch")
 
         cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-        cmd = f"{cmd} {Build_Config.pullPublishRPMS} {constants.prevPublishRPMRepo}"
+        cmd = f"{cmd} {Build_Config.pullPublishRPMS} {constants.prevPublishRPMRepo} "
         cmd += configdict["additional-path"]["photon-publish-rpms-path"]
         runShellCmd(cmd)
+        print("publish_rpms_cached cmd: %s" % (cmd))
         check_prerequesite["publish-rpms-cached"] = True
 
     def publish_x_rpms_cached():
@@ -500,9 +501,10 @@ class BuildEnvironmentSetup:
             os.makedirs(f"{constants.prevPublishXRPMRepo}/noarch")
 
         cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-        cmd = f"{cmd} {Build_Config.pullPublishXRPMS} {constants.prevPublishXRPMRepo}"
+        cmd = f"{cmd} {Build_Config.pullPublishXRPMS} {constants.prevPublishXRPMRepo} "
         cmd += configdict["additional-path"]["photon-publish-x-rpms-path"]
         runShellCmd(cmd)
+        print("publish_rpms_cached cmd: %s" % (cmd))
         check_prerequesite["publish-x-rpms-cached"] = True
 
     def publish_x_rpms():
