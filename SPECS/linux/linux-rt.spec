@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.83
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -717,7 +717,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "cn lvm dm-mod megaraid_sas"
+--add-drivers "cn dm-mod megaraid_sas"
 EOF
 
 # Cleanup dangling symlinks
@@ -770,6 +770,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-2
+- remove lvm in add-drivers list
+- lvm drivers are built as part of dm-mod
 * Mon Sep 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-1
 - Update to version 5.10.83
 * Mon Sep 12 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-17
