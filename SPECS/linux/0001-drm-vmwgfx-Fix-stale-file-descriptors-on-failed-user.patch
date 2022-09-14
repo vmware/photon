@@ -1,0 +1,164 @@
+From dd55f1db7eeb4844f1014c9eb9911f3318c9ccb5 Mon Sep 17 00:00:00 2001
+From: Mathias Krause <minipli@grsecurity.net>
+Date: Thu, 13 Jan 2022 18:15:24 +0100
+Subject: [PATCH] drm/vmwgfx: Fix stale file descriptors on failed usercopy
+
+[ The patch is yet to be upstreamed ]
+
+A failing usercopy of the fence_rep object will lead to a stale entry in
+the file descriptor table as put_unused_fd() won't release it. This
+enables userland to refer to a dangling 'file' object through that still
+valid file descriptor, leading to all kinds of use-after-free
+exploitation scenarios.
+
+Fix this by deferring the call to fd_install() until after the usercopy
+has succeeded.
+
+Cc: Zack Rusin <zackr@vmware.com>
+Fixes: c906965dee22 ("drm/vmwgfx: Add export fence to file descriptor support")
+[mks: backport to v5.16 and older]
+Signed-off-by: Mathias Krause <minipli@grsecurity.net>
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.h     |  5 ++--
+ drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c | 33 +++++++++++++------------
+ drivers/gpu/drm/vmwgfx/vmwgfx_fence.c   |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.c     |  2 +-
+ 4 files changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
+index 1523b51a7284..ad208a5f4ebe 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
+@@ -1088,15 +1088,14 @@ extern int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+ 				      struct vmw_private *dev_priv,
+ 				      struct vmw_fence_obj **p_fence,
+ 				      uint32_t *p_handle);
+-extern void vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
++extern int vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
+ 					struct vmw_fpriv *vmw_fp,
+ 					int ret,
+ 					struct drm_vmw_fence_rep __user
+ 					*user_fence_rep,
+ 					struct vmw_fence_obj *fence,
+ 					uint32_t fence_handle,
+-					int32_t out_fence_fd,
+-					struct sync_file *sync_file);
++					int32_t out_fence_fd);
+ bool vmw_cmd_describe(const void *buf, u32 *size, char const **cmd);
+ 
+ /**
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+index 83e1b54eb864..739cbc77d886 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+@@ -3816,17 +3816,17 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+  * Also if copying fails, user-space will be unable to signal the fence object
+  * so we wait for it immediately, and then unreference the user-space reference.
+  */
+-void
++int
+ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
+ 			    struct vmw_fpriv *vmw_fp, int ret,
+ 			    struct drm_vmw_fence_rep __user *user_fence_rep,
+ 			    struct vmw_fence_obj *fence, uint32_t fence_handle,
+-			    int32_t out_fence_fd, struct sync_file *sync_file)
++			    int32_t out_fence_fd)
+ {
+ 	struct drm_vmw_fence_rep fence_rep;
+ 
+ 	if (user_fence_rep == NULL)
+-		return;
++		return 0;
+ 
+ 	memset(&fence_rep, 0, sizeof(fence_rep));
+ 
+@@ -3854,20 +3854,14 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
+ 	 * handle.
+ 	 */
+ 	if (unlikely(ret != 0) && (fence_rep.error == 0)) {
+-		if (sync_file)
+-			fput(sync_file->file);
+-
+-		if (fence_rep.fd != -1) {
+-			put_unused_fd(fence_rep.fd);
+-			fence_rep.fd = -1;
+-		}
+-
+ 		ttm_ref_object_base_unref(vmw_fp->tfile, fence_handle,
+ 					  TTM_REF_USAGE);
+ 		VMW_DEBUG_USER("Fence copy error. Syncing.\n");
+ 		(void) vmw_fence_obj_wait(fence, false, false,
+ 					  VMW_FENCE_WAIT_TIMEOUT);
+ 	}
++
++	return ret ? -EFAULT : 0;
+ }
+ 
+ /**
+@@ -4209,16 +4203,23 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+ 
+ 			(void) vmw_fence_obj_wait(fence, false, false,
+ 						  VMW_FENCE_WAIT_TIMEOUT);
++		}
++	}
++
++	ret = vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv), ret,
++				    user_fence_rep, fence, handle, out_fence_fd);
++
++	if (sync_file) {
++		if (ret) {
++			/* usercopy of fence failed, put the file object */
++			fput(sync_file->file);
++			put_unused_fd(out_fence_fd);
+ 		} else {
+ 			/* Link the fence with the FD created earlier */
+ 			fd_install(out_fence_fd, sync_file->file);
+ 		}
+ 	}
+ 
+-	vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv), ret,
+-				    user_fence_rep, fence, handle, out_fence_fd,
+-				    sync_file);
+-
+ 	/* Don't unreference when handing fence out */
+ 	if (unlikely(out_fence != NULL)) {
+ 		*out_fence = fence;
+@@ -4236,7 +4237,7 @@ int vmw_execbuf_process(struct drm_file *file_priv,
+ 	 */
+ 	vmw_validation_unref_lists(&val_ctx);
+ 
+-	return 0;
++	return ret;
+ 
+ out_unlock_binding:
+ 	mutex_unlock(&dev_priv->binding_mutex);
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
+index 0f8d29397157..8bc41ec97d71 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
+@@ -1171,7 +1171,7 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
+ 	}
+ 
+ 	vmw_execbuf_copy_fence_user(dev_priv, vmw_fp, 0, user_fence_rep, fence,
+-				    handle, -1, NULL);
++				    handle, -1);
+ 	vmw_fence_obj_unreference(&fence);
+ 	return 0;
+ out_no_create:
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+index 312ed0881a99..e58112997c88 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+@@ -2479,7 +2479,7 @@ void vmw_kms_helper_validation_finish(struct vmw_private *dev_priv,
+ 	if (file_priv)
+ 		vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv),
+ 					    ret, user_fence_rep, fence,
+-					    handle, -1, NULL);
++					    handle, -1);
+ 	if (out_fence)
+ 		*out_fence = fence;
+ 	else
+-- 
+2.19.0
+
