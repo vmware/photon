@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -151,6 +151,10 @@ Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Next 2 patches are about to be merged into stable
 Patch106: 0001-mm-fix-panic-in-__alloc_pages.patch
 Patch107: 0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
+
+# Patches for ptp_vmw
+Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -286,6 +290,9 @@ The Linux package contains the Linux kernel doc files
 
 # mm and scsi fixes
 %autopatch -p1 -m106 -M107
+
+# Patches for ptp_vmw
+%autopatch -p1 -m201 -M202
 
 # crypto
 %autopatch -p1 -m500 -M506
@@ -507,6 +514,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
+- Update ptp_vmw with provider mode support
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-6
 - Fix CVE-2021-4155 and CVE-2021-4204
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
