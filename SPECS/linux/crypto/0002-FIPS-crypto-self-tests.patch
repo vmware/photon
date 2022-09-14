@@ -8,13 +8,40 @@ crypto_self_test module invokes test of crypto algorithms.
 
 Alexey: add FIPS_NOT_ALLOWED macro
 ---
+ crypto/Kconfig            |  13 +
  crypto/Makefile           |   1 +
- crypto/crypto_self_test.c |  96 ++++++
- crypto/testmgr.c          |  70 ++++-
- crypto/testmgr.h          | 757 ++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 910 insertions(+), 14 deletions(-)
+ crypto/crypto_self_test.c | 103 ++++++
+ crypto/testmgr.c          |  70 +++-
+ crypto/testmgr.h          | 757 ++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 930 insertions(+), 14 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 1157f82dc..08debffe8 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -206,6 +206,21 @@ config CRYPTO_TEST
+ 	help
+ 	  Quick & dirty crypto test module.
+ 
++config CRYPTO_SELF_TEST
++	bool "Crypto self test"
++	select CRYPTO_MANAGER
++	select CRYPTO_FIPS
++	select CRYPTO_AES
++	select CRYPTO_CBC
++	select CRYPTO_ECB
++	select CRYPTO_DES
++	select CRYPTO_XTS
++	select CRYPTO_RSA
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	help
++	  Crypto self test module for FIPS.
++
+ config CRYPTO_SIMD
+ 	tristate
+ 	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
 index b279483fba50..b7861fc22d33 100644
 --- a/crypto/Makefile
@@ -23,16 +50,16 @@ index b279483fba50..b7861fc22d33 100644
  sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
-+obj-y += crypto_self_test.o
++obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
 new file mode 100644
-index 000000000000..50de82ad76cf
+index 000000000..c2ffd20c9
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,100 @@
+@@ -0,0 +1,103 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -45,6 +72,9 @@ index 000000000000..50de82ad76cf
 +#include <linux/init.h>
 +#include <linux/err.h>
 +#include <linux/crypto.h>
++MODULE_LICENSE("GPL");
++
++extern int alg_test(const char *driver, const char *alg, u32 type, u32 mask);
 +
 +struct alg_self_test {
 +	char *driver_name;
@@ -109,7 +139,7 @@ index 000000000000..50de82ad76cf
 +#define FIPS_NOT_ALLOWED(algname) 0
 +#endif
 +
-+int __init crypto_self_test_init(void)
++static int __init crypto_self_test_init(void)
 +{
 +	int err = -ENOMEM;
 +	int i = 0;

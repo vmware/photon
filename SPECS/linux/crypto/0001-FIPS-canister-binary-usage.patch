@@ -50,7 +50,7 @@ index b7861fc22d33..af4cdacf7506 100644
  sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
--obj-y += crypto_self_test.o
+-obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o

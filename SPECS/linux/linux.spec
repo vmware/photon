@@ -17,12 +17,13 @@
 %ifarch aarch64
 %define arch arm64
 %define archdir arm64
+%global fips 0
 %endif
 
 Summary:        Kernel
 Name:           linux
 Version:        5.10.83
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -375,6 +376,10 @@ cp %{SOURCE17} crypto/
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
+%if 0%{?kat_build:1}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
 %include %{SOURCE7}
 
 # Set/add CONFIG_CROSS_COMPILE= if needed
@@ -687,6 +692,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-4
+- Enable crypto related configs in aarch64 similar to x86_64
+- crypto_self_test and broken kattest module enhancements
 * Tue Sep 13 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-3
 - mm: fix percpu allocation for memoryless nodes
 - pvscsi: fix disk detection issue

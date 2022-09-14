@@ -1,8 +1,7 @@
-commit 4a55f48b643b1a6f44fe5e0e9ac2572aec6169f7
-Author: Keerthana K <keerthanak@vmware.com>
-Date:   Mon Nov 9 16:57:22 2020 +0000
-
-crypto: kattest - break KAT fips intentionally
+From 45091a04ba2778c2f133067384201961e0b03721 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 20 Dec 2021 14:25:41 +0000
+Subject: [PATCH] crypto: kattest - break KAT fips intentionally
 
 1. Modified Kernel crypto testmgr to break KAT fips tests for
    algorithms supported in photon.
@@ -11,22 +10,59 @@ crypto: kattest - break KAT fips intentionally
    to break a particular algorithm in fips power on self tests.
    you can specify values [1,2,3...18]. each value corresponds to
    an algorithm for which the test vectors are tampered.
+---
+ crypto/Kconfig   | 19 +++++++++++++
+ crypto/Makefile  |  1 +
+ crypto/kattest.c | 74 ++++++++++++++++++++++++++++++++++++++++++++++++
+ crypto/testmgr.c | 29 +++++++++++++++++++
+ 4 files changed, 123 insertions(+)
+ create mode 100644 crypto/kattest.c
 
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index aa15d8ee0..d720dc794 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -220,6 +220,25 @@ config CRYPTO_SELF_TEST
+ 	help
+ 	  Crypto self test module for FIPS.
+ 
++config CRYPTO_BROKEN_KAT
++	bool "Broken Known Answer Test module"
++	select CRYPTO_MANAGER
++	select CRYPTO_FIPS
++	select CRYPTO_AES
++	select CRYPTO_CBC
++	select CRYPTO_ECB
++	select CRYPTO_CTR
++	select CRYPTO_DES
++	select CRYPTO_XTS
++	select CRYPTO_HMAC
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	select CRYPTO_RSA
++	select CRYPTO_DRBG
++	select CRYPTO_ECDH
++	help
++	  Crypto Broken Known Answer Test for FIPS testing
++
+ config CRYPTO_SIMD
+ 	tristate
+ 	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b7861fc22..9df57264f 100644
+index b4d3850f2..875bf89e7 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -50,6 +50,7 @@ sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
- obj-y += crypto_self_test.o
-+obj-y += kattest.o
+ obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
++obj-$(CONFIG_CRYPTO_BROKEN_KAT) += kattest.o
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o
 diff --git a/crypto/kattest.c b/crypto/kattest.c
 new file mode 100644
-index 000000000..50903abbc
+index 000000000..e2a9eb893
 --- /dev/null
 +++ b/crypto/kattest.c
 @@ -0,0 +1,74 @@
@@ -105,10 +141,10 @@ index 000000000..50903abbc
 +subsys_initcall(kattest_init);
 +module_exit(kattest_exit);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index b2ba16632..d6c712a53 100644
+index b505d0286..7f59f18a6 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -35,6 +35,29 @@
+@@ -36,6 +36,29 @@
  #include <crypto/internal/simd.h>
  
  #include "internal.h"
@@ -138,7 +174,7 @@ index b2ba16632..d6c712a53 100644
  
  static bool notests;
  module_param(notests, bool, 0644);
-@@ -56,6 +79,8 @@ DEFINE_PER_CPU(bool, crypto_simd_disabled_for_test);
+@@ -57,6 +80,8 @@ DEFINE_PER_CPU(bool, crypto_simd_disabled_for_test);
  EXPORT_PER_CPU_SYMBOL_GPL(crypto_simd_disabled_for_test);
  #endif
  
@@ -147,7 +183,7 @@ index b2ba16632..d6c712a53 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -5665,6 +5690,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5713,6 +5738,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  			     (j >= 0 && !alg_test_descs[j].fips_allowed)))
  		goto non_fips_alg;
  
@@ -158,3 +194,6 @@ index b2ba16632..d6c712a53 100644
  	rc = 0;
  	if (i >= 0)
  		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
+-- 
+2.28.0
+
