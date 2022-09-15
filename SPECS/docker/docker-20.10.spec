@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.11
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -316,6 +316,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-9
+- Bump up version to compile with new go
 * Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-8
 - Bump up version to compile with new go
 * Tue Aug 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.11-7
