@@ -8,12 +8,12 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=cbed7b6ab551366cc9cf9b5e8ac90cfc7395f6e79a1b44b1dcbf1e3ed6edcc644a339cca4efb4560d139355a893d00b6ac1b2e7116478f5bff3c8bfa5fdeb950
+Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=cbed7b6ab551366cc9cf9b5e8ac90cfc7395f6e79a1b44b1dcbf1e3ed6edcc644a339cca4efb4560d139355a893d00b6ac1b2e7116478f5bff3c8bfa5fdeb950
 
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  check
+BuildRequires:  check-devel
 BuildRequires:  glib-devel
 BuildRequires:  gpgme-devel
 BuildRequires:  attr-devel
@@ -81,16 +81,19 @@ pip3 install pygpgme xattr
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %doc README.md
 %{_libdir}/%{name}.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_includedir}/%{name}/
 
 %files -n python3-librepo
+%defattr(-,root,root)
 %{python3_sitearch}/%{name}/
 
 %changelog

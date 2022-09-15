@@ -1,17 +1,18 @@
-Summary:	Library for manipulating pipelines
-Name:		libpipeline
-Version:	1.5.5
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://libpipeline.nongnu.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
-%define sha512  libpipeline=adb228325c1f11e9f3566f2fc63541a90c88fe24656fc74ed0294d1eb3b80073bf4741fe7c289f53b340702145b11637d37682e3036dce41ec0fe45dcc6d62c5
+Summary:    Library for manipulating pipelines
+Name:       libpipeline
+Version:    1.5.5
+Release:    1%{?dist}
+License:    GPLv3+
+URL:        http://libpipeline.nongnu.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-%if %{with_check}
-BuildRequires:  check
+Source0: http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
+%define sha512 %{name}=adb228325c1f11e9f3566f2fc63541a90c88fe24656fc74ed0294d1eb3b80073bf4741fe7c289f53b340702145b11637d37682e3036dce41ec0fe45dcc6d62c5
+
+%if 0%{?with_check}
+BuildRequires:  check-devel
 BuildRequires:  pkg-config
 %endif
 
@@ -19,36 +20,39 @@ BuildRequires:  pkg-config
 Contains a library for manipulating pipelines of sub processes
 in a flexible and convenient way.
 
-%package        devel
+%package devel
 Summary:        Library providing headers and static libraries to libpipeline
 Group:          Development/Libraries
-Requires:       libpipeline = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       pkgconfig(libpipeline)
 
-%description    devel
+%description devel
 Development files for libpipeline
 
 %prep
-%autosetup
+%autosetup -p1
+
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
-#find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make -C tests check %{?_smp_mflags}
+%endif
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.la

@@ -19,7 +19,7 @@ Patch0:         rpm-ostree-libdnf-build.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  check
+BuildRequires:  check-devel
 BuildRequires:  cmake
 BuildRequires:  libtool
 BuildRequires:  git
@@ -38,8 +38,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  rpm-devel
 BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  autogen
 BuildRequires:  libsolv-devel >= 0.7.19
 BuildRequires:  libsolv

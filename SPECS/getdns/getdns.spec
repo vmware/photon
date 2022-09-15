@@ -12,7 +12,7 @@ Source0:        http://www.getdnsapi.net/dist/%{name}-%{version}.tar.gz
 %define sha512  %{name}=d09b8bdd0b4a3df2d25b9689166226da83a5a7eb2c7436487dc637539ac6077624a4d66cf684c4e6c4911561872c6bd191af3afd90d275b1662e4c6c47773ef6
 
 BuildRequires:  cmake
-BuildRequires:  check
+BuildRequires:  check-devel
 BuildRequires:  libev-devel
 BuildRequires:  libuv-devel
 BuildRequires:  glibc-devel
