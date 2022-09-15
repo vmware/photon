@@ -42,7 +42,7 @@ from SpecData import SPECS
 from support.check_spec import check_specs
 from utils import Utils
 
-targetList = {
+targetDict = {
     "image": [
         "iso",
         "ami",
@@ -74,7 +74,6 @@ targetList = {
         "generate-yaml-files",
         "create-repo",
         "distributed-build",
-        "package",
     ],
     "buildEnvironment": [
         "packages-cached",
@@ -94,21 +93,8 @@ targetList = {
     ],
     "tool-checkup": [
         "check-pre-reqs",
-        "check-docker",
-        "photon-builder-image",
-        "check-bison",
-        "check-texinfo",
-        "check-g++",
-        "check-gawk",
-        "check-repotool",
-        "check-kpartx",
-        "check-sanity",
         "check-spec-files",
-        "check-pyopenssl",
-        "check-photon-installer",
         "initialize-constants",
-        "contain",
-        "vixdiskutil",
     ],
     "utilities": [
         "generate-dep-lists",
@@ -130,32 +116,6 @@ runShellCmd = cmdUtils.runShellCmd
 
 curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
-
-
-def vixdiskutil():
-    if check_prerequesite["vixdiskutil"]:
-        return
-
-    if not os.path.exists(f"{photonDir}/tools/bin"):
-        cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
-
-    if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-        runShellCmd("make -C " + photonDir + "/tools/src/vixDiskUtil")
-
-    check_prerequesite["vixdiskutil"] = True
-
-
-def contain():
-    if check_prerequesite["contain"]:
-        return
-
-    if not os.path.exists(f"{photonDir}/tools/bin"):
-        cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
-
-    if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
-        runShellCmd("make -C " + photonDir + "/tools/src/contain install")
-
-    check_prerequesite["contain"] = True
 
 
 class Build_Config:
@@ -288,7 +248,7 @@ class Utilities:
             "SpecDeps", constants.logPath, constants.logLevel
         )
         if not os.path.isdir(Build_Config.generatedDataPath):
-            runCommandInShell("mkdir -p " + Build_Config.generatedDataPath)
+            runCommandInShell(f"mkdir -p {Build_Config.generatedDataPath}")
 
         if configdict["targetName"] in ["pkgtree", "who_needs", "print_upward_deps"]:
             if "pkg" not in os.environ:
@@ -361,6 +321,7 @@ class Utilities:
     def pull_stage_rpms(self):
         if not self.args or len(self.args) != 1:
             raise Exception("Please provide pull url as a parameter")
+
         url = self.args[0]
         files = self.specDepsObject.listRPMfilenames()
         notFound = []
@@ -368,14 +329,14 @@ class Utilities:
             dst = os.path.join(constants.rpmPath, f)
             if os.path.exists(dst):
                 continue
-            src = url + "/" + f
-            print("Downloading {}".format(f))
+            src = f"{url}/{f}"
+            print(f"Downloading {f}")
             try:
                 downloader.downloadFile(src, dst)
             except Exception:
                 self.logger.info("Not found")
                 notFound.append(f)
-        if len(notFound):
+        if notFound:
             self.logger.info("List of missing files: " + str(notFound))
 
     def clean_stage_rpms(self):
@@ -414,22 +375,22 @@ class BuildEnvironmentSetup:
 
     def packages_cached():
         check_prerequesite["packages-cached"] = True
+
+        if not configdict["additional-path"]["photon-cache-path"]:
+            raise Exception("ERROR: photon-cache-path is empty")
+
         runCommandInShell(
             f"rm -rf {Build_Config.rpmNoArchPath}/* {Build_Config.rpmArchPath}/*"
         )
         runCommandInShell(
             "cp -rf "
             + configdict["additional-path"]["photon-cache-path"]
-            + "/RPMS/noarch/* "
-            + Build_Config.rpmNoArchPath
+            + f"/RPMS/noarch/* {Build_Config.rpmNoArchPath}"
         )
         runCommandInShell(
             "cp -rf "
             + configdict["additional-path"]["photon-cache-path"]
-            + "/RPMS/"
-            + constants.currentArch
-            + "/* "
-            + Build_Config.rpmArchPath
+            + f"/RPMS/{constants.currentArch}/* {Build_Config.rpmArchPath}"
         )
         RpmBuildTarget.create_repo()
 
@@ -448,11 +409,14 @@ class BuildEnvironmentSetup:
         if check_prerequesite["sources-cached"]:
             return
 
+        if not configdict["additional-path"]["photon-sources-path"]:
+            raise Exception("ERROR: photon-sources-path is empty")
+
         print("Using cached SOURCES...")
         runCommandInShell(
             "ln -sf "
             + configdict["additional-path"]["photon-sources-path"]
-            + "  "
+            + " "
             + constants.sourcePath
         )
         check_prerequesite["sources-cached"] = True
@@ -475,18 +439,17 @@ class BuildEnvironmentSetup:
             return
 
         if not os.path.isdir(
-            constants.prevPublishRPMRepo + "/" + constants.currentArch
+            f"{constants.prevPublishRPMRepo}/{constants.currentArch}"
         ):
-            os.makedirs(constants.prevPublishRPMRepo + "/" + constants.currentArch)
+            os.makedirs(f"{constants.prevPublishRPMRepo}/{constants.currentArch}")
 
-        if not os.path.isdir(constants.prevPublishRPMRepo + "/noarch"):
-            os.makedirs(constants.prevPublishRPMRepo + "/noarch")
+        if not os.path.isdir(f"{constants.prevPublishRPMRepo}/noarch"):
+            os.makedirs(f"{constants.prevPublishRPMRepo}/noarch")
 
         cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
         cmd = f"{cmd} {Build_Config.pullPublishRPMS} {constants.prevPublishRPMRepo} "
         cmd += configdict["additional-path"]["photon-publish-rpms-path"]
         runShellCmd(cmd)
-        print("publish_rpms_cached cmd: %s" % (cmd))
         check_prerequesite["publish-rpms-cached"] = True
 
     def publish_x_rpms_cached():
@@ -505,7 +468,6 @@ class BuildEnvironmentSetup:
         cmd = f"{cmd} {Build_Config.pullPublishXRPMS} {constants.prevPublishXRPMRepo} "
         cmd += configdict["additional-path"]["photon-publish-x-rpms-path"]
         runShellCmd(cmd)
-        print("publish_rpms_cached cmd: %s" % (cmd))
         check_prerequesite["publish-x-rpms-cached"] = True
 
     def publish_x_rpms():
@@ -564,11 +526,11 @@ class CleanUp:
         CleanUp.clean_install()
         CleanUp.clean_chroot()
         print("Deleting Photon ISO...")
-        runCommandInShell("rm -f " + Build_Config.stagePath + "/photon-*.iso")
+        runCommandInShell(f"rm -f {Build_Config.stagePath}/photon-*.iso")
         print("Deleting stage dir...")
-        runCommandInShell("rm -rf " + Build_Config.stagePath)
+        runCommandInShell(f"rm -rf {Build_Config.stagePath}")
         print("Deleting chroot path...")
-        runCommandInShell("rm -rf " + constants.buildRootPath)
+        runCommandInShell(f"rm -rf {constants.buildRootPath}")
         print("Deleting tools/bin...")
         runCommandInShell("rm -rf tools/bin")
 
@@ -605,7 +567,7 @@ class CleanUp:
                     rpmFile = os.path.join(
                         constants.rpmPath,
                         buildarch,
-                        p + "-" + version + "-" + release + ".*" + buildarch + ".rpm",
+                        f"{p}-{version}-{release}.*{buildarch}.rpm",
                     )
                     runCommandInShell(f"rm -f {rpmFile}")
 
@@ -680,24 +642,23 @@ class RpmBuildTarget:
         else:
             BuildEnvironmentSetup.sources()
 
-        contain()
         CheckTools.check_spec_files()
 
         Utilities(None).generate_dep_lists()
 
         if constants.buildArch != constants.targetArch:
             runCommandInShell(
-                "mkdir -p " + constants.rpmPath + "/" + constants.targetArch
+                f"mkdir -p {constants.rpmPath}/{constants.targetArch}"
             )
 
-        self.logger.debug("Source Path :" + constants.sourcePath)
-        self.logger.debug("Spec Path :" + constants.specPath)
-        self.logger.debug("Rpm Path :" + constants.rpmPath)
-        self.logger.debug("Log Path :" + constants.logPath)
-        self.logger.debug("Log Level :" + constants.logLevel)
-        self.logger.debug("Top Dir Path :" + constants.topDirPath)
-        self.logger.debug("Publish RPMS Path :" + constants.prevPublishRPMRepo)
-        self.logger.debug("Publish X RPMS Path :" + constants.prevPublishXRPMRepo)
+        self.logger.debug(f"Source Path : {constants.sourcePath}")
+        self.logger.debug(f"Spec Path : {constants.specPath}")
+        self.logger.debug(f"Rpm Path : {constants.rpmPath}")
+        self.logger.debug(f"Log Path : {constants.logPath}")
+        self.logger.debug(f"Log Level : {constants.logLevel}")
+        self.logger.debug(f"Top Dir Path : {constants.topDirPath}")
+        self.logger.debug(f"Publish RPMS Path : {constants.prevPublishRPMRepo}")
+        self.logger.debug(f"Publish X RPMS Path : {constants.prevPublishXRPMRepo}")
 
         Builder.get_packages_with_build_options(
             configdict["photon-build-param"]["pkg-build-options"]
@@ -716,9 +677,6 @@ class RpmBuildTarget:
             # Then do the build to the target
             constants.currentArch = constants.targetArch
             constants.crossCompiling = True
-
-        if check_prerequesite["photon-builder-image"]:
-            return
 
     @staticmethod
     def create_repo():
@@ -766,14 +724,10 @@ class RpmBuildTarget:
         check_prerequesite["packages"] = True
 
     def package(self, pkgName):
-        if check_prerequesite["package"]:
-            return
-
-        self.logger.debug("Package to build:" + pkgName)
+        self.logger.debug(f"Package to build: {pkgName}")
         Builder.buildSpecifiedPackages(
             [pkgName], Build_Config.buildThreads, Build_Config.pkgBuildType
         )
-        check_prerequesite["package"] = True
 
     def packages_minimal(self):
         if check_prerequesite["packages-minimal"]:
@@ -846,7 +800,7 @@ class RpmBuildTarget:
         check_prerequesite["updated-packages"] = True
 
     def check_packages(self):
-        if check_prerequesite["check"]:
+        if check_prerequesite["check-packages"]:
             return
 
         constants.setRPMCheck(True)
@@ -857,13 +811,12 @@ class RpmBuildTarget:
             Build_Config.pkgInfoFile,
             self.logger,
         )
-        check_prerequesite["check"] = True
+        check_prerequesite["check-packages"] = True
 
     def distributed_build():
         # TODO: should be moved to top
         import DistributedBuilder
 
-        vixdiskutil()
         print("Distributed Building using kubernetes ...")
         with open(Build_Config.distributedBuildFile, "r") as configFile:
             distributedBuildConfig = json.load(configFile)
@@ -933,21 +886,16 @@ class CheckTools:
         if check_prerequesite["check-pre-reqs"]:
             return
 
-        CheckTools.check_bison()
-        CheckTools.check_gplusplus()
-        CheckTools.check_gawk()
-        CheckTools.check_repo_tool()
-        CheckTools.check_texinfo()
+        CheckTools.check_all_tools()
         CheckTools.check_sanity()
         CheckTools.check_docker()
-        CheckTools.check_pyopenssl()
         CheckTools.create_ph_builder_img()
+        CheckTools.check_photon_installer()
+        CheckTools.check_contain()
+        CheckTools.check_vixdiskutil()
         check_prerequesite["check-pre-reqs"] = True
 
     def create_ph_builder_img():
-        if check_prerequesite["photon-builder-image"]:
-            return
-
         ph_docker_img = configdict["photon-build-param"]["photon-docker-image"]
         ph_docker_img_url = configdict["photon-build-param"]["ph-docker-img-url"]
         ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
@@ -958,40 +906,33 @@ class CheckTools:
         cmd = f"{cmd} {ph_docker_img} {ph_builder_tag}"
         runShellCmd(cmd)
 
-        check_prerequesite["photon-builder-image"] = True
+    def check_vixdiskutil():
+        local_build = not configdict["photon-build-param"]["start-scheduler-server"]
+        if constants.buildArch == "x86_64" and local_build:
+            if not os.path.exists(f"{photonDir}/tools/bin"):
+                cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
 
-    def check_bison():
-        if check_prerequesite["check-bison"]:
-            return
+            if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
+                runShellCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
 
-        if not shutil.which("bison"):
-            raise Exception("bison not present")
-        check_prerequesite["check-bison"] = True
+    def check_contain():
+        if not os.path.exists(f"{photonDir}/tools/bin"):
+            cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
 
-    def check_gplusplus():
-        if check_prerequesite["check-g++"]:
-            return
+        if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
+            runShellCmd(f"make -C {photonDir}/tools/src/contain install")
 
-        if not shutil.which("g++"):
-            raise Exception("g++ not present")
-        check_prerequesite["check-g++"] = True
+    def check_all_tools():
+        tools = ["bison", "g++", "gawk", "makeinfo", "kpartx"]
+        for tool in tools:
+            if not shutil.which(tool):
+                raise Exception(f"{tool} not present")
 
-    def check_gawk():
-        if check_prerequesite["check-gawk"]:
-            return
-
-        if not shutil.which("gawk"):
-            raise Exception("gawk not present")
-
-        check_prerequesite["check-gawk"] = True
-
-    def check_repo_tool():
-        if check_prerequesite["check-repotool"]:
-            return
+        cmdUtils.runShellCmd("pip3 show pyOpenSSL >/dev/null 2>&1")
 
         createrepo_cmd = ""
-        for i in {"createrepo", "createrepo_c"}:
-            createrepo_cmd = shutil.which(i)
+        for tool in {"createrepo", "createrepo_c"}:
+            createrepo_cmd = shutil.which(tool)
             if createrepo_cmd:
                 break
 
@@ -999,29 +940,12 @@ class CheckTools:
             raise Exception("createrepo not found")
 
         configdict["createrepo-cmd"] = createrepo_cmd
-        check_prerequesite["check-repotool"] = True
-
-    def check_texinfo():
-        if check_prerequesite["check-texinfo"]:
-            return
-
-        if not shutil.which("makeinfo"):
-            raise Exception("texinfo not present")
-        check_prerequesite["check-texinfo"] = True
 
     def check_sanity():
-        if check_prerequesite["check-sanity"]:
-            return
-
         script = f"{photonDir}/tools/scripts/sanity_check.sh"
         runShellCmd(script)
 
-        check_prerequesite["check-sanity"] = True
-
     def check_docker():
-        if check_prerequesite["check-docker"]:
-            return
-
         if not glob.glob(Build_Config.dockerEnv) and not shutil.which("docker"):
             raise Exception("docker not present")
 
@@ -1035,18 +959,6 @@ class CheckTools:
             print(f"\nError: Python3 package docker-{docker_py_ver} not installed.")
             print(f"Please use: pip3 install docker=={docker_py_ver}\n")
             raise Exception()
-
-        check_prerequesite["check-docker"] = True
-
-    def check_pyopenssl():
-        if check_prerequesite["check-pyopenssl"]:
-            return
-
-        try:
-            import OpenSSL
-        except Exception as e:
-            raise Exception(e)
-        check_prerequesite["check-pyopenssl"] = True
 
     def check_spec_files():
         if check_prerequesite["check-spec-files"]:
@@ -1072,18 +984,7 @@ class CheckTools:
 
         check_prerequesite["check-spec-files"] = True
 
-    def check_kpartx():
-        if check_prerequesite["check-kpartx"]:
-            return
-
-        if not shutil.which("kpartx"):
-            raise Exception("Package kpartx not installed. Aborting.")
-        check_prerequesite["check-kpartx"] = True
-
     def check_photon_installer():
-        if check_prerequesite["check-photon-installer"]:
-            return
-
         url = "https://github.com/vmware/photon-os-installer.git"
         cmd = "pip3 install git+%s" % url
 
@@ -1098,8 +999,6 @@ class CheckTools:
             print("Warning: %s" % e)
             install_from_url(cmd)
             return
-
-        check_prerequesite["check-photon-installer"] = True
 
         key = "SKIP_INSTALLER_UPDATE"
         if key in os.environ and strtobool(os.environ[key]):
@@ -1150,7 +1049,7 @@ class BuildImage:
         self.photon_release_version = constants.releaseVersion
 
     def set_Iso_Parameters(self, imgName):
-        self.generated_data_path = Build_Config.stagePath + "/common/data"
+        self.generated_data_path = f"{Build_Config.stagePath}/common/data"
         self.src_iso_path = None
         if imgName == "iso":
             self.iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.iso"
@@ -1214,16 +1113,12 @@ class BuildImage:
         imagebuilder.createIso(self)
 
     def build_image(self):
-        CheckTools.check_kpartx()
-        CheckTools.check_photon_installer()
         BuildEnvironmentSetup.photon_stage()
 
         local_build = not configdict["photon-build-param"]["start-scheduler-server"]
-        if constants.buildArch == "x86_64" and local_build:
-            vixdiskutil()
         if local_build:
             RpmBuildTarget.ostree_repo()
-        print("Building " + self.img_name + " image")
+        print(f"Building {self.img_name} image")
         imagebuilder.createImage(self)
 
     @staticmethod
@@ -1554,7 +1449,7 @@ def main():
     if not cfgPath:
         cfgPath = f"{curDir}/{build_cfg}"
         if not os.path.isfile(cfgPath) or branch:
-            cfgPath = str(PurePath(curDir, "photon-" + branch, build_cfg))
+            cfgPath = str(PurePath(curDir, f"photon-{branch}", build_cfg))
 
     global configdict
     global check_prerequesite
@@ -1597,8 +1492,8 @@ def main():
 
     configdict["packageName"] = None
 
-    for target in targetList:
-        for item in targetList[target]:
+    for target in targetDict:
+        for item in targetDict[target]:
             check_prerequesite[item] = False
 
     initialize_constants()
@@ -1612,7 +1507,7 @@ def main():
 
     try:
         attr = None
-        if targetName in targetList["image"]:
+        if targetName in targetDict["image"]:
             buildImage = BuildImage(targetName)
             if targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
                 buildImage.set_Iso_Parameters(targetName)
@@ -1621,17 +1516,19 @@ def main():
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])
-        elif targetName in targetList["rpmBuild"]:
+        elif targetName in targetDict["rpmBuild"]:
             if targetName != "distributed-build":
                 attr = getattr(RpmBuildTarget(), configdict["targetName"])
             else:
                 attr = getattr(RpmBuildTarget, configdict["targetName"])
-        elif targetName in targetList["buildEnvironment"]:
+        elif targetName in targetDict["buildEnvironment"]:
             attr = getattr(BuildEnvironmentSetup, configdict["targetName"])
-        elif targetName in targetList["cleanup"]:
+        elif targetName in targetDict["cleanup"]:
             attr = getattr(CleanUp, configdict["targetName"])
-        elif targetName in targetList["utilities"]:
-            attr = getattr(Utilities.utility, configdict["targetName"])
+        elif targetName in targetDict["utilities"]:
+            attr = getattr(Utilities(options.args), configdict["targetName"])
+        elif targetName in targetDict["tool-checkup"]:
+            attr = getattr(CheckTools, configdict["targetName"])
         else:
             RpmBuildTarget().package(targetName)
 
