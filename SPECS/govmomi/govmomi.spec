@@ -1,6 +1,6 @@
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
-Version:        0.28.0
+Version:        0.29.0
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        Apache License 2.0
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/govmomi
 Source0:        https://github.com/vmware/govmomi/%{name}-%{version}.tar.gz
-%define sha512  govmomi=8e475678bfbe68c62f51f1b7fd0804bb4058911d7550f0d91b8caca2cd77293bd659ce55cbeab457b9d92005b126a3a814030304b8e354bee4d37cf59974fb41
+%define sha512  govmomi=f43cdb8333775689ede39bc2f488433de1a8c6be9cffd534f50023557f5fde3bddc6f2ead88d9f23d0de3a7ed16191bc4daa1e7f31dceb80055feb202c94ab7e
 BuildRequires:  go
 BuildRequires:  which
 BuildRequires:  ca-certificates
@@ -54,5 +54,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/vcsim
 
 %changelog
+*   Thu Sep 15 2022 Shivani Agarwal <shivania2@vmware.com> 0.29.0-1
+-   Upgrade Version
 *   Fri May 13 2022 Shivani Agarwal <shivania2@vmware.com> 0.28.0-1
 -   Initial version of govmomi 0.28.0
