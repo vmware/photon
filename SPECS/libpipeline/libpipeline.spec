@@ -1,17 +1,18 @@
-Summary:	Library for manipulating pipelines
-Name:		libpipeline
-Version:	1.5.3
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://libpipeline.nongnu.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
-%define sha1 libpipeline=725e1104b864f06835e5620bfe689a5a00cbeb1f
+Summary:    Library for manipulating pipelines
+Name:       libpipeline
+Version:    1.5.3
+Release:    1%{?dist}
+License:    GPLv3+
+URL:        http://libpipeline.nongnu.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-%if %{with_check}
-BuildRequires: check
+Source0: http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
+%define sha512 %{name}=db0796bffbcdd8e875902385c7cdc140e3e0e045b3d0eba1017e55b4c66027c20cc2cd0fccaf52f59fa941d0925134011317b9c27986765a1ec2a73132ebaec6
+
+%if 0%{?with_check}
+BuildRequires: check-devel
 BuildRequires: pkg-config
 %endif
 
@@ -22,33 +23,34 @@ in a flexible and convenient way.
 %package devel
 Summary:        Library providing headers and static libraries to libpipeline
 Group:          Development/Libraries
-Requires:       libpipeline = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       pkgconfig(libpipeline)
 
 %description devel
 Development files for libpipeline
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 %configure
+%make_build
 
-make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
-#find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
-make -C tests check
+make -C tests check %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.la

@@ -8,8 +8,9 @@ URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512  %{name}=16dde1e37cd5958eb8e90d77f9c0967bd8f7b9464c0b56116fd5b1df5ff38c69d994b453c53187c33d7c44c05329f49d271a919a1575a493caaf0bffc5a6e34d
+Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
+%define sha512 %{name}=16dde1e37cd5958eb8e90d77f9c0967bd8f7b9464c0b56116fd5b1df5ff38c69d994b453c53187c33d7c44c05329f49d271a919a1575a493caaf0bffc5a6e34d
+
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
@@ -18,7 +19,7 @@ Patch0:         rpm-ostree-libdnf-build.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  check
+BuildRequires:  check-devel
 BuildRequires:  cmake
 BuildRequires:  libtool
 BuildRequires:  git
@@ -37,11 +38,9 @@ BuildRequires:  openssl-devel
 BuildRequires:  rpm-devel
 BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  autogen
 BuildRequires:  libsolv-devel >= 0.7.19
-BuildRequires:  libsolv
 BuildRequires:  systemd-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  gperf
@@ -112,6 +111,7 @@ install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 
 %files
+%defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/%{name}/
 %{_libdir}/*.so.1*
@@ -132,6 +132,7 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_mandir}/man8/rpm-ostree*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -139,10 +140,12 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %files host
+%defattr(-,root,root)
 %{_bindir}/rpm-ostree-host/mk-ostree-host.sh
 %{_bindir}/rpm-ostree-host/function.inc
 
 %files repo
+%defattr(-,root,root)
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog

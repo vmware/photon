@@ -7,11 +7,13 @@ URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=c9f39d7497d310ae220df2dfbd8e95f347e2bc8c
+
+Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=cbed7b6ab551366cc9cf9b5e8ac90cfc7395f6e79a1b44b1dcbf1e3ed6edcc644a339cca4efb4560d139355a893d00b6ac1b2e7116478f5bff3c8bfa5fdeb950
+
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  check
+BuildRequires:  check-devel
 BuildRequires:  glib-devel
 BuildRequires:  gpgme-devel
 BuildRequires:  attr-devel
@@ -43,8 +45,8 @@ Development files for librepo.
 Summary:        Python 3 bindings for the librepo library
 Provides:       python3-librepo
 Requires:       %{name} = %{version}-%{release}
-Requires:   	python3-packaging
-Requires:   	python3-sphinx
+Requires:       python3-packaging
+Requires:       python3-sphinx
 
 %description -n python3-librepo
 Python 3 bindings for the librepo library.
@@ -56,52 +58,55 @@ mkdir build-py3
 %build
 pushd build-py3
 %cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
-make %{?_smp_mflags}
+%make_build
 popd
 
 %install
 pushd build-py3
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 popd
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %doc README.md
 %{_libdir}/%{name}.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_includedir}/%{name}/
 
 %files -n python3-librepo
+%defattr(-,root,root)
 %{python3_sitearch}/%{name}/
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.2-4
--   Bump up to compile with python 3.10
-*   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-3
--   openssl 3.0.0 compatibility
-*   Tue Sep 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-2
--   Remove python dependencies.
-*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.14.2-1
--   Updated to 1.14.2
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
--   Fix build with new rpm
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
--   openssl 1.1.1
-*   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
--   Fixed string parsing logic
-*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
--   Automatic Version Bump
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1
--   Updated to 1.12.0
-*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.10.2-3
--   Mass removal python2
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
--   Added for ARM Build
-*   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
--   Initial build. First version
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.2-4
+- Bump up to compile with python 3.10
+* Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-3
+- openssl 3.0.0 compatibility
+* Tue Sep 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-2
+- Remove python dependencies.
+* Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.14.2-1
+- Updated to 1.14.2
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
+- Fix build with new rpm
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
+- openssl 1.1.1
+* Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
+- Fixed string parsing logic
+* Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
+- Automatic Version Bump
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1
+- Updated to 1.12.0
+* Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.10.2-3
+- Mass removal python2
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+- Added for ARM Build
+* Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
+- Initial build. First version

@@ -8,11 +8,11 @@ License:       Apache2.0
 URL:           http://www.vmware.com
 Distribution:  Photon
 
-Source0:       %{name}-%{version}.tar.gz
-%define sha1 netmgmt=e08b88b8c9b11a226d5483a6d978e70e96ef7464
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
 
 BuildRequires: autoconf
-BuildRequires: check >= 0.9.4
+BuildRequires: check-devel
 BuildRequires: docker >= 1.12
 BuildRequires: glib-devel
 
@@ -29,7 +29,7 @@ Network management utilities for PhotonOS
 %package devel
 Summary: netmgmt development headers and libraries
 Group: Development/Libraries
-Requires: netmgmt = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 header files and libraries for netmgmt
@@ -37,7 +37,7 @@ header files and libraries for netmgmt
 %package cli-devel
 Summary: netmgmt development cli headers and libraries
 Group: Development/Libraries
-Requires: netmgmt = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description cli-devel
 header files and libraries for netmgmt cli
@@ -50,17 +50,15 @@ autoreconf -mif
 # fix gcc 9 compilation warning/error
 export CFLAGS="-O2 -g -Wno-error=format-truncation -Wno-error=restrict -Wno-error=format-overflow -Wno-error=stringop-truncation -Wno-error=stringop-overflow"
 %configure \
-	--libdir=%{_lib64dir}
+    --libdir=%{_lib64dir}
 %make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-%post
-/sbin/ldconfig
-# First argument is 1 => New Installation
-# First argument is 2 => Upgrade
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -69,16 +67,16 @@ find %{buildroot} -name '*.la' -delete
 %{_lib64dir}/libnetmgrcli.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/netmgmt/netmgr.h
 %{_lib64dir}/libnetmgr.a
 %{_lib64dir}/libnetmgr.so
 
 %files cli-devel
+%defattr(-,root,root)
 %{_includedir}/netmgmt/netmgrcli.h
 %{_lib64dir}/libnetmgrcli.a
 %{_lib64dir}/libnetmgrcli.so
-
-#%%doc ChangeLog README COPYING
 
 %changelog
 * Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
