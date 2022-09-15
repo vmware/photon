@@ -10,7 +10,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.19
+Version:        1.19.1
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -19,7 +19,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=c4460d54957a0bcf3407ea72cd1c6b3c645ef4ef6cc0fa142a80cb43c06ca4af31d52b0ccd723c81d17a62004bc96559cad23da874a4b668b4d8b168f1da2186
+%define sha512  go=7e8cf557f05d5a537f9305bb9c19cf8ab9ce640376e5ea97ff0d490b016364936e8dfc129462760c4e817af01fdf09e3f815b88412f9985bb254dfa3167752c0
 Requires:       glibc
 
 %define ExtraBuildRequires go
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.1-1
+- Upgrade to 1.19.1.
 * Fri Aug 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.19-1
 - Upgrade to 1.19.
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.1-2
