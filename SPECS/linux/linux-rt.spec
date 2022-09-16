@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.93
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.103
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt60
+%define rt_version rt62
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=a152188e394258d0694e7e47a05a109068492d985251f468f2b883881f1234f3fb269c9d5935e3299c7cc2bfb66cc7948e5d36f69700049580d4f9cf4ff1cc94
+%define sha512 linux=81431367bd262136c2c178397afd9f17b7c507262dc211030523e1d69a48521c65bb516daf721882ac3694157840d092c7f82a04a14e7afaf791648a9f38cd66
 
 Source1:    config-rt
 Source2:    initramfs.trigger
@@ -98,14 +98,6 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch102: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-0330
-Patch103: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-# Fix for CVE-2022-22942
-Patch104: 0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-# Fix for CVE-2022-0492
-Patch105: 0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-# Fix for CVE-2022-0435
-Patch106: 0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -426,8 +418,11 @@ Patch611: 0311-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
 Patch612: 0312-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
 Patch613: 0313-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
 Patch614: 0314-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
+Patch615: 0315-eventfd-Make-signal-recursion-protection-a-task-bit.patch
+Patch616: 0316-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
+Patch617: 0317-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
 # Keep rt_version matched up with this patch.
-Patch615: 0315-Linux-5.10.90-rt60-REBASE.patch
+Patch618: 0318-Linux-5.10.100-rt62-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -563,7 +558,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M106
+%autopatch -p1 -m100 -M102
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -790,6 +785,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 15 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-1
+- Update to version 5.10.103
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-5
 - Fix for CVE-2022-0435
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-4

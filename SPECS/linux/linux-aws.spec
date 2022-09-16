@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.93
-Release:        5%{?dist}
+Version:        5.10.103
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=a152188e394258d0694e7e47a05a109068492d985251f468f2b883881f1234f3fb269c9d5935e3299c7cc2bfb66cc7948e5d36f69700049580d4f9cf4ff1cc94
+%define sha512 linux=81431367bd262136c2c178397afd9f17b7c507262dc211030523e1d69a48521c65bb516daf721882ac3694157840d092c7f82a04a14e7afaf791648a9f38cd66
 
 Source1:    config-aws
 Source2:    initramfs.trigger
@@ -64,14 +64,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-0330
-Patch104: 0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-# Fix for CVE-2022-22942
-Patch105: 0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-# Fix for CVE-2022-0492
-Patch106: 0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-# Fix for CVE-2022-0435
-Patch107: 0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -191,7 +183,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M107
+%autopatch -p1 -m100 -M103
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -357,6 +349,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 15 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-1
+- Update to version 5.10.103
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-5
 - Fix for CVE-2022-0435
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-4
