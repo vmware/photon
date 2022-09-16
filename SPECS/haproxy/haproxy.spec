@@ -1,21 +1,15 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.3.4
-Release:        6%{?dist}
+Version:        2.6.0
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha1    haproxy=8bb2371a91a7874810c5b5374c24232292697cde
-
-Patch0:         haproxy-CVE-2021-39242.patch
-Patch1:         haproxy-CVE-2021-39240.patch
-Patch2:         haproxy-CVE-2021-40346.patch
-Patch3:         0001-openssl-3.0.0-support.patch
-Patch4:         haproxy-CVE-2022-0711.patch
+Source0:        http://www.haproxy.org/download/2.6/src/%{name}-%{version}.tar.gz
+%define sha512  %{name}=7bb70bfb5606bbdac61d712bc510c5e8d5a5126ed8827d699b14a2f4562b3bd57f8f21344d955041cee0812c661350cca8082078afe2f277ff1399e461ddb7bb
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -44,15 +38,15 @@ It contains the documentation and manpages for haproxy package.
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
         USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
-make %{?_smp_mflags} -C contrib/systemd
-sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
-sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
+make %{?_smp_mflags} -C admin/systemd
+sed -i s/"local\/"/""/g admin/systemd/haproxy.service
+sed -i "s/\/run/\/var\/run/g" admin/systemd/haproxy.service
 sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux-glibc install %{?_smp_mflags}
-install -vDm755 contrib/systemd/haproxy.service \
+install -vDm755 admin/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service
 install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/haproxy/haproxy.cfg
 
@@ -68,6 +62,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Fri Sep 16 2022 Nitesh Kumar <kunitesh@vmware.com> 2.6.0-1
+- Upgrade to v2.6.0
 * Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.3.4-6
 - Fix CVE-2022-0711
 * Mon Sep 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.4-5
