@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -13,54 +13,51 @@ Distribution:   Photon
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=dc1be96d433223e764f20fc7807f46baf44d2ec23a54edcf570251f0fec4b5040a311f62521e6fb4cd96723a4b791c51fa1f5fb5bc86b478e89b587ea36b46a4
 
-Source1:        brp-strip-debug-symbols
-Source2:        brp-strip-unneeded
-Source3:        macros
-Source4:        macros.php
-Source5:        macros.perl
-Source6:        macros.vpath
-Source7:        macros.ldconfig
-Source8:        rpmdb-rebuild.sh
-Source9:        rpmdb-rebuild.service
-Source10:       rpm.conf
-Source11:       lock.c
+Source1: brp-strip-debug-symbols
+Source2: brp-strip-unneeded
+Source3: macros
+Source4: macros.php
+Source5: macros.perl
+Source6: macros.vpath
+Source7: macros.ldconfig
+Source8: rpmdb-rebuild.sh
+Source9: rpmdb-rebuild.service
+Source10: rpm.conf
+Source11: lock.c
 
-Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch1:         Fix-OpenPGP-parsing-bugs.patch
-Patch2:         Header-signatures-alone-are-not-sufficient.patch
-Patch3:         Fix-regression-reading-rpm-v3.patch
-Patch4:         rpmdb-rename-dir.patch
-Patch5:         silence-warning.patch
-Patch6:         sync-buf-cache.patch
-Patch7:         wait-for-lock.patch
-Patch8:         CVE-2021-3521-1.patch
-Patch9:         CVE-2021-3521-2.patch
-Patch10:        CVE-2021-3521-3.patch
+Patch0: find-debuginfo-do-not-generate-dir-entries.patch
+Patch1: Header-signatures-alone-are-not-sufficient.patch
+Patch2: Fix-regression-reading-rpm-v3.patch
+Patch3: rpmdb-rename-dir.patch
+Patch4: silence-warning.patch
+Patch5: sync-buf-cache.patch
+Patch6: wait-for-lock.patch
+Patch7: CVE-2021-3521.patch
 
-Requires:       bash
-Requires:       zstd-libs
-Requires:       lua
-Requires:       openssl >= 1.1.1
-Requires:       %{name}-libs = %{version}-%{release}
+Requires: bash
+Requires: zstd-libs
+Requires: lua
+Requires: openssl >= 1.1.1
+Requires: %{name}-libs = %{version}-%{release}
 
-BuildRequires:  systemd-devel
-BuildRequires:  dbus-devel >= 1.3
-BuildRequires:  systemd-rpm-macros
-BuildRequires:  lua-devel
-BuildRequires:  popt-devel
-BuildRequires:  nss-devel
-BuildRequires:  elfutils-devel
-BuildRequires:  libcap-devel
-BuildRequires:  xz-devel
-BuildRequires:  file-devel
-BuildRequires:  python3-devel
-BuildRequires:  openssl >= 1.1.1
-BuildRequires:  zstd-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  libtool
-BuildRequires:  libltdl-devel
-BuildRequires:  openssl-devel
+BuildRequires: systemd-devel
+BuildRequires: dbus-devel >= 1.3
+BuildRequires: systemd-rpm-macros
+BuildRequires: lua-devel
+BuildRequires: popt-devel
+BuildRequires: nss-devel
+BuildRequires: elfutils-devel
+BuildRequires: libcap-devel
+BuildRequires: xz-devel
+BuildRequires: file-devel
+BuildRequires: python3-devel
+BuildRequires: openssl >= 1.1.1
+BuildRequires: zstd-devel
+BuildRequires: sqlite-devel
+BuildRequires: python3-setuptools
+BuildRequires: libtool
+BuildRequires: libltdl-devel
+BuildRequires: openssl-devel
 
 %description
 RPM package manager
@@ -299,10 +296,8 @@ rm -rf %{buildroot}
 %{rpmhome}/ocamldeps.sh
 %{rpmhome}/*.prov
 %{rpmhome}/sepdebugcrcfix
-
 %{rpmhome}/rpmdeps
 %{rpmhome}/pythondistdeps.py
-
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmdeps.8*
@@ -326,10 +321,14 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %files plugin-systemd-inhibit
+%defattr(-,root,root,-)
 %{_libdir}/rpm-plugins/systemd_inhibit.so
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-13
+- Further fixes to CVE-2021-3521
+- Remove pgp related fixes, it's not used by other distros
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-12
 - Fix CVE-2021-3521
 * Wed Jun 22 2022 Harinadh D <hdommaraju@vmware.com> 4.16.1.3-11
