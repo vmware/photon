@@ -1,15 +1,17 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=5e47e6ac626f2bfc10a9f2f24c2e66c4d7f291ca778ebd81c7d565326e036e821d3eb92e5d7540517b1c715466232a7d7da895ab48811d037ad92d423ed934b6
+Source0: https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=5e47e6ac626f2bfc10a9f2f24c2e66c4d7f291ca778ebd81c7d565326e036e821d3eb92e5d7540517b1c715466232a7d7da895ab48811d037ad92d423ed934b6
+
+Patch0: fix-validation-of-user.patch
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -30,7 +32,7 @@ on binary policies such as customizing policy boolean settings.
 %package        utils
 Summary:        SELinux libsepol utilies
 Group:          Development/Libraries
-Requires:       libsepol = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    utils
 The libsepol-utils package contains the utilities
@@ -91,6 +93,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Fri Sep 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4-2
+- Fix user validation
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
 - Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1
