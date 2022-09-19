@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -20,24 +20,18 @@ Source4:        cache_swap.sh
 Source5:        %{name}.logrotate
 
 BuildRequires:  Linux-PAM-devel
-BuildRequires:  autoconf
 BuildRequires:  ed
-BuildRequires:  expat
 BuildRequires:  expat-devel
-BuildRequires:  gawk
-BuildRequires:  gcc
+BuildRequires:  build-essential
 BuildRequires:  gnupg
 BuildRequires:  krb5-devel
 BuildRequires:  libcap-devel
 BuildRequires:  libecap-devel
 BuildRequires:  libgpg-error-devel
-BuildRequires:  libtool
 BuildRequires:  libxml2-devel
-BuildRequires:  make
-BuildRequires:  nettle
+BuildRequires:  nettle-devel
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
-BuildRequires:  systemd
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
 
@@ -45,6 +39,12 @@ Requires:       openssl
 Requires:       shadow
 Requires:       perl-URI
 Requires:       systemd
+Requires:       libxml2
+Requires:       nettle
+Requires:       perl
+Requires:       Linux-PAM
+Requires:       cyrus-sasl
+Requires:       openldap
 
 %description
 Squid is a high-performance proxy caching server for Web clients,
@@ -62,7 +62,7 @@ lookup program (dnsserver), a program for retrieving FTP data
 %autosetup -p1
 
 %define _confdir %{_sysconfdir}
-%define _squiddatadir /usr/share/%{name}
+%define _squiddatadir %{_datadir}/%{name}
 
 %build
 %define _lto_cflags %{nil}
@@ -151,6 +151,13 @@ mkdir -p %{buildroot}%{_localstatedir}/log/%{name} \
 
 chmod 644 contrib/url-normalizer.pl contrib/user-agents.pl
 
+# install /usr/lib/tmpfiles.d/squid.conf
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat > %{buildroot}%{_tmpfilesdir}/%{name}.conf <<EOF
+# See tmpfiles.d(5) for details
+d /run/%{name} 0755 %{name} %{name} - -
+EOF
+
 %pre
 if ! getent group %{name} >/dev/null 2>&1; then
   /usr/sbin/groupadd -g 53 %{name}
@@ -194,6 +201,7 @@ rm -rf %{buildroot}
 %attr(770,%{name},root) %dir %{_localstatedir}/log/%{name}
 %attr(750,%{name},%{name}) %dir %{_localstatedir}/spool/%{name}
 %attr(755,%{name},%{name}) %dir /run/%{name}
+%{_tmpfilesdir}/squid.conf
 
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}.pam
 %config(noreplace) %{_sysconfdir}/%{name}/cachemgr.conf.default
@@ -219,6 +227,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Mon Sep 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6-3
+- Add squid.conf to create runtime directories at boot
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6-2
 - Bump version as a part of nettle upgrade
 * Mon Jul 25 2022 Susant Sahani <ssahani@vmware.com> 5.6-1
