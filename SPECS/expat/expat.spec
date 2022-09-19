@@ -1,14 +1,14 @@
 Summary:        An XML parser library
 Name:           expat
 Version:        2.2.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha1 expat=90a361e4c97f8c469479ffadc0de0b121a911fb5
+%define sha512 %{name}=e082874efcc4b00709e2c0192c88fb15dfc4f33fc3a2b09e619b010ea93baaf7e7572683f738463db0ce2350cab3de48a0c38af6b74d1c4f5a9e311f499edab0
 Patch0:         CVE-2022-22822-27.patch
 Patch1:         CVE-2021-45960-46143.patch
 Patch2:         CVE-2022-23852.patch
@@ -16,6 +16,7 @@ Patch3:         CVE-2022-23990.patch
 Patch4:         CVE-2022-25235_25236.patch
 Patch5:         CVE-2022-25314_25315.patch
 Patch6:         CVE-2022-25313.patch
+Patch7:         expat-CVE-2022-40674.patch
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -45,18 +46,17 @@ The package contains expat doc files.
 
 %build
 %configure --disable-static
-
-make %{?_smp_mflags}
+%make_build
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_docdir}/%{name}
 %{_fixperms} %{buildroot}/*
 
 %check
-make %{?_smp_mflags} check
+%make_check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+* Mon Sep 19 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-10
+- Fix CVE-2022-40674
 * Fri Mar 04 2022 Tapas Kundu <tkundu@vmware.com> 2.2.9-9
 - Fix CVE-2022-25313
 * Mon Feb 28 2022 Tapas Kundu <tkundu@vmware.com> 2.2.9-8
