@@ -1,0 +1,10 @@
+diff --git a/tools/perf/util/scripting-engines/Build b/tools/perf/util/scripting-engines/Build
+index 7b342ce..2ad0ea9 100644
+--- a/tools/perf/util/scripting-engines/Build
++++ b/tools/perf/util/scripting-engines/Build
+@@ -3,4 +3,4 @@ perf-$(CONFIG_LIBPYTHON) += trace-event-python.o
+ 
+ CFLAGS_trace-event-perl.o += $(PERL_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-shadow -Wno-nested-externs -Wno-undef -Wno-switch-default
+ 
+-CFLAGS_trace-event-python.o += $(PYTHON_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-shadow
++CFLAGS_trace-event-python.o += $(PYTHON_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-shadow -Wno-deprecated-declarations

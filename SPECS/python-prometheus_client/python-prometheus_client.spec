@@ -1,18 +1,14 @@
 Name:           python3-prometheus_client
-Version:        0.8.0
-Release:        2%{?dist}
+Version:        0.14.1
+Release:        1%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
 License:        Apache-2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/prometheus_client
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
+Url:            https://pypi.python.org/pypi/prometheus_client
 Source0: prometheus_client-%{version}.tar.gz
-%define sha512 prometheus_client=76f548b77bcb3630ac069cc4004bffd44fdebc600beefbd390ad06e53c61bc743840cda0fc349e876cd5cf8f915000ac2432da3d4698f6e7d73f77ead7b2b400
-
-Source1: client_python-tests-%{version}.tar.gz
-%define sha512 client_python-tests=d4c6e2cd633ef31a47f644c83eb41446dced191cd49e137cddc2301bc872312bae9b07c63e840c1aa666f7037c80aa6ed64246ee63a036406e4d9a69caa3e15b
+%define sha512  prometheus_client=3ba1389f23566ecab1371452ec717e06c4e444d1ac8a37cb27429493e64f3931e6876734c0947cb43ba086ed51ca47a0c7764d488ea6e7f2d0864447f49b09e4
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -32,7 +28,6 @@ Python client for the Prometheus monitoring system.
 
 %prep
 %autosetup -p1 -n prometheus_client-%{version}
-tar xf %{SOURCE1} --no-same-owner
 
 %build
 %py3_build
@@ -42,7 +37,7 @@ tar xf %{SOURCE1} --no-same-owner
 
 %if 0%{?with_check}
 %check
-python3 setup.py test
+python3 setup.py tests
 %endif
 
 %files
@@ -50,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1
+- Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-2
 - Fix build with new rpm
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1

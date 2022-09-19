@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
+%global debug_package %{nil}
 Name:           python3-netifaces
-Version:        0.10.9
-Release:        2%{?dist}
+Version:        0.11.0
+Release:        1%{?dist}
 Summary:        Python library to retrieve information about network interfaces
 Group:          Development/Libraries
 License:        MIT
@@ -10,7 +9,7 @@ URL:            http://alastairs-place.net/netifaces/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/n/netifaces/netifaces-%{version}.tar.gz
-%define sha1    netifaces=340a91e6cdd03c941a0da464255d6e4b5cbe5512
+%define sha512  netifaces=a53110efb78c89c4d72d002104866253a4c085dd27ff9f41d4cfe3811cc5619e7585ceda4e91e83cdd0645c40c745c61d205708ee9a34427b35f437a48f148e5
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -21,14 +20,14 @@ Requires:       python3-libs
 This package provides a cross platform API for getting address information
 from network interfaces.
 
-
 %prep
-%setup -q -n netifaces-%{version}
+%autosetup -n netifaces-%{version}
 
 %build
+%{py3_build}
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %clean
 rm -rf %{buildroot}/*
@@ -39,6 +38,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.11.0-1
+-  Automatic Version Bump
 *  Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.10.9-2
 -  Mass removal python2
 *  Tue Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.10.9-1

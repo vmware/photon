@@ -1,5 +1,5 @@
 Name:           python3-pytest
-Version:        6.2.5
+Version:        7.1.2
 Release:        1%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
-%define sha512 pytest=7624563a9d967da4cbf82cfff90bae8c0cca07b32e291dc7c5efa787725ed1a255edd066bf0d5fbd89b8cbed8cf5b619fe7c7017f44a7f8a014e3310c06bdbf9
+%define sha512 pytest=e61c9b0a8fc053626da307d6bac1f5caab451c4948ef7c7f2e2f991c3433a55f81ec0d9412fca646c02f22e695c71e873ee48fc0ab0aad337ce01b70628df494
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -21,6 +21,7 @@ BuildRequires:  python3-packaging
 BuildRequires:  python3-pluggy
 BuildRequires:  python3-py
 BuildRequires:  python3-toml
+BuildRequires:  python3-pip
 BuildRequires:  python3-wcwidth
 
 Requires:       python3
@@ -64,6 +65,8 @@ make %{_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.2-1
+- Automatic Version Bump
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.5-1
 - Upgrade to 6.2.5 which is python3.10 compatible
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-2

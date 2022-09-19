@@ -1,15 +1,14 @@
 Name:           python3-fuse
-Version:        1.0.2
+Version:        1.0.5
 Release:        1%{?dist}
 Summary:        Python interface to libfuse
 License:        LGPL
 Group:          Development/Languages/Python
-URL:            https://github.com/libfuse/python-fuse
+Url:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
+Source0: https://github.com/libfuse/python-fuse/archive/refs/tags/python-fuse-%{version}.tar.gz
+%define sha512  python-fuse=e0d0cc0f3dee9416eefe430119e8f2f5a9bbc88a214d36d1d23c7e1f7ce78cc977a173f6d22c05cb928715d5c657ba29738f60453323b25299dddc08d57595d2
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: https://github.com/libfuse/python-fuse/archive/refs/tags/python-fuse-%{version}.tar.gz
-%define sha512 python-fuse=9c71e621db41ea70fe0cf824df73b81704f08f38470b6cddd2d7c5933c90edd80af86a0aa20f19e0e4e4aec1dde1c49b65646931cf7debdc5dc875cb3e2d1c31
 
 BuildRequires:  fuse-devel
 BuildRequires:  pkg-config
@@ -37,5 +36,7 @@ find %{buildroot}%{_libdir} -name '*.pyc' -delete
 %{python3_sitelib}/fuse*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
+- Automatic Version Bump
 * Thu Feb 18 2021 Tapas Kundu <tkundu@vmware.com> 1.0.2-1
 - Initial packaging for python3-fuse

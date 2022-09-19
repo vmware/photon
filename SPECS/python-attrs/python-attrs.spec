@@ -1,7 +1,7 @@
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
 Version:        22.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -34,10 +34,10 @@ Attributes without boilerplate.
 %autosetup -p1 -n attrs-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 #python2 does not support for tests
@@ -49,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.1.0-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 22.1.0-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2

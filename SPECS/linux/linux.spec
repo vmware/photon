@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.142
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -83,6 +83,9 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
+
+# To support compilation with py 3.11
+Patch8:  do-not-throw-error-for-py311-deprecated-modules.patch
 
 # To support GCC v12
 Patch9:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
@@ -474,6 +477,7 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 
 %ifarch x86_64
@@ -782,6 +786,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.10.142-4
+- Dont throw error for supported deprecated modules of py311
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-3
 - Fix build with latest toolchain
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-2

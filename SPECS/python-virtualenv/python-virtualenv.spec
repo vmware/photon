@@ -1,6 +1,6 @@
 Name:           python3-virtualenv
-Version:        20.1.0
-Release:        2%{?dist}
+Version:        20.16.3
+Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
@@ -9,14 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: virtualenv-%{version}.tar.gz
-%define sha512 virtualenv=740bf8ba30d836c240d248dd2fa31a8702cfa8f96a6192dd6430dbeff3ebbf0fe67d4fd2439ed4961869731520b097783a29381eae3f81f6700b6050b75422c8
+%define sha512 virtualenv=d3a90bab9862ea2a70e1dc429dff98a729425858a2153281cba4ecaf13107e6c3a43781e8c96b1f2a6c1ddd797de86bcfee8129a698e45d20eed76432efba5a6
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-appdirs
 BuildRequires:  python3-setuptools
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools
-
+BuildRequires:  python3-pip
 Requires:       python3
 Requires:       python3-appdirs
 Requires:       python3-distlib
@@ -51,6 +51,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 20.16.3-1
+- Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.1.0-2
 - Fix build with new rpm
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20.1.0-1

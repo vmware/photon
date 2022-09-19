@@ -1,16 +1,17 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
-Version:        5.7.3
-Release:        2%{?dist}
+Version:        5.9.1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
-%define sha1    psutil=0b093faed351cf89e930d1c3ba380831b068ebc1
+%define sha512  psutil=1ddb119a10243d17d808417817ec8659d22447f12a4bbc0366c13f6587a4b0b59f4e74f6ac5d1e1a908bb5fd287be630466d32beabcb5008f6a19c24a1557c27
+%if 0%{?with_check}
 Patch0:         fix-make-check-psutil.patch
+%endif
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -25,10 +26,10 @@ psutil (process and system utilities) is a cross-platform library for retrieving
 %autosetup -n psutil-%{version} -p1
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildroot}/%{python3_sitelib} %{?_smp_mflags}
@@ -38,25 +39,27 @@ make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildroot}/%{python3_sit
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Oct 19 2021 Tapas Kundu <tkundu@vmware.com> 5.7.3-2
--   Requires setuptools for building.
--   Fixed makecheck
-*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.3-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.7.2-2
--   openssl 1.1.1
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.2-1
--   Automatic Version Bump
-*   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 5.4.7-4
--   Mass removal python2
-*   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-3
--   Disabled make check as it requires certain drivers to be
--   installed in /sys/class/power_supply
-*   Fri Jan 11 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-2
--   Fix makecheck
-*   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
--   Updated to version 5.4.7
-*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
--   Fixed make check error.
-*   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
--   Initial packaging for Photon
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.1-1
+- Automatic Version Bump
+* Tue Oct 19 2021 Tapas Kundu <tkundu@vmware.com> 5.7.3-2
+- Requires setuptools for building.
+- Fixed makecheck
+* Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.3-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.7.2-2
+- openssl 1.1.1
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.2-1
+- Automatic Version Bump
+* Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 5.4.7-4
+- Mass removal python2
+* Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-3
+- Disabled make check as it requires certain drivers to be
+- installed in /sys/class/power_supply
+* Fri Jan 11 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-2
+- Fix makecheck
+* Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
+- Updated to version 5.4.7
+* Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
+- Fixed make check error.
+* Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
+- Initial packaging for Photon

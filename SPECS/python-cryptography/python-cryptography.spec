@@ -1,6 +1,6 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        3.3.2
+Version:        38.0.1
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
@@ -9,17 +9,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha512 cryptography=55f6ee13342b3209b1fcb310f4c4d33d22856ee785cb2347e6ad36c34e9b42f6e0d5bece8e458b09663a5b78e34c4567fe7a211b51ca71f55ccc93e3f62dc5e4
-
-Patch0:         0001-openssl-3.0.0-support.patch
+%define sha512 cryptography=a0e9eb645888a74e01377c0ed79427d066a50d10a9b628828195e82b7ee44ff59866f3659f2028541856bba818340c404e00061645c2676bc63f8ece42fd511e
 
 BuildRequires:  openssl-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-setuptools-rust
+BuildRequires:  python3-typing-extensions
+BuildRequires:  python3-semantic-version
+BuildRequires:  rust
+BuildRequires:  ca-certificates
 %if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
@@ -42,10 +43,10 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 %autosetup -p1 -n cryptography-%{version}
 
 %build
-python3 setup.py build
+%{py3_build}
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{py3_install}
 
 %check
 openssl req \
@@ -67,6 +68,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 38.0.1-1
+- Update to 38.0.1
 * Sat Nov 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-1
 - update to version 3.3.2 and openssl 3.0.0 support
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1

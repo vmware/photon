@@ -1,17 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        Amazon Web Services Library.
 Name:           python3-botocore
-Version:        1.21.3
-Release:        1%{?dist}
+Version:        1.27.56
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
-%define sha1    botocore=4b794bd1da92920b5c680ff688f7ad1f1857e446
+%define sha512  botocore=cbbb95ee5ba0381e6c12c6ee72224976c6618fd7a645a0fa8de60308e1682e5fe37d4bbc49b8c61dffa7482479596ad24df350554eb6a46e63ec8ac8957bfb47
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -27,20 +24,19 @@ Requires:       python3-jmespath
 Requires:       python3-dateutil
 Requires:       python3-urllib3
 BuildArch:      noarch
-Provides:       python3.9dist(botocore)
+Provides:       python%{python3_version}dist(botocore)
 
 %description
 A low-level interface to a growing number of Amazon Web Services. The botocore package is the foundation for the AWS CLI as well as boto3.
-
 
 %prep
 %autosetup -n botocore-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 pip3 install nose
@@ -53,6 +49,10 @@ nosetests tests/unit
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.56-2
+- Update release to compile with python 3.11
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27.56-1
+-   Automatic Version Bump
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.21.3-1
 -   Update to 1.21.3
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.13-1

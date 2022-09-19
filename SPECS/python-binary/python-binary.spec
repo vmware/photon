@@ -1,6 +1,6 @@
 Name:           python3-binary
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library to convert between binary and SI units
 License:        Apache-2.0 OR MIT
 Group:          Development/Languages/Python
@@ -29,10 +29,10 @@ Binary provides a bug-free and easy way to convert between and within binary (IE
 %autosetup -n binary-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 pip3 install pluggy atomicwrites more_itertools
@@ -43,5 +43,7 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Sep 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.0-1
--   Initial Build
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.0-2
+- Update release to compile with python 3.11
+* Tue Sep 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.0-1
+- Initial Build

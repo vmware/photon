@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        1.25.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -11,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
-%define sha1    urllib3=fb096161db7025d6fefd716f7da878e887f91082
+%define sha512  urllib3=58f77edb9ced62cbac7b0baf2651c07f9f413267f103730ee25f08c5d4d0bf52a2ace02f58841bcd55652db677c7a1dc9a756681e7e32d590bc69d8b93e8f173
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -27,7 +25,7 @@ Requires:       python3-libs
 
 BuildArch:      noarch
 
-Provides:       python3.9dist(urllib3)
+Provides:       python%{python3_version}dist(urllib3)
 
 %description
 urllib3 is a powerful, sanity-friendly HTTP client for Python.
@@ -39,10 +37,10 @@ Much of the Python ecosystem already uses urllib3 and you should too.
 rm -rf test/with_dummyserver/
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 nofiles=$(ulimit -n)
@@ -70,6 +68,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.25.11-3
+- Update release to compile with python 3.11
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-2
 - Added provides
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.25.11-1

@@ -1,17 +1,14 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-zope.event
 Version:        4.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very basic event publishing system
 License:        ZPL-2.1
 Group:          Development/Libraries/Python
 Url:            http://pypi.python.org/pypi/zope.event
 Source0:        https://pypi.python.org/packages/source/z/zope.event/zope.event-%{version}.tar.gz
-%define sha1    zope.event=32ac2c3f2c4c9bb6f4d7bccbb5dbd6f22964d6ad
+%define sha512  zope.event=1d82ae316fc75eebc03aadeb78890a19add35490720cd7bd073faeb9dc9ed97511ca4fdafc2228530798384d667c0aa88e3ef47b0be668128556a78bf82c42e5
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  python3
 BuildRequires:  python3-sphinx
 Requires:       python3
 Requires:       python3-setuptools
@@ -27,13 +24,13 @@ example, a type-based event dispatching system that builds on zope.event
 can be found in zope.component.
 
 %prep
-%setup -q -n zope.event-%{version}
+%autosetup -n zope.event-%{version}
 
 %build
-python setup.py build
+%py3_build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python setup.py test
@@ -44,5 +41,7 @@ python setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 4.5.0-1
--   Initial build.  First version
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.5.0-2
+- Update release to compile with python 3.11
+* Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 4.5.0-1
+- Initial build.  First version

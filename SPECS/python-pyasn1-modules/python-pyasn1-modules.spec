@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python3-pyasn1-modules
 Version:        0.2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyasn1-modules-%{version}.tar.gz
-%define sha1    pyasn1-modules=43b89feb6864fe359aae89120627165219de313b
+%define sha512  pyasn1-modules=fdfcaa065deffdd732deaa1fa30dec2fc4a90ffe15bd12de40636ce0212f447611096d2f4e652ed786b5c47544439e6a93721fabe121f3320f13965692a1ca5b
 
 BuildArch:      noarch
 
@@ -27,25 +25,20 @@ Requires:       python3-libs
 
 %description
 This is a small but growing collection of ASN.1 data structures expressed in Python terms using pyasn1 data model.
-
 It’s thought to be useful to protocol developers and testers.
-
 All modules are py2k/py3k-compliant.
-
 If you happen to convert some ASN.1 module into pyasn1 that is not yet present in this collection and wish to contribute - please send it to me.
-
 Written by Ilya Etingof <ilya@glas.net>.
 
-
 %prep
-%setup -q -n pyasn1-modules-%{version}
+%autosetup -n pyasn1-modules-%{version}
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 pushd ../tools
@@ -59,13 +52,15 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.8-1
--   Automatic Version Bump
-*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.2.2-2
--   Mass removal python2
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.2.2-1
--   Update to version 0.2.2
-*   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-2
--   Fixed make check.
-*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-1
--   Initial packaging for Photon
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.8-2
+- Update release to compile with python 3.11
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.8-1
+- Automatic Version Bump
+* Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.2.2-2
+- Mass removal python2
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.2.2-1
+- Update to version 0.2.2
+* Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-2
+- Fixed make check.
+* Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-1
+- Initial packaging for Photon

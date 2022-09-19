@@ -1,15 +1,14 @@
 Name:           python3-jsonpointer
-Version:        2.0
-Release:        2%{?dist}
+Version:        2.3
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://github.com/stefankoegl/python-json-pointer
-
+Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0: https://github.com/stefankoegl/python-json-pointer/archive/refs/tags/jsonpointer-%{version}.tar.gz
-%define sha512 jsonpointer=e8e2b03c12c3fc5f65816fc71d1c07135ef74a0c912286f5b8bef2d9e21b8ae6e766d1aa2104b3eeb0e53928034321f25b203386ac3f5641b54b0641f6a08137
+%define sha512 jsonpointer=e04da474a5ec376d1cd2c764c2d7a11ac296450df199449994cb1dedf02a49df3ae3a4e75b2963370dba1da166464602b849a79609f7a98d8246dab0b342c819
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -40,6 +39,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3-1
+- Automatic Version Bump
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0-2
 - Mass removal python2
 * Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0-1

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-M2Crypto
-Version:        0.36.0
-Release:        4%{?dist}
+Version:        0.38.0
+Release:        1%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -13,7 +11,7 @@ Patch0:         makecheck.patch
 %endif
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define sha1    M2Crypto=666735839ad0d9b414cc39937ffad2675297bb02
+%define sha512  M2Crypto=b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -49,7 +47,7 @@ CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls
 
 %install
 rm -rf %{buildroot}
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -62,23 +60,25 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Apr 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-4
--   Openssl 3.0.0 compatibility
-*   Tue Feb 16 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.36.0-3
--   Fix make check
-*   Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-2
--   Openssl 1.1.1 compatibility
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.36.0-1
--   Automatic Version Bump
-*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.30.1-4
--   Mass removal python2
-*   Mon Oct 07 2019 Shreyas B. <shreyasb@vmware.com> 0.30.1-3
--   Fixed makecheck errors.
-*   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.30.1-2
--   Add %check
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.30.1-1
--   Update to version 0.30.1
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.26.0-2
--   Remove BuildArch
-*   Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.26.0-1
--   Initial packaging
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.38.0-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-4
+- Openssl 3.0.0 compatibility
+* Tue Feb 16 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.36.0-3
+- Fix make check
+* Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-2
+- Openssl 1.1.1 compatibility
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.36.0-1
+- Automatic Version Bump
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.30.1-4
+- Mass removal python2
+* Mon Oct 07 2019 Shreyas B. <shreyasb@vmware.com> 0.30.1-3
+- Fixed makecheck errors.
+* Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.30.1-2
+- Add %check
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.30.1-1
+- Update to version 0.30.1
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.26.0-2
+- Remove BuildArch
+* Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.26.0-1
+- Initial packaging

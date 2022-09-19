@@ -1,17 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
-Version:        3.24.0
-Release:        4%{?dist}
+Version:        3.25.0
+Release:        1%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/datastax/python-driver/archive/cassandra-driver-%{version}.tar.gz
-%define sha1    cassandra-driver=3affe07f7c0bea76d202f60627d11c3b445908c0
+%define sha512  cassandra-driver=82a2bace177d74551ea349bf30141785e1e7b750e612c8aa64a51520a082d43b0828b68a4c8e82b21b17a4d955fe9f82118cdf0b2a259f86eacfd3994bd45a56
 
 BuildRequires:  python3
 BuildRequires:  cython3
@@ -34,7 +31,7 @@ Requires:       libev
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
-Requires:       python3-geomet < 0.3
+Requires:       python3-geomet
 
 %description
 A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
@@ -42,7 +39,7 @@ using exclusively Cassandra's binary protocol and Cassandra Query Language v3. T
 supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 %prep
-%setup -q -n cassandra-driver-%{version}
+%autosetup -p1 -n cassandra-driver-%{version}
 
 %build
 python3 setup.py build --no-cython
@@ -73,6 +70,8 @@ python3 setup.py eventlet_nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.25.0-1
+-   Automatic Version Bump
 *   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.24.0-4
 -   Fixed install time dependency
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.24.0-3

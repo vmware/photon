@@ -1,6 +1,6 @@
 Name:       tpm2-pytss
 Version:    1.2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Python bindings for tpm2-tss
 License:    BSD
 URL:        https://github.com/tpm2-software/tpm2-pytss
@@ -15,6 +15,7 @@ BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-pkgconfig
 BuildRequires: python3-pycparser
+BuildRequires: python3-pip
 BuildRequires: git
 BuildRequires: tpm2-tss-devel
 
@@ -53,5 +54,7 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.0-2
+- Update release to compile with python 3.11
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-1
 - First build. Needed for tpm2-pkcs11.

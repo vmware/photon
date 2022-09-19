@@ -1,6 +1,6 @@
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
-Version:        4.0.0
+Version:        5.0.0
 Release:        1%{?dist}
 Url:            https://pypi.org/project/chardet
 License:        LGPL v2.1
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/chardet/chardet/archive/chardet-%{version}.tar.gz
-%define sha512 chardet=ebd7f420e1094445270db993f6373ffe7370419e002b0bb13299dc6c9b0f7c4e77b0f44f871fba6371e6869e7c86728514367db377e3137487a3acf50cb81e96
+%define sha512 chardet=3853248584d53d977abe0e6ab856e1526fd7360d9b94b4f08d03895da80ba9efac8882dbd3f919f0d52b0699c0d7fd68edb223c37512685976c6f2b212fbe0ff
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -47,6 +47,8 @@ chardet is a universal character encoding detector in Python.
 %{_bindir}/chardetect
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.0.0-1
+- Automatic Version Bump
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-1
 - Add python3-setuptools to Requires
 * Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.0.4-2

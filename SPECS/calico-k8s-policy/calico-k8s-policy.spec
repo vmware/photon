@@ -1,7 +1,7 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
 Version:        3.17.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Group:          Development/Tools
@@ -15,14 +15,12 @@ BuildRequires:  libcalico
 BuildRequires:  libffi-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-asn1crypto
 BuildRequires:  python3-backports.ssl_match_hostname
 BuildRequires:  python3-ConcurrentLogHandler
 BuildRequires:  python3-cffi
-BuildRequires:  python3-pycrypto
+BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-dnspython
 BuildRequires:  python3-docopt
@@ -47,9 +45,7 @@ BuildRequires:  python3-subprocess32
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-websocket-client
 BuildRequires:  python3-virtualenv
-BuildRequires:  python3
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-setuptools
 %define debug_package %{nil}
 
@@ -73,6 +69,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+* Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-6
+- Replace deprecated pycrypto with pycryptodome
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.17.1-5
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 3.17.1-4

@@ -1,21 +1,21 @@
 %define debug_package %{nil}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
-Version:        4.0
-Release:        5%{?dist}
+Version:        5.5
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
-%define sha512  PyInstaller=d0cff91a5cb1cfe297e33dc89013849f139161a000c0449b590b0ac1c4bb0ccd01e8dc6bf10ed3b5b6fb21a280e567d23dbaed8cab8bf0ec50db5ff5a09a5a19
-Patch0:         pyinstaller-gcc-10.patch
+Source0:        https://files.pythonhosted.org/packages/1e/d7/214b25c912d5f7d9c31d266821a8be6a35df80535056fe83997688721927/pyinstaller-%{version}.tar.gz
+%define sha512  pyinstaller=aaff7fe272d70b597691d398344289333b11343f9ef37cd797a264310db140e8ec391c8aef7a0661f18487222fb945a5f797f31e21c932585277335f5c30ace6
+BuildRequires:  cmocka-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
 %if %{with_check}
@@ -38,13 +38,13 @@ PyInstaller is tested against Windows, Mac OS X, and Linux. However, it is not a
 to make a Linux app you run it in Linux, etc. PyInstaller has been used successfully with AIX, Solaris, and FreeBSD, but is not tested against them.
 
 %prep
-%autosetup -n pyinstaller-%{version} -p1
+%autosetup -n pyinstaller-%{version}
 
 %build
 pushd bootloader
 python3 ./waf distclean all
 popd
-python3 setup.py build
+%py3_build
 
 %install
 python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
@@ -70,29 +70,31 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
-*   Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 4.0-5
--   Release Bump-up to build with updated pyOpenSSL version
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4
--   GCC-10 support.
-*   Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3
--   Added Requires pyinstaller-hooks-contrib and altgraph
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.0-2
--   openssl 1.1.1
-*   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0-1
--   Automatic Version Bump
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
--   Automatic Version Bump
-*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.4-4
--   Mass removal python2
-*   Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.4-3
--   Fix compilation issue with gcc-8.4.0
-*   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 3.4-2
--   Fix makecheck.
-*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1
--   Updated to release 3.4
-*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.1-1
--   Version update. Build bootloader from sources
-*   Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
--   Fix make check issues.
-*   Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
--   Initial packaging for Photon
+* Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.5-1
+- Update to 5.5
+* Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 4.0-5
+- Release Bump-up to build with updated pyOpenSSL version
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4
+- GCC-10 support.
+* Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3
+- Added Requires pyinstaller-hooks-contrib and altgraph
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.0-2
+- openssl 1.1.1
+* Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
+- Automatic Version Bump
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.4-4
+- Mass removal python2
+* Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.4-3
+- Fix compilation issue with gcc-8.4.0
+* Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 3.4-2
+- Fix makecheck.
+* Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1
+- Updated to release 3.4
+* Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.1-1
+- Version update. Build bootloader from sources
+* Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
+- Fix make check issues.
+* Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
+- Initial packaging for Photon

@@ -46,10 +46,10 @@ many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 %autosetup -p1 -n Twisted-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 mv %{buildroot}/%{_bindir}/twistd %{buildroot}/%{_bindir}/twistd3
 mv %{buildroot}/%{_bindir}/trial %{buildroot}/%{_bindir}/trial3
 mv %{buildroot}/%{_bindir}/tkconch %{buildroot}/%{_bindir}/tkconch3

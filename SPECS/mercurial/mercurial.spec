@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        6.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
@@ -11,8 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
 %define sha512  %{name}=4fd383870e5e5e684d4a74eef461c5b5fbf3c2fb1b62696edeadd3870ca5de1f7dfc9d2fc86a5022c36486640520ab0c8c23e099e08a38497b8345149b2aff37
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 Requires:       python3
@@ -31,7 +27,7 @@ make %{?_smp_mflags} build
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-python3 setup.py install --skip-build --root %{buildroot}
+%py3_install
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -61,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_hg
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 6.2.1-2
+- Update release to compile with python 3.11
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2.1-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1.1-1

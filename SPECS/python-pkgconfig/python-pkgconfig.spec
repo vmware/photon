@@ -2,7 +2,7 @@
 
 Name:       python3-pkgconfig
 Version:    1.5.5
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Python interface to the pkg-config command line tool
 License:    MIT
 URL:        https://github.com/matze/pkgconfig
@@ -52,5 +52,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/%{srcname}/
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.5-2
+- Update release to compile with python 3.11
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.5-1
 - First build. Needed by tpm2-pytss.

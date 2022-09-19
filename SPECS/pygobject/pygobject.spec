@@ -1,6 +1,6 @@
 Name:           python3-pygobject
 Version:        3.42.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -50,11 +50,11 @@ Development files for pygobject.
 
 %build
 export PYGOBJECT_WITHOUT_PYCAIRO='True'
-python3 setup.py build
+%py3_build
 
 %install
 export PYGOBJECT_WITHOUT_PYCAIRO='True'
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 %if 0%{?with_check}
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.42.2-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.42.2-1
 - Automatic Version Bump
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.38.0-4

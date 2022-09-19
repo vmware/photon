@@ -1,7 +1,7 @@
 Summary:        Python Atomic file writes
 Name:           python3-atomicwrites
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -29,10 +29,10 @@ Python Atomic file writes
 %autosetup -p1 -n atomicwrites-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -47,6 +47,8 @@ python3 test_atomicwrites.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.1-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
 - Automatic Version Bump
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.0-2

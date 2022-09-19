@@ -1,20 +1,21 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        the blessed package to manage your versions by scm tags.
 Name:           python3-setuptools_scm
-Version:        4.1.2
-Release:        2%{?dist}
+Version:        7.0.5
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/setuptools_scm
 Source0:        https://files.pythonhosted.org/packages/source/s/setuptools_scm/setuptools_scm-%{version}.tar.gz
-%define sha1    setuptools_scm=464fcfa8c35f0f1e6dcfe79c0d66cfe6f8e4b5ec
+%define sha512  setuptools_scm=5b3420f0aaa0dd1655afb0fdcedc3738b75dbb9d8205e0ad67555c251d330a0d3620a7297cfdcfabbc7386a8acf43fe73fa7f3b17e2d156495fd8b2ab7d1c985
+
+Patch0:         build_with_py311.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
+BuildRequires:  python3-packaging
 BuildRequires:  python3-setuptools
 
 Requires:       python3
@@ -27,15 +28,14 @@ setuptools_scm handles managing your python package versions in scm metadata ins
 
 It also handles file finders for the supported scm’s.
 
-
 %prep
-%setup -q -n setuptools_scm-%{version}
+%autosetup -p1 -n setuptools_scm-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 7.0.5-1
+-   Automatic Version Bump
 *   Thu Sep 03 2020 Tapas Kundu <tkundu@vmware.com> 4.1.2-2
 -   Requires python3-setuptools for installation
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.2-1

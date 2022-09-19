@@ -2,10 +2,8 @@
 # spec file for package python3-linux-procfs
 #
 
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-linux-procfs
-Version:        0.6.1
+Version:        0.7.0
 Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,7 +12,7 @@ License:        GPLv2
 Summary:        Linux /proc abstraction classes
 URL:            https://git.kernel.org/pub/scm/libs/python/python-linux-procfs/python-linux-procfs.git/
 Source:         https://cdn.kernel.org/pub/software/libs/python/python-linux-procfs/python-linux-procfs-%{version}.tar.xz
-%define sha1 python-linux-procfs=24b8dcc897241b64035f5a77848908456b42011c
+%define sha512  python-linux-procfs=9b2489b47949560245fb23eefa1600869618921173a94534af4db88938fbc855ce37e24100286bdee9fd18a3f140fb86bef06fa7a473ed55e5cdde721f54113c
 
 BuildArch:     noarch
 BuildRequires: python3-devel
@@ -32,7 +30,7 @@ Abstractions to extract information from the Linux kernel /proc files.
 %autosetup -n python-linux-procfs-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 rm -rf %{buildroot}
@@ -50,5 +48,7 @@ LANG=en_US.UTF-8 python3 bitmasklist_test.py
 %license COPYING
 
 %changelog
-*   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.6.1-1
--   Initial version.
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1
+- Automatic Version Bump
+* Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.6.1-1
+- Initial version.

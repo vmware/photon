@@ -2,7 +2,7 @@
 Summary:        Altgraph helps in creating graph network for doing BFS and DFS traversals.
 Name:           python3-altgraph
 Version:        0.17.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.org/project/altgraph
 License:        MIT
 Group:          Development/Languages/Python
@@ -31,6 +31,8 @@ altgraph is a fork of graphlib: a graph (network) package for constructing graph
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.2-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.17.2-1
 - Automatic Version Bump
 * Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 0.17-1

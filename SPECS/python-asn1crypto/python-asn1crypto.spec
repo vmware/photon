@@ -1,6 +1,6 @@
 Name:           python3-asn1crypto
 Version:        1.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
 License:        MIT
 Group:          Development/Languages/Python
@@ -26,10 +26,10 @@ A fast, pure Python library for parsing and serializing ASN.1 structures.
 %autosetup -p1 -n asn1crypto-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 #%%check
 #Commented out %check due to no test existence
@@ -39,6 +39,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.1-2
+- Update release to compile with python 3.11
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.1-1
 - Update to 1.5.1
 * Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1

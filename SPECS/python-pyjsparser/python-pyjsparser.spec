@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Fast javascript parser (based on esprima.js).
 Name:           python3-pyjsparser
 Version:        2.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,10 +9,8 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/pyjsparser/2.5.2
 
 Source0:        https://files.pythonhosted.org/packages/source/p/pyjsparser/pyjsparser-%{version}.tar.gz
-%define         sha1 pyjsparser=760fc7a1dacefa484fea4b0c4273973eb6af76b2
+%define         sha512 pyjsparser=811faf1d1fcae363417931e095bf108b27ec8762a12048b658215ecdecc1fd1bbb183f2ec35199ce67e7837aeda6ccf27b6f4bbd62b19fe6a5c9ba6fa7615031
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
@@ -31,10 +27,10 @@ Fast javascript parser (based on esprima.js).
 %autosetup -p1 -n pyjsparser-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 #%%check
 #This package does not come with a test suite.
@@ -44,6 +40,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.1-3
+- Update release to compile with python 3.11
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-2
 - Mass removal python2
 * Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 2.7.1-1

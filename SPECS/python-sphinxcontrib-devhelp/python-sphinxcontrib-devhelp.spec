@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-sphinxcontrib-devhelp
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/sphinxcontrib-devhelp
 Source0:        https://files.pythonhosted.org/packages/98/33/dc28393f16385f722c893cb55539c641c9aaec8d1bc1c15b69ce0ac2dbb3/sphinxcontrib-devhelp-%{version}.tar.gz
-%define sha1    sphinxcontrib-devhelp=3782815be9e11190fe7c7d697e73369432c56fd6
+%define sha512  sphinxcontrib-devhelp=83b46eaf26df3932ea2136cfda1c0fca4fc08ce8bca564845b3efe5bb00d6c8c93991f4edd4913d4ec796e2d85bd2c7265adf28e98f42e8094daeb5ac11a0eb1
 BuildArch:      noarch
 
 BuildRequires:  python3
@@ -19,7 +17,7 @@ BuildRequires:  python3-setuptools
 
 Requires:       python3
 
-Provides: python3.9dist(sphinxcontrib-devhelp)
+Provides: python%{python3_version}dist(sphinxcontrib-devhelp)
 
 %description
 This package contains a single module, which implements a platform independent
@@ -30,23 +28,25 @@ the same lock object twice, it will not block.
 
 %prep
 %autosetup -p1 -n sphinxcontrib-devhelp-%{version}
+find -name '*.mo' -delete
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
-%{__python3} test.py
+%{_python3} test.py
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %license LICENSE
 %doc README.rst
-%{python3_sitelib}/sphinxcontrib/
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-2
+- Update release to compile with python 3.11
 * Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-1
 - initial version

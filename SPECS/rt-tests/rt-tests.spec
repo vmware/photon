@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        rt-tests tests various real-time features of linux
 Name:           rt-tests
 Version:        2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-2.0
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/
@@ -13,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  build-essential
 BuildRequires:  libnuma-devel
-BuildRequires:  python3
+BuildRequires:  python3-devel
 Requires:       python3
 Requires:       libnuma
 Requires:       glibc
@@ -45,5 +43,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.4-2
+- Update release to compile with python 3.11
 * Thu Sep 08 2022 Sharan Turlapati <sturlapati@vmware.com> 2.4-1
 - Initial version of rt-tests for Photon

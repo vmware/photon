@@ -1,28 +1,28 @@
 %global srcname distlib
 
-Name:       python3-distlib
-Version:    0.3.1
-Release:    1%{?dist}
-Summary:    Low-level components of distutils2/packaging, augmented with higher-level APIs
-License:    Python
-URL:        https://pypi.org/project/distlib/
-Source0:    https://files.pythonhosted.org/packages/2f/83/1eba07997b8ba58d92b3e51445d5bf36f9fba9cb8166bcae99b9c3464841/distlib-%{version}.zip
-%define sha1    distlib=1c575431e31c32d25596c360e81bba7fe4638669
+Name:           python3-distlib
+Version:        0.3.6
+Release:        1%{?dist}
+Summary:        Low-level components of distutils2/packaging, augmented with higher-level APIs
+License:        Python
+URL:            https://pypi.org/project/distlib/
+Source0:        https://files.pythonhosted.org/packages/58/07/815476ae605bcc5f95c87a62b95e74a1bce0878bc7a3119bc2bf4178f175/distlib-%{version}.tar.gz
+%define sha512  distlib=27f3a59f9175a92befb9a65a66cd0b8eb65185dab6fa13ef94e85ca69c2bc1b7281ce1522601034007cb98677ba9237a46224df4adc70ed966db7e131e073636
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Patch0: distlib_unbundle.patch
-
-BuildArch:  noarch
+BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3
+BuildRequires:  python3-wheel
+BuildRequires:  python3-pip
+BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 
 Requires:       python3
 
-Provides:       python3.9dist(distlib) = %{version}-%{release}
+Provides:       python%{python3_version}dist(distlib)
 
 %description
 Distlib contains the implementations of the packaging PEPs and other low-level
@@ -34,19 +34,16 @@ time saved by not having to reinvent wheels, and improved interoperability
 between tools.
 
 %prep
-%setup -q -n %{srcname}-%{version}
-%patch0 -p1
+%autosetup -p1 -n %{srcname}-%{version}
 
 rm distlib/*.exe
 rm -rf distlib/_backport
-rm tests/test_shutil.py*
-rm tests/test_sysconfig.py*
 
 %build
-python3 setup.py build
+%pyproject_wheel
 
 %install
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%pyproject_install
 
 %if %{with check}
 %check
@@ -61,5 +58,7 @@ export PYTHONHASHSEED=0
 %license LICENSE.txt
 
 %changelog
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.6-1
+- Update release to compile with python 3.11
 * Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.3.1-1
 - initial version

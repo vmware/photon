@@ -1,17 +1,17 @@
 Name:           python3-prettytable
-Version:        0.7.2
-Release:        7%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://code.google.com/p/prettytable
-
-Source0: prettytable-%{version}.tar.gz
-%define sha512 prettytable=84611b9ad11bd428cdb00795e0a9baff44d027331b73ed1742596acda8acc8aca3df4276fa2f2ca2289f10b2989b3c86556de70bca6a9773b15cd80c54c33117
+Source0:        prettytable-%{version}.tar.gz
+%define sha512  prettytable=e190717e2ea89e8faddc7015fd5118e0d93ac5f5318641ce5960b22b4ea3740ff12c4d15812b33655252f258c96f9e848f554d1e678d39761c28025ba7772609
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
@@ -46,6 +46,8 @@ LANG=en_US.UTF-8 python3 prettytable_test.py
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3.0-1
+- Automatic Version Bump
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.7.2-7
 - Mass removal python2
 * Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.2-6

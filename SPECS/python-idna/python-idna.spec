@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python3-idna
-Version:        2.10
-Release:        1%{?dist}
+Version:        3.3
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        idna-%{version}.tar.gz
-%define sha1    idna=ab9b7f0143cc0095da8439939eee9ce153af5f60
+%define sha512  idna=70b7cc8718e7d7899c75cfe476f044eae5a2fa03801fc9c12e3a092627ca943ffc4a578f9b8a55e181a11564835e125cfaaa577c02a6461dbb97366e620e53ad
 
 BuildArch:      noarch
 
@@ -29,15 +27,14 @@ This library also provides support for Unicode Technical Standard 46, Unicode ID
 
 This acts as a suitable replacement for the “encodings.idna” module that comes with the Python standard library, but only supports the old, deprecated IDNA specification (RFC 3490).
 
-
 %prep
-%setup -q -n idna-%{version}
+%autosetup -n idna-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -47,13 +44,17 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10-1
--   Automatic Version Bump
-*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7-2
--   Mass removal python2
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.7-1
--   Update to version 2.7
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-2
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--   Initial packaging for Photon
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10-1
+- Automatic Version Bump
+* Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7-2
+- Mass removal python2
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.7-1
+- Update to version 2.7
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-2
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+- Initial packaging for Photon

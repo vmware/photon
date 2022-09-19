@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -142,7 +142,7 @@ mv %{buildroot}%{_tdnfpluginsdir}/libtdnfmetalink.so %{buildroot}%{_tdnfpluginsd
 mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
 
 pushd %{__cmake_builddir}/python
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 popd
 find %{buildroot} -name '*.pyc' -delete
 
@@ -263,6 +263,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.3-2
+- Update release to compile with python 3.11
 * Thu Nov 17 2022 Oliver Kurth <okurth@vmware.com> 3.4.3-1
 - update to 3.4.3
 * Thu Oct 27 2022 Oliver Kurth <okurth@vmware.com> 3.4.2-1

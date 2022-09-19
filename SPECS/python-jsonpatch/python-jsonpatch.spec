@@ -1,5 +1,5 @@
 Name:           python3-jsonpatch
-Version:        1.26
+Version:        1.32
 Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
@@ -7,9 +7,8 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jsonpatch
-
 Source0: https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
-%define sha512 jsonpatch=4ec622d25a53859111670453cd1461bc28d025cd768a06ebb39e4109508306cbf1838ce9343be9552a320fed71242103ceef7d6c4552d0df8fa15c48ab6b2e69
+%define sha512  jsonpatch=edd5d7433b1bd0513b9998c989778ae3ede47251aab2e19b7111fe5f6ae7fda75202df473f258cd13e73aae1f5908d85ec046c59d99ad8264a454a84a00bf75f
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -24,7 +23,7 @@ BuildArch:      noarch
 Library to apply JSON Patches according to RFC 6902.
 
 %prep
-%autosetup -p1 -n jsonpatch-%{version}
+%autosetup -n jsonpatch-%{version}
 
 %build
 %py3_build
@@ -44,6 +43,8 @@ python3 ext_tests.py && python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26-1
 - Automatic Version Bump
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.23-2

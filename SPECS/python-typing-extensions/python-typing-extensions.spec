@@ -1,6 +1,6 @@
 Name:           python3-typing-extensions
 Version:        4.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backported and Experimental Type Hints for Python 3.7+
 License:        PSF
 Group:          Development/Tools
@@ -50,5 +50,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.0-2
+- Update release to compile with python 3.11
 * Wed Oct 12 2022 Tapas Kundu <tkundu@vmware.com> 4.3.0-1
 - Update to version 4.3.0

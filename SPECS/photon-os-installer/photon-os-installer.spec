@@ -3,7 +3,7 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -37,7 +37,7 @@ This is to create rpm for installer code
 %autosetup -p1
 
 %build
-pyinstaller --onefile photon-installer.spec
+pyinstaller photon-installer.spec
 
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -51,6 +51,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0-8
+- Update release to compile with python 3.11
 * Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 2.0-7
 - Release Bump-Up to build with updated pyOpenSSL version
 * Fri Nov 04 2022 Ankit Jain <ankitja@vmware.com> 2.0-6

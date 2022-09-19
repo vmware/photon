@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -121,6 +119,8 @@ chmod 700  %{buildroot}/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.5-2
+- Update release to compile with python 3.11
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.0.5-1
 - Version bump
 * Thu Jun 02 2022 Susant Sahani <ssahani@vmware.com> 1.0.3-1

@@ -1,15 +1,14 @@
 Name:           python3-hypothesis
-Version:        5.41.1
-Release:        2%{?dist}
+Version:        6.54.4
+Release:        1%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
 Url:            https://github.com/HypothesisWorks/hypothesis-python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0: https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
-%define sha512 hypothesis=fd491c85f3b2d82777423e18ec529cdae67197d6e8c4654f2148b06ac418de5beadadc11d92df2f2188ac0555803703d1b7fd9ae0274bcd58b608fa5e0ab8e50
+%define sha512 hypothesis=5c40daa2acb56fa0d4e7b84351eaf86bf470311a50608075c58f26b305d3e5811eceb50349b898da92e5d6a257e753f5ee68e14dcafd01731647e4aa42322e4a
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -44,6 +43,8 @@ and then generates simple and comprehensible examples that make your tests fail.
 %{_bindir}/hypothesis
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.54.4-1
+- Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.41.1-2
 - Fix build with new rpm
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.41.1-1

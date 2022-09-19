@@ -1,7 +1,7 @@
 Summary:        C extensions for Python3
 Name:           cython3
 Version:        0.29.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,7 +24,7 @@ It makes writing C extensions for Python as easy as Python itself.
 %autosetup -n cython-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 python3 setup.py install --skip-build --root %{buildroot}
@@ -49,29 +49,31 @@ rm -rf %{buildroot}
 %{python3_sitelib}/__pycache__/*
 
 %changelog
-*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.32-1
--   Automatic Version Bump
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.28-1
--   Automatic Version Bump
-*   Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 0.29.23-1
--   Automatic Version Bump
-*   Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 3.0a6-1
--   Update to 3.0a6
-*   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 0.29.21-2
--   Build with python3
-*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.29.21-1
--   Automatic Version Bump
-*   Fri Jan 11 2019 Michelle Wang <michellew@vmware.com> 0.28.5-2
--   Fix make check tests for cython3.
-*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.28.5-1
--   Upgraded to version 0.28.5.
-*   Thu Jul 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.25.2-4
--   Keeping uniformity across all spec files.
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.25.2-3
--   Add python3-xml to python3 sub package Buildrequires.
-*   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.25.2-2
--   Updated python3 site path.
-*   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
--   Update to 0.25.2.
-*   Fri Jan 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.23.4-1
--   Initial build.
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.29.32-2
+- Update release to compile with python 3.11
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.32-1
+- Automatic Version Bump
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.28-1
+- Automatic Version Bump
+* Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 0.29.23-1
+- Automatic Version Bump
+* Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 3.0a6-1
+- Update to 3.0a6
+* Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 0.29.21-2
+- Build with python3
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.29.21-1
+- Automatic Version Bump
+* Fri Jan 11 2019 Michelle Wang <michellew@vmware.com> 0.28.5-2
+- Fix make check tests for cython3.
+* Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.28.5-1
+- Upgraded to version 0.28.5.
+* Thu Jul 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.25.2-4
+- Keeping uniformity across all spec files.
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.25.2-3
+- Add python3-xml to python3 sub package Buildrequires.
+* Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.25.2-2
+- Updated python3 site path.
+* Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
+- Update to 0.25.2.
+* Fri Jan 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.23.4-1
+- Initial build.

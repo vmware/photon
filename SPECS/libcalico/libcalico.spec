@@ -1,7 +1,7 @@
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Group:          Development/Tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}=c3d0f9f36930389fc3b6f1f2222ebc85440a50ee
+%define sha512  %{name}=f38c850720b635c09fbc32f9be4830531f3cd47f77b1084f3150765d84f7e3ba5d135b7389fd4528c4f78593376907c1e5f7ac7eecfbea3d83bdf3c7d8134edf
 
 BuildRequires:  git
 BuildRequires:  libffi-devel
@@ -22,7 +22,7 @@ BuildRequires:  python3-asn1crypto
 BuildRequires:  python3-backports.ssl_match_hostname
 BuildRequires:  python3-ConcurrentLogHandler
 BuildRequires:  python3-cffi
-BuildRequires:  python3-pycrypto
+BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-dnspython
 BuildRequires:  python3-docopt
@@ -73,6 +73,8 @@ Library for interacting with Calico data model.
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.19.0-5
+- Replace deprecated pycrypto with pycryptodome
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.19.0-4
 - Fix build with new rpm
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.19.0-3

@@ -1,7 +1,7 @@
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
 Version:        0.71
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -36,10 +36,10 @@ Everything is done in 100% pure Python so it's extremely easy to install and use
 %autosetup -p1 -n Js2Py-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 #%%check
 #This package does not come with a test suite.
@@ -49,6 +49,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.71-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.71-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.70-1

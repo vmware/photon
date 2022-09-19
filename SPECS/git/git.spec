@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.38.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -19,9 +19,9 @@ Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
 Requires:       perl
-Requires:       perl-YAML
-Requires:       perl-DBI
 Requires:       perl-CGI
+Requires:       perl-DBI
+Requires:       perl-YAML
 Requires:       subversion-perl
 Requires:       python3
 
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.38.1-2
+- Update release to compile with python 3.11
 * Tue Oct 25 2022 Nitesh Kumar <kunitesh@vmware.com> 2.38.1-1
 - Upgrade version to 2.38.1
 * Sun Sep 11 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.37.3-1

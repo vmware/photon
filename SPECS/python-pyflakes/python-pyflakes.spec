@@ -1,19 +1,15 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-pyflakes
-Version:        2.3.1
-Release:        1%{?dist}
+Version:        2.5.0
+Release:        2%{?dist}
 Summary:        A simple program which checks Python source files for errors
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz
 Source0:        pyflakes-%{version}.tar.gz
-%define sha1    pyflakes=9798bb913a46fc8352d75098d94c837ec3559393
+%define sha512  pyflakes=e47303c4b445e0c010dfc96244b6fa991bd1870072c61cc7acd309947af3d81581276b012b56b7db0d8df3f91a4216a5ec502720c149f5707d5d1d28654aeeb4
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
@@ -31,10 +27,10 @@ check on style.
 %autosetup -n pyflakes-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --skip-build
+%py3_install
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 
 %check
@@ -46,5 +42,9 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jul 09 2021 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
--   Initial packaging for python3-pyflakes
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.5.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+- Automatic Version Bump
+* Fri Jul 09 2021 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
+- Initial packaging for python3-pyflakes

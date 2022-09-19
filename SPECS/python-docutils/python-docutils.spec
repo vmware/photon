@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
-Version:        0.16
-Release:        2%{?dist}
+Version:        0.19
+Release:        1%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/docutils
 Source0:        https://files.pythonhosted.org/packages/source/d/docutils/docutils-%{version}.tar.gz
-%define sha1    docutils=35f6d15225f8e830ef379cbc9a7ae0b82db97231
+%define sha512  docutils=fb904a899f2b6f3c07c5079577bd7c52a3182cb85f6a4149391e523498df15bfa317f0c04095b890beeb3f89c2b444875a2a609d880ac4d7fbc3125e46b37ea5
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -30,10 +28,10 @@ Docutils is a modular system for processing documentation into useful formats, s
 %autosetup -n docutils-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
@@ -43,6 +41,7 @@ python3 test3/alltests.py
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
+%{_bindir}/docutils
 %{_bindir}/rstpep2html.py
 %{_bindir}/rst2xml.py
 %{_bindir}/rst2xetex.py
@@ -57,6 +56,8 @@ python3 test3/alltests.py
 %{_bindir}/rst2html4.py
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.19-1
+-   Automatic Version Bump
 *   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 0.16-2
 -   Version bump up, required by bluez 5.63
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16-1

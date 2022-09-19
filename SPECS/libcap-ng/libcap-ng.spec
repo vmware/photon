@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -76,6 +74,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-2
+- Update release to compile with python 3.11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.3-1
 - Automatic Version Bump
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 0.8.2-2

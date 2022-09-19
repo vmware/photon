@@ -1,14 +1,12 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-mock
 Version:        4.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rolling backport of unittest.mock for all Pythons
 License:        BSD License
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/e2/be/3ea39a8fd4ed3f9a25aae18a1bff2df7a610bca93c8ede7475e32d8b73a0/mock-4.0.3.tar.gz
 Source0:        mock-%{version}.tar.gz
-%define sha1    mock=348e1bd2d19bd25819709ec1adc0b04c926c9a0c
+%define sha512  mock=aa4275344a40fd3eea75c1c305f82dd6a561d2a4584b7acd0a85f3a9b34d0cfd1722770d74ae26c04d871d844a3189186d7f087017ddf850d6c378cc98676ea5
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3
@@ -19,7 +17,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
 BuildArch:      noarch
-Provides:       python3.9dist(mock)
+Provides:       python%{python3_version}dist(mock)
 
 %description
 mock is a library for testing in Python. It allows you to replace parts of your system under test with mock objects and make assertions about how they have been used.
@@ -30,7 +28,7 @@ This package contains a rolling backport of the standard library mock code compa
 %autosetup -n mock-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --skip-build
@@ -44,5 +42,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 4.0.3-1
--   Initial packaging for python3-mock
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.0.3-2
+- Update release to compile with python 3.11
+* Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 4.0.3-1
+- Initial packaging for python3-mock

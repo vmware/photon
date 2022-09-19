@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-tornado
 Version:        6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 License:        PSFL
 Group:          Development/Languages/Python
@@ -26,26 +24,28 @@ Tornado is a Python web framework and asynchronous networking library
 %autosetup -n tornado-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2-1
--   Automatic Version Bump
-*   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1-1
--   Automatic Version Bump
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.4-1
--   Automatic Version Bump
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 4.5.2-3
--   Mass removal python2
-*   Tue Dec 17 2019 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-2
--   To build python2 and python3 tornado packages
--   To remove buildArch
-*   Mon Dec 11 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-1
--   Initial version of python tornado for PhotonOS.
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 6.2-2
+- Update release to compile with python 3.11
+* Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2-1
+- Automatic Version Bump
+* Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.4-1
+- Automatic Version Bump
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 4.5.2-3
+- Mass removal python2
+* Tue Dec 17 2019 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-2
+- To build python2 and python3 tornado packages
+- To remove buildArch
+* Mon Dec 11 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-1
+- Initial version of python tornado for PhotonOS.

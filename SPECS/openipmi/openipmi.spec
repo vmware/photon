@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -87,7 +85,7 @@ This package contains a network IPMI listener.
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
     --with-perlinstall=%{perl_vendorarch}   \
-    --with-python=/usr/bin/python3.9        \
+    --with-python=/usr/bin/python%{python3_version} \
     --with-pythoninstall=%{python3_sitelib}
 
 make %{?_smp_mflags}
@@ -188,6 +186,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.33-2
+- Update release to compile with python 3.11
 * Wed Sep 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.33-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.32-1

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
-Version:        5.5.1
+Version:        5.10.0
 Release:        1%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -10,8 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
-%define sha1    pbr=a79db0e5a9d9d2f1ba4c6369b3a83f0f5d37a62c
-Patch0:         disable-test-wsgi.patch
+%define sha512  pbr=a5f4393407a17f4de5977483f3c7fa651780b9b9069a0a1898a5b511742262dfb06f891cfcb632c5b64ecfd041188095ceb880c6e71c99c81f0eace59e4e1976
 BuildRequires:  python3-docutils
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
@@ -27,17 +24,15 @@ BuildArch:      noarch
 %description
 A library for managing setuptools packaging needs in a consistent manner.
 
-
 %prep
-%setup -q -n pbr-%{version}
-%patch0 -p1
+%autosetup -n pbr-%{version}
 
 %build
 export SKIP_PIP_INSTALL=1
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 mv %{buildroot}/%{_bindir}/pbr %{buildroot}/%{_bindir}/pbr3
 
 %if 0
@@ -65,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.10.0-1
+-   Automatic Version Bump
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.1-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1

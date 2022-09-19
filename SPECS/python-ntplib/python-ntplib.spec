@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python NTP library
 Name:           python3-ntplib
-Version:        0.3.4
-Release:        1%{?dist}
+Version:        0.4.0
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,7 +9,7 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/ntplib/
 
 Source0:        ntplib-%{version}.tar.gz
-%define         sha1 ntplib=08c3591bf257d893f455b833064e8be1889ec8bf
+%define sha512  ntplib=e17e329ebbac05817a5e41322552b5befbfdeeeff16297d6ecdac5246f42826f14b40cc5f4929d662774a6635dfc624e9338c54eaa52d5b4504125b62708ab53
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -33,10 +31,10 @@ It also provides utility functions to translate NTP fields values to text (mode,
 %autosetup -p1 -n ntplib-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 #%%check
 #Commented out %check due to no test existence
@@ -46,6 +44,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.4.0-1
+- Automatic Version Bump
 * Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 0.3.4-1
 - Update to 0.3.4
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.3.3-3

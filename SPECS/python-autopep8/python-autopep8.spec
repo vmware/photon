@@ -1,20 +1,17 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
-Version:        1.5.4
-Release:        2%{?dist}
+Version:        1.7.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        autopep8-%{version}.tar.gz
-%define sha1    autopep8=9260df6f3d29b5faeb67ec8d789fe85e5f6fca54
+%define sha512  autopep8=e93ddf90ff989af71790f70f7e7101f7cc60890c8a976552a097c13b0a0e10c16dfd8770214b19d7fabd59403e6d87a9a37d75a2c6f3ed27f8c82a7d8da95dad
 
 BuildArch:      noarch
 
-BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -30,15 +27,14 @@ autopep8 automatically formats Python code to conform to the PEP 8 style guide.
 It uses the pycodestyle utility to determine what parts of the code needs to be
 formatted.
 
-
 %prep
-%setup -q -n autopep8-%{version}
+%autosetup -n autopep8-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -49,6 +45,8 @@ python3 setup.py test
 %{_bindir}/autopep8
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+-   Automatic Version Bump
 *   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2
 -   Add python3-toml to requires
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.4-1

@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.17.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -344,6 +344,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.17.1-5
+- Bump up to compile with python 3.11
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-4
 - Bump version as a part of zstd upgrade
 * Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-3

@@ -2,12 +2,10 @@
 # spec file for package python3-ethtool
 #
 
-%{!?python3_sitearch: %define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %global pypi_name ethtool
 Name:           python3-ethtool
-Version:        0.14
-Release:        3%{?dist}
+Version:        0.15
+Release:        1%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,7 +13,7 @@ Distribution:   Photon
 License:        GPLv2
 URL:            https://pypi.org/project/ethtool/
 Source0:        python-ethtool-%{version}.tar.gz
-%define sha1 python-ethtool=6e811ede779f2eac9d30950b6dc7abba61372262
+%define sha512  python-ethtool=82a9c08d1794f8f44e2a797d4631bacef3d492c8274d161f74d789e299f3de4830e03e863e428a14dea9713c43f10a1c743a30a504bb4c8eac03bded5c708670
 
 BuildRequires:  gcc
 BuildRequires:  python3-devel
@@ -39,10 +37,10 @@ changing of Ethernet card settings, such as speed, port, auto-negotiation, and
 PCI locations.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n python-%{pypi_name}-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 a2x3 -d manpage -f manpage man/pethtool.8.asciidoc
 a2x3 -d manpage -f manpage man/pifconfig.8.asciidoc
 
@@ -71,9 +69,11 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
-*   Sun Oct 11 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.14-3
--   Build with updated ethtool release
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2
--   Use asciidoc3
-*   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
--   Initial version.
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
+- Automatic Version Bump
+* Sun Oct 11 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.14-3
+- Build with updated ethtool release
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2
+- Use asciidoc3
+* Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
+- Initial version.

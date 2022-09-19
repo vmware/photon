@@ -1,6 +1,6 @@
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python3-CacheControl
-Version:        0.12.6
+Version:        0.12.11
 Release:        1%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            https://github.com/ionrock/cachecontrol
 
 Source0: CacheControl-%{version}.tar.gz
-%define sha512 CacheControl=5269624dd523c4f94b258ba4d35d2fce65779377c601c1ade01b1058a6616319725fde10b188fbc7015ac263537fb11085272fbbb9b595e87c187521066a567a
+%define sha512  CacheControl=6a39e8fd2ebcca776cad533a79f107897aaffbe68b561f89301ef824d2400f8c36ec4e52682b7cf14734f9f77ab27e251202c71036b43422d81126f48cc27834
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -46,6 +46,8 @@ python3 setup.py test
 %{_bindir}/doesitcache3
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.12.11-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.6-1
 - Automatic Version Bump
 * Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.12.5-2

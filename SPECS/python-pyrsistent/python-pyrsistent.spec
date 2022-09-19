@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
-Version:        0.17.3
-Release:        2%{?dist}
+Version:        0.18.1
+Release:        1%{?dist}
 License:        MIT License (MIT)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
 Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
-%define sha1    pyrsistent=d762223188b86093fa89ddb239a24bdf972a1259
+%define sha512  pyrsistent=353ad6e9165e1afdde37730a9289cf8dde28491abb688d702a8c8f5279e24f5ce387a5d00ac4a077322299f9c1a535781bcacdcd1cb914ddb317b3ca9641778b
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
@@ -39,13 +37,13 @@ The data structures are designed to share common elements through path copying. 
 and make them as pythonic as possible so that they can be easily integrated into any python program without hassle.
 
 %prep
-%setup -q -n pyrsistent-%{version}
+%autosetup -n pyrsistent-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -55,9 +53,11 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
--   Fix build with new rpm
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
--   Automatic Version Bump
-*   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1
--   Initial packaging for Photon
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18.1-1
+- Automatic Version Bump
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
+- Fix build with new rpm
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
+- Automatic Version Bump
+* Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1
+- Initial packaging for Photon

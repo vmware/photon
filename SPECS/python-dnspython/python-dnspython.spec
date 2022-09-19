@@ -1,21 +1,20 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A DNS toolkit for Python
 Name:           python3-dnspython
-Version:        2.0.0
+Version:        2.2.1
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/d/dnspython/dnspython-%{version}.zip
-%define sha1    dnspython=8282caa20a2adcd5457166fd98f636bb1ab80754
+Source0:        https://files.pythonhosted.org/packages/source/d/dnspython/dnspython-%{version}.tar.gz
+%define sha512  dnspython=4b4d9c1670d7e948fb9eaa60d1a9ddef53d74f44dc547ad2b1b93390943bc3ed92da3adf4d711dcf216fd703da00389fc055b9ae96c7ff6ca012836b7601f464
 BuildArch:      noarch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  unzip
@@ -29,15 +28,14 @@ dnspython provides both high and low level access to DNS. The high level classes
 
 dnspython originated at Nominum where it was developed to facilitate the testing of DNS software. Nominum has generously allowed it to be open sourced under a BSD-style license.
 
-
 %prep
-%setup -q -n dnspython-%{version}
+%autosetup -n dnspython-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py test
@@ -47,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.1-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.15.0-4

@@ -1,5 +1,5 @@
 Name:           python3-click
-Version:        8.0.1
+Version:        8.1.3
 Release:        1%{?dist}
 Summary:        Composable command line interface toolkit
 License:        BSD License
@@ -9,7 +9,7 @@ Group:          Development/Languages/Python
 URL:            https://palletsprojects.com/p/click
 
 Source0: https://github.com/pallets/click/archive/refs/tags/click-%{version}.tar.gz
-%define sha512 click=6a6d66c68dae4cfcfdab5d77dab4ab280b18f8e9ec326b4860012253d8f6b4fa57a5a3794ddebd228da85f893b0c6a737d8be3ad361d31098ef0a2ad684d6d0a
+%define sha512 click=be5b0c8b72ef7c10854f31406668ca4d6f826381deff10bb6a87a406166c09af97e2165f1327094d96abade15efb872892af37f20fdbc855b659cb2c7bd2f2c5
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -42,5 +42,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 8.1.3-1
+- Automatic Version Bump
 * Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 8.0.1-1
 - Initial packaging for Photon

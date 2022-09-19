@@ -3,7 +3,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.3.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -21,6 +21,8 @@ Patch2:     spidermonkey_checks_disable.patch
 Patch3:     copy-headers.patch
 Patch4:     fix-soname.patch
 Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
+#python 3.11 fix
+Patch6:     python-change-file-read-mode.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -131,6 +133,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 102.3.0-2
+- Update release to compile with python 3.11
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 102.3.0-1
 - Upgrade to v102.3.0
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-4

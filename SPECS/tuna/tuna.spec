@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           tuna
 Version:        0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
 Group:          Applications/System
@@ -27,7 +25,7 @@ Operations can be done on CPU sockets, understanding CPU topology.
 %autosetup
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 rm -rf %{buildroot}
@@ -64,6 +62,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.18-2
+- Update release to compile with python 3.11
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18-1
 - Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 0.17-1

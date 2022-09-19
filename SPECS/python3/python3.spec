@@ -1,10 +1,10 @@
-%global VER 3.9
+%global VER 3.11
 %global with_gdb_hooks 1
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.9.1
-Release:        9%{?dist}
+Version:        3.11.0
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,12 +12,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512  Python=b90029d6825751685983e9dcf0e0ec9e46f18e6c7d37b0dd7a245a94316f8c0090308ad7c2b2b49ed2514b0b909177231dd5bcad03031bf4624e37136fcf8019
+%define sha512  Python=314eef88ae0d68760f34d7a32f238fd2ecb27c50963baa7357c42ad8159026ec50229a0b31d83c39710a472904a06422afc082f9658a90a1dc83ccb74c08039d
 
 Source1:        macros.python
 
 Patch0:         cgi3.patch
-Patch1:         Handle-the-EPERM-error-gracefully-in-crypt.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -178,6 +177,7 @@ fi
     --with-system-expat \
     --with-system-ffi \
     --enable-optimizations \
+    --with-lto \
     --with-dbmliborder=gdbm:ndbm
 
 %make_build
@@ -194,6 +194,7 @@ find %{buildroot}%{_libdir} \( -type f -name '*.pyc' -or \
 rm %{buildroot}%{_bindir}/2to3
 mkdir -p %{buildroot}%{_rpmmacrodir}
 install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
+cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/pathfix.py
 
 %if 0%{?__debug_package}
 %if 0%{?with_gdb_hooks}
@@ -245,7 +246,6 @@ rm -rf %{buildroot}/*
 
 %exclude %{_libdir}/python%{VER}/ctypes/test
 %exclude %{_libdir}/python%{VER}/distutils/tests
-%exclude %{_libdir}/python%{VER}/sqlite3/test
 %exclude %{_libdir}/python%{VER}/idlelib/idle_test
 %exclude %{_libdir}/python%{VER}/test
 %exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
@@ -258,7 +258,6 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python%{VER}/site-packages/
 %exclude %{_libdir}/python%{VER}/ctypes/test
 %exclude %{_libdir}/python%{VER}/distutils/tests
-%exclude %{_libdir}/python%{VER}/sqlite3/test
 %exclude %{_libdir}/python%{VER}/idlelib/idle_test
 %exclude %{_libdir}/python%{VER}/test
 %exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
@@ -283,6 +282,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpython%{VER}.so
 %{_libdir}/pkgconfig/python-%{VER}.pc
 %{_libdir}/pkgconfig/python3.pc
+%{_bindir}/pathfix.py
 %{_bindir}/python3-config
 %{_bindir}/python%{VER}-config
 %{_libdir}/pkgconfig/python-%{VER}-embed.pc
@@ -307,10 +307,11 @@ rm -rf %{buildroot}/*
 
 %files setuptools
 %defattr(-, root, root, 755)
+%{_libdir}/python%{VER}/site-packages/distutils-precedence.pth
+%{_libdir}/python%{VER}/site-packages/_distutils_hack/*
 %{_libdir}/python%{VER}/site-packages/pkg_resources/*
 %{_libdir}/python%{VER}/site-packages/setuptools/*
-%{_libdir}/python%{VER}/site-packages/setuptools-49.2.1.dist-info/*
-%{_bindir}/easy_install-%{VER}
+%{_libdir}/python%{VER}/site-packages/setuptools-*.dist-info/*
 %exclude %{_libdir}/python%{VER}/site-packages/setuptools/*.exe
 
 %files test
@@ -322,6 +323,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Sep 19 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-1
+- Update to 3.11
 * Fri Aug 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-9
 - Bump version as a part of sqlite upgrade
 * Wed Aug 10 2022 Piyush Gupta <gpiyush@vmware.com> 3.9.1-8

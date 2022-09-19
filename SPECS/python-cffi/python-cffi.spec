@@ -1,7 +1,7 @@
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
-Version:        1.14.3
-Release:        3%{?dist}
+Version:        1.15.1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha512  cffi=1eedd27df1b6743d1ace3cc036c6c46e800872705e8ec1e40d190b93a1b5ad759cdb8b9936bf6d70bed63476ea213f5a90b3a3b82db0a8d4d0e29654fb60154f
+%define sha512  cffi=e99cafcb029076abc29e435b490fa0573ee2856f4051b7ca8a5b38cd125d56dd9dae8b189f59ceb3d728a675da8ee83239e09e19f8b0feeddea4b186ab5173a5
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -36,10 +36,10 @@ Foreign Function Interface for Python, providing a convenient and reliable way o
 %autosetup -p1 -n cffi-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 pip3 install pytest
@@ -50,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.1-1
+- Automatic Version Bump
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.3-3
 - Bump version as a part of libffi upgrade
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.3-2

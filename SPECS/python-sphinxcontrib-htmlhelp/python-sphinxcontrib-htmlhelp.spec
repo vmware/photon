@@ -1,6 +1,6 @@
 Name:           python3-sphinxcontrib-htmlhelp
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
 Group:          Development/Languages/Python
@@ -28,7 +28,7 @@ BuildRequires: python3-pip
 
 Requires: python3
 
-Provides: python3.9dist(sphinxcontrib-htmlhelp)
+Provides: python%{python3_version}dist(sphinxcontrib-htmlhelp)
 
 %description
 This package contains a single module, which implements a platform independent
@@ -60,6 +60,8 @@ pip3 install html5lib
 %{python3_sitelib}/sphinxcontrib/
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-2
+- Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-1
 - Upgrade to v2.0.0
 * Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.0.3-1

@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
-%define sha1    pexpect=ee5dd435ca68dc05daa783e3330eea365a404378
+%define sha512  pexpect=7447ae2d1e13be422c894a8fd51c5aaa788e37ea7f0c798c88b77afd401fb3631400a637077ccbb83c2e3876b0d0c5e1dbd5fdc9d3739d785b4d5ad7c0192580
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -37,18 +35,16 @@ Pexpect allows your script to spawn a child application and control it as if a h
 were typing commands.
 
 %prep
-%setup -q -n pexpect-%{version}
+%autosetup -n pexpect-%{version}
 
 %build
-python3 setup.py build
-
+%py3_build
 
 %install
 rm -rf %{buildroot}
-python3 setup.py install --root=%{buildroot}
+%py3_install
 
 %check
-
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pathlib2 funcsigs pluggy more_itertools
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
@@ -58,20 +54,21 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.8.0-2
--   openssl 1.1.1
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
--   Automatic Version Bump
-*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.6.0-4
--   Mass removal python2
-*   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 4.6.0-3
--   Fix make check
-*   Wed Dec 05 2018 Ashwin H <ashwinh@vmware.com> 4.6.0-2
--   Add %check
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.6.0-1
--   Update to version 4.6.0
-*   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-2
--   Adding requires on ptyprocess
-*   Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
--   Initial packaging for Photon
-
+* Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.8.0-3
+- Update release to compile with python 3.11
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.8.0-2
+- openssl 1.1.1
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
+- Automatic Version Bump
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.6.0-4
+- Mass removal python2
+* Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 4.6.0-3
+- Fix make check
+* Wed Dec 05 2018 Ashwin H <ashwinh@vmware.com> 4.6.0-2
+- Add %check
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.6.0-1
+- Update to version 4.6.0
+* Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-2
+- Adding requires on ptyprocess
+* Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
+- Initial packaging for Photon

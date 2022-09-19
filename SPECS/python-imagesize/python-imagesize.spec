@@ -1,15 +1,14 @@
 Name:           python3-imagesize
-Version:        1.2.0
-Release:        2%{?dist}
+Version:        1.4.1
+Release:        1%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/shibukawa/imagesize_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0: https://github.com/shibukawa/imagesize_py/archive/refs/tags/imagesize-%{version}.tar.gz
-%define sha512 imagesize=c82a7fe433064c3a60ed664bad8ce4e602c527bcf2f7c9ab9be6ed650654626d9e0907028b2b0c5a484712bc989335b2b4f66494c8d445f5043ed4c2bc519700
+%define sha512  imagesize=f191d7fe34a01ab21b0f4f6519df8ab2a53c1ca54956f4d825d9cec5bd5f4c569491bdc26cb36fcaad2c453c35e51f69379f091362e206453aaefbda4802daa4
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -43,6 +42,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
+- Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-2
 - Fix build with new rpm
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
@@ -56,4 +57,4 @@ py.test3
 * Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.1-2
 - Change python to python2
 * Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.1-1
-- Initial
+- Initial Build

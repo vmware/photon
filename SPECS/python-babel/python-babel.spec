@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-babel
-Version:        2.9.1
-Release:        1%{?dist}
+Version:        2.10.3
+Release:        2%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -11,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
-%define sha1    Babel=1ce15f82eba5184cabe6ac1491cb58262e27adfd
+%define sha512  Babel=72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -62,6 +60,10 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.10.3-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10.3-1
+- Automatic Version Bump
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.9.1-1
 - Upgrade to v2.9.1 to fix CVE-2021-42771
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-3

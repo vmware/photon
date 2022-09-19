@@ -1,9 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%global __python3 \/usr\/bin\/python3
-
 Name:           dbus-python3
 Version:        1.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
@@ -13,9 +10,7 @@ Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{v
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-docutils
 BuildRequires:  dbus-devel
 BuildRequires:  glib-devel
@@ -38,20 +33,19 @@ Requires:       dbus-devel
 Developer files for Python bindings for D-Bus.
 
 %prep
-%autosetup  -n dbus-python-%{version}
+%autosetup -n dbus-python-%{version}
 
 %build
 %configure PYTHON="%{__python3}"
 %make_build %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 cp -r dbus_python*egg-info %{buildroot}%{python3_sitelib}
 rm -f %{buildroot}%{python3_sitelib}/*.la
 
 %check
-# make doesn't support _smp_mflags
-make check
+make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -68,6 +62,8 @@ make check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.2-2
+- Update release to compile with python 3.11
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.3.2-1
 - version bump
 * Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2

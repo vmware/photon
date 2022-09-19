@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %define VER 6.0.0
 Summary:        A Python-based command-line client for running simple CQL commands on a Cassandra cluster.
 Name:           python3-cqlsh
@@ -7,7 +5,7 @@ Name:           python3-cqlsh
 # 6.0.0b4 so tdnf update/install considers 6.0.0b4 as latest version
 # Thus, to overcome this appended "ga" at the end 6.0.0 to make it latest one
 # Once next version > 6.0.0 is available then we can remove "ga"
-Version:        6.0.0ga
+Version:        6.0.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Development/Languages/Python
@@ -15,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/cqlsh
 Source0:        https://files.pythonhosted.org/packages/source/c/cqlsh/cqlsh-%{VER}.tar.gz
-%define         sha1 cqlsh=cdd46b2ebdd4d8b3da141233f1fc038cdd7ee979
+%define sha512  cqlsh=762f9fb17d2a0123ae01df7898d9fa912a211a9283649035ba1e21b8ce0fc348a4520c89a9073821127e86261f457edb127a436cc2594308f082e7c25eae8f9b
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -39,10 +37,10 @@ This is a simple re-bundling of the open source tool that comes bundled with Cas
 %autosetup -p1 -n cqlsh-%{VER}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %check
 python3 setup.py check
@@ -53,6 +51,8 @@ python3 setup.py check
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.0.0-1
+- Automatic Version Bump
 * Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0ga-1
 - Update to 6.0.0
 * Wed Jun 09 2021 Ankit Jain <ankitja@vmware.com> 6.0.0b4-1

@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
-Version:        0.6.0
-Release:        6%{?dist}
+Version:        0.7.0
+Release:        2%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/ptyprocess/ptyprocess-%{version}.tar.gz
-%define sha1    ptyprocess=39622a2ff2cb456f17db542d60e5a0782e354128
+%define sha512  ptyprocess=791d8f2e79900627215ce80ce67ee9c79173dbc08297c6219d5058f9b80c5e323b93049e6836a70c4073f43548d22e3cf310f2e9948ef12f96bcaa15b0ddb2f3
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -32,17 +30,14 @@ BuildArch:      noarch
 Launch a subprocess in a pseudo terminal (pty), and interact with both the
 process and its pty.
 
-
 %prep
-%setup -q -n ptyprocess-%{version}
+%autosetup -n ptyprocess-%{version}
 
 %build
-python3 setup.py build
-
+%py3_build
 
 %install
-rm -rf %{buildroot}
-python3 setup.py install --root=%{buildroot}
+%py3_install
 
 %check
 pip3 install pathlib2 funcsigs pluggy more_itertools
@@ -53,18 +48,21 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.6.0-6
--   openssl 1.1.1
-*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-5
--   Mass removal python2
-*   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-4
--   Fix make check
-*   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 0.6.0-3
--   Fix make check
-*   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 0.6.0-2
--   Add %check
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.6.0-1
--   Update to version 0.6.0
-*   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 0.5.2-1
--   Initial packaging for Photon
-
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.6.0-6
+- openssl 1.1.1
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-5
+- Mass removal python2
+* Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-4
+- Fix make check
+* Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 0.6.0-3
+- Fix make check
+* Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 0.6.0-2
+- Add %check
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.6.0-1
+- Update to version 0.6.0
+* Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 0.5.2-1
+- Initial packaging for Photon

@@ -1,19 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        Query Language for JSON
 Name:           python3-jmespath
-Version:        0.10.0
-Release:        3%{?dist}
+Version:        1.0.1
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jmespath
 Source0:        https://pypi.python.org/packages/e5/21/795b7549397735e911b032f255cff5fb0de58f96da794274660bca4f58ef/jmespath-%{version}.tar.gz
-%define         sha1 jmespath=356c48dfea2214dd9e7e2b222a99dddfe9c0d05c
-BuildRequires:  python3
-BuildRequires:  python3-libs
+%define sha512  jmespath=a1c2424d859f732ba854fabf5e3e47cef88f782d6e9707e5f49f29ddef2fab391aa69866f2e70a58a5f4373a43ab098a787a9a03c15025acf46e5a25243513fb
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -24,17 +19,16 @@ BuildRequires:  curl-devel
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
-Provides:       python3.9dist(jmespath)
+Provides:       python%{python3_version}dist(jmespath)
 
 %description
 JMESPath (pronounced “james path”) allows you to declaratively specify how to extract elements from a JSON document.
-
 
 %prep
 %autosetup -n jmespath-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
@@ -53,16 +47,20 @@ python3 setup.py test
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
-*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 0.10.0-3
--   Added provides
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.10.0-2
--   openssl 1.1.1
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.10.0-1
--   Automatic Version Bump
-*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.9.3-3
--   Mass removal python2
-*   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 0.9.3-2
--   Fix make check
--   moved the build requires from subpackages
-*   Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 0.9.3-1
--   Initial packaging for photon.
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.1-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.1-1
+- Automatic Version Bump
+* Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 0.10.0-3
+- Added provides
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.10.0-2
+- openssl 1.1.1
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.10.0-1
+- Automatic Version Bump
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.9.3-3
+- Mass removal python2
+* Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 0.9.3-2
+- Fix make check
+- moved the build requires from subpackages
+* Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 0.9.3-1
+- Initial packaging for photon.

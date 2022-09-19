@@ -3,7 +3,7 @@
 Summary:        Message of the Day
 Name:           motd
 Version:        0.1.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv3
 URL:            http://github.com/rtnpro/fedora-motd
 Group:          Applications/Daemons
@@ -34,7 +34,7 @@ Generates Dynamic MOTD.
 %autosetup -p1 -n motdgen-%{commit0}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
 python3 setup.py install -O1 --skip-build --install-data=%{_datadir} --root %{buildroot}
@@ -74,6 +74,8 @@ rm -rf %{_localstatedir}/run/motdgen
 %{_tmpfilesdir}/motd.conf
 
 %changelog
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.3-7
+- Update release to compile with python 3.11
 * Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1.3-6
 - Systemd to generate runtime directory.
 * Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.3-5

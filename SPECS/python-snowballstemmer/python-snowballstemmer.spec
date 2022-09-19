@@ -1,5 +1,5 @@
 Name:           python3-snowballstemmer
-Version:        2.0.0
+Version:        2.2.0
 Release:        1%{?dist}
 Summary:        Python stemming library
 License:        BSD
@@ -7,9 +7,8 @@ Group:          Development/Languages/Python
 Url:            https://github.com/shibukawa/snowball_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0: https://pypi.python.org/packages/20/6b/d2a7cb176d4d664d94a6debf52cd8dbae1f7203c8e42426daa077051d59c/snowballstemmer-%{version}.tar.gz
-%define sha512 snowballstemmer=d673205cacc7f6e81eaee23e6c50064af77c3c4464dbdf5dc1c3f5682dec2688fe6e7069b7ed2e59259312ba926d3be84bd846a132b6138e30b4ff2b9a9353e8
+%define sha512 snowballstemmer=f1dee83e06fc79ffb250892fe62c75e3393b9af07fbf7cde413e6391870aa74934302771239dea5c9bc89806684f95059b00c9ffbcf7340375c9dd8f1216cd37
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -57,6 +56,8 @@ It includes following language algorithms:
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
 - Automatic Version Bump
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.2.1-3

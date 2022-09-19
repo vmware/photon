@@ -1,15 +1,14 @@
 Name:           python3-websocket-client
-Version:        0.57.0
-Release:        2%{?dist}
+Version:        1.4.1
+Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/websocket-client/websocket-client
-
-Source0: https://github.com/websocket-client/websocket-client/archive/refs/tags/websocket_client-%{version}.tar.gz
-%define sha512 websocket_client=8677b00abbdd995ef1c2254f73a01713eb0707ee2549031f410205af7bbbf57b4730b38a78d683a90605c1412863f57a3829d8be1c058f3e9bfb177bd49c4525
+Source0:        https://files.pythonhosted.org/packages/99/11/01fe7ebcb7545a1990c53c11f31230afe1388b0b34256e3fd20e49482245/websocket-client-%{version}.tar.gz
+%define sha512  websocket-client=a2804421e97ccbfb61cb2e8a2be6ecd5d5d60210971e27ca4e00a4854fb49df2e3c87ec87c0ec11565d7ce03f419dc3cbd8c2402843a8fced49d75d65d07b502
 
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
@@ -28,7 +27,7 @@ BuildArch:      noarch
 WebSocket client for python
 
 %prep
-%autosetup -n websocket_client-%{version}
+%autosetup -n websocket-client-%{version}
 
 %build
 %py3_build
@@ -44,9 +43,11 @@ python3 setup.py test
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_bindir}/wsdump.py
+%{_bindir}/wsdump
 
 %changelog
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.1-1
+- Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.57.0-2
 - openssl 1.1.1
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.57.0-1
