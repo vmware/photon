@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.10.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -11,7 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/ansible/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1 %{name}=22eefc076bc1ebce0de86d32cacccea1b8330d22
+%define sha512  %{name}=f923e856795f720fce4a9e862e8089ab20037c2739ca30311195753765c44cae41a60a125b94a8b07b6c2247b3c88a9fe5e6bdf8c5786a744bd46190cb624f89
+
+Source1:        macros.ansible
 
 Patch0:         Add-Photon-OS-tdnf-support.patch
 
@@ -35,6 +35,13 @@ Requires:       python3-devel
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
+%package devel
+Summary:        Development files for ansible packages
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+Development files for ansible packages
+
 %prep
 %autosetup -p1
 
@@ -44,6 +51,8 @@ python3 setup.py build
 %install
 %{__rm} -rf %{buildroot}
 python3 setup.py install -O1 --skip-build --root "%{buildroot}"
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %check
 python3 setup.py test
@@ -53,7 +62,13 @@ python3 setup.py test
 %{_bindir}/*
 %{python3_sitelib}/*
 
+%files devel
+%defattr(-, root, root)
+%{_rpmmacrodir}/macros.%{name}
+
 %changelog
+* Tue Sep 27 2022 Nitesh Kumar <kunitesh@vmware.com> 2.10.16-2
+- Adding devel sub package
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.10.16-1
 - Upgrade to 2.10.16 & fix tdnf module packaging
 * Mon Jun 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.10.10-1
