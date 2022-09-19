@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.256
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -466,6 +466,14 @@ Patch510: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
 
 # Fix for CVE-2022-36123
 Patch511: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
+
+# Fix for CVE-2022-3028
+Patch512: 0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
+
+# Fix for CVE-2021-4037
+Patch513: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
+Patch514: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
+Patch515: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 
 #Patches for i40e driver
 Patch1500: 0001-Add-support-for-gettimex64-interface.patch
@@ -1058,6 +1066,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Sep 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-3
+- Fix for CVE-2022-3028/2021-4037
 * Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2
 - Fix for CVE-2022-39189/2022-36123
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1

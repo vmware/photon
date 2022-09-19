@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.256
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -414,16 +414,24 @@ Patch525: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
 # Fix for CVE-2022-36123
 Patch526: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 
+# Fix for CVE-2022-3028
+Patch527: 0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
+
+# Fix for CVE-2021-4037
+Patch528: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
+Patch529: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
+Patch530: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+
 # Update vmxnet3 driver to version 6
-Patch530: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
-Patch531: 0002-vmxnet3-prepare-for-version-6-changes.patch
-Patch532: 0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
-Patch533: 0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
-Patch534: 0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
-Patch535: 0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
-Patch536: 0007-vmxnet3-update-to-version-6.patch
-Patch537: 0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
-Patch538: 0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+Patch531: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
+Patch532: 0002-vmxnet3-prepare-for-version-6-changes.patch
+Patch533: 0003-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch534: 0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch535: 0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch536: 0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch537: 0007-vmxnet3-update-to-version-6.patch
+Patch538: 0008-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+Patch539: 0009-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
 
 # Update vmxnet3 driver to version 7
 Patch540: 0001-vmxnet3-prepare-for-version-7-changes.patch
@@ -538,10 +546,10 @@ ApplyPatch "1" "516"
 %patch520 -p1
 %endif
 
-ApplyPatch "521" "528"
+ApplyPatch "521" "530"
 
 # Update vmxnet3 driver to version 6
-ApplyPatch "530" "538"
+ApplyPatch "531" "539"
 
 # Update vmxnet3 driver to version 7
 ApplyPatch "540" "549"
@@ -772,6 +780,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Sep 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-3
+- Fix for CVE-2022-3028/2021-4037
 * Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2
 - Fix for CVE-2022-39189/2022-36123
 * Tue Aug 30 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.256-1

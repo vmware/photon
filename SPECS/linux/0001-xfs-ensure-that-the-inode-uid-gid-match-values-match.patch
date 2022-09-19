@@ -1,0 +1,102 @@
+From 3d8f2821502d0b60bac2789d0bea951fda61de0c Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Fri, 21 Feb 2020 08:31:26 -0800
+Subject: [PATCH] xfs: ensure that the inode uid/gid match values match the
+ icdinode ones
+
+commit 3d8f2821502d0b60bac2789d0bea951fda61de0c upstream
+
+Instead of only synchronizing the uid/gid values in xfs_setup_inode,
+ensure that they always match to prepare for removing the icdinode
+fields.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+---
+ fs/xfs/libxfs/xfs_inode_buf.c | 2 ++
+ fs/xfs/xfs_icache.c           | 4 ++++
+ fs/xfs/xfs_inode.c            | 8 ++++++--
+ fs/xfs/xfs_iops.c             | 3 ---
+ 4 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 09d9c8cfa..28a90a17a 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -226,7 +226,9 @@ xfs_inode_from_disk(
+ 
+ 	to->di_format = from->di_format;
+ 	to->di_uid = be32_to_cpu(from->di_uid);
++	inode->i_uid = xfs_uid_to_kuid(to->di_uid);
+ 	to->di_gid = be32_to_cpu(from->di_gid);
++	inode->i_gid = xfs_gid_to_kgid(to->di_gid);
+ 	to->di_flushiter = be16_to_cpu(from->di_flushiter);
+ 
+ 	/*
+diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
+index 56e9043bd..ceee27b70 100644
+--- a/fs/xfs/xfs_icache.c
++++ b/fs/xfs/xfs_icache.c
+@@ -286,6 +286,8 @@ xfs_reinit_inode(
+ 	uint64_t	version = inode_peek_iversion(inode);
+ 	umode_t		mode = inode->i_mode;
+ 	dev_t		dev = inode->i_rdev;
++	kuid_t		uid = inode->i_uid;
++	kgid_t		gid = inode->i_gid;
+ 
+ 	error = inode_init_always(mp->m_super, inode);
+ 
+@@ -294,6 +296,8 @@ xfs_reinit_inode(
+ 	inode_set_iversion_queried(inode, version);
+ 	inode->i_mode = mode;
+ 	inode->i_rdev = dev;
++	inode->i_uid = uid;
++	inode->i_gid = gid;
+ 	return error;
+ }
+ 
+diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
+index 0370ee34b..974be9d59 100644
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -812,15 +812,19 @@ xfs_ialloc(
+ 
+ 	inode->i_mode = mode;
+ 	set_nlink(inode, nlink);
+-	ip->i_d.di_uid = xfs_kuid_to_uid(current_fsuid());
+-	ip->i_d.di_gid = xfs_kgid_to_gid(current_fsgid());
++	inode->i_uid = current_fsuid();
++	ip->i_d.di_uid = xfs_kuid_to_uid(inode->i_uid);
+ 	inode->i_rdev = rdev;
+ 	xfs_set_projid(ip, prid);
+ 
+ 	if (pip && XFS_INHERIT_GID(pip)) {
++		inode->i_gid = VFS_I(pip)->i_gid;
+ 		ip->i_d.di_gid = pip->i_d.di_gid;
+ 		if ((VFS_I(pip)->i_mode & S_ISGID) && S_ISDIR(mode))
+ 			inode->i_mode |= S_ISGID;
++	} else {
++		inode->i_gid = current_fsgid();
++		ip->i_d.di_gid = xfs_kgid_to_gid(inode->i_gid);
+ 	}
+ 
+ 	/*
+diff --git a/fs/xfs/xfs_iops.c b/fs/xfs/xfs_iops.c
+index 6011086b5..1148d13d8 100644
+--- a/fs/xfs/xfs_iops.c
++++ b/fs/xfs/xfs_iops.c
+@@ -1294,9 +1294,6 @@ xfs_setup_inode(
+ 	/* make the inode look hashed for the writeback code */
+ 	inode_fake_hash(inode);
+ 
+-	inode->i_uid    = xfs_uid_to_kuid(ip->i_d.di_uid);
+-	inode->i_gid    = xfs_gid_to_kgid(ip->i_d.di_gid);
+-
+ 	i_size_write(inode, ip->i_d.di_size);
+ 	xfs_diflags_to_iflags(inode, ip);
+ 
+-- 
+2.30.5
+
