@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.103
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -126,6 +126,8 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-1016
+Patch104: 0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -332,7 +334,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M103
+%autopatch -p1 -m100 -M104
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -708,6 +710,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Sep 20 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-4
+- Fix for CVE-2022-1016
 * Tue Sep 20 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-3
 - Fix SEV and Hypercall alternative inst. patches
 * Tue Sep 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.103-2

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.103
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -98,6 +98,8 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch102: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-1016
+Patch103: 0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -558,7 +560,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M56
 
 # CVE
-%autopatch -p1 -m100 -M102
+%autopatch -p1 -m100 -M103
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -785,6 +787,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 20 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-3
+- Fix for CVE-2022-1016
 * Mon Sep 19 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-2
 - Fix SEV and Hypercall alternative inst. patches
 * Thu Sep 15 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-1
