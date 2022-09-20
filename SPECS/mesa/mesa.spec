@@ -1,15 +1,15 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        22.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512  mesa=04f827ac800e22c24923606fa5a3b6707db876ee973b2442efbd439675596f7481fb4eefcb94bc013afa7b223663324af8592af566d379bbb9c0601f2b700807
+Source0: http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=04f827ac800e22c24923606fa5a3b6707db876ee973b2442efbd439675596f7481fb4eefcb94bc013afa7b223663324af8592af566d379bbb9c0601f2b700807
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -36,11 +36,29 @@ Provides:       pkg-config(dri)
 %description
 Mesa is an OpenGL compatible 3D graphics library.
 
-%package vulkan-drivers
+%package        vulkan-drivers
 Summary:        Mesa Vulkan drivers
 
-%description vulkan-drivers
+%description     vulkan-drivers
 The drivers with support for the Vulkan API.
+
+%package        libgbm
+Summary:        Mesa gbm runtime library
+Requires:       expat
+Requires:       libdrm
+Requires:       libwayland-server
+Provides:       libgbm
+
+%description    libgbm
+Mesa gbm runtime library.
+
+%package        libgbm-devel
+Summary:        Mesa libgbm development package
+Requires:       %{name}-libgbm = %{version}-%{release}
+Provides:       libgbm-devel
+
+%description    libgbm-devel
+Mesa libgbm development package.
 
 %prep
 %autosetup -n %{name}-%{name}-%{version} -p1
@@ -61,7 +79,7 @@ meson --prefix=%{_prefix} build/ \
         -Dshared-glapi=disabled \
         -Dgles1=disabled \
         -Dopengl=false \
-        -Dgbm=disabled \
+        -Dgbm=enabled \
         -Dglx=disabled \
         -Degl=disabled \
         -Dglvnd=false \
@@ -101,6 +119,19 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 %endif
 
+%files libgbm
+%defattr(-,root,root)
+%{_libdir}/libgbm.so.1
+%{_libdir}/libgbm.so.1.*
+
+%files libgbm-devel
+%defattr(-,root,root)
+%{_libdir}/libgbm.so
+%{_includedir}/gbm.h
+%{_libdir}/pkgconfig/gbm.pc
+
 %changelog
+* Mon Sep 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-2
+- Enable libgbm
 * Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-1
 - Initial Version

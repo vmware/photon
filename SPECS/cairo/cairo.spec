@@ -1,15 +1,18 @@
 Summary:        A 2D graphics library.
 Name:           cairo
 Version:        1.17.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1    cairo=ce1234bd120bb0c1679a75a5c3c76d0b2edcc88f
+%define sha512  cairo=cacdbd470b4ce592446da5a6e76eedfb4210139f3fd8611e629d21499b8648124af08c3ec541c183e00ade227e5c261002cebb93d71937e611b6f7da52e57f20
+
 Patch0:         CVE-2020-35492.patch
+
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -17,22 +20,34 @@ BuildRequires:  pixman-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  glib-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libXext-devel
+
 Requires:       pixman
 Requires:       glib
 Requires:       libpng
 Requires:       expat
+Requires:       libX11
+Requires:       libXext
+Requires:       fontconfig
+Requires:       freetype2
+
 %description
 Cairo is a 2D graphics library with support for multiple output devices.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	freetype2-devel
-Requires:	pixman-devel
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       freetype2-devel
+Requires:       pixman-devel
+Requires:       libX11-devel
+Requires:       libXext-devel
+
+%description    devel
 It contains the libraries and header files to create applications.
 
 %prep
+# Using autosetup is not feasible
 %setup -cqn %{name}-%{version}
 mv %{name}-%{version}*/* .
 %patch0 -p1
@@ -44,16 +59,17 @@ mv %{name}-%{version}*/* .
 autoreconf -f -i
 
 %configure \
-    --enable-xlib=no        \
+    --enable-xlib=yes        \
     --enable-xlib-render=no \
     --enable-win32=no       \
     CFLAGS="-O3 -fPIC"      \
     --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
+
+%ldconfig_scriptlets
 
 %post
 /sbin/ldconfig
@@ -75,6 +91,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Sep 5 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.2-3
+-   Enabled xlib
 *   Thu Apr 1 2021 Michelle Wang <michellew@vmware.com> 1.17.2-2
 -   Add patch for CVE-2020-3549
 *   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
