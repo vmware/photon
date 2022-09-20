@@ -36,10 +36,17 @@ index 017de6c..e3a8ac7 100644
  	.code32
  SYM_FUNC_START(startup_32)
  	/*
-@@ -109,6 +117,7 @@ SYM_FUNC_START(startup_32)
+@@ -109,6 +117,14 @@ SYM_FUNC_START(startup_32)
  
  /* setup a stack and make sure cpu supports long mode. */
  	leal	rva(boot_stack_end)(%ebp), %esp
++
++	/* Reload CS, so we don't depend on bootloader selectors */
++	leal	rva(1f)(%ebp), %eax
++	pushl	$__KERNEL32_CS
++	pushl	%eax
++	lret
++1:
 +	call	load_early_idt32
  
  	call	verify_cpu

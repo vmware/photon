@@ -66,7 +66,7 @@ index ac9fc51..67601c5 100644
  /*
   * The hypercall definitions differ in the low word of the %edx argument
   * in the following way: the old port base interface uses the port
-@@ -28,30 +34,54 @@
+@@ -28,30 +34,56 @@
  #define VMWARE_HYPERVISOR_HB   BIT(0)
  #define VMWARE_HYPERVISOR_OUT  BIT(1)
  
@@ -88,7 +88,9 @@ index ac9fc51..67601c5 100644
 +		      "movw $" __stringify(VMWARE_HYPERVISOR_PORT)	\
 +							", %%dx; "	\
 +		      "inl (%%dx), %%eax", X86_FEATURE_HYPERVISOR,	\
++		      "movw $0, %%dx; "					\
  		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "movw $0, %%dx; "					\
  		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
  
  /*
@@ -149,7 +151,7 @@ new file mode 100644
 index 00000000..fc9cbcf
 --- /dev/null
 +++ b/arch/x86/kernel/cpu/vmw_hc.S
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,63 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +
 +#include <asm/asm.h>
@@ -166,9 +168,11 @@ index 00000000..fc9cbcf
 +	inl	(%dx), %eax
 +	retq
 +.Lvmw_vmcall:
++	movw	$0, %dx
 +	vmcall
 +	retq
 +.Lvmw_vmmcall:
++	movw	$0, %dx
 +	vmmcall
 +	retq
 +SYM_FUNC_END(vmw_hypercall_slowpath)
