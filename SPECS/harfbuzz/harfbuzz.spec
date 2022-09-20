@@ -1,7 +1,7 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        2.6.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://harfbuzz.org
 Group:          System Environment/Libraries
@@ -13,6 +13,7 @@ Source0: https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version
 
 BuildRequires:  glib-devel
 BuildRequires:  freetype2-devel
+BuildRequires:  gobject-introspection-devel
 
 Requires:       glib
 Requires:       freetype2
@@ -32,7 +33,7 @@ It contains the libraries and header files to create applications
 %autosetup -p1
 
 %build
-%configure
+%configure --with-gobject --enable-introspection
 %make_build
 
 %install
@@ -56,6 +57,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_bindir}/*
+%{_libdir}/girepository-1.0/*
 
 %files devel
 %defattr(-,root,root)
@@ -65,8 +67,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/cmake/harfbuzz/harfbuzz-config.cmake
+%{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Wed Nov 23 2022 Shivani Agarwal <shivania2@vmware.com> 2.6.7-3
+- Enabled introspection
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.7-2
 - Spec fixes
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.7-1

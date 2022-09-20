@@ -1,7 +1,7 @@
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  3%{?dist}
+Release:  4%{?dist}
 License:  LGPLv2 or MPLv1.1
 URL:      https://cairographics.org
 Group:    System Environment/Libraries
@@ -18,14 +18,18 @@ BuildRequires:  pixman-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  glib-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libXext-devel
 
-Requires: pixman
-Requires: glib
-Requires: libpng
-Requires: expat
-Requires: freetype2
-Requires: fontconfig
-Requires: binutils-libs
+Requires:       pixman
+Requires:       glib
+Requires:       libpng
+Requires:       expat
+Requires:       freetype2
+Requires:       fontconfig
+Requires:       binutils-libs
+Requires:       libX11
+Requires:       libXext
 
 %description
 Cairo is a 2D graphics library with support for multiple output devices.
@@ -36,6 +40,8 @@ Requires:   %{name} = %{version}-%{release}
 Requires:   freetype2-devel
 Requires:   pixman-devel
 Requires:   libpng-devel
+Requires:       libX11-devel
+Requires:       libXext-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -49,7 +55,7 @@ export CFLAGS="-O3 -fPIC"
 sed 's/PTR/void */' -i util/cairo-trace/lookup-symbol.c
 
 %configure \
-    --enable-xlib=no \
+    --enable-xlib=yes \
     --enable-xlib-render=no \
     --enable-win32=no \
     --disable-static \
@@ -58,6 +64,8 @@ sed 's/PTR/void */' -i util/cairo-trace/lookup-symbol.c
 
 %install
 %make_install %{?_smp_mflags}
+
+%ldconfig_scriptlets
 
 %post
 /sbin/ldconfig
@@ -83,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.6-4
+- Enabled xlib
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.17.6-3
 - Fix packaging and spec improvements
 * Thu Sep 01 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.17.6-2

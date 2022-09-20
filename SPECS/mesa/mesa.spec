@@ -1,7 +1,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        22.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
@@ -37,11 +37,29 @@ Provides:       pkg-config(dri)
 %description
 Mesa is an OpenGL compatible 3D graphics library.
 
-%package vulkan-drivers
+%package        vulkan-drivers
 Summary:        Mesa Vulkan drivers
 
-%description vulkan-drivers
+%description     vulkan-drivers
 The drivers with support for the Vulkan API.
+
+%package        libgbm
+Summary:        Mesa gbm runtime library
+Requires:       expat
+Requires:       libdrm
+Requires:       libwayland-server
+Provides:       libgbm
+
+%description    libgbm
+Mesa gbm runtime library.
+
+%package        libgbm-devel
+Summary:        Mesa libgbm development package
+Requires:       %{name}-libgbm = %{version}-%{release}
+Provides:       libgbm-devel
+
+%description    libgbm-devel
+Mesa libgbm development package.
 
 %prep
 %autosetup -p1
@@ -61,7 +79,7 @@ The drivers with support for the Vulkan API.
     -Dshared-glapi=disabled \
     -Dgles1=disabled \
     -Dopengl=false \
-    -Dgbm=disabled \
+    -Dgbm=enabled \
     -Dglx=disabled \
     -Degl=disabled \
     -Dglvnd=false \
@@ -104,7 +122,20 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 %endif
 
+%files libgbm
+%defattr(-,root,root)
+%{_libdir}/libgbm.so.1
+%{_libdir}/libgbm.so.1.*
+
+%files libgbm-devel
+%defattr(-,root,root)
+%{_libdir}/libgbm.so
+%{_includedir}/gbm.h
+%{_libdir}/pkgconfig/gbm.pc
+
 %changelog
+* Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 22.2.2-2
+- Enable libgbm
 * Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 22.2.2-1
 - Automatic Version Bump
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.0-1

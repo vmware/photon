@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.50.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -20,12 +20,17 @@ BuildRequires:  meson
 BuildRequires:  pkg-config
 BuildRequires:  fribidi-devel
 BuildRequires:  cmake
+BuildRequires:  libX11-devel
+BuildRequires:  libXext-devel
+BuildRequires:  gobject-introspection-devel
+BuildRequires:  libpng-devel
 
-Requires: freetype2
-Requires: fontconfig
-Requires: fribidi
-Requires: glib
-Requires: harfbuzz
+Requires:       freetype2
+Requires:       fontconfig
+Requires:       fribidi
+Requires:       glib
+Requires:       harfbuzz
+Requires:       libpng
 
 %description
 Pango is a library for laying out and rendering of text, with an emphasis on internationalization.
@@ -35,6 +40,11 @@ Pango can be used anywhere that text layout is needed, though most of the work o
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       harfbuzz-devel
+Requires:       glib-devel
+Requires:       cairo-devel
+Requires:       libpng-devel
+Requires:       fontconfig-devel
+Requires:       fribidi-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -46,7 +56,7 @@ It contains the libraries and header files to create applications
 %meson \
     -Dlibthai=disabled \
     -Dxft=disabled \
-    -Dintrospection=disabled
+    -Dintrospection=enabled
 
 %meson_build
 
@@ -67,14 +77,18 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
+%{_datadir}/gir-1.0/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/girepository-1.0/
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 1.50.11-2
+- Enabled introspection
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.50.11-1
 - Upgrade to v1.50.11
 * Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
