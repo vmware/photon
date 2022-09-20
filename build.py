@@ -118,6 +118,14 @@ curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
 
 
+def build_vixdiskutil():
+    if not os.path.exists(f"{photonDir}/tools/bin"):
+        cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
+
+    if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
+        runShellCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
+
+
 class Build_Config:
     buildThreads = 1
     stagePath = ""
@@ -817,6 +825,8 @@ class RpmBuildTarget:
         # TODO: should be moved to top
         import DistributedBuilder
 
+        build_vixdiskutil()
+
         print("Distributed Building using kubernetes ...")
         with open(Build_Config.distributedBuildFile, "r") as configFile:
             distributedBuildConfig = json.load(configFile)
@@ -892,7 +902,6 @@ class CheckTools:
         CheckTools.create_ph_builder_img()
         CheckTools.check_photon_installer()
         CheckTools.check_contain()
-        CheckTools.check_vixdiskutil()
         check_prerequesite["check-pre-reqs"] = True
 
     def create_ph_builder_img():
@@ -905,15 +914,6 @@ class CheckTools:
         cmd = f"{photonDir}/tools/scripts/ph4-docker-img-import.sh {ph_docker_img_url}"
         cmd = f"{cmd} {ph_docker_img} {ph_builder_tag}"
         runShellCmd(cmd)
-
-    def check_vixdiskutil():
-        local_build = not configdict["photon-build-param"]["start-scheduler-server"]
-        if constants.buildArch == "x86_64" and local_build:
-            if not os.path.exists(f"{photonDir}/tools/bin"):
-                cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
-
-            if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-                runShellCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
 
     def check_contain():
         if not os.path.exists(f"{photonDir}/tools/bin"):
@@ -1116,6 +1116,9 @@ class BuildImage:
         BuildEnvironmentSetup.photon_stage()
 
         local_build = not configdict["photon-build-param"]["start-scheduler-server"]
+        if constants.buildArch == "x86_64" and local_build:
+            build_vixdiskutil()
+
         if local_build:
             RpmBuildTarget.ostree_repo()
         print(f"Building {self.img_name} image")
