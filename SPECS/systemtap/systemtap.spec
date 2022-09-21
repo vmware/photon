@@ -7,8 +7,8 @@
 %define with_sqlite    1
 
 Name:          systemtap
-Version:       4.4
-Release:       2%{?dist}
+Version:       4.7
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -17,7 +17,7 @@ URL:           http://sourceware.org/systemtap
 License:       GPLv2+
 
 Source0:       http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8fb1fe5071ec99ce3c6bcf82afdc98a3e1abc0ea937f3019b225c3a1879ada30080740b1918a84c6db06fe1893e6d1e7dc84be26c7e597d7feda1efe11354e76
+%define sha512 %{name}=7d7c213dc4f7c5430f81763668da21403fbc351d1701b1096eb1ad233e3f0325e35f01dfd0a33e75f277b26fdde88c46d42dd32e32e4d4f27a45d53e2dd0f831
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -105,6 +105,24 @@ Requires:      gzip
 
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
+
+%package exporter
+Summary: Systemtap-prometheus interoperation mechanism
+Requires: %{name}-runtime = %{version}-%{release}
+
+%description exporter
+This package includes files for a systemd service that manages
+systemtap sessions and relays prometheus metrics from the sessions
+to remote requesters on demand.
+
+%package runtime-python3
+Summary: Systemtap Python 3 Runtime Support
+License: GPLv2+
+Requires: %{name}-runtime = %{version}-%{release}
+
+%description runtime-python3
+This package includes support files needed to run systemtap scripts
+that probe python 3 processes.
 
 %prep
 %autosetup -p1
@@ -280,6 +298,7 @@ fi
 %{_bindir}/stap-report
 %{_bindir}/stapsh
 %{_bindir}/stapbpf
+%{_bindir}/stap-profile-annotate
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/runtime
 %{_datadir}/%{name}/runtime/*.h
@@ -300,6 +319,7 @@ fi
 %{_mandir}/man3/stap*.3stap*
 %{_mandir}/man7/warning::symbols.7stap*
 %{_mandir}/man7/warning::buildid.7stap*
+%{_mandir}/man7/warning::pass5.7stap.gz
 %{_mandir}/man7/stappaths.7*
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/stapbpf.8*
@@ -356,7 +376,21 @@ fi
 %{_mandir}/man7/warning::debuginfo.7stap*
 %{_mandir}/man8/stap-server.8*
 
+%files exporter
+%{_sysconfdir}/stap-exporter
+%{_sysconfdir}/sysconfig/stap-exporter
+%{_libdir}/systemd/system/stap-exporter.service
+%{_mandir}/man8/stap-exporter.8*
+%{_sbindir}/stap-exporter
+
+%files runtime-python3
+%{python3_sitearch}/HelperSDT
+%{python3_sitearch}/HelperSDT-*.egg-info
+%{_libexecdir}/systemtap/python/stap-resolve-module-function.py
+
 %changelog
+* Wed Sep 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.7-1
+- Update to version 4.7
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.4-2
 - Bump version as a part of sqlite upgrade
 * Thu Nov 12 2020 Ankit Jain <ankitja@vmware.com> 4.4-1
