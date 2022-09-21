@@ -20,19 +20,19 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=73ae2fb7fd5ad85258e130435f30f12ddefaa98e
+%define sha512 %{name}=30777e55c85880b31d974eb882cec3559739710121b875b8fcad7f7296686d850e9cd394eeba06284a8013f4c2fbbfdf628bd29082e87c908920e970836ba6df
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1:        %{name}-native-%{ps_native_ver}.tar.gz
-%define sha1    %{name}-native=0aa26684c8aded1e34527bc1d322621c941f960c
+%define sha512 %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}-%{version}-linux=aa344b7d869454674323d4968479d4a00088cefc
+%define sha512 %{name}-%{version}-linux=f07a038ef8e7c4894f78139c08739a605ce0deb79d2f0e9d5abb8be5fda31a1636804c99c0dceedd5798e08e353263c338b98b7477eb40ebfb875545b0cbf3fb
 
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
@@ -42,7 +42,7 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 # Hence we need to re-build it.
 # https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
 Source5:        omi-%{libmi_tag}.tar.gz
-%define sha1    omi-%{libmi_tag}=823cbc445b631a094217d36050d35b59772a1407
+%define sha512 omi-%{libmi_tag}=97dbd968bd4a3075b534af9ebfe03c7003e3dfa07b0cc3923842fe6aecfbebff29fd2537195eb2ee27ff8e8e7a3779a4ba26156b7029a916c4a5eba4024d8009
 
 BuildArch:      x86_64
 
@@ -93,10 +93,11 @@ cp %{SOURCE3} .
 cp %{SOURCE4} src
 bash -x build.sh
 cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}
-pushd src/libpsl-native
-cmake -DCMAKE_BUILD_TYPE=Debug .
 
-make %{?_smp_mflags}
+pushd src/libpsl-native
+%{__cmake} -DCMAKE_BUILD_TYPE=Debug .
+%make_build
+popd
 
 %install
 cd %{_builddir}/PowerShell-%{version}
@@ -117,8 +118,8 @@ cp %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}
 cp -r %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
   %{buildroot}%{_libdir}/%{name}/Modules
 
-%check
 %if 0%{?with_check}
+%check
 cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8

@@ -8,8 +8,8 @@ Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.getdnsapi.net/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d09b8bdd0b4a3df2d25b9689166226da83a5a7eb2c7436487dc637539ac6077624a4d66cf684c4e6c4911561872c6bd191af3afd90d275b1662e4c6c47773ef6
+Source0: http://www.getdnsapi.net/dist/%{name}-%{version}.tar.gz
+%define sha512 %{name}=d09b8bdd0b4a3df2d25b9689166226da83a5a7eb2c7436487dc637539ac6077624a4d66cf684c4e6c4911561872c6bd191af3afd90d275b1662e4c6c47773ef6
 
 BuildRequires:  cmake
 BuildRequires:  check-devel
@@ -57,18 +57,16 @@ getdns_query_mon is great for automated monitoring of DNS server replies.
 %autosetup -p1
 
 %build
-%cmake -DUSE_LIBIDN2=OFF -DENABLE_STUB_ONLY=ON
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DUSE_LIBIDN2=OFF \
+    -DENABLE_STUB_ONLY=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-cmake --build .
-
-%if 0%{?with_check}
-%check
-# make test needs a network connection - so disabled per default
-#make test %{?_smp_mflags}
-%endif
+%cmake_build
 
 %install
-DESTDIR=%{buildroot} cmake --install .
+%cmake_install
 
 rm -rf %{buildroot}%{_libdir}/*.la \
        %{buildroot}%{_docdir}/%{name}

@@ -7,8 +7,10 @@ URL:             https://github.com/rpm-software-management/%{name}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Base
+
 Source0: https://github.com/rpm-software-management/drpm/releases/download/0.5.0/drpm-%{version}.tar.bz2
 %define sha512 %{name}=9b622de94067e18e5238b67678f746632751ac03a29dd584e7cab3d024a9b9e8f7f1ee80503147614493cf4928eba183bbdc1086c71d4433996b2b9475341cdb
+
 BuildRequires:   cmake
 BuildRequires:   gcc
 BuildRequires:   rpm-devel
@@ -18,6 +20,7 @@ BuildRequires:   bzip2-devel
 BuildRequires:   xz-devel
 BuildRequires:   cmocka-devel
 BuildRequires:   pkg-config
+
 Requires: rpm-libs
 Requires: cmocka
 Requires: openssl
@@ -37,23 +40,22 @@ The drpm-devel package provides a C interface (drpm.h) for the drpm library.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-mkdir build
-pushd build
-cmake \
+%cmake \
     -DWITH_ZSTD:BOOL=yes \
     -DHAVE_LZLIB_DEVEL:BOOL=0 \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    ..
-%make_build
+    -DCMAKE_BUILD_TYPE=Debug
+
+%cmake_build
 
 %install
-pushd build
-%make_install %{?_smp_mflags}
+%cmake_install
 
+%if 0%{?with_check}
 %check
-pushd build
-ctest -VV
+cd %{__cmake_builddir}
+%ctest
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig

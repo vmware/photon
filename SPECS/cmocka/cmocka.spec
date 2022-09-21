@@ -27,17 +27,21 @@ Develeopment headers and libraries for %{name}.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%cmake \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    ..
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DWITH_CMOCKERY_SUPPORT=ON \
+    -DUNIT_TESTING=ON
 
-%make_build
+%cmake_build
 
 %install
-cd build
-%make_install %{?_smp_mflags}
+%cmake_install
+
+%if 0%{?with_check}
+%check
+%ctest
+%endif
 
 %ldconfig_scriptlets
 

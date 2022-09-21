@@ -8,8 +8,8 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    %{name}=10516c6d177dc3d893e640c75d891ee3d6c1edcf
+Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=bb98ffb0a992c9907795f7bb7492196f7195fdb5e292e8a764a7a1a8cc078dcf60bebf26ed3db116f78b7022a600c996fd2645e5f6e5d24e4ed99392e1f08df3
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -17,6 +17,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
+BuildRequires:  ninja-build
 
 Requires:       libstdc++-devel
 Requires:       ncurses
@@ -39,25 +40,26 @@ The clang-devel package contains libraries, header files and documentation for d
 %autosetup -n %{name}-%{version}.src -p1
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr               \
-      -DCMAKE_BUILD_TYPE=Release                \
-      -DLLVM_MAIN_INCLUDE_DIR=/usr/include \
-      -Wno-dev ..
+%cmake -G Ninja \
+    -DLLVM_PARALLEL_LINK_JOBS=1 \
+    -DCMAKE_INSTALL_PREFIX=%{_usr} \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
+    -DBUILD_SHARED_LIBS=OFF \
+    -Wno-dev
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
 %ldconfig_scriptlets
 
+%if 0%{?with_check}
 %check
 cd build
 make clang-check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}/*

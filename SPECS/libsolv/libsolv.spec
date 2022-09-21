@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.19
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -38,42 +38,46 @@ for developing applications that use libsolv.
 %autosetup -p1
 
 %build
-cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%cmake \
     -DENABLE_RPMDB=ON \
     -DENABLE_COMPLEX_DEPS=ON \
     -DENABLE_RPMDB_BYRPMHEADER=ON \
     -DENABLE_RPMDB_LIBRPM=ON \
-    -DENABLE_RPMMD=ON
+    -DENABLE_RPMMD=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_BUILD_TYPE=Debug
 
-%make_build
+%cmake_build
 
 %install
-%make_install %{?_smp_mflags}
+%cmake_install
 find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
+cd %{__cmake_builddir}
 make %{?_smp_mflags} test
 %endif
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_lib64dir}/libsolv.so.*
-%{_lib64dir}/libsolvext.so.*
+%{_libdir}/libsolv.so.*
+%{_libdir}/libsolvext.so.*
 %{_mandir}/man1/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_lib64dir}/libsolv.so
-%{_lib64dir}/libsolvext.so
-%{_lib64dir}/pkgconfig/*
+%{_libdir}/libsolv.so
+%{_libdir}/libsolvext.so
+%{_libdir}/pkgconfig/*
 %{_datadir}/cmake/*
 %{_mandir}/man3/*
 
 %changelog
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-5
+- Use cmake macros
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-4
 - Drop libdb support
 * Wed Dec 1 2021 Oliver Kurth <okurth@vmware.com> 0.7.19-3

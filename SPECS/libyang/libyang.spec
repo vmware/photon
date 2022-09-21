@@ -45,22 +45,19 @@ YANG validator tools.
 %autosetup -p1
 
 %build
-mkdir build
-cd build
 %cmake \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DENABLE_TESTS=ON \
-    ..
+    -DENABLE_TESTS=ON
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
+
 %if 0%{?with_check}
 %check
-cd build
+cd %{__cmake_builddir}
 make test %{?_smp_mflags}
 %endif
 

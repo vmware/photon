@@ -1,22 +1,27 @@
 %define debug_package %{nil}
+
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
 Url:            https://github.com/aws/aws-sdk-cpp
-Source0:        aws-sdk-cpp-%{version}.tar.gz
-%define sha1    aws-sdk-cpp=5db6bed30cb85c59c7a3a58034f222007e6a9e49
+
+Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ebe8e402107b7b70a9b397c94ad981ff02d97e10e6fd8337f19b732185ecbb79e132eecd513300ce733a765fd780dd765c1d2b34479e5e1d891fa771722bad81
+
 Patch0:         aws-sdk-cpp-Build-foxes-for-GCC9.patch
+
 Requires:       openssl-devel
 Requires:       curl-devel
 Requires:       zlib-devel
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-sdk-kinesis = %{version}-%{release}
 Requires:       aws-sdk-s3 = %{version}-%{release}
+
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -81,102 +86,83 @@ aws s3 libs
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-cmake \
--DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
--DCMAKE_BUILD_TYPE=Release ..
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+cd %{__cmake_builddir}
 for component in "core" "kinesis" "s3"; do
-  cd aws-cpp-sdk-$component
+  pushd aws-cpp-sdk-$component
   make %{?_smp_mflags}
-  cd ..
+  popd
 done
 
 %install
-cd build
+cd %{__cmake_builddir}
 for component in "core" "kinesis" "s3"; do
-  cd aws-cpp-sdk-$component
-  make DESTDIR=%{buildroot} install
-  cd ..
+  pushd aws-cpp-sdk-$component
+  make DESTDIR=%{buildroot} install %{?_smp_mflags}
+  popd
 done
-rm -rf %{buildroot}%{_lib64dir}/cmake
+
+rm -rf %{buildroot}%{_libdir}/cmake
 
 %clean
 rm -rf %{buildroot}/*
 
-# Pre-install
-%pre
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-# Post-install
 %post
+/sbin/ldconfig
 
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-    /sbin/ldconfig
-
-# Pre-uninstall
-%preun
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
-# Post-uninstall
 %postun
-
-    /sbin/ldconfig
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
+/sbin/ldconfig
 
 %files
-    %defattr(-,root,root,0755)
-    %exclude %{_includedir}/aws/core
-    %exclude %{_includedir}/aws/kinesis
-    %exclude %{_includedir}/aws/s3
-    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-core.pc
-    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-kinesis.pc
-    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
-    %exclude %{_lib64dir}/libaws-cpp-sdk-core.so
-    %exclude %{_lib64dir}/libaws-cpp-sdk-kinesis.so
-    %exclude %{_lib64dir}/libaws-cpp-sdk-s3.so
+%defattr(-,root,root,0755)
+%exclude %{_includedir}/aws/core
+%exclude %{_includedir}/aws/kinesis
+%exclude %{_includedir}/aws/s3
+%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
+%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-kinesis.pc
+%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-s3.pc
+%exclude %{_libdir}/libaws-cpp-sdk-core.so
+%exclude %{_libdir}/libaws-cpp-sdk-kinesis.so
+%exclude %{_libdir}/libaws-cpp-sdk-s3.so
 
 %files -n aws-sdk-core
-    %defattr(-,root,root,0755)
-    %{_includedir}/aws/core/*
-    %{_lib64dir}/pkgconfig/aws-cpp-sdk-core.pc
+%defattr(-,root,root,0755)
+%{_includedir}/aws/core/*
+%{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
 
 %files -n aws-core-libs
-    %defattr(-,root,root,0755)
-    %{_lib64dir}/libaws-cpp-sdk-core.so
+%defattr(-,root,root,0755)
+%{_libdir}/libaws-cpp-sdk-core.so
 
 %files -n aws-sdk-kinesis
-    %defattr(-,root,root,0755)
-    %{_includedir}/aws/kinesis/*
-    %{_lib64dir}/pkgconfig/aws-cpp-sdk-kinesis.pc
+%defattr(-,root,root,0755)
+%{_includedir}/aws/kinesis/*
+%{_libdir}/pkgconfig/aws-cpp-sdk-kinesis.pc
 
 %files -n aws-kinesis-libs
-    %defattr(-,root,root,0755)
-    %{_lib64dir}/libaws-cpp-sdk-kinesis.so
+%defattr(-,root,root,0755)
+%{_libdir}/libaws-cpp-sdk-kinesis.so
 
 %files -n aws-sdk-s3
-    %defattr(-,root,root,0755)
-    %{_includedir}/aws/s3/*
-    %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
+%defattr(-,root,root,0755)
+%{_includedir}/aws/s3/*
+%{_libdir}/pkgconfig/aws-cpp-sdk-s3.pc
 
 %files -n aws-s3-libs
-    %defattr(-,root,root,0755)
-    %{_lib64dir}/libaws-cpp-sdk-s3.so
+%defattr(-,root,root,0755)
+%{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-4
--   Bump up release for openssl
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-3
--   openssl 1.1.1
-*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.4.33-2
--   Fix compilation issue with gcc-8.4.0
-*   Thu Aug 30 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-1
--   Initial build.  First version
+* Thu Sep 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.33-5
+- Use cmake macros
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-4
+- Bump up release for openssl
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-3
+- openssl 1.1.1
+* Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.4.33-2
+- Fix compilation issue with gcc-8.4.0
+* Thu Aug 30 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-1
+- Initial build.  First version

@@ -6,9 +6,11 @@ License:       BSD and EPL
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Group:         Applications/Database
-URL:           https://eclipse.org/paho/clients/c/
-Source0:       https://github.com/eclipse/paho.mqtt.c/archive/v%{version}/paho.mqtt.c-%{version}.tar.gz
-%define sha1   paho.mqtt.c-%{version}=5a7058ab971522965ef390ffcfa5428e672b5135
+URL:           https://eclipse.org/paho/clients/c
+
+Source0: https://github.com/eclipse/paho.mqtt.c/archive/v%{version}/paho.mqtt.c-%{version}.tar.gz
+%define sha512 paho.mqtt.c-%{version}=2a2ad34df508d8d97ef5382310ba28bb5280843bec337770a2e20442405dde3283473a6038b23fbc1a79bd60d1dfb72d6b508ae4338e95d88b370c0e5625dae5
+
 BuildRequires: cmake
 BuildRequires: openssl-devel
 
@@ -23,23 +25,20 @@ Requires:           %{name} = %{version}-%{release}
 Development files for the the Paho MQTT C Client.
 
 %prep
-%autosetup -n paho.mqtt.c-%{version}
+%autosetup -p1 -n paho.mqtt.c-%{version}
 
 %build
-mkdir build && cd build
-cmake \
+%cmake \
   -DPAHO_WITH_SSL=TRUE \
   -DPAHO_BUILD_DOCUMENTATION=FALSE \
   -DPAHO_BUILD_SAMPLES=TRUE \
   -DPAHO_ENABLE_CPACK=FALSE \
-  -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-  -DCMAKE_INSTALL_LIBDIR:PATH=lib \
-  ..
+  -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir}
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
 %files
 %defattr(-,root,root)

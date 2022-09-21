@@ -22,14 +22,22 @@ Vulkan Header files and API registry
 %autosetup -n Vulkan-Headers-%{version} -p1
 
 %build
-%cmake -DCMAKE_INSTALL_LIBDIR=%{_libdir}
-%make_build
+%cmake -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+        -DCMAKE_C_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_CXX_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_Fortran_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_INSTALL_DO_STRIP:BOOL=OFF \
+        -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \
+        -DLIB_INSTALL_DIR:PATH=%{_libdir} \
+        -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
+        -DSHARE_INSTALL_PREFIX:PATH=%{_datadir}
+%cmake_build
 
 %install
-%make_install
+%cmake_install
 
 %check
-make %{?_smp_mflags} check
+%cmake_check
 
 %clean
 rm -rf %{buildroot}/*
@@ -43,5 +51,5 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/registry/
 
 %changelog
-*   Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216-1
--   Initial version
+* Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216-1
+- Initial version

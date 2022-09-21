@@ -8,8 +8,8 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    %{name}=3e303f06aa00e5c2616db606b980389ee0b73883
+Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
+%define sha512 %{name}=686dbae35fa7b3a3fcb05b0e8babc15249b1830b61388d57b4107507c3a133b9c87a8d32bdd7a796c2726f13774a706b8ed0c9bab158f98eaebec7859fc96755
 
 BuildRequires:  swig
 BuildRequires:  libxml2-devel
@@ -64,21 +64,23 @@ Python bindings.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake \
--DCMAKE_BUILD_TYPE=Debug \
--DCMAKE_INSTALL_PREFIX=%{_prefix} \
--DCMAKE_INSTALL_LIBDIR:PATH=lib \
---enable-sce \
---enable-perl \
-..
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DENABLE_PERL=ON \
+    -DENABLE_SCE=ON
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 find %{buildroot} -name '*.la' -delete
+
+%if 0%{?_with_check}
+%check
+ctest -V %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)

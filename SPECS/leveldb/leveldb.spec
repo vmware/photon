@@ -1,15 +1,15 @@
-Summary:	A fast and lightweight key/value database library by Google
-Name:		leveldb
-Version:	1.22
-Release:	2%{?dist}
-License:	BSD
-URL:		https://github.com/google/leveldb
-Group:		Development/Libraries/C and C++
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    A fast and lightweight key/value database library by Google
+Name:       leveldb
+Version:    1.22
+Release:    3%{?dist}
+License:    BSD
+URL:        https://github.com/google/leveldb
+Group:      Development/Libraries/C and C++
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-Source0:	https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f9bbf5f466e7f707b94e19261762319ea9f65d41911690e84f59098551e2e69beccf756a414d705ade74ee96fd979bdb8b94c171c6f2cc83873cbd4a9380dbab
+Source0: https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f9bbf5f466e7f707b94e19261762319ea9f65d41911690e84f59098551e2e69beccf756a414d705ade74ee96fd979bdb8b94c171c6f2cc83873cbd4a9380dbab
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -20,10 +20,10 @@ BuildRequires:  sqlite-devel
 %description
 A fast and lightweight key/value database library.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-%description	devel
+%package    devel
+Summary:    Header and development files
+Requires:   %{name} = %{version}-%{release}
+%description    devel
 %{summary}.
 
 %prep
@@ -42,14 +42,20 @@ Libs: -l%{name}
 EOF
 
 %build
-%cmake .
-%make_build
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DLEVELDB_BUILD_TESTS:BOOL=OFF \
+    -DLEVELDB_BUILD_BENCHMARKS:BOOL=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+
+%cmake_build
 
 %install
-%make_install %{?_smp_mflags}
+%cmake_install
+
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 cp -a %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
-rm -rf %{buildroot}/%{_libdir}/cmake
 
 %if 0%{?with_check}
 %check
@@ -69,8 +75,11 @@ ctest -V %{?_smp_mflags}
 %{_includedir}/%{name}/
 %{_libdir}/lib%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/cmake/%{name}
 
 %changelog
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.22-3
+- Use cmake macros
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.22-2
 - Bump version as a part of sqlite upgrade
 * Wed Jul 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.22-1

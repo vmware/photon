@@ -17,7 +17,6 @@ BuildRequires:  itstool >= 2.0.2
 BuildRequires:  libxslt >= 1.1.28
 BuildRequires:  itstool
 BuildRequires:  which
-BuildRequires:  cmake
 BuildRequires:  check-devel
 BuildRequires:  python3-devel
 

@@ -6,7 +6,7 @@ License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 rdma=04dddde2ae0899be4d75cc34529fdcf6a035b27f
+%define sha512 rdma=c9c05f586c10e666fe36176849de3dc614151179758200a48ddd8679e67c1d99203930afc64056b8d41a6fb6f2b583991f91e498c20869bec56ab65e654c9e3d
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -152,8 +152,8 @@ easy, object-oriented access to IB verbs.
 %autosetup
 
 %build
-cmake \
-        -DCMAKE_BUILD_TYPE=Release \
+%cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
         -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
         -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
@@ -173,20 +173,25 @@ cmake \
         -DCMAKE_INSTALL_PERLDIR:PATH=%{perl_vendorlib} \
         -DCMAKE_INSTALL_PYTHON_ARCH_LIB:PATH=%{python3_sitearch} \
         -GNinja
+
+cd %{__cmake_builddir}
 %ninja_build
 
 %install
 # pandoc is not available - create missing prebuilt pandoc files.
-cat infiniband-diags/man/cmake_install.cmake | grep prebuilt | sed 's/^.*prebuilt\///;s/")//' | xargs -n1 -i touch buildlib/pandoc-prebuilt/{}
+cat %{__cmake_builddir}/infiniband-diags/man/cmake_install.cmake | grep prebuilt | sed 's/^.*prebuilt\///;s/")//' | xargs -n1 -i touch buildlib/pandoc-prebuilt/{}
 
+cd %{__cmake_builddir}
 %ninja_install
 
 # Remove init.d scripts
-rm -rf %{buildroot}/%{_sysconfdir}/rc.d
-rm -rf %{buildroot}/%{_sbindir}/srp_daemon.sh
+rm -rf %{buildroot}%{_sysconfdir}/rc.d \
+       %{buildroot}%{_sbindir}/srp_daemon.sh
 
+%if 0%{?with_check}
 %check
-cd build && make %{?_smp_mflags} check
+cd %{__cmake_builddir} && make %{?_smp_mflags} check
+%endif
 
 %post -n libibverbs -p /sbin/ldconfig
 %postun -n libibverbs -p /sbin/ldconfig

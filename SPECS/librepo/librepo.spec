@@ -53,18 +53,25 @@ Python 3 bindings for the librepo library.
 
 %prep
 %autosetup -p1
-mkdir build-py3
 
 %build
-pushd build-py3
-%cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
-%make_build
-popd
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DENABLE_PYTHON=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DENABLE_TESTS=ON
+
+%cmake_build
 
 %install
-pushd build-py3
-%make_install %{?_smp_mflags}
-popd
+%cmake_install
+
+%if 0%{?with_check}
+%check
+pip3 install pygpgme xattr
+%ctest
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig

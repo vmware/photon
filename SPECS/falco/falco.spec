@@ -10,8 +10,9 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    falco=5e06986ef51fe3223b64482b73fa908db65c31e8
+Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=54410dc7dbbde99e82150a4d0186312a5b352740175157b1e2641a85e989fd3c2717d42380c6d80e2b07181fbdd215b08e88312943ae22267228415a3ec2cc4a
+
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
 BuildArch:      x86_64
@@ -28,15 +29,10 @@ BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  wget
-BuildRequires:	which
-BuildRequires:	grpc-devel
-BuildRequires:	c-ares-devel
-BuildRequires:	protobuf-devel
-%if %{with_check}
-BuildRequires:  dkms
-BuildRequires:  xz-devel
-BuildRequires:  jq
-%endif
+BuildRequires:  which
+BuildRequires:  grpc-devel
+BuildRequires:  c-ares-devel
+BuildRequires:  protobuf-devel
 
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
@@ -53,6 +49,7 @@ Requires:       protobuf
 Requires:       c-ares
 
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir /lib/modules/%{uname_r}
 
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
@@ -61,32 +58,30 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 %autosetup -p1
 
 %build
-mkdir build
-cd build
-%{cmake} \
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
     -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
-    ..
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
-make %{?_smp_mflags} all KERNELDIR="/lib/modules/%{uname_r}/build"
+export KERNELDIR="%{_modulesdir}/build"
+%cmake_build
 
 %install
-cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build" %{?_smp_mflags}
-mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
-install -vm 644 driver/falco.ko %{buildroot}/lib/modules/%{uname_r}/extra
+export KERNELDIR="%{_modulesdir}/build"
+%cmake_install
+mkdir -p %{buildroot}%{_modulesdir}/extra
+install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
 
-#falco requires docker instance and dpkg to pass make check.
-#%%check
-#easy_install pip
-#pip install 'stevedore>=0.14'
-#pip install 'avocado-framework<=36.0'
-#pip install fabric
-#pip install aexpect
-#pip install pystache
-#test/run_regression_tests.sh
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
 
 %clean
 rm -rf %{buildroot}/*
@@ -97,13 +92,7 @@ rm -rf %{buildroot}/*
 %exclude %{_usrsrc}
 %{_sysconfdir}/falco
 %{_datadir}/falco
-/lib/modules/%{uname_r}/extra/falco.ko
-
-%post
-/sbin/depmod -a
-
-%postun
-/sbin/depmod -a
+%{_modulesdir}/extra/falco.ko
 
 %changelog
 * Mon Mar 28 2022 Harinadh D <hdommaraju@vmware.com> 0.30.0-2

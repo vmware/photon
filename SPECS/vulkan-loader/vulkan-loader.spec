@@ -8,8 +8,8 @@ Distribution:   Photon
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
-Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512  Vulkan-Loader-%{version}.tar.gz=2acc3385c68c6c256febf2d66f3ae39dc7e60dca98fcedd9239ead163b9580c7bb226a4e4108da742c96e158e1c0ca3fc6ce4dec77225c7f832baf8b4f54ddbd
+Source0: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
+%define sha512 Vulkan-Loader-%{version}.tar.gz=2acc3385c68c6c256febf2d66f3ae39dc7e60dca98fcedd9239ead163b9580c7bb226a4e4108da742c96e158e1c0ca3fc6ce4dec77225c7f832baf8b4f54ddbd
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -53,12 +53,12 @@ developing applications that use %{name}.
         -DLIB_INSTALL_DIR:PATH=%{_libdir} \
         -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} \
         -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
-        -GNinja
+        -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir}
 
-%ninja_build
+%cmake_build
 
 %install
-%ninja_install
+%cmake_install
 
 # create the filesystem
 mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
@@ -94,5 +94,5 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
-*   Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
--   Initial version
+* Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
+- Initial version

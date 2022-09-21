@@ -6,10 +6,10 @@ License:        ASL 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Security
-
 URL:            https://github.com/iovisor/bpftrace
-Source0:        https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha1    bpftrace=50437f7c3ca09c0868daffed2a6cd083be8a05d4
+
+Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=611a7e61dbd1f4cc52b7e51a1a143296ff7b2df115b3a28034c674d8eefb5d482cac551ab82d6b7cc2f6fc0668b07d2d9e283dff371fd9a3f649c80113fdca82
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -47,16 +47,19 @@ and predecessor tracers such as DTrace and SystemTap
         -DBUILD_TESTING:BOOL=OFF \
         -DBUILD_SHARED_LIBS:BOOL=OFF \
         -DENABLE_TESTS:BOOL=OFF \
-        -DBUILD_DEPS=OFF
-%make_build
+        -DBUILD_DEPS=OFF \
+        -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+%cmake_build
 
 %install
-%make_install
+%cmake_install
 
 find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
   sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
 
 %files
+%defattr(-,root,root)
 %doc README.md CONTRIBUTING-TOOLS.md
 %doc docs/reference_guide.md docs/tutorial_one_liners.md
 %license LICENSE
@@ -70,6 +73,7 @@ find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
 
 %changelog
 * Mon Feb 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.4-1
+- Upgrade to v0.11.4
 * Sat Oct 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-2
 - Fix aarch64 build errors
 * Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 0.11.1-1

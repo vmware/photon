@@ -1,14 +1,16 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.8.20
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
-Source0:        http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
-%define sha1    doxygen=606a7bb525a55a01fc7399bc50ad7589ad1d2283
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
+%define sha512 %{name}=65d104d25061ee59199c74c0328f59fbeaf14f0dade755187ebd43f59008adfef243d4da448b71ae04dc325b848f9bdd109eb20e6f6092f3ed19862426d060cf
+
 BuildRequires:  cmake
 BuildRequires:  python3
 BuildRequires:  python3-xml
@@ -19,33 +21,37 @@ but it also supports other popular programming languages such as C, Objective-C,
 (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, and to some extent D.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-mkdir build
-cd build
-cmake -DLIBCLANG_BUILD_STATIC=ON \
-      -DBUILD_SHARED_LIBS=OFF \
-      -DLLVM_ENABLE_PIC=OFF \
-      -DLLVM_BUILD_LLVM_DYLIB=OFF \
-      -DLLVM_BUILD_LLVM_C_DYLIB=OFF \
-      -DLLVM_ENABLE_TERMINFO=OFF \
-      ../
-make %{?_smp_mflags}
+%cmake -DLIBCLANG_BUILD_STATIC=ON \
+       -DBUILD_SHARED_LIBS=OFF \
+       -DLLVM_ENABLE_PIC=OFF \
+       -DLLVM_BUILD_LLVM_DYLIB=OFF \
+       -DLLVM_BUILD_LLVM_C_DYLIB=OFF \
+       -DLLVM_ENABLE_TERMINFO=OFF \
+       -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+       ..
+
+%cmake_build
 
 %install
-cd build
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%cmake_install
 
+%if 0%{?with_check}
 %check
+cd %{__cmake_builddir}
 make %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)
-%{_prefix}/local/bin/doxygen
+%{_bindir}/%{name}
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.20-2
--   Bump up to compile with python 3.10
-*   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.8.20-1
--   Initial build and add this for libsigc++ build requires
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.20-3
+- Use cmake macros
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.20-2
+- Bump up to compile with python 3.10
+* Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.8.20-1
+- Initial build and add this for libsigc++ build requires

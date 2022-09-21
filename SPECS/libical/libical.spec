@@ -1,14 +1,14 @@
-Summary:	Libical — an implementation of iCalendar protocols and data formats
-Name:		libical
-Version:	3.0.8
-Release: 	4%{?dist}
-License:	MPL-2.0
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    Libical — an implementation of iCalendar protocols and data formats
+Name:       libical
+Version:    3.0.8
+Release:    5%{?dist}
+License:    MPL-2.0
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-Source0:	https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 %{name}=d2a9cecb9b8d825d5b6989e44b424235a27173a7
+Source0: https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ce015e6d4c1c7cb4af7b45748ce8251c663f80f6a4357ddff6a97796642619abe882f4cadeca10cabeb1b25577869f436da15bca882e032eb3ff0475f6010d8b
 
 BuildRequires:  cmake
 BuildRequires:  glib-devel
@@ -22,12 +22,12 @@ protocol data units. The iCalendar specification describes how calendar
 clients can communicate with calendar servers so users can store their
 calendar data and arrange meetings with other users.
 
-%package	devel
-Summary:	Development files for Libical
-Group:		Development/System
-Requires:	%{name} = %{version}-%{release}
+%package    devel
+Summary:    Development files for Libical
+Group:      Development/System
+Requires:   %{name} = %{version}-%{release}
 
-%description	devel
+%description    devel
 The libical-devel package contains libraries and header files for developing
 applications that use libical.
 
@@ -35,37 +35,42 @@ applications that use libical.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-cmake -DENABLE_GTK_DOC=OFF \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-      ..
+%cmake -DENABLE_GTK_DOC=OFF \
+       -DCMAKE_BUILD_TYPE=Debug \
+       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+       -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+       -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
-%check
 %if 0%{?with_check}
-make test ARGS="-V" -C build %{?_smp_mflags}
+%check
+cd %{__cmake_builddir}
+make test ARGS="-V" %{?_smp_mflags}
 %endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%{_lib64dir}/*.so.*
-%{_lib64dir}/cmake/LibIcal/*.cmake
+%defattr(-,root,root)
+%{_libdir}/*.so.*
+%{_libdir}/cmake/LibIcal/*.cmake
 %doc COPYING TODO
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
-%{_lib64dir}/*.so
-%{_lib64dir}/*.a
-%{_lib64dir}/pkgconfig/*.pc
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-5
+- Use cmake macros
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-4
 - Drop libdb support
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 3.0.8-3

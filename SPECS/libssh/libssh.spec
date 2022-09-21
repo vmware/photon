@@ -7,10 +7,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
-Source0:        https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
-%define sha1    libssh=1b2dd673b58e1eaf20fde45cd8de2197cfab2f78
-Source3:        libssh_client.config
-Source4:        libssh_server.config
+
+Source0: https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
+%define sha512 %{name}=4040ec4af937e95be2e41313ef6d4db60b46b8d4dea10c09402398127c1d1ca8843392d207088aeee3c7ef631c6ae7b66861327dcebf78ed3af0723777619fd1
+
+Source1:        libssh_client.config
+Source2:        libssh_server.config
+
 BuildRequires:  build-essential
 BuildRequires:  cmake
 BuildRequires:  krb5-devel
@@ -20,6 +23,7 @@ BuildRequires:  openssh-server
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libpcap-devel
+
 Requires:       %{name}-config = %{version}-%{release}
 Requires:       e2fsprogs-libs
 Requires:       krb5
@@ -51,49 +55,48 @@ The %{name}-config package provides the default configuration files for %{name}.
 %autosetup -p1
 
 %build
-mkdir build
-pushd build
-cmake .. \
-         -DCMAKE_BUILD_TYPE=Release \
-         -DBUILD_SHARED_LIBS=ON \
-         -DJSONCPP_WITH_WARNING_AS_ERROR=OFF \
-         -DJSONCPP_WITH_PKGCONFIG_SUPPORT=ON \
-         -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF \
-         -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-         -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
-         -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
-         -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-         -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
-         -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
-         -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
-         -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
-         -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
-         -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
-         -DGLOBAL_CLIENT_CONFIG="%{_sysconfdir}/libssh/libssh_client.config" \
-         -DGLOBAL_BIND_CONFIG="%{_sysconfdir}/libssh/libssh_server.config"
-make %{?_smp_mflags}
-popd
+%cmake \
+     -DCMAKE_BUILD_TYPE=Debug \
+     -DBUILD_SHARED_LIBS=ON \
+     -DJSONCPP_WITH_WARNING_AS_ERROR=OFF \
+     -DJSONCPP_WITH_PKGCONFIG_SUPPORT=ON \
+     -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF \
+     -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
+     -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
+     -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+     -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
+     -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
+     -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
+     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
+     -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
+     -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
+     -DGLOBAL_CLIENT_CONFIG="%{_sysconfdir}/%{name}/%{name}_client.config" \
+     -DGLOBAL_BIND_CONFIG="%{_sysconfdir}/%{name}/%{name}_server.config"
+
+%cmake_build
 
 %install
-pushd build
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-install -d -m755 %{buildroot}%{_sysconfdir}/libssh
-install -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/libssh/libssh_client.config
-install -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/libssh/libssh_server.config
-popd
+%cmake_install
+install -d -m755 %{buildroot}%{_sysconfdir}/%{name}
+install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/%{name}_client.config
+install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.config
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+%if 0%{?with_check}
 %check
-ctest --output-on-failure
+%ctest
+%endif
 
 %files
+%defattr(-,root,root)
 %doc AUTHORS BSD ChangeLog README
 %license COPYING
 %{_libdir}/libssh.so.4*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/libssh/
 %dir %{_libdir}/cmake/
 %{_libdir}/cmake/libssh/
@@ -101,6 +104,7 @@ ctest --output-on-failure
 %{_libdir}/libssh.so
 
 %files config
+%defattr(-,root,root)
 %attr(0755,root,root) %dir %{_sysconfdir}/libssh
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_client.config
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_server.config

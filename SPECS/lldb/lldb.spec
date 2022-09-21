@@ -8,8 +8,8 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    %{name}=49f5d91e20672b9e9756a776fc800c8c7da8eba2
+Source0: http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=05de84a0606becdabacb46fbc5cd67607ca47c22469da13470b76a96b96e6f34b3045fd1f5bed9c82228c2ce529562ee71667788a5048f079fef450d63a1557c
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -20,6 +20,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
 BuildRequires:  lua-devel
+BuildRequires:  ninja-build
 
 Requires:       lua
 Requires:       llvm = %{version}
@@ -51,22 +52,19 @@ The package contains the LLDB Python3 module.
 %autosetup -n %{name}-%{version}.src -p1
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr           \
-      -DCMAKE_BUILD_TYPE=Release            \
-      -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix}  \
+%cmake -G Ninja\
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
       -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
-      -DLLVM_DIR=/usr/lib/cmake/llvm        \
-      -DLLVM_BUILD_LLVM_DYLIB=ON ..         \
-      -DLLDB_DISABLE_LIBEDIT:BOOL=ON
+      -DLLVM_DIR=%{_libdir}/cmake/llvm \
+      -DLLVM_BUILD_LLVM_DYLIB=ON \
+      -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%cmake_install
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python3_sitelib}/six.*

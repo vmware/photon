@@ -34,10 +34,10 @@ Development files for %{name} library.
        -DINSTALL_HEADERS:BOOL=ON \
        -DREGISTER_BUILD_DIR:BOOL=OFF \
        -DREGISTER_INSTALL_PREFIX:BOOL=OFF
-%make_build
+%cmake_build
 
 %install
-%make_install
+%cmake_install
 
 %check
 %if 0%{with_check}

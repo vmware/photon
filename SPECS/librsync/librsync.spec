@@ -1,15 +1,15 @@
 Summary:        Rsync libraries
 Name:           librsync
 Version:        2.3.1
-Release:        1%{?dist}
-URL:            http://librsync.sourcefrog.net/
+Release:        2%{?dist}
+URL:            http://librsync.sourcefrog.net
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#https://github.com/librsync/librsync/archive/v2.0.0.tar.gz
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    librsync=5127c8fa462b741f4943ece679bf83615cc47c17
+
+Source0: https://github.com/librsync/librsync/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=89e5b5ad960b8036acce41df09f5e50601d7eb57d48a2bd21c4ee54a3a375f62ee514036b9a562277b5656735b84cadf6f54cbf48c364bbf0c04f2d95ae3b5a6
 
 BuildRequires:  cmake
 
@@ -28,7 +28,7 @@ and incompatible with rsync 2.4.6.
 %package devel
 Summary: Headers and development libraries for librsync
 Group: Development/Libraries
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 librsync implements the "rsync" algorithm, which allows remote
@@ -49,22 +49,23 @@ based on librsync.
 %autosetup -p1
 
 %build
-mkdir -p build
-cd build
+%cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_SKIP_RPATH:BOOL=YES \
+    -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
+    -DENABLE_STATIC:BOOL=NO \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-%{cmake} -DCMAKE_SKIP_RPATH:BOOL=YES \
-         -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
-         -DENABLE_STATIC:BOOL=NO ..
-make %{?_smp_mflags}
+%cmake_build
 
 %install
-cd build
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%cmake_install
 
+%if 0%{?with_check}
 %check
-cd build
-export LD_LIBRARY_PATH="%{buildroot}/%{_libdir}/"
+export LD_LIBRARY_PATH="%{buildroot}%{_libdir}"
 make %{?_smp_mflags} test
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -83,11 +84,13 @@ make %{?_smp_mflags} test
 %{_libdir}/*.so
 
 %changelog
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1
--   Automatic Version Bump
-*   Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 2.0.2-1
--   Update to 2.0.2
-*   Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
--   Updated %check
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
--   Initial build. First version
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.1-2
+- Use cmake macros
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1
+- Automatic Version Bump
+* Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 2.0.2-1
+- Update to 2.0.2
+* Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
+- Updated %check
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
+- Initial build. First version

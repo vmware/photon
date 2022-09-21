@@ -5,11 +5,12 @@ Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
-# Source0:  https://github.com/JuliaStrings/utf8proc/archive/v%{version}.tar.gz
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=a868878257355456e08b5f21bc2ee6a164386865
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:  https://github.com/JuliaStrings/utf8proc/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=0c553faf4f3841c17c7aa4cce1e917b1585c430ac3f7f240ab98cbe01b9743f2074532e6f71faf3df030f5af00e483a3faf9716a67e6a4b1bb66a3de48308014
+
 BuildRequires:  cmake
 
 %description
@@ -25,23 +26,23 @@ The utf8proc-devel package contains libraries, header files and documentation
 for developing applications that use utf8proc.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-      -DCMAKE_BUILD_TYPE=Release        \
-      -DBUILD_SHARED_LIBS=ON            \
-      ..
-make %{?_smp_mflags}
+%cmake \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DBUILD_SHARED_LIBS=ON \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+
+%cmake_build
 
 %install
-cd build
-make DESTDIR=%{buildroot} install
+%cmake_install
 
+%if 0%{?with_check}
 %check
-make check
+make check %{?_smp_mflags}
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -57,7 +58,7 @@ make check
 %{_libdir}/libutf8proc.so
 
 %changelog
-*       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
--       Automatic Version Bump
-*       Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
--       Initial Version.
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+- Automatic Version Bump
+* Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
+- Initial Version.

@@ -3,12 +3,13 @@ Name:           wireshark
 Version:        3.6.2
 Release:        1%{?dist}
 License:        GPL+
-URL:            http://www.wireshark.org/
-Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha1 wireshark=d4cf3da54021a763e0bf5f28b4f0bf5c0912d344
+URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://wireshark.org/download/src/%{name}-%{version}.tar.xz
+%define sha512 %{name}=cd4a8077629632e9a924600f9af2ffd01917726fd64504d6f3b4a2a1cb5340c9c0bac23e4abab63743952a0a78efd2e09bb125b127d24e85eca6fa41928fd070
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -46,8 +47,8 @@ including a rich display filter language and the ability to view the
 reconstructed stream of a TCP session.
 
 %package devel
-Summary:Development headers and libraries for wireshark
-Requires: wireshark = %{version}-%{release} glibc-devel glib-devel
+Summary:    Development headers and libraries for wireshark
+Requires:   %{name} = %{version}-%{release} glibc-devel glib-devel
 
 %description devel
 The wireshark-devel package contains the header files, developer
@@ -60,7 +61,8 @@ and plugins.
 %autosetup -p1
 
 %build
-%cmake -G "Ninja" \
+%cmake -G "Unix Makefiles" \
+       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
        -DDISABLE_WERROR=ON \
        -DENABLE_LUA=OFF \
        -DBUILD_mmdbresolve=OFF \
@@ -71,15 +73,16 @@ and plugins.
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-        %{nil}
+        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+        -DCMAKE_BUILD_TYPE=Debug
 
-%ninja_build
+%cmake_build
 
 %install
-%ninja_install
+%cmake_install
 
-rm -rf %{buildroot}%{_mandir}
-rm -rf %{buildroot}%{_docdir}
+rm -rf %{buildroot}%{_mandir} \
+       %{buildroot}%{_docdir}
 
 %files
 %defattr(-,root,root)
@@ -88,6 +91,7 @@ rm -rf %{buildroot}%{_docdir}
 %{_datadir}/wireshark/*
 
 %files devel
+%defattr(-,root,root)
 %doc doc/README.* ChangeLog
 %{_includedir}/wireshark
 %{_libdir}/lib*.so
