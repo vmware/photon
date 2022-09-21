@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
-Version:        1.9.4
-Release:        2%{?dist}
+Version:        1.9.5
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
-%define sha512  %{name}=613f17800ebd05b66b1954af4d51282a1779678e7ade6c43046fc940742a697ebdf3af8e94ac70a3422bc96def663e70eaea8c4349d192e2fe5e516c57cc345a
+%define sha512  %{name}=4ad4c1ecd4a12220442f354b90aa56f80e78fcaf288d5e36da421437d59811ed3d429ee13717692886a55b9628ae565d40ce13c51792ccc8bba15b1e018cb651
 
 BuildRequires:  cmake
 BuildRequires:  python3
@@ -49,6 +49,8 @@ make %{?_smp_mflags} check
 %{_bindir}/%{name}
 
 %changelog
+* Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.9.5-1
+- Version update
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.9.4-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.4-1
