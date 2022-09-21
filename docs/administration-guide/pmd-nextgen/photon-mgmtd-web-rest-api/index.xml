@@ -1,7 +1,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– photon-mgmtd API</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</link><description>Recent content in photon-mgmtd API on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Service Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/service-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/service-management/</guid><description>
 &lt;h2 id="post-method">POST Method&lt;/h2>
 &lt;p>To manage the available services and take actions on the services, execute a POST request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;{command}”,”unit”:”{unit}&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;{command}”,”unit”:”{unit}&amp;quot;}' http://localhost/api/v1/service/systemd
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameters:&lt;/p>
 &lt;table>
@@ -23,7 +23,7 @@
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;start&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;start&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -33,7 +33,7 @@
 }
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;stop&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;stop&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -46,14 +46,14 @@
 &lt;h3 id="status-of-all-the-services">Status of all the services:&lt;/h3>
 &lt;p>The &lt;code>systemctl list-unit-files&lt;/code> command lists all the services available in the system.
 To fetch the list of services listed in the list-unit files, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
 &lt;/code>&lt;/pre>
 &lt;h3 id="status-of-a-specific-service">Status of a Specific Service:&lt;/h3>
 &lt;p>To receive the status details of a specific service, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/status
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/status
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -71,7 +71,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response&lt;/strong>:&lt;/p>
 &lt;pre>&lt;code>{
@@ -102,7 +102,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="value-of-a-specific-property">Value of a Specific Property&lt;/h3>
 &lt;p>To fetch the value of a specific property, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/manager/property/Version
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/manager/property/Version
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -120,7 +120,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -133,7 +133,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 }
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -147,7 +147,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="properties-of-a-specific-service">Properties of a Specific Service&lt;/h3>
 &lt;p>To fetch the property of a specific service, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/property
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/property
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -165,11 +165,11 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/property
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/property
 &lt;/code>&lt;/pre>
 &lt;h3 id="properties-of-all-services">Properties of All Services&lt;/h3>
 &lt;p>To fetch all the properties of a service, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -187,14 +187,14 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
 &lt;/code>&lt;/pre>
 &lt;h3 id="configuration-details">Configuration Details&lt;/h3>
 &lt;p>To receive the configuration details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -257,10 +257,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="configuration-update-details">Configuration Update Details&lt;/h3>
 &lt;p>To fetch the details about the configuration updates, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -324,24 +324,24 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;h2 id="get-method">GET Method&lt;/h2>
 &lt;h3 id="system-information">System Information&lt;/h3>
 &lt;p>To fetch the complete system information, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
 &lt;/code>&lt;/pre>
 &lt;h3 id="cpu-information">CPU Information&lt;/h3>
 &lt;p>To fetch information related to CPU, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
 &lt;/code>&lt;/pre>
 &lt;h3 id="disk-usage-details">Disk Usage Details&lt;/h3>
 &lt;p>To fetch the usage details of the disk, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -363,10 +363,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="platform--kernel-version-details">Platform &amp;amp; kernel version details&lt;/h3>
 &lt;p>To fetch the details about the platform and kernel versions on which the system is installed:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -391,10 +391,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="miscellaneous-hardware-details">Miscellaneous Hardware Details&lt;/h3>
 &lt;p>To fetch miscellaneous harware details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -417,17 +417,17 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="user-details">User Details&lt;/h3>
 &lt;p>To fetch the user details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
 &lt;/code>&lt;/pre>
 &lt;h3 id="virtual-memory-details">Virtual Memory Details&lt;/h3>
 &lt;p>To fetch the details of the virtual memory, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -474,17 +474,17 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="kernel-module-details">Kernel Module Details&lt;/h3>
 &lt;p>To fetch the details about the kernel module, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
 &lt;/code>&lt;/pre>
 &lt;h3 id="network-arp-details">Network ARP Details&lt;/h3>
 &lt;p>To fetch the network ARP details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -552,17 +552,17 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="partition-details">Partition Details&lt;/h3>
 &lt;p>To fetch the partition details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
 &lt;/code>&lt;/pre>
 &lt;h3 id="platform-details">Platform Details&lt;/h3>
 &lt;p>To fetch the details of the platform on which the system is installed, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Respose:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -577,10 +577,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="swap-memory-details">Swap Memory Details&lt;/h3>
 &lt;p>To fetch the swap memory details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -602,10 +602,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
 &lt;/code>&lt;/pre>
 &lt;h3 id="inputoutput-details-of-all-disk-partitions">Input/Output Details of all Disk Partitions&lt;/h3>
 &lt;p>To fetch the input/output (read/write) details of all the disk partition, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -807,7 +807,7 @@ fs.file-max: 9223372036854775807
 &lt;h2 id="get-method">GET Method&lt;/h2>
 &lt;h3 id="network-details">Network Details&lt;/h3>
 &lt;p>To fetch complete network details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -1218,10 +1218,10 @@ fs.file-max: 9223372036854775807
 &lt;/code>&lt;/pre>
 &lt;h3 id="route-details">Route Details&lt;/h3>
 &lt;p>To fetch the route details, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
+&lt;pre>&lt;code>root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -1358,10 +1358,10 @@ fs.file-max: 9223372036854775807
 &lt;/code>&lt;/pre>
 &lt;h3 id="all-interfaces-links-details">All Interfaces Links Details&lt;/h3>
 &lt;p>To fetch all the interfaces links details (such as interface, mac address, and transaction), execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -1911,7 +1911,7 @@ Example:
 &lt;h2 id="post-method">POST Method&lt;/h2>
 &lt;h3 id="add-a-group">Add a Group&lt;/h3>
 &lt;p>To add a group, execute a POST request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -1933,7 +1933,7 @@ Example:
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -1944,7 +1944,7 @@ Example:
 &lt;/code>&lt;/pre>
 &lt;h3 id="add-a-user">Add a User&lt;/h3>
 &lt;p>To add a user, execute a POST request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameter:&lt;/p>
 &lt;table>
@@ -1962,12 +1962,12 @@ Example:
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
 &lt;/code>&lt;/pre>
 &lt;h2 id="delete-method">DELETE Method&lt;/h2>
 &lt;h3 id="remove-a-group">Remove a Group&lt;/h3>
 &lt;p>To remove a group, execute a DELETE request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/remove
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/remove
 &lt;/code>&lt;/pre>
 &lt;p>The following table lists the parameters:&lt;/p>
 &lt;table>
@@ -1989,7 +1989,7 @@ Example:
 &lt;/tbody>
 &lt;/table>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon22&amp;quot;}' http://localhost/api/v1/system/group/remove
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon22&amp;quot;}' http://localhost/api/v1/system/group/remove
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -2000,7 +2000,7 @@ Example:
 &lt;/code>&lt;/pre>
 &lt;h3 id="remove-a-user">Remove a User&lt;/h3>
 &lt;p>To remove a user, execute a DELETE request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/remove
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/remove
 &lt;/code>&lt;/pre>
 &lt;p>&lt;strong>Response&lt;/strong>&lt;/p>
 &lt;pre>&lt;code>{
@@ -2012,18 +2012,18 @@ Example:
 &lt;h2 id="put-method">PUT Method&lt;/h2>
 &lt;h3 id="modify-group">Modify Group&lt;/h3>
 &lt;p>To modify the name of a group, execute a PUT request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
 &lt;/code>&lt;/pre>
 &lt;h2 id="get-method">GET Method&lt;/h2>
 &lt;h3 id="host-details">Host Details&lt;/h3>
 &lt;p>To fetch the details of the host, execute a GET request in the following format:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe
 &lt;/code>&lt;/pre>
 &lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
 &lt;/code>&lt;/pre>
 &lt;h2 id="login-status">Login Status&lt;/h2>
 &lt;p>You can use the &lt;code>pmctl&lt;/code> tool to get login details of users. The following section lists the commands you can use to get the user details.&lt;/p>

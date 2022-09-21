@@ -22,7 +22,7 @@
 &lt;pre>&lt;code># tdnf install pmd-nextgen
 # systemctl start photon-mgmtd.service
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Configuration</title><link>/docs/administration-guide/pmd-nextgen/configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/configuration/</guid><description>
-&lt;p>To configure &lt;code>photon-mgmtd&lt;/code>, use the &lt;code>photon-mgmtd&lt;/code> file located in the following directory: &lt;code>/etc/photon-mgmtd/&lt;/code>&lt;/p>
+&lt;p>To configure &lt;code>photon-mgmtd&lt;/code>, use the &lt;code>photon-mgmt.toml&lt;/code> file located in the following directory: &lt;code>/etc/photon-mgmt/&lt;/code>&lt;/p>
 &lt;p>You can set values for the following keys in the &lt;code>[System]&lt;/code> section:&lt;/p>
 &lt;p>&lt;code>LogLevel=&lt;/code>&lt;br>
 Specifies the log level. The key takes one of the following:
@@ -36,10 +36,10 @@ Default is &lt;code>true&lt;/code>.&lt;/p>
 Specifies the IP address and port that the REST API server listens to.
 When enabled, the default is &lt;code>127.0.0.1:5208&lt;/code>.&lt;/p>
 &lt;p>&lt;code>ListenUnixSocket=&lt;/code>
-Specifies whether you want the server to listen on a unix domain socket &lt;code>/run/photon-mgmtd/photon-mgmtd.sock&lt;/code>. This is a boolean key and takes the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>.
+Specifies whether you want the server to listen on a unix domain socket &lt;code>/run/photon-mgmt/photon-mgmt.sock&lt;/code>. This is a boolean key and takes the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>.
 Default is &lt;code>true&lt;/code>.&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> When you enable both &lt;code>ListenUnixSocket=&lt;/code> and &lt;code>Listen=&lt;/code>, server listens on the unix domain socket by default.&lt;/p>
-&lt;pre>&lt;code>❯ sudo cat /etc/photon-mgmtd/photon-mgmtd.toml
+&lt;pre>&lt;code>❯ sudo cat /etc/photon-mgmt/photon-mgmt.toml
 [System]
 LogLevel=&amp;quot;info&amp;quot;
 UseAuthentication=&amp;quot;false&amp;quot;
@@ -63,13 +63,13 @@ Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Job 56328 photon-mgmtd.se
 Jan 06 16:32:19 Zeus systemd[1]: Started photon-mgmtd.service - A REST API based configuration management microservice gateway.
 Jan 06 16:32:19 Zeus systemd[230041]: photon-mgmtd.service: Executing: /usr/bin/photon-mgmtd
 Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&amp;quot;2022-01-06T16:32:19+05:30&amp;quot; level=info msg=&amp;quot;photon-mgmtd: v0.1 (built go1.18beta1)&amp;quot;
-Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&amp;quot;2022-01-06T16:32:19+05:30&amp;quot; level=info msg=&amp;quot;Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmtd/photon-mgmtd&amp;gt;
+Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&amp;quot;2022-01-06T16:32:19+05:30&amp;quot; level=info msg=&amp;quot;Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmt/photon-mgmt.sock' in HTTP mode pid=103575&amp;quot;&amp;gt;
 &lt;/code>&lt;/pre>
 &lt;h2 id="how-to-configure-users">How to Configure Users?&lt;/h2>
 &lt;h3 id="unix-domain-socket">Unix domain socket&lt;/h3>
-&lt;p>When you add users to the &lt;code>photon-mgmtd&lt;/code> group, they can access the unix socket.
+&lt;p>When you add users to the &lt;code>photon-mgmt&lt;/code> group, they can access the unix socket.
 Use the following command to add a user:&lt;br>
-&lt;code># usermod -a -G photon-mgmtd exampleusername&lt;/code>&lt;/p></description></item><item><title>Docs: photon-mgmtd API</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</guid><description>
+&lt;code># usermod -a -G photon-mgmt exampleusername&lt;/code>&lt;/p></description></item><item><title>Docs: photon-mgmtd API</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</guid><description>
 &lt;p>Use &lt;code>photon-mgmtd&lt;/code> REST-APIs to manage, control, configure, and monitor services remotely.&lt;/p>
 &lt;p>You can use &lt;code>photon-mgmtd&lt;/code> to manage the following:&lt;/p>
 &lt;ul>

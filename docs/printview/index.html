@@ -4394,15 +4394,15 @@ You can also browse it using the copenapi_cli tool that comes with the pmd packa
 <span style=color:#ce5c00;font-weight:700>&gt;&gt;&gt;</span> <span style=color:#000>help</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>pmd</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#000>server</span><span style=color:#000;font-weight:700>()</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#000>user</span><span style=color:#000;font-weight:700>)</span>
 </code></pre></div><p>For details about the network commands, see also the <a href=../../docs/administration-guide/netmgr.python/>Network Configuration Manager - Python API</a>.</p><h2 id=pmd-c-api>PMD C API</h2><p>PMD C APIs are defined in the header files (<code>pmd_fwmgmt.h</code>, <code>pmd_netmgr.h</code>, <code>pmd_pkgmgmt.h</code>, <code>pmd_usermgmt.h</code>) that are stored in the following location:</p><ul><li><a href=https://github.com/vmware/pmd/tree/master/include>https://github.com/vmware/pmd/tree/master/include</a></li></ul><p>For details about the network commands, see also the <a href=../../docs/administration-guide/managing-network-configuration/netmgr.c/>Network Configuration Manager - C API</a>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8b4b106dd249809ae3a7299f1a4eae5c>6.17 - pmd-nextgen Overview</h1><p>The <code>pmd-nextgen</code> package contains the <code>photon-mgmtd</code> tool. <code>photon-mgmtd</code> is a high-performing, open-source, lightweight, pluggable REST API gateway designed with stateless architecture. <code>photon-mgmtd</code> is written in Go and built with performance in mind. It facilitates real-time configuration, performance analysis, and health monitoring of systems, networks, services, and applications.</p><p><code>photon-mgmtd</code> is optimized to provide the following benefits:</p><ul><li>The proactive monitoring and analytics features help the administrator to efficiently collect analytical data for performance and health management of systems.</li><li>For remote access, you can use the platform-independent REST APIs via any application on any Operating system. For example, you can use applications such as Curl/Chrome/Postman on any operating system such as Linux/iOS/Android/Windows and so on.</li><li>Minimal data transfer using JSON.</li><li>Plugin based architecture for easier operation.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-a00dac4babfe8cf054be28fffef9f709>6.17.1 - Features</h1><p>The following table lists the <code>photon-mgmtd</code> features details:</p><table><thead><tr><th>Feature</th><th>Details</th></tr></thead><tbody><tr><td>systemd</td><td>Information, services (start, stop, restart, status), service properties such as CPUShares</td></tr><tr><td>see information from /proc fs</td><td>netstat, netdev, memory and much more</td></tr></tbody></table></div><div class=td-content style=page-break-before:always><h1 id=pg-95785543589f74d9ea00b250d1e129b5>6.17.2 - Installing photon-mgmtd</h1><p>You can install <code>photon-mgmtd</code> using the <code>pmd-nextgen</code> package. The <code>pmd-nextgen</code> package is included in your Photon OS 4.0 Rev 2 distribution. To install <code>pmd-nextgen</code>, run the following command:</p><pre><code># tdnf install pmd-nextgen
 # systemctl start photon-mgmtd.service
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-a544a607c1041b0b3842726d4038bd99>6.17.3 - Configuration</h1><p>To configure <code>photon-mgmtd</code>, use the <code>photon-mgmtd</code> file located in the following directory: <code>/etc/photon-mgmtd/</code></p><p>You can set values for the following keys in the <code>[System]</code> section:</p><p><code>LogLevel=</code><br>Specifies the log level. The key takes one of the following:
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-a544a607c1041b0b3842726d4038bd99>6.17.3 - Configuration</h1><p>To configure <code>photon-mgmtd</code>, use the <code>photon-mgmt.toml</code> file located in the following directory: <code>/etc/photon-mgmt/</code></p><p>You can set values for the following keys in the <code>[System]</code> section:</p><p><code>LogLevel=</code><br>Specifies the log level. The key takes one of the following:
 values: <code>Trace</code>, <code>Debug</code>, <code>Info</code>, <code>Warning</code>, <code>Error</code>, <code>Fatal</code> and <code>Panic</code>.
 Default is <code>info</code>.</p><p><code>UseAuthentication=</code>
 Specifies whether a user needs authentication. This is a boolean key and takes the following values: <code>true</code>, <code>false</code>.
 Default is <code>true</code>.</p><p>You can set values for the following keys in the <code>[Network]</code> section:</p><p><code>Listen=</code>
 Specifies the IP address and port that the REST API server listens to.
 When enabled, the default is <code>127.0.0.1:5208</code>.</p><p><code>ListenUnixSocket=</code>
-Specifies whether you want the server to listen on a unix domain socket <code>/run/photon-mgmtd/photon-mgmtd.sock</code>. This is a boolean key and takes the following values: <code>true</code>, <code>false</code>.
-Default is <code>true</code>.</p><p><strong>Note:</strong> When you enable both <code>ListenUnixSocket=</code> and <code>Listen=</code>, server listens on the unix domain socket by default.</p><pre><code>❯ sudo cat /etc/photon-mgmtd/photon-mgmtd.toml                                     
+Specifies whether you want the server to listen on a unix domain socket <code>/run/photon-mgmt/photon-mgmt.sock</code>. This is a boolean key and takes the following values: <code>true</code>, <code>false</code>.
+Default is <code>true</code>.</p><p><strong>Note:</strong> When you enable both <code>ListenUnixSocket=</code> and <code>Listen=</code>, server listens on the unix domain socket by default.</p><pre><code>❯ sudo cat /etc/photon-mgmt/photon-mgmt.toml                                     
 [System]
 LogLevel=&quot;info&quot;
 UseAuthentication=&quot;false&quot;
@@ -4430,26 +4430,26 @@ Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Job 56328 photon-mgmtd.se
 Jan 06 16:32:19 Zeus systemd[1]: Started photon-mgmtd.service - A REST API based configuration management microservice gateway.
 Jan 06 16:32:19 Zeus systemd[230041]: photon-mgmtd.service: Executing: /usr/bin/photon-mgmtd
 Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&quot;2022-01-06T16:32:19+05:30&quot; level=info msg=&quot;photon-mgmtd: v0.1 (built go1.18beta1)&quot;
-Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&quot;2022-01-06T16:32:19+05:30&quot; level=info msg=&quot;Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmtd/photon-mgmtd&gt;
-</code></pre><h2 id=how-to-configure-users>How to Configure Users?</h2><h3 id=unix-domain-socket>Unix domain socket</h3><p>When you add users to the <code>photon-mgmtd</code> group, they can access the unix socket.
-Use the following command to add a user:<br><code># usermod -a -G photon-mgmtd exampleusername</code></p></div><div class=td-content style=page-break-before:always><h1 id=pg-48bb2642823c725171e8423bce85d5eb>6.17.4 - photon-mgmtd API</h1><p>Use <code>photon-mgmtd</code> REST-APIs to manage, control, configure, and monitor services remotely.</p><p>You can use <code>photon-mgmtd</code> to manage the following:</p><ul><li>Services</li><li>System</li><li>Network</li><li>User, Group, Host</li></ul></div><div class=td-content><h1 id=pg-5b0f3247298fdb8de4cc1599573d17c3>6.17.4.1 - Service Management</h1><h2 id=post-method>POST Method</h2><p>To manage the available services and take actions on the services, execute a POST request in the following format:</p><pre><code>curl --unix-socket  /run/photon-mgmtd/photon-mgmtd.sock  --request POST --data '{&quot;action&quot;:&quot;{command}”,”unit”:”{unit}&quot;}' http://localhost/api/v1/service/systemd
-</code></pre><p>The following table lists the parameters:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service you want to manage.</td></tr><tr><td>Action Commands</td><td>The action you want to take on the service. Start, stop, restart, try-restart, reload-or-restart, reload, enable, disable, mask, unnmask, kill</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;action&quot;:&quot;start&quot;,&quot;unit&quot;:&quot;nginx.service&quot;}' http://localhost/api/v1/service/systemd
+Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&quot;2022-01-06T16:32:19+05:30&quot; level=info msg=&quot;Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmt/photon-mgmt.sock' in HTTP mode pid=103575&quot;&gt;
+</code></pre><h2 id=how-to-configure-users>How to Configure Users?</h2><h3 id=unix-domain-socket>Unix domain socket</h3><p>When you add users to the <code>photon-mgmt</code> group, they can access the unix socket.
+Use the following command to add a user:<br><code># usermod -a -G photon-mgmt exampleusername</code></p></div><div class=td-content style=page-break-before:always><h1 id=pg-48bb2642823c725171e8423bce85d5eb>6.17.4 - photon-mgmtd API</h1><p>Use <code>photon-mgmtd</code> REST-APIs to manage, control, configure, and monitor services remotely.</p><p>You can use <code>photon-mgmtd</code> to manage the following:</p><ul><li>Services</li><li>System</li><li>Network</li><li>User, Group, Host</li></ul></div><div class=td-content><h1 id=pg-5b0f3247298fdb8de4cc1599573d17c3>6.17.4.1 - Service Management</h1><h2 id=post-method>POST Method</h2><p>To manage the available services and take actions on the services, execute a POST request in the following format:</p><pre><code>curl --unix-socket  /run/photon-mgmt/photon-mgmt.sock  --request POST --data '{&quot;action&quot;:&quot;{command}”,”unit”:”{unit}&quot;}' http://localhost/api/v1/service/systemd
+</code></pre><p>The following table lists the parameters:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service you want to manage.</td></tr><tr><td>Action Commands</td><td>The action you want to take on the service. Start, stop, restart, try-restart, reload-or-restart, reload, enable, disable, mask, unnmask, kill</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;action&quot;:&quot;start&quot;,&quot;unit&quot;:&quot;nginx.service&quot;}' http://localhost/api/v1/service/systemd
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:&quot;&quot;,
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;action&quot;:&quot;stop&quot;,&quot;unit&quot;:&quot;nginx.service&quot;}' http://localhost/api/v1/service/systemd
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;action&quot;:&quot;stop&quot;,&quot;unit&quot;:&quot;nginx.service&quot;}' http://localhost/api/v1/service/systemd
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:&quot;&quot;,
    &quot;errors&quot;:&quot;&quot;
 }
 </code></pre><h2 id=get-method>GET Method:</h2><h3 id=status-of-all-the-services>Status of all the services:</h3><p>The <code>systemctl list-unit-files</code> command lists all the services available in the system.
-To fetch the list of services listed in the list-unit files, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
-</code></pre><h3 id=status-of-a-specific-service>Status of a Specific Service:</h3><p>To receive the status details of a specific service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/status
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to get the status.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
+To fetch the list of services listed in the list-unit files, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
+</code></pre><h3 id=status-of-a-specific-service>Status of a Specific Service:</h3><p>To receive the status details of a specific service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/status
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to get the status.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
 </code></pre><p><strong>Response</strong>:</p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4475,8 +4475,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=value-of-a-specific-property>Value of a Specific Property</h3><p>To fetch the value of a specific property, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/manager/property/Version
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Property</td><td>Version, Features, Virtualization, Architecture, Tainted.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
+</code></pre><h3 id=value-of-a-specific-property>Value of a Specific Property</h3><p>To fetch the value of a specific property, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/manager/property/Version
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Property</td><td>Version, Features, Virtualization, Architecture, Tainted.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4485,7 +4485,7 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4494,12 +4494,12 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=properties-of-a-specific-service>Properties of a Specific Service</h3><p>To fetch the property of a specific service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/property
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to get the properties.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/property
-</code></pre><h3 id=properties-of-all-services>Properties of All Services</h3><p>To fetch all the properties of a service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to fetch the properties.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
-</code></pre><h3 id=configuration-details>Configuration Details</h3><p>To receive the configuration details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+</code></pre><h3 id=properties-of-a-specific-service>Properties of a Specific Service</h3><p>To fetch the property of a specific service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/property
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to get the properties.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/property
+</code></pre><h3 id=properties-of-all-services>Properties of All Services</h3><p>To fetch all the properties of a service, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Unit</td><td>The name of the service for which you want to fetch the properties.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
+</code></pre><h3 id=configuration-details>Configuration Details</h3><p>To receive the configuration details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4557,8 +4557,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=configuration-update-details>Configuration Update Details</h3><p>To fetch the details about the configuration updates, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+</code></pre><h3 id=configuration-update-details>Configuration Update Details</h3><p>To fetch the details about the configuration updates, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4616,12 +4616,12 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-19e7d9ff8483f07de738438fda0a8630>6.17.4.2 - System Management</h1><h2 id=get-method>GET Method</h2><h3 id=system-information>System Information</h3><p>To fetch the complete system information, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
-</code></pre><h3 id=cpu-information>CPU Information</h3><p>To fetch information related to CPU, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
-</code></pre><h3 id=disk-usage-details>Disk Usage Details</h3><p>To fetch the usage details of the disk, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-19e7d9ff8483f07de738438fda0a8630>6.17.4.2 - System Management</h1><h2 id=get-method>GET Method</h2><h3 id=system-information>System Information</h3><p>To fetch the complete system information, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
+</code></pre><h3 id=cpu-information>CPU Information</h3><p>To fetch information related to CPU, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
+</code></pre><h3 id=disk-usage-details>Disk Usage Details</h3><p>To fetch the usage details of the disk, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4638,8 +4638,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=platform--kernel-version-details>Platform & kernel version details</h3><p>To fetch the details about the platform and kernel versions on which the system is installed:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+</code></pre><h3 id=platform--kernel-version-details>Platform & kernel version details</h3><p>To fetch the details about the platform and kernel versions on which the system is installed:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4659,8 +4659,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=miscellaneous-hardware-details>Miscellaneous Hardware Details</h3><p>To fetch miscellaneous harware details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+</code></pre><h3 id=miscellaneous-hardware-details>Miscellaneous Hardware Details</h3><p>To fetch miscellaneous harware details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4678,10 +4678,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=user-details>User Details</h3><p>To fetch the user details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
-</code></pre><h3 id=virtual-memory-details>Virtual Memory Details</h3><p>To fetch the details of the virtual memory, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+</code></pre><h3 id=user-details>User Details</h3><p>To fetch the user details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
+</code></pre><h3 id=virtual-memory-details>Virtual Memory Details</h3><p>To fetch the details of the virtual memory, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4723,10 +4723,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=kernel-module-details>Kernel Module Details</h3><p>To fetch the details about the kernel module, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
-</code></pre><h3 id=network-arp-details>Network ARP Details</h3><p>To fetch the network ARP details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+</code></pre><h3 id=kernel-module-details>Kernel Module Details</h3><p>To fetch the details about the kernel module, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
+</code></pre><h3 id=network-arp-details>Network ARP Details</h3><p>To fetch the network ARP details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:[
@@ -4789,10 +4789,10 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    ],
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=partition-details>Partition Details</h3><p>To fetch the partition details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
-</code></pre><h3 id=platform-details>Platform Details</h3><p>To fetch the details of the platform on which the system is installed, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+</code></pre><h3 id=partition-details>Partition Details</h3><p>To fetch the partition details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
+</code></pre><h3 id=platform-details>Platform Details</h3><p>To fetch the details of the platform on which the system is installed, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
 </code></pre><p><strong>Respose:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4802,8 +4802,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 } 
-</code></pre><h3 id=swap-memory-details>Swap Memory Details</h3><p>To fetch the swap memory details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+</code></pre><h3 id=swap-memory-details>Swap Memory Details</h3><p>To fetch the swap memory details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4820,8 +4820,8 @@ To fetch the list of services listed in the list-unit files, execute a GET reque
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=inputoutput-details-of-all-disk-partitions>Input/Output Details of all Disk Partitions</h3><p>To fetch the input/output (read/write) details of all the disk partition, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+</code></pre><h3 id=inputoutput-details-of-all-disk-partitions>Input/Output Details of all Disk Partitions</h3><p>To fetch the input/output (read/write) details of all the disk partition, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -4947,7 +4947,7 @@ fs.file-max: 9223372036854775807
 </code></pre><h4 id=remove-a-variable-configuration-in-sysctl-configuration>Remove a Variable Configuration in sysctl Configuration</h4><p>To remove a variable configuration from the <code>sysctl</code> configuration, execute a DELETE request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&quot;apply&quot;:true,&quot;key&quot;:&quot;&lt;keyName&gt;&quot;,&quot;filename&quot;:&quot;&lt;fileName&gt;&quot;}' http://localhost/api/v1/system/sysctl/remove
 </code></pre><p>Example:</p><pre><code>&gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&quot;apply&quot;:true,&quot;key&quot;:&quot;fs.file-max&quot;,&quot;filename&quot;:&quot;99-sysctl.conf&quot;}' http://localhost/api/v1/system/sysctl/remove
 </code></pre><h4 id=load-sysctl-configuration-files-1>Load sysctl Configuration Files</h4><p>To load <code>sysctl</code> configuration files, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;apply&quot;:true,&quot;files&quot;:[&quot;&lt;fileName&gt;&quot;,&quot;&lt;fileName&gt;&quot;]}' http://localhost/api/v1/system/sysctl/load
-</code></pre><p>Example:</p><pre><code>&gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;apply&quot;:true,&quot;files&quot;:[&quot;99-sysctl.conf&quot;,&quot;75-sysctl.conf&quot;]}' http://localhost/api/v1/system/sysctl/load</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-4e4ab91ed8af6d422d9d488a40e236ce>6.17.4.3 - Network Management</h1><h2 id=get-method>GET Method</h2><h3 id=network-details>Network Details</h3><p>To fetch complete network details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
+</code></pre><p>Example:</p><pre><code>&gt;curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;apply&quot;:true,&quot;files&quot;:[&quot;99-sysctl.conf&quot;,&quot;75-sysctl.conf&quot;]}' http://localhost/api/v1/system/sysctl/load</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-4e4ab91ed8af6d422d9d488a40e236ce>6.17.4.3 - Network Management</h1><h2 id=get-method>GET Method</h2><h3 id=network-details>Network Details</h3><p>To fetch complete network details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:{
@@ -5353,8 +5353,8 @@ fs.file-max: 9223372036854775807
    },
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=route-details>Route Details</h3><p>To fetch the route details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route
-</code></pre><p>Example:</p><pre><code>root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
+</code></pre><h3 id=route-details>Route Details</h3><p>To fetch the route details, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route
+</code></pre><p>Example:</p><pre><code>root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:[
@@ -5486,8 +5486,8 @@ fs.file-max: 9223372036854775807
    ],
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=all-interfaces-links-details>All Interfaces Links Details</h3><p>To fetch all the interfaces links details (such as interface, mac address, and transaction), execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+</code></pre><h3 id=all-interfaces-links-details>All Interfaces Links Details</h3><p>To fetch all the interfaces links details (such as interface, mac address, and transaction), execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:[
@@ -5806,32 +5806,32 @@ Example:
 
 
 
-</code></pre></div></div><div class=td-content style=page-break-before:always><h1 id=pg-f509c300882e0da178d124743129006b>6.17.4.4 - User, Group, and Host Management</h1><h2 id=post-method>POST Method</h2><h3 id=add-a-group>Add a Group</h3><p>To add a group, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Gid</td><td>ID of the group that you want to add.</td></tr><tr><td>Name</td><td>Name of the group that you want to add.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
+</code></pre></div></div><div class=td-content style=page-break-before:always><h1 id=pg-f509c300882e0da178d124743129006b>6.17.4.4 - User, Group, and Host Management</h1><h2 id=post-method>POST Method</h2><h3 id=add-a-group>Add a Group</h3><p>To add a group, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Gid</td><td>ID of the group that you want to add.</td></tr><tr><td>Name</td><td>Name of the group that you want to add.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/add
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:&quot;group added&quot;,
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=add-a-user>Add a User</h3><p>To add a user, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/add
-</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Name</td><td>Name of the user you want to add.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/add
-</code></pre><h2 id=delete-method>DELETE Method</h2><h3 id=remove-a-group>Remove a Group</h3><p>To remove a group, execute a DELETE request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/remove
-</code></pre><p>The following table lists the parameters:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Name</td><td>Name of the group you want to delete.</td></tr><tr><td>Gid</td><td>ID of the group that you want to delete.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon22&quot;}' http://localhost/api/v1/system/group/remove
+</code></pre><h3 id=add-a-user>Add a User</h3><p>To add a user, execute a POST request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/add
+</code></pre><p>The following table lists the parameter:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Name</td><td>Name of the user you want to add.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/add
+</code></pre><h2 id=delete-method>DELETE Method</h2><h3 id=remove-a-group>Remove a Group</h3><p>To remove a group, execute a DELETE request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon&quot;,&quot;Gid&quot;:&quot;1125&quot;}' http://localhost/api/v1/system/group/remove
+</code></pre><p>The following table lists the parameters:</p><table><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>Name</td><td>Name of the group you want to delete.</td></tr><tr><td>Gid</td><td>ID of the group that you want to delete.</td></tr></tbody></table><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon22&quot;}' http://localhost/api/v1/system/group/remove
 </code></pre><p><strong>Response:</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:&quot;group removed&quot;,
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h3 id=remove-a-user>Remove a User</h3><p>To remove a user, execute a DELETE request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/remove
+</code></pre><h3 id=remove-a-user>Remove a User</h3><p>To remove a user, execute a DELETE request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{&quot;Name&quot;:&quot;photon1&quot;}' http://localhost/api/v1/system/user/remove
 </code></pre><p><strong>Response</strong></p><pre><code>{
    &quot;success&quot;:true,
    &quot;message&quot;:&quot;user removed&quot;,
    &quot;errors&quot;:&quot;&quot;
 }
-</code></pre><h2 id=put-method>PUT Method</h2><h3 id=modify-group>Modify Group</h3><p>To modify the name of a group, execute a PUT request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&quot;Name&quot;:&quot;photon6&quot;,&quot;NewName&quot;:&quot;photon33&quot;}' http://localhost/api/v1/system/group/modify
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&quot;Name&quot;:&quot;photon6&quot;,&quot;NewName&quot;:&quot;photon33&quot;}' http://localhost/api/v1/system/group/modify
-</code></pre><h2 id=get-method>GET Method</h2><h3 id=host-details>Host Details</h3><p>To fetch the details of the host, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe
-</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
+</code></pre><h2 id=put-method>PUT Method</h2><h3 id=modify-group>Modify Group</h3><p>To modify the name of a group, execute a PUT request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{&quot;Name&quot;:&quot;photon6&quot;,&quot;NewName&quot;:&quot;photon33&quot;}' http://localhost/api/v1/system/group/modify
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{&quot;Name&quot;:&quot;photon6&quot;,&quot;NewName&quot;:&quot;photon33&quot;}' http://localhost/api/v1/system/group/modify
+</code></pre><h2 id=get-method>GET Method</h2><h3 id=host-details>Host Details</h3><p>To fetch the details of the host, execute a GET request in the following format:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe
+</code></pre><p>Example:</p><pre><code>curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
 </code></pre><h2 id=login-status>Login Status</h2><p>You can use the <code>pmctl</code> tool to get login details of users. The following section lists the commands you can use to get the user details.</p><h4 id=list-users>List Users</h4><p>To list all the logged in users, use the following command in the <code>pmctl</code> tool:</p><pre><code>&gt;pmctl status login user
 </code></pre><h4 id=list-sessions>List Sessions</h4><p>To list all the logged in sessions, use the following command in the <code>pmctl</code> tool:</p><pre><code>&gt;pmctl status login session
 </code></pre><h4 id=get-user-based-on-uid>Get User based on UID</h4><p>To get the status of users based on user ID, use <code>pmctl</code> command in the following format:</p><pre><code>pmctl status login user &lt;UID&gt;
