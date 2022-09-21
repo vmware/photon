@@ -1,29 +1,30 @@
 %global debug_package %{nil}
+%define ipmi_ver 1_8_19
+
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
-Version:        1.8.18
-Release:        6%{?dist}
+Version:        1.8.19
+Release:        1%{?dist}
 License:        BSD
-
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-1.8.18.2.tar.bz2
-%define sha1    ipmitool=3f1b4b670e95945b028581ffe578dd774447c0ad
-BuildRequires:	autoconf
-BuildRequires:	autoconf-archive
-BuildRequires:	automake
-BuildRequires:	libtool
-BuildRequires:	glib
-BuildRequires:	glibc
-BuildRequires:	cmake
-BuildRequires:	openssl-devel
-BuildRequires:	curl-devel
-Requires:	openssl
-Requires:	curl
+URL:            https://github.com/ipmitool/ipmitool
 
-Patch0:         CVE-2020-5208.patch
-Patch1:         0007-hpmfwupg-move-variable-definition-to-c-file.patch
+Source0: https://github.com/ipmitool/ipmitool/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=2d91706e9feba4b2ce4808eca087b81b842c4292a5840830001919c06ec8babd8f8761b74bb9dcf8fbc7765f028a5b1a192a3c1b643f2adaa157fed6fb0d1ee3
+
+BuildRequires:  autoconf
+BuildRequires:  autoconf-archive
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  glib
+BuildRequires:  glibc
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+
+Requires:   openssl
+Requires:   curl
 
 %description
 This package contains a utility for interfacing with devices that support
@@ -41,42 +42,45 @@ Log (SEL), printing Field Replaceable Unit (FRU) information, reading and
 setting LAN configuration, and chassis power control.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-IPMITOOL_%{ipmi_ver}
 
 %build
-./bootstrap
+sh ./bootstrap
 %configure --with-kerneldir \
-    --with-rpm-distro=
-make %{?_smp_mflags}
+          --with-rpm-distro=
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install-strip %{?_smp_mflags}
-mkdir -p %{buildroot}/lib/systemd/system
+%make_install install-strip %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(755,root,root)
-%attr(755,root,root) %{_bindir}/*
-%attr(755,root,root) %{_sbindir}/*
-%{_datadir}/ipmitool/*
+%{_bindir}/*
+%{_sbindir}/*
+%{_datadir}/%{name}/*
 %{_mandir}/man*/*
-%doc %{_datadir}/doc/ipmitool
+%doc %{_docdir}/ipmitool
+%{_datadir}/misc/enterprise-numbers
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-6
--   Bump up release for openssl
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.18-5
--   GCC-10 support.
-*   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-4
--   Make ipmitool compatible for openssl-1.1.x
-*   Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-3
--   Fix %configure.
-*   Thu Feb 13 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-2
--   Fix CVE-2020-5208.
-*   Fri Aug 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-1
--   Initial build.  First version
+* Thu Sep 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-1
+- Upgrade to v1.8.19
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-6
+- Bump up release for openssl
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.18-5
+- GCC-10 support.
+* Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-4
+- Make ipmitool compatible for openssl-1.1.x
+* Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-3
+- Fix %configure.
+* Thu Feb 13 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-2
+- Fix CVE-2020-5208.
+* Fri Aug 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-1
+- Initial build.  First version
