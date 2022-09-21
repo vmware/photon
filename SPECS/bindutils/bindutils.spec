@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.27
-Release:        3%{?dist}
+Version:        9.16.33
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=5c71f228db83aa8cc9e65466d6e5afca4a9f80c693358111a003fe09e1a14522175eb2b6a0f11e2a2cd4fdba01f2ae315de52e394a441b3861ca2a011e02af62
+%define sha512  bind=43fd2cea52dfd1115a4cca83830ab5b93208be401cdbbdff2bbf204b8f0d99fb434ad3156d3a21649488cc904ae09f145feba97b9b6918b0cf063ff5e2b10af5
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -81,6 +81,9 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Wed Sep 21 2022 Dweep Advani <dadvani@vmware.com> 9.16.33-1
+-   Version upgraded to 9.16.33 to fix multiple CVEs
+-   CVE-2022-2795, CVE-2022-3080,  CVE-2022-38177 and CVE-2022-38178
 *   Thu Jun 23 2022 Harinadh D <hdommaraju@vmware.com> 9.16.27-3
 -   add nsupdate to the package
 *   Tue Mar 29 2022 Tapas Kundu <tkundu@vmware.com> 9.16.27-2
