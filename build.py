@@ -1407,8 +1407,8 @@ def process_additional_cfgs(cfgdict_additional_path):
         "PHOTON_SOURCES_PATH": "photon-sources-path",
         "PHOTON_PUBLISH_RPMS_PATH": "photon-publish-rpms-path",
         "PHOTON_PUBLISH_XRPMS_PATH": "photon-publish-x-rpms-path",
-        "PHOTON_PKG_BLACKLIST_FILE": "photon-publish-x-rpms-path",
-        "DISTRIBUTED_BUILD_CONFIG": "pkg-black-list-file",
+        "PHOTON_PKG_BLACKLIST_FILE": "pkg-black-list-file",
+        "DISTRIBUTED_BUILD_CONFIG": "distributed-build-option-file",
     }
 
     for k, v in env_additional_cfg_map.items():
