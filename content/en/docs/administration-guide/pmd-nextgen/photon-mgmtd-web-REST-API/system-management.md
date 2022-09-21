@@ -10,11 +10,11 @@ weight: 2
 
 To fetch the complete system information, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe
 
 Example:
 
-	curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/describe | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
 
 
 
@@ -22,11 +22,11 @@ Example:
 
 To fetch information related to CPU, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/cpuinfo
 
 
 ### Disk Usage Details ###
@@ -34,12 +34,12 @@ Example:
 
 To fetch the usage details of the disk, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/diskusage
 
 **Response:**  
 	
@@ -65,11 +65,11 @@ Example:
 
 To fetch the details about the platform and kernel versions on which the system is installed:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/version
 
 **Response:**  
     
@@ -99,12 +99,12 @@ Example:
 
 To fetch miscellaneous harware details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/misc
 
 **Response:**  
 
@@ -132,11 +132,11 @@ Example:
 
 To fetch the user details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/userstat
 
 
 ### Virtual Memory Details ###
@@ -144,11 +144,11 @@ Example:
 
 To fetch the details of the virtual memory, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/virtualmemory
 
 **Response:**  
     
@@ -201,24 +201,24 @@ Example:
 
 To fetch the details about the kernel module, execute a GET request in the following format: 
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
 
 
 Example: 
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/modules
 
 
 ### Network ARP Details ###
 
 To fetch the network ARP details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/net/arp
 
 **Response:**  
     
@@ -291,24 +291,24 @@ Example:
 
 To fetch the partition details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
 
 
 Example:
 
-	curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/partitions
 
 
 ### Platform Details ###
 
 To fetch the details of the platform on which the system is installed, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/platform
 
 **Respose:**  
 	
@@ -328,12 +328,12 @@ Example:
 
 To fetch the swap memory details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/swapmemory
 
 **Response:**  
     
@@ -359,11 +359,11 @@ Example:
 
 To fetch the input/output (read/write) details of all the disk partition, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/proc/iocounters
 
 **Response:**  
 

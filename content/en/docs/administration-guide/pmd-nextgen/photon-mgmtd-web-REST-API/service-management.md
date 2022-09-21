@@ -7,7 +7,7 @@ weight: 1
 
 To manage the available services and take actions on the services, execute a POST request in the following format:
 
-    curl --unix-socket  /run/photon-mgmtd/photon-mgmtd.sock  --request POST --data '{"action":"{command}”,”unit”:”{unit}"}' http://localhost/api/v1/service/systemd
+    curl --unix-socket  /run/photon-mgmt/photon-mgmt.sock  --request POST --data '{"action":"{command}”,”unit”:”{unit}"}' http://localhost/api/v1/service/systemd
 
 The following table lists the parameters:
 
@@ -19,7 +19,7 @@ The following table lists the parameters:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{"action":"start","unit":"nginx.service"}' http://localhost/api/v1/service/systemd
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"action":"start","unit":"nginx.service"}' http://localhost/api/v1/service/systemd
 
 **Response:** 
  
@@ -32,7 +32,7 @@ Example:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{"action":"stop","unit":"nginx.service"}' http://localhost/api/v1/service/systemd
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"action":"stop","unit":"nginx.service"}' http://localhost/api/v1/service/systemd
 
 **Response:**  
 
@@ -49,11 +49,11 @@ Example:
 The `systemctl list-unit-files` command lists all the services available in the system. 
 To fetch the list of services listed in the list-unit files, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/units
  
 
 
@@ -61,7 +61,7 @@ Example:
 
 To receive the status details of a specific service, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/status
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/status
 
 The following table lists the parameter:
 
@@ -72,7 +72,7 @@ The following table lists the parameter:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq	% Total % Received % Xferd Average Speed Time Time Time Current	Dload Upload Total Spent Left Speed	100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
 
 **Response**:  
     
@@ -107,7 +107,7 @@ Example:
 
 To fetch the value of a specific property, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/manager/property/Version
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/manager/property/Version
 
 
 The following table lists the parameter:
@@ -119,7 +119,7 @@ The following table lists the parameter:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
 
 **Response:**  
     
@@ -135,7 +135,7 @@ Example:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
 
 **Response:**  
     
@@ -153,7 +153,7 @@ Example:
 
 To fetch the property of a specific service, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/property
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/property
 
 
 The following table lists the parameter:
@@ -165,14 +165,14 @@ The following table lists the parameter:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/property
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/property
 
 
 ### Properties of All Services ###
 
 To fetch all the properties of a service, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
 
 The following table lists the parameter:
 
@@ -183,7 +183,7 @@ The following table lists the parameter:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
 
 
 
@@ -191,11 +191,11 @@ Example:
 
 To receive the configuration details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf
 
 **Response:**  
     
@@ -262,11 +262,11 @@ Example:
 
 To fetch the details about the configuration updates, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/service/systemd/conf/update
 
 **Response:**  
     

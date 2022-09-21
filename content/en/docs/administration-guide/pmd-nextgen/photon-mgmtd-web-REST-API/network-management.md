@@ -10,7 +10,7 @@ weight: 3
 
 To fetch complete network details, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
+	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
 
 **Response:**
 
@@ -424,11 +424,11 @@ To fetch complete network details, execute a GET request in the following format
 
 To fetch the route details, execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route
 
 Example:
 
-    root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
+    root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
 
 
 **Response:**  
@@ -572,11 +572,11 @@ Example:
 
 To fetch all the interfaces links details (such as interface, mac address, and transaction), execute a GET request in the following format:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
 
 Example:
 
-    curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock http://localhost/api/v1/network/netlink/link
 
 **Response:**  
     
