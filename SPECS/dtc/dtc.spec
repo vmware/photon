@@ -3,14 +3,16 @@ Name:          dtc
 Version:       1.6.1
 Release:       1%{?dist}
 License:       GPLv2+
-URL:           https://devicetree.org/
+URL:           https://devicetree.org
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.gz
-%define sha512 dtc=34b64f356070710fd78f34ed624a06cec02915c98ab53eddbb0843f2a4c62dc95a78aa8583d7f433db60d1233eb1a2babecd85cd8179e74f27fe46ca412cb2b3
-BuildRequires: gcc make
-BuildRequires: flex bison swig
+
+Source0: https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=34b64f356070710fd78f34ed624a06cec02915c98ab53eddbb0843f2a4c62dc95a78aa8583d7f433db60d1233eb1a2babecd85cd8179e74f27fe46ca412cb2b3
+
+BuildRequires: build-essential
+BuildRequires: swig
 
 %description
 Devicetree is a data structure for describing hardware. Rather than hard coding
@@ -21,27 +23,28 @@ boot time. The devicetree is used by OpenFirmware, OpenPOWER Abstraction Layer
 Flattened Device Tree (FDT) form.
 
 %package devel
-Summary: Development headers for device tree library
-Requires: %{name} = %{version}-%{release}
+Summary:    Development headers for device tree library
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 This package provides development files for libfdt
 
 %prep
 %autosetup -p1
-sed -i 's/python2/python3/' pylibfdt/setup.py
 
 %build
-make %{?_smp_mflags} V=1 CC="gcc $RPM_OPT_FLAGS $RPM_LD_FLAGS"
+%make_build
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot} PREFIX=%{buildroot}/usr \
-                            LIBDIR=%{_libdir} BINDIR=%{_bindir} INCLUDEDIR=%{_includedir} V=1
+%make_install %{?_smp_mflags} \
+        DESTDIR=%{buildroot} PREFIX=%{_prefix} \
+        LIBDIR=%{_libdir} BINDIR=%{_bindir} INCLUDEDIR=%{_includedir}
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
+%defattr(-,root,root)
 %license GPL
 %doc Documentation/manual.txt
 %{_bindir}/*
@@ -49,6 +52,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libfdt.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/libfdt.so
 %{_libdir}/libfdt.a
 %{_includedir}/*
