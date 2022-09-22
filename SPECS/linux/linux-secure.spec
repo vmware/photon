@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.103
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.109
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=81431367bd262136c2c178397afd9f17b7c507262dc211030523e1d69a48521c65bb516daf721882ac3694157840d092c7f82a04a14e7afaf791648a9f38cd66
+%define sha512 linux=0a035a72096c6076c47c93c885dbbf0f59315ea7acf1289305a98d6d585d9622115b38fb32634cc72929fd200eb7a4f5debb076c681afec999dbe49ef67438e2
 
 Source1:        config-secure
 Source2:        initramfs.trigger
@@ -84,8 +84,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-1016
-Patch104: 0001-netfilter_nf_tables_initialize_registers_in_nft_do_chain.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -181,7 +179,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M95
 
 # CVE
-%autopatch -p1 -m100 -M104
+%autopatch -p1 -m100 -M103
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -318,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-1
+- Update to version 5.10.109
 * Tue Sep 20 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-3
 - Fix for CVE-2022-1016
 * Mon Sep 19 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-2

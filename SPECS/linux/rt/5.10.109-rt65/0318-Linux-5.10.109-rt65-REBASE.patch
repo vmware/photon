@@ -1,0 +1,20 @@
+From 1b4c331f0b945cc17db97131b4da592114d66dab Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Wed, 6 Apr 2022 11:40:52 -0300
+Subject: [PATCH 318/318] Linux 5.10.109-rt65 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f1..e2eb19782d4c4 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt65
+-- 
+2.35.1
+
