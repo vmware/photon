@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.109
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -126,6 +126,8 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+# Fix for CVE-2022-29582
+Patch104: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -332,7 +334,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M103
+%autopatch -p1 -m100 -M104
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -708,6 +710,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-2
+- Fix for CVE-2022-29582
 * Wed Sep 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-1
 - Update to version 5.10.109
 * Tue Sep 20 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.103-4
