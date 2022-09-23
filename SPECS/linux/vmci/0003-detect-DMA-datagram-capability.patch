@@ -1,0 +1,53 @@
+From eed2298d936087a1c85e0fa6f7170028e4f4fded Mon Sep 17 00:00:00 2001
+From	Jorgen Hansen <>
+Subject	[PATCH v3 3/8] VMCI: dma dg: detect DMA datagram capability
+Date	Mon, 7 Feb 2022 02:27:20 -0800
+
+commit eed2298d936087a1c85e0fa6f7170028e4f4fded upstream.
+
+Detect the VMCI DMA datagram capability, and if present, ack it
+to the device.
+
+Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+Signed-off-by: Jorgen Hansen <jhansen@vmware.com>
+---
+ drivers/misc/vmw_vmci/vmci_guest.c | 11 +++++++++++
+ include/linux/vmw_vmci_defs.h      |  1 +
+ 2 files changed, 12 insertions(+)
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index d30d66258e52..b93afe7f7119 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -562,6 +562,17 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 		}
+ 	}
+ 
++	if (mmio_base != NULL) {
++		if (capabilities & VMCI_CAPS_DMA_DATAGRAM) {
++			caps_in_use |= VMCI_CAPS_DMA_DATAGRAM;
++		} else {
++			dev_err(&pdev->dev,
++				"Missing capability: VMCI_CAPS_DMA_DATAGRAM\n");
++			error = -ENXIO;
++			goto err_free_data_buffer;
++		}
++	}
++
+ 	dev_info(&pdev->dev, "Using capabilities 0x%x\n", caps_in_use);
+ 
+ 	/* Let the host know which capabilities we intend to use. */
+diff --git a/include/linux/vmw_vmci_defs.h b/include/linux/vmw_vmci_defs.h
+index 8fc00e2685cf..1ce2cffdc3ae 100644
+--- a/include/linux/vmw_vmci_defs.h
++++ b/include/linux/vmw_vmci_defs.h
+@@ -39,6 +39,7 @@
+ #define VMCI_CAPS_DATAGRAM      BIT(2)
+ #define VMCI_CAPS_NOTIFICATIONS BIT(3)
+ #define VMCI_CAPS_PPN64         BIT(4)
++#define VMCI_CAPS_DMA_DATAGRAM  BIT(5)
+ 
+ /* Interrupt Cause register bits. */
+ #define VMCI_ICR_DATAGRAM      BIT(0)
+-- 
+2.25.1

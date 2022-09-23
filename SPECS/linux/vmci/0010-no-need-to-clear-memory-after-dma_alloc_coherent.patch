@@ -1,0 +1,35 @@
+From cc312da2d3af87f183c57b672042c85cfe6f15c2 Mon Sep 17 00:00:00 2001
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: VMCI: No need to clear memory after a dma_alloc_coherent() call
+
+commit cc312da2d3af87f183c57b672042c85cfe6f15c2 upstream.
+
+dma_alloc_coherent() already clear the allocated memory, there is no need
+to explicitly call memset().
+This saves a few cycles and a few lines of code.
+
+Acked-by: Vishnu Dasa <vdasa@vmware.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/3e8c0bfaa77500e22d6c90f249da1c53dbae716e.1645734041.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index 1a18587..02d4722 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -706,13 +706,11 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 		vmci_dev->notification_bitmap = dma_alloc_coherent(
+ 			&pdev->dev, PAGE_SIZE, &vmci_dev->notification_base,
+ 			GFP_KERNEL);
+-		if (!vmci_dev->notification_bitmap) {
++		if (!vmci_dev->notification_bitmap)
+ 			dev_warn(&pdev->dev,
+ 				 "Unable to allocate notification bitmap\n");
+-		} else {
+-			memset(vmci_dev->notification_bitmap, 0, PAGE_SIZE);
++		else
+ 			caps_in_use |= VMCI_CAPS_NOTIFICATIONS;
+-		}
+ 	}
+ 
+ 	if (mmio_base != NULL) {

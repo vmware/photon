@@ -1,0 +1,142 @@
+From 22aa5c7f323022477b70e044eb00e6bfea9498e8 Mon Sep 17 00:00:00 2001
+From: Jorgen Hansen <jhansen@vmware.com>
+Subject	[PATCH v3 7/8] VMCI: dma dg: add support for DMA datagrams sends
+Date	Mon, 7 Feb 2022 02:27:24 -0800
+
+commit 22aa5c7f323022477b70e044eb00e6bfea9498e8 upstream.
+
+Use DMA based send operation from the transmit buffer instead of the
+iowrite8_rep based datagram send when DMA datagrams are supported.
+
+The outgoing datagram is sent as inline data in the VMCI transmit
+buffer. Once the header has been configured, the send is initiated
+by writing the lower 32 bit of the buffer base address to the
+VMCI_DATA_OUT_LOW_ADDR register. Only then will the device process
+the header and the datagram itself. Following that, the driver busy
+waits (it isn't possible to sleep on the send path) for the header
+busy flag to change - indicating that the send is complete.
+
+Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+Signed-off-by: Jorgen Hansen <jhansen@vmware.com>
+---
+ drivers/misc/vmw_vmci/vmci_guest.c | 45 ++++++++++++++++++++++++++++--
+ include/linux/vmw_vmci_defs.h      | 34 ++++++++++++++++++++++
+ 2 files changed, 77 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index 36eade15ba87..bf524217914e 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -13,6 +13,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/module.h>
++#include <linux/processor.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/init.h>
+@@ -114,6 +115,47 @@ static void vmci_write_reg(struct vmci_guest_device *dev, u32 val, u32 reg)
+ 		iowrite32(val, dev->iobase + reg);
+ }
+ 
++static int vmci_write_data(struct vmci_guest_device *dev,
++			   struct vmci_datagram *dg)
++{
++	int result;
++
++	if (dev->mmio_base != NULL) {
++		struct vmci_data_in_out_header *buffer_header = dev->tx_buffer;
++		u8 *dg_out_buffer = (u8 *)(buffer_header + 1);
++
++		if (VMCI_DG_SIZE(dg) > VMCI_MAX_DG_SIZE)
++			return VMCI_ERROR_INVALID_ARGS;
++
++		/*
++		 * Initialize send buffer with outgoing datagram
++		 * and set up header for inline data. Device will
++		 * not access buffer asynchronously - only after
++		 * the write to VMCI_DATA_OUT_LOW_ADDR.
++		 */
++		memcpy(dg_out_buffer, dg, VMCI_DG_SIZE(dg));
++		buffer_header->opcode = 0;
++		buffer_header->size = VMCI_DG_SIZE(dg);
++		buffer_header->busy = 1;
++
++		vmci_write_reg(dev, lower_32_bits(dev->tx_buffer_base),
++			       VMCI_DATA_OUT_LOW_ADDR);
++
++		/* Caller holds a spinlock, so cannot block. */
++		spin_until_cond(buffer_header->busy == 0);
++
++		result = vmci_read_reg(vmci_dev_g, VMCI_RESULT_LOW_ADDR);
++		if (result == VMCI_SUCCESS)
++			result = (int)buffer_header->result;
++	} else {
++		iowrite8_rep(dev->iobase + VMCI_DATA_OUT_ADDR,
++			     dg, VMCI_DG_SIZE(dg));
++		result = vmci_read_reg(vmci_dev_g, VMCI_RESULT_LOW_ADDR);
++	}
++
++	return result;
++}
++
+ /*
+  * VM to hypervisor call mechanism. We use the standard VMware naming
+  * convention since shared code is calling this function as well.
+@@ -139,8 +181,7 @@ int vmci_send_datagram(struct vmci_datagram *dg)
+ 	spin_lock_irqsave(&vmci_dev_spinlock, flags);
+ 
+ 	if (vmci_dev_g) {
+-		iowrite8_rep(vmci_dev_g->iobase + VMCI_DATA_OUT_ADDR,
+-			     dg, VMCI_DG_SIZE(dg));
++		vmci_write_data(vmci_dev_g, dg);
+ 		result = vmci_read_reg(vmci_dev_g, VMCI_RESULT_LOW_ADDR);
+ 	} else {
+ 		result = VMCI_ERROR_UNAVAILABLE;
+diff --git a/include/linux/vmw_vmci_defs.h b/include/linux/vmw_vmci_defs.h
+index 8bc37d8244a8..6fb663b36f72 100644
+--- a/include/linux/vmw_vmci_defs.h
++++ b/include/linux/vmw_vmci_defs.h
+@@ -110,6 +110,40 @@ enum {
+ #define VMCI_MMIO_ACCESS_OFFSET        ((size_t)(128 * 1024))
+ #define VMCI_MMIO_ACCESS_SIZE          ((size_t)(64 * 1024))
+ 
++/*
++ * For VMCI devices supporting the VMCI_CAPS_DMA_DATAGRAM capability, the
++ * sending and receiving of datagrams can be performed using DMA to/from
++ * a driver allocated buffer.
++ * Sending and receiving will be handled as follows:
++ * - when sending datagrams, the driver initializes the buffer where the
++ *   data part will refer to the outgoing VMCI datagram, sets the busy flag
++ *   to 1 and writes the address of the buffer to VMCI_DATA_OUT_HIGH_ADDR
++ *   and VMCI_DATA_OUT_LOW_ADDR. Writing to VMCI_DATA_OUT_LOW_ADDR triggers
++ *   the device processing of the buffer. When the device has processed the
++ *   buffer, it will write the result value to the buffer and then clear the
++ *   busy flag.
++ * - when receiving datagrams, the driver initializes the buffer where the
++ *   data part will describe the receive buffer, clears the busy flag and
++ *   writes the address of the buffer to VMCI_DATA_IN_HIGH_ADDR and
++ *   VMCI_DATA_IN_LOW_ADDR. Writing to VMCI_DATA_IN_LOW_ADDR triggers the
++ *   device processing of the buffer. The device will copy as many available
++ *   datagrams into the buffer as possible, and then sets the busy flag.
++ *   When the busy flag is set, the driver will process the datagrams in the
++ *   buffer.
++ */
++struct vmci_data_in_out_header {
++	uint32_t busy;
++	uint32_t opcode;
++	uint32_t size;
++	uint32_t rsvd;
++	uint64_t result;
++};
++
++struct vmci_sg_elem {
++	uint64_t addr;
++	uint64_t size;
++};
++
+ /*
+  * We have a fixed set of resource IDs available in the VMX.
+  * This allows us to have a very simple implementation since we statically
+-- 
+2.25.1

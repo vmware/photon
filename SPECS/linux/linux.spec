@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -185,6 +185,26 @@ Patch1510: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 #Patches for iavf driver
 Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
+#Patches for vmci driver
+Patch1521: 001-return-correct-error-code.patch
+Patch1522: 002-switch-to-kvfree_rcu-API.patch
+Patch1523: 003-print-unexpanded-names-of-ioctl.patch
+Patch1524: 004-enforce-queuepair-max-size-for-IOCTL_VMCI_QUEUEPAIR_ALLOC.patch
+Patch1531: 0001-whitespace-formatting-change-for-vmci-register-defines.patch
+Patch1532: 0002-add-MMIO-access-to-registers.patch
+Patch1533: 0003-detect-DMA-datagram-capability.patch
+Patch1534: 0004-set-OS-page-size.patch
+Patch1535: 0005-register-dummy-IRQ-handlers-for-DMA-datagrams.patch
+Patch1536: 0006-allocate-send-receive-buffers-for-DMAdatagrams.patch
+Patch1537: 0007-add-support-for-DMA-datagrams-send.patch
+Patch1538: 0008-add-support-for-DMA-datagrams-receive.patch
+Patch1539: 0009-fix-the-description-of-vmci_check_host_caps.patch
+Patch1540: 0010-no-need-to-clear-memory-after-dma_alloc_coherent.patch
+Patch1541: 0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
+Patch1542: 0012-check-exclusive-vectors-when-freeing-interrupt1.patch
+Patch1543: 0013-release-notification-bitmap-inn-error-path.patch
+Patch1544: 0014-add-support-for-arm64.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -378,6 +398,9 @@ pushd ../iavf-%{iavf_version}
 %patch1511 -p1
 popd
 %endif
+
+# vmci
+%autopatch -p1 -m1521 -M1544
 
 %build
 make %{?_smp_mflags} mrproper
@@ -713,6 +736,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-2
+- VMCI patches & configs
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-1
 - Update to version 5.10.118
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-4
