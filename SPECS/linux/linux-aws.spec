@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.109
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -66,6 +66,8 @@ Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2022-29582
 Patch104: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
+# Fix for CVE-2022-21499
+Patch105: 0001-debug-Lock-down-kgdb.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -185,7 +187,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M104
+%autopatch -p1 -m100 -M105
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -351,6 +353,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-3
+- Fix for CVE-2022-21499
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-2
 - Fix for CVE-2022-29582
 * Wed Sep 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-1

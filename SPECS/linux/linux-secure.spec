@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.109
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -86,6 +86,8 @@ Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2022-29582
 Patch104: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
+# Fix for CVE-2022-21499
+Patch105: 0001-debug-Lock-down-kgdb.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -181,7 +183,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M95
 
 # CVE
-%autopatch -p1 -m100 -M104
+%autopatch -p1 -m100 -M105
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -318,6 +320,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-3
+- Fix for CVE-2022-21499
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-2
 - Fix for CVE-2022-29582
 * Wed Sep 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-1
