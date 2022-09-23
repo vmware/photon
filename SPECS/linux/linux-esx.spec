@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.118
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -81,6 +81,8 @@ Patch11: apparmor-af_unix-mediation.patch
 
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
+Patch18: 0001-Control-MEMCG_KMEM-config.patch
+Patch19: 0001-cgroup-v1-cgroup_stat-support.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
@@ -545,6 +547,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-5
+- .config: disable kernel accounting for memory cgroups
+- Enable cgroup v1 stats
+- .config: enable PERCPU_STATS
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-4
 - Avoid TSC recalibration
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-3
