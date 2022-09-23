@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.118
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -113,9 +113,10 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 # arm64 hypervisor detection and kmsg dumper
-Patch58: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch59: 0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+Patch59: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch60: 0002-arm64-hyper-implement-VMware-hypervisor-features.patch
 
 # CVE:
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -350,12 +351,12 @@ manipulation of eBPF programs and maps.
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m55 -M58
 %endif
 
 %ifarch aarch64
 # arm64 hypervisor detection and kmsg dumper
-%autopatch -p1 -m58 -M59
+%autopatch -p1 -m59 -M60
 %endif
 
 # CVE
@@ -738,6 +739,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-4
+- Avoid TSC recalibration
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-3
 - Fix for CVE-2022-21505
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-2

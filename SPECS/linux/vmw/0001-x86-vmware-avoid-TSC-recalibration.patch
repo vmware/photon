@@ -1,0 +1,29 @@
+From 57e4df78c340b8b610111c10f4d4206fc7f9ad87 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 4 Jan 2021 15:31:19 -0800
+Subject: [PATCH] x86/vmware: avoid TSC recalibration
+
+When TSC frequency is known (retrieved from hypervisor), we should skip
+TSC refined calibration by setting X86_FEATURE_TSC_KNOWN_FREQ.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c6ede3b3d302..83164110ccc5 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -378,6 +378,8 @@ static void __init vmware_set_capabilities(void)
+ 	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
+ 	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
+ 	setup_force_cpu_cap(X86_FEATURE_HYPERVISOR);
++	if (vmware_tsc_khz)
++		setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ);
+ 	if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMCALL)
+ 		setup_force_cpu_cap(X86_FEATURE_VMCALL);
+ 	else if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMMCALL)
+-- 
+2.11.0
+
