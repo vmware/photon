@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.109
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -68,6 +68,10 @@ Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch104: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
 Patch105: 0001-debug-Lock-down-kgdb.patch
+# Fix for CVE-2022-1966
+Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+# Fix for CVE-2022-1972
+Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -187,7 +191,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M105
+%autopatch -p1 -m100 -M107
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -353,6 +357,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-4
+- Fix for CVE-2022-1966, CVE-2022-1972
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-3
 - Fix for CVE-2022-21499
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-2

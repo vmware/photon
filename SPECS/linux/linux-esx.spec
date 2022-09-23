@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.109
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -149,6 +149,10 @@ Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch104: 0001-io_uring-fix-race-between-timeout-flush-and-removal.patch
 # Fix for CVE-2022-21499
 Patch105: 0001-debug-Lock-down-kgdb.patch
+# Fix for CVE-2022-1966
+Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
+# Fix for CVE-2022-1972
+Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 
 # Next 2 patches are about to be merged into stable
 Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
@@ -287,7 +291,7 @@ The Linux package contains the Linux kernel doc files
 %patch90 -p1
 
 # CVE
-%autopatch -p1 -m100 -M105
+%autopatch -p1 -m100 -M107
 
 # mm and scsi fixes
 %autopatch -p1 -m110 -M110
@@ -517,6 +521,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-4
+- Fix for CVE-2022-1966, CVE-2022-1972
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-3
 - Fix for CVE-2022-21499
 * Thu Sep 22 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.109-2
