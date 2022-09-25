@@ -1,0 +1,31 @@
+From d805289c761cbaac189d6feb68b09e8e75f9b3b2 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Fri, 22 Jul 2022 06:26:26 +0000
+Subject: [PATCH] Added Main class for proxy-11.3-jar-with-dependencies.jar
+
+proxy-11.3-jar-with-dependencies.jar doesn't have main class defined in
+manifest. Due to this issue wavefront-proxy service was crashing.
+
+---
+ proxy/pom.xml | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index d5164b3d..a63c0043 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -75,6 +75,11 @@
+           <descriptorRefs>
+             <descriptorRef>jar-with-dependencies</descriptorRef>
+           </descriptorRefs>
++          <archive>
++            <manifest>
++              <mainClass>com.wavefront.agent.PushAgent</mainClass>
++            </manifest>
++          </archive>
+         </configuration>
+         <executions>
+           <execution>
+-- 
+2.23.3
+

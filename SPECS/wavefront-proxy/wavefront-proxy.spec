@@ -1,21 +1,20 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
-Version:          9.2
-Release:          2%{?dist}
+Version:          11.3
+Release:          1%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
-Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha1      wavefront=baec4ae6899fddf97ed855b93cfe62e2e6441057
-Patch0:           wavefront-proxy-CVE-2021-44228.patch
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
+Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
+%define sha512    wavefront=8c540f413a47396e6618fa800a22928252f7ec13e6ba68c3bf7ccdaa09e6bfa10ac25629ea176c2a89970ebbb4ccf1aa2c5cc7a67c0ecd56544d69f9767ce3fb
+Patch0:           0001-Added-Main-class-for-proxy-11.3-jar-with-dependencies.patch
 BuildRequires:    apache-maven
-BuildRequires:    openjre8
-BuildRequires:    openjdk8
+BuildRequires:    openjdk11
 BuildRequires:    systemd-devel
 Requires:         systemd
-Requires:         openjre8
+Requires:         openjdk11
 Requires:         commons-daemon
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
@@ -26,43 +25,40 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%autosetup -n wavefront-proxy-wavefront-%{version}
+%autosetup -p1 -n %{name}-proxy-%{version}
 
-cat << EOF >>wavefront-proxy.service
+cat << EOF >> %{name}.service
 [Unit]
 Description=The Wavefront Proxy Server
 After=network.target
 
 [Service]
-PIDFile=/var/run/wavefront-proxy.pid
-ExecStart=/usr/bin/java -Xmx4G -Xms1G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=/etc/wavefront/wavefront-proxy/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f /etc/wavefront/wavefront-proxy/wavefront.conf
-ExecStop=/bin/kill -HUP \$MAINPID
+PIDFile=%{_var}/run/%{name}.pid
+ExecStart=%{_bindir}/java -Xmx4G -Xms1G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=%{_sysconfdir}/wavefront/%{name}/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f %{_sysconfdir}/wavefront/%{name}/wavefront.conf
+ExecStop=%{_bindir}/kill -HUP \$MAINPID
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
-sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
-sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
+sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/%{name}/bin/autoconf-%{name}.sh
+sed -i 's/-jar \/opt\/wavefront\/%{name}\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' docker/run.sh
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
-%if "%{_arch}" == "aarch64"
-mvn install -DskipTests
-%else
-mvn install -DskipTests
-%endif
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*11.0*)
+mvn -f proxy install -DskipTests
 
 %install
-install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/log4j2-stdout.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/log4j2.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2.xml
-install -m 755 -D pkg/etc/wavefront/wavefront-proxy/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
-install -m 644 -D pkg/etc/wavefront/wavefront-proxy/wavefront.conf.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/wavefront.conf
-install -m 755 -D pkg/usr/share/doc/wavefront-proxy/copyright %{buildroot}/%{_docdir}/%name/copyright
-install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
-install -m 755 -D wavefront-proxy.service %{buildroot}/%{_unitdir}/wavefront-proxy.service
-install -m 755 -D proxy/docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
+install -m 755 -D pkg/opt/wavefront/%{name}/bin/autoconf-%{name}.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-%{name}.sh
+install -m 755 -D pkg/etc/wavefront/%{name}/log4j2-stdout.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
+install -m 755 -D pkg/etc/wavefront/%{name}/log4j2.xml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/log4j2.xml
+install -m 755 -D pkg/etc/wavefront/%{name}/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
+install -m 755 -D pkg/etc/wavefront/%{name}/wavefront.conf.default %{buildroot}%{_sysconfdir}/wavefront/%{name}/wavefront.conf
+install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/copyright
+install -m 755 -D proxy/target/proxy-%{version}-jar-with-dependencies.jar %{buildroot}/opt/wavefront-push-agent.jar
+install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
 %pre
 user="wavefront"
@@ -70,7 +66,7 @@ group="wavefront"
 getent group $group >/dev/null || groupadd -r $group
 getent passwd $user >/dev/null || useradd -c "Wavefront Proxy Server" -d /opt/wavefront -g $group \
         -s /sbin/nologin -M -r $user
-spool_dir="/var/spool/wavefront-proxy"
+spool_dir="/var/spool/%{name}"
 log_dir="/var/log/wavefront"
 [[ -d $spool_dir ]] || mkdir -p $spool_dir && chown $user:$group $spool_dir
 [[ -d $log_dir ]] || mkdir -p $log_dir && chown $user:$group $log_dir
@@ -97,6 +93,7 @@ if [ $1 -eq 0 ] ; then
 fi
 %systemd_postun_with_restart %{name}.service
 
+%clean
 rm -rf %{buildroot}/*
 
 %files
@@ -107,9 +104,11 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/wavefront/%{name}/log4j2-stdout.xml
 %{_sysconfdir}/wavefront/%{name}/log4j2.xml
 %{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
-%{_unitdir}/wavefront-proxy.service
+%{_unitdir}/%{name}.service
 
 %changelog
+* Fri Sep 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.3-1
+- Update to version 11.3
 * Tue Dec 14 2021 Dweep Advani <dadvani@vmware.com> 9.2-2
 - Fixed for CVE-2021-44228 in log4j by consuming version 2.16.0
 * Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 9.2-1
