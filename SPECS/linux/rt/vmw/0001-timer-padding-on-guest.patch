@@ -1,0 +1,341 @@
+From 689b29973a642e3fea20ba74cdfa48f439258e9a Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Mon, 6 Jun 2022 20:32:24 +0000
+Subject: [PATCH] timer padding on guest
+
+This is an optimization to hide the virtualization cost of timer interrupts.
+
+The idea is that if we have a predictable overhead, we can prepone the timer by
+the said overhead. As a result we would receive the interrupt in the guest at the
+same time as baremetal, giving the impression that there is no virtualization
+overhead.
+
+Next we have to determine what value to prepone the timer by.
+One of the fundamental guarantees of timer interrupts is that a timer's callback
+will never be invoked before its configured time.
+If the timer is preponed, it needs to be ensured that this guarantee is satisfied.
+In order to do that, the interrupt handler needs to spin in the guest,
+in case the timer is received earlier than intended. This is not a desirable scenario,
+especially in a real-time system, as this will be hogging the CPU from the workload,
+with interrupts disabled.
+
+When we traced the observed overhead from the guest for timer interrupts,
+we found that in about 99.9% of the instances the overhead was within a range
+of about 400ns, from approx. 1200ns to 1600ns.
+
+So we decided to use the minimum observed overhead since boot time to prepone the timer.
+The miniumum observed overhead is continuously monitored during runtime.
+With this option, we are minimizing the need to spin while also not giving up too much of the
+possible latency gains.
+
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ arch/x86/kernel/apic/apic.c | 22 +++++++++++++-
+ include/linux/clockchips.h  | 22 ++++++++++++++
+ include/linux/hrtimer.h     |  3 ++
+ kernel/time/clockevents.c   | 59 +++++++++++++++++++++++++++++++++++++
+ kernel/time/hrtimer.c       | 41 ++++++++++++++++++++++++++
+ 5 files changed, 146 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 9791828f3fcd..721dd9ca9578 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -34,6 +34,7 @@
+ #include <linux/dmi.h>
+ #include <linux/smp.h>
+ #include <linux/mm.h>
++#include <linux/hrtimer.h>
+ 
+ #include <asm/trace/irq_vectors.h>
+ #include <asm/irq_remapping.h>
+@@ -451,6 +452,22 @@ int setup_APIC_eilvt(u8 offset, u8 vector, u8 msg_type, u8 mask)
+ }
+ EXPORT_SYMBOL_GPL(setup_APIC_eilvt);
+ 
++/*
++ * Function to convert time delta from tsc to ns. It will call clockevent_delta2ns,
++ * which takes unsigned long value as input. Since tsc is a u64 value, in a 32 bit system
++ * this can lead to data loss. So this function is restricted to x86_64 systems only.
++ */
++unsigned long long tsc_delta2ns(unsigned long delta,
++				struct clock_event_device *evt)
++{
++#ifdef CONFIG_X86_64
++	return clockevent_delta2ns(delta / TSC_DIVISOR, evt);
++#else
++	return 0;
++#endif
++}
++EXPORT_SYMBOL_GPL(tsc_delta2ns);
++
+ /*
+  * Program the next event, relative to now
+  */
+@@ -465,12 +482,15 @@ static int lapic_next_deadline(unsigned long delta,
+ 			       struct clock_event_device *evt)
+ {
+ 	u64 tsc;
++	u64 deadline;
+ 
+ 	/* This MSR is special and need a special fence: */
+ 	weak_wrmsr_fence();
+ 
+ 	tsc = rdtsc();
+-	wrmsrl(MSR_IA32_TSC_DEADLINE, tsc + (((u64) delta) * TSC_DIVISOR));
++	deadline = tsc + (((u64) delta) * TSC_DIVISOR);
++	wrmsrl(MSR_IA32_TSC_DEADLINE, deadline);
++	this_cpu_write(last_programmed_time_tsc, deadline);
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/clockchips.h b/include/linux/clockchips.h
+index 8ae9a95ebf5b..d722e0f1d09c 100644
+--- a/include/linux/clockchips.h
++++ b/include/linux/clockchips.h
+@@ -15,10 +15,31 @@
+ # include <linux/cpumask.h>
+ # include <linux/ktime.h>
+ # include <linux/notifier.h>
++#include <asm/hypervisor.h>
+ 
+ struct clock_event_device;
+ struct module;
+ 
++/*
++ * Timer padding enabled ?
++ */
++static bool timer_padding_enabled __read_mostly  = true;
++
++/*
++ * timer_padding_is_enabled - query, if the timer padding optimization is enabled
++ */
++static inline int timer_padding_is_enabled(void)
++{
++#ifdef CONFIG_X86_64
++	if (timer_padding_enabled != false && x86_hyper_type != X86_HYPER_VMWARE) {
++		timer_padding_enabled = false;
++	}
++	return timer_padding_enabled;
++#else
++	return 0;
++#endif
++}
++
+ /*
+  * Possible states of a clock event device.
+  *
+@@ -180,6 +201,7 @@ div_sc(unsigned long ticks, unsigned long nsec, int shift)
+ 
+ /* Clock event layer functions */
+ extern u64 clockevent_delta2ns(unsigned long latch, struct clock_event_device *evt);
++extern unsigned long long tsc_delta2ns(unsigned long delta, struct clock_event_device *evt);
+ extern void clockevents_register_device(struct clock_event_device *dev);
+ extern int clockevents_unbind_device(struct clock_event_device *ced, int cpu);
+ 
+diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
+index 542b4fa2cda9..911d253585ae 100644
+--- a/include/linux/hrtimer.h
++++ b/include/linux/hrtimer.h
+@@ -316,6 +316,9 @@ static inline int hrtimer_is_hres_active(struct hrtimer *timer)
+ #ifdef CONFIG_HIGH_RES_TIMERS
+ struct clock_event_device;
+ 
++DECLARE_PER_CPU(unsigned long long, min_overhead_tsc);
++DECLARE_PER_CPU(unsigned long long, last_programmed_time_tsc);
++
+ extern void hrtimer_interrupt(struct clock_event_device *dev);
+ 
+ extern unsigned int hrtimer_resolution;
+diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+index 8c0e4092f661..29ac0b9598af 100644
+--- a/kernel/time/clockevents.c
++++ b/kernel/time/clockevents.c
+@@ -33,6 +33,25 @@ struct ce_unbind {
+ 	int res;
+ };
+ 
++/*
++ * Enable / Disable timer padding optimization
++ */
++static int __init setup_timer_padding(char *str)
++{
++#ifdef CONFIG_X86_64
++	if (x86_hyper_type != X86_HYPER_VMWARE) {
++		timer_padding_enabled = false;
++		return 0;
++	}
++	return (kstrtobool(str, &timer_padding_enabled) == 0);
++#else
++	timer_padding_enabled = false;
++	return 0;
++#endif
++}
++
++__setup("timerpadding=", setup_timer_padding);
++
+ static u64 cev_delta2ns(unsigned long latch, struct clock_event_device *evt,
+ 			bool ismax)
+ {
+@@ -325,6 +344,7 @@ int clockevents_program_event(struct clock_event_device *dev, ktime_t expires,
+ 	unsigned long long clc;
+ 	int64_t delta;
+ 	int rc;
++	unsigned long long min_overhead_ns = 0;
+ 
+ 	if (WARN_ON_ONCE(expires < 0))
+ 		return -ETIME;
+@@ -334,9 +354,20 @@ int clockevents_program_event(struct clock_event_device *dev, ktime_t expires,
+ 		return dev->set_next_ktime(expires, dev);
+ 
+ 	delta = ktime_to_ns(ktime_sub(expires, ktime_get()));
++
+ 	if (delta <= 0)
+ 		return force ? clockevents_program_min_delta(dev) : -ETIME;
+ 
++	if (timer_padding_is_enabled()) {
++		min_overhead_ns = tsc_delta2ns(this_cpu_read(min_overhead_tsc), dev);
++		/*
++		 * min_overhead_ns <= 1000 is not reliable
++		 * tsc_delta2ns only returns values greater than 1us reliably
++		 */
++		if (min_overhead_ns > 1000 && delta > min_overhead_ns)
++			delta = delta - min_overhead_ns;
++	}
++
+ 	delta = min(delta, (int64_t) dev->max_delta_ns);
+ 	delta = max(delta, (int64_t) dev->min_delta_ns);
+ 
+@@ -664,6 +695,32 @@ static struct bus_type clockevents_subsys = {
+ static DEFINE_PER_CPU(struct device, tick_percpu_dev);
+ static struct tick_device *tick_get_tick_dev(struct device *dev);
+ 
++static ssize_t sysfs_show_timer_padding_ns(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct tick_device *td;
++	ssize_t count = 0;
++	int cpu = 0;
++	unsigned long long min_overhead_ns = 0;
++
++	if (!timer_padding_is_enabled())
++		return 0;
++	raw_spin_lock_irq(&clockevents_lock);
++	td = tick_get_tick_dev(dev);
++	if (td && td->evtdev) {
++		if (cpumask_weight(td->evtdev->cpumask) == 1) {
++			cpu = cpumask_first(td->evtdev->cpumask);
++			if (per_cpu(min_overhead_tsc, cpu) != ULONG_MAX)
++				min_overhead_ns = tsc_delta2ns(per_cpu(min_overhead_tsc, cpu), td->evtdev);
++			count = snprintf(buf, PAGE_SIZE, "%lld\n", min_overhead_ns);
++		}
++	}
++	raw_spin_unlock_irq(&clockevents_lock);
++	return count;
++}
++static DEVICE_ATTR(timer_padding_ns, 0444, sysfs_show_timer_padding_ns, NULL);
++
+ static ssize_t sysfs_show_current_tick_dev(struct device *dev,
+ 					   struct device_attribute *attr,
+ 					   char *buf)
+@@ -756,6 +813,8 @@ static int __init tick_init_sysfs(void)
+ 			err = device_create_file(dev, &dev_attr_current_device);
+ 		if (!err)
+ 			err = device_create_file(dev, &dev_attr_unbind_device);
++		if (!err && timer_padding_is_enabled())
++			err = device_create_file(dev, &dev_attr_timer_padding_ns);
+ 		if (err)
+ 			return err;
+ 	}
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index f2ebba79f854..0e7f8f083b65 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -51,6 +51,7 @@
+ #include <linux/timer.h>
+ #include <linux/freezer.h>
+ #include <linux/compat.h>
++#include <linux/delay.h>
+ 
+ #include <linux/uaccess.h>
+ 
+@@ -1548,6 +1549,9 @@ static __latent_entropy void hrtimer_run_softirq(struct softirq_action *h)
+ 
+ #ifdef CONFIG_HIGH_RES_TIMERS
+ 
++DEFINE_PER_CPU(unsigned long long, min_overhead_tsc) = ULONG_MAX;
++DEFINE_PER_CPU(unsigned long long, last_programmed_time_tsc) = 0;
++
+ /*
+  * High resolution timer interrupt
+  * Called with interrupts disabled
+@@ -1558,6 +1562,10 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+ 	ktime_t expires_next, now, entry_time, delta;
+ 	unsigned long flags;
+ 	int retries = 0;
++	long long current_overhead = 0;
++	unsigned long long tsc_now = 0;
++	ktime_t early = 0;
++	ktime_t timer_padding_spin = 0;
+ 
+ 	BUG_ON(!cpu_base->hres_active);
+ 	cpu_base->nr_events++;
+@@ -1567,6 +1575,35 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+ 	entry_time = now = hrtimer_update_base(cpu_base);
+ retry:
+ 	cpu_base->in_hrtirq = 1;
++
++	tsc_now = rdtsc();
++	current_overhead = tsc_now - this_cpu_read(last_programmed_time_tsc);
++
++	if (timer_padding_is_enabled() && current_overhead > 0 && cpu_base->next_timer
++	    && ktime_before(now, cpu_base->expires_next)) {
++		early = ktime_sub(cpu_base->expires_next, now);
++		while (early > 0) {
++			/*
++			 * We pad/prepone the timer by the value of min_overhead_tsc.
++			 * That means we cannot arrive here earlier than the expected timer fire by
++			 * more than min_overhead_tsc, even with no overhead
++			 */
++			if (ktime_to_ns(early) > tsc_delta2ns(this_cpu_read(min_overhead_tsc), dev))
++				break;
++			timer_padding_spin = ktime_add(timer_padding_spin, early);
++			ndelay(early);
++			now = hrtimer_update_base(cpu_base);
++			if (!ktime_before(now, cpu_base->expires_next)) {
++				early = 0;
++				break;
++			} else
++				early = ktime_sub(cpu_base->expires_next, now);
++		}
++	}
++	if (current_overhead > 0 && current_overhead < this_cpu_read(min_overhead_tsc)) {
++		this_cpu_write(min_overhead_tsc, current_overhead);
++	}
++
+ 	/*
+ 	 * We set expires_next to KTIME_MAX here with cpu_base->lock
+ 	 * held to prevent that a timer is enqueued in our queue via
+@@ -1598,6 +1635,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+ 	if (expires_next == KTIME_MAX ||
+ 	    !tick_program_event(expires_next, 0)) {
+ 		cpu_base->hang_detected = 0;
++		if (timer_padding_spin > 1000 && timer_padding_is_enabled())
++			pr_warn("hrtimer: timer padding spent %llu ns spinning\n", ktime_to_ns(timer_padding_spin));
+ 		return;
+ 	}
+ 
+@@ -1641,6 +1680,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+ 	else
+ 		expires_next = ktime_add(now, delta);
+ 	tick_program_event(expires_next, 1);
++	if (timer_padding_is_enabled())
++		pr_warn("hrtimer: timer padding spent %llu ns spinning\n", ktime_to_ns(timer_padding_spin));
+ 	pr_warn_once("hrtimer: interrupt took %llu ns\n", ktime_to_ns(delta));
+ }
+ 
+-- 
+2.23.3
+

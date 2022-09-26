@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -467,6 +467,9 @@ Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 #Backport hrtick changes
 Patch715: 0001-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 
+#Patch to add timer padding on guest
+Patch716: 0001-timer-padding-on-guest.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -598,7 +601,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m110 -M110
 
 # RT
-%autopatch -p1 -m301 -M715
+%autopatch -p1 -m301 -M716
 
 %autopatch -p1 -m1000 -M1006
 
@@ -822,6 +825,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 26 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-9
+- Patch for timer padding on guest
 * Mon Sep 26 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-8
 - Backport hrtick changes to fix lost timer wakeups
 * Mon Sep 26 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-7
