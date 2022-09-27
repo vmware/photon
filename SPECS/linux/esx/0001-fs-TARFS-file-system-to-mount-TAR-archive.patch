@@ -1,5 +1,5 @@
-From bdd01d48127fbcf6a41ac2c3589175c8300b7a02 Mon Sep 17 00:00:00 2001
-From: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+From 62ecd2b899da16815574f7c9d5628bfc7438d0b9 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
 
@@ -20,18 +20,18 @@ allocation for file content data.
 
 Signed-off-by: Srinidhi Rao <srinidhir@vmware.com>
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
-Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  fs/Kconfig                    |   1 +
  fs/Makefile                   |   1 +
  fs/tarfs/Kconfig              |  18 +
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
- fs/tarfs/tarfs.h              | 180 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 483 +++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 719 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1481 insertions(+)
+ fs/tarfs/tarfs.h              | 184 +++++++++
+ fs/tarfs/tarfs_file_dir_ops.c | 572 +++++++++++++++++++++++++++
+ fs/tarfs/tarfs_inode.c        | 713 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1568 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -177,10 +177,10 @@ index 000000000000..2a816e9ff7e1
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000000..bdae08ad68f3
+index 000000000000..37c460381aaf
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
-@@ -0,0 +1,180 @@
+@@ -0,0 +1,184 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -201,7 +201,7 @@ index 000000000000..bdae08ad68f3
 +
 +#define MAX_FILE_NAME_SIZE 100
 +#define TARFS_BLOCK_SIZE_BITS (9)
-+#define TARFS_BLOCK_SIZE (1 << TARFS_BLOCK_SIZE_BITS)
++#define TARFS_BLOCK_SIZE (1U << TARFS_BLOCK_SIZE_BITS)
 +#define DEBUG_PRINT
 +#ifdef DEBUG_PRINT
 +#define tarfs_debug(fmt, args...)  do {				\
@@ -273,8 +273,8 @@ index 000000000000..bdae08ad68f3
 +	char				*dir_name;
 +	char				*base_name;
 +	char				*link_name;
-+	unsigned int			offset;
-+	unsigned int			data_offset;
++	loff_t				offset;
++	loff_t				data_offset;
 +	size_t				data_size;
 +	unsigned long			inode;
 +	struct inode			*ptr_inode;
@@ -285,6 +285,7 @@ index 000000000000..bdae08ad68f3
 +	struct timespec64 		mtime;
 +	struct timespec64 		ctime;
 +	struct tarfs_entry 		*next;
++	spinlock_t			lock;
 +	struct radix_tree_root 		root_tree;
 +	unsigned long 			radix_root_key;
 +};
@@ -309,7 +310,6 @@ index 000000000000..bdae08ad68f3
 +	return TARFS_SB(sb)->first;
 +}
 +
-+extern int tarfs_file_release(struct inode *inode, struct file *file);
 +extern int tarfs_getattr(const struct path *path, struct kstat *stat, u32 request_mask, unsigned int flags);
 +extern int tarfs_read_dir(struct file *file, struct dir_context *ctx);
 +extern mode_t tarfs_entry_mode(struct tarfs_entry *entry);
@@ -319,14 +319,17 @@ index 000000000000..bdae08ad68f3
 +extern struct tarfs_entry *tarfs_find(struct tarfs_entry *entry, const char *dir_name, const char *base_name);
 +extern sector_t tarfs_bmap(struct address_space *mapping, sector_t block);
 +extern int tarfs_readpage(struct file *file, struct page *page);
++extern void tarfs_readahead(struct readahead_control *rac);
++extern struct inode *tarfs_create_inode(struct super_block *sb,
++                struct tarfs_entry *entry, umode_t mode);
 +
 +static const struct file_operations tarfs_file_operations = {
 +	.llseek		= generic_file_llseek,
 +	.read_iter	= tarfs_file_read_iter,
-+	.mmap		= generic_file_mmap,
++	.mmap		= generic_file_readonly_mmap,
 +	.fsync		= generic_file_fsync,
 +	.open		= generic_file_open,
-+	.release	= tarfs_file_release,
++	.splice_read    = generic_file_splice_read,
 +};
 +
 +static const struct inode_operations tarfs_file_inode_operations = {
@@ -357,16 +360,17 @@ index 000000000000..bdae08ad68f3
 +
 +static const struct address_space_operations tarfs_ram_addr_ops = {
 +	.readpage	= tarfs_readpage,
-+	.bmap		= tarfs_bmap,
++	.readahead	= tarfs_readahead,
++	.bmap           = tarfs_bmap,
 +};
 +
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..3c5597006649
+index 000000000000..6b8b9072fd4d
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
-@@ -0,0 +1,483 @@
+@@ -0,0 +1,572 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -387,6 +391,8 @@ index 000000000000..3c5597006649
 +#include <linux/uio.h>
 +#include <linux/buffer_head.h>
 +#include <linux/statfs.h>
++#include <linux/file.h>
++#include <linux/mpage.h>
 +
 +#include "tarfs.h"
 +
@@ -431,44 +437,26 @@ index 000000000000..3c5597006649
 +/**
 + * @brief Returns the tarfs entry by searching based on inode number.
 + * @param  entry: Pointer to the ROOT entry of tarfs
-+inode: inode number which is mapped to the entry to be found.
++ * inode: inode number which is mapped to the entry to be found.
 + * @return the tarfs entry containing the inode number.
 + */
 +static struct tarfs_entry *tarfs_find_by_inode(struct tarfs_entry *entry, unsigned long inode)
 +{
++	struct tarfs_entry *f_entry = NULL;
 +
-+	struct tarfs_entry *entry_node = NULL;
-+	struct radix_tree_iter iter;
-+	void **slot = NULL;
-+
-+	tarfs_debug("In tarfs_find_by_node, inode = %ld", inode);
-+
-+	radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
-+
-+		entry_node = radix_tree_deref_slot(slot);
-+		if ( unlikely(!entry_node) )
-+			continue;
-+
-+		if (radix_tree_exception(entry_node)) {
-+			if (radix_tree_deref_retry(entry_node))
-+				slot = radix_tree_iter_retry(&iter);
-+			continue;
-+		}
-+
-+		if  ( inode == entry_node->inode) {
-+			tarfs_debug("\n FOUND %ld\n", entry_node->inode);
-+			return entry_node;
-+		}
-+
++	if (entry) {
++		rcu_read_lock();
++		f_entry = radix_tree_lookup(&entry->root_tree, inode);
++		rcu_read_unlock();
 +	}
-+	return NULL;
++	return f_entry;
 +}
 +
 +/**
 + * @brief Returns the tarfs entry by searching based on name of the file.
 + * @param  entry: Pointer to the ROOT entry of tarfs
-+dir_name: Directory name/path in which the file resides.
-+base_name: Name of the file.
++ * dir_name: Directory name/path in which the file resides.
++ * base_name: Name of the file.
 + * @return the tarfs entry containing the name.
 + */
 +struct tarfs_entry *tarfs_find(struct tarfs_entry *entry, const char *dir_name, const char *base_name)
@@ -477,6 +465,10 @@ index 000000000000..3c5597006649
 +	struct radix_tree_iter iter;
 +	void **slot = NULL;
 +
++	if (!entry) {
++		tarfs_err("Invalid Entry!!");
++		return NULL;
++	}
 +	radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
 +
 +		entry_node = radix_tree_deref_slot(slot);
@@ -523,8 +515,6 @@ index 000000000000..3c5597006649
 +	else
 +		snprintf(name, len, "%s/%s",entry->dir_name, entry->base_name);
 +
-+	tarfs_debug("found name = %s", name);
-+
 +	return name;
 +
 +}
@@ -539,19 +529,21 @@ index 000000000000..3c5597006649
 +{
 +	struct tarfs_entry *entry;
 +
-+	tarfs_debug("i_ino = %ld", inode->i_ino);
++	if (!inode || !root_entry) {
++		tarfs_err("Invalid inode or root_entry!!");
++		return NULL;
++	}
++
 +	if (inode->i_ino == root_entry->radix_root_key) {
 +		return kzalloc(1, GFP_KERNEL);
 +	}
 +
 +	entry = tarfs_find_by_inode(root_entry, inode->i_ino);
 +	if (!entry) {
-+		tarfs_err("Failed to find inode by entry, root->entry = %s",
-+				root_entry->base_name);
++		tarfs_err("Failed to find inode by entry, root->entry=%s inode=%px ino=%ld",
++				root_entry->base_name, inode, inode->i_ino);
 +		return NULL;
 +	}
-+
-+	tarfs_debug("full_name = %s%s ", entry->dir_name, entry->base_name);
 +	return tarfs_full_name(entry);
 +}
 +
@@ -566,7 +558,6 @@ index 000000000000..3c5597006649
 +int tarfs_getattr(const struct path *path, struct kstat *stat,
 +		u32 request_mask, unsigned int flags)
 +{
-+
 +	struct inode *inode = d_inode(path->dentry);
 +
 +	generic_fillattr(inode, stat);
@@ -576,6 +567,64 @@ index 000000000000..3c5597006649
 +	return 0;
 +}
 +EXPORT_SYMBOL(tarfs_getattr);
++
++
++static struct inode *tarfs_revalidate_entry(struct super_block *sb, struct tarfs_entry *found_entry)
++{
++	struct tarfs_entry *entry;
++	struct inode *build_inode = NULL;
++	struct tarfs_entry *rentry = tarfs_get_first_entry(sb);
++	int err = 0;
++
++	if (!found_entry->ptr_inode || (found_entry->ptr_inode->i_state & (I_FREEING | I_CLEAR))
++			|| found_entry->ptr_inode->i_ino != found_entry->inode) {
++		tarfs_info("inode in freeing state [%px]!!", found_entry->ptr_inode);
++		spin_lock(&found_entry->lock);
++	        entry = radix_tree_delete(&rentry->root_tree, found_entry->inode);
++		if (!entry) {
++			tarfs_err("Radix tree delete fails [%ld]!!",found_entry->inode);
++		}
++		tarfs_debug("entry[%px] %s/%s [%ld]",entry,entry->dir_name,entry->base_name,entry->inode);
++		build_inode = tarfs_create_inode(sb, found_entry, found_entry->mode);
++		if (!build_inode) {
++			spin_unlock(&found_entry->lock);
++			tarfs_err("new inode doesn't get created[%s/%s]",found_entry->dir_name, found_entry->base_name);
++			goto out;
++		}
++		radix_tree_preload(GFP_NOIO);
++		err = radix_tree_insert(&rentry->root_tree, (unsigned long)build_inode->i_ino, found_entry);
++		if (err) {
++			spin_unlock(&found_entry->lock);
++			tarfs_err("Radix tree insert fails err=%d, inode %ld", err, build_inode->i_ino);
++			goto out1;
++		}
++		radix_tree_preload_end();
++		spin_unlock(&found_entry->lock);
++		tarfs_debug("entry[%px] %s/%s (%ld == %ld) state=%ld inserted into radix tree!!",
++				entry,entry->dir_name,entry->base_name,entry->inode,entry->ptr_inode->i_ino,
++				entry->ptr_inode->i_state);
++		if (entry != radix_tree_lookup(&rentry->root_tree, build_inode->i_ino)) {
++			tarfs_err("Dynamic Inode creation unsuccessful err=%d, inode %ld", err, build_inode->i_ino);
++			goto out1;
++		}
++		tarfs_debug("found entry->name = %s/%s & entry->inode = (%ld == %ld) inode=%px state=%lu pages=%lu",
++				found_entry->dir_name, found_entry->base_name, found_entry->inode,build_inode->i_ino,
++				build_inode,build_inode->i_state,build_inode->i_mapping->nrpages);
++	} else {
++		build_inode = found_entry->ptr_inode;
++		if (!build_inode) {
++			tarfs_err("inode doesn't exist[%s/%s]",found_entry->dir_name, found_entry->base_name);
++			return NULL;
++		}
++	}
++	return build_inode;
++out1:
++	iput(build_inode);
++out:
++	found_entry->ptr_inode = NULL;
++	found_entry->inode = 0;
++	return NULL;
++}
 +
 +/*
 + * @brief Ignore all pos beyond file size
@@ -602,37 +651,57 @@ index 000000000000..3c5597006649
 +	struct tarfs_entry *entry = tarfs_get_first_entry(inode->i_sb);
 +	char *dir_path;
 +	int namelen = 0;
++	struct tarfs_entry *entry_node = NULL;
++	struct radix_tree_iter iter;
++	void **slot = NULL;
 +
-+	if (beyond_eof(inode, ctx->pos))
-+		return 0;
-+	/* Loop through the entry to find matching entry node with inode */
-+	if (!dir_emit_dots(file, ctx)) {
-+		tarfs_err("%lld", ctx->pos);
++	if (beyond_eof(inode, ctx->pos)) {
 +		return 0;
 +	}
-+	tarfs_debug("[%lld] [%d] [%lld]", ctx->pos, inode->i_sb->s_blocksize_bits, inode->i_size);
++	/* Loop through the entry to find matching entry node with inode */
++	if (!dir_emit_dots(file, ctx)) {
++		tarfs_err("dir_emit_dots err=%lld", ctx->pos);
++		return 0;
++	}
++	tarfs_debug("[%lld] [%d] [%lld] [%lu] [%lu]",
++			ctx->pos, inode->i_sb->s_blocksize_bits,
++			inode->i_size, inode->i_state, inode->i_ino);
 +	dir_path = build_lookup_path(inode, entry);
 +	if (!dir_path) {
 +		tarfs_err("Failed to get dir path %ld", PTR_ERR(dir_path));
-+		return -ENOENT;
++		return PTR_ERR(dir_path);
 +	}
 +	tarfs_debug("In tarfs_read_dir dir_path=%s", dir_path);
 +
-+	while (entry) {
-+		tarfs_debug("dir_path=%s entry->dir_name = %s base_name=%s",
-+				dir_path, entry->dir_name, entry->base_name );
-+		if (!strcmp(dir_path, entry->dir_name)) {
-+			/* Print all sub dirs by iterating through entry */
-+			namelen = strlen(entry->base_name);
-+			if (!dir_emit(ctx, entry->base_name, namelen,
-+						entry->inode, (entry->mode >> 12))){
++        radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
++
++                entry_node = radix_tree_deref_slot(slot);
++                if ( unlikely(!entry_node) )
++                        continue;
++                if (radix_tree_exception(entry_node)) {
++                        if (radix_tree_deref_retry(entry_node))
++                                slot = radix_tree_iter_retry(&iter);
++                        continue;
++                }
++                if  (!strcmp(entry_node->dir_name, dir_path)) {
++			// Print all sub dirs by iterating through entry
++			tarfs_debug("dir_path=%s entry->dir_name = %s base_name=%s ino=%ld state=%lu sz=%lu",
++				dir_path, entry_node->dir_name, entry_node->base_name, entry_node->inode,
++				entry_node->ptr_inode->i_state, entry->data_size);
++			if (!tarfs_revalidate_entry(inode->i_sb, entry_node)) {
++				kfree(dir_path);
++				tarfs_err("entry revalidation failed!!");
++				return PTR_ERR(NULL);
++			}
++			namelen = strlen(entry_node->base_name);
++			if (!dir_emit(ctx, entry_node->base_name, namelen,
++						entry_node->inode, (entry_node->mode >> 12))){
++				tarfs_err("dir emit fails!!");
 +				break;
 +			}
 +			ctx->pos++;
-+		}
-+		entry = entry->next;
-+	}
-+	tarfs_debug("dir_path=%s", dir_path);
++                }
++        }
 +	kfree(dir_path);
 +	return 0;
 +}
@@ -671,31 +740,46 @@ index 000000000000..3c5597006649
 +	struct tarfs_entry *found_entry = NULL;
 +	char *dir_path = NULL;
 +	struct inode *build_inode = NULL;
-+	struct tarfs_entry *entry;
++	struct tarfs_entry *rentry;
 +
-+	tarfs_debug("In tarfs_lookup");
-+
++        if (!dir || !dentry) {
++                tarfs_err("Error: Null pointer occur");
++                return ERR_PTR(-ENOENT);
++        }
 +	if ( !dir->i_sb ) {
 +		tarfs_err("Error Missing superblock in tarfs_lookup");
-+		return NULL;
++                return ERR_PTR(-ENOENT);
 +	}
++	tarfs_debug("In tarfs_lookup inode=%px[ino=%ld] and dentry=%px name=%s [%u]",
++			dir,dir->i_ino,dentry,dentry->d_name.name, dentry->d_name.len);
 +
-+	entry = tarfs_get_first_entry(dir->i_sb);
-+	dir_path = build_lookup_path(dir, entry);
++        if (simple_positive(dentry)) {
++                tarfs_err("dentry is positive [%px][%px][%px=%s]", dentry->d_inode, dir, dentry, dentry->d_name.name);
++                d_invalidate(dentry);
++                return ERR_PTR(-ENOENT);
++        }
 +
-+	found_entry = tarfs_find(entry, dir_path, dentry->d_name.name);
-+
-+	if ( found_entry ) {
-+		build_inode = found_entry->ptr_inode;
-+		tarfs_debug("found entry->name = %s%s & entry->inode = %ld",
-+				found_entry->dir_name, found_entry->base_name,
-+				found_entry->inode);
-+	} else {
-+		tarfs_debug("Dir entry not found %s",dir_path);
-+	}
++	rentry = tarfs_get_first_entry(dir->i_sb);
++	dir_path = build_lookup_path(dir, rentry);
++	tarfs_debug("ends dir_path=%s", dir_path);
++	found_entry = tarfs_find(rentry, dir_path, dentry->d_name.name);
 +	kfree(dir_path);
 +
-+	tarfs_debug("ends dir_path=%s", dir_path);
++	if (found_entry) {
++		build_inode = tarfs_revalidate_entry(dir->i_sb, found_entry);
++		if (!build_inode) {
++			tarfs_err("entry revalidation failed found entry->name = %s/%s!!",
++					found_entry->dir_name, found_entry->base_name);
++			return NULL;
++		}
++		tarfs_debug("found entry->name = %s/%s & entry->inode = (%ld == %ld) inode=%px state=%lu pages=%lu",
++                                found_entry->dir_name, found_entry->base_name,
++                                found_entry->inode,build_inode->i_ino,build_inode,
++				build_inode->i_state,build_inode->i_mapping->nrpages);
++	} else {
++		tarfs_err("Dir entry not found [%px][%px=%s]!!", dir, dentry, dentry->d_name.name);
++		return ERR_PTR(-ENOENT);
++	}
 +	return d_splice_alias(build_inode, dentry);
 +}
 +EXPORT_SYMBOL(tarfs_lookup);
@@ -712,9 +796,9 @@ index 000000000000..3c5597006649
 +	struct inode *inode  = file_inode(file);
 +	struct tarfs_entry *root_entry = tarfs_get_first_entry(inode->i_sb);
 +	struct tarfs_entry *entry;
-+	ssize_t count, to_read, inner_size, copied;
++	size_t count, to_read, inner_size, copied;
 +	loff_t pos = iocb->ki_pos, inner_off;
-+	unsigned int block;
++	sector_t block;
 +	struct buffer_head *bh;
 +
 +	entry = tarfs_find_by_inode(root_entry, inode->i_ino);
@@ -726,7 +810,9 @@ index 000000000000..3c5597006649
 +		return -EINVAL;
 +	count = min_t(size_t, iov_iter_count(to), entry->data_size - pos);
 +	if (pos >= entry->data_size || !count) {
-+		tarfs_debug("File read complete pos=%llu size=%ld", pos,entry->data_size);
++		tarfs_debug("File read complete[%s/%s][%px] pos=%llu size=%ld nrpages=%lu",
++				entry->dir_name, entry->base_name, entry->ptr_inode, pos,
++				entry->data_size, inode->i_mapping->nrpages);
 +		return 0;
 +	}
 +
@@ -739,7 +825,7 @@ index 000000000000..3c5597006649
 +		bh = sb_bread(inode->i_sb, block);
 +
 +		if (!bh) {
-+			tarfs_err("Failed to read block %u", block);
++			tarfs_err("Failed to read block %llu", block);
 +			return -EINVAL;
 +		}
 +
@@ -759,7 +845,6 @@ index 000000000000..3c5597006649
 +		tarfs_err("Failed to read any bytes %ld", to_read);
 +	}
 +	iocb->ki_pos += (count - to_read);
-+	tarfs_debug("count=%ld res=%ld",count, to_read);
 +	return (count - to_read);
 +}
 +EXPORT_SYMBOL_GPL(tarfs_file_read_iter);
@@ -781,19 +866,24 @@ index 000000000000..3c5597006649
 + */
 +static int tarfs_getblk(struct inode *inode, sector_t block, struct buffer_head *bp, int create)
 +{
-+	struct tarfs_entry *root = tarfs_get_first_entry(inode->i_sb);
++	struct tarfs_entry *root;
 +	struct tarfs_entry *entry;
 +	sector_t blk_offset;
 +
-+	entry = tarfs_find_by_inode(root, inode->i_ino);
-+	if (!entry)
++	if (!inode) {
++		tarfs_err("Null Inode!!");
 +		return -EIO;
++	}
++	root = tarfs_get_first_entry(inode->i_sb);
++	entry = tarfs_find_by_inode(root, inode->i_ino);
++	if (!entry) {
++		tarfs_err("Entry Not Found [%px][%ld]!!", inode, inode->i_ino);
++		return -EIO;
++	}
 +	blk_offset = entry->data_offset / inode->i_sb->s_blocksize;
-+	tarfs_debug("block=[%lld] [%lld] [%d] [%ld]",block, blk_offset, entry->data_offset, entry->data_size);
 +	map_bh(bp, inode->i_sb, block + blk_offset);
 +	return 0;
 +}
-+
 +
 +/**
 + * tarfs_readpage - read one page synchronously into the pagecache
@@ -818,6 +908,21 @@ index 000000000000..3c5597006649
 +EXPORT_SYMBOL_GPL(tarfs_readpage);
 +
 +/**
++ * tarfs_readahead - start reads against pages
++ * @rac: Describes which pages to read.
++ * @get_block: The filesystem's block mapper function.
++ *
++ * This function walks the pages and the blocks within each page, building and
++ * emitting large BIOs.
++ */
++void tarfs_readahead(struct readahead_control *rac)
++{
++        tarfs_debug("Readahead [%px]", rac);
++	mpage_readahead(rac, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_readahead);
++
++/**
 + * tarfs_bmap - perform logical to physical block mapping
 + * @mapping:	logical to physical mapping to use
 + * @block:	logical block (relative to @mapping).
@@ -834,28 +939,16 @@ index 000000000000..3c5597006649
 + */
 +sector_t tarfs_bmap(struct address_space *mapping, sector_t block)
 +{
-+	tarfs_debug("block=[%lld]",block);
++	tarfs_debug("block=[%llu]",block);
 +	return generic_block_bmap(mapping, block, tarfs_getblk);
 +}
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
-+
-+/**
-+ * @brief Releases a file handle.
-+ * @param inode the affected inode
-+ * @param file the file to close
-+ * @return \c 0
-+ */
-+int tarfs_file_release(struct inode *inode, struct file *file)
-+{
-+	return 0;
-+}
-+
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..5edc3e9fc456
+index 000000000000..f2ee913f694d
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,719 @@
+@@ -0,0 +1,713 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -882,7 +975,7 @@ index 000000000000..5edc3e9fc456
 +#include "tarfs.h"
 +
 +#define ROOT_INO_MODE (S_IFDIR | 0555)
-+#define ALIGN_SECTOR(x) (((x) % 512 > 0) ? 512 - ((x) % 512) : 0)
++#define ALIGN_SECTOR(x) (((x) % TARFS_BLOCK_SIZE > 0) ? TARFS_BLOCK_SIZE - ((x) % TARFS_BLOCK_SIZE) : 0)
 +#define OCTAL (8)
 +
 +static void tarfs_kill_super(struct super_block *sb);
@@ -896,7 +989,6 @@ index 000000000000..5edc3e9fc456
 +{
 +
 +	struct inode * inode = new_inode(sb);
-+	struct tarfs_sbi* sb_info = TARFS_SB(sb);
 +
 +	if (inode) {
 +		INIT_HLIST_NODE(&inode->i_hash);
@@ -906,8 +998,7 @@ index 000000000000..5edc3e9fc456
 +		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 +		mapping_set_unevictable(inode->i_mapping);
 +		inode->i_sb = sb;
-+		tarfs_debug("inode created !!");
-+		sb_info->files++;
++		tarfs_debug("inode created [%px][%ld]!!",inode, inode->i_ino);
 +	}
 +	return inode;
 +
@@ -1003,7 +1094,6 @@ index 000000000000..5edc3e9fc456
 +			inode->i_fop = &tarfs_file_operations;
 +			break;
 +	}
-+	sb_info->blocks += entry->ptr_inode->i_blocks;
 +	tarfs_debug("inode created = %ld", entry->inode);
 +	return inode;
 +}
@@ -1107,25 +1197,25 @@ index 000000000000..5edc3e9fc456
 +	return true;
 +}
 +
-+size_t tarfs_read(void *buffer, size_t size, off_t offset, struct super_block *sb)
++size_t tarfs_read(void *buffer, size_t size, loff_t offset, struct super_block *sb)
 +{
 +	struct buffer_head *bh;
 +	size_t pos = 0;
-+	unsigned int block;
++	sector_t block;
 +	loff_t inner_off;
-+	ssize_t inner_size;
++	size_t inner_size;
 +
 +	while (size > 0) {
 +		block = (offset + pos) / sb->s_blocksize;
 +		inner_off = (offset + pos) % sb->s_blocksize;
-+		inner_size = min_t(ssize_t, sb->s_blocksize - inner_off, size);
++		inner_size = min_t(size_t, sb->s_blocksize - inner_off, size);
 +
-+		tarfs_debug("blk=[%d] offset=[%ld] pos=[%ld] inneroff=[%lld] innersize=[%ld] \
++		tarfs_debug("blk=[%llu] offset=[%lld] pos=[%ld] inneroff=[%lld] innersize=[%ld] \
 +				blksize=[%ld] size=[%ld]",block, offset, pos, inner_off,
 +				inner_size, sb->s_blocksize, size);
 +		bh = sb_bread(sb, block);
 +		if (!bh) {
-+			tarfs_err("Failed to read block %u Err=%ld", block, PTR_ERR(bh));
++			tarfs_err("Failed to read block %llu Err=%ld", block, PTR_ERR(bh));
 +			break;
 +		}
 +
@@ -1151,7 +1241,7 @@ index 000000000000..5edc3e9fc456
 + * @param offset the 512-byte aligned offset
 + * @return the entry on success, else \c NULL
 + */
-+struct tarfs_entry *tarfs_read_entry(struct super_block *sb, off_t offset)
++struct tarfs_entry *tarfs_read_entry(struct super_block *sb, loff_t offset)
 +{
 +	struct star_header header;
 +	struct tarfs_entry *entry = NULL;
@@ -1160,7 +1250,7 @@ index 000000000000..5edc3e9fc456
 +	size_t namelen = 0;
 +	size_t curlen = 0;
 +	char typeflag = 0;
-+	unsigned int length = 0;
++	size_t length = 0;
 +	unsigned int mode = 0;
 +	uid_t uid = 0;
 +	gid_t gid = 0;
@@ -1204,7 +1294,7 @@ index 000000000000..5edc3e9fc456
 +		 * 512-byte header.... [Actual header data, replace hdr.name with @LongName if [L]
 +		 *                       else replace hdr.linkname with @LongLink if [K]]
 +		 **/
-+		if (kstrtouint(header.size, OCTAL, (unsigned int *)&namelen) != 0) {
++		if (kstrtoul(header.size, OCTAL, (size_t *)&namelen) != 0) {
 +			tarfs_err("failed to read size");
 +			return NULL;
 +		}
@@ -1246,7 +1336,7 @@ index 000000000000..5edc3e9fc456
 +		goto err_lvl1;
 +	}
 +	// Parse the data length from the header
-+	if (kstrtouint(header.size, OCTAL, (unsigned int *)&length) != 0) {
++	if (kstrtoul(header.size, OCTAL, (size_t *)&length) != 0) {
 +		tarfs_err("failed to read size");
 +		goto err_lvl1;
 +	}
@@ -1339,12 +1429,14 @@ index 000000000000..5edc3e9fc456
 +	int err;
 +
 +	if (first) {
++		sb_info->files++;
 +		sb_info->first = first;
 +		alloc_inode = tarfs_create_inode(sb, parent, parent->mode);
 +		if (IS_ERR_OR_NULL(alloc_inode)) {
 +			tarfs_err("alloc_inode failed !!");
 +			return NULL;
 +		}
++		sb_info->blocks += first->ptr_inode->i_blocks;
 +		radix_tree_preload(GFP_NOIO);
 +		INIT_RADIX_TREE(&first->root_tree, GFP_NOIO);
 +		err = radix_tree_insert(&first->root_tree, (unsigned long)first->ptr_inode->i_ino, first);
@@ -1356,6 +1448,7 @@ index 000000000000..5edc3e9fc456
 +		radix_tree_preload_end();
 +	}
 +	while (parent) {
++		sb_info->files++;
 +		/* Skipping the data of previous entry */
 +		length = parent->data_offset + parent->data_size;
 +		next = tarfs_read_entry(sb, length + ALIGN_SECTOR(length));
@@ -1370,6 +1463,7 @@ index 000000000000..5edc3e9fc456
 +			parent->inode = 2;
 +			break;
 +		}
++		sb_info->blocks += parent->ptr_inode->i_blocks;
 +		radix_tree_preload(GFP_NOIO);
 +		err = radix_tree_insert(&first->root_tree, (unsigned long)alloc_inode->i_ino, parent);
 +		if (err) {
@@ -1419,9 +1513,8 @@ index 000000000000..5edc3e9fc456
 +		goto error;
 +	}
 +	sb->s_op = &tarfs_super_ops;
-+	sb->s_d_op = &simple_dentry_operations;
 +	sb->s_time_gran = 1;
-+	sb->s_flags |= SB_RDONLY | SB_NOATIME; /*Read only file system*/
++	sb->s_flags |= SB_RDONLY | SB_NOATIME | SB_ACTIVE; /*Read only file system*/
 +	sb->s_maxbytes = MAX_LFS_FILESIZE;
 +	if (!sb_set_blocksize(sb, TARFS_BLOCK_SIZE)) {
 +		tarfs_err("device does not support %d byte blocks", TARFS_BLOCK_SIZE);
@@ -1485,7 +1578,7 @@ index 000000000000..5edc3e9fc456
 +static struct dentry *tarfs_mount(struct file_system_type *type, int flags,
 +		char const *dev, void *data)
 +{
-+	return mount_bdev(type, flags, dev, data, tarfs_fill_sb);
++	return mount_bdev(type, SB_RDONLY | flags, dev, data, tarfs_fill_sb);
 +}
 +
 +/**
@@ -1496,7 +1589,6 @@ index 000000000000..5edc3e9fc456
 +{
 +	struct tarfs_sbi *sb_info = TARFS_SB(sb);
 +	struct tarfs_entry* entry = sb_info ? (sb_info->first) : NULL;
-+	unsigned long root_ino = entry ? entry->radix_root_key : 0;
 +	struct tarfs_entry *next;
 +
 +	tarfs_debug("Kill super");
@@ -1511,13 +1603,8 @@ index 000000000000..5edc3e9fc456
 +			kfree(entry->base_name);
 +		if (strlen(entry->link_name) > MAX_FILE_NAME_SIZE)
 +			kfree(entry->link_name);
-+		if (entry->header.typeflag != LNKTYPE)
-+			iput(entry->ptr_inode);
 +		kfree(entry);
 +		entry = next;
-+	}
-+	if (root_ino) {
-+		iput(sb->s_root->d_inode);
 +	}
 +	if (sb->s_root) {
 +		kfree(sb->s_root->d_fsdata);
