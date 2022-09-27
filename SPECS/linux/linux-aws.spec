@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.118
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,14 @@ Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patc
 Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 # Fix for CVE-2022-21505
 Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
+# Fix for CVE-2022-2585
+Patch110: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
+# Fix for CVE-2022-2586
+Patch111: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+Patch112: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
+Patch113: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+# Fix for CVE-2022-2588
+Patch114: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -193,7 +201,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M108
+%autopatch -p1 -m100 -M114
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -359,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-5
+- Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Mon Sep 26 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-4
 - Enable cgroup v1 stats
 - .config: enable PERCPU_STATS

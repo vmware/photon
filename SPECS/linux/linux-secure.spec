@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.118
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -93,9 +93,17 @@ Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patc
 Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 # Fix for CVE-2022-21505
 Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
+# Fix for CVE-2022-2585
+Patch109: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
+# Fix for CVE-2022-2586
+Patch110: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+Patch111: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
+Patch112: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+# Fix for CVE-2022-2588
+Patch113: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 
 # Next 2 patches are about to be merged into stable
-Patch110: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch120: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -208,10 +216,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M108
+%autopatch -p1 -m100 -M113
 
 # mm and scsi fixes
-%autopatch -p1 -m110 -M110
+%autopatch -p1 -m120 -M120
 
 # crypto
 %autopatch -p1 -m500 -M506
@@ -348,6 +356,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-6
+- Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Fri Sep 23 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-5
 - Enable cgroup v1 stats
 - .config: enable PERCPU_STATS
