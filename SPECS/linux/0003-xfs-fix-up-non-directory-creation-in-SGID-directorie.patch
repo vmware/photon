@@ -7,8 +7,7 @@ commit 01ea173e103edd5ec41acec65b9261b87e123fc2 upstream
 
 XFS always inherits the SGID bit if it is set on the parent inode, while
 the generic inode_init_owner does not do this in a few cases where it can
-create a possible security problem, see commit 0fa3ecd87848
-("Fix up non-directory creation in SGID directories") for details.
+create a possible security problem, see commit 0fa3ecd87848                                                                                                       ("Fix up non-directory creation in SGID directories") for details.
 
 Switch XFS to use the generic helper for the normal path to fix this,
 just keeping the simple field inheritance open coded for the case of the
@@ -19,57 +18,48 @@ Reported-by: Christian Brauner <christian.brauner@ubuntu.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
-[Ashwin: Backported for v4.9.y]
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>                                                                                                    [Ashwin: Backported for v4.9]
 ---
- fs/xfs/xfs_inode.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ fs/xfs/xfs_inode.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
-index 2d0a576c..0ab32263 100644
+index 312e5c6e..8fe8d200 100644
 --- a/fs/xfs/xfs_inode.c
 +++ b/fs/xfs/xfs_inode.c
 @@ -780,6 +780,7 @@ xfs_ialloc(
  	xfs_buf_t	**ialloc_context,
  	xfs_inode_t	**ipp)
  {
-+	struct inode    *dir = pip ? VFS_I(pip) : NULL;
++	struct inode     *dir = pip ? VFS_I(pip) : NULL;
  	struct xfs_mount *mp = tp->t_mountp;
  	xfs_ino_t	ino;
  	xfs_inode_t	*ip;
-@@ -822,23 +823,21 @@ xfs_ialloc(
+@@ -822,17 +823,16 @@ xfs_ialloc(
  	if (ip->i_d.di_version == 1)
  		ip->i_d.di_version = 2;
  
 -	inode->i_mode = mode;
  	set_nlink(inode, nlink);
 -	inode->i_uid = current_fsuid();
- 	ip->i_d.di_uid = xfs_kuid_to_uid(inode->i_uid);
  	xfs_set_projid(ip, prid);
  
 -	if (pip && XFS_INHERIT_GID(pip)) {
 -		inode->i_gid = VFS_I(pip)->i_gid;
--		ip->i_d.di_gid = pip->i_d.di_gid;
 -		if ((VFS_I(pip)->i_mode & S_ISGID) && S_ISDIR(mode))
 -			inode->i_mode |= S_ISGID;
 -	} else {
 -		inode->i_gid = current_fsgid();
--		ip->i_d.di_gid = xfs_kgid_to_gid(inode->i_gid);
-+       if (dir && !(dir->i_mode & S_ISGID) &&
-+           (mp->m_flags & XFS_MOUNT_GRPID)) {
-+                inode->i_uid = current_fsuid();
-+                ip->i_d.di_gid = pip->i_d.di_gid;
-+                inode->i_gid = dir->i_gid;
-+                inode->i_mode = mode;
++	if (dir && !(dir->i_mode & S_ISGID) &&
++	   (mp->m_flags & XFS_MOUNT_GRPID)) {
++		inode->i_uid = current_fsuid();
++		inode->i_gid = dir->i_gid;
++		inode->i_mode = mode;
 +        } else {
-+                inode_init_owner(inode, dir, mode);
-+                ip->i_d.di_gid = xfs_kgid_to_gid(inode->i_gid);
++		inode_init_owner(inode, dir, mode);
          }
  
--
- 	/*
- 	 * If the group ID of the new file does not match the effective group
- 	 * ID or one of the supplementary group IDs, the S_ISGID bit is cleared
+ 
 -- 
 2.30.5
 

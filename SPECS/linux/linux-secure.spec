@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.326
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -182,7 +182,8 @@ Patch133:       0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 
 # Fix for CVE-2021-4037
 Patch134:       0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
-Patch135:       0002-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+Patch135:       0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
+Patch136:       0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -382,6 +383,7 @@ popd
 %patch133 -p1
 %patch134 -p1
 %patch135 -p1
+%patch136 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -504,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 27 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-4
+-   Modify fix for CVE-2021-4037
 *   Thu Sep 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-3
 -   Fix for CVE-2022-36123/2021-4037
 *   Wed Sep 14 2022 Srish Srinivasan <ssrish@vmware.com> 4.9.326-2

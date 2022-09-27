@@ -1,0 +1,385 @@
+From 542951592c99ff7b15c050954c051dd6dd6c0f97 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Fri, 21 Feb 2020 08:31:27 -0800
+Subject: [PATCH] xfs: remove the icdinode di_uid/di_gid members
+
+commit 542951592c99ff7b15c050954c051dd6dd6c0f97 upstream
+
+Use the Linux inode i_uid/i_gid members everywhere and just convert
+from/to the scalar value when reading or writing the on-disk inode.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+[Ashwin: Backported for v4.9]
+---
+ fs/xfs/libxfs/xfs_inode_buf.c | 10 ++++----
+ fs/xfs/libxfs/xfs_inode_buf.h |  2 --
+ fs/xfs/xfs_inode.c            | 14 ++++-------
+ fs/xfs/xfs_inode_item.c       |  4 ++--
+ fs/xfs/xfs_ioctl.c            |  6 ++---
+ fs/xfs/xfs_iops.c             |  6 +----
+ fs/xfs/xfs_itable.c           |  4 ++--
+ fs/xfs/xfs_qm.c               | 44 ++++++++++++++++++++---------------
+ fs/xfs/xfs_quota.h            |  4 ++--
+ fs/xfs/xfs_symlink.c          |  4 +---
+ 10 files changed, 44 insertions(+), 54 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 4af58b8..de421fc 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -233,10 +233,8 @@ xfs_inode_from_disk(
+ 	}
+ 
+ 	to->di_format = from->di_format;
+-	to->di_uid = be32_to_cpu(from->di_uid);
+-	inode->i_uid = xfs_uid_to_kuid(to->di_uid);
+-	to->di_gid = be32_to_cpu(from->di_gid);
+-	inode->i_gid = xfs_gid_to_kgid(to->di_gid);
++	inode->i_uid = xfs_uid_to_kuid(be32_to_cpu(from->di_uid));
++	inode->i_gid = xfs_gid_to_kgid(be32_to_cpu(from->di_gid));
+ 	to->di_flushiter = be16_to_cpu(from->di_flushiter);
+ 
+ 	/*
+@@ -288,8 +286,8 @@ xfs_inode_to_disk(
+ 
+ 	to->di_version = from->di_version;
+ 	to->di_format = from->di_format;
+-	to->di_uid = cpu_to_be32(from->di_uid);
+-	to->di_gid = cpu_to_be32(from->di_gid);
++	to->di_uid = cpu_to_be32(xfs_kuid_to_uid(inode->i_uid));
++	to->di_gid = cpu_to_be32(xfs_kgid_to_gid(inode->i_gid));
+ 	to->di_projid_lo = cpu_to_be16(from->di_projid_lo);
+ 	to->di_projid_hi = cpu_to_be16(from->di_projid_hi);
+ 
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.h b/fs/xfs/libxfs/xfs_inode_buf.h
+index 3cfe12a..7b0b56e 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.h
++++ b/fs/xfs/libxfs/xfs_inode_buf.h
+@@ -31,8 +31,6 @@ struct xfs_icdinode {
+ 	__int8_t	di_version;	/* inode version */
+ 	__int8_t	di_format;	/* format of di_c data */
+ 	__uint16_t	di_flushiter;	/* incremented on flush */
+-	__uint32_t	di_uid;		/* owner's user id */
+-	__uint32_t	di_gid;		/* owner's group id */
+ 	__uint16_t	di_projid_lo;	/* lower part of owner's project id */
+ 	__uint16_t	di_projid_hi;	/* higher part of owner's project id */
+ 	xfs_fsize_t	di_size;	/* number of bytes in file */
+diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
+index 3f9f4d8..312e5c6 100644
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -825,17 +825,14 @@ xfs_ialloc(
+ 	inode->i_mode = mode;
+ 	set_nlink(inode, nlink);
+ 	inode->i_uid = current_fsuid();
+-	ip->i_d.di_uid = xfs_kuid_to_uid(inode->i_uid);
+ 	xfs_set_projid(ip, prid);
+ 
+ 	if (pip && XFS_INHERIT_GID(pip)) {
+ 		inode->i_gid = VFS_I(pip)->i_gid;
+-		ip->i_d.di_gid = pip->i_d.di_gid;
+ 		if ((VFS_I(pip)->i_mode & S_ISGID) && S_ISDIR(mode))
+ 			inode->i_mode |= S_ISGID;
+ 	} else {
+ 		inode->i_gid = current_fsgid();
+-		ip->i_d.di_gid = xfs_kgid_to_gid(inode->i_gid);
+         }
+ 
+ 
+@@ -844,9 +841,8 @@ xfs_ialloc(
+ 	 * ID or one of the supplementary group IDs, the S_ISGID bit is cleared
+ 	 * (and only if the irix_sgid_inherit compatibility variable is set).
+ 	 */
+-	if ((irix_sgid_inherit) &&
+-	    (inode->i_mode & S_ISGID) &&
+-	    (!in_group_p(xfs_gid_to_kgid(ip->i_d.di_gid))))
++	if (irix_sgid_inherit &&
++	    (inode->i_mode & S_ISGID) && !in_group_p(inode->i_gid))
+ 		inode->i_mode &= ~S_ISGID;
+ 
+ 	ip->i_d.di_size = 0;
+@@ -1187,8 +1183,7 @@ xfs_create(
+ 	/*
+ 	 * Make sure that we have allocated dquot(s) on disk.
+ 	 */
+-	error = xfs_qm_vop_dqalloc(dp, xfs_kuid_to_uid(current_fsuid()),
+-					xfs_kgid_to_gid(current_fsgid()), prid,
++	error = xfs_qm_vop_dqalloc(dp, current_fsuid(), current_fsgid(), prid,
+ 					XFS_QMOPT_QUOTALL | XFS_QMOPT_INHERIT,
+ 					&udqp, &gdqp, &pdqp);
+ 	if (error)
+@@ -1363,8 +1358,7 @@ xfs_create_tmpfile(
+ 	/*
+ 	 * Make sure that we have allocated dquot(s) on disk.
+ 	 */
+-	error = xfs_qm_vop_dqalloc(dp, xfs_kuid_to_uid(current_fsuid()),
+-				xfs_kgid_to_gid(current_fsgid()), prid,
++	error = xfs_qm_vop_dqalloc(dp, current_fsuid(), current_fsgid(), prid,
+ 				XFS_QMOPT_QUOTALL | XFS_QMOPT_INHERIT,
+ 				&udqp, &gdqp, &pdqp);
+ 	if (error)
+diff --git a/fs/xfs/xfs_inode_item.c b/fs/xfs/xfs_inode_item.c
+index d0a3c4b..636baaf 100644
+--- a/fs/xfs/xfs_inode_item.c
++++ b/fs/xfs/xfs_inode_item.c
+@@ -336,8 +336,8 @@ xfs_inode_to_log_dinode(
+ 
+ 	to->di_version = from->di_version;
+ 	to->di_format = from->di_format;
+-	to->di_uid = from->di_uid;
+-	to->di_gid = from->di_gid;
++	to->di_uid = xfs_kuid_to_uid(inode->i_uid);
++	to->di_gid = xfs_kgid_to_gid(inode->i_gid);
+ 	to->di_projid_lo = from->di_projid_lo;
+ 	to->di_projid_hi = from->di_projid_hi;
+ 
+diff --git a/fs/xfs/xfs_ioctl.c b/fs/xfs/xfs_ioctl.c
+index 5e28a52..69b1ab4 100644
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -1348,9 +1348,9 @@ xfs_ioctl_setattr(
+ 	 * because the i_*dquot fields will get updated anyway.
+ 	 */
+ 	if (XFS_IS_QUOTA_ON(mp)) {
+-		code = xfs_qm_vop_dqalloc(ip, ip->i_d.di_uid,
+-					 ip->i_d.di_gid, fa->fsx_projid,
+-					 XFS_QMOPT_PQUOTA, &udqp, NULL, &pdqp);
++		code = xfs_qm_vop_dqalloc(ip, VFS_I(ip)->i_uid,
++				VFS_I(ip)->i_gid, fa->fsx_projid,
++				XFS_QMOPT_PQUOTA, &udqp, NULL, &pdqp);
+ 		if (code)
+ 			return code;
+ 	}
+diff --git a/fs/xfs/xfs_iops.c b/fs/xfs/xfs_iops.c
+index 46a36b5..2883f4f 100644
+--- a/fs/xfs/xfs_iops.c
++++ b/fs/xfs/xfs_iops.c
+@@ -643,9 +643,7 @@ xfs_setattr_nonsize(
+ 		 */
+ 		ASSERT(udqp == NULL);
+ 		ASSERT(gdqp == NULL);
+-		error = xfs_qm_vop_dqalloc(ip, xfs_kuid_to_uid(uid),
+-					   xfs_kgid_to_gid(gid),
+-					   xfs_get_projid(ip),
++		error = xfs_qm_vop_dqalloc(ip, uid, gid, xfs_get_projid(ip),
+ 					   qflags, &udqp, &gdqp, NULL);
+ 		if (error)
+ 			return error;
+@@ -714,7 +712,6 @@ xfs_setattr_nonsize(
+ 				olddquot1 = xfs_qm_vop_chown(tp, ip,
+ 							&ip->i_udquot, udqp);
+ 			}
+-			ip->i_d.di_uid = xfs_kuid_to_uid(uid);
+ 			inode->i_uid = uid;
+ 		}
+ 		if (!gid_eq(igid, gid)) {
+@@ -726,7 +723,6 @@ xfs_setattr_nonsize(
+ 				olddquot2 = xfs_qm_vop_chown(tp, ip,
+ 							&ip->i_gdquot, gdqp);
+ 			}
+-			ip->i_d.di_gid = xfs_kgid_to_gid(gid);
+ 			inode->i_gid = gid;
+ 		}
+ 	}
+diff --git a/fs/xfs/xfs_itable.c b/fs/xfs/xfs_itable.c
+index 26d67ce..ead5c4e 100644
+--- a/fs/xfs/xfs_itable.c
++++ b/fs/xfs/xfs_itable.c
+@@ -88,8 +88,8 @@ xfs_bulkstat_one_int(
+ 	buf->bs_projid_lo = dic->di_projid_lo;
+ 	buf->bs_projid_hi = dic->di_projid_hi;
+ 	buf->bs_ino = ino;
+-	buf->bs_uid = dic->di_uid;
+-	buf->bs_gid = dic->di_gid;
++	buf->bs_uid = xfs_kuid_to_uid(inode->i_uid);
++	buf->bs_gid = xfs_kgid_to_gid(inode->i_gid);
+ 	buf->bs_size = dic->di_size;
+ 
+ 	buf->bs_nlink = inode->i_nlink;
+diff --git a/fs/xfs/xfs_qm.c b/fs/xfs/xfs_qm.c
+index e3edaa5..2ee241f 100644
+--- a/fs/xfs/xfs_qm.c
++++ b/fs/xfs/xfs_qm.c
+@@ -344,18 +344,18 @@ xfs_qm_dqattach_locked(
+ 	ASSERT(xfs_isilocked(ip, XFS_ILOCK_EXCL));
+ 
+ 	if (XFS_IS_UQUOTA_ON(mp) && !ip->i_udquot) {
+-		error = xfs_qm_dqattach_one(ip, ip->i_d.di_uid, XFS_DQ_USER,
+-						flags & XFS_QMOPT_DQALLOC,
+-						&ip->i_udquot);
++		error = xfs_qm_dqattach_one(ip,
++				xfs_kuid_to_uid(VFS_I(ip)->i_uid),
++				XFS_DQ_USER, flags & XFS_QMOPT_DQALLOC, &ip->i_udquot);
+ 		if (error)
+ 			goto done;
+ 		ASSERT(ip->i_udquot);
+ 	}
+ 
+ 	if (XFS_IS_GQUOTA_ON(mp) && !ip->i_gdquot) {
+-		error = xfs_qm_dqattach_one(ip, ip->i_d.di_gid, XFS_DQ_GROUP,
+-						flags & XFS_QMOPT_DQALLOC,
+-						&ip->i_gdquot);
++		error = xfs_qm_dqattach_one(ip,
++				xfs_kgid_to_gid(VFS_I(ip)->i_gid),
++				XFS_DQ_GROUP, flags & XFS_QMOPT_DQALLOC, &ip->i_gdquot);
+ 		if (error)
+ 			goto done;
+ 		ASSERT(ip->i_gdquot);
+@@ -1209,14 +1209,14 @@ xfs_qm_dqusage_adjust(
+ 	 * and quotaoffs don't race. (Quotachecks happen at mount time only).
+ 	 */
+ 	if (XFS_IS_UQUOTA_ON(mp)) {
+-		error = xfs_qm_quotacheck_dqadjust(ip, ip->i_d.di_uid,
++		error = xfs_qm_quotacheck_dqadjust(ip, xfs_kuid_to_uid(VFS_I(ip)->i_uid),
+ 						   XFS_DQ_USER, nblks, rtblks);
+ 		if (error)
+ 			goto error0;
+ 	}
+ 
+ 	if (XFS_IS_GQUOTA_ON(mp)) {
+-		error = xfs_qm_quotacheck_dqadjust(ip, ip->i_d.di_gid,
++		error = xfs_qm_quotacheck_dqadjust(ip, xfs_kgid_to_gid(VFS_I(ip)->i_gid),
+ 						   XFS_DQ_GROUP, nblks, rtblks);
+ 		if (error)
+ 			goto error0;
+@@ -1666,8 +1666,8 @@ xfs_qm_dqfree_one(
+ int
+ xfs_qm_vop_dqalloc(
+ 	struct xfs_inode	*ip,
+-	xfs_dqid_t		uid,
+-	xfs_dqid_t		gid,
++	kuid_t			uid,
++	kgid_t			gid,
+ 	prid_t			prid,
+ 	uint			flags,
+ 	struct xfs_dquot	**O_udqpp,
+@@ -1675,6 +1675,7 @@ xfs_qm_vop_dqalloc(
+ 	struct xfs_dquot	**O_pdqpp)
+ {
+ 	struct xfs_mount	*mp = ip->i_mount;
++	struct inode		*inode = VFS_I(ip);
+ 	struct xfs_dquot	*uq = NULL;
+ 	struct xfs_dquot	*gq = NULL;
+ 	struct xfs_dquot	*pq = NULL;
+@@ -1688,7 +1689,7 @@ xfs_qm_vop_dqalloc(
+ 	xfs_ilock(ip, lockflags);
+ 
+ 	if ((flags & XFS_QMOPT_INHERIT) && XFS_INHERIT_GID(ip))
+-		gid = ip->i_d.di_gid;
++		gid = inode->i_gid;
+ 
+ 	/*
+ 	 * Attach the dquot(s) to this inode, doing a dquot allocation
+@@ -1703,7 +1704,7 @@ xfs_qm_vop_dqalloc(
+ 	}
+ 
+ 	if ((flags & XFS_QMOPT_UQUOTA) && XFS_IS_UQUOTA_ON(mp)) {
+-		if (ip->i_d.di_uid != uid) {
++		if (!uid_eq(inode->i_uid, uid)) {
+ 			/*
+ 			 * What we need is the dquot that has this uid, and
+ 			 * if we send the inode to dqget, the uid of the inode
+@@ -1714,7 +1715,7 @@ xfs_qm_vop_dqalloc(
+ 			 * holding ilock.
+ 			 */
+ 			xfs_iunlock(ip, lockflags);
+-			error = xfs_qm_dqget(mp, NULL, uid,
++			error = xfs_qm_dqget(mp, NULL, xfs_kuid_to_uid(uid),
+ 						 XFS_DQ_USER,
+ 						 XFS_QMOPT_DQALLOC |
+ 						 XFS_QMOPT_DOWARN,
+@@ -1739,9 +1740,9 @@ xfs_qm_vop_dqalloc(
+ 		}
+ 	}
+ 	if ((flags & XFS_QMOPT_GQUOTA) && XFS_IS_GQUOTA_ON(mp)) {
+-		if (ip->i_d.di_gid != gid) {
++		if (!gid_eq(inode->i_gid, gid)) {
+ 			xfs_iunlock(ip, lockflags);
+-			error = xfs_qm_dqget(mp, NULL, gid,
++			error = xfs_qm_dqget(mp, NULL, xfs_kgid_to_gid(gid),
+ 						 XFS_DQ_GROUP,
+ 						 XFS_QMOPT_DQALLOC |
+ 						 XFS_QMOPT_DOWARN,
+@@ -1873,7 +1874,8 @@ xfs_qm_vop_chown_reserve(
+ 			XFS_QMOPT_RES_RTBLKS : XFS_QMOPT_RES_REGBLKS;
+ 
+ 	if (XFS_IS_UQUOTA_ON(mp) && udqp &&
+-	    ip->i_d.di_uid != be32_to_cpu(udqp->q_core.d_id)) {
++	    xfs_kuid_to_uid(VFS_I(ip)->i_uid) !=
++			be32_to_cpu(udqp->q_core.d_id)) {
+ 		udq_delblks = udqp;
+ 		/*
+ 		 * If there are delayed allocation blocks, then we have to
+@@ -1886,7 +1888,8 @@ xfs_qm_vop_chown_reserve(
+ 		}
+ 	}
+ 	if (XFS_IS_GQUOTA_ON(ip->i_mount) && gdqp &&
+-	    ip->i_d.di_gid != be32_to_cpu(gdqp->q_core.d_id)) {
++	    xfs_kgid_to_gid(VFS_I(ip)->i_gid) !=
++			be32_to_cpu(gdqp->q_core.d_id)) {
+ 		gdq_delblks = gdqp;
+ 		if (delblks) {
+ 			ASSERT(ip->i_gdquot);
+@@ -1983,14 +1986,17 @@ xfs_qm_vop_create_dqattach(
+ 
+ 	if (udqp && XFS_IS_UQUOTA_ON(mp)) {
+ 		ASSERT(ip->i_udquot == NULL);
+-		ASSERT(ip->i_d.di_uid == be32_to_cpu(udqp->q_core.d_id));
++		ASSERT(xfs_kuid_to_uid(VFS_I(ip)->i_uid) ==
++			be32_to_cpu(udqp->q_core.d_id));
+ 
+ 		ip->i_udquot = xfs_qm_dqhold(udqp);
+ 		xfs_trans_mod_dquot(tp, udqp, XFS_TRANS_DQ_ICOUNT, 1);
+ 	}
+ 	if (gdqp && XFS_IS_GQUOTA_ON(mp)) {
+ 		ASSERT(ip->i_gdquot == NULL);
+-		ASSERT(ip->i_d.di_gid == be32_to_cpu(gdqp->q_core.d_id));
++		ASSERT(xfs_kgid_to_gid(VFS_I(ip)->i_gid) ==
++			be32_to_cpu(gdqp->q_core.d_id));
++
+ 		ip->i_gdquot = xfs_qm_dqhold(gdqp);
+ 		xfs_trans_mod_dquot(tp, gdqp, XFS_TRANS_DQ_ICOUNT, 1);
+ 	}
+diff --git a/fs/xfs/xfs_quota.h b/fs/xfs/xfs_quota.h
+index ce6506a..6f7d378 100644
+--- a/fs/xfs/xfs_quota.h
++++ b/fs/xfs/xfs_quota.h
+@@ -79,7 +79,7 @@ extern int xfs_trans_reserve_quota_bydquots(struct xfs_trans *,
+ 		struct xfs_mount *, struct xfs_dquot *,
+ 		struct xfs_dquot *, struct xfs_dquot *, long, long, uint);
+ 
+-extern int xfs_qm_vop_dqalloc(struct xfs_inode *, xfs_dqid_t, xfs_dqid_t,
++extern int xfs_qm_vop_dqalloc(struct xfs_inode *, kuid_t, kgid_t,
+ 		prid_t, uint, struct xfs_dquot **, struct xfs_dquot **,
+ 		struct xfs_dquot **);
+ extern void xfs_qm_vop_create_dqattach(struct xfs_trans *, struct xfs_inode *,
+@@ -102,7 +102,7 @@ extern void xfs_qm_unmount_quotas(struct xfs_mount *);
+ 
+ #else
+ static inline int
+-xfs_qm_vop_dqalloc(struct xfs_inode *ip, xfs_dqid_t uid, xfs_dqid_t gid,
++xfs_qm_vop_dqalloc(struct xfs_inode *ip, kuid_t kuid, kgid_t kgid,
+ 		prid_t prid, uint flags, struct xfs_dquot **udqp,
+ 		struct xfs_dquot **gdqp, struct xfs_dquot **pdqp)
+ {
+diff --git a/fs/xfs/xfs_symlink.c b/fs/xfs/xfs_symlink.c
+index 58142ae..f9f790b 100644
+--- a/fs/xfs/xfs_symlink.c
++++ b/fs/xfs/xfs_symlink.c
+@@ -211,9 +211,7 @@ xfs_symlink(
+ 	/*
+ 	 * Make sure that we have allocated dquot(s) on disk.
+ 	 */
+-	error = xfs_qm_vop_dqalloc(dp,
+-			xfs_kuid_to_uid(current_fsuid()),
+-			xfs_kgid_to_gid(current_fsgid()), prid,
++	error = xfs_qm_vop_dqalloc(dp, current_fsuid(), current_fsgid(), prid,
+ 			XFS_QMOPT_QUOTALL | XFS_QMOPT_INHERIT,
+ 			&udqp, &gdqp, &pdqp);
+ 	if (error)
+-- 
+2.23.3
+
