@@ -1,4 +1,4 @@
-From 62ecd2b899da16815574f7c9d5628bfc7438d0b9 Mon Sep 17 00:00:00 2001
+From 2a0b3b52f1140111e0f4ce33f8c634e44135eafa Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -29,9 +29,9 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 184 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 572 +++++++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 713 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1568 insertions(+)
+ fs/tarfs/tarfs_file_dir_ops.c | 575 +++++++++++++++++++++++++++
+ fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1572 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -367,10 +367,10 @@ index 000000000000..37c460381aaf
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..6b8b9072fd4d
+index 000000000000..fc50e4fe3009
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
-@@ -0,0 +1,572 @@
+@@ -0,0 +1,575 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -666,6 +666,9 @@ index 000000000000..6b8b9072fd4d
 +	tarfs_debug("[%lld] [%d] [%lld] [%lu] [%lu]",
 +			ctx->pos, inode->i_sb->s_blocksize_bits,
 +			inode->i_size, inode->i_state, inode->i_ino);
++	if (!entry)
++		return 0;
++
 +	dir_path = build_lookup_path(inode, entry);
 +	if (!dir_path) {
 +		tarfs_err("Failed to get dir path %ld", PTR_ERR(dir_path));
@@ -945,10 +948,10 @@ index 000000000000..6b8b9072fd4d
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..f2ee913f694d
+index 000000000000..871b3ff67514
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,713 @@
+@@ -0,0 +1,714 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -1553,17 +1556,18 @@ index 000000000000..f2ee913f694d
 +	__insert_inode_hash(inode, inode->i_ino);
 +	entry = tarfs_open(sb);
 +	if (!entry) {
-+		tarfs_err("Failed to read first entry");
-+		tarfs_kill_super(sb);
-+		return -ENOMEM;
++		tarfs_err("Failed to read first entry!!");
++		sb->s_magic = (unsigned long)OLDGNU_MAGIC;
++	} else {
++		entry->radix_root_key = inode->i_ino;
++		sb->s_magic = (unsigned long)entry->header.magic;
 +	}
-+	entry->radix_root_key = inode->i_ino;
-+	sb->s_magic = (unsigned long)entry->header.magic;
 +	tarfs_debug("first allocated root inode num = %ld and sb = %p magic=[%s]", inode->i_ino, sb, (char *)sb->s_magic);
 +	return 0;
 +
 +error:
 +	kfree(sb_info);
++	sb->s_fs_info = NULL;
 +	return err;
 +}
 +
