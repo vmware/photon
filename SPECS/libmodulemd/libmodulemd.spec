@@ -1,15 +1,15 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.xz
-%define sha1    %{name}-%{version}=e83886f374922ecf6fa728c6c588d697d0748b99
+Source0: https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.xz
+%define sha512  %{name}-%{version}=b2a4fa4120d4dca714ef724a9e8f805d4f8a306a950e670f86f6184467c070ddb93360fff3bb079eb3a442b52024fe796ceb1195800d62bbb1f5cb67f8889e05
 
 BuildRequires:  meson
 BuildRequires:  clang-devel
@@ -17,7 +17,6 @@ BuildRequires:  gcc
 BuildRequires:  glib-devel
 BuildRequires:  valgrind
 BuildRequires:  python3-devel
-BuildRequires:  python3
 BuildRequires:  python3-gobject-introspection
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  python3-pygobject
@@ -29,6 +28,10 @@ BuildRequires:  libyaml-devel
 BuildRequires:  file-devel
 
 Requires:       libyaml
+Requires:       file-libs
+Requires:       python3
+Requires:       rpm-libs
+Requires:       glib
 
 %description
 C Library for manipulating module metadata files
@@ -44,9 +47,10 @@ It contains the libraries and header files.
 %autosetup -p1 -n modulemd-%{version}
 
 %build
-%meson -Dwith_py2=false \
-      -Dwith_manpages=disabled \
-      -Dwith_docs=false
+%meson \
+    -Dwith_py2=false \
+    -Dwith_manpages=disabled \
+    -Dwith_docs=false
 
 %meson_build
 
@@ -55,7 +59,11 @@ It contains the libraries and header files.
 
 %ldconfig_scriptlets
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
+%defattr(-,root,root)
 %doc README.md
 %{_bindir}/modulemd-validator
 %{_libdir}/girepository-1.0/Modulemd-2.0.typelib
@@ -63,12 +71,15 @@ It contains the libraries and header files.
 %{_datadir}/gir-1.0/Modulemd-2.0.gir
 %{python3_sitelib}/*
 
-%files  devel
+%files devel
+%defattr(-,root,root)
 %{_libdir}/libmodulemd.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.0-2
+- Bump version as a part of clang upgrade
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 2.13.0-1
 - Use autosetup, ldconfig scriptlets, switch to meson
 - and version bump

@@ -1,15 +1,17 @@
+%global debug_package %{nil}
+
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        12.0.0
-Release:        4%{?dist}
+Version:        15.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha512  %{name}=20acd58ea9a8a8f237dc7ade44702cf610c80f48d157f77a4f35cf210f4b89fa783e9e7bf747010a2ef921f8dc1658b63d3f3563c0e19c6019a3d9af41378a22
+Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=77824fe6c70760048d5c97e429185281530f5755cab859c08d857ce686f4a338896fd51cc29daec6718490e08e170840755993f38da7bdafaef1b3ba303d6fed
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -53,13 +55,14 @@ The package contains the LLDB Python3 module.
 
 %build
 %cmake -G Ninja\
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_BUILD_TYPE=Release \
       -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
       -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
       -DLLVM_DIR=%{_libdir}/cmake/llvm \
       -DLLVM_BUILD_LLVM_DYLIB=ON \
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
-      -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+      -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3}
 
 %cmake_build
 
@@ -91,6 +94,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1
+- Upgrade to v15.0.1
 * Tue Jul 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
 - Use cmake macros for build
 * Mon Nov 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3

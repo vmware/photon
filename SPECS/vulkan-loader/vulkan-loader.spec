@@ -1,6 +1,6 @@
 Name:           vulkan-loader
 Version:        1.3.216.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -93,5 +93,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*   Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.216.0-2
+-   Bump version as a part of mesa upgrade
 *   Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
 -   Initial version

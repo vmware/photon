@@ -1,21 +1,27 @@
+%global debug_package %{nil}
+
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        12.0.0
-Release:        4%{?dist}
+Version:        15.0.1
+Release:        1%{?dist}
 License:        NCSA
-URL:            http://lldb.llvm.org
+URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha512  %{name}=ec17153ef774a1e08085763bda7d0dfce6802fbaa17e89831695ce1b2eb015a6c2aebfaa9fe7985a83b9c51bd75d40bb4f1fc706dc16d4c0dc2b2722a1d8a24e
+Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=ec61b6d061ba71e00f6e9c1042705ab3512ff71a823e18ce75a3b8fd2ef40efff186b42d4be6ef948019e5bb5b3fb28f0c615ebb7872ec89f7643261eadf276a
+
+Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
+%define sha512 cmake=fbb29395a337be4e591567cc0f990857a2663cb2335b5ef30945c6b516dbc65e86f022ef3acc1dc572cf6791e1cd20f6754256e00b60cdbf579c04ed74460522
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
-BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  ninja-build
+BuildRequires:  glibc-devel
 
 Requires:       libxml2
 
@@ -40,19 +46,21 @@ Group:          System Environment/Libraries
 The libllvm package contains shared libraries for llvm
 
 %prep
-%autosetup -p1 -n %{name}-%{version}.src
+%autosetup -p1 -n %{name}-%{version}.src -a1
 
 %build
+mv cmake-%{version}.src/Modules/*.cmake cmake/modules
 %cmake -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
       -DBUILD_SHARED_LIBS:BOOL=OFF \
       -DLLVM_PARALLEL_LINK_JOBS=1 \
       -DLLVM_ENABLE_FFI:BOOL=ON \
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
       -DLLVM_INCLUDE_GO_TESTS=No \
       -DLLVM_ENABLE_RTTI:BOOL=ON \
+      -DLLVM_INCLUDE_BENCHMARKS=OFF \
       -Wno-dev
 
 %cmake_build
@@ -98,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1
+- Upgrade to v15.0.1
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
 - Use cmake macros for build
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3

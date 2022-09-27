@@ -1,6 +1,6 @@
 Name:           bpftrace
-Version:        0.12.1
-Release:        2%{?dist}
+Version:        0.16.0
+Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -8,8 +8,8 @@ Distribution:   Photon
 Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 
-Source0:        https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a578499668bd2eb7342689b6c0ef3db6ca263a971d8e6f1b9a68c502c27170d24ede212a0fc2a72263e72aff58924f488a5c80d447397503a08512dc47b63345
+Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=52ca4fea4e2f8d2cbf0f9f1bc69af0ee3408201f019006dd2e838b9458cfc01761eba3df24c39e05cf93220d85d0cecc69bb44ec72f9f44cec0eb94479bff734
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -21,6 +21,8 @@ BuildRequires:  clang-devel
 BuildRequires:  bcc-devel >= 0.11.0-2
 BuildRequires:  libbpf-devel
 BuildRequires:  binutils-devel
+BuildRequires:  cereal-devel
+BuildRequires:  curl-devel
 
 Requires:       bcc
 Requires:       bcc-tools
@@ -42,13 +44,13 @@ and predecessor tracers such as DTrace and SystemTap
 %autosetup -p1
 
 %build
-%cmake . \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DBUILD_TESTING:BOOL=OFF \
-        -DBUILD_SHARED_LIBS:BOOL=OFF \
-        -DENABLE_TESTS:BOOL=OFF \
-        -DBUILD_DEPS=OFF \
-        -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+%cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DBUILD_TESTING:BOOL=OFF \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DENABLE_TESTS:BOOL=OFF \
+    -DBUILD_DEPS=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
 %cmake_build
 
@@ -58,7 +60,11 @@ and predecessor tracers such as DTrace and SystemTap
 find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
   sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
+%defattr(-,root,root)
 %doc README.md CONTRIBUTING-TOOLS.md
 %doc docs/reference_guide.md docs/tutorial_one_liners.md
 %license LICENSE
@@ -66,11 +72,15 @@ find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
 %dir %{_datadir}/%{name}/tools
 %dir %{_datadir}/%{name}/tools/doc
 %{_bindir}/%{name}
+%{_bindir}/%{name}-aotrt
 %{_mandir}/man8/*
 %attr(0755,-,-) %{_datadir}/%{name}/tools/*.bt
+%attr(0755,-,-) %{_datadir}/%{name}/tools/old/*.bt
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-1
+- Upgrade to v0.16.0
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.12.1-2
 - Fix build with latest cmake
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 0.12.1-1

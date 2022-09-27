@@ -1,0 +1,60 @@
+From 6ae10d75a032317fadc130909eba2a57d05f7063 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmare.com>
+Date: Wed, 28 Sep 2022 17:25:22 +0530
+Subject: [PATCH] rename LLVMJITCSymbolMapPair to LLVMOrcCSymbolMapPair
+
+For more info, refer:
+https://github.com/llvm/llvm-project/commit/b425f556935c1105dea59871a46caa7af2d378ad
+
+------------------------------------------------------------------------
+
+Pass the right number of args to
+LLVMOrcCreateCustomCAPIDefinitionGenerator(...)
+
+For more info, refer:
+https://github.com/llvm/llvm-project/commit/14b7c108a2bf46541efc3a5c9cbd589b3afc18e6
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ src/backend/jit/llvm/llvmjit.c          | 4 ++--
+ src/backend/jit/llvm/llvmjit_inline.cpp | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/backend/jit/llvm/llvmjit.c b/src/backend/jit/llvm/llvmjit.c
+index 120f523..35864e8 100644
+--- a/src/backend/jit/llvm/llvmjit.c
++++ b/src/backend/jit/llvm/llvmjit.c
+@@ -1114,7 +1114,7 @@ llvm_resolve_symbols(LLVMOrcDefinitionGeneratorRef GeneratorObj, void *Ctx,
+ 					 LLVMOrcJITDylibRef JD, LLVMOrcJITDylibLookupFlags JDLookupFlags,
+ 					 LLVMOrcCLookupSet LookupSet, size_t LookupSetSize)
+ {
+-	LLVMOrcCSymbolMapPairs symbols = palloc0(sizeof(LLVMJITCSymbolMapPair) * LookupSetSize);
++	LLVMOrcCSymbolMapPairs symbols = palloc0(sizeof(LLVMOrcCSymbolMapPair) * LookupSetSize);
+ 	LLVMErrorRef error;
+ 	LLVMOrcMaterializationUnitRef mu;
+ 
+@@ -1232,7 +1232,7 @@ llvm_create_jit_instance(LLVMTargetMachineRef tm)
+ 	 * Symbol resolution support for "special" functions, e.g. a call into an
+ 	 * SQL callable function.
+ 	 */
+-	ref_gen = LLVMOrcCreateCustomCAPIDefinitionGenerator(llvm_resolve_symbols, NULL);
++	ref_gen = LLVMOrcCreateCustomCAPIDefinitionGenerator(llvm_resolve_symbols, NULL, NULL);
+ 	LLVMOrcJITDylibAddGenerator(LLVMOrcLLJITGetMainJITDylib(lljit), ref_gen);
+ 
+ 	return lljit;
+diff --git a/src/backend/jit/llvm/llvmjit_inline.cpp b/src/backend/jit/llvm/llvmjit_inline.cpp
+index 2d013b7..865b0d6 100644
+--- a/src/backend/jit/llvm/llvmjit_inline.cpp
++++ b/src/backend/jit/llvm/llvmjit_inline.cpp
+@@ -62,7 +62,7 @@ extern "C"
+ #include <llvm/IR/ModuleSummaryIndex.h>
+ #include <llvm/Linker/IRMover.h>
+ #include <llvm/Support/ManagedStatic.h>
+-
++#include <llvm/Support/MemoryBuffer.h>
+ 
+ /*
+  * Type used to represent modules InlineWorkListItem's subject is searched for
+-- 
+2.37.3
+

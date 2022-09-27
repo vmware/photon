@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        6.0.0
-Release:        3%{?dist}
+Version:        7.0.0
+Release:        rc1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -16,8 +16,8 @@ Group:          Development/Tools
 # For example:
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
-Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
+Source0: %{name}-%{version}-rc1-linux-x64.tar.gz
+%define sha512 %{name}=62145fdaf182581cec5ba6bbafd66e3bb2df28379311f13e6849371a88cc2f428db3663f96ad006bbf4411eba609d486036d3b2aa1e3d86eee53216aec543fc1
 
 BuildArch:      x86_64
 
@@ -56,6 +56,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-rc1
+- Upgrade to v7.0.0-rc1
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-3
 - Bump version after lttng-ust upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-2

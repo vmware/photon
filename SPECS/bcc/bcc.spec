@@ -2,26 +2,22 @@
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
-Version:         0.19.0
-Release:         2%{?dist}
+Version:         0.25.0
+Release:         1%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
 URL:             https://github.com/iovisor/bcc
 
-Source0:        https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=b6180462a45c768f219e026d8a4b43424b7cad4e07db8101725bd2bc31ee4de117774c0ad8d157502c97c1187057b45c7a491e7198ac2c59e6d56e58797f4df3
+Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9f71f6c21d1f66054985562168d5848352f5029383e9c65c907a6f044258bc23df842cc65db20bfaaf33789e69c9b8e7b606a32dc882cbdf093b71768c8b521d
 
-#https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule.tar.gz
-Source1:        bcc-src-with-submodule-%{version}.tar.gz
-%define sha512  bcc-src-with-submodule=66a1ac0199e3e0405a795d0e4f0d7895a9df38260ac0d77e857a69c81457ff9976e1eb285fe49818a8e21461abd748c66837ce49cc9d3e0952278db92c611fb5
+Source1: https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule-%{version}.tar.gz
+%define sha512 %{name}-src-with-submodule=842e0957dd3a7cbb60e8aba497ae0841bfa564306ba27effca5348466dae6735557dc0a871d63a2519e3bba105632bcb279af7cfacf378dff9de2638484dac63
 
-BuildRequires:   bison
 BuildRequires:   cmake
-BuildRequires:   flex
-BuildRequires:   make
-BuildRequires:   gcc
+BuildRequires:   build-essential
 BuildRequires:   libstdc++
 BuildRequires:   elfutils-libelf
 BuildRequires:   elfutils-libelf-devel-static
@@ -30,6 +26,9 @@ BuildRequires:   llvm-devel
 BuildRequires:   clang-devel
 BuildRequires:   pkg-config
 BuildRequires:   ncurses-devel
+BuildRequires:   curl-devel
+
+Requires: curl-libs
 
 %description
 BCC is a toolkit for creating efficient kernel tracing and manipulation programs,
@@ -45,16 +44,16 @@ Requires:        %{name} = %{version}-%{release}
 %{name}-devel contains shared libraries and header files for
 developing application.
 
-%package -n      python3-bcc
+%package -n      python3-%{name}
 Summary:         Python3 bindings for BPF Compiler Collection (BCC)
 Requires:        %{name} = %{version}-%{release}
 
-%description -n  python3-bcc
+%description -n  python3-%{name}
 Python bindings for BPF Compiler Collection (BCC)
 
 %package         examples
 Summary:         Examples for BPF Compiler Collection (BCC)
-Requires:        python3-bcc = %{version}-%{release}
+Requires:        python3-%{name} = %{version}-%{release}
 
 %description     examples
 Examples for BPF Compiler Collection (BCC)
@@ -70,9 +69,9 @@ Command line tools for BPF Compiler Collection (BCC)
 # Using autosetup is not feasible
 %setup -q -n %{name}-%{version}
 # Using autosetup is not feasible
-%setup -D -c -T -a 1 -n %{name}-%{version}
-cp -rf bcc/* .
-rm -r bcc
+%setup -D -c -T -a1 -n %{name}-%{version}
+cp -rf %{name}/* .
+rm -r %{name}
 
 %build
 %cmake -DREVISION_LAST=%{version} \
@@ -87,41 +86,48 @@ rm -r bcc
 %install
 %cmake_install
 # mangle shebangs
-find %{buildroot}%{_datadir}/bcc/{tools,examples} -type f -exec \
+find %{buildroot}%{_datadir}/%{name}/{tools,examples} -type f -exec \
     sed -i -e '1 s|^#!/usr/bin/python$|#!'%{python3}'|' \
            -e '1 s|^#!/usr/bin/env python$|#!'%{python3}'|' {} \;
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%clean
+rm -rf %{buildroot}/*
 
 %files
+%defattr(-,root,root)
 %doc README.md
 %license LICENSE.txt
 %{_libdir}/lib%{name}.so.*
-%{_libdir}/libbcc_bpf.so.*
+%{_libdir}/lib%{name}_bpf.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/lib%{name}.so
-%{_libdir}/libbcc_bpf.so
+%{_libdir}/lib%{name}_bpf.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/lib%{name}.pc
 %{_includedir}/%{name}/
 
-%files -n python3-bcc
+%files -n python3-%{name}
+%defattr(-,root,root)
 %{python3_sitelib}/%{name}*
 
 %files examples
+%defattr(-,root,root)
 %{_datadir}/%{name}/examples/*
 
 %files tools
+%defattr(-,root,root)
 %{_datadir}/%{name}/introspection/*
 %{_datadir}/%{name}/tools/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.25.0-1
+- Upgrade to v0.25.1
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.19.0-2
 - Use cmake macros for build and install
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.19.0-1

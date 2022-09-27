@@ -1,15 +1,17 @@
+%global debug_package %{nil}
+
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        12.0.0
-Release:        4%{?dist}
+Version:        15.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
-%define sha512  %{name}=f5613b9bffc962467d3bedb7f66b4e057e2781eb63c5dadfd3cf0b02453e29eff0a4f844889031292f06a8b4c081d4d41c515b7f719826ce5c4209a09df9f1f6
+Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=5e5cb8c82ad09df2fec8de4de391d5c6d85c88ce4f94ef2c5cee6cd54e3bde3071402d335cf7f5676a5cf9766af4978df7ef44673b414532b43a53a9f0e23d3d
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -44,7 +46,7 @@ The clang-devel package contains libraries, header files and documentation for d
 %cmake -G Ninja \
     -DLLVM_PARALLEL_LINK_JOBS=1 \
     -DCMAKE_INSTALL_PREFIX=%{_usr} \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
     -DBUILD_SHARED_LIBS=OFF \
     -Wno-dev
@@ -53,6 +55,9 @@ The clang-devel package contains libraries, header files and documentation for d
 
 %install
 %cmake_install
+
+mkdir -p %{buildroot}%{python3_sitelib}
+mv %{buildroot}%{_libdir}/{libear,libscanbuild} %{buildroot}%{python3_sitelib}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -80,8 +85,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/*
 %{_libdir}/clang/*
 %{_includedir}/*
+%{python3_sitelib}/libear
+%{python3_sitelib}/libscanbuild
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1
+- Upgrade to v15.0.1
 * Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4
 - Further fixes to cmake macro usages
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3

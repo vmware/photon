@@ -1,15 +1,15 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        22.1.1
+Version:        22.2.0
 Release:        1%{?dist}
 License:        MIT
-URL:            http://www.mesa3d.org/
+URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512  mesa=04f827ac800e22c24923606fa5a3b6707db876ee973b2442efbd439675596f7481fb4eefcb94bc013afa7b223663324af8592af566d379bbb9c0601f2b700807
+Source0: https://archive.mesa3d.org/%{name}-%{version}.tar.xz
+%define sha512 %{name}=13a21b9ed6b0a5dfd0293b73df271a929c3155d83e8beb3d958fe18d79277f3611bf5b26a1186d446f4e1479a36bb13d0a13d6ac68937989fe7a0d917e12171e
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -27,9 +27,11 @@ BuildRequires:  libwayland-client
 BuildRequires:  libwayland-server
 BuildRequires:  libwayland-egl
 BuildRequires:  libpciaccess-devel
+BuildRequires:  glslang-devel
 
 Requires:       libllvm
 Requires:       expat-libs
+
 Provides:       pkg-config(dri)
 
 %description
@@ -42,42 +44,44 @@ Summary:        Mesa Vulkan drivers
 The drivers with support for the Vulkan API.
 
 %prep
-%autosetup -n %{name}-%{name}-%{version} -p1
+%autosetup -p1
 
 %build
-meson --prefix=%{_prefix} build/ \
-        -Dgallium-vdpau=disabled \
-        -Dgallium-xvmc=disabled \
-        -Dgallium-omx=disabled \
-        -Dgallium-va=disabled \
-        -Dgallium-xa=disabled \
-        -Dgallium-nine=false \
-        -Dgallium-opencl=disabled \
-        -Dvulkan-drivers=amd \
-        -Dplatforms=wayland \
-        -Dosmesa=false \
-        -Dvulkan-layers=device-select \
-        -Dshared-glapi=disabled \
-        -Dgles1=disabled \
-        -Dopengl=false \
-        -Dgbm=disabled \
-        -Dglx=disabled \
-        -Degl=disabled \
-        -Dglvnd=false \
-        -Dllvm=enabled \
-        -Dshared-llvm=enabled \
-        -Dvalgrind=disabled \
-        -Dbuild-tests=false \
-        -Dselinux=false \
-        -Dvulkan-drivers=auto \
-        -Dintel-clc=disabled \
-        -Dgles2=disabled \
-        -Ddri3=disabled \
-        -Dmicrosoft-clc=disabled \
-        %{nil}
+%meson \
+    -Dgallium-vdpau=disabled \
+    -Dgallium-xvmc=disabled \
+    -Dgallium-omx=disabled \
+    -Dgallium-va=disabled \
+    -Dgallium-xa=disabled \
+    -Dgallium-nine=false \
+    -Dgallium-opencl=disabled \
+    -Dplatforms=wayland \
+    -Dosmesa=false \
+    -Dvulkan-layers=device-select \
+    -Dshared-glapi=disabled \
+    -Dgles1=disabled \
+    -Dopengl=false \
+    -Dgbm=disabled \
+    -Dglx=disabled \
+    -Degl=disabled \
+    -Dglvnd=false \
+    -Dllvm=enabled \
+    -Dshared-llvm=enabled \
+    -Dvalgrind=disabled \
+    -Dbuild-tests=false \
+    -Dselinux=false \
+    -Dvulkan-drivers=auto \
+    -Dintel-clc=disabled \
+    -Dgles2=disabled \
+    -Ddri3=disabled \
+    -Dmicrosoft-clc=disabled \
+    -Dbuild-aco-tests=false \
+    %{nil}
+
+%meson_build
 
 %install
-DESTDIR=%{buildroot}/ ninja -C build install
+%meson_install
 
 %clean
 rm -rf %{buildroot}/*
@@ -101,5 +105,7 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.0-1
+- Upgrade to v22.2.0
 * Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-1
 - Initial Version

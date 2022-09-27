@@ -1,18 +1,17 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%global major 78
 
-%global	major 78
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.15.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
 URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 Distribution:  Photon
 
-Source0:       https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha1   firefox-%{version}=34231209e6ec933e86ab010181b1d89ae6e4e894
+Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
+%define sha512  firefox-%{version}=ac3de735b246ce4f0e1619cd2664321ffa374240ce6843e785d79a350dc30c967996bbcc5e3b301cb3d822ca981cbea116758fc4122f1738d75ddfd1165b6378
 
 Patch0:        emitter.patch
 Patch1:        emitter_test.patch
@@ -62,17 +61,20 @@ cd js/src
     --disable-tests \
     --with-system-zlib
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd js/src
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 chmod -x %{buildroot}%{_libdir}/pkgconfig/*.pc
 # remove non required files
 rm %{buildroot}%{_libdir}/libjs_static.ajs
 find %{buildroot} -name '*.la' -delete
 
 %ldconfig_scriptlets
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -86,6 +88,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-3
+- Bump version as a part of clang upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 78.15.0-2
 - Require specific version of icu
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-1
