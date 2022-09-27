@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.17
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=dc5784d11d09c29fbf3fc155e2f242b3d3309454
+%define sha512  Python=2dc19a0b0d818c71429dae94783e58b2aac0fa31f5faa1e840cac06245a59932ecc4658d913515736601bcf70a78c9ec60367aed75f4567d1e41ff3bb104da9a
 
 Patch0:         cgi.patch
 Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
@@ -19,6 +19,7 @@ Patch4:         CVE-2019-9674.patch
 Patch5:         CVE-2019-18348.patch
 Patch6:         CVE-2020-8492.patch
 Patch7:         CVE-2019-20907.patch
+Patch8:         CVE-2015-20107.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -265,6 +266,8 @@ LANG=en_US.UTF-8 make %{?_smp_mflags} test
 %{_libdir}/python2.7/test/*
 
 %changelog
+* Mon Sep 26 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.17-7
+- Fix CVE-2015-20107
 * Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 2.7.17-6
 - Link python to python3 if installed
 * Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-5
