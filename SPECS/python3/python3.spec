@@ -35,7 +35,7 @@ Patch16:        CVE-2022-0391-1.patch
 Patch17:        CVE-2022-0391-2.patch
 Patch18:        CVE-2021-3737-1.patch
 Patch19:        CVE-2021-3737-2.patch
-Patch20:        CVE-2015-20107.patch
+Patch20:        python3-CVE-2015-20107.patch
 Patch21:        CVE-2021-28861.patch
 Patch22:        CVE-2021-4189.patch
 
