@@ -1,0 +1,147 @@
+From 65078302b96703745dab13559aeaf096dc300934 Mon Sep 17 00:00:00 2001
+From: Hao Luo <haoluo@google.com>
+Date: Fri, 5 Aug 2022 07:26:42 +0530
+Subject: [PATCH 1/8] bpf: Introduce composable reg, ret and arg types.
+
+[Upstream commit d639b9d13a39cf15639cbe6e8b2c43eb60148a73]
+
+There are some common properties shared between bpf reg, ret and arg
+values. For instance, a value may be a NULL pointer, or a pointer to
+a read-only memory. Previously, to express these properties, enumeration
+was used. For example, in order to test whether a reg value can be NULL,
+reg_type_may_be_null() simply enumerates all types that are possibly
+NULL. The problem of this approach is that it's not scalable and causes
+a lot of duplication. These properties can be combined, for example, a
+type could be either MAYBE_NULL or RDONLY, or both.
+
+This patch series rewrites the layout of reg_type, arg_type and
+ret_type, so that common properties can be extracted and represented as
+composable flag. For example, one can write
+
+ ARG_PTR_TO_MEM | PTR_MAYBE_NULL
+
+which is equivalent to the previous
+
+ ARG_PTR_TO_MEM_OR_NULL
+
+The type ARG_PTR_TO_MEM are called "base type" in this patch. Base
+types can be extended with flags. A flag occupies the higher bits while
+base types sits in the lower bits.
+
+This patch in particular sets up a set of macro for this purpose. The
+following patches will rewrite arg_types, ret_types and reg_types
+respectively.
+
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-2-haoluo@google.com
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ include/linux/bpf.h          | 43 ++++++++++++++++++++++++++++++++++++
+ include/linux/bpf_verifier.h | 14 ++++++++++++
+ 2 files changed, 57 insertions(+)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index ea3ff499e..2d93d50f3 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -254,6 +254,29 @@ bool bpf_map_meta_equal(const struct bpf_map *meta0,
+ 
+ extern const struct bpf_map_ops bpf_map_offload_ops;
+ 
++/* bpf_type_flag contains a set of flags that are applicable to the values of
++ * arg_type, ret_type and reg_type. For example, a pointer value may be null,
++ * or a memory is read-only. We classify types into two categories: base types
++ * and extended types. Extended types are base types combined with a type flag.
++ *
++ * Currently there are no more than 32 base types in arg_type, ret_type and
++ * reg_types.
++ */
++#define BPF_BASE_TYPE_BITS	8
++
++enum bpf_type_flag {
++	/* PTR may be NULL. */
++	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
++
++	__BPF_TYPE_LAST_FLAG	= PTR_MAYBE_NULL,
++};
++
++/* Max number of base types. */
++#define BPF_BASE_TYPE_LIMIT	(1UL << BPF_BASE_TYPE_BITS)
++
++/* Max number of all types. */
++#define BPF_TYPE_LIMIT		(__BPF_TYPE_LAST_FLAG | (__BPF_TYPE_LAST_FLAG - 1))
++
+ /* function argument constraints */
+ enum bpf_arg_type {
+ 	ARG_DONTCARE = 0,	/* unused argument in helper function */
+@@ -296,7 +319,13 @@ enum bpf_arg_type {
+ 	ARG_PTR_TO_BTF_ID_SOCK_COMMON,	/* pointer to in-kernel sock_common or bpf-mirrored bpf_sock */
+ 	ARG_PTR_TO_PERCPU_BTF_ID,	/* pointer to in-kernel percpu type */
+ 	__BPF_ARG_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_ARG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_ARG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
+ 
+ /* type of values returned from helper functions */
+ enum bpf_return_type {
+@@ -311,7 +340,14 @@ enum bpf_return_type {
+ 	RET_PTR_TO_BTF_ID_OR_NULL,	/* returns a pointer to a btf_id or NULL */
+ 	RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL, /* returns a pointer to a valid memory or a btf_id or NULL */
+ 	RET_PTR_TO_MEM_OR_BTF_ID,	/* returns a pointer to a valid memory or a btf_id */
++	__BPF_RET_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_RET_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_RET_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
+ 
+ /* eBPF function prototype used by verifier to allow BPF_CALLs from eBPF programs
+  * to in-kernel helper functions and for adjusting imm32 field in BPF_CALL
+@@ -410,7 +446,14 @@ enum bpf_reg_type {
+ 	PTR_TO_RDWR_BUF,	 /* reg points to a read/write buffer */
+ 	PTR_TO_RDWR_BUF_OR_NULL, /* reg points to a read/write buffer or NULL */
+ 	PTR_TO_PERCPU_BTF_ID,	 /* reg points to a percpu kernel variable */
++	__BPF_REG_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_REG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_REG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
+ 
+ /* The information passed from prog-specific *_is_valid_access
+  * back to the verifier.
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 391bc1480..6eb595212 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -488,4 +488,18 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 			    u32 btf_id,
+ 			    struct bpf_attach_target_info *tgt_info);
+ 
++#define BPF_BASE_TYPE_MASK	GENMASK(BPF_BASE_TYPE_BITS - 1, 0)
++
++/* extract base type from bpf_{arg, return, reg}_type. */
++static inline u32 base_type(u32 type)
++{
++	return type & BPF_BASE_TYPE_MASK;
++}
++
++/* extract flags from an extended type. See bpf_type_flag in bpf.h. */
++static inline u32 type_flag(u32 type)
++{
++	return type & ~BPF_BASE_TYPE_MASK;
++}
++
+ #endif /* _LINUX_BPF_VERIFIER_H */
+-- 
+2.37.1
+

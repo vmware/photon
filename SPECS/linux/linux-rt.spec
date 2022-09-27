@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.118
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -116,9 +116,18 @@ Patch110: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
 Patch111: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
 # Fix for CVE-2022-2588
 Patch112: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
+# Fix for CVE-2022-0500
+Patch113: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
+Patch114: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
+Patch115: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
+Patch116: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
+Patch117: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
+Patch118: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
+Patch119: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
+Patch120: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
 # Next 2 patches are about to be merged into stable
-Patch120: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch130: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -606,10 +615,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M112
+%autopatch -p1 -m100 -M120
 
 # mm and scsi fixes
-%autopatch -p1 -m120 -M120
+%autopatch -p1 -m130 -M130
 
 # RT
 %autopatch -p1 -m301 -M716
@@ -847,6 +856,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-13
+- Backport fixes for CVE-2022-0500
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-12
 - Fix for CVE-2022-2585, CVE-2022-2586 and CVE-2022-2588
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-11
