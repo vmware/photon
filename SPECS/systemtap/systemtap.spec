@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.7
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -52,11 +52,12 @@ BuildRequires: pkg-config
 BuildRequires: rpm-devel
 %endif
 
-Requires:      gcc
-Requires:      linux-devel
-Requires:      make
-Requires:      elfutils
-Requires:      %{name}-runtime = %{version}-%{release}
+Requires:   boost
+Requires:   gcc
+Requires:   linux-devel
+Requires:   make
+Requires:   elfutils
+Requires:   %{name}-runtime = %{version}-%{release}
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -389,6 +390,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7-2
+- Add boost to requires
 * Wed Sep 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.7-1
 - Update to version 4.7
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.4-2
