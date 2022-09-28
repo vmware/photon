@@ -1,12 +1,13 @@
 Summary:                Wayland Compositor Infrastructure
 Name:                   wayland
 Version:                1.20.0
-Release:                2%{?dist}
+Release:                3%{?dist}
 License:                MIT
 URL:                    http://wayland.freedesktop.org/
 Group:                  System Environment/Libraries
 Source0:                https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
 %define sha512          wayland=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
+Patch0:                 CVE-2021-3782.patch
 Vendor:                 VMware, Inc.
 Distribution:           Photon
 
@@ -58,7 +59,7 @@ Requires:   libffi
 It contains the wayland server libraries
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 CONFIGURE_OPTS=(
@@ -115,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Wed Sep 28 2022 Shivani Agarwal <shivania2@vmware.com> 1.20.0-3
+- Fix CVE-2021-3782
 * Thu Aug 25 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-2
 - Bump up release version
 * Tue Jun 14 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-1
