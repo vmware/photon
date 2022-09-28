@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.326
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -107,6 +107,8 @@ Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 #Fix CVE-2022-2586
 Patch67:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+# Fix for CVE-2022-34918
+Patch68:        0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -322,6 +324,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -545,6 +548,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.326-5
+-   Fix for CVE-2022-34918
 *   Tue Sep 27 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-4
 -   Modify fix for CVE-2021-4037
 *   Thu Sep 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-3

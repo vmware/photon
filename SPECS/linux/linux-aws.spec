@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.326
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -204,6 +204,8 @@ Patch159:       0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
 
 #Fix CVE-2022-2586
 Patch160:        0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
+# Fix for CVE-2022-34918
+Patch161:        0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Fix for CVE-2021-4197
 Patch162:        0001-cgroup-Use-open-time-credentials-for-process-migrato.patch
@@ -435,6 +437,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch158 -p1
 %patch159 -p1
 %patch160 -p1
+%patch161 -p1
 %patch162 -p1
 %patch163 -p1
 %patch164 -p1
@@ -593,6 +596,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.326-5
+-   Fix for CVE-2022-34918
 *   Tue Sep 27 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-4
 -   Modify fix for CVE-2021-4037
 *   Thu Sep 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-3
