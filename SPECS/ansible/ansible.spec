@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,7 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=e728ea784c754d8e702068340247a6b08a632b1b
+%define sha512  %{name}=6ffbb0106afff0e6cdb013d43e55d8e5d1857c64edd08efc9302d543891f1331cbbd95af3bc19f7058b831a2e6ce0d504e6116286c28a4c9dab9c08600469718
+
+Source1:        macros.ansible
 
 Patch0:         Add-Photon-OS-tdnf-support.patch
 
@@ -40,6 +42,13 @@ BuildRequires:  python3-jinja2
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
+%package devel
+Summary:        Development files for ansible packages
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+Development files for ansible packages
+
 %prep
 %autosetup -p1
 
@@ -49,6 +58,8 @@ python3 setup.py build
 %install
 %{__rm} -rf %{buildroot}
 python3 setup.py install -O1 --skip-build --root "%{buildroot}"
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %check
 python3 setup.py test
@@ -58,7 +69,13 @@ python3 setup.py test
 %{_bindir}/*
 %{python3_sitelib}/*
 
+%files devel
+%defattr(-, root, root)
+%{_rpmmacrodir}/macros.%{name}
+
 %changelog
+* Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.12.1-2
+- Adding devel sub package
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
 - Upgrade to v2.12.1 & fix tdnf module packaging
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.22-2
