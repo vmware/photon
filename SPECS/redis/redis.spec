@@ -1,6 +1,6 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    7.0.4
+Version:    7.0.5
 Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=748359ca515a203f541f7caba8a1396dac0421bd2159aa476b87e037745ab2f4edffc239c88be0e78e0bd0c39e7d9386667572e029f9cc5ea9e5b85e447ddf90
+%define sha512 %{name}=6431fc4c787f47eef372eb4c75a5873ddceb570d01198602eab2894e144a6857528f4c61ebefd8801eea327c32f98e63c065edeb765ae65d8254df972f334831
 
 Patch0:         %{name}-conf.patch
 
@@ -90,6 +90,9 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.5-1
+- Upgrade to v7.0.5
+- Fixes CVE-2022-35951
 * Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.4-1
 - Upgrade to v7.0.4, this also fixes CVE-2022-31144
 * Sat Jul 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.2-1
