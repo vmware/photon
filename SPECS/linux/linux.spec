@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.142
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 %{name}=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -515,8 +515,8 @@ done \
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
@@ -549,7 +549,7 @@ pushd ../iavf-%{iavf_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
     INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 install -Dvm 644 src/linux/auxiliary_bus.h \
-       %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+       %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
@@ -583,7 +583,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/* %{buildroot}%{_docdir}/%{name}-%{uname_r}
+cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
 %if 0%{?__debug_package}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
@@ -591,7 +591,7 @@ install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{un
 ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 %endif
 
-cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
+cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet
 photon_linux=vmlinuz-%{uname_r}
@@ -617,18 +617,18 @@ EOF
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
@@ -653,7 +653,7 @@ make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{bu
 
 %post
 /sbin/depmod -a %{uname_r}
-ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
+ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
 /sbin/depmod -a %{uname_r}
@@ -675,7 +675,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-%config(noreplace) /boot/%{name}-%{uname_r}.cfg
+%config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
@@ -695,7 +695,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/%{name}-%{uname_r}/*
+%{_docdir}/linux-%{uname_r}/*
 # For out-of-tree Intel i40e driver.
 %ifarch x86_64
 %{_mandir}/*
@@ -704,7 +704,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files devel
 %defattr(-,root,root)
 %{_modulesdir}/build
-%{_usrsrc}/%{name}-headers-%{uname_r}
+%{_usrsrc}/linux-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
@@ -766,6 +766,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-2
+- Replace rpm macro 'name' with 'linux' to be consistent with other flavors.
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
 - Update to version 5.10.142
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.132-1
