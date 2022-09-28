@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
@@ -80,6 +80,8 @@ make %{?_smp_mflags} test_gssntlmssp
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+*   Thu Dec 01 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0.0-3
+-   Bump version as part of samba-client upgrade
 *   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.0.0-2
 -   Bump version as a part of libxslt upgrade
 *   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 1.0.0-1

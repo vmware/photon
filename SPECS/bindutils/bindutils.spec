@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
@@ -14,6 +14,11 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
+BuildRequires:  krb5-devel
+BuildRequires:  e2fsprogs-devel
+
+Requires: krb5
+Requires: e2fsprogs-libs
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -81,6 +86,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Tue Sep 27 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 9.16.33-2
+-   Adding e2fsprogs and krb5 as dependencies to get functionality needed for SSSD.
 *   Wed Sep 21 2022 Dweep Advani <dadvani@vmware.com> 9.16.33-1
 -   Version upgraded to 9.16.33 to fix multiple CVEs
 -   CVE-2022-2795, CVE-2022-3080,  CVE-2022-38177 and CVE-2022-38178
