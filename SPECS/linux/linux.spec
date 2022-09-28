@@ -22,7 +22,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.132
+Version:        5.10.142
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 %{name}=e1bfc069a91c111a81694e6ecf71f995a33a9dcf89e31ee7c9e01821bc1fb00c1b895cb1786bc62d398c6e9dc657ceb3f6b8033b50b17e77cce9a82039ca5c86
+%define sha512 %{name}=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -127,16 +127,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-21505
-Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
-# Fix for CVE-2022-2585
-Patch109: 0001-posix-cpu-timers-Cleanup-CPU-timers-before-freeing-t.patch
-# Fix for CVE-2022-2586
-Patch110: 0001-netfilter-nf_tables-do-not-allow-SET_ID-to-refer-to-.patch
-Patch111: 0002-netfilter-nf_tables-do-not-allow-CHAIN_ID-to-refer-t.patch
-Patch112: 0003-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
-# Fix for CVE-2022-2588
-Patch113: 0001-net_sched-cls_route-remove-from-list-when-handle-is-.patch
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
 Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
@@ -184,6 +174,11 @@ Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %if 0%{?kat_build}
 Patch510: 0003-FIPS-broken-kattest.patch
 %endif
+%endif
+
+%if 0%{?fips}
+#retpoline
+Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
 # SEV on VMware:
@@ -397,6 +392,10 @@ manipulation of eBPF programs and maps.
 %if 0%{?kat_build}
 %patch510 -p1
 %endif
+%endif
+
+%if 0%{?fips}
+%patch511 -p1
 %endif
 
 %ifarch x86_64
@@ -767,6 +766,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
+- Update to version 5.10.142
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.132-1
 - Update to version 5.10.132
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-10

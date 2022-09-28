@@ -1,10 +1,10 @@
-From 2b47c1cf5f3aeceb383cd020d3934ddc12ccb594 Mon Sep 17 00:00:00 2001
+From ee1e94d53d143479830e82c8324afbaa49a61bc7 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Sat, 4 Feb 2017 04:15:14 +0000
-Subject: [PATCH 2/3] Added PAX_RANDKSTACK
+Subject: [PATCH] Added PAX_RANDKSTACK
 
    Reworked to randomize kernel stack at entry of each syscall instead of exit
-   
+
    Documentation of the original patch
 
    1. Design
@@ -82,15 +82,15 @@ Subject: [PATCH 2/3] Added PAX_RANDKSTACK
 
 Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
-
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 ---
- arch/x86/entry/entry_64.S    | 37 +++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/process_64.c | 15 +++++++++++++++
- security/Kconfig             | 16 ++++++++++++++++
- 3 files changed, 68 insertions(+)
+ arch/x86/entry/entry_64.S    | 38 ++++++++++++++++++++++++++++++++++--
+ arch/x86/kernel/process_64.c | 15 ++++++++++++++
+ security/Kconfig             | 16 +++++++++++++++
+ 3 files changed, 67 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index cad08703c..df7620668 100644
+index 559c82b83475..9e2d0eeb6786 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -54,6 +54,15 @@ SYM_CODE_START(native_usergs_sysret64)
@@ -109,7 +109,7 @@ index cad08703c..df7620668 100644
  /*
   * 64-bit SYSCALL instruction entry. Up to 6 arguments in registers.
   *
-@@ -113,9 +122,28 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
+@@ -115,15 +124,32 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
  	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
  
  	/* IRQs are off. */
@@ -119,26 +119,32 @@ index cad08703c..df7620668 100644
 +	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
 +	 */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	pushq	%rax
-+	movq	%rsp, %rdi
-+	call	pax_randomize_kstack
-+	popq	%rdi
-+	movq	%rsp, %rsi
-+	movq	%rax, %rsp
++	pushq   %rax
++	movq    %rsp, %rdi
++	call    pax_randomize_kstack
++	popq    %rdi
++	movq    %rsp, %rsi
++	movq    %rax, %rsp
 +
-+	pushq	%rsi
++	pushq   %rsi
 +#else
  	movq	%rax, %rdi
  	movq	%rsp, %rsi
+ 
+ 	/* clobbers %rax, make sure it is after saving the syscall nr */
+ 	IBRS_ENTER
+ 	UNTRAIN_RET
+-
 +#endif
  	call	do_syscall_64		/* returns with IRQs disabled */
+-
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq	%rsp
++	popq    %rsp
 +#endif
- 
  	/*
  	 * Try to use SYSRET instead of IRET if we're returning to
-@@ -283,8 +311,16 @@ SYM_CODE_START(ret_from_fork)
+ 	 * a completely clean 64-bit userspace context.  If we're not,
+@@ -288,8 +314,16 @@ SYM_CODE_START(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
@@ -156,7 +162,7 @@ index cad08703c..df7620668 100644
  
  1:
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 9afefe3..c8f2f23 100644
+index ad3f82a18de9..c653598d119a 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
 @@ -61,6 +61,21 @@
@@ -182,10 +188,10 @@ index 9afefe3..c8f2f23 100644
  void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
  		 const char *log_lvl)
 diff --git a/security/Kconfig b/security/Kconfig
-index 564e975..7ef4ec8 100644
+index ea9587201623..04d9e21e87d4 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -80,6 +80,22 @@ config PAX_MPROTECT
+@@ -81,6 +81,22 @@ config PAX_MPROTECT
  	  the enforcement of non-executable pages.
  
  endif
@@ -209,4 +215,5 @@ index 564e975..7ef4ec8 100644
  
  source "security/keys/Kconfig"
 -- 
-2.7.4
+2.23.3
+

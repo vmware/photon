@@ -1,10 +1,11 @@
-From 1a03573a43964c35456c0bc3911e7a77e90c204f Mon Sep 17 00:00:00 2001
+From dd6556d3ada9fb0615a4c8a5d0ea1bea9e3f8fad Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 3 Feb 2017 07:11:28 -0800
-Subject: [PATCH 3/3] Added rap_plugin
+Subject: [PATCH] Added rap_plugin
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_asm.S             |  14 +-
  arch/x86/crypto/aesni-intel_avx-x86_64.S      |  16 +-
@@ -114,7 +115,7 @@ Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index 57aef3f5a81e..1629c5ebbf27 100644
+index 69c7c0dc22ea..42562514c2f9 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
 @@ -1701,7 +1701,7 @@ SYM_FUNC_END(aesni_gcm_enc)
@@ -181,7 +182,7 @@ index 57aef3f5a81e..1629c5ebbf27 100644
  	cmp $16, LEN
  	jb .Lctr_enc_just_ret
 diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
-index 2cf8e94d986a..8af417ab8350 100644
+index 4d9b2f887064..f9ef5dd76d5a 100644
 --- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
 +++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
 @@ -1773,7 +1773,7 @@ _initial_blocks_done\@:
@@ -257,11 +258,11 @@ index 2cf8e94d986a..8af417ab8350 100644
          mov	keysize,%eax
          cmp     $32, %eax
 diff --git a/arch/x86/crypto/blowfish-x86_64-asm_64.S b/arch/x86/crypto/blowfish-x86_64-asm_64.S
-index 4222ac6d6584..8e5856528a8f 100644
+index 802d71582689..b7f32175fcb9 100644
 --- a/arch/x86/crypto/blowfish-x86_64-asm_64.S
 +++ b/arch/x86/crypto/blowfish-x86_64-asm_64.S
 @@ -141,7 +141,7 @@ SYM_FUNC_START(__blowfish_enc_blk)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__blowfish_enc_blk)
  
 -SYM_FUNC_START(blowfish_dec_blk)
@@ -270,7 +271,7 @@ index 4222ac6d6584..8e5856528a8f 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 @@ -332,7 +332,7 @@ SYM_FUNC_START(__blowfish_enc_blk_4way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__blowfish_enc_blk_4way)
  
 -SYM_FUNC_START(blowfish_dec_blk_4way)
@@ -279,7 +280,7 @@ index 4222ac6d6584..8e5856528a8f 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/camellia-aesni-avx-asm_64.S b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-index ecc0a9a905c4..08fed8a8b810 100644
+index 297b1a7ed2bc..014e38318074 100644
 --- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 @@ -893,7 +893,7 @@ SYM_FUNC_START_LOCAL(__camellia_dec_blk16)
@@ -292,7 +293,7 @@ index ecc0a9a905c4..08fed8a8b810 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 @@ -918,7 +918,7 @@ SYM_FUNC_START(camellia_ecb_enc_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_ecb_enc_16way)
  
 -SYM_FUNC_START(camellia_ecb_dec_16way)
@@ -301,7 +302,7 @@ index ecc0a9a905c4..08fed8a8b810 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 @@ -948,7 +948,7 @@ SYM_FUNC_START(camellia_ecb_dec_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_ecb_dec_16way)
  
 -SYM_FUNC_START(camellia_cbc_dec_16way)
@@ -319,7 +320,7 @@ index ecc0a9a905c4..08fed8a8b810 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 @@ -1256,7 +1256,7 @@ SYM_FUNC_START_LOCAL(camellia_xts_crypt_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_xts_crypt_16way)
  
 -SYM_FUNC_START(camellia_xts_enc_16way)
@@ -337,7 +338,7 @@ index ecc0a9a905c4..08fed8a8b810 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 diff --git a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-index 0907243c501c..8e90e612d337 100644
+index 288cd246da20..305b66db98df 100644
 --- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
 @@ -931,7 +931,7 @@ SYM_FUNC_START_LOCAL(__camellia_dec_blk32)
@@ -350,7 +351,7 @@ index 0907243c501c..8e90e612d337 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
 @@ -960,7 +960,7 @@ SYM_FUNC_START(camellia_ecb_enc_32way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_ecb_enc_32way)
  
 -SYM_FUNC_START(camellia_ecb_dec_32way)
@@ -359,7 +360,7 @@ index 0907243c501c..8e90e612d337 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
 @@ -994,7 +994,7 @@ SYM_FUNC_START(camellia_ecb_dec_32way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_ecb_dec_32way)
  
 -SYM_FUNC_START(camellia_cbc_dec_32way)
@@ -377,7 +378,7 @@ index 0907243c501c..8e90e612d337 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
 @@ -1369,7 +1369,7 @@ SYM_FUNC_START_LOCAL(camellia_xts_crypt_32way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(camellia_xts_crypt_32way)
  
 -SYM_FUNC_START(camellia_xts_enc_32way)
@@ -395,11 +396,11 @@ index 0907243c501c..8e90e612d337 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
 diff --git a/arch/x86/crypto/camellia-x86_64-asm_64.S b/arch/x86/crypto/camellia-x86_64-asm_64.S
-index 1372e6408850..e470e74194af 100644
+index 347c059f5940..d7c40b73e929 100644
 --- a/arch/x86/crypto/camellia-x86_64-asm_64.S
 +++ b/arch/x86/crypto/camellia-x86_64-asm_64.S
 @@ -222,7 +222,7 @@ SYM_FUNC_START(__camellia_enc_blk)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__camellia_enc_blk)
  
 -SYM_FUNC_START(camellia_dec_blk)
@@ -408,7 +409,7 @@ index 1372e6408850..e470e74194af 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -458,7 +458,7 @@ SYM_FUNC_START(__camellia_enc_blk_2way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__camellia_enc_blk_2way)
  
 -SYM_FUNC_START(camellia_dec_blk_2way)
@@ -417,7 +418,7 @@ index 1372e6408850..e470e74194af 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/cast5-avx-x86_64-asm_64.S b/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
-index 8a6181b08b59..44365a36e3db 100644
+index b258af420c92..1ba2e5ffe355 100644
 --- a/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
 +++ b/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
 @@ -359,7 +359,7 @@ SYM_FUNC_START_LOCAL(__cast5_dec_blk16)
@@ -430,7 +431,7 @@ index 8a6181b08b59..44365a36e3db 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 @@ -396,7 +396,7 @@ SYM_FUNC_START(cast5_ecb_enc_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast5_ecb_enc_16way)
  
 -SYM_FUNC_START(cast5_ecb_dec_16way)
@@ -439,11 +440,11 @@ index 8a6181b08b59..44365a36e3db 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/cast6-avx-x86_64-asm_64.S b/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
-index 932a3ce32a88..d4fee79680ca 100644
+index 6eccaf1fb4c6..7b3a998e2a7c 100644
 --- a/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
 +++ b/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
 @@ -341,7 +341,7 @@ SYM_FUNC_START_LOCAL(__cast6_dec_blk8)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__cast6_dec_blk8)
  
 -SYM_FUNC_START(cast6_ecb_enc_8way)
@@ -452,7 +453,7 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 @@ -364,7 +364,7 @@ SYM_FUNC_START(cast6_ecb_enc_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast6_ecb_enc_8way)
  
 -SYM_FUNC_START(cast6_ecb_dec_8way)
@@ -461,7 +462,7 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 @@ -387,7 +387,7 @@ SYM_FUNC_START(cast6_ecb_dec_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast6_ecb_dec_8way)
  
 -SYM_FUNC_START(cast6_cbc_dec_8way)
@@ -470,7 +471,7 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 @@ -413,7 +413,7 @@ SYM_FUNC_START(cast6_cbc_dec_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast6_cbc_dec_8way)
  
 -SYM_FUNC_START(cast6_ctr_8way)
@@ -479,7 +480,7 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -441,7 +441,7 @@ SYM_FUNC_START(cast6_ctr_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast6_ctr_8way)
  
 -SYM_FUNC_START(cast6_xts_enc_8way)
@@ -488,7 +489,7 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -468,7 +468,7 @@ SYM_FUNC_START(cast6_xts_enc_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(cast6_xts_enc_8way)
  
 -SYM_FUNC_START(cast6_xts_dec_8way)
@@ -497,11 +498,11 @@ index 932a3ce32a88..d4fee79680ca 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/serpent-avx-x86_64-asm_64.S b/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-index ba9e4c1e7f5c..31848015a057 100644
+index c985bc15304b..cdddb43010f7 100644
 --- a/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
 +++ b/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
 @@ -662,7 +662,7 @@ SYM_FUNC_START_LOCAL(__serpent_dec_blk8_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__serpent_dec_blk8_avx)
  
 -SYM_FUNC_START(serpent_ecb_enc_8way_avx)
@@ -510,7 +511,7 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -680,7 +680,7 @@ SYM_FUNC_START(serpent_ecb_enc_8way_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ecb_enc_8way_avx)
  
 -SYM_FUNC_START(serpent_ecb_dec_8way_avx)
@@ -519,7 +520,7 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -698,7 +698,7 @@ SYM_FUNC_START(serpent_ecb_dec_8way_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ecb_dec_8way_avx)
  
 -SYM_FUNC_START(serpent_cbc_dec_8way_avx)
@@ -528,7 +529,7 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -716,7 +716,7 @@ SYM_FUNC_START(serpent_cbc_dec_8way_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_cbc_dec_8way_avx)
  
 -SYM_FUNC_START(serpent_ctr_8way_avx)
@@ -537,7 +538,7 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -736,7 +736,7 @@ SYM_FUNC_START(serpent_ctr_8way_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ctr_8way_avx)
  
 -SYM_FUNC_START(serpent_xts_enc_8way_avx)
@@ -546,7 +547,7 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -758,7 +758,7 @@ SYM_FUNC_START(serpent_xts_enc_8way_avx)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_xts_enc_8way_avx)
  
 -SYM_FUNC_START(serpent_xts_dec_8way_avx)
@@ -555,11 +556,11 @@ index ba9e4c1e7f5c..31848015a057 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/serpent-avx2-asm_64.S b/arch/x86/crypto/serpent-avx2-asm_64.S
-index c9648aeae705..84c099a63ddf 100644
+index ca18948964f4..8c50e1bb8a2f 100644
 --- a/arch/x86/crypto/serpent-avx2-asm_64.S
 +++ b/arch/x86/crypto/serpent-avx2-asm_64.S
 @@ -668,7 +668,7 @@ SYM_FUNC_START_LOCAL(__serpent_dec_blk16)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__serpent_dec_blk16)
  
 -SYM_FUNC_START(serpent_ecb_enc_16way)
@@ -568,7 +569,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -690,7 +690,7 @@ SYM_FUNC_START(serpent_ecb_enc_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ecb_enc_16way)
  
 -SYM_FUNC_START(serpent_ecb_dec_16way)
@@ -577,7 +578,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -712,7 +712,7 @@ SYM_FUNC_START(serpent_ecb_dec_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ecb_dec_16way)
  
 -SYM_FUNC_START(serpent_cbc_dec_16way)
@@ -586,7 +587,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -735,7 +735,7 @@ SYM_FUNC_START(serpent_cbc_dec_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_cbc_dec_16way)
  
 -SYM_FUNC_START(serpent_ctr_16way)
@@ -595,7 +596,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 @@ -760,7 +760,7 @@ SYM_FUNC_START(serpent_ctr_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_ctr_16way)
  
 -SYM_FUNC_START(serpent_xts_enc_16way)
@@ -604,7 +605,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 @@ -786,7 +786,7 @@ SYM_FUNC_START(serpent_xts_enc_16way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(serpent_xts_enc_16way)
  
 -SYM_FUNC_START(serpent_xts_dec_16way)
@@ -613,7 +614,7 @@ index c9648aeae705..84c099a63ddf 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 diff --git a/arch/x86/crypto/sha256-avx-asm.S b/arch/x86/crypto/sha256-avx-asm.S
-index 4739cd31b9db..e62831f6e8f7 100644
+index 3baa1ec39097..b888ca542feb 100644
 --- a/arch/x86/crypto/sha256-avx-asm.S
 +++ b/arch/x86/crypto/sha256-avx-asm.S
 @@ -346,7 +346,7 @@ a = TMP_
@@ -626,7 +627,7 @@ index 4739cd31b9db..e62831f6e8f7 100644
  	pushq   %rbx
  	pushq   %r12
 diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
-index 11ff60c29c8b..768ed6508ab1 100644
+index 3439aaf4295d..c672bc079f3f 100644
 --- a/arch/x86/crypto/sha256-avx2-asm.S
 +++ b/arch/x86/crypto/sha256-avx2-asm.S
 @@ -525,7 +525,7 @@ STACK_SIZE	= _RSP      + _RSP_SIZE
@@ -639,7 +640,7 @@ index 11ff60c29c8b..768ed6508ab1 100644
  	pushq	%rbx
  	pushq	%r12
 diff --git a/arch/x86/crypto/sha256-ssse3-asm.S b/arch/x86/crypto/sha256-ssse3-asm.S
-index ddfa863b4ee3..fc87bd0481d2 100644
+index c4a5db612c32..9fa991c21b59 100644
 --- a/arch/x86/crypto/sha256-ssse3-asm.S
 +++ b/arch/x86/crypto/sha256-ssse3-asm.S
 @@ -355,7 +355,7 @@ a = TMP_
@@ -652,7 +653,7 @@ index ddfa863b4ee3..fc87bd0481d2 100644
  	pushq   %rbx
  	pushq   %r12
 diff --git a/arch/x86/crypto/sha256_ni_asm.S b/arch/x86/crypto/sha256_ni_asm.S
-index 7abade04a3a3..72f057ba34c9 100644
+index 94d50dd27cb5..d89273dd77e9 100644
 --- a/arch/x86/crypto/sha256_ni_asm.S
 +++ b/arch/x86/crypto/sha256_ni_asm.S
 @@ -97,7 +97,7 @@
@@ -665,7 +666,7 @@ index 7abade04a3a3..72f057ba34c9 100644
  	shl		$6, NUM_BLKS		/*  convert to bytes */
  	jz		.Ldone_hash
 diff --git a/arch/x86/crypto/sha512-avx-asm.S b/arch/x86/crypto/sha512-avx-asm.S
-index 63470fd6ae32..f154ec84c5e4 100644
+index 34fc71c3524e..b43d33f9ce77 100644
 --- a/arch/x86/crypto/sha512-avx-asm.S
 +++ b/arch/x86/crypto/sha512-avx-asm.S
 @@ -277,7 +277,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
@@ -678,7 +679,7 @@ index 63470fd6ae32..f154ec84c5e4 100644
  	je nowork
  
 diff --git a/arch/x86/crypto/sha512-avx2-asm.S b/arch/x86/crypto/sha512-avx2-asm.S
-index 3a44bdcfd583..a52abeab6c54 100644
+index 399fa74ab3d3..b887367ec793 100644
 --- a/arch/x86/crypto/sha512-avx2-asm.S
 +++ b/arch/x86/crypto/sha512-avx2-asm.S
 @@ -569,7 +569,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
@@ -691,7 +692,7 @@ index 3a44bdcfd583..a52abeab6c54 100644
  	mov	%rsp, %rax
  	sub	$frame_size, %rsp
 diff --git a/arch/x86/crypto/sha512-ssse3-asm.S b/arch/x86/crypto/sha512-ssse3-asm.S
-index 7946a1bee85b..ba4890a4fd39 100644
+index e9b460a54503..31d34a0e9fc8 100644
 --- a/arch/x86/crypto/sha512-ssse3-asm.S
 +++ b/arch/x86/crypto/sha512-ssse3-asm.S
 @@ -278,7 +278,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
@@ -704,11 +705,11 @@ index 7946a1bee85b..ba4890a4fd39 100644
  	cmp $0, msglen
  	je nowork
 diff --git a/arch/x86/crypto/twofish-avx-x86_64-asm_64.S b/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
-index a5151393bb2f..d58383a8816b 100644
+index c3707a71ef72..e85357dca0ad 100644
 --- a/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
 +++ b/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
 @@ -315,7 +315,7 @@ SYM_FUNC_START_LOCAL(__twofish_dec_blk8)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__twofish_dec_blk8)
  
 -SYM_FUNC_START(twofish_ecb_enc_8way)
@@ -717,7 +718,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -335,7 +335,7 @@ SYM_FUNC_START(twofish_ecb_enc_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(twofish_ecb_enc_8way)
  
 -SYM_FUNC_START(twofish_ecb_dec_8way)
@@ -726,7 +727,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -355,7 +355,7 @@ SYM_FUNC_START(twofish_ecb_dec_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(twofish_ecb_dec_8way)
  
 -SYM_FUNC_START(twofish_cbc_dec_8way)
@@ -735,7 +736,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -380,7 +380,7 @@ SYM_FUNC_START(twofish_cbc_dec_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(twofish_cbc_dec_8way)
  
 -SYM_FUNC_START(twofish_ctr_8way)
@@ -744,7 +745,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -407,7 +407,7 @@ SYM_FUNC_START(twofish_ctr_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(twofish_ctr_8way)
  
 -SYM_FUNC_START(twofish_xts_enc_8way)
@@ -753,7 +754,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 @@ -431,7 +431,7 @@ SYM_FUNC_START(twofish_xts_enc_8way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(twofish_xts_enc_8way)
  
 -SYM_FUNC_START(twofish_xts_dec_8way)
@@ -762,7 +763,7 @@ index a5151393bb2f..d58383a8816b 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/twofish-i586-asm_32.S b/arch/x86/crypto/twofish-i586-asm_32.S
-index a6f09e4f2e46..968d02efcf59 100644
+index 3abcad661884..b60be23f102b 100644
 --- a/arch/x86/crypto/twofish-i586-asm_32.S
 +++ b/arch/x86/crypto/twofish-i586-asm_32.S
 @@ -207,7 +207,7 @@
@@ -775,7 +776,7 @@ index a6f09e4f2e46..968d02efcf59 100644
  	push    %ebx
  	push    %esi
 @@ -263,7 +263,7 @@ SYM_FUNC_START(twofish_enc_blk)
- 	ret
+ 	RET
  SYM_FUNC_END(twofish_enc_blk)
  
 -SYM_FUNC_START(twofish_dec_blk)
@@ -784,11 +785,11 @@ index a6f09e4f2e46..968d02efcf59 100644
  	push    %ebx
  	push    %esi
 diff --git a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-index fc23552afe37..b0a36a1b36d5 100644
+index b12d916f08d6..6703091ca0bd 100644
 --- a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
 +++ b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
 @@ -269,7 +269,7 @@ SYM_FUNC_START(__twofish_enc_blk_3way)
- 	ret;
+ 	RET;
  SYM_FUNC_END(__twofish_enc_blk_3way)
  
 -SYM_FUNC_START(twofish_dec_blk_3way)
@@ -797,7 +798,7 @@ index fc23552afe37..b0a36a1b36d5 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/twofish-x86_64-asm_64.S b/arch/x86/crypto/twofish-x86_64-asm_64.S
-index d2e56232494a..6b0c290ce12a 100644
+index 775af290cd19..f17a7da3db76 100644
 --- a/arch/x86/crypto/twofish-x86_64-asm_64.S
 +++ b/arch/x86/crypto/twofish-x86_64-asm_64.S
 @@ -202,7 +202,7 @@
@@ -810,7 +811,7 @@ index d2e56232494a..6b0c290ce12a 100644
  
  	/* %rdi contains the ctx address */
 @@ -255,7 +255,7 @@ SYM_FUNC_START(twofish_enc_blk)
- 	ret
+ 	RET
  SYM_FUNC_END(twofish_enc_blk)
  
 -SYM_FUNC_START(twofish_dec_blk)
@@ -819,10 +820,10 @@ index d2e56232494a..6b0c290ce12a 100644
  
  	/* %rdi contains the ctx address */
 diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
-index 08bf95dbc911..fdae3b9a5022 100644
+index 63dc4b1dfc92..e9d5d53d351f 100644
 --- a/arch/x86/entry/Makefile
 +++ b/arch/x86/entry/Makefile
-@@ -30,3 +30,5 @@ obj-y				+= vsyscall/
+@@ -31,3 +31,5 @@ obj-$(CONFIG_PREEMPTION)	+= thunk_$(BITS).o
  obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
  obj-$(CONFIG_X86_X32_ABI)	+= syscall_x32.o
  
@@ -968,10 +969,10 @@ index 75884d2cdec3..266f5ce89639 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 2400ad62f330..046aded04993 100644
+index a85fb17f1180..a44c3b22370a 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -979,6 +979,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1284,6 +1284,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(addr, opcode, len);
  }
  
@@ -1009,7 +1010,7 @@ index 924571fe5864..762151df26c4 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index 629c4994f165..3354622029e8 100644
+index 7f57110f958e..b00d2f8f9cbd 100644
 --- a/arch/x86/kernel/e820.c
 +++ b/arch/x86/kernel/e820.c
 @@ -145,7 +145,7 @@ static struct e820_entry *__e820__mapped_all(u64 start, u64 end,
@@ -1022,20 +1023,20 @@ index 629c4994f165..3354622029e8 100644
  	return __e820__mapped_all(start, end, type);
  }
 diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index ac3d5f22fe64..406b2cb77b00 100644
+index e3a375185a1b..13d8bf9fc0b8 100644
 --- a/arch/x86/kernel/ftrace_64.S
 +++ b/arch/x86/kernel/ftrace_64.S
 @@ -172,7 +172,7 @@ SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL)
   * This is weak to keep gas from relaxing the jumps.
-  * It is also used to copy the retq for trampolines.
+  * It is also used to copy the RET for trampolines.
   */
 -SYM_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
 +RAP_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
- 	retq
+ 	UNWIND_HINT_FUNC
+ 	RET
  SYM_FUNC_END(ftrace_epilogue)
- 
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 5e9a34b5bd74..58e9345487a4 100644
+index 455e195847f9..53e33da34ac7 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
 @@ -226,7 +226,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
@@ -1052,7 +1053,7 @@ index 5e9a34b5bd74..58e9345487a4 100644
  	if (!early) {
  		write = text_poke;
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index 6c3407ba6ee9..78d63d301b03 100644
+index e21937680d1f..4c739f642b1b 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
 @@ -270,6 +270,10 @@ struct pv_info pv_info = {
@@ -1066,7 +1067,7 @@ index 6c3407ba6ee9..78d63d301b03 100644
  struct paravirt_patch_template pv_ops = {
  	/* Init ops. */
  	.init.patch		= native_patch,
-@@ -336,8 +340,7 @@ struct paravirt_patch_template pv_ops = {
+@@ -335,8 +339,7 @@ struct paravirt_patch_template pv_ops = {
  	.mmu.flush_tlb_kernel	= native_flush_tlb_global,
  	.mmu.flush_tlb_one_user	= native_flush_tlb_one_user,
  	.mmu.flush_tlb_others	= native_flush_tlb_others,
@@ -1077,7 +1078,7 @@ index 6c3407ba6ee9..78d63d301b03 100644
  	.mmu.exit_mmap		= paravirt_nop,
  
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 7692bf7908e6..6e668b1c3540 100644
+index 2a39a2df6f43..9a262aa3ba03 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
 @@ -116,6 +116,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
@@ -1092,10 +1093,10 @@ index 7692bf7908e6..6e668b1c3540 100644
  	}
  
 diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
-index 53cf8aa35032..e440ef8cbcf2 100644
+index e3031afcb103..e428faabe1d0 100644
 --- a/arch/x86/xen/xen-asm.S
 +++ b/arch/x86/xen/xen-asm.S
-@@ -25,7 +25,7 @@
+@@ -27,7 +27,7 @@
   * event status with one and operation.  If there are pending events,
   * then enter the hypervisor to get them handled.
   */
@@ -1104,16 +1105,16 @@ index 53cf8aa35032..e440ef8cbcf2 100644
  	FRAME_BEGIN
  	/* Unmask events */
  	movb $0, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
-@@ -51,7 +51,7 @@ SYM_FUNC_END(xen_irq_enable_direct)
+@@ -53,7 +53,7 @@ SYM_FUNC_END(xen_irq_enable_direct)
   * Disabling events is simply a matter of making the event mask
   * non-zero.
   */
 -SYM_FUNC_START(xen_irq_disable_direct)
 +RAP_FUNC_START(xen_irq_disable_direct)
  	movb $1, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
- 	ret
+ 	RET
  SYM_FUNC_END(xen_irq_disable_direct)
-@@ -65,7 +65,7 @@ SYM_FUNC_END(xen_irq_disable_direct)
+@@ -67,7 +67,7 @@ SYM_FUNC_END(xen_irq_disable_direct)
   * undefined.  We need to toggle the state of the bit, because Xen and
   * x86 use opposite senses (mask vs enable).
   */
@@ -1122,7 +1123,7 @@ index 53cf8aa35032..e440ef8cbcf2 100644
  	testb $0xff, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
  	setz %ah
  	addb %ah, %ah
-@@ -80,7 +80,7 @@ SYM_FUNC_END(xen_save_fl_direct)
+@@ -82,7 +82,7 @@ SYM_FUNC_END(xen_save_fl_direct)
   * interrupt mask state, it checks for unmasked pending events and
   * enters the hypervisor to get them delivered if so.
   */
@@ -1132,10 +1133,10 @@ index 53cf8aa35032..e440ef8cbcf2 100644
  	testw $X86_EFLAGS_IF, %di
  	setz PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
 diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index ddaeceb7e109..f6b89be4d861 100644
+index ed600473ad7e..bf9a6a7c0303 100644
 --- a/drivers/char/tpm/tpm-chip.c
 +++ b/drivers/char/tpm/tpm-chip.c
-@@ -402,6 +402,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+@@ -373,6 +373,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
  }
  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
  
@@ -1147,7 +1148,7 @@ index ddaeceb7e109..f6b89be4d861 100644
  /**
   * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
   * @pdev: parent device to which the chip is associated
-@@ -419,9 +424,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
+@@ -390,9 +395,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
  	if (IS_ERR(chip))
  		return chip;
  
@@ -2546,7 +2547,7 @@ index ccbded3353bd..59de675c4cff 100644
  	struct csio_hw *hw = pci_get_drvdata(pdev);
  
 diff --git a/drivers/scsi/csiostor/csio_lnode.c b/drivers/scsi/csiostor/csio_lnode.c
-index dc98f51f466f..cbf803442c4a 100644
+index d5ac93897023..f8db0065dd79 100644
 --- a/drivers/scsi/csiostor/csio_lnode.c
 +++ b/drivers/scsi/csiostor/csio_lnode.c
 @@ -55,10 +55,10 @@ int csio_fdmi_enable = 1;
@@ -2883,7 +2884,7 @@ index dc08a3d9b3a8..20d7deef7d49 100644
  
  static inline struct afs_read *afs_get_read(struct afs_read *req)
 diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index c837675cd395..dc044a354ee2 100644
+index 9f88ca7b2001..9726acde3644 100644
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
 @@ -160,7 +160,7 @@ typedef struct {
@@ -4546,7 +4547,7 @@ index fcb3f040102a..356aae0b0ac2 100644
  pgoff_t page_cache_next_miss(struct address_space *mapping,
  			     pgoff_t index, unsigned long max_scan);
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index a55097b4d992..39d7a0bc8e59 100644
+index 692ce678c5f1..ed81c2cd14dc 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -179,7 +179,7 @@ static inline const char *pci_power_name(pci_power_t state)
@@ -4559,10 +4560,10 @@ index a55097b4d992..39d7a0bc8e59 100644
  	pci_channel_io_normal = (__force pci_channel_state_t) 1,
  
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 2e4a658d65d6..c4faac34e20f 100644
+index fd2aa6b9909e..fe2871f65d29 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -855,6 +855,8 @@ void __weak bpf_jit_free_exec(void *addr)
+@@ -859,6 +859,8 @@ void __weak bpf_jit_free_exec(void *addr)
  	module_memfree(addr);
  }
  
@@ -4571,7 +4572,7 @@ index 2e4a658d65d6..c4faac34e20f 100644
  struct bpf_binary_header *
  bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  		     unsigned int alignment,
-@@ -887,11 +889,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -891,11 +893,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  	hdr->pages = pages;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
@@ -4597,10 +4598,10 @@ index 2e4a658d65d6..c4faac34e20f 100644
  }
  
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index c81151926171..cc1050d52757 100644
+index 0e01216f4e5a..9ab0dbcdec33 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -1171,8 +1171,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
+@@ -1201,8 +1201,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
  	timer->function = perf_mux_hrtimer_handler;
  }
  
@@ -4611,7 +4612,7 @@ index c81151926171..cc1050d52757 100644
  	struct hrtimer *timer = &cpuctx->hrtimer;
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
-@@ -10727,8 +10728,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
+@@ -10772,8 +10773,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
  		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
  		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
  
@@ -4622,10 +4623,10 @@ index c81151926171..cc1050d52757 100644
  	cpus_read_unlock();
  	mutex_unlock(&mux_interval_mutex);
 diff --git a/kernel/module.c b/kernel/module.c
-index 185b2655bc20..94e4269578f2 100644
+index 6a0fd245c048..12c690935e2a 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -3248,8 +3248,15 @@ static int setup_load_info(struct load_info *info, int flags)
+@@ -3252,8 +3252,15 @@ static int setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -4641,7 +4642,7 @@ index 185b2655bc20..94e4269578f2 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -3284,7 +3291,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -3288,7 +3295,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -4651,10 +4652,10 @@ index 185b2655bc20..94e4269578f2 100644
  	return 0;
  }
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 6db20a66e8e6..7b3747867c7f 100644
+index da96a309eefe..8449671861bf 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3669,7 +3669,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+@@ -3679,7 +3679,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
  /* rq->lock is NOT held, but preemption is disabled */
  static void __balance_callback(struct rq *rq)
  {
@@ -4663,7 +4664,7 @@ index 6db20a66e8e6..7b3747867c7f 100644
  	void (*func)(struct rq *rq);
  	unsigned long flags;
  
-@@ -3677,7 +3677,7 @@ static void __balance_callback(struct rq *rq)
+@@ -3687,7 +3687,7 @@ static void __balance_callback(struct rq *rq)
  	head = rq->balance_callback;
  	rq->balance_callback = NULL;
  	while (head) {
@@ -4673,7 +4674,7 @@ index 6db20a66e8e6..7b3747867c7f 100644
  		head->next = NULL;
  		head = next;
 diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index a3ae00c348a8..ee21dd90ba86 100644
+index aaf98771f935..244f3a31a9fc 100644
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
 @@ -568,8 +568,8 @@ static inline bool need_pull_dl_task(struct rq *rq, struct task_struct *prev)
@@ -4688,10 +4689,10 @@ index a3ae00c348a8..ee21dd90ba86 100644
  static void push_dl_tasks(struct rq *);
  static void pull_dl_task(struct rq *);
 diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index b5cf418e2e3f..13f0c4c81404 100644
+index e6f22836c600..fb6f6bf150a6 100644
 --- a/kernel/sched/rt.c
 +++ b/kernel/sched/rt.c
-@@ -354,8 +354,8 @@ static inline int has_pushable_tasks(struct rq *rq)
+@@ -359,8 +359,8 @@ static inline int has_pushable_tasks(struct rq *rq)
  	return !plist_head_empty(&rq->rt.pushable_tasks);
  }
  
@@ -4703,10 +4704,10 @@ index b5cf418e2e3f..13f0c4c81404 100644
  static void push_rt_tasks(struct rq *);
  static void pull_rt_task(struct rq *);
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 08db8e095e48..fda68512d801 100644
+index 12c65628801c..eec3dd427054 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -975,7 +975,10 @@ struct rq {
+@@ -974,7 +974,10 @@ struct rq {
  	unsigned long		cpu_capacity;
  	unsigned long		cpu_capacity_orig;
  
@@ -4718,7 +4719,7 @@ index 08db8e095e48..fda68512d801 100644
  
  	unsigned char		nohz_idle_balance;
  	unsigned char		idle_balance;
-@@ -1388,7 +1391,7 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+@@ -1387,7 +1390,7 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
  
  static inline void
  queue_balance_callback(struct rq *rq,
@@ -4727,7 +4728,7 @@ index 08db8e095e48..fda68512d801 100644
  		       void (*func)(struct rq *rq))
  {
  	lockdep_assert_held(&rq->lock);
-@@ -1396,7 +1399,7 @@ queue_balance_callback(struct rq *rq,
+@@ -1395,7 +1398,7 @@ queue_balance_callback(struct rq *rq,
  	if (unlikely(head->next))
  		return;
  
@@ -4772,7 +4773,7 @@ index c5b0457415be..6752f5d1e672 100644
  	struct page *page;
  	int ret = 0;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 5e5726048a1a..82190d4e2332 100644
+index 2b88b17cc8b2..b6484a4939a1 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
 @@ -757,7 +757,8 @@ rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
@@ -4786,7 +4787,7 @@ index 5e5726048a1a..82190d4e2332 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 2b19189a930f..4e84cd6c6969 100644
+index c17a7dda0163..8a13ce803a10 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
 @@ -389,7 +389,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
@@ -4798,10 +4799,10 @@ index 2b19189a930f..4e84cd6c6969 100644
  
  const struct ip_set_ext_type ip_set_extensions[] = {
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index 952e46876329..d490f63eafaa 100644
+index 36814be80264..293b36ce6345 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
-@@ -28,6 +28,14 @@ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)		\
+@@ -32,6 +32,14 @@ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)		\
  gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT_PERFORMANCE)	\
  		+= -fplugin-arg-randomize_layout_plugin-performance-mode
  
@@ -4816,7 +4817,7 @@ index 952e46876329..d490f63eafaa 100644
  gcc-plugin-$(CONFIG_GCC_PLUGIN_STACKLEAK)	+= stackleak_plugin.so
  gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK)		\
  		+= -DSTACKLEAK_PLUGIN
-@@ -53,8 +61,12 @@ GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugin
+@@ -57,8 +65,12 @@ GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugin
  GCC_PLUGINS_CFLAGS := $(filter-out %/sancov_plugin.so, $(GCC_PLUGINS_CFLAGS))
  export GCC_PLUGINS_CFLAGS
  
@@ -4830,7 +4831,7 @@ index 952e46876329..d490f63eafaa 100644
  # All enabled GCC plugins are collected here for building below.
  GCC_PLUGIN := $(gcc-plugin-y)
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index d66949bfeba4..2b1805ba964e 100644
+index b5487cce69e8..4cfae9729b6c 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -29,11 +29,13 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
@@ -6170,10 +6171,10 @@ index 000000000000..65bc1cdea580
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index e08f75aed429..6a1cfe3005e4 100644
+index e48742760fec..c75534e7ce41 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -2183,13 +2183,6 @@ static int check_exports(struct module *mod)
+@@ -2184,13 +2184,6 @@ static int check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp || exp->module == mod) {
@@ -6188,7 +6189,7 @@ index e08f75aed429..6a1cfe3005e4 100644
  		}
  		basename = strrchr(mod->name, '/');
 diff --git a/security/Kconfig b/security/Kconfig
-index eb4fff299dae..578f960bf8b2 100644
+index 04d9e21e87d4..48efcc926aa6 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -82,6 +82,24 @@ config PAX_MPROTECT
@@ -6217,5 +6218,5 @@ index eb4fff299dae..578f960bf8b2 100644
  	bool "Randomize kernel stack base"
  	depends on X86_TSC && X86
 -- 
-2.19.0
+2.23.3
 

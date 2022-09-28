@@ -1,0 +1,67 @@
+From 7f17302b1a63c7602763102b6e898e07aac03ae5 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Wed, 14 Sep 2022 04:58:20 +0000
+Subject: [PATCH] retpoline: re-introduce alternative for r11
+
+  -  Re-introduce R11 retpoline macro and
+adjust the al_instr structure while applying
+alternatives to the fips canister section.
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ arch/x86/kernel/alternative.c | 16 ++++++++++++++++
+ arch/x86/lib/retpoline.S      |  4 ++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index a44c3b22370a..f270cf9f847b 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -416,6 +416,10 @@ static void __init_or_module noinline optimize_nops(u8 *instr, size_t len)
+  * Marked "noinline" to cause control flow change and thus insn cache
+  * to refetch changed I$ lines.
+  */
++
++extern struct alt_instr __canister_saltinstructions;
++extern struct alt_instr __canister_ealtinstructions;
++
+ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+ 						  struct alt_instr *end)
+ {
+@@ -490,6 +494,18 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+ 
+ next:
+ 		optimize_nops(instr, a->instrlen);
++		/*
++		 * alt_instr structure size has changed from 13 to 12 bytes by
++		 * commit e68db6f780c6e0ec777045ece0 ("x86/alternatives:
++		 * Optimize optimize_nops()").
++		 * The removed 1 byte field is padlen which is not used
++		 * anymore. To make a++ iterator work, to point to proper start
++		 * of the next structure, let's advance the pointer by 1 byte
++		 * every time after processing canister's (bigger) structures.
++		 */
++		if (a >= &__canister_saltinstructions &&
++			a < &__canister_ealtinstructions)
++			a = (struct alt_instr *)((char *)a + 1);
+ 	}
+ }
+ 
+diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
+index 1221bb099afb..32f4f3794dba 100644
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -38,6 +38,10 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
+ 
+ .endm
+ 
++SYM_FUNC_START_NOALIGN(__x86_retpoline_r11)
++RETPOLINE r11
++SYM_FUNC_END(__x86_retpoline_r11)
++
+ /*
+  * Despite being an assembler file we can't just use .irp here
+  * because __KSYM_DEPS__ only uses the C preprocessor and would
+-- 
+2.23.3
+
