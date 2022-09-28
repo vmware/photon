@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.118
-Release:        10%{?kat_build:.kat}%{?dist}
+Version:        5.10.132
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 %{name}=5ce0746c3b519abe9e20d1c80264a6a8e49bc18907cc0712fd0520f8e74806028a1b3929da636d6ab88b195895f1873122122b1506b7047c37ba30ed22b357f1
+%define sha512 %{name}=e1bfc069a91c111a81694e6ecf71f995a33a9dcf89e31ee7c9e01821bc1fb00c1b895cb1786bc62d398c6e9dc657ceb3f6b8033b50b17e77cce9a82039ca5c86
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -127,12 +127,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-21499
-Patch105: 0001-debug-Lock-down-kgdb.patch
-# Fix for CVE-2022-1966
-Patch106: 0001-netfilter_nf_tables_disallow_non-stateful_expression_in_sets.patch
-# Fix for CVE-2022-1972
-Patch107: 0001-netfilter_nf_tables_sanitize_nft_set_desc_concat_parse.patch
 # Fix for CVE-2022-21505
 Patch108: 0001-ima-Verify-ima-appraisal-is-set-to-enforce.patch
 # Fix for CVE-2022-2585
@@ -179,6 +173,9 @@ Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
 Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
+#Patch to introduce wrappers for random callback functions
+Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
+
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
@@ -392,7 +389,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M506
+%autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M509
@@ -770,6 +767,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.132-1
+- Update to version 5.10.132
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-10
 - Backport fixes for CVE-2022-0500
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.118-9
