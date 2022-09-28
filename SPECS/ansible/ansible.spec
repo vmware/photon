@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.13.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,11 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512 %{name}=06d3e322980eb61b0f73b93b43d0bf3b5542feacbf11e8dc7862150f13bcc3c46d7f7a34ca1866cd6f4a09881e464a63714e9e645ca1367cee05dd192f375c4b
+%define sha512  %{name}=06d3e322980eb61b0f73b93b43d0bf3b5542feacbf11e8dc7862150f13bcc3c46d7f7a34ca1866cd6f4a09881e464a63714e9e645ca1367cee05dd192f375c4b
 
-Source1: tdnf.py
+Source1:        tdnf.py
+Source2:        macros.ansible
 
-BuildArch: noarch
+BuildArch:      noarch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -37,6 +38,13 @@ Requires: python3-resolvelib
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
+%package devel
+Summary:        Development files for ansible packages
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+Development files for ansible packages
+
 %prep
 %autosetup -p1
 cp -vp %{SOURCE1} lib/%{name}/modules/
@@ -46,6 +54,8 @@ cp -vp %{SOURCE1} lib/%{name}/modules/
 
 %install
 %py3_install
+install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %if 0%{?with_check}
 %check
@@ -59,7 +69,13 @@ cp -vp %{SOURCE1} lib/%{name}/modules/
 %{_bindir}/*
 %{python3_sitelib}/*
 
+%files devel
+%defattr(-, root, root)
+%{_rpmmacrodir}/macros.%{name}
+
 %changelog
+* Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.13.3-2
+- Adding devel sub package
 * Sat Sep 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.3-1
 - Upgrade to v2.13.3
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.27-1
