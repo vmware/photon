@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.256
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -135,6 +135,9 @@ Patch76: 0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch77: 0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch78: 0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch79: 0005-ovl-check-permission-to-open-real-file.patch
+
+# Fix for CVE-2022-34918
+Patch80: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # inherit tcp_limit_output_bytes
 Patch90: tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -780,6 +783,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.256-4
+- Fix for CVE-2022-34918
 * Mon Sep 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-3
 - Fix for CVE-2022-3028/2021-4037
 * Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-2

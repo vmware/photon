@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.256
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -116,6 +116,9 @@ Patch75: 0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 Patch76: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch77: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch78: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+
+# Fix for CVE-2022-34918
+Patch79: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -872,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.256-5
+- Fix for CVE-2022-34918
 * Mon Sep 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-4
 - Fix for CVE-2022-3028/2021-4037
 * Tue Sep 13 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-3
