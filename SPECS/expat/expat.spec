@@ -1,7 +1,7 @@
 Summary:        An XML parser library
 Name:           expat
 Version:        2.2.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
@@ -18,6 +18,7 @@ Patch3:         CVE-2022-23990.patch
 Patch4:         CVE-2022-25235_25236.patch
 Patch5:         CVE-2022-25314_25315.patch
 Patch6:         CVE-2022-25313.patch
+patch7:         expat-CVE-2022-40674.patch
 
 %description
 The Expat package contains a stream oriented C library for parsing XML.
@@ -32,6 +33,7 @@ The Expat package contains a stream oriented C library for parsing XML.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 sh ./configure \
@@ -73,6 +75,8 @@ rm -rf %{buildroot}/*
 #%%{_mandir}/man1/*
 
 %changelog
+* Wed Sep 28 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-9
+- Fix CVE-2022-40674
 * Fri Mar 04 2022 Tapas Kundu <tkundu@vmware.com> 2.2.9-8
 - Fix CVE-2022-25313
 * Mon Feb 28 2022 Tapas Kundu <tkundu@vmware.com> 2.2.9-7
