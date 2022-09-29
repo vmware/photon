@@ -1,6 +1,6 @@
 Summary:         Programs for finding and viewing man pages
 Name:            man-db
-Version:         2.10.2
+Version:         2.11.0
 Release:         1%{?dist}
 License:         GPLv2+
 URL:             http://www.nongnu.org/man-db
@@ -8,7 +8,7 @@ Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
-%define sha512   man-db=5ad7a7b601aadf4d2d7cc068881fffe3d91dc85fcf4c17e66fbe6e2b04bb1c46f5ba5d4bc7f6ab3f39e00065be39061b101d3064c12b1e89f0fee61c088611bf
+%define sha512   man-db=0790dd6109e537f7dffb29258efd929d79274150755cab6bb8d6f239ad32df3a2006e00f61988808dc280fd3c1493a969e75cb8c4aab653f805bae8b73d9c910
 Requires:        libpipeline
 Requires:        gdbm
 Requires:        xz
@@ -80,6 +80,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.0-1
+-   Automatic Version Bump
 *   Tue Jun 07 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10.2-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.3-1
