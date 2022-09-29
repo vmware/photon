@@ -1,19 +1,25 @@
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
 Version:       2.13.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2, LGPLv2.1 and MIT
 URL:           https://lttng.org/download/
-Source:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha512 lttng-ust=1954c3a4b2600ce50a14b6d54407ad7897e159c662afe3fab724da24b7fccd81da72f0aff22878a5fbc3d262fd143be7d55a3de608925fff5f1dec5614831b74
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+Source: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=1954c3a4b2600ce50a14b6d54407ad7897e159c662afe3fab724da24b7fccd81da72f0aff22878a5fbc3d262fd143be7d55a3de608925fff5f1dec5614831b74
+
 BuildRequires: userspace-rcu-devel
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires: perl
 %endif
-Requires:      userspace-rcu
+
+Requires: userspace-rcu
+
+Provides: liblttng-ust.so.0()(64bit)
 
 %description
 This library may be used by user-space applications to generate
@@ -35,14 +41,13 @@ The libraries and header files needed for LTTng-UST development.
 	--disable-static \
 	--disable-numa
 
-make %{?_smp_mflags}
+%make_build
+
+%install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
-
-%install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
-rm -vf %{buildroot}%{_libdir}/*.la
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -60,6 +65,8 @@ rm -vf %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.4-2
+- Add Provides: liblttng-ust.so.0()(64bit) to fix dotnet-runtime build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
 - Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.5-1

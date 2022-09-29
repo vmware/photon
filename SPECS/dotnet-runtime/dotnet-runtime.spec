@@ -3,7 +3,7 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
 Version:        6.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -16,15 +16,17 @@ Group:          Development/Tools
 # For example:
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
-Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512  %{name}=7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
+Source0: %{name}-%{version}-linux-x64.tar.gz
+%define sha512 %{name}=7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
 
 BuildArch:      x86_64
 
-Requires:       curl
-Requires:       libunwind
-Requires:       krb5
-Requires:       lttng-ust
+BuildRequires: lttng-ust-devel >= 2.13.4-2
+
+Requires: curl
+Requires: libunwind
+Requires: krb5
+Requires: lttng-ust >= 2.13.4-2
 
 %description
 .NET Core is a development platform that you can use to build command-line
@@ -43,11 +45,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
 rm LICENSE.txt ThirdPartyNotices.txt
 ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,0755)
@@ -57,6 +56,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-3
+- Bump version after lttng-ust upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-2
 - Fix binary path
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.0-1
