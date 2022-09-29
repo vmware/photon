@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -77,9 +77,14 @@ cd %{__cmake_builddir}
 make test %{?_smp_mflags}
 %endif
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%doc LICENSE README
 %{_libdir}/plugin/*
 %{_libdir}/*.so.*
 %{_bindir}/*
@@ -91,6 +96,7 @@ make test %{?_smp_mflags}
 %exclude %{_datadir}
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_includedir}/*
@@ -98,10 +104,11 @@ make test %{?_smp_mflags}
 
 %files icu-data-files
 %defattr(-, root, root, -)
-%doc LICENSE README
 %{_libdir}/private/icudt69l
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-2
+- Bump version as a part of libtirpc upgrade
 * Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-1
 - Upgrade to v8.0.31
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-3

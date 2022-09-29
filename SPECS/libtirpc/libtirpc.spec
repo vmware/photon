@@ -1,7 +1,7 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
-Version:        1.3.2
-Release:        2%{?dist}
+Version:        1.3.3
+Release:        1%{?dist}
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=8664d5c4f842ee5acf83b9c1cadb7871f17b8157a7c4500e2236dcfb3a25768cab39f7c5123758dcd7381e30eb028ddfa26a28f458283f2dcea3426c9878c255
+%define sha512 %{name}=df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe
 
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
@@ -70,6 +70,8 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 %{_libdir}/*.a
 
 %changelog
+* Thu Sep 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
+- Automatic Version Bump
 * Tue Sep 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.2-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.2-1

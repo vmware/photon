@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -60,11 +60,12 @@ sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 
 %build
-%configure --enable-libmount-mount \
-           --without-tcp-wrappers \
-           --enable-gss \
-           --enable-nfsv4 \
-           --disable-static
+%configure \
+   --enable-libmount-mount \
+   --without-tcp-wrappers \
+   --enable-gss \
+   --enable-nfsv4 \
+   --disable-static
 # fix building against new gcc
 sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
 %make_build
@@ -123,6 +124,9 @@ fi
 /sbin/ldconfig
 %systemd_postun_with_restart nfs-server.service
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/default/%{name}
@@ -145,6 +149,8 @@ fi
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.2-2
+- Bump version as a part of libtirpc upgrade
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.2-1
 - Upgrade to v2.6.2
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-3

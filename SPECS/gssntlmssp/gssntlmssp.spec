@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
@@ -81,6 +81,9 @@ install -pm644 examples/mech.ntlmssp %{buildroot}%{_sysconfdir}/gss/mech.d/ntlms
 make %{?_smp_mflags} test_gssntlmssp
 %endif
 
+%clean
+rm -rf %{buildroot}/*
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/gss/mech.d/ntlmssp.conf
@@ -92,6 +95,8 @@ make %{?_smp_mflags} test_gssntlmssp
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-4
+- Bump version as a part of libtirpc upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-3
 - Bump version as a part of libxslt upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-2

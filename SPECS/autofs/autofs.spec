@@ -1,19 +1,21 @@
 %global debug_package %{nil}
+
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
-%define sha512  %{name}=6ee6283c0977c82848a654dc24745ee687f6916de441c3688fa91f67ca7295e632ee3808cc2358984a4b9f19841e6e1a91ab48aad6341ac8e63827fe8c32d223
+Source0: http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
+%define sha512 %{name}=6ee6283c0977c82848a654dc24745ee687f6916de441c3688fa91f67ca7295e632ee3808cc2358984a4b9f19841e6e1a91ab48aad6341ac8e63827fe8c32d223
+
 Source1:        %{name}.service
 
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
 
@@ -29,33 +31,32 @@ Automounting is the process of automatically mounting and unmounting of file sys
 %build
 %configure --with-libtirpc
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-mkdir -p -m755 %{buildroot}/lib/systemd/system \
-               %{buildroot}/etc/auto.master.d
+mkdir -p -m755 %{buildroot}%{_unitdir} \
+               %{buildroot}%{_sysconfdir}/auto.master.d
 
-make install mandir=%{_mandir} INSTALLROOT=%{buildroot} %{?_smp_mflags}
+%make_install mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
-mkdir -p -m755 %{buildroot}/etc/sysconfig
+mkdir -p -m755 %{buildroot}%{_sysconfdir}/sysconfig
 make -C redhat %{?_smp_mflags}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}/lib/systemd/system/autofs.service
-install -m 644 redhat/autofs.conf %{buildroot}/etc/autofs.conf
-install -m 644 redhat/autofs.sysconfig %{buildroot}/etc/sysconfig/autofs
-install -m 644 samples/auto.master %{buildroot}/etc/auto.master
-install -m 644 samples/auto.misc %{buildroot}/etc/auto.misc
-install -m 755 samples/auto.net %{buildroot}/etc/auto.net
-install -m 755 samples/auto.smb %{buildroot}/etc/auto.smb
-install -m 600 samples/autofs_ldap_auth.conf %{buildroot}/etc/autofs_ldap_auth.conf
-rm -rf %{buildroot}/etc/rc.d
-
-#%%check
-#This package does not come with a test suite.
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}
+install -m 644 redhat/autofs.conf %{buildroot}%{_sysconfdir}/autofs.conf
+install -m 644 redhat/autofs.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/autofs
+install -m 644 samples/auto.master %{buildroot}%{_sysconfdir}/auto.master
+install -m 644 samples/auto.misc %{buildroot}%{_sysconfdir}/auto.misc
+install -m 755 samples/auto.net %{buildroot}%{_sysconfdir}/auto.net
+install -m 755 samples/auto.smb %{buildroot}%{_sysconfdir}/auto.smb
+install -m 600 samples/autofs_ldap_auth.conf %{buildroot}%{_sysconfdir}/autofs_ldap_auth.conf
+rm -rf %{buildroot}%{_sysconfdir}/rc.d
 
 %post
+/sbin/ldconfig
 %systemd_post autofs.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart autofs.service
 
 %preun
@@ -79,9 +80,11 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/auto.master.d
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-/lib/systemd/system/autofs.service
+%{_unitdir}/autofs.service
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.8-2
+- Bump version as a part of libtirpc upgrade
 * Thu Aug 25 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.1.8-1
 - Update version to 5.1.8
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.1.7-1

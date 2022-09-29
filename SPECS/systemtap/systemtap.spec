@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -16,7 +16,7 @@ Distribution:  Photon
 URL:           http://sourceware.org/systemtap
 License:       GPLv2+
 
-Source0:       http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
+Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=7d7c213dc4f7c5430f81763668da21403fbc351d1701b1096eb1ad233e3f0325e35f01dfd0a33e75f277b26fdde88c46d42dd32e32e4d4f27a45d53e2dd0f831
 
 BuildRequires: elfutils-devel
@@ -60,8 +60,6 @@ Requires:   elfutils
 Requires:   %{name}-runtime = %{version}-%{release}
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
-
-BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
 SystemTap is an instrumentation system for systems running Linux.
@@ -212,7 +210,7 @@ make %{?_smp_mflags} check
 %endif
 
 %clean
-rm -rf "%{buildroot}"
+rm -rf %{buildroot}
 
 %pre
 getent group stap-server >/dev/null || groupadd -g 155 -r stap-server || groupadd -r stap-server
@@ -230,7 +228,7 @@ test -e ~stap-server && chmod 755 ~stap-server
 exit 0
 
 %post server
-if [ $1 -eq 1 ] ; then
+if [ $1 -eq 1 ]; then
   test -e %{_localstatedir}/log/stap-server/log || {
     touch %{_localstatedir}/log/stap-server/log
     chmod 664 %{_localstatedir}/log/stap-server/log
@@ -248,45 +246,45 @@ if [ $1 -eq 1 ] ; then
 fi
 
 %preun server
-if [ $1 = 0 ] ; then
+if [ $1 = 0 ]; then
   /sbin/service stap-server stop >/dev/null 2>&1
   /sbin/chkconfig --del stap-server
 fi
 exit 0
 
 %postun server
-if [ "$1" -ge "1" ] ; then
+if [ "$1" -ge "1" ]; then
   /sbin/service stap-server condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post initscript
-if [ $1 -eq 1 ] ; then
+if [ $1 -eq 1 ]; then
   /sbin/chkconfig --add %{name}
   exit 0
 fi
 
 %preun initscript
-if [ $1 = 0 ] ; then
+if [ $1 = 0 ]; then
   /sbin/service %{name} stop >/dev/null 2>&1
   /sbin/chkconfig --del %{name}
 fi
 exit 0
 
 %postun initscript
-if [ "$1" -ge "1" ] ; then
+if [ "$1" -ge "1" ]; then
   /sbin/service %{name} condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post
-if [ $1 -eq 1 ] ; then
+if [ $1 -eq 1 ]; then
   (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
   (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %preun
-if [ $1 -eq 0 ] ; then
+if [ $1 -eq 0 ]; then
   (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
   (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
@@ -378,6 +376,7 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %files exporter
+%defattr(-,root,root)
 %{_sysconfdir}/stap-exporter
 %{_sysconfdir}/sysconfig/stap-exporter
 %{_libdir}/systemd/system/stap-exporter.service
@@ -385,11 +384,14 @@ fi
 %{_sbindir}/stap-exporter
 
 %files runtime-python3
+%defattr(-,root,root)
 %{python3_sitearch}/HelperSDT
 %{python3_sitearch}/HelperSDT-*.egg-info
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7-3
+- Bump version as a part of libtirpc upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7-2
 - Add boost to requires
 * Wed Sep 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.7-1

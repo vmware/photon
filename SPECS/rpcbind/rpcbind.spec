@@ -1,18 +1,19 @@
 Summary:         RPC program number mapper
 Name:            rpcbind
 Version:         1.2.6
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         BSD
 URL:             http://nfsv4.bullopensource.org
 Group:           Applications/Daemons
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
-%define sha512   rpcbind=fb89c61be4c533fe2e6057749d97079a2d1c9fac0d35d6be1a159a0edbf86092b3fc121f19fa920e75aac5ecdd3f59f5978e6401d5cad16cd438c977736206a7
-Source1:         rpcbind.service
-Source2:         rpcbind.socket
-Source3:         rpcbind.sysconfig
+Source0: http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=fb89c61be4c533fe2e6057749d97079a2d1c9fac0d35d6be1a159a0edbf86092b3fc121f19fa920e75aac5ecdd3f59f5978e6401d5cad16cd438c977736206a7
+
+Source1:         %{name}.service
+Source2:         %{name}.socket
+Source3:         %{name}.sysconfig
 
 BuildRequires:   libtirpc-devel
 BuildRequires:   systemd-devel
@@ -32,11 +33,11 @@ The rpcbind utility is a server that converts RPC program numbers into universal
 %autosetup -p1
 
 %build
-sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
+sed -i "/servname/s:%{name}:sunrpc:" src/%{name}.c
 %configure \
             --enable-warmstarts \
             --disable-debug \
-            --with-statedir=%{_localstatedir}/lib/rpcbind \
+            --with-statedir=%{_sharedstatedir}/%{name} \
             --with-rpcuser=rpc
 
 %make_build
@@ -44,16 +45,18 @@ sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
 %install
 %make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_sharedstatedir}/rpcbind \
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
          %{buildroot}%{_unitdir} \
          %{buildroot}%{_sysconfdir}/sysconfig
 
 install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/rpcbind
+install -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 install -vdm755 %{buildroot}%{_presetdir}
-echo "disable rpcbind.socket" > %{buildroot}%{_presetdir}/50-rpcbind.preset
-echo "disable rpcbind.service" >> %{buildroot}%{_presetdir}/50-rpcbind.preset
+cat > %{buildroot}%{_presetdir}/50-%{name}.preset << EOF
+disable %{name}.socket
+disable %{name}.service
+EOF
 
 %if 0%{?with_check}
 %check
@@ -63,28 +66,18 @@ make %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 
-%files
-%defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/sysconfig/rpcbind
-%{_sbindir}/*
-%{_bindir}/*
-%{_mandir}/man8/*
-%dir %{_localstatedir}/lib/rpcbind
-%{_unitdir}/*
-%{_presetdir}/50-rpcbind.preset
-
 %pre
 getent group rpc >/dev/null || groupadd -f -g 31 -r rpc
 if ! getent passwd rpc >/dev/null ; then
   if ! getent passwd 31 >/dev/null ; then
-    useradd -d %{_sharedstatedir}/rpcbind -g rpc -s /bin/false -u 31 rpc > /dev/null 2>&1
+    useradd -d %{_sharedstatedir}/%{name} -g rpc -s /bin/false -u 31 rpc > /dev/null 2>&1
   else
-    useradd -d %{_sharedstatedir}/rpcbind -g rpc -s /bin/false rpc > /dev/null 2>&1
+    useradd -d %{_sharedstatedir}/%{name} -g rpc -s /bin/false rpc > /dev/null 2>&1
   fi
 fi
 
 %preun
-%systemd_preun rpcbind.service rpcbind.socket
+%systemd_preun %{name}.service %{name}.socket
 if [ $1 -eq 0 ]; then
   userdel  rpc 2>/dev/null || :
   groupdel rpc 2>/dev/null || :
@@ -93,15 +86,27 @@ fi
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-  chown -v root:sys %{_sharedstatedir}/rpcbind
+  chown -v root:sys %{_sharedstatedir}/%{name}
 fi
-%systemd_post rpcbind.socket rpcbind.service
+%systemd_post %{name}.socket %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart rpcbind.service rpcbind.socket
+%systemd_postun_with_restart %{name}.service %{name}.socket
+
+%files
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%{_sbindir}/*
+%{_bindir}/*
+%{_mandir}/man8/*
+%dir %{_localstatedir}/lib/%{name}
+%{_unitdir}/*
+%{_presetdir}/50-%{name}.preset
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6-3
+- Bump version as a part of libtirpc upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6-2
 - Fix binary path
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.6-1
