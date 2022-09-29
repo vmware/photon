@@ -1,7 +1,7 @@
 Summary:          systemd-233
 Name:             systemd
 Version:          233
-Release:          31%{?dist}
+Release:          32%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -52,6 +52,7 @@ Patch32:          systemd-233-CVE-2020-13776.patch
 Patch33:          systemd-233-ipv6ll.patch
 Patch34:          systemd-233-CVE-2021-33910.patch
 Patch35:          systemd-233-CVE-2020-13529.patch
+Patch36:          systemd-233-CVE-2022-2526.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -272,6 +273,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Tue Sep 27 2022 Mukul Sikka <msikka@vmware.com> 233-32
+- Fix for CVE-2022-2526
 * Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 233-31
 - Fix for CVE-2020-13529
 * Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 233-30
