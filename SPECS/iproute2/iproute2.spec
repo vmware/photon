@@ -15,6 +15,8 @@ Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{ver
 %define sha512  %{name}=a468eefa797898b6de452212aa432c0a931434defacae5fb4335754c1292c5d86a8c8dbf3017f90cec266d71a2a17ae469aac17e1a85a5cbddc70814313e4c13
 Patch0:         replace_killall_by_pkill.patch
 
+BuildRequires:  bison
+
 Provides:       iproute
 
 %description

@@ -235,6 +235,7 @@ BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
+BuildRequires:  bison
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel

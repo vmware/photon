@@ -27,6 +27,7 @@ BuildRequires:  libwayland-client
 BuildRequires:  libwayland-server
 BuildRequires:  libwayland-egl
 BuildRequires:  libpciaccess-devel
+BuildRequires:  bison
 
 Requires:       libllvm
 Requires:       expat-libs

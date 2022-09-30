@@ -35,6 +35,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  openldap >= 2.4
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  sqlite-devel
+BuildRequires:  bison
 
 %define _likewise_prefix /opt/likewise
 %define _likewise_bin %{_likewise_prefix}/bin

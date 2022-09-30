@@ -18,6 +18,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
 BuildRequires:  ninja-build
+BuildRequires:  bison
 
 Requires:       libstdc++-devel
 Requires:       ncurses

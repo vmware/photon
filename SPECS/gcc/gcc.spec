@@ -25,6 +25,10 @@ BuildRequires:  autogen
 BuildRequires:  dejagnu
 %endif
 
+# bison from publish RPMs will be used.
+# We can't use BuildRequires here, as bison might not yet been built.
+%define ExtraBuildRequires bison
+
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.

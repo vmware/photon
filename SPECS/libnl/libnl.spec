@@ -13,6 +13,7 @@ Source0:    https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name
 
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
+BuildRequires:  bison
 
 Requires:   glib
 Requires:   dbus

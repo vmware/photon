@@ -8,12 +8,13 @@ Distribution:   Photon
 Group:          System Environment/NetworkingPrograms
 URL:            https://chrony.tuxfamily.org
 Source0:        https://download.tuxfamily.org/chrony/chrony-%{version}.tar.gz
-%define sha1    %{name}=628340e7ff3311ea5b5a6198bacde2a8b05b6ae4
+%define sha512  %{name}=a1c11a386c43f495910f7f2e9b5fbb1652c3631471d182b9b8203dfef98611d11535ad547a879856551263aed0ae2e30e4135b8ed89553684706166bc1c725c9
 
 BuildRequires:  systemd
 BuildRequires:  libcap-devel
 BuildRequires:  nettle-devel
 BuildRequires:  libseccomp-devel
+BuildRequires:  bison
 
 Requires:       nettle
 Requires:       libcap

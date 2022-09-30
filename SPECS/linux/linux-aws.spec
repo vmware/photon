@@ -135,6 +135,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  python3-macros
+BuildRequires:  bison
 
 Requires: kmod
 Requires: filesystem

@@ -16,6 +16,7 @@ BuildRequires:  krb5-devel
 BuildRequires:  curl-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  util-linux-devel
+BuildRequires:  bison
 
 Requires:       curl
 Requires:       krb5

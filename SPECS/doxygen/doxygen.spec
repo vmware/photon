@@ -14,6 +14,7 @@ Source0: http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
 BuildRequires:  cmake
 BuildRequires:  python3
 BuildRequires:  python3-xml
+BuildRequires:  bison
 
 %description
 Doxygen is the de facto standard tool for generating documentation from annotated C++ sources,

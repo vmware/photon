@@ -16,6 +16,7 @@ BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  swig
 BuildRequires:  audit-devel
 BuildRequires:  python3-devel
+BuildRequires:  bison
 
 Requires:       libselinux = %{version}
 Requires:       libsepol = %{version}

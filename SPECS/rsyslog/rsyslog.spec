@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    %{name}=f9cc77c6d07315047956e8f92936e19b2b862b5e
+%define sha512  %{name}=b1c68099236cc0722f52822f8b46d7f2a4a023e0809907f2b0173d5593df3c6f914516310bd832ac028252fb2c467dc90756d4472950e4244f3919b328a8bd6e
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -24,6 +24,7 @@ BuildRequires:  autogen
 BuildRequires:  gnutls-devel
 BuildRequires:  curl-devel
 BuildRequires:  libgpg-error-devel
+BuildRequires:  bison
 
 Requires:       gnutls
 Requires:       systemd

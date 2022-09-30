@@ -24,6 +24,7 @@ Patch0:     Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
+BuildRequires:  bison
 
 Requires:   xz
 Requires:   device-mapper

@@ -11,7 +11,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1    glibc=71ff0af28bdf4525d7b91ec5d82d1fc002000e91
+%define sha512  glibc=8460c155b7003e04f18dabece4ed9ad77445fa2288a7dc08e80a8fc4c418828af29e0649951bd71a54ea2ad2d4da7570aafd9bdfe4a37e9951b772b442afe50b
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
@@ -36,7 +36,7 @@ Patch18:        CVE-2022-23218.patch
 Patch19:        CVE-2022-23219.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
-%define ExtraBuildRequires python3, python3-libs
+%define ExtraBuildRequires bison, python3, python3-libs
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and

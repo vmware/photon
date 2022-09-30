@@ -16,17 +16,17 @@ License: GPLv2+
 URL:     http://gcc.gnu.org
 
 Source0: https://ftp.gnu.org/gnu/gcc/gcc-%{version}/gcc-%{version}.tar.xz
-%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
+%define sha512 gcc=ad41a7e4584e40e92cdf860bc0288500fbaf5dfb7e8c3fcabe9eba809c87bcfa85b46c19c19921b0cdf6d05483faede8287bb9ea120c0d1559449a70e602c8d4
 Source1: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{linux_kernel_version}.tar.xz
-%define sha1 linux=0fc8eeba8a8a710c95d71f140dfdc4bdff735248
+%define sha512 linux=bc3ed347f6506a7a417865ead92a372107ded69db377dbde4344bb375f7ec5f53779334118927bf90b146d3286d5c51dc55998f09e93f944df3165b7fb440d7e
 Source2: https://ftp.gnu.org/gnu/glibc/glibc-%{glibc_version}.tar.xz
-%define sha1 glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
+%define sha512 glibc=521f820953ff07c69ece4c2186f59fc061a7f9747932cd70ef2995c2b2deee76eeb6de700d85071cdca5949179aa8ccee75eda7feca1394121ec7b821ad0a3f3
 Source3: https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.1.tar.gz
-%define sha1 mpfr=655e3cf416a0cc9530d9cb3c38dc8839504f0e98
+%define sha512 mpfr=d6b395febe034eb589fdcf503ed295f0e34d2c95de2685e7c4049bc1b3a84a78119c966b97fa1b77bbc047369a8623925479b1d90ed4794b6b37944aa137ca15
 Source4: https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz
-%define sha1 gmp=9dc6981197a7d92f339192eea974f5eca48fcffe
+%define sha512 gmp=9f098281c0593b76ee174b722936952671fab1dae353ce3ed436a31fe2bc9d542eca752353f6645b7077c1f395ab4fdd355c58e08e2a801368f1375690eee2c6
 Source5: https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz
-%define sha1 mpc=b019d9e1d27ec5fb99497159d43a3164995de2d0
+%define sha512 mpc=72d657958b07c7812dc9c7cbae093118ce0e454c68a585bfb0e2fa559f1bf7c5f49b93906f580ab3f1073e5b595d23c6494d4d76b765d16dde857a18dd239628
 
 Patch0:   libsanitizer-avoidustat.h-glibc-2.28.patch
 Patch1:   PLUGIN_TYPE_CAST-gcc7.patch
@@ -40,6 +40,7 @@ Provides: libgcc_s.so.1(GCC_4.2.0)
 Provides: libgcc_s.so.1(GLIBC_2.0)
 
 BuildRequires: binutils-aarch64-linux-gnu
+BuildRequires: bison
 
 Requires: binutils-aarch64-linux-gnu
 

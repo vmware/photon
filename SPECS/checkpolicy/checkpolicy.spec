@@ -12,6 +12,7 @@ Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{ve
 %define sha512  %{name}=40e7ccd804aa19f229eb76bdaeb79c87ed19004ac7b91674ecfb92d543573dc26f9d456ea25ed1e0ef8e1a69538e41c68b386a0743023f3ea83aa4350fc3ce30
 
 BuildRequires:  libsemanage-devel = %{version}
+BuildRequires:  bison
 
 %description
 checkpolicy is a program that checks and compiles a SELinux security policy configuration

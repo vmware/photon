@@ -1,14 +1,16 @@
 Summary: Display hardware performance counters for Linux tasks
 Name:    tiptop
 Version: 2.3.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL: http://tiptop.gforge.inria.fr/
 Source: %{name}-%{version}.tar.gz
-%define sha1 tiptop=52ccd0d5dfa0a8a6f692c379e560a394a6f376b9
+%define sha512 tiptop=73d275bc3957583524c872b401cf4fa773de7b4e7b7177f1787851f43e7c4aeefd953eb50b2dbce3babfc7a1c46707370ba4ad06998260177994b2eafb91395b
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon
+
+BuildRequires: bison
 
 %description
 Hardware performance monitoring counters have recently received a lot of attention.
@@ -21,11 +23,12 @@ For example, a low IPC (number of executed instructions per cycle) indicates tha
 such as conflicts between processes in a multicore environment.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-./configure
-make
+%configure
+make %{?_smp_mflags}
+
 %install
 install -D  src/tiptop %{buildroot}%{_bindir}/tiptop
 install -D  src/ptiptop %{buildroot}%{_bindir}/ptiptop
@@ -35,6 +38,8 @@ install -D  src/ptiptop %{buildroot}%{_bindir}/ptiptop
 %{_bindir}/*
 
 %changelog
+*       Wed Sep 28 2022 Bo Gan <ganb@vmware.com> 2.3.1-2
+-       Use correct configure options.
 *       Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2.3.1-1
 -       Update version to 2.3.1.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3-2

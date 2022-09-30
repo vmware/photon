@@ -9,13 +9,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1 %{name}=727ae2ecdf0e420aa5b5a210d61ef2794bbc03d8
+%define sha512  %{name}=29fd56715746bd748036ca71195bc15ae5b663ac4944cf2da07a72fe3c7c881a1f27f32406cde4852e7f76b77cb2eadb5184b2b644b11d71df2ab94f5462185b
 
 Patch0:         0001-Do-not-write-after-the-end-of-the-array-and-overwrit.patch
 
 Requires:       libevent ncurses
 
-BuildRequires:  libevent-devel ncurses-devel
+BuildRequires:  libevent-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  bison
 
 %description
 Terminal multiplexer

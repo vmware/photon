@@ -19,6 +19,7 @@ BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
+BuildRequires: bison
 Requires:      binutils
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 

@@ -164,6 +164,7 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
+BuildRequires:  bison
 
 %if 0%{?fips}
 BuildRequires: gdb
