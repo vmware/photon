@@ -12,18 +12,18 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}.tar.gz=e69250fbab9cfa6488ae69040a2f8cd7f269121e954cacdb2478a46bf519bcd05fedf0bca74b482386e44127be462d95488c1ec60be772506a0d7e736751885b
+Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}.tar.gz=e69250fbab9cfa6488ae69040a2f8cd7f269121e954cacdb2478a46bf519bcd05fedf0bca74b482386e44127be462d95488c1ec60be772506a0d7e736751885b
 
-Source1:        https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
-%define sha512  contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
+Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
+%define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
@@ -51,7 +51,7 @@ Kubernetes is an open source implementation of container cluster management.
 %package        kubeadm
 Summary:        kubeadm deployment tool
 Group:          Development/Tools
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a %{name} cluster.
 
@@ -209,6 +209,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-5
+- Bump version as a part of cni upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-4
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-3

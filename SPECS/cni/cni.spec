@@ -1,15 +1,18 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
-Version:        0.9.1
-Release:        5%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containernetworking/plugins
-Source0:        https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
-%define sha512  cni=24e8fcedbff2ae7a83aa96085b546b164de6a0884d593e3b5386e9d2de3c4d9a215db9e9405332020cc45c371709a32b600e263e4f8dee62c51adafdc0180f24
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
+%define sha512 %{name}=03da31caee5f9595abf65d4a551984b995bc18c5e97409549f08997c5a6a2b41a8950144f8a5b4f810cb401ddbe312232d2be76ec977acf8108eb490786b1817
+
 BuildRequires:  go
+
 %define _default_cni_plugins_dir /opt/cni/bin
 
 %description
@@ -21,20 +24,24 @@ along with a number of supported plugins.
 %autosetup -p1 -n plugins-%{version}
 
 %build
-./build_linux.sh
+sh ./build_linux.sh
 
 %install
 install -vdm 755 %{buildroot}%{_default_cni_plugins_dir}
 install -vpm 0755 -t %{buildroot}%{_default_cni_plugins_dir} bin/*
 
+%if 0%{?with_check}
 %check
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.1-1
+- Upgrade v1.1.1
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.9.1-5
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 0.9.1-4

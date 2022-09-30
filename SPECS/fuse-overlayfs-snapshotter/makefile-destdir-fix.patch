@@ -1,0 +1,38 @@
+From af6b450aa2262e0d7d0f60322cf147fffc6fb128 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 3 Nov 2022 18:22:52 +0530
+Subject: [PATCH] Makefile: tweak destdir to be more flexible
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Makefile | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d1b8c5c..28f9145 100644
+--- a/Makefile
++++ b/Makefile
+@@ -13,6 +13,7 @@
+ #   limitations under the License.
+
+ DESTDIR ?= /usr/local
++BINDIR ?= $(DESTDIR)/bin
+
+ VERSION ?= $(shell git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
+ VERSION_TRIMMED := $(VERSION:v%=%)
+@@ -28,10 +29,10 @@ bin/containerd-fuse-overlayfs-grpc:
+ 	$(GO_BUILD) -o $@ $(PKG_MAIN)
+
+ install:
+-	install bin/containerd-fuse-overlayfs-grpc $(DESTDIR)/bin
++	install -D -m 755 bin/containerd-fuse-overlayfs-grpc $(BINDIR)/containerd-fuse-overlayfs-grpc
+
+ uninstall:
+-	rm -f $(DESTDIR)/bin/containerd-fuse-overlayfs-grpc
++	rm -f $(BINDIR)/containerd-fuse-overlayfs-grpc
+
+ clean:
+ 	rm -rf bin
+--
+2.35.5
+

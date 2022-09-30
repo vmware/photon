@@ -12,35 +12,32 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
+Source0: https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
 
-Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
+Source1: https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
 %define sha512 tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
 
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
+Source2: https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
 %define sha512 libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
 
-Source99:       default-disable.preset
+Source3:       default-disable.preset
 
-Patch97:        tini-disable-git.patch
-Patch98:        disable-docker-cli-md2man-install.patch
-Patch99:        remove-firewalld-1809.patch
-Patch100:       CVE-2021-41089.patch
+Patch0:        tini-disable-git.patch
+Patch1:        remove-firewalld-1809.patch
+Patch2:        disable-docker-cli-md2man-install.patch
+Patch3:        CVE-2021-41089.patch
 
-BuildRequires:  systemd
 BuildRequires:  systemd-devel
-BuildRequires:  systemd-rpm-macros
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
-BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
@@ -50,7 +47,6 @@ BuildRequires:  go-md2man
 BuildRequires:  cmake
 BuildRequires:  sed
 BuildRequires:  jq
-BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
 
 Requires:       docker-engine = %{version}-%{release}
@@ -101,13 +97,14 @@ mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
 tar -C tini -xf %{SOURCE1}
 
 pushd tini
-%patch97 -p1
+%patch0 -p1
 popd
 
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 cd %{name}-ce-%{version}
-%patch99 -p1
-%patch98 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 mv components/engine ../src/%{gopath_comp_engine}
 mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
@@ -129,7 +126,7 @@ pushd "src/%{gopath_comp_cli}"
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   GITCOMMIT=%{DOCKER_GITCOMMIT} \
-  make dynbinary manpages
+  make dynbinary manpages %{?_smp_mflags}
 popd
 
 # Don't use trimpath for now, see https://github.com/golang/go/issues/16860
@@ -227,7 +224,7 @@ for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
   cp "src/%{gopath_comp_cli}/$cli_file" "build-docs/cli-$cli_file"
 done
 
-install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
+install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_presetdir}/50-docker.preset
 
 %pre engine
 if [ $1 -gt 0 ] ; then
@@ -304,6 +301,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-5
+- Bump version as a part of containerd upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-4
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-3

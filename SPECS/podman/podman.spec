@@ -3,18 +3,21 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
-URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=b5b70e83a67ccfea149cb7df87a452d51fbb5e87ab3d1c6b4f623ba0f8f8a25442cee6ae8b8d31ea844f08c3ea4962e865ddb90e61c185dfad29d3b23aa8338f
-Source1:        dnsname-%{dnsnamevers}.tar.gz
-%define sha512  dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
-Source2:        gvisor-tap-vsock-fdc231ae7b8fe1aec4cf0b8777274fa21b70d789.tar.gz
-%define sha512  gvisor-tap-vsock=eedc553378abdb4a2aff3ba10e77c52c8cdec0de67ad70dc69e418255b0f78663271ac0ac3f3a887bc5fd0871309b5c9769c92c26b894d836dcf6e7385836abf
+URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=b5b70e83a67ccfea149cb7df87a452d51fbb5e87ab3d1c6b4f623ba0f8f8a25442cee6ae8b8d31ea844f08c3ea4962e865ddb90e61c185dfad29d3b23aa8338f
+
+Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
+%define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
+
+Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-fdc231ae7b8fe1aec4cf0b8777274fa21b70d789.tar.gz
+%define sha512 gvisor-tap-vsock=eedc553378abdb4a2aff3ba10e77c52c8cdec0de67ad70dc69e418255b0f78663271ac0ac3f3a887bc5fd0871309b5c9769c92c26b894d836dcf6e7385836abf
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -33,6 +36,7 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  libselinux-devel
+
 Provides:       pkgconfig(devmapper)
 
 Requires:       libassuan
@@ -50,7 +54,6 @@ share and deploy applications using OCI Containers and Container Images.
 
 %package tests
 Summary: Tests for %{name}
-
 Requires: bats
 Requires: jq
 
@@ -82,48 +85,54 @@ Compared to libslirp, gvisor-tap-vsock brings a configurable DNS server and dyna
 
 %prep
 %autosetup -Sgit -n %{name}-%{version}
-tar xf %{SOURCE1}
-tar xf %{SOURCE2}
+tar xf %{SOURCE1} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner
 
 %build
 #build podman
 export BUILDTAGS="seccomp exclude_graphdriver_devicemapper $(hack/btrfs_installed_tag.sh) $(hack/btrfs_tag.sh) $(hack/libdm_tag.sh) $(hack/selinux_tag.sh) $(hack/systemd_tag.sh) $(hack/libsubid_tag.sh)"
-make %{?_smp_mflags}
+%make_build
 
 #build plugin
 pushd dnsname-%{dnsnamevers}
-make %{?_smp_mflags}
+%make_build
 popd
 
 #build gvproxy
 pushd gvisor-tap-vsock
-make %{?_smp_mflags}
+%make_build
 popd
 
 %install
 #install podman
-make %{?_smp_mflags} DESTDIR=%{buildroot} PREFIX=%{_prefix} LIBEXECDIR=%{_libexecdir}\
+export PREFIX=%{_prefix}
+
+%make_install %{?_smp_mflags} LIBEXECDIR=%{_libexecdir} \
      install.bin install.man install.systemd install.completions \
      install.remote install.modules-load
 
-install -d -p %{buildroot}/%{_datadir}/%{name}/test/system
-cp -pav test/system %{buildroot}/%{_datadir}/%{name}/test/
+install -d -p %{buildroot}%{_datadir}/%{name}/test/system
+cp -pav test/system %{buildroot}%{_datadir}/%{name}/test/
 
 # Exclude podman-remote man pages from main package
-for file in `find %{buildroot}%{_mandir}/man[15] -type f | sed "s,%{buildroot},," | grep -v -e remote`; do
-    echo "$file*" >> podman.file-list
+rm -f podman.file-list
+for file in $(find %{buildroot}%{_mandir}/man[15] -type f | sed "s,%{buildroot},," | grep -v -e remote); do
+  echo "$file*" >> podman.file-list
 done
 
 #install plugin
-cd dnsname-%{dnsnamevers}
-make install %{?_smp_mflags} PREFIX=%{_prefix} DESTDIR=%{buildroot}
-cd ..
+pushd dnsname-%{dnsnamevers}
+%make_install %{?_smp_mflags}
+popd
 
 #install gvproxy
-cd gvisor-tap-vsock
+pushd gvisor-tap-vsock
 install -dp %{buildroot}%{_libexecdir}/%{name}
 install -p -m0755 bin/gvproxy %{buildroot}%{_libexecdir}/%{name}
-cd ..
+popd
+
+rm -rf %{buildroot}%{_datadir}/zsh \
+       %{buildroot}%{_datadir}/fish
 
 %files -f %{name}.file-list
 %defattr(-,root,root)
@@ -133,10 +142,6 @@ cd ..
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/rootlessport
 %{_datadir}/bash-completion/completions/%{name}
-%dir %{_datadir}/zsh/site-functions
-%{_datadir}/zsh/site-functions/_%{name}
-%dir %{_datadir}/fish/vendor_completions.d
-%{_datadir}/fish/vendor_completions.d/%{name}.fish
 %{_unitdir}/%{name}*
 %{_userunitdir}/%{name}*
 %{_tmpfilesdir}/%{name}.conf
@@ -148,10 +153,6 @@ cd ..
 %{_bindir}/%{name}-remote
 %{_mandir}/man1/%{name}-remote*.*
 %{_datadir}/bash-completion/completions/%{name}-remote
-%dir %{_datadir}/fish/vendor_completions.d
-%{_datadir}/fish/vendor_completions.d/%{name}-remote.fish
-%dir %{_datadir}/zsh/site-functions
-%{_datadir}/zsh/site-functions/_%{name}-remote
 
 %files tests
 %defattr(-,root,root)
@@ -173,6 +174,8 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.3.0-3
+- Bump version as a part of cni upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 4.3.0-2
 - Bump up version to compile with new go
 * Wed Nov 2 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3.0-1

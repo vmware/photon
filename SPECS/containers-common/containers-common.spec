@@ -8,7 +8,7 @@
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
 Version:        1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers
 # Clone containers sub repo common, image, shortnames, skopeo and storage
@@ -104,5 +104,7 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1-2
+- Bump version as a part of cni upgrade
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1-1
 - Initial version

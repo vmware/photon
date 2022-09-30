@@ -7,7 +7,6 @@ RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y coreutils sed --refresh
 COPY [ "./tmp/calico/opt/cni/bin/calico", \
        "./tmp/calico/opt/cni/bin/calico-ipam", \
        "./tmp/calico/opt/cni/bin/portmap", \
-       "./tmp/calico/opt/cni/bin/flannel", \
        "./tmp/calico/opt/cni/bin/host-local", \
        "./tmp/calico/opt/cni/bin/loopback", \
        "/opt/cni/bin/" ]
