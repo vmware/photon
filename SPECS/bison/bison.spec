@@ -1,6 +1,6 @@
 Summary:	Contains a parser generator
 Name:		bison
-Version:	3.7.6
+Version:	3.8.2
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
@@ -8,33 +8,27 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
-%define sha1 bison=bbd6362383a7276cd85ed3f19cb5416aeb98e5db
-%if %{with_check}
-Patch0:         make-check.patch
-%endif
+%define sha512 bison=d4d23af6671406e97257892f90651b67f2ab95219831372be032190b7156c10a3435d457857e677445df8b2327aacccc15344acbbc3808a6f332a93cce23b444
+
 BuildRequires:	m4
-BuildRequires:	gettext
+BuildRequires:	flex
 Requires:	m4
 Requires:	gettext
-BuildRequires:	flex
+Requires:	glibc
+
 %description
 This package contains a parser generator
-%prep
-%setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
-%build
-#make some fixes required by glibc-2.28:
-sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
-echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
-autoreconf -fiv
+%prep
+%autosetup -n %{name}-%{version}
+
+%build
 %configure \
 	--disable-silent-rules
-make %{?_smp_mflags}
+%make_build
+
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
@@ -50,6 +44,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+* Thu Sep 29 2022 Sharan Turlapati <sturlapati@vmware.com> 3.8.2-1
+- Update to version 3.8.2
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.6-1
 - Automatic Version Bump
 * Tue Jan 26 2021 Anish Swaminathan <anishs@vmware.com> 3.7.1-3
