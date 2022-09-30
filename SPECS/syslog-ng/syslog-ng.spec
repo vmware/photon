@@ -35,6 +35,7 @@ BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
+BuildRequires:  bison
 
 %description
 The syslog-ng application is a flexible and highly scalable

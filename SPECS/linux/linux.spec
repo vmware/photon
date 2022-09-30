@@ -226,6 +226,7 @@ BuildRequires:  slang-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  cmake
+BuildRequires:  bison
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel

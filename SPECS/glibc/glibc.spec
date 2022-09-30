@@ -27,7 +27,7 @@ Provides:       /sbin/ldconfig
 
 Requires:       filesystem
 
-%define ExtraBuildRequires python3, python3-libs
+%define ExtraBuildRequires bison, python3, python3-libs
 
 %description
 This library provides the basic routines for allocating memory,

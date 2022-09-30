@@ -29,6 +29,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  bison
 
 %if 0%{?with_check}
 BuildRequires: python3-pip

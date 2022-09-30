@@ -9,6 +9,7 @@ Source0:       http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 Group:         Networking/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
+BuildRequires: bison
 
 %description
 Libpcap provides a portable framework for low-level network

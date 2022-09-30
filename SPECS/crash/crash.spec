@@ -3,7 +3,7 @@
 
 Name:          crash
 Version:       8.0.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -28,6 +28,7 @@ BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
+BuildRequires: bison
 
 Requires: binutils
 Requires: ncurses-libs
@@ -103,6 +104,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 8.0.2-2
+- Add Bison in buildRequires.
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 8.0.2-1
 - Automatic Version Bump
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1

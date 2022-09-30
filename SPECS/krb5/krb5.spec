@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -11,6 +11,7 @@ Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{vers
 %define sha512  %{name}=6f57479f13f107cd84f30de5c758eb6b9fc59171329c13e5da6073b806755f8d163eb7bd84767ea861ad6458ea0c9eeb00ee044d3bcad01ef136e9888564b6a2
 Requires:       openssl
 Requires:       e2fsprogs-libs
+BuildRequires:  bison
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
 Provides:       pkgconfig(mit-krb5)
@@ -120,6 +121,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2
+-   Add Bison in buildrequires
 *   Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.20.1-1
 -   Upgrade to version 1.20.1
 *   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17.2-2

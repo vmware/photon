@@ -24,6 +24,7 @@ BuildRequires:  autogen
 BuildRequires:  gnutls-devel
 BuildRequires:  curl-devel
 BuildRequires:  libgpg-error-devel
+BuildRequires:  bison
 
 Requires:       gnutls
 Requires:       systemd

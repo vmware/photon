@@ -18,6 +18,7 @@ Source1:        %{name}.service
 BuildRequires:  systemd-devel
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
+BuildRequires:  bison
 
 Requires:       systemd
 Requires:       libtirpc

@@ -243,6 +243,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
+BuildRequires:  bison
 
 %if 0%{?fips}
 BuildRequires: gdb

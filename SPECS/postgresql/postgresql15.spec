@@ -42,6 +42,7 @@ BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemtap-sdt-devel
+BuildRequires:  boost-devel
 BuildRequires:  systemd-devel
 BuildRequires:  tar
 BuildRequires:  tcl-devel

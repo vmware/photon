@@ -15,6 +15,7 @@ BuildRequires:  systemd
 BuildRequires:  libcap-devel
 BuildRequires:  nettle-devel
 BuildRequires:  libseccomp-devel
+BuildRequires:  bison
 
 Requires:       nettle
 Requires:       libcap
