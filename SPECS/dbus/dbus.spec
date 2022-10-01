@@ -1,7 +1,7 @@
-Summary:        DBus for systemd
+Summary:        DBus message bus
 Name:           dbus
-Version:        1.14.0
-Release:        2%{?dist}
+Version:        1.15.0
+Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512  %{name}=9bf17a3ebb3cf44722c6fbf24ee56e9dc14d6882fc312f26c7f07459d969424bc2fb63a229139e011804ecc479a8f0eb1a0c83286f8d5a664c5979d12634179f
+%define sha512  %{name}=6f7e1d4ff525ce13c5f671f1b045a089c379cbfb777662ce7a55ffe4893a8ab2aaf38877a7b8f261823067a20f3b336437449eb353a97d30699496375e00bf1a
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -75,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Sat Oct 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.0-1
+- Version bump
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
