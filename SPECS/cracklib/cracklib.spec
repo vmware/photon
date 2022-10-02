@@ -1,23 +1,23 @@
-# Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
-
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          2%{?dist}
+Release:          3%{?dist}
 Group:            System Environment/Libraries
-Source:           cracklib-%{version}.tar.gz
-%define sha1      cracklib-%{version}=ffe455aba4da8d49fcdbe6964aa35367a7438581
-Source1:          cracklib-words-%{version}.gz
-%define sha1      cracklib-words-%{version}=6491f1cc63233c678e9e5983f32ff98208d0b05a
 URL:              http://sourceforge.net/projects/cracklib/
 License:          GPL
 Vendor:           VMware, Inc.
 Distribution:     Photon
-BuildRequires:    python3
-BuildRequires:    python3-libs
+
+Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512  cracklib-%{version}=76d701ee521ae35b4cbab406f23a15c84937bb06d3c3747ca8ef2584a41074fc00309a676ec37ebd5b32930163213365cf508d47f614cfccea38e1ba6babb2ff
+
+Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
+%define sha512  cracklib-words-%{version}=1fa34b0a2e16d6906982b248f1757bf5bf8154d8d7e8bab94a4ac25080c41434d3828a2c8dd5065e9be586f36480ab70375f09e0bb64eb495d96a460619e2bae
+
 BuildRequires:    python3-devel
 BuildRequires:    python3-setuptools
 BuildRequires:    python3-xml
+
 # cross compilation requires native dicts generating tools
 %define BuildRequiresNative cracklib-dicts
 Requires:         /bin/ln
@@ -93,10 +93,10 @@ install %{SOURCE1} dicts/
 
 %build
 if [ %{_host} != %{_build} ]; then
-export PYTHONXCPREFIX=/target-%{_arch}/usr
-export CC=%{_host}-gcc
-export LDSHARED='%{_host}-gcc -shared'
-export LDFLAGS='-L/target-%{_arch}/usr/lib'
+  export PYTHONXCPREFIX=/target-%{_arch}/usr
+  export CC=%{_host}-gcc
+  export LDSHARED='%{_host}-gcc -shared'
+  export LDFLAGS='-L/target-%{_arch}/usr/lib'
 fi
 export CFLAGS="$RPM_OPT_FLAGS"
 %configure \
@@ -108,18 +108,20 @@ python3 setup.py build
 popd
 
 %install
-rm -rf %{buildroot}
 make %{?_smp_mflags} install DESTDIR=%{buildroot}/
 chmod 755 ./util/cracklib-format
 chmod 755 ./util/cracklib-packer
 if [ %{_host} = %{_build} ]; then
-export PATH=./util:$PATH
+  export PATH=./util:$PATH
 fi
-cracklib-format dicts/cracklib* | cracklib-packer %{buildroot}/%{_datadir}/cracklib/words
-echo password | cracklib-packer %{buildroot}/%{_datadir}/cracklib/empty
-rm -f %{buildroot}/%{_datadir}/cracklib/cracklib-small
-ln -s cracklib-format %{buildroot}/%{_sbindir}/mkdict
-ln -s cracklib-packer %{buildroot}/%{_sbindir}/packer
+cracklib-format dicts/cracklib* | cracklib-packer %{buildroot}%{_datadir}/cracklib/words
+echo password | cracklib-packer %{buildroot}%{_datadir}/cracklib/empty
+
+rm -f %{buildroot}%{_datadir}/cracklib/cracklib-small \
+      %{buildroot}%{_libdir}/*.la
+
+ln -s cracklib-format %{buildroot}%{_sbindir}/mkdict
+ln -s cracklib-packer %{buildroot}%{_sbindir}/packer
 
 pushd python
 python3 setup.py install --skip-build --root %{buildroot}
@@ -158,9 +160,9 @@ ln -sf empty.pwi %{_datadir}/cracklib/pw_dict.pwi
 %postun
 /sbin/ldconfig
 [ $1 = 0 ] || exit 0
-rm -f %{_datadir}/cracklib/pw_dict.hwm
-rm -f %{_datadir}/cracklib/pw_dict.pwd
-rm -f %{_datadir}/cracklib/pw_dict.pwi
+rm -f %{_datadir}/cracklib/pw_dict.hwm \
+      %{_datadir}/cracklib/pw_dict.pwd \
+      %{_datadir}/cracklib/pw_dict.pwi
 
 %files
 %defattr(-,root,root)
@@ -173,7 +175,6 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
-%{_libdir}/libcrack.la
 
 %files -n python3-cracklib
 %defattr(-,root,root)
@@ -189,33 +190,35 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
-*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.7-2
--   Update release to compile with python 3.10
-*   Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
--   Automatic Version Bump
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10
--   Mass removal python2
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-9
--   Cross compilation support
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
--   Fix script dependency
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
--   Move python2 requires to python subpackage and added python3.
-*   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
--   Fix CVE-2016-6318, trigger for cracklib-dicts
--   Trigger for dynamic symlink for dict
-*   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
--   Revert compressing pw_dict.pwd back. Python code
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-3
+- Remove .la files
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.7-2
+- Update release to compile with python 3.10
+* Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
+- Automatic Version Bump
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10
+- Mass removal python2
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-9
+- Cross compilation support
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
+- Fix script dependency
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
+- Move python2 requires to python subpackage and added python3.
+* Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
+- Fix CVE-2016-6318, trigger for cracklib-dicts
+- Trigger for dynamic symlink for dict
+* Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
+- Revert compressing pw_dict.pwd back. Python code
     cracklib.VeryFascistCheck does not handle it.
-*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
--   Remove any dicts from cracklib main package
--   Compress pw_dict.pwd file
--   Move doc folder to devel package
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
--   GA - Bump release of all rpms
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
--   Updated to version 2.9.6
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
--   Updated group.
+* Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
+- Remove any dicts from cracklib main package
+- Compress pw_dict.pwd file
+- Move doc folder to devel package
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
+- GA - Bump release of all rpms
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
+- Updated to version 2.9.6
+* Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
+- Updated group.

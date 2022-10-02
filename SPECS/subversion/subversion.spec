@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -33,14 +33,14 @@ The Apache version control system.
 
 %package        devel
 Summary:        Header and development files for mesos
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 subversion-devel package contains header files, libraries.
 
 %package        perl
 Summary:        Allows Perl scripts to directly use Subversion repositories.
 Requires:       perl
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    perl
 Provides Perl (SWIG) support for Subversion version control system.
 
@@ -86,7 +86,6 @@ sudo -u test make check && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
 %{_datadir}/pkgconfig/*.pc
 
@@ -99,6 +98,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-3
+- Remove .la files
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-2
 - Bump version as a part of sqlite upgrade
 * Tue Apr 26 2022 Ankit Jain <ankitja@vmware.com> 1.14.2-1

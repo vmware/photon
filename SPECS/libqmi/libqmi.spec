@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libqmi/libqmi-%{version}.tar.xz
-%define sha1    %{name}=f42a4100d00f20bdee9e4137fa7de143729be41d
+%define sha512 %{name}=6545de5d82dfbfb139ecbf5fefb0b8e34032863f36d573ca3785aa37c12881e88a0903ea7f5eb665f29406189baa2901e751338589da8310f737abaa2df04d89
 
 BuildRequires:  libmbim-devel
 BuildRequires:  libgudev-devel
@@ -65,9 +65,9 @@ make %{?_smp_mflags} check
 %{_datadir}/bash-completion/*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/libqmi-glib/*
 %{_libdir}/pkgconfig/qmi-glib.pc
-%{_libdir}/libqmi-glib.la
 %{_datadir}/gtk-doc/*
 
 %changelog

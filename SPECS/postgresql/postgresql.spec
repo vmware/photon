@@ -38,7 +38,7 @@ Requires:       tzdata
 Requires:       zlib
 Requires:       lz4
 Requires:       systemd
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 PostgreSQL is an object-relational database management system.
@@ -86,7 +86,6 @@ make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 

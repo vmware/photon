@@ -1,0 +1,131 @@
+From c6ea41446a7367939380f992e884dfc5ea862a32 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmare.com>
+Date: Sun, 2 Oct 2022 15:17:37 +0530
+Subject: [PATCH] os-install-post improvements
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ platform.in                 |  2 ++
+ scripts/Makefile.am         |  4 ++--
+ scripts/brp-remove-la-files | 10 ++++++++++
+ scripts/brp-strip           | 36 +++++++++++++++++++++++++++++++++---
+ 4 files changed, 47 insertions(+), 5 deletions(-)
+ create mode 100755 scripts/brp-remove-la-files
+ mode change 100755 => 100644 scripts/brp-strip
+
+diff --git a/platform.in b/platform.in
+index 604f0c3..e9658ce 100644
+--- a/platform.in
++++ b/platform.in
+@@ -94,12 +94,14 @@
+ %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
+ %__brp_strip_shared %{_rpmconfigdir}/brp-strip-shared
+ %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
++%__brp_remove_la_files %{_rpmconfigdir}/brp-remove-la-files
+ 
+ %__os_install_post    \
+     %{?__brp_compress} \
+     %{?__brp_strip} \
+     %{?__brp_strip_static_archive} \
+     %{?__brp_strip_comment_note} \
++    %{?__brp_remove_la_files} \
+ %{nil}
+ 
+ %__spec_install_post\
+diff --git a/scripts/Makefile.am b/scripts/Makefile.am
+index f2788cc..5bbed40 100644
+--- a/scripts/Makefile.am
++++ b/scripts/Makefile.am
+@@ -8,7 +8,7 @@ CLEANFILES =
+ EXTRA_DIST = \
+ 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
+ 	brp-strip brp-strip-comment-note brp-python-hardlink \
+-	brp-strip-shared brp-strip-static-archive \
++	brp-strip-shared brp-strip-static-archive brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+ 	find-debuginfo.sh find-lang.sh \
+@@ -25,7 +25,7 @@ EXTRA_DIST = \
+ rpmconfig_SCRIPTS = \
+ 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
+ 	brp-strip brp-strip-comment-note brp-python-hardlink \
+-	brp-strip-shared brp-strip-static-archive \
++	brp-strip-shared brp-strip-static-archive brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+ 	find-lang.sh find-requires find-provides \
+diff --git a/scripts/brp-remove-la-files b/scripts/brp-remove-la-files
+new file mode 100755
+index 0000000..56fa25a
+--- /dev/null
++++ b/scripts/brp-remove-la-files
+@@ -0,0 +1,10 @@
++#!/bin/sh
++
++# If using normal root, avoid changing anything.
++if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
++  exit 0
++fi
++
++find "$RPM_BUILD_ROOT" -type f -name '*.la' 2>/dev/null -print0 |
++  xargs --null grep --fixed-strings '.la - a libtool library file' --files-with-matches --null |
++  xargs --null rm --force
+diff --git a/scripts/brp-strip b/scripts/brp-strip
+old mode 100755
+new mode 100644
+index c3484fe..799bf2b
+--- a/scripts/brp-strip
++++ b/scripts/brp-strip
+@@ -1,4 +1,5 @@
+ #!/bin/sh
++
+ # If using normal root, avoid changing anything.
+ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+ 	exit 0
+@@ -7,11 +8,40 @@ fi
+ STRIP=${1:-strip}
+ NCPUS=${RPM_BUILD_NCPUS:-1}
+ 
++# 32 was chosen as a compromise between reducing the overhead of starting new
++# processes and distributing the work load evenly over as much processors as
++# possible
++MAX_ARGS=32
++
+ case `uname -a` in
+ Darwin*) exit 0 ;;
+ *) ;;
+ esac
+ 
+-# Strip ELF binaries
+-find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" -print0 | \
+-    xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | grep -v ' shared object,' | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | xargs -I\{\} $STRIP -g \{\}" ARG0
++# Below is the explanation of commands in the order of their appearance
++# Ignore /usr/lib/debug entries
++# Ignore all go(guile objects & golang) files
++# Consider files with only single link
++# Run the file command to find relevant non-stripped binaries, with bundle size of 32
++# Ignore all 'no machine' files
++# Only operate on non-stripped binaries
++
++strip_elf_binaries()
++{
++  local nlinks="${1}"
++  local nprocs="${2}"
++
++  find "$RPM_BUILD_ROOT" -type f \
++    ! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \
++    ! -name "*.go" -links "${nlinks}" -print0 | \
++    xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \
++    sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
++    grep -v 'no machine' | \
++    xargs -I\{\} $STRIP -g \{\}" ARG0
++}
++
++# strip all binaries with single link
++strip_elf_binaries "1" "${NCPUS}"
++
++# strip all binaries with more than 1 link
++strip_elf_binaries "+1" "1"
+-- 
+2.37.3
+

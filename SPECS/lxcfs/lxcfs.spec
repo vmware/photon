@@ -1,25 +1,28 @@
 Summary:     Linux Containers File System
 Name:        lxcfs
 Version:     4.0.5
-Release:     1%{?dist}
+Release:     2%{?dist}
 URL:         https://linuxcontainers.org/lxcfs/downloads/
-Source0:     %{name}-%{version}.tar.gz
 License:     LGPL 2.1+
 Group:       System Environment/Libraries
-%define sha1 %{name}=51e83b4184d1caee0232f995283389ba802c813f
 Vendor:		 VMware, Inc.
 Distribution:  Photon
+
+Source0:     %{name}-%{version}.tar.gz
+%define sha512 %{name}=6961d7cb08a7562a17e513b53b1a3a75993824b1e1a4de12d080e73ba86f9883abb43b039ce82e938d3f2e9fffa7eea6bb1a12b07b9b281e393946146a9e3a86
+
 BuildRequires: gcc
 BuildRequires: libtool
 BuildRequires: fuse-devel
 BuildRequires: systemd
+
 Requires:      fuse
 
 %description
 LXCFS is a simple userspace filesystem designed to work around some current limitations of the Linux kernel.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -27,9 +30,8 @@ LXCFS is a simple userspace filesystem designed to work around some current limi
 make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
-mkdir -p %{buildroot}/%{_sharedstatedir}/%{name}
+%make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 %post
 %systemd_post lxcfs.service
@@ -51,10 +53,11 @@ rm -rf %{buildroot}
 %config(noreplace) %{_datarootdir}/lxc/config/common.conf.d/00-%{name}.conf
 %{_datarootdir}/%{name}/lxc.mount.hook
 %{_datarootdir}/%{name}/lxc.reboot.hook
-%{_libdir}/%{name}/liblxcfs.la
 %{_libdir}/%{name}/liblxcfs.so
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.0.5-2
+- Remove .la files
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.5-1
 - Automatic Version Bump
 * Wed Apr 22 2020 Anish Swaminathan <anishs@vmware.com>  4.0.3-1

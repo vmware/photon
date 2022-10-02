@@ -1,25 +1,26 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.24.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
-%define sha1    %{name}=1162a4302be250ca3334f3bfd1e7d04770e4b4ff
+Source0: https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
+%define sha512  %{name}=1005ca982b9f705deb64ae6e9ed0af7803a7802cf653b1dc83c7c90a073ac9e776100f6b2bda2be8c72fefd18ae7adb5c5509d9368398271b3b364a0ae977a1f
 
 BuildRequires:  libgudev-devel
 BuildRequires:  libgudev
 BuildRequires:  systemd-devel
-BuildRequires:  systemd-libs
-BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  gcc
 BuildRequires:  glib-devel
 BuildRequires:  pkg-config
-BuildRequires:  automake autoconf libtool
+BuildRequires:  automake
+BuildRequires:  autoconf
+BuildRequires:  libtool
 
 Requires:       libgudev
 
@@ -44,8 +45,8 @@ make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
-%check
 %if 0%{?with_check}
+%check
 make %{?_smp_mflags} check
 %endif
 
@@ -65,10 +66,11 @@ make %{?_smp_mflags} check
 %files devel
 %{_includedir}/libmbim-glib/*
 %{_libdir}/pkgconfig/mbim-glib.pc
-%{_libdir}/libmbim-glib.la
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.24.2-5
+- Remove .la files
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.24.2-4
 - Exclude debug symbols properly
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.24.2-3

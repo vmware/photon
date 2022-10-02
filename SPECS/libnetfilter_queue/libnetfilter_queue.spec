@@ -1,14 +1,15 @@
 Summary:    Provides API to packets queued by kernel packet filter
 Name:       libnetfilter_queue
 Version:    1.0.5
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.netfilter.org/projects/libnetfilter_queue/index.html
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_queue=799e991428e14d65a5dc44d914e9af10a80a3526
+
+Source0: http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=732a44b602e5efaa4f5582ea25ff8f5ec8f4dca5c0e725cd93fe2d441db80416b25c6018147be90acb262d7428eb5b21b3f7b5920e612d115061ec6a19d67f85
 
 BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
@@ -30,35 +31,35 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-static
 make %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %doc COPYING
 %{_libdir}/*.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 
 %changelog
-*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
--   Automatic Version Bump
-*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 1.0.3-1
--   Update to 1.0.3
-*   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2-1
--   Initial packaging
-
-
-
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-2
+- Remove .la files
+* Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
+- Automatic Version Bump
+* Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 1.0.3-1
+- Update to 1.0.3
+* Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2-1
+- Initial packaging

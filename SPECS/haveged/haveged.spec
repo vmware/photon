@@ -1,17 +1,18 @@
-# This spec is extracted from haveged-1.9.1.tar.gz
-
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.13
 Release:        1%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
-Distribution:   Discus
+Distribution:   Photon
 Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
+
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha1 haveged=add39b7665f2251fe087817397552893c70f11ab
+%define sha512 haveged=dff0f4273643ed6b2fea26f1ba5c17be3d655d27ab0b96091bcd23e1cb984fc440cc81e694cc7bcc84a9a667d96f3c04a73675f79ecae525ee56390940cce576
+
 Source1:        haveged.service
+
 Requires:       systemd
 
 BuildRequires:  systemd
@@ -45,34 +46,30 @@ Requires:  haveged
 Headers and shared object symbolic links for the HAVEGE algorithm
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-#autoreconf -fiv
 %configure
-#SMP build is not working
-#make %{?_smp_mflags}
-make
-
-%check
-make %{?_smp_mflags} check
-
+%make_build
 
 %install
 rm -rf %{buildroot}
-make install DESTDIR=%{buildroot} INSTALL="install -p"
+make install DESTDIR=%{buildroot} INSTALL="install -p" %{?_smp_mflags}
 
 chmod 0644 COPYING README ChangeLog AUTHORS
 
 #Install systemd service file
 rm -rf %{buildroot}/etc/init.d
-pushd $RPM_BUILD_ROOT
+pushd %{buildroot}
 mkdir -p ./lib/systemd/system
 install -p -m644 %{SOURCE1} ./lib/systemd/system/haveged.service
 popd
 
 # We don't ship .la files.
 rm -rf %{buildroot}%{_libdir}/libhavege.*a
+
+%check
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}
@@ -104,7 +101,6 @@ rm -rf %{buildroot}
 %doc contrib/build/havege_sample.c
 %{_libdir}/*.so
 
-
 %changelog
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.13-1
 - Automatic Version Bump
@@ -127,7 +123,6 @@ rm -rf %{buildroot}
 - It introduces new macros - systemd_post, systemd_preun and systemd_postun;
 - which replace scriptlets from Fedora 18 and older
 - see https://fedoraproject.org/wiki/Packaging:ScriptletSnippets#Systemd
-
 * Tue Aug 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-1
 - Update to the version 1.5
 - Main new feature is a run time verification of the produced random numbers

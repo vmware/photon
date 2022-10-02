@@ -12,7 +12,7 @@ Url:            http://www.thrysoee.dk/editline/
 Group:          Applications/Libraries
 
 Source0:        libedit-%{libedit_release}-%{libedit_version}.tar.gz
-%define sha1    %{name}=855747cff17110fb59703b5b957d11c8f76b91ef
+%define sha512 %{name}=b7361c277f971ebe87e0e539e5e1fb01a4ca1bbab61e199eb97774d8b60dddeb9e35796faf9cc68eb86d1890e8aac11db13b44b57ccc8302d559741fbe9d979e
 
 Requires:       ncurses
 

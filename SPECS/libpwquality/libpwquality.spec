@@ -7,8 +7,9 @@ URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/libpwquality/libpwquality/releases/download/libpwquality-%{version}/libpwquality-%{version}.tar.bz2
-%define sha1    libpwquality=d70c24327aa898a1d3dc84b9e14303f0ac852fb1
+%define sha512 libpwquality=6f395e94797cc565edae6de8f4c7c60736d07ffa849c9878ec4d867f8cb7bea6f08bdd20501791dd05b02d487f8fea66a02a30841c7cea6e86b5903eaf685879
 
 BuildRequires:  cracklib-devel
 BuildRequires:  Linux-PAM-devel
@@ -40,7 +41,7 @@ pwquality Python module that provides Python bindings
 for the libpwquality library.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
@@ -53,6 +54,8 @@ make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
+find %{buildroot} -name '*.la' -delete
+
 %post
 /sbin/ldconfig
 
@@ -64,8 +67,6 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %config(noreplace) %{_sysconfdir}/security/pwquality.conf
 %{_libdir}/*.so.*
 %{_libdir}/security/pam_pwquality.so
-%exclude %{_libdir}/libpwquality.la
-%exclude %{_libdir}/security/pam_pwquality.la
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -85,7 +86,7 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{python3_sitearch}/*.egg-info
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.2-2
--   Bump up to compile with python 3.10
-*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
--   Initial version
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.2-2
+- Bump up to compile with python 3.10
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
+- Initial version

@@ -1,7 +1,7 @@
 Summary:    Key table files, console fonts, and keyboard utilities
 Name:       kbd
 Version:    2.3.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://ftp.altlinux.org/pub/people/legion/kbd
 Group:      Applications/System
@@ -37,7 +37,10 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 %make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ*
+
+rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ* \
+      %{buildroot}%{_libdir}/*.la
+
 %find_lang %{name}
 
 %check
@@ -50,7 +53,6 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.a
-%{_libdir}/*.la
 %{_libdir}/*.so.*
 %{_libdir}/*.so
 %{_defaultdocdir}/%{name}-%{version}/*
@@ -61,6 +63,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.0-2
+- Remove .la files
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1

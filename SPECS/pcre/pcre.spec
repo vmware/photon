@@ -1,12 +1,13 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.44
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
 %define sha512  pcre=f26d850aab5228799e58ac8c2306fb313889332c39e29b118ef1de57677c5c90f970d68d3f475cabc64f8b982a77f04eca990ff1057f3ccf5e19bd137997c4ac
 
@@ -38,7 +39,8 @@ Group:      System Environment/Libraries
 This package contains minimal set of shared pcre libraries.
 
 %prep
-%autosetup
+%autosetup -p1
+
 %build
 %configure \
             --docdir=/usr/share/doc/pcre-%{version} \
@@ -55,6 +57,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
+rm -f %{buildroot}%{_libdir}/*.la
 mv -v %{buildroot}/usr/lib/libpcre.so.* %{buildroot}/lib &&
 ln -sfv ../../lib/$(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so
 ln -sfv $(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so.0
@@ -64,6 +67,7 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/pcregrep
@@ -81,7 +85,6 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 
@@ -90,37 +93,39 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
-*   Fri Jun 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 8.44-3
--   Enable jit, just in time compiling
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.44-2
--   Fix build with new rpm
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.44-1
--   Automatic Version Bump
-*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 8.42-2
--   Cross compilation support
-*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.42-1
--   Update to version 8.42
-*   Wed Dec 20 2017 Xiaolin Li <xiaolinl@vmware.com> 8.41-1
--   Update to version 8.41
-*   Wed Jul 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.40-4
--   Added fix for CVE-2017-11164 by adding stack recursion limit
-*   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 8.40-3
--   Added fixes for CVE-2017-7244, CVE-2017-7245, CVE-2017-7246, CVE-2017-7186
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 8.40-2
--   Added -libs subpackage
-*   Mon Apr 03 2017 Robert Qi <qij@vmware.com> 8.40-1
--   Update to 8.40
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 8.39-2
--   Modified %check
-*   Fri Sep 9 2016 Xiaolin Li <xiaolinl@vmware.com> 8.39-1
--   Update to version 8.39
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.38-3
--   GA - Bump release of all rpms
-*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  8.38-2
--   Add upstream fixes patch
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 8.38-1
--   Updated to version 8.38
-*   Mon Nov 30 2015 Sharath George <sharathg@vmware.com> 8.36-2
--   Add symlink for libpcre.so.1
-*   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 8.36-1
--   Initial version
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.44-4
+- Remove .la files
+* Fri Jun 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 8.44-3
+- Enable jit, just in time compiling
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.44-2
+- Fix build with new rpm
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.44-1
+- Automatic Version Bump
+* Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 8.42-2
+- Cross compilation support
+* Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.42-1
+- Update to version 8.42
+* Wed Dec 20 2017 Xiaolin Li <xiaolinl@vmware.com> 8.41-1
+- Update to version 8.41
+* Wed Jul 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.40-4
+- Added fix for CVE-2017-11164 by adding stack recursion limit
+* Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 8.40-3
+- Added fixes for CVE-2017-7244, CVE-2017-7245, CVE-2017-7246, CVE-2017-7186
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 8.40-2
+- Added -libs subpackage
+* Mon Apr 03 2017 Robert Qi <qij@vmware.com> 8.40-1
+- Update to 8.40
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 8.39-2
+- Modified %check
+* Fri Sep 9 2016 Xiaolin Li <xiaolinl@vmware.com> 8.39-1
+- Update to version 8.39
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.38-3
+- GA - Bump release of all rpms
+* Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  8.38-2
+- Add upstream fixes patch
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 8.38-1
+- Updated to version 8.38
+* Mon Nov 30 2015 Sharath George <sharathg@vmware.com> 8.36-2
+- Add symlink for libpcre.so.1
+* Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 8.36-1
+- Initial version

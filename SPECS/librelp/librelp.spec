@@ -1,19 +1,20 @@
-Summary:	RELP Library
-Name:		librelp
-Version:	1.8.0
-Release:	3%{?dist}
-License:	GPLv3+
-URL:		http://www.librelp.com
-Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=0eeebe2ab7be63d57f5183856cc5804a6a30ccc4
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    RELP Library
+Name:       librelp
+Version:    1.8.0
+Release:    4%{?dist}
+License:    GPLv3+
+URL:        http://www.librelp.com
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-BuildRequires:	gnutls-devel
-BuildRequires:	autogen
+Source0: http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
+%define sha512 %{name}=aa3e02010cdd4587ff28987f00291708e752b2e2f5f37f5a5239bda6992f55cf428cf1b6e06847062be31844cfdda6b654bcbb9024dff943d140b405ec93c0f4
 
-Requires:	gnutls
+BuildRequires:  gnutls-devel
+BuildRequires:  autogen
+
+Requires:   gnutls
 
 %description
 Librelp is an easy to use library for the RELP protocol. RELP (stands
@@ -21,15 +22,15 @@ for Reliable Event Logging Protocol) is a general-purpose, extensible
 logging protocol.
 
 %package devel
-Summary:	Development libraries and header files for librelp
-Requires:	librelp
+Summary:    Development libraries and header files for librelp
+Requires:   librelp
 
 %description devel
 The package contains libraries and header files for
 developing applications that use librelp.
 
 %prep
-%autosetup
+%autosetup -p1
 autoreconf -fiv
 
 %build
@@ -37,7 +38,7 @@ autoreconf -fiv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 #There are two tests(out of 16) which run under valgrind.
@@ -55,20 +56,23 @@ sed -i '/basic-sessionbreak-vg.sh/d' tests/Makefile.am
 
 make check %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_libdir}/*.la
-%{_libdir}/*.a
+
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.a
 %{_includedir}/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-4
+- Remove .la files
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.0-3
 - Bump up release for openssl
 * Tue Nov 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-2

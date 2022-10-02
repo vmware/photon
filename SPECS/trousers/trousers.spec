@@ -1,7 +1,7 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/trousers/
 Group:      System Environment/Security
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
+%define sha512 %{name}=bf87f00329cf1d76a12cf6b6181fa22f90e76af3c5786e6e2db98438d2d3f0c0e05364374664173f45e3a2f6c0e2364948d0b958a7845cb23fcb340150cd9b21
 
 Patch0:     tcsd_fixes.patch
 Patch1:     trousers-0.3.14-fno-common.patch
@@ -56,17 +56,6 @@ if [ $1 -eq 1 ]; then
     fi
 fi
 
-%postun
-if [ $1 -eq 0 ]; then
-    # this is delete operation
-    if getent passwd tss >/dev/null; then
-        userdel tss
-    fi
-    if getent group tss >/dev/null; then
-        groupdel tss
-    fi
-fi
-
 %post -n libtspi -p /sbin/ldconfig
 %postun	-n libtspi -p /sbin/ldconfig
 
@@ -81,18 +70,19 @@ fi
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libtspi.la
 %{_libdir}/libtspi.so
-%{_libdir}/libtspi.so.1
 %{_mandir}/man3
 
 %files -n libtspi
 %defattr(-,root,root)
 %{_libdir}/libtspi.so.1.2.0
+%{_libdir}/libtspi.so.1
 %exclude %dir %{_libdir}/debug
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.14-7
+- Remove .la files
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.14-6
 - Exclude debug symbols properly
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.3.14-5

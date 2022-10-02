@@ -7,7 +7,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://fedorahosted.org/releases/l/i/libaio/libaio-0.3.110.tar.gz
-%define sha1 libaio=f8f6ed15f22e528f6f415939b07854539e3360e4
+%define sha512 libaio=664295d330d6e9adc005e2331e77582619625b479ffc2b81728ba6a682487380ee936079c4a69d35144b458bbe35c612f4ed9b32e913bd7e109b824345763eb3
 Patch0:		libaio-install-to-destdir-slash-usr.patch
 
 %if %{with_check}
@@ -26,17 +26,17 @@ require the Linux-native async I/O API.
 %package	devel
 Summary:	Development files for Linux-native asynchronous I/O access
 Group:		Development/System
-Requires:	libaio
+Requires:	%{name} = %{version}-%{release}
 
 %description	devel
 This package provides header files to include and libraries to link with
 for the Linux-native asynchronous I/O facility ("async I/O", or "aio").
 
 %prep
+# Using autosetup is not feasible
 %setup -q -a 0
 %patch0 -p0 -b .install-to-destdir-slash-usr
 %patch0 -p1 -b .install-to-destdir-slash-usr
-
 
 %build
 # A library with a soname of 1.0.0 was inadvertantly released.  This
@@ -44,21 +44,20 @@ for the Linux-native asynchronous I/O facility ("async I/O", or "aio").
 # the libaio-0.3.103 directory, and then builds the library again
 # with the correct soname.
 cd %{name}-%{version}
-make soname='libaio.so.1.0.0' libname='libaio.so.1.0.0'
+make soname='libaio.so.1.0.0' libname='libaio.so.1.0.0' %{?_smp_mflags}
 cd ..
-make
+make %{?_smp_mflags}
 
 %install
 cd %{name}-%{version}
 install -D -m 755 src/libaio.so.1.0.0 %{buildroot}/%{_libdir}/libaio.so.1.0.0
 cd ..
-make destdir=%{buildroot} prefix=%{_prefix} libdir=/lib usrlibdir=%{_libdir} includedir=%{_includedir} install
+make destdir=%{buildroot} prefix=%{_prefix} libdir=/lib usrlibdir=%{_libdir} includedir=%{_includedir} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -77,5 +76,3 @@ make %{?_smp_mflags} -k check
 - GA - Bump release of all rpms
 * Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.110-1
 - Initial version
-
-

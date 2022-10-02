@@ -1,13 +1,16 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
 Version:        234
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
-Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha1 libgudev=003253c2e75f4602193432c45f234c54694e0057
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
+%define sha512 libgudev=cb01906d532b05cf8f69acdf80a8f05fbd4863fd98e88928b491e3657e60844f7ae6ca903ddd773fbea37268ff85d12719de47fd92a2f18b98fa2dbfe85e8151
+
 BuildRequires:  glib >= 2.22.0
 BuildRequires:  glib-devel
 BuildRequires:  gnome-common
@@ -16,8 +19,8 @@ BuildRequires:  gtk-doc
 BuildRequires:  pkg-config
 BuildRequires:  systemd-devel
 BuildRequires:  which
+
 Requires:       systemd
-Distribution:   Photon
 
 %description
 This is libgudev, a library providing GObject bindings for libudev. It
@@ -25,28 +28,27 @@ used to be part of udev, and now is a project on its own.
 
 %package devel
 Summary:        Header and development files for libgudev
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       glib-devel
 
 %description devel
 libgudev-devel package contains header files for building gudev applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure  --disable-umockdev
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -54,11 +56,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files devel
 %{_includedir}/*
-%{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 234-2
+- Remove .la files
 * Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 234-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 233-1

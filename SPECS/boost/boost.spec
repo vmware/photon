@@ -9,7 +9,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://sourceforge.net/projects/boost/files/boost/%{version}/boost_1_74_0.tar.bz2
-%define sha1    boost=f82c0d8685b4d0e3971e8e2a8f9ef1551412c125
+%define sha512 boost=4ec9c1164ec9b95ce46ba1c073e586c94b3882dce5b7347ea14bbef0c1da230e12aa5328a501ce38cae1b1d7623daa3246325625899179b4cc309242540982a4
 Patch0:         fix-compatibility-with-python-1.patch
 Patch1:         fix-compatibility-with-python-2.patch
 BuildRequires:	bzip2-devel
@@ -72,21 +72,21 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
-*   Fri Mar 11 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.74.0-2
--   Add support for building boost with python
-*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.74.0-1
--   Automatic Version Bump
-*   Tue Sep 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.66.0-1
--   Update to version 1.66.0
-*   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 1.63.0-1
--   Upgraded to version 1.63.0
-*   Thu Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
--   Build static libs in additon to shared.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
--   GA - Bump release of all rpms
-*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.60.0-1
--   Update to version 1.60.0.
-*   Thu Oct 01 2015 Xiaolin Li <xiaolinl@vmware.com> 1.56.0-2
--   Move header files to devel package.
-*   Tue Feb 10 2015 Divya Thaluru <dthaluru@vmware.com> 1.56.0-1
--   Initial build. First version
+* Fri Mar 11 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.74.0-2
+- Add support for building boost with python
+* Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.74.0-1
+- Automatic Version Bump
+* Tue Sep 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.66.0-1
+- Update to version 1.66.0
+* Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 1.63.0-1
+- Upgraded to version 1.63.0
+* Thu Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
+- Build static libs in additon to shared.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
+- GA - Bump release of all rpms
+* Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.60.0-1
+- Update to version 1.60.0.
+* Thu Oct 01 2015 Xiaolin Li <xiaolinl@vmware.com> 1.56.0-2
+- Move header files to devel package.
+* Tue Feb 10 2015 Divya Thaluru <dthaluru@vmware.com> 1.56.0-1
+- Initial build. First version

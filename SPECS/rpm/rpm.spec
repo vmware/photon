@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -13,17 +13,15 @@ Distribution:   Photon
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=dc1be96d433223e764f20fc7807f46baf44d2ec23a54edcf570251f0fec4b5040a311f62521e6fb4cd96723a4b791c51fa1f5fb5bc86b478e89b587ea36b46a4
 
-Source1: brp-strip-debug-symbols
-Source2: brp-strip-unneeded
-Source3: macros
-Source4: macros.php
-Source5: macros.perl
-Source6: macros.vpath
-Source7: macros.ldconfig
-Source8: rpmdb-rebuild.sh
-Source9: rpmdb-rebuild.service
-Source10: rpm.conf
-Source11: lock.c
+Source1: macros
+Source2: macros.php
+Source3: macros.perl
+Source4: macros.vpath
+Source5: macros.ldconfig
+Source6: rpmdb-rebuild.sh
+Source7: rpmdb-rebuild.service
+Source8: rpm.conf
+Source9: lock.c
 
 Patch0: find-debuginfo-do-not-generate-dir-entries.patch
 Patch1: Header-signatures-alone-are-not-sufficient.patch
@@ -33,6 +31,7 @@ Patch4: silence-warning.patch
 Patch5: sync-buf-cache.patch
 Patch6: wait-for-lock.patch
 Patch7: CVE-2021-3521.patch
+Patch8: os-install-post-improvements.patch
 
 Requires: bash
 Requires: zstd-libs
@@ -165,7 +164,7 @@ export CPPFLAGS="-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS
 
 %make_build
 
-gcc -Wall -o lock %{SOURCE11}
+gcc -Wall -o lock %{SOURCE9}
 chmod 700 lock
 
 pushd python
@@ -183,21 +182,19 @@ find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/rpm
-install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
-install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE6} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE7} %{buildroot}%{_rpmmacrodir}
-install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE6} %{buildroot}%{rpmhome}
 
 mkdir -p %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE9} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE7} %{buildroot}%{_unitdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-mv lock %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
+mv lock %{buildroot}%{rpmhome}
 
 pushd python
 %py3_install
@@ -326,6 +323,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-14
+- Cleanup macros file
+- Remove redundant brp-strip-debug-symbols script
 * Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-13
 - Further fixes to CVE-2021-3521
 - Remove pgp related fixes, it's not used by other distros
@@ -418,7 +418,7 @@ rm -rf %{buildroot}
 - Update to 4.13.0
 * Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22
 - Do not allow -debuginfo to own directories to avoid conflicts with
-    filesystem package and between each other. Patch applied
+  filesystem package and between each other. Patch applied
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-21
 - rpm-libs requires nss-libs, xz-libs and bzip2-libs.
 * Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20

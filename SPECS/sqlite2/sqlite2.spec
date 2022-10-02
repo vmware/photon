@@ -1,7 +1,7 @@
 Summary:        SQLite: An Embeddable SQL Database Engine
 Name:           sqlite2
 Version:        2.8.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.sqlite.org
 License:        Public Domain
 Group:          System Environment/GeneralLibraries
@@ -19,7 +19,7 @@ SQLite is a self-contained, high-reliability, embedded, full-featured, public-do
 %package devel
 Summary: Headers and development libraries for sqlite2
 Group: Development/Libraries
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 Headers and development libraries for sqlite2
@@ -29,14 +29,13 @@ Headers and development libraries for sqlite2
 
 %build
 %configure \
-       --enable-threads     \
-       --enable-shared      \
+       --enable-threads \
+       --enable-shared \
        --enable-symbols
 
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
@@ -52,10 +51,11 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/libsqlite.a
-%{_libdir}/libsqlite.la
 %{_libdir}/libsqlite.so
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.8.17-4
+- Remove .la files
 * Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 2.8.17-3
 - adding patch to fix lemon segmentation fault
 * Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.8.17-2

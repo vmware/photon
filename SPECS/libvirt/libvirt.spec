@@ -4,11 +4,12 @@ Version:        7.10.0
 Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
-Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=fcaf7b763bf6e930d8b0a131b32752ebc2b8af9f
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c7eecc9538b68852a8cc67565566d64ec7b087b6f009858b2eb524bc3ef0f6ca3c0da67edf801e6a3ae3fcc0364e65e108fa92bcb01ee810c85fa5f37785aa32
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl

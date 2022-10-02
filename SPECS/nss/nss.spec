@@ -33,7 +33,7 @@ security standards into an application.
 Summary:        Development Libraries for Network Security Services
 Group:          Development/Libraries
 Requires:       nspr-devel
-Requires:       nss = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 Header files for doing development with Network Security Services.
@@ -113,11 +113,13 @@ sudo -u test ./all.sh && userdel test -r -f
 %exclude %{_libdir}/libsoftokn3.chk
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %files libs
+%defattr(-,root,root)
 %{_libdir}/libfreeblpriv3.so
 %{_libdir}/libfreeblpriv3.chk
 %{_libdir}/libnss3.so

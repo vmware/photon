@@ -7,11 +7,13 @@ URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 libpsl=dc5fd26d060b3445386b5a82628df900567654f4
+
+Source0: https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a5084b9df4ff2a0b1f5074b20972efe0da846473396d27b57967c7f6aa190ab3c910b4bfc4f8f03802f08decbbad5820d850c36ad59610262ae37fe77de0c7f5
 
 BuildRequires: icu-devel >= 70.1
-BuildRequires: python3
+BuildRequires: python3-devel
+
 Requires:      icu >= 70.1
 
 %description
@@ -57,16 +59,18 @@ for example it checks if domains are public suffixes, checks if cookie-domain
 is acceptable for domains and so on.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 sed -i 's/env python/&3/' src/psl-make-dafsa
-%configure --disable-silent-rules \
-           --disable-static
+%configure \
+    --disable-silent-rules \
+    --disable-static
+
 make %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 install -m0755 src/psl-make-dafsa %{buildroot}%{_bindir}/
 
 %check
@@ -91,22 +95,21 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Fri Dec 10 2021 Alexey Makhalov <amakhalov@vmware.com> 0.21.1-3
--   Requires specific version of icu
--   Add icu-devel dependency to -devel subpackage
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.1-2
--   Bump up to compile with python 3.10
-*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-1
--   Automatic Version Bump
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.21.0-1
--   Update to 0.21.0
--   Build with python3
--   Mass removal python2
-*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 0.20.2-2
--   Added BuildRequires python2
-*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1
--   Initial packaging of libpsl
+* Fri Dec 10 2021 Alexey Makhalov <amakhalov@vmware.com> 0.21.1-3
+- Requires specific version of icu
+- Add icu-devel dependency to -devel subpackage
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.1-2
+- Bump up to compile with python 3.10
+* Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-1
+- Automatic Version Bump
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.21.0-1
+- Update to 0.21.0
+- Build with python3
+- Mass removal python2
+* Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 0.20.2-2
+- Added BuildRequires python2
+* Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1
+- Initial packaging of libpsl

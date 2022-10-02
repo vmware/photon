@@ -10,6 +10,7 @@ URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
 %define sha512 openldap=b929bced0f5ba9a90e015a24b8037c8958fbb7282db272bd0cacf43b5f7540ab42159a3c4441148074340228bb5f07f93651c0dbb2affde961be156058f99ce5
 
@@ -63,7 +64,7 @@ export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
         --with-cyrus-sasl    \
         --with-threads
 
-  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
 
 if [ %{_host} != %{_build} ]; then
  sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
@@ -72,9 +73,7 @@ make depend %{?_smp_mflags}
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 chmod a+x %{buildroot}%{_libdir}/liblber.so*
@@ -93,7 +92,6 @@ popd
 make %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %clean

@@ -1,15 +1,15 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha1    dbus=09e90abe435ac3bd8d2d6d1fafc886b0d97c8185
+Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
+%define sha512 %{name}=93724660529fb777e2dd5207f953dd0b4c02c079293ae202ffdcabd9c4033110a7f9980b55a443770e0ea0bb8fc6b5717797d954ee268d34e13d364df0f01539
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -24,7 +24,7 @@ The dbus package contains dbus.
 
 %package    devel
 Summary:    Header and development files
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 Requires:   expat-devel
 %description    devel
 It contains the libraries and header files to create applications
@@ -42,7 +42,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_lib}
+rm -f %{buildroot}%{_libdir}/*.la
 
 %check
 make %{?_smp_mflags} check
@@ -59,8 +59,6 @@ make %{?_smp_mflags} check
 %{_docdir}/*
 %{_datadir}/dbus-1
 
-#%%{_sharedstatedir}/*
-
 %files  devel
 %defattr(-,root,root)
 %{_includedir}/*
@@ -69,11 +67,12 @@ make %{?_smp_mflags} check
 %dir %{_libdir}/dbus-1.0
 %{_libdir}/dbus-1.0/include/
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.18-2
+- Remove .la files
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.18-1
 - Automatic Version Bump
 * Wed May 06 2020 Susant Sahani <ssahani@vmware.com> 1.13.14-1

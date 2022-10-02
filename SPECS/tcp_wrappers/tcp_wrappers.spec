@@ -7,12 +7,16 @@ Group: 		System Environment/Networking
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 URL: 		ftp://ftp.porcupine.org/pub/security/index.html
+
 Source0: 	ftp://ftp.porcupine.org/pub/security/%{name}_%{version}.tar.gz
-%define sha1 tcp_wrappers=61689ec85b80f4ca0560aef3473eccd9e9e80481
+%define sha512 tcp_wrappers=2d9d003791f8d00912a36ae00579e2b8dd7ad8a7bf8eae259659bcaf5365b150540ff6c93c91765872c76041579b7a02b6e3c64528fb7f8235680399ba1d9dac
+
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/6.3/tcp_wrappers-7.6-shared_lib_plus_plus-1.patch
+
 Requires:       finger
-BuildRequires:  libnsl-devel
 Requires:       libnsl
+
+BuildRequires:  libnsl-devel
 
 %description
 The TCP Wrapper package provides daemon wrapper programs that report the name of the client requesting network services and the requested service.
@@ -26,20 +30,20 @@ Requires:	libnsl-devel
 The libraries and header files needed for tcp_wrappers development.
 
 %prep
-%setup -qn %{name}_%{version}
-%patch0 -p1
+%autosetup -p1 -n %{name}_%{version}
 
 %build
 sed -i -e "s,^extern char \*malloc();,/* & */," scaffold.c
 sed -i 's/-O2/-O2 -DUSE_GETDOMAIN/g' Makefile
-make REAL_DAEMON_DIR=%{_sbindir} STYLE=-DPROCESS_OPTIONS CC=%{_host}-gcc linux
+make REAL_DAEMON_DIR=%{_sbindir} STYLE=-DPROCESS_OPTIONS CC=%{_host}-gcc linux %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}%{_libdir}
-mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_mandir}/man{3,5,8}
-mkdir -p %{buildroot}%{_includedir}
-make DESTDIR=%{buildroot} install
+mkdir -p %{buildroot}%{_libdir} \
+         %{buildroot}%{_sbindir} \
+         %{buildroot}%{_mandir}/man{3,5,8} \
+         %{buildroot}%{_includedir}
+
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -74,4 +78,3 @@ make DESTDIR=%{buildroot} install
 - GA - Bump release of all rpms
 * Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 7.6-1
 - Initial version
-

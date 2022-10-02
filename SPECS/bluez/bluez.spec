@@ -1,13 +1,14 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.58
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha512  %{name}=159b554e0afd56af5da6f8333383f2fdf96d77a0e82d762bf4b37786e7312b7e61fbbae0f18b26442a606e0a232f48e0f45a4b38b95de36c7daf384f582315a3
+
+Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
+%define sha512 %{name}=159b554e0afd56af5da6f8333383f2fdf96d77a0e82d762bf4b37786e7312b7e61fbbae0f18b26442a606e0a232f48e0f45a4b38b95de36c7daf384f582315a3
 
 Patch0:         bluez-CVE-2021-41229.patch
 Patch1:         bluez-CVE-2021-3658.patch
@@ -44,16 +45,17 @@ use in Bluetooth applications.
 
 %build
 %configure \
-	--enable-tools \
-	--enable-library \
-	--enable-usb \
-	--enable-threads \
-	--enable-monitor \
-	--enable-obex \
-	--enable-systemd \
-	--enable-experimental \
-	--enable-deprecated \
-	--disable-cups
+    --enable-tools \
+    --enable-library \
+    --enable-usb \
+    --enable-threads \
+    --enable-monitor \
+    --enable-obex \
+    --enable-systemd \
+    --enable-experimental \
+    --enable-deprecated \
+    --disable-cups
+
 make %{?_smp_mflags}
 
 %install
@@ -63,7 +65,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 make %{?_smp_mflags} -k check
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -73,7 +74,6 @@ make %{?_smp_mflags} -k check
 %{_libexecdir}/bluetooth/bluetoothd
 %{_datadir}/zsh/site-functions/_bluetoothctl
 %{_libdir}/*.so.*
-%{_libdir}/libbluetooth.la
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
@@ -88,6 +88,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.58-6
+- Remove .la files
 * Mon Sep 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-5
 - Patched to fix CVE-2022-39176, CVE-2022-39177
 * Tue Mar 22 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-4

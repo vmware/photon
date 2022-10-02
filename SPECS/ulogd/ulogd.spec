@@ -114,7 +114,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %{_unitdir}/%{name}.service
 %dir %{_localstatedir}/log/%{name}
-%exclude %{_libdir}/%{name}/*.la
 %exclude %{_libdir}/%{name}/%{name}_output_MYSQL.so
 %exclude %{_libdir}/%{name}/%{name}_output_PCAP.so
 %exclude %{_libdir}/%{name}/%{name}_output_SQLITE3.so

@@ -7,8 +7,10 @@ License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://repo.or.cz/libtar.git/snapshot/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 libtar=11a12695abf4f9668801d24b7b552daed1219b2f395c09818d15e16721f7136d63aa0c09e442401e4fedbf7335748f0dc46f8da21b94b36595910b2fe44d4aea
+
 Patch0:         libtar-gen-debuginfo.patch
 Patch1:         libtar-1.2.11-missing-protos.patch
 Patch2:         libtar-1.2.11-mem-deref.patch
@@ -44,11 +46,8 @@ autoreconf -iv
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 chmod +x %{buildroot}%{_libdir}/libtar.so.*
-
-#%%check
-#Commented out %check due to no test existence
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -63,7 +62,6 @@ chmod +x %{buildroot}%{_libdir}/libtar.so.*
 %{_includedir}/*
 %{_mandir}/man3/*
 %{_libdir}/libtar.so
-%exclude %{_libdir}/libtar.la
 
 %changelog
 * Tue Aug 16 2022 Ankit Jain <ankitja@vmware.com> 1.2.20-6

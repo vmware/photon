@@ -1,17 +1,18 @@
-%define         aprver  1
+%define aprver 1
+%global __brp_remove_la_files %{nil}
 
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=caac4a92d51b211b0c1374217e4fc64ca8142288
+Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=daa140c83c7e2c45c3980d9dc81d34fa662bebd050653562c39572d0ddf2eaedb71767c518a59d77f59db9b32e00221ef48b9f72ec3666c4521dd511969f3706
 
 %if 0%{?with_check}
 Patch0:         apr-skip-getservbyname-test.patch
@@ -54,12 +55,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/%{name}/*
 %{_libdir}/%{name}.exp
-%{_libdir}/libapr*.so*
+%{_libdir}/libapr*.so.*
 %exclude %dir %{_libdir}/debug
-%exclude %{_libdir}/*.la
-%exclude %{_libdir}/*.a
-%exclude %{_libdir}/*.so
-%exclude %{_libdir}/pkgconfig
 %{_bindir}/*
 
 %files  devel
@@ -71,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-5
+- Don't remove .la files, needed during subversion build
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-4
 - Exclude debug symbols properly
 * Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.7.0-3

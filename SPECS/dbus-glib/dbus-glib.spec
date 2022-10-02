@@ -1,17 +1,18 @@
 Summary:        Glib interfaces to D-Bus API
 Name:           dbus-glib
 Version:        0.110
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        AFL and GPLv2+
 Group:          System Environment/Libraries
-Source0:        http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
-%define sha1 dbus-glib=998b7c762c8f18c906f19fc393bb8712eabe8c97
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:	glib-devel
-BuildRequires:	dbus-devel
-BuildRequires:	systemd-devel
+Source0: http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
+%define sha512  %{name}=c40ccf7118d4951f0e09082216ccd26f21ee906bdf96d912611d3cd29badd7ef446bea74e19f26c28ebceb9e19bb659d11c643c3e712dac499df12907be88a54
+
+BuildRequires:  glib-devel
+BuildRequires:  dbus-devel
+BuildRequires:  systemd-devel
 
 Requires:       glib
 Requires:       dbus
@@ -23,36 +24,38 @@ Provides:       pkgconfig(dbus-glib-1)
 The D-Bus GLib package contains GLib interfaces to the D-Bus API.
 
 %package devel
-Summary:	Libraries and headers for the D-Bus GLib bindings
-Requires:	glib-devel
-Requires:	dbus-devel
-Requires:	%{name} = %{version}
+Summary:    Libraries and headers for the D-Bus GLib bindings
+Requires:   glib-devel
+Requires:   dbus-devel
+Requires:   %{name} = %{version}
 
 %description devel
 Headers and static libraries for the D-Bus GLib bindings
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-%configure                   \
-  --disable-static            \
+%configure \
+  --disable-static \
   --disable-gtk-doc
 
-make %{?_smp_mflags}
+%make_build
+
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/bash_completion.d/*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.la
 %{_libexecdir}/*
 %{_mandir}/man1/*
 %{_datadir}/gtk-doc/*
@@ -64,21 +67,23 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*	Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 0.110-2
-- Add build requres and requires.
-*	Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.110-1
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.110-3
+- Remove .la files
+* Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 0.110-2
+- Add build requires and requires.
+* Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.110-1
 - Upgraded to 0.110
 * Wed May 03 2017 Bo Gan <ganb@vmware.com> 0.108-1
 - Update to 0.108
 * Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.106-5
 - Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.106-4
--	GA - Bump release of all rpms
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.106-4
+- GA - Bump release of all rpms
 * Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 0.106-1
 - Updated to version 0.106
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 0.104-3
 - Add requires to dbus-glib-devel
 * Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.104-2
--	Updated build requires after creating devel package for dbus
-*	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.104-1
--	Initial build.
+- Updated build requires after creating devel package for dbus
+* Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.104-1
+- Initial build.

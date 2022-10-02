@@ -1,7 +1,7 @@
 Summary:    Library for manipulating pipelines
 Name:       libpipeline
 Version:    1.5.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        http://libpipeline.nongnu.org
 Group:      Applications/System
@@ -38,6 +38,7 @@ Development files for libpipeline
 
 %install
 %make_install %{?_smp_mflags}
+rm -f %{buildroot}%{_libdir}/*.la
 
 %check
 make -C tests check %{?_smp_mflags}
@@ -53,11 +54,12 @@ make -C tests check %{?_smp_mflags}
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 %{_mandir}/man3/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-2
+- Remove .la files
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
 - Automatic Version Bump
 * Tue Jul 07 2020 Shreenidhi Shedi <photon-checkins@vmware.com> 1.5.2-1

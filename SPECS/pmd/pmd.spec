@@ -1,6 +1,5 @@
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
-%define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
 %define gssapi_unix_ver 1.0.0
 
 Summary:        Photon Management Daemon
@@ -173,125 +172,114 @@ fi
 
 # Post-install
 %post
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-    sed -i "s/IPADDRESS_MARKER/`ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`/g" /etc/pmd/restapispec.json
-    /sbin/ldconfig
-    %systemd_post pmd.service
-    %systemd_post pmdprivsepd.service
+# First argument is 1 => New Installation
+# First argument is 2 => Upgrade
+sed -i "s/IPADDRESS_MARKER/`ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`/g" /etc/pmd/restapispec.json
+/sbin/ldconfig
+%systemd_post pmd.service
+%systemd_post pmdprivsepd.service
 
-    if [ "$1" = 1 ]; then
-      openssl req \
-          -new \
-          -newkey rsa:2048 \
-          -days 365 \
-          -nodes \
-          -x509 \
-          -subj "/C=US/ST=WA/L=Bellevue/O=vmware/CN=photon-pmd-default" \
-          -keyout /etc/pmd/server.key \
-          -out /etc/pmd/server.crt
+if [ "$1" = 1 ]; then
+  openssl req \
+      -new \
+      -newkey rsa:2048 \
+      -days 365 \
+      -nodes \
+      -x509 \
+      -subj "/C=US/ST=WA/L=Bellevue/O=vmware/CN=photon-pmd-default" \
+      -keyout /etc/pmd/server.key \
+      -out /etc/pmd/server.crt
 
-      chmod 0400 /etc/pmd/server.key
-      chown %{name} /etc/pmd/server.key
-      openssl genrsa -out /etc/pmd/privsep_priv.key 2048
-      openssl rsa -in /etc/pmd/privsep_priv.key -pubout > /etc/pmd/privsep_pub.key
-      chmod 0400 /etc/pmd/privsep*.key
-      chown %{name} /etc/pmd/privsep_pub.key
-    fi
-    %tmpfiles_create %_tmpfilesdir/%{name}.conf
+  chmod 0400 /etc/pmd/server.key
+  chown %{name} /etc/pmd/server.key
+  openssl genrsa -out /etc/pmd/privsep_priv.key 2048
+  openssl rsa -in /etc/pmd/privsep_priv.key -pubout > /etc/pmd/privsep_pub.key
+  chmod 0400 /etc/pmd/privsep*.key
+  chown %{name} /etc/pmd/privsep_pub.key
+fi
+%tmpfiles_create %_tmpfilesdir/%{name}.conf
 
 # Pre-uninstall
 %preun
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-    %systemd_preun pmd.service
-    %systemd_preun pmdprivsepd.service
+# First argument is 0 => Uninstall
+# First argument is 1 => Upgrade
+%systemd_preun pmd.service
+%systemd_preun pmdprivsepd.service
 
 # Post-uninstall
 %postun
-    /sbin/ldconfig
+/sbin/ldconfig
 
-    %systemd_postun_with_restart pmd.service
-    %systemd_postun_with_restart pmdprivsepd.service
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-if [ $1 -eq 0 ] ; then
-    if getent passwd %{name} >/dev/null; then
-        /sbin/userdel %{name}
-    fi
-    if getent group %{name} >/dev/null; then
-        /sbin/groupdel %{name}
-    fi
-fi
+%systemd_postun_with_restart pmd.service
+%systemd_postun_with_restart pmdprivsepd.service
 
 # Post-uninstall
 %postun cli
-    /sbin/ldconfig
+/sbin/ldconfig
 
 %post gssapi-unix
-    # Create directory "/usr/lib/gss" if not exist
-    if [ ! -d "%{_libdir}/gss" ] ; then
-        mkdir -p %{_libdir}/gss
+# Create directory "/usr/lib/gss" if not exist
+if [ ! -d "%{_libdir}/gss" ] ; then
+    mkdir -p %{_libdir}/gss
+fi
+
+# Create directory "/etc/gss" if not exist
+if [ ! -d "%{_sysconfdir}/gss" ] ; then
+    mkdir -p %{_sysconfdir}/gss
+fi
+
+# Create file "/etc/gss/mech" if not exist
+if [ ! -f "%{_mech_file}" ]; then
+    touch %{_mech_file}
+fi
+
+# Add symlink of libgssapi_unix_creds.so to %{_libdir} directory
+if [ ! -h %{_libdir}/libgssapi_unix_creds.so ]; then
+    /bin/ln -s %{_libdir}/gssapi_unix/libgssapi_unix_creds.so %{_libdir}/libgssapi_unix_creds.so
+fi
+
+# Add libgssapi_unix.so to gssapi_unix directory
+if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
+    /bin/ln -sf %{_libdir}/gssapi_unix/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
+fi
+
+# Update file "/etc/gss/mech" with GSSAPI mech_id
+if [ -f "%{_mech_file}" ]; then
+    if [ `grep -c "%{_mech_id}" "%{_mech_file}"` -lt 1 ]; then
+        echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
     fi
+fi
 
-    # Create directory "/etc/gss" if not exist
-    if [ ! -d "%{_sysconfdir}/gss" ] ; then
-        mkdir -p %{_sysconfdir}/gss
-    fi
+chmod 644 %{_mech_file}
 
-    # Create file "/etc/gss/mech" if not exist
-    if [ ! -f "%{_mech_file}" ]; then
-        touch %{_mech_file}
-    fi
-
-    # Add symlink of libgssapi_unix_creds.so to %{_libdir} directory
-    if [ ! -h %{_libdir}/libgssapi_unix_creds.so ]; then
-        /bin/ln -s %{_libdir}/gssapi_unix/libgssapi_unix_creds.so %{_libdir}/libgssapi_unix_creds.so
-    fi
-
-    # Add libgssapi_unix.so to gssapi_unix directory
-    if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        /bin/ln -sf %{_libdir}/gssapi_unix/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
-    fi
-
-    # Update file "/etc/gss/mech" with GSSAPI mech_id
-    if [ -f "%{_mech_file}" ]; then
-        if [ `grep -c "%{_mech_id}" "%{_mech_file}"` -lt 1 ]; then
-            echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
-        fi
-    fi
-
-    chmod 644 %{_mech_file}
-
-    /sbin/ldconfig
+/sbin/ldconfig
 
 # Pre-uninstall gssapi-unix
 %preun gssapi-unix
 
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
+# First argument is 0 => Uninstall
+# First argument is 1 => Upgrade
 
 if [ "$1" = 0 ]; then
-    # Cleanup libgssapi_unix_creds.so symlink
-    if [ -h %{_libdir}/libgssapi_unix_creds.so ]; then
-        rm -f %{_libdir}/libgssapi_unix_creds.so
-    fi
+# Cleanup libgssapi_unix_creds.so symlink
+if [ -h %{_libdir}/libgssapi_unix_creds.so ]; then
+    rm -f %{_libdir}/libgssapi_unix_creds.so
+fi
 
-    # Cleanup GSSAPI UNIX symlink
-    if [ -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        rm -f %{_libdir}/gss/libgssapi_unix.so
-    fi
+# Cleanup GSSAPI UNIX symlink
+if [ -h %{_libdir}/gss/libgssapi_unix.so ]; then
+    rm -f %{_libdir}/gss/libgssapi_unix.so
+fi
 
-    # Remove GSSAPI configuration from GSS mech file
-    if [ -f "%{_mech_file}" ]; then
-        if [ `grep -c  "%{_mech_id}" "%{_mech_file}"` -gt 0 ]; then
-            cat "%{_mech_file}" | sed '/%{_mech_id}/d' > "/tmp/mech-$$"
-            if [ -s /tmp/mech-$$ ]; then
-                mv "/tmp/mech-$$" "%{_mech_file}"
-            fi
+# Remove GSSAPI configuration from GSS mech file
+if [ -f "%{_mech_file}" ]; then
+    if [ `grep -c  "%{_mech_id}" "%{_mech_file}"` -gt 0 ]; then
+        cat "%{_mech_file}" | sed '/%{_mech_id}/d' > "/tmp/mech-$$"
+        if [ -s /tmp/mech-$$ ]; then
+            mv "/tmp/mech-$$" "%{_mech_file}"
         fi
     fi
+fi
 fi
 
 %if 0%{?with_check}
@@ -308,126 +296,125 @@ popd
 rm -rf %{buildroot}/*
 
 %files
-    %defattr(-,root,root,0755)
-    %{_bindir}/pmd
-    %{_bindir}/pmdprivsepd
-    %{_libdir}/systemd/system/pmd.service
-    %{_libdir}/systemd/system/pmdprivsepd.service
-    /etc/pmd/pmd.conf
-    /etc/pmd/api_sddl.conf
-    /etc/pmd/restapispec.json
-    /etc/pmd/restconfig.txt
-    %attr(0766, %{name}, %{name}) %dir /var/opt/%{name}/log
-    %attr(0766, %{name}, %{name}) /var/log/%{name}
-    %_tmpfilesdir/%{name}.conf
-    %dir /etc/pmd.roles.plugins.d/
-    %dir /etc/pmd.roles.d/
+%defattr(-,root,root,0755)
+%{_bindir}/pmd
+%{_bindir}/pmdprivsepd
+%{_libdir}/systemd/system/pmd.service
+%{_libdir}/systemd/system/pmdprivsepd.service
+/etc/pmd/pmd.conf
+/etc/pmd/api_sddl.conf
+/etc/pmd/restapispec.json
+/etc/pmd/restconfig.txt
+%attr(0766, %{name}, %{name}) %dir /var/opt/%{name}/log
+%attr(0766, %{name}, %{name}) /var/log/%{name}
+%_tmpfilesdir/%{name}.conf
+%dir /etc/pmd.roles.plugins.d/
+%dir /etc/pmd.roles.d/
 
 %files libs
-    %defattr(-,root,root)
-    %{_libdir}/libpmdclient.so*
+%defattr(-,root,root)
+%{_libdir}/libpmdclient.so*
 
 %files cli
-    %defattr(-,root,root)
-    %{_bindir}/pmd-cli
-    %exclude %{_libdir}/libpmdclient.a
+%defattr(-,root,root)
+%{_bindir}/pmd-cli
+%exclude %{_libdir}/libpmdclient.a
 
 %files devel
-    %defattr(-,root,root)
-    %{_includedir}/pmd/*.h
-    %{_libdir}/pkgconfig/pmdclient.pc
+%defattr(-,root,root)
+%{_includedir}/pmd/*.h
+%{_libdir}/pkgconfig/pmdclient.pc
 
 %files python3
-    %defattr(-,root,root)
-    %{_python3_sitearch}/%{name}/
-    %{_python3_sitearch}/%{name}_python-*.egg-info
+%defattr(-,root,root)
+%{python3_sitearch}/%{name}/
+%{python3_sitearch}/%{name}_python-*.egg-info
 
 # gssapi_unix
 %files gssapi-unix
-    %defattr(-,root,root)
-    %dir %{_libdir}/gssapi_unix
-    %dir %{_bindir}/gssapi_unix
-    %dir %{_includedir}/gssapi_unix
-    %{_libdir}/gssapi_unix/*.so*
-    %{_bindir}/gssapi_unix/unix_srp
-    %{_includedir}/gssapi_unix/*.h
-    %exclude %{_libdir}/gssapi_unix/*.a
-    %exclude %{_libdir}/gssapi_unix/*.la
+%defattr(-,root,root)
+%dir %{_libdir}/gssapi_unix
+%dir %{_bindir}/gssapi_unix
+%dir %{_includedir}/gssapi_unix
+%{_libdir}/gssapi_unix/*.so*
+%{_bindir}/gssapi_unix/unix_srp
+%{_includedir}/gssapi_unix/*.h
+%exclude %{_libdir}/gssapi_unix/*.a
 
 %changelog
-*   Mon Sep 19 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-11
--   Bump to consume latest tdnf (3.3.2)
-*   Mon May 09 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-10
--   Bump to consume latest tdnf (3.3.1)
-*   Fri Dec 10 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-9
--   Bump to consume latest tdnf (3.2.2)
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.0.7-8
--   Bump up to compile with python 3.10
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.0.7-7
--   Bump up release for openssl
-*   Mon Jul 26 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-6
--   Bump to consume latest tdnf
-*   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.7-5
--   Bump to consume latest tdnf
-*   Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4
--   Use GSSAPI-Unix Code from github
--   Support for openssl v1.1.1 added to GSSAPI-Unix Code
-*   Sat Feb 20 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-3
--   Update to 0.0.7-GA
-*   Fri Feb 19 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-2
--   Bump to consume latest tdnf
-*   Thu Dec 24 2020 Tapas Kundu <tkundu@vmware.com> 0.0.7-1
--   Update to 0.0.7-beta
--   Added support for network-config-manager
--   Support for "pmd-cli net" and python3 "server.net"
--   Added test directory which includes tests for both
--   pmd-cli and python3 for net to test changes locally
--   Removed support for netmgmt
-*   Thu Nov 19 2020 Shreyas B <shreyasb@vmware.com> 0.0.6-7
--   Remove LightWave & LikeWise dependency.
--   Add dcerpc & openldap dependency.
--   Build gssapi_unix as subpackage of PMD.
--   Support for OpenSSL v1.1.1.
--   Fix Build issues.
-*   Tue Nov 03 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-6
--   Added null check for pszgpgkeys
-*   Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 0.0.6-5
--   Build with tdnf v3.0.0-beta
-*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-4
--   Mass removal python2
-*   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-3
--   Build with tdnf 2.1.1
-*   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.6-2
--   apply patch for tdnf-2.1.0
-*   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 0.0.6-1
--   Updated to release 0.0.6
--   Included role mgmt changes.
-*   Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
--   Fix a bug in firewall management persist commands
-*   Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
--   Fix for if_iaid and duid.
-*   Tue Dec 11 2018 Michelle Wang <michellew@vmware.com> 0.0.5-7
--   DNS_MODE_INVALID is renamed with DNS_MODE_UNKNOWN in netmgmt 1.2.0.
-*   Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-6
--   Build with tdnf 2.0.0.
-*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  0.0.5-5
--   Fixed the log file directory structure
-*   Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
--   update to use c-rest-engine-1.11
-*   Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
--   Bug fixes and net commands fixes
-*   Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
--   Apply patch for local rpc connection separation
--   patch for couple of minor coverity scan fixes.
-*   Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
--   Update to version 0.0.5
-*   Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
--   Add privilege separation
-*   Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
--   Fix REST param handling, CLI locale.
-*   Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
--   Fix python3 string issues.
-*   Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
--   Changes for lightwave dependencies
-*   Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
--   Initial build.  First version
+* Mon Sep 19 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-11
+- Bump to consume latest tdnf (3.3.2)
+* Mon May 09 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-10
+- Bump to consume latest tdnf (3.3.1)
+* Fri Dec 10 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-9
+- Bump to consume latest tdnf (3.2.2)
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.0.7-8
+- Bump up to compile with python 3.10
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.0.7-7
+- Bump up release for openssl
+* Mon Jul 26 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-6
+- Bump to consume latest tdnf
+* Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.7-5
+- Bump to consume latest tdnf
+* Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4
+- Use GSSAPI-Unix Code from github
+- Support for openssl v1.1.1 added to GSSAPI-Unix Code
+* Sat Feb 20 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-3
+- Update to 0.0.7-GA
+* Fri Feb 19 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-2
+- Bump to consume latest tdnf
+* Thu Dec 24 2020 Tapas Kundu <tkundu@vmware.com> 0.0.7-1
+- Update to 0.0.7-beta
+- Added support for network-config-manager
+- Support for "pmd-cli net" and python3 "server.net"
+- Added test directory which includes tests for both
+- pmd-cli and python3 for net to test changes locally
+- Removed support for netmgmt
+* Thu Nov 19 2020 Shreyas B <shreyasb@vmware.com> 0.0.6-7
+- Remove LightWave & LikeWise dependency.
+- Add dcerpc & openldap dependency.
+- Build gssapi_unix as subpackage of PMD.
+- Support for OpenSSL v1.1.1.
+- Fix Build issues.
+* Tue Nov 03 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-6
+- Added null check for pszgpgkeys
+* Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 0.0.6-5
+- Build with tdnf v3.0.0-beta
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-4
+- Mass removal python2
+* Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-3
+- Build with tdnf 2.1.1
+* Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.6-2
+- apply patch for tdnf-2.1.0
+* Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 0.0.6-1
+- Updated to release 0.0.6
+- Included role mgmt changes.
+* Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
+- Fix a bug in firewall management persist commands
+* Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
+- Fix for if_iaid and duid.
+* Tue Dec 11 2018 Michelle Wang <michellew@vmware.com> 0.0.5-7
+- DNS_MODE_INVALID is renamed with DNS_MODE_UNKNOWN in netmgmt 1.2.0.
+* Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-6
+- Build with tdnf 2.0.0.
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  0.0.5-5
+- Fixed the log file directory structure
+* Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
+- update to use c-rest-engine-1.11
+* Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
+- Bug fixes and net commands fixes
+* Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
+- Apply patch for local rpc connection separation
+- patch for couple of minor coverity scan fixes.
+* Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
+- Update to version 0.0.5
+* Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
+- Add privilege separation
+* Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
+- Fix REST param handling, CLI locale.
+* Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
+- Fix python3 string issues.
+* Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
+- Changes for lightwave dependencies
+* Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
+- Initial build.  First version

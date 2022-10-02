@@ -1,7 +1,8 @@
+%define majorver 8.6
+
 Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.10
-%define majorver 8.6
 Release:        2%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
@@ -10,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha1    tcl-core=8a51f3cf987e75f859b5e378f27d9182030cc3f7
+%define sha512 tcl-core=de31ac8fc5226c831198af88befa05ccb1842dcfd209690e25b907f062033b3ae7a77bc12e85c4210ce85cfd7c598060e03fc81b0e624d422bfe4df655cc9068
 
 Patch0:         tcl-CVE-2021-35331.patch
 
@@ -42,10 +43,10 @@ cd unix
        --enable-shared      \
        --disable-static     \
        --enable-symbols
+
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install -C unix %{?_smp_mflags}
 
 ln -s tclsh%{majorver} %{buildroot}%{_bindir}/tclsh
@@ -61,11 +62,12 @@ ln -s %{_libdir}/%{name}Config.sh %{buildroot}/%{_libdir}/%{name}%{majorver}/%{n
 
 mkdir -p %{buildroot}/%{_includedir}/%{name}-private/{generic,unix}
 find generic unix -name "*.h" -exec cp -p '{}' %{buildroot}/%{_includedir}/%{name}-private/'{}' ';'
-( cd %{buildroot}/%{_includedir}
-	for i in *.h ; do
-				[ -f %{buildroot}/%{_includedir}/%{name}-private/generic/$i ] && ln -sf ../../$i %{buildroot}/%{_includedir}/%{name}-private/generic ;
-					done
-					)
+(
+ cd %{buildroot}/%{_includedir}
+    for i in *.h ; do
+      [ -f %{buildroot}/%{_includedir}/%{name}-private/generic/$i ] && ln -sf ../../$i %{buildroot}/%{_includedir}/%{name}-private/generic
+    done
+)
 
 # remove buildroot traces
 sed -i -e "s|$PWD/unix|%{_libdir}|; s|$PWD|%{_includedir}/%{name}-private|" %{buildroot}/%{_libdir}/%{name}Config.sh
@@ -93,7 +95,7 @@ make test %{?_smp_mflags}
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/tcl.pc
-/%{_libdir}/libtclstub8.6.a
+%{_libdir}/libtclstub8.6.a
 %{_mandir}/mann/*
 %{_mandir}/man3/*
 # exclude /usr/share/man/man3/Thread.3.gz conflict with package perl-5.28.0-5.ph3.x86_64

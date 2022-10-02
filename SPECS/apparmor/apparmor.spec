@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.0.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -8,41 +8,35 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
 
-Source0:        https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
+Source0: https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=2465a8bc400e24e548b0589b7b022fb8325c53858429b9c54204f989d5589d7bd99c9507bde88a48f9965a55edcbac98efeeb6b93aeefe6a27afa0b7e851aea6
 
-BuildRequires:  python3
+Patch0:         fix-build-failure-in-apparmor.patch
+Patch1:         remove-distutils.patch
+
 BuildRequires:  perl
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  swig
 BuildRequires:  make
 BuildRequires:  gawk
 BuildRequires:  which
-BuildRequires:  libstdc++
 BuildRequires:  libstdc++-devel
 BuildRequires:  gcc
-BuildRequires:  libgcc
 BuildRequires:  libgcc-devel
-BuildRequires:  glibc
 BuildRequires:  glibc-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
-BuildRequires:  httpd
 BuildRequires:  httpd-devel
 BuildRequires:  httpd-tools
 BuildRequires:  apr
 BuildRequires:  apr-util-devel
-BuildRequires:  Linux-PAM
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  dejagnu
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools, python3-xml
-
-Patch0:         fix-build-failure-in-apparmor.patch
-Patch1:         remove-distutils.patch
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %description
 AppArmor is a file and network mandatory access control
@@ -216,10 +210,10 @@ make check %{?_smp_mflags}
 
 %install
 export PYTHONPATH=%{python3_sitelib}
-export PYTHON=/usr/bin/python3
+export PYTHON=%{python3}
 export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
 cd libraries/libapparmor
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../binutils/
@@ -236,6 +230,15 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
+%preun parser
+%systemd_preun apparmor.service
+
+%post parser
+%systemd_post apparmor.service
+
+%postun parser
+%systemd_postun_with_restart apparmor.service
+
 %files -n libapparmor
 %defattr(-,root,root)
 %{_libdir}/libapparmor.so.*
@@ -249,7 +252,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %files -n libapparmor-devel
 %defattr(-,root,root)
 %{_libdir}/libapparmor.a
-%{_libdir}/libapparmor.la
 %{_libdir}/libapparmor.so
 %{_libdir}/pkgconfig/libapparmor.pc
 %dir %{_includedir}/aalogparse
@@ -302,15 +304,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %doc %{_mandir}/man1/aa-exec.1.gz
 %doc %{_mandir}/man2/aa_stack_profile.2.gz
 
-%preun parser
-%systemd_preun apparmor.service
-
-%post parser
-%systemd_post apparmor.service
-
-%postun parser
-%systemd_postun_with_restart apparmor.service
-
 %files abstractions
 %defattr(644,root,root,755)
 %dir %{_sysconfdir}/apparmor.d/abstractions
@@ -361,6 +354,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-9
+- Remove .la files
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 3.0.0-8
 - Bump version as a part of httpd v2.4.54 upgrade
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.0-7

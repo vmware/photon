@@ -1,15 +1,15 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.14.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%{version}.tar.xz
-%define sha1    %{name}=07e36664c9effa548b6d58cd7d7dce5da10a16ca
+Source0: https://www.freedesktop.org/software/ModemManager/ModemManager-%{version}.tar.xz
+%define sha512  %{name}=850217895df92e4037e94afd0947de8079d2b49b085d96af7cdb5714ed87d40e9a892750c8392370c940a259b00bfccad67fa09a2a8861ce1e6d50aa355f7bc9
 
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
@@ -37,7 +37,7 @@ communicate with the actual device.
 
 %package      devel
 Summary:      Header and development files for ModemManager
-Requires:     %{name} = %{version}
+Requires:     %{name} = %{version}-%{release}
 Requires:     libqmi-devel
 Requires:     gobject-introspection-devel
 %description  devel
@@ -47,11 +47,16 @@ It contains the libraries and header files for ModemManager
 %autosetup -p1
 
 %build
-%configure --disable-static --enable-more-warnings=no
-make %{?_smp_mflags}
+%configure \
+    --disable-static \
+    --enable-more-warnings=no \
+    --without-qmi \
+    --without-mbim
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} UDEV_BASE_DIR=%{_libdir}/udev install %{?_smp_mflags}
+%make_install UDEV_BASE_DIR=%{_libdir}/udev %{?_smp_mflags}
 
 %check
 %if 0%{?with_check}
@@ -82,13 +87,15 @@ make %{?_smp_mflags} check
 %{_udevrulesdir}/*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/ModemManager/*
 %{_includedir}/libmm-glib/*
 %{_libdir}/pkgconfig/ModemManager.pc
 %{_libdir}/pkgconfig/mm-glib.pc
-%{_libdir}/libmm-glib.la
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-5
+- Remove .la files
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-4
 - Exclude debug symbols properly
 * Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.14.2-3

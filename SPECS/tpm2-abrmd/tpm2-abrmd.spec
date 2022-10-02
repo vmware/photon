@@ -1,16 +1,24 @@
 Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:           tpm2-abrmd
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tpm2=fb6e3565ea65813e30dee0b50b9c20b36973182f
-BuildRequires:	which dbus-devel glib-devel tpm2-tss-devel
-Requires:       dbus glib tpm2-tss
+%define sha512 tpm2=2191c7e466271cb85fcb20fcd91c78df80f53030fb055d0b4670db33708939b60a9124955356f27662975abdcb9c8d144df884003986ffdbd801ca4e47edc21a
+
+BuildRequires: which
+BuildRequires: dbus-devel
+BuildRequires: glib-devel
+BuildRequires: tpm2-tss-devel
+
+Requires: dbus
+Requires: glib
+Requires: tpm2-tss
 
 %description
 TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
@@ -22,16 +30,18 @@ Requires:    %{name} = %{version}-%{release}
 The libraries and header files needed for TSS2 ABRMD development.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 %configure \
     --disable-static \
     --with-systemdsystemunitdir=/usr/lib/systemd/system \
     --with-dbuspolicydir=/etc/dbus-1/system.d
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,16 +60,17 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_includedir}/tss2/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libtss2-tcti-tabrmd.la
 %{_libdir}/libtss2-tcti-tabrmd.so
 %{_libdir}/libtss2-tcti-tabrmd.so.0
 %{_mandir}/man3
 %{_mandir}/man7
 
 %changelog
-*   Tue Aug 18 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.3-1
--   Automatic Version Bump
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
--   Automatic Version Bump
-*   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.0-1
--   Initial build. First version
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.3-2
+- Remove .la files
+* Tue Aug 18 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.3-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
+- Automatic Version Bump
+* Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.0-1
+- Initial build. First version

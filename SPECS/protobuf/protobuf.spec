@@ -1,14 +1,16 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.19.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
-Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=2a69db42342fab77bb1e105dd19fb12d9f9236cf
+
+Source0: protobuf-%{version}.tar.gz
+%define sha512 protobuf=2653b9852e5ac69f1de9b6ac02887c366aa0a9efd2b29e53135f61a9a10f5a1b5853a8c4cbb3658f519dfdbde9f32c547c39751ab417f123162b08be9e76c9e1
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -113,11 +115,8 @@ popd
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libprotobuf-lite.la
 %{_libdir}/libprotobuf-lite.so
-%{_libdir}/libprotobuf.la
 %{_libdir}/libprotobuf.so
-%{_libdir}/libprotoc.la
 %{_libdir}/libprotoc.so
 
 %files static
@@ -133,37 +132,39 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
-*   Wed Mar 02 2022 Harinadh D <hdommaraju@vmware.com> 3.19.4-1
--   Version update
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-2
--   Bump up to compile with python 3.10
-*   Wed Feb 10 2021 Harinadh D <hdommaraju@vmware.com> 3.14.0-1
--   Update protobuf
-*   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.13.0-2
--   Disabled few slow tests on aarch64
-*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.13.0-1
--   Automatic Version Bump
-*   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.12.3-1
--   Automatic Version Bump
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.6.1-2
--   Mass removal python2
-*   Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1
--   Update to version 3.6.1
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-6
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.2.0-5
--   Use python2 explicitly while building
-*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4
--   Renamed openjdk to openjdk8
-*   Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3
--   Update python3 version
-*   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.2.0-2
--   Build protobuf-java.
-*   Fri Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
--   Upgrade to 3.2.0
-*   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
--   Build protobuf-python.
-*   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
--   Build static lib.
-*   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-1
--   Initial packaging for Photon
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.19.4-2
+- Remove .la files
+* Wed Mar 02 2022 Harinadh D <hdommaraju@vmware.com> 3.19.4-1
+- Version update
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-2
+- Bump up to compile with python 3.10
+* Wed Feb 10 2021 Harinadh D <hdommaraju@vmware.com> 3.14.0-1
+- Update protobuf
+* Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.13.0-2
+- Disabled few slow tests on aarch64
+* Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.13.0-1
+- Automatic Version Bump
+* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.12.3-1
+- Automatic Version Bump
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.6.1-2
+- Mass removal python2
+* Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1
+- Update to version 3.6.1
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-6
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.2.0-5
+- Use python2 explicitly while building
+* Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4
+- Renamed openjdk to openjdk8
+* Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3
+- Update python3 version
+* Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.2.0-2
+- Build protobuf-java.
+* Fri Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
+- Upgrade to 3.2.0
+* Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
+- Build protobuf-python.
+* Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+- Build static lib.
+* Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-1
+- Initial packaging for Photon

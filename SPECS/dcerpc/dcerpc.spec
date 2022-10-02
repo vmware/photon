@@ -1,19 +1,22 @@
 Summary:        DCERPC
 Name:           dcerpc
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Novell DCE-RPC - BSD
 URL:            https://github.com/vmware/likewise-open/tree/lcifs/dcerpc
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        dcerpc-%{version}.tar.gz
-%define sha1    dcerpc=63abc1d5d1c421baabc5442b9b9a1a7653ef4271
+%define sha512 dcerpc=dbe1cc49c982f33be7f17fc64c97266877f016555a57a27d31ce08279462c998885fc03570daa47e0fcdf48b178205309af3eb83fc2cee207c3747f3abc88e65
+
 Patch0:         fix_arm_build.patch
 BuildRequires:  krb5-devel
 BuildRequires:  curl-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  util-linux-devel
+
 Requires:       curl
 Requires:       krb5
 Requires:       e2fsprogs
@@ -29,8 +32,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 autoreconf -fi
@@ -45,7 +47,6 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}/*
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -53,7 +54,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/dceidl
 %{_bindir}/idl
 %{_bindir}/uuid
-%{_libdir}/libdcerpc.so
 %{_libdir}/libdcerpc.so.1
 %{_libdir}/libdcerpc.so.1.0.2
 %{_sbindir}/dcerpcd
@@ -132,11 +132,13 @@ rm -rf %{buildroot}/*
 %{_includedir}/ncklib/cs_s_conv.c
 %{_includedir}/ncklib/sysconf.h
 %{_datadir}/dcerpc/idl.cat
-%exclude %{_libdir}/libdcerpc.la
-%exclude %{_libdir}/libdcerpc.a
+%{_libdir}/libdcerpc.so
+%{_libdir}/libdcerpc.a
 
 %changelog
-*   Fri Dec 04 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-2
--   Fix arm build issue.
-*   Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-1
--   Initial build.  First version
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-3
+- Remove .la files
+* Fri Dec 04 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-2
+- Fix arm build issue.
+* Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-1
+- Initial build.  First version
