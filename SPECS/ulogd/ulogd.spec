@@ -7,14 +7,18 @@ URL:            https://git.netfilter.org/ulogd2/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.netfilter.org/pub/ulogd/%{name}-%{version}.tar.bz2
-%define sha1 ulogd=f2d90469e2842e2bfbe19c55cf6d56ac107aa4b9
+%define sha512 ulogd=1ad12bcf91bebe8bf8580de38693318cdabd17146f1f65acf714334885cf13adf5f783abdf2dd67474ef12f82d2cfb84dd4859439bc7af10a0df58e4c7e48b09
+
 Source1:        ulogd.service
+
+Patch0:         compilation-fix-for-ulogd-mysql.patch
+
 BuildRequires:  mysql-devel libpcap-devel sqlite-devel
 BuildRequires:  libnfnetlink-devel libtirpc-devel pkg-config
 BuildRequires:  systemd-devel
 Requires:       systemd
-Patch0:         compilation-fix-for-ulogd-mysql.patch
 
 %description
 ulogd is a logging daemon that reads event messages coming from the
@@ -45,31 +49,30 @@ Requires: %{name} = %{version}-%{release}
 %description pcap
 ulogd-pcap is a pcap  output plugin for ulogd.
 
-
 %prep
-%setup   -q
-%patch0  -p1
+%autosetup -p1
 
 %build
 %configure --enable-static=no \
-           --enable-nfacct=no --enable-nflog=no \
-           --enable-nfct=no \
-	   --with-dbi-lib=%{_libdir} \
-	   --with-pcap-lib=%{_libdir} \
-	   --with-sqlite3-lib=%{_libdir}
+       --enable-nfacct=no --enable-nflog=no \
+       --enable-nfct=no \
+       --with-dbi-lib=%{_libdir} \
+       --with-pcap-lib=%{_libdir} \
+       --with-sqlite3-lib=%{_libdir}
 make %{?_smp_mflags}
 
 %install
-
-rm -rf %{buildroot}
 install -vd %{buildroot}/%{_sysconfdir}
 install -vd %{buildroot}/%{_libdir}/ulogd
 install -vd %{buildroot}/%{_sbindir}/sbin
 install -vd %{buildroot}/%{_mandir}/man8
 install -vd %{buildroot}/%{_libdir}/systemd/system/
 install -vd %{buildroot}/var/log/ulogd/
-make DESTDIR=%{buildroot} install
-rm -f %{buildroot}/lib/systemd/system/ulogd.service
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+rm -f %{buildroot}/lib/systemd/system/ulogd.service \
+      %{buildroot}%{_libdir}/*.la
+
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 ulogd.conf %{buildroot}%{_sysconfdir}/ulogd.conf
 install ulogd.8 %{buildroot}/%{_mandir}/man8/ulogd.8
@@ -100,7 +103,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/ulogd.conf
 %{_libdir}/systemd/system/ulogd.service
 %dir %{_localstatedir}/log/ulogd
-%exclude %{_libdir}/ulogd/*.la
 %exclude %{_libdir}/ulogd/ulogd_output_MYSQL.so
 %exclude %{_libdir}/ulogd/ulogd_output_PCAP.so
 %exclude %{_libdir}/ulogd/ulogd_output_SQLITE3.so
@@ -108,7 +110,6 @@ rm -rf %{buildroot}
 %files mysql
 %defattr(0644,root,root,0755)
 %{_libdir}/ulogd/ulogd_output_MYSQL.so
-
 
 %files sqlite
 %defattr(0644,root,root,0755)
@@ -119,5 +120,5 @@ rm -rf %{buildroot}
 %{_libdir}/ulogd/ulogd_output_PCAP.so
 
 %changelog
-*   Tue Jul 02 2019 Vikash Bansal <bvikas@vmware.com> 2.0.7-1
--   Added ulogd package to photon-3.0
+* Tue Jul 02 2019 Vikash Bansal <bvikas@vmware.com> 2.0.7-1
+- Added ulogd package to photon-3.0

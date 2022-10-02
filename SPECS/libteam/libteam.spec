@@ -1,23 +1,23 @@
-Summary:	Team driver
-Name:		libteam
-Version:	1.31
-Release:	1%{?dist}
+Summary:    Team driver
+Name:       libteam
+Version:    1.31
+Release:    2%{?dist}
 License:        GPLv2+
 URL:            http://www.libteam.org
 Source0:        http://libteam.org/files/%{name}-%{version}.tar.gz
-%define sha1 libteam=338f2bae08e143bc3f7a84317ddc3053cff2691d
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-BuildRequires:	libnl-devel
-BuildRequires:	libdaemon-devel
-BuildRequires:	jansson-devel
-Distribution:	Photon
+%define sha512 libteam=f18cbe7316f6ac8ddf019d2e4b52e19fbdbc75d637f8cacda15b29d679508919230e1af3eb656febe7aafdf8a94c4334f2ae95ecd60bc89ac379622b99d3b615
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+BuildRequires:  libnl-devel
+BuildRequires:  libdaemon-devel
+BuildRequires:  jansson-devel
+Distribution:   Photon
 %description
 The libteam package contains the user-space components of the Team driver. It provides a mechanism to team multiple NICs into one logical port at the L2 layer.
 
 %package devel
-Summary:	Development libraries and header files for libteam
-Requires:	%{name} = %{version}-%{release}
+Summary:    Development libraries and header files for libteam
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 The package contains libraries and header files for
@@ -39,14 +39,14 @@ The package contains libraries and header files for
 developing applications that use teamd and libteamdctl
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -D -m 0644 teamd/redhat/systemd/teamd@.service  %{buildroot}%{_unitdir}/teamd@.service
 install -p -m 755 utils/bond2team %{buildroot}%{_bindir}/bond2team
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
@@ -75,7 +75,6 @@ install -p -m 644 teamd/example_configs/* %{buildroot}%{_datadir}/teamd/example_
 %defattr(-,root,root)
 %{_includedir}/team.h
 %{_libdir}/libteam.a
-%{_libdir}/libteam.la
 %{_libdir}/libteam.so
 %{_libdir}/pkgconfig/libteam.pc
 
@@ -91,11 +90,12 @@ install -p -m 644 teamd/example_configs/* %{buildroot}%{_datadir}/teamd/example_
 %files -n teamd-devel
 %{_includedir}/teamdctl.h
 %{_libdir}/libteamdctl.a
-%{_libdir}/libteamdctl.la
 %{_libdir}/libteamdctl.so
 %{_libdir}/pkgconfig/libteamdctl.pc
 %{_datadir}/teamd/*
 
 %changelog
-*   Tue Dec 08 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.31-1
--   Initial build. First version
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.31-2
+- Remove .la files
+* Tue Dec 08 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.31-1
+- Initial build. First version

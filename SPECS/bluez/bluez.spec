@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.58
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -73,7 +73,6 @@ make %{?_smp_mflags} -k check
 %{_libexecdir}/bluetooth/bluetoothd
 %{_datadir}/zsh/site-functions/_bluetoothctl
 %{_libdir}/*.so.*
-%{_libdir}/libbluetooth.la
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
@@ -88,6 +87,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.58-6
+- Remove .la files
 * Mon Sep 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-5
 - Patched to fix CVE-2022-39176, CVE-2022-39177
 * Tue Mar 22 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-4

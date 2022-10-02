@@ -1,14 +1,14 @@
 Summary:    libpsl - C library to handle the Public Suffix List
 Name:       libpsl
 Version:    0.20.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    MIT
 URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 libpsl=890376d6038652911cfa853ccfb5b993ae0743ee
+%define sha512 libpsl=fa9f6f7f0447d9fe00f5dfca5262c56ff26217eea44d0f7fc1e5d982224c41874e753f0aa06dd9e5d7d03d4f04e3dacd4f36034cc8dd0fc6e2c28b49a23e62fe
 
 BuildRequires: icu-devel
 BuildRequires: python2
@@ -56,7 +56,7 @@ for example it checks if domains are public suffixes, checks if cookie-domain
 is acceptable for domains and so on.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-silent-rules \
@@ -64,11 +64,11 @@ is acceptable for domains and so on.
 make %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 install -m0755 src/psl-make-dafsa %{buildroot}%{_bindir}/
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -89,13 +89,14 @@ make check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 0.20.2-3
--   Bump up to use new icu lib.
-*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.20.2-2
--   Added python2 as a build requirement
-*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1
--   Initial packaging of libpsl
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.20.2-4
+- Remove .la files
+* Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 0.20.2-3
+- Bump up to use new icu lib.
+* Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.20.2-2
+- Added python2 as a build requirement
+* Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1
+- Initial packaging of libpsl

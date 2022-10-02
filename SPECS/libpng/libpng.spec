@@ -1,35 +1,36 @@
-Summary:	contains libraries for reading and writing PNG files.
-Name:		libpng
-Version:	1.6.35
-Release:	2%{?dist}
-License:	libpng
-URL:		http://www.libpng.org/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
-Patch0:		libpng-CVE-2019-7317.patch
-%define sha1 libpng=0df1561aa1da610e892239348970d574b14deed0
-Provides:	pkgconfig(libpng)
-Provides:	pkgconfig(libpng16)
+Summary:    contains libraries for reading and writing PNG files.
+Name:       libpng
+Version:    1.6.35
+Release:    3%{?dist}
+License:    libpng
+URL:        http://www.libpng.org/
+Group:      System Environment/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
+Patch0:     libpng-CVE-2019-7317.patch
+%define sha512 libpng=b69152bc7869e98536effa8e45e2dac7bffee26aa9e31fc90b37506a702256919bcf4dd9cadc42fa4e45143bc023ffd7c637742367e58707e8c2226b3a09eee0
+Provides:   pkgconfig(libpng)
+Provides:   pkgconfig(libpng16)
 %description
 The libpng package contains libraries used by other programs for reading and writing PNG files. The PNG format was designed as a replacement for GIF and, to a lesser extent, TIFF, with many improvements and extensions and lack of patent problems.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-%description	devel
+%package    devel
+Summary:    Header and development files
+Requires:   %{name} = %{version}-%{release}
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+rm -f %{buildroot}%{_libdir}/*.la
 
 %check
 make %{?_smp_mflags} -k check
@@ -52,21 +53,22 @@ make %{?_smp_mflags} -k check
 %{_bindir}/*-config
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/man/man3/*
 
 %changelog
-*	Fri May 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.6.35-2
--	Patch update to fix CVE-2019-7317
-*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.6.35-1
--       Update to 1.6.35
-*	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.29-1
--	Updated to version 1.6.29
-*       Thu Feb 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.27-1
--       Updated to version 1.6.27
-*       Mon Sep 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.23-2
--       Included the libpng16 pkgconfig
-*       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.23-1
--       Initial version
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.35-3
+- Remove .la files
+* Fri May 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.6.35-2
+- Patch update to fix CVE-2019-7317
+* Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.6.35-1
+- Update to 1.6.35
+* Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.29-1
+- Updated to version 1.6.29
+* Thu Feb 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.27-1
+- Updated to version 1.6.27
+* Mon Sep 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.23-2
+- Included the libpng16 pkgconfig
+* Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.23-1
+- Initial version

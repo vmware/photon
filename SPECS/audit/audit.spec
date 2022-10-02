@@ -1,18 +1,18 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        19%{?dist}
-Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha512  audit=7d416aaa21c1a167f8e911ca82aecbaba804424f3243f505066c43ecc4a62a34feb2c27555e99d3268608404793dccca0f828c63670e3aa816016fb493f8174a
-Patch0:         detect_python2_audit.patch
+Release:        20%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
+%define sha512  audit=7d416aaa21c1a167f8e911ca82aecbaba804424f3243f505066c43ecc4a62a34feb2c27555e99d3268608404793dccca0f828c63670e3aa816016fb493f8174a
+
+Patch0:         detect_python2_audit.patch
+
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
 BuildRequires:  go
@@ -22,9 +22,8 @@ BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
 BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
+
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -83,9 +82,10 @@ and libauparse.
 make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/spool/audit
-%make_install
+mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d} \
+         %{buildroot}%{_var}/spool/audit
+
+%make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
@@ -147,7 +147,6 @@ mkdir -p /var/log/audit
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/golang/*
 %{_includedir}/*.h
@@ -156,13 +155,15 @@ mkdir -p /var/log/audit
 
 %files python
 %defattr(-,root,root)
-%{python2_sitelib}/*
+%{python_sitelib}/*
 
 %files -n python3-audit
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.8.5-20
+- Remove .la files
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-19
 - Bump up version to compile with new go
 * Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 2.8.5-18

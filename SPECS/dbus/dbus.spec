@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha1    dbus=6e9a99e0140f71800c1ed6283af80c26f7e3f39b
+%define sha512 dbus=8301fa716ade578bd8df2e5f7179a8f09c33e58cc57f36dd76e767bef4dceccfb20f266e20afbea687c88d2b26c1e1d52c8510d2e028008b8277e8ce21dae366
 
 Patch0:         CVE-2019-12749.patch
 
@@ -63,7 +63,6 @@ make %{?_smp_mflags} check
 %{_libexecdir}/*
 %{_docdir}/*
 %{_datadir}/dbus-1
-#%%{_sharedstatedir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -73,11 +72,12 @@ make %{?_smp_mflags} check
 %dir %{_libdir}/dbus-1.0
 %{_libdir}/dbus-1.0/include/
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.8-2
+- Remove .la files
 * Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.8-1
 - Automatic Version Bump
 * Fri Oct 18 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.13.6-2

@@ -1,11 +1,11 @@
 Summary:        NUMA support for Linux
 Name:           numactl
 Version:        2.0.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            https://github.com/numactl/numactl
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=81c9fa6ab9d41e1cb37103ca4f76ef2b0d37b6e0
+%define sha512 %{name}=f7b747eb8f3ded9f3661cb0fc7b65b5ed490677f881f8fe6a000baf714747515853b4e5c8781b014241180bf16e9f0bfdf2c6f758725e34b4938696ba496b72a
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,7 +28,7 @@ The package contains libraries and header files for
 developing applications that use libnuma.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -fiv
@@ -36,7 +36,7 @@ autoreconf -fiv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -57,14 +57,14 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/numa.pc
 %{_mandir}/man2/*
 %{_mandir}/man3/*
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.13-3
+- Remove .la files
 * Tue Sep 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.13-2
 - Fix libnuma-devel dependency
 * Mon Nov 18 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.13-1
 - Initial build. First version
-

@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -79,7 +79,7 @@ Gsettings schemas compiling tool
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -96,7 +96,6 @@ Gsettings schemas compiling tool
 %defattr(-, root, root)
 %{_bindir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 %{_libdir}/gio/*
 %{_libdir}/glib-*/*
@@ -113,6 +112,8 @@ Gsettings schemas compiling tool
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.58.0-10
+- Remove .la files
 * Fri Sep 02 2022 Harinadh D <hdommaraju@vmware.com> 2.58.0-9
 - fix CVE-2021-3800
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.58.0-8

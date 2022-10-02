@@ -6,9 +6,11 @@ License:     MIT
 Group:       Development/Libraries
 URL:         http://pyyaml.org/wiki/LibYAML
 Vendor:      VMware, Inc.
-Distribution:Photon
-Source0:     http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
-%define      sha1 yaml=125a3113681f06320dcdfde48bab47cba9031263
+Distribution:   Photon
+
+Source0: http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
+%define sha512 yaml=97ebeea2a2c877b24de2e1ffbf175d07d97d5c8b90e06d21fd057e1114d10b96c04fd92c2ed4e956db751b7ac1686b3fd5778927912ca5bb0d096908a1351235
+
 Patch0:      libyaml-make-check-fix.patch
 
 %description
@@ -26,8 +28,7 @@ documentation for %{name}. If you like to develop programs using %{name},
 you will need to install %{name}-devel.
 
 %prep
-%setup -n yaml-%{version}
-%patch0 -p1
+%autosetup -p1 -n yaml-%{version}
 
 %build
 %configure --disable-static
@@ -56,20 +57,19 @@ make %{?_smp_mflags} check
 %{_includedir}/yaml.h
 %{_libdir}/libyaml.so
 %{_libdir}/pkgconfig/*.pc
-%exclude %{_libdir}/*.la
 
 %changelog
-*       Wed Aug 21 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.2.1-2
--       Fix PyYAML make check
-*       Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.2.1-1
--       Update to version 0.2.1
-*       Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.1.7-1
--       Updating version to 0.1.7
-*       Mon Oct 03 2016 Chang Lee <changlee@vmware.com> 0.1.6-4
--       Modified check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.6-3
--	GA - Bump release of all rpms
-*       Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.6-2
--       Fix cve-2014-9130.
-*       Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 0.1.6-1
--       Initial package for Photon.
+* Wed Aug 21 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.2.1-2
+- Fix PyYAML make check
+* Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.2.1-1
+- Update to version 0.2.1
+* Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.1.7-1
+- Updating version to 0.1.7
+* Mon Oct 03 2016 Chang Lee <changlee@vmware.com> 0.1.6-4
+- Modified check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.6-3
+- GA - Bump release of all rpms
+* Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.6-2
+- Fix cve-2014-9130.
+* Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 0.1.6-1
+- Initial package for Photon.

@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -32,7 +32,7 @@ The Apache version control system.
 
 %package        devel
 Summary:        Header and development files for mesos
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The subversion-devel package contains header files, libraries.
@@ -40,7 +40,7 @@ The subversion-devel package contains header files, libraries.
 %package        perl
 Summary:        Allows Perl scripts to directly use Subversion repositories.
 Requires:       perl
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    perl
 Provides Perl (SWIG) support for Subversion version control system.
@@ -86,7 +86,6 @@ sudo -u test make check && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
 %{_datadir}/pkgconfig/*.pc
 %exclude %dir %{_libdir}/debug
@@ -100,6 +99,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-4
+- Remove .la files
 * Mon Jul 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-3
 - Remove redundant locale directory packaging
 * Fri Apr 29 2022 Michelle Wang <michellew@vmware.com> 1.10.8-2

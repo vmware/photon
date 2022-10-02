@@ -1,29 +1,26 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-# Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
-
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            System Environment/Libraries
-Source:           cracklib-%{version}.tar.gz
-%define sha1      cracklib-%{version}=ffe455aba4da8d49fcdbe6964aa35367a7438581
-Source1:          cracklib-words-%{version}.gz
-%define sha1      cracklib-words-%{version}=6491f1cc63233c678e9e5983f32ff98208d0b05a
 URL:              http://sourceforge.net/projects/cracklib/
 License:          GPL
 Vendor:           VMware, Inc.
 Distribution:     Photon
+
+Source0:          cracklib-%{version}.tar.gz
+%define sha512 cracklib-%{version}=76d701ee521ae35b4cbab406f23a15c84937bb06d3c3747ca8ef2584a41074fc00309a676ec37ebd5b32930163213365cf508d47f614cfccea38e1ba6babb2ff
+
+Source1:          cracklib-words-%{version}.gz
+%define sha512 cracklib-words-%{version}=1fa34b0a2e16d6906982b248f1757bf5bf8154d8d7e8bab94a4ac25080c41434d3828a2c8dd5065e9be586f36480ab70375f09e0bb64eb495d96a460619e2bae
+
 Requires:         /bin/ln
 Requires(post):   /bin/ln
 Requires(postun): /bin/rm
-BuildRequires:    python2
-BuildRequires:    python2-libs
+
+Buildrequires:    rpm-build
 BuildRequires:    python2-devel
 BuildRequires:    python-setuptools
-BuildRequires:    python3
-BuildRequires:    python3-libs
 BuildRequires:    python3-devel
 BuildRequires:    python3-setuptools
 BuildRequires:    python3-xml
@@ -66,7 +63,7 @@ If you are installing CrackLib, you should also install cracklib-dicts.
 %package        devel
 Summary:        Cracklib link library & header file
 Group:          Development/Libraries
-Requires:       cracklib
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The cracklib devel package include the needed library link and
@@ -77,7 +74,6 @@ Summary:        The cracklib python module
 Group:          Development/Languages/Python
 Requires:       cracklib
 Requires:       python2
-Requires:       python2-libs
 
 %description    python
 The cracklib python module
@@ -87,7 +83,6 @@ Summary:        The cracklib python module
 Group:          Development/Languages/Python
 Requires:       cracklib
 Requires:       python3
-Requires:       python3-libs
 
 %description -n python3-cracklib
 The cracklib python3 module
@@ -100,7 +95,7 @@ Group:          System Environment/Libraries
 The CrackLib language pack.
 
 %prep
-%setup -q -n cracklib-%{version}
+%autosetup -p1 -n cracklib-%{version}
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
@@ -114,22 +109,22 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure \
   --datadir=%{_datadir} \
   --disable-static \
   --without-python
-make
+
+make %{?_smp_mflags}
+
 pushd python
 python2 setup.py build
 python3 setup.py build
 popd
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT/
-chmod 755 ./util/cracklib-format
-chmod 755 ./util/cracklib-packer
-util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/words
-echo password | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
-rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
-ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
-ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
+%make_install %{?_smp_mflags}
+chmod 755 ./util/cracklib-format ./util/cracklib-packer
+util/cracklib-format dicts/cracklib* | util/cracklib-packer %{buildroot}%{_datadir}/cracklib/words
+echo password | util/cracklib-packer %{buildroot}%{_datadir}/cracklib/empty
+rm -f %{buildroot}%{_datadir}/cracklib/cracklib-small
+ln -s cracklib-format %{buildroot}%{_sbindir}/mkdict
+ln -s cracklib-packer %{buildroot}%{_sbindir}/packer
 
 pushd python
 python2 setup.py install --skip-build --root %{buildroot}
@@ -138,11 +133,11 @@ popd
 
 %check
 mkdir -p /usr/share/cracklib
-cp $RPM_BUILD_ROOT%{_datadir}/cracklib/* /usr/share/cracklib/
+cp %{buildroot}%{_datadir}/cracklib/* /usr/share/cracklib/
 make %{?_smp_mflags} test
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
 /sbin/ldconfig
@@ -169,9 +164,9 @@ ln -sf empty.pwi %{_datadir}/cracklib/pw_dict.pwi
 %postun
 /sbin/ldconfig
 [ $1 = 0 ] || exit 0
-rm -f %{_datadir}/cracklib/pw_dict.hwm
-rm -f %{_datadir}/cracklib/pw_dict.pwd
-rm -f %{_datadir}/cracklib/pw_dict.pwi
+rm -f %{_datadir}/cracklib/pw_dict.hwm \
+      %{_datadir}/cracklib/pw_dict.pwd \
+      %{_datadir}/cracklib/pw_dict.pwi
 
 %files
 %defattr(-,root,root)
@@ -184,11 +179,10 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
-%{_libdir}/libcrack.la
 
 %files python
 %defattr(-,root,root)
-%{python2_sitelib}/*
+%{python_sitelib}/*
 
 %files -n python3-cracklib
 %defattr(-,root,root)
@@ -204,27 +198,29 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
-*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
--   Automatic Version Bump
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
--   Fix script dependency
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
--   Move python2 requires to python subpackage and added python3.
-*   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
--   Fix CVE-2016-6318, trigger for cracklib-dicts
--   Trigger for dynamic symlink for dict
-*   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
--   Revert compressing pw_dict.pwd back. Python code
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-2
+- Remove .la files
+* Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
+- Automatic Version Bump
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
+- Fix script dependency
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
+- Move python2 requires to python subpackage and added python3.
+* Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
+- Fix CVE-2016-6318, trigger for cracklib-dicts
+- Trigger for dynamic symlink for dict
+* Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
+- Revert compressing pw_dict.pwd back. Python code
     cracklib.VeryFascistCheck does not handle it.
-*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
--   Remove any dicts from cracklib main package
--   Compress pw_dict.pwd file
--   Move doc folder to devel package
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
--   GA - Bump release of all rpms
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
--   Updated to version 2.9.6
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
--   Updated group
+* Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
+- Remove any dicts from cracklib main package
+- Compress pw_dict.pwd file
+- Move doc folder to devel package
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
+- GA - Bump release of all rpms
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
+- Updated to version 2.9.6
+* Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
+- Updated group

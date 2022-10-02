@@ -1,10 +1,7 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -129,11 +126,8 @@ popd
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libprotobuf-lite.la
 %{_libdir}/libprotobuf-lite.so
-%{_libdir}/libprotobuf.la
 %{_libdir}/libprotobuf.so
-%{_libdir}/libprotoc.la
 %{_libdir}/libprotoc.so
 
 %files static
@@ -143,7 +137,7 @@ popd
 %{_libdir}/libprotoc.a
 
 %files python
-%{python2_sitelib}/*
+%{python_sitelib}/*
 
 %files python3
 %{python3_sitelib}/*
@@ -152,6 +146,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-3
+- Remove .la files
 * Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-2
 - Bump version as a part of apache-maven upgrade
 * Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1

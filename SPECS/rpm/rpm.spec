@@ -1,13 +1,11 @@
 %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")
-
 %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")
-
 %define rpmhome %{_libdir}/rpm
 
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -18,10 +16,8 @@ Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{versio
 %define sha512 %{name}=726c72e2b920a43572d5ccc872411e1d89352ae49f0a9a2bea80a15cede65f55942224f373923bf0615c19328599191f617bb86a63c9075a8a9b1d4a038e7f0d
 
 Source1: macros
-Source2: brp-strip-debug-symbols
-Source3: brp-strip-unneeded
-Source4: macros.python2
-Source5: macros.python3
+Source2: macros.python2
+Source3: macros.python3
 
 Patch0: find-debuginfo-do-not-generate-dir-entries.patch
 Patch1: CVE-2021-20271.patch
@@ -29,6 +25,7 @@ Patch2: Header-signatures-alone-are-not-sufficient.patch
 Patch3: CVE-2021-20266.patch
 Patch4: Fix-regression-reading-rpm-v3.patch
 Patch5: CVE-2021-3521.patch
+Patch6: os-install-post-improvements.patch
 
 Requires: bash
 Requires: libdb
@@ -132,8 +129,8 @@ export CPPFLAGS='-I%{_includedir}/nspr -I%{_includedir}/nss -DLUA_COMPAT_APIINTC
 %make_build
 
 pushd python
-python2 setup.py build
-python3 setup.py build
+%py_build
+%py3_build
 popd
 
 %if 0%{?with_check}
@@ -156,14 +153,12 @@ find %{buildroot} -name '*.la' -delete
 # System macros and prefix
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
-install -vm755 %{SOURCE2} %{buildroot}%{rpmhome}/
-install -vm755 %{SOURCE3} %{buildroot}%{rpmhome}/
-install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
 
 pushd python
-python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%py_install
+%py3_install
 popd
 
 %post libs -p /sbin/ldconfig
@@ -222,7 +217,7 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{rpmhome}/macros.d
+%{_rpmmacrodir}/*
 %{rpmhome}/perl.req
 %{rpmhome}/find-debuginfo.sh
 %{rpmhome}/find-lang.sh
@@ -283,6 +278,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-6
+- Cleanup macros file
+- Remove redundant brp-strip-debug-symbols script
 * Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-5
 - Further fixes to CVE-2021-3521
 - Remove pgp related fixes, it's not used by other distros

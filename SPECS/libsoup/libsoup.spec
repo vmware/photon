@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.64.0
-Release:         5%{?dist}
+Release:         6%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -90,7 +90,6 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %exclude %{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 
@@ -102,6 +101,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.64.0-6
+- Remove .la files
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-5
 - Bump version as a part of httpd v2.4.54 upgrade
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-4

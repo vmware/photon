@@ -1,14 +1,14 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf-c/
 Source0:        %{name}-%{version}.tar.gz
-%define         sha1 protobuf-c=37cbb1e8dc07d8819328f2cac9aec757c8d51756
+%define         sha512 protobuf-c=555e6fdf303ddcd51516f9022d8c5e59304863930dfa6c5d4a5657356a444a9279dfcc8e17d071700ef81317a1b32eaa3991af72e08cae93e78865df519fe506
 BuildRequires:  protobuf >= 2.6.0
 BuildRequires:  protobuf-devel >= 2.6.0
 BuildRequires:  autoconf
@@ -41,7 +41,7 @@ Requires:       protobuf-c = %{version}-%{release}
 The protobuf-c-static package contains static protobuf-c libraries.
 
 %prep
-%setup
+%autosetup -p1
 autoreconf -iv
 
 %build
@@ -49,7 +49,7 @@ autoreconf -iv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -64,7 +64,6 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libprotobuf-c.la
 %{_libdir}/libprotobuf-c.so
 
 %files static
@@ -72,9 +71,11 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf-c.a
 
 %changelog
-*   Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.3.1-1
--   Updated to release 1.3.1
-*   Thu Mar 30 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-2
--   Fix protobuf-c-static requires
-*   Sat Mar 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-1
--   Initial packaging for Photon
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1-2
+- Remove .la files
+* Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.3.1-1
+- Updated to release 1.3.1
+* Thu Mar 30 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-2
+- Fix protobuf-c-static requires
+* Sat Mar 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-1
+- Initial packaging for Photon

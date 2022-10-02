@@ -1,9 +1,10 @@
 %define aprver 1
+%global __brp_remove_la_files %{nil}
 
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.6.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -11,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=ebf4f15fa5003b1490550e260f5a57dc8a2ff0ac
+%define sha512 %{name}=cfdc6e618fa35fb42cf394855795c6835fd361d4b090e71b6e1cf7c631fdb96cbbed54f2d1584099ea8f7e623a4a968bf7d70a947eee06216caff2db72d55ea8
 
 %if 0%{?with_check}
 Patch0:         apr-skip-getservbyname-test.patch
@@ -51,11 +52,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/%{name}/*
 %{_libdir}/%{name}.exp
-%{_libdir}/libapr*.so*
+%{_libdir}/libapr*.so.*
 %exclude %dir %{_libdir}/debug
-%exclude %{_libdir}/*.la
-%exclude %{_libdir}/*.a
-%exclude %{_libdir}/*.so
 %exclude %{_libdir}/pkgconfig
 %{_bindir}/*
 
@@ -68,6 +66,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+* Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.5-3
+- Don't remove .la files, needed during subversion build
 * Tue Sep 24 2019 Ankit Jain <ankitja@vmware.com> 1.6.5-2
 - Fix for makecheck, added a patch for the same
 * Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 1.6.5-1

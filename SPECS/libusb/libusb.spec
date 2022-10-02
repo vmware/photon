@@ -1,14 +1,14 @@
 Summary:        A library which allows userspace access to USB devices
 Name:           libusb
 Version:        1.0.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://sourceforge.net/projects/libusb/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://downloads.sourceforge.net/libusb/libusb-%{version}.tar.bz2
-%define sha1 libusb=10116aa265aac4273a0c894faa089370262ec0dc
+%define sha512 libusb=2a93ba48bb66b9775838c16d74f7269348d9bc163f94ccf2842d1108d95a41cf79f8c8065233bea410fb94261a462dbb08ecfa1a9b6d3ddf4a5980e6043f74f4
 BuildRequires:  systemd-devel
 Requires:       systemd
 
@@ -25,14 +25,14 @@ This package contains the header files, libraries and documentation needed to
 develop applications that use libusb.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-static
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 pushd tests
@@ -50,20 +50,20 @@ popd
 %files devel
 %{_includedir}/*
 %{_libdir}/libusb*.so
-%{_libdir}/libusb*.la
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0.22-1
--   Update to version 1.0.22
-*   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com>  1.0.21-1
--   Upgrading version to 1.0.21
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.0.20-4
--   Change systemd dependency
-*   Tue Jul 12 2016 Xiaolin Li <xiaolinl@vmware.com>  1.0.20-3
--   Build libusb single threaded.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.20-2
--   GA - Bump release of all rpms
-*   Thu May 05 2016 Nick Shi <nshi@vmware.com> 1.0.20-1
--   Initial version
-
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.22-2
+- Remove .la files
+* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0.22-1
+- Update to version 1.0.22
+* Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com>  1.0.21-1
+- Upgrading version to 1.0.21
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.0.20-4
+- Change systemd dependency
+* Tue Jul 12 2016 Xiaolin Li <xiaolinl@vmware.com>  1.0.20-3
+- Build libusb single threaded.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.20-2
+- GA - Bump release of all rpms
+* Thu May 05 2016 Nick Shi <nshi@vmware.com> 1.0.20-1
+- Initial version

@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.2.tar.xz
-%define sha1    %{name}=9c1377fe879a9a36a9cd937425f501d6bf8fa234
+%define sha512 %{name}=fb00ce6f3dc9795468e81ba295ad82e9586add2d7118661ea5f287a99afca97dc3aea64488393792bb1198e7abf2605bbc5ded2517980d67f8819931effdeea5
 
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
@@ -77,9 +77,10 @@ make %{?_smp_mflags} check
 %{_includedir}/libmm-glib/*
 %{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/pkgconfig/mm-glib.pc
-%{_libdir}/libmm-glib.la
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.2-4
+- Remove .la files
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.2-3
 - Exclude debug symbols properly
 * Wed Oct 23 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.2-2

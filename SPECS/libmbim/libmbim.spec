@@ -1,7 +1,7 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.16.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-1.16.2.tar.xz
-%define sha1    %{name}=acb71b3afa3cabd39f2c7e0f70d188b9bbc4b6ea
+%define sha512 %{name}=6081a5b40b7fc5cd21adf1948c16c57919c452bc2eccdccb561412ecada5aca7ff1fcac79568eb3dda83d49c780b0dab95a0b15bda0c4f2712b735cbe95402be
 
 BuildRequires:  libgudev-devel
 
@@ -21,7 +21,7 @@ and devices which speak the Mobile Interface Broadband Model (MBIM) protocol.
 
 %package    devel
 Summary:    Header and development files for libmbim
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 Requires:   libgudev-devel
 %description    devel
 It contains the libraries and header files for libmbim
@@ -57,10 +57,11 @@ make %{?_smp_mflags} check
 %files devel
 %{_includedir}/libmbim-glib/*
 %{_libdir}/pkgconfig/mbim-glib.pc
-%{_libdir}/libmbim-glib.la
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.2-3
+- Remove .la files
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.2-2
 - Exclude debug symbols properly
 * Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1

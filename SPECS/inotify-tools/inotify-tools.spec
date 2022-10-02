@@ -1,16 +1,17 @@
 Summary:        Command line utility for i-node notifications and management.
 Name:           inotify-tools
 Version:        3.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://sourceforge.net/projects/inotify-tools
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/Systems
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sourceforge.net/projects/inotify-tools/files/latest/download/%{name}-%{version}.tar.gz
-Provides:       libinotifytools0
 
-%define sha1 inotify-tools=4f9c027e441a84e78b36f9c1a87bf1896216b5ff
+Source0:        http://sourceforge.net/projects/inotify-tools/files/latest/download/%{name}-%{version}.tar.gz
+%define sha512 inotify-tools=e757ca5d3bac2b6b84e9435671107d6d695ff7d04cefd139590ab538d1be8f9a295eb9b0042406bdbfa60bb2b2545a428ec861e60f1cbf172050d47d0350bdb9
+
+Provides:       libinotifytools0
 
 %description
 inotify-tools is simple command line interface program for linux distributions
@@ -27,16 +28,14 @@ documentation for %{name}. If you like to develop programs using %{name},
 you will need to install %{name}-devel.
 
 %prep
-%setup -q
-
+%autosetup -p1
 
 %build
 %configure
-make
+%make_build
 
 %install
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
-%makeinstall
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -44,25 +43,25 @@ make %{?_smp_mflags} check
 %post -p /sbin/ldconfig
 
 %clean
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/usr/bin
-/usr/share
-/%{_libdir}/libinotifytools.so.0.4.1
+%{_bindir}/*
+%{_datadir}/*
+%{_libdir}/libinotifytools.so.0.4.1
 
 %files devel
 %defattr(-,root,root)
-/usr/include
-/%{_libdir}/libinotifytools.a
-/%{_libdir}/libinotifytools.so
-/%{_libdir}/libinotifytools.so.0
-/%{_libdir}/libinotifytools.la
+%{_includedir}/*
+%{_libdir}/libinotifytools.a
+%{_libdir}/libinotifytools.so
+%{_libdir}/libinotifytools.so.0
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.13-2
--	GA - Bump release of all rpms
-*       Mon Dec 14 2015 Kumar Kaushik <kaushikk@vmware.com> 3.13-1
--       Initial build.  First version
-
+* Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.13-3
+- Remove .la files
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.13-2
+- GA - Bump release of all rpms
+* Mon Dec 14 2015 Kumar Kaushik <kaushikk@vmware.com> 3.13-1
+- Initial build. First version
