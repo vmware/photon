@@ -1,20 +1,19 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.13.1
-Release:        2%{?dist}
+Version:        1.16.3
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=561522b06943f6d1c33bd78132db1f7020fc4fd1
+%define sha1    unbound=01a3b7a85e076bf0cdd4da75a06a13bf0c49a298
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Patch0:         0001-Fix-for-CVE-2022-30698-and-CVE-2022-30699.patch
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -23,6 +22,7 @@ Unbound is a validating, recursive, and caching DNS resolver.
 Summary:    unbound development libs and headers
 Group:      Development/Libraries
 Requires:   expat-devel
+
 %description devel
 Development files for unbound dns server
 
@@ -34,7 +34,6 @@ unbound dns server docs
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -80,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Fri Sep 30 2022 Srish S. <ssrish@vmware.com> 1.16.3-1
+-  Update to version 1.16.3 for fixing CVE-2022-3204
 *  Tue Aug 23 2022 Srish S. <ssrish@vmware.com> 1.13.1-2
 -  Fix for CVE-2022-30698 and CVE-2022-30699
 *  Tue Feb 15 2022 Nitesh Kumar <kunitesh@vmware.com> 1.13.1-1
