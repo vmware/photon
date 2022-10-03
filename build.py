@@ -1255,7 +1255,8 @@ def initialize_constants():
     constants.setReleaseVersion(
         configdict["photon-build-param"]["photon-release-version"]
     )
-    constants.setPullSourcesURL(Builder.get_baseurl(configdict["photon-build-param"]["pull-sources-config"]))
+
+    constants.setPullSourcesURL(Builder.get_baseurl(configdict["pull-sources-config"]))
     constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
         configdict["photon-build-param"].get("rpm-check-stop-on-error", False)
