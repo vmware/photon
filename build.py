@@ -1255,7 +1255,7 @@ def initialize_constants():
     constants.setReleaseVersion(
         configdict["photon-build-param"]["photon-release-version"]
     )
-    constants.setPullSourcesURL(Builder.get_baseurl(configdict["pull-sources-config"]))
+    constants.setPullSourcesURL(Builder.get_baseurl(configdict["photon-build-param"]["pull-sources-config"]))
     constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
         configdict["photon-build-param"].get("rpm-check-stop-on-error", False)
@@ -1357,7 +1357,7 @@ def set_default_value_of_config():
     configdict.setdefault(key, {}).setdefault("base-commit", "")
 
 
-def process_env_buid_params(ph_build_param):
+def process_env_build_params(ph_build_param):
     env_build_param_dict = {
         "INPUT_PHOTON_BUILD_NUMBER": "input-photon-build-number",
         "BASE_COMMIT": "input-photon-build-number",
@@ -1475,7 +1475,7 @@ def main():
         configdict["photon-path"] = os.path.dirname(cfgPath)
 
     ph_build_param = configdict["photon-build-param"]
-    process_env_buid_params(ph_build_param)
+    process_env_build_params(ph_build_param)
 
     cfgdict_additional_path = configdict["additional-path"]
     process_additional_cfgs(cfgdict_additional_path)
