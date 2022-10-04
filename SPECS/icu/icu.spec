@@ -1,15 +1,15 @@
 Summary:    International Components for Unicode
 Name:       icu
-Version:    70.1
-Release:    2%{?dist}
+Version:    71.1
+Release:    1%{?dist}
 License:    MIT and UCD and Public Domain
 URL:        http://www.icu-project.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://download.icu-project.org/files/%{name}4c/%{version}/%{name}4c-70_1-src.tgz
-%define sha512  %{name}=0b26ae7207155cb65a8fdb25f7b2fa4431e74b12bccbed0884a17feaae3c96833d12451064dd152197fd6ea5fd3adfd95594284a463e66c82e0d860f645880c9
+Source0: https://github.com/unicode-org/icu/archive/refs/tags/%{name}4c-71_1-src.tgz
+%define sha512 %{name}=1fd2a20aef48369d1f06e2bb74584877b8ad0eb529320b976264ec2db87420bae242715795f372dbc513ea80047bc49077a064e78205cd5e8b33d746fd2a2912
 
 %description
 The International Components for Unicode (ICU) package is a mature,
@@ -17,7 +17,7 @@ widely used set of C/C++ libraries providing Unicode and Globalization support f
 
 %package    devel
 Summary:    Header and development files
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications.
 
@@ -30,7 +30,6 @@ It contains the libraries and header files to create applications.
 
 %install
 %make_install %{?_smp_mflags}
-rm -f %{buildroot}%{_libdir}/*.la
 
 %files
 %defattr(-,root,root)
@@ -48,6 +47,8 @@ rm -f %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 71.1-1
+- Upgrade to v71.1
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 70.1-2
 - Fix binary path
 * Wed Nov 24 2021 Alexey Makhalov <amakhalov@vmware.com> 70.1-1

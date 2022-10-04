@@ -8,7 +8,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.312
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u-shenandoah/
 Group:		Development/Tools
@@ -91,6 +91,7 @@ sh configure \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic
 
+# make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
     BUILD_HEADLESS_ONLY=1 \
@@ -104,6 +105,7 @@ make \
     SCTP_WERROR=
 
 %install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
 	BUILD_HEADLESS_ONLY=yes \
 	OPENJDK_TARGET_OS=linux \
@@ -245,6 +247,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.312-2
+-   Bump version as a part of icu upgrade
 *   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
 -   Upgrade to version 1.8.0.312 (aarch64-shenandoah-jdk8u312-b07)
 *   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.282-1

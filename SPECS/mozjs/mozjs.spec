@@ -3,7 +3,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.15.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -11,7 +11,7 @@ URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderM
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha512  firefox-%{version}=ac3de735b246ce4f0e1619cd2664321ffa374240ce6843e785d79a350dc30c967996bbcc5e3b301cb3d822ca981cbea116758fc4122f1738d75ddfd1165b6378
+%define sha512 firefox-%{version}=ac3de735b246ce4f0e1619cd2664321ffa374240ce6843e785d79a350dc30c967996bbcc5e3b301cb3d822ca981cbea116758fc4122f1738d75ddfd1165b6378
 
 Patch0:        emitter.patch
 Patch1:        emitter_test.patch
@@ -88,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-4
+- Bump version as a part of icu upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-3
 - Bump version as a part of clang upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 78.15.0-2

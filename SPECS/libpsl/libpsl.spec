@@ -1,7 +1,7 @@
 Summary:        libpsl - C library to handle the Public Suffix List
 Name:           libpsl
 Version:        0.21.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            https://github.com/rockdaboot/libpsl
 Group:          System Environment/Development
@@ -96,6 +96,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-5
+- Bump version as a part of icu upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-4
 - Remove .la files
 * Fri Dec 10 2021 Alexey Makhalov <amakhalov@vmware.com> 0.21.1-3

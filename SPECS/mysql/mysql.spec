@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.29
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -102,6 +102,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l
 
 %changelog
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-3
+- Bump version as a part of icu upgrade
 * Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-2
 - Use cmake macros for build & fix requires
 * Mon May 02 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.29-1
