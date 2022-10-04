@@ -1179,15 +1179,13 @@ class BuildImage:
         script = "build-k8s-base-image.sh"
         cmd = f"./{script} {constants.releaseVersion} {constants.buildNumber}"
         cmd = f"{cmd} {Build_Config.stagePath}"
-        if runCommandInShell(cmd):
-            raise Exception(f"{script} script failed")
+        runShellCmd(cmd)
 
         for script in k8s_build_scripts:
             cmd = f"./{script} {ph_dist_tag} {constants.releaseVersion}"
             cmd = f"{cmd} {constants.specPath} {Build_Config.stagePath}"
             cmd = f"{cmd} {ph_builder_tag}"
-            if runCommandInShell(cmd):
-                raise Exception(f"{script} script failed")
+            runShellCmd(cmd)
 
         print("Successfully built all the k8s docker images")
         os.chdir(photonDir)
