@@ -1,7 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.2
-Release:      5%{?dist}
+Release:      6%{?dist}
 License:      ISC
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
@@ -9,7 +9,7 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
-%define sha1  dhcp=cb4ba6617e1bc2e3cbf770be5c0443b1ad276db5
+%define sha512  dhcp=c3dee2cf6e4b43d519d4bc89e9b8b12a6e3747d8c4edc0f83d4a88355a483b91a5f7d2353a3c0a2f37f88704fd2f64478ac5161ca72b10c42cebcb92907afa40
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service
@@ -18,6 +18,8 @@ Source:       dhcrelay.service
 Patch0:       dhcp-nowplusinterval.patch
 Patch1:       dhcp-4.4.2-fno-common.patch
 Patch2:       dhcp-CVE-2021-25217.patch
+Patch3:       dhcp-CVE-2022-2928.patch
+Patch4:       dhcp-CVE-2022-2929.patch
 
 BuildRequires:  systemd
 
@@ -168,6 +170,8 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Oct 04 2022 Dweep Advani <dadvani@vmware.com> 4.4.2-6
+- Fixed CVE-2022-2928 and CVE-2022-2929
 * Tue Nov 02 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-5
 - Add unit file dhcrelay.service
 * Tue Aug 24 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-4
