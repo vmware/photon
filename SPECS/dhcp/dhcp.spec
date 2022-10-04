@@ -1,7 +1,7 @@
 Summary:    Dynamic host configuration protocol
 Name:       dhcp
 Version:    4.3.5
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    ISC
 Url:        http://isc.org/products/DHCP/
 Group:      System Environment/Base
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
-%define sha1 dhcp=6140a0cf6b3385057d76c14278294284ba19e5a5
+%define sha512 dhcp=aba0e1d361eb9e7ed33fc48c0b0b9288057af9ec51775e40e27feb9ababc182506706fcf39079236ce36b0f7ded391e107474dc29de2e60ed45d37753505e1f0
 
 Patch0:     dhcp-4.3.5-client_script-1.patch
 Patch1:     dhcp-4.3.5-missing_ipv6-1.patch
@@ -18,6 +18,8 @@ Patch3:     dhcp-CVE-2018-5733.patch
 Patch4:     dhcp-nowplusinterval.patch
 Patch5:     dhcp-CVE-2018-5732.patch
 Patch6:     dhcp-CVE-2021-25217.patch
+Patch7:     dhcp-CVE-2022-2928.patch
+Patch8:     dhcp-CVE-2022-2929.patch
 
 BuildRequires:  systemd
 
@@ -195,6 +197,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Oct 04 2022 Dweep Advani <dadvani@vmware.com> 4.3.5-9
+- Fixed CVE-2022-2928 and CVE-2022-2929
 * Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-8
 - Fix CVE-2021-25217
 * Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-7
