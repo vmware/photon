@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.142
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -547,8 +547,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
-*   Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
--   Update to version 5.10.142
+* Tue Oct 04 2022 Ankit Jain <ankitja@vmware.com> 5.10.142-2
+- linux-esx: Enabling VFIO,UIO and IOMMU support
+* Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
+- Update to version 5.10.142
 * Tue Aug 16 2022 srinidhira0 <srinidhir@vmware.com> 5.10.132-1
 - Update to version 5.10.132
 * Fri Aug 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.118-14
