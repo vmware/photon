@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.5
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -15,6 +15,9 @@ Patch2:         dhcp-CVE-2017-3144.patch
 Patch3:         dhcp-CVE-2018-5733.patch
 Patch4:         dhcp-CVE-2018-5732.patch
 Patch5:         dhcp-CVE-2021-25217.patch
+Patch6:         dhcp-CVE-2022-2928.patch
+Patch7:         dhcp-CVE-2022-2929.patch
+
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -172,6 +175,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Oct 04 2022 Dweep Advani <dadvani@vmware.com> 4.3.5-8
+- Fixed CVE-2022-2928 and CVE-2022-2929
 * Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-7
 - Fix CVE-2021-25217
 * Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
