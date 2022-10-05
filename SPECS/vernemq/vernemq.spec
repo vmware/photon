@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.5
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Source0:          https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
@@ -117,10 +117,12 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
-*   Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-1
--   Use erlang/otp version 24
-*   Wed Jun 09 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-1
--   Upgrade to 1.12.0 version
--   Add Requires on useradd, groupadd for pre and userdel, groupdel for postun
-*   Sun Feb 28 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.11.0-1
--   Initial build. First version
+* Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-2
+- Use erlang/otp version 25.1
+* Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-1
+- Use erlang/otp version 24
+* Wed Jun 09 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-1
+- Upgrade to 1.12.0 version
+- Add Requires on useradd, groupadd for pre and userdel, groupdel for postun
+* Sun Feb 28 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.11.0-1
+- Initial build. First version

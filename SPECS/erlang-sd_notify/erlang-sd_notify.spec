@@ -5,7 +5,7 @@
 Name:            erlang-%{realname}
 Summary:         Erlang Bindings for sd_notify()
 Version:         1.1
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         MIT
 URL:             https://github.com/systemd/erlang-%{realname}
 Source0:         https://github.com/systemd/erlang-%{realname}/archive/%{name}-%{version}.tar.gz
@@ -25,8 +25,8 @@ Erlang module for native access to the systemd-notify facilities.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-cp /usr/share/elixir/%{elixir_version}/lib/mix/test/fixtures/rebar .
-cp /usr/share/elixir/%{elixir_version}/lib/mix/test/fixtures/rebar3 .
+cp %{_datadir}/elixir/%{elixir_version}/lib/mix/test/fixtures/rebar .
+cp %{_datadir}/elixir/%{elixir_version}/lib/mix/test/fixtures/rebar3 .
 chmod +x rebar3
 %make_build all
 
@@ -46,7 +46,9 @@ popd
 %{_libdir}/erlang/lib/%{realname}-%{version}/ebin/%{realname}.beam
 
 %changelog
-* Thu Nov 12 2020 Harinadh D <hdommaraju@vmware.com> 1.1-2
+* Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 1.1-3
+- version bump to use new elixir version
+* Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 1.1-2
 - use reabr built with erlang >= 24
 * Thu Nov 12 2020 Harinadh D <hdommaraju@vmware.com> 1.1-1
 - Update to 1.1

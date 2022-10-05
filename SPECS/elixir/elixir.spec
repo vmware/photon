@@ -2,7 +2,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.13.4
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
 Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -47,6 +47,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+* Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 1.13.4-2
+- version bump to compile with new erlang
 * Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 1.13.4-1
 - version update
 * Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.2-2

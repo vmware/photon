@@ -1,6 +1,6 @@
 Name:         erlang
 Summary:      erlang
-Version:      24.3.4.5
+Version:      25.1
 Release:      1%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
@@ -9,7 +9,7 @@ License:      ASL2.0
 URL:          http://erlang.com
 
 Source0:      OTP-%{version}.tar.gz
-%define sha512  OTP=7f9826be5d5afd9d9adaaebdb55165e536c5d2efaa4bbd11cb826bf255b2d89feac8abe5a805bf7ad717fdd0c1633ea2e12692366e2d38fcb8c3d0c452ae17cd
+%define sha512  OTP=d9ad3f41a01121ce1e299ce3532a4bb498bb804a28ea01715cdda3308a89d84ebe14ad3da421a400e403ccb218fb8b3b708344ff10fcfd9e3b28286cac85d81a
 Requires:   ncurses-libs
 BuildRequires: unzip
 %description
@@ -35,6 +35,8 @@ sh ./configure --disable-hipe --prefix=%{_prefix} --enable-fips
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 25.1-1
+- Version update to fix low entropy issue
 * Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 24.3.4.5-1
 - Version update
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.1-4
