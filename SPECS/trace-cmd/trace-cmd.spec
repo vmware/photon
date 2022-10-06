@@ -15,7 +15,7 @@ BuildRequires:  audit-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 BuildRequires:  gcc
 Requires:       audit python3 traceevent-plugins
 

@@ -27,7 +27,7 @@ BuildRequires: erlang
 BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: git
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: xmlto
 BuildRequires: python3-xml
 BuildRequires: python3-devel

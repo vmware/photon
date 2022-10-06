@@ -1,17 +1,17 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.35
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
+Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
 %define sha512  %{name}=9dd4a699235f50ae9b75b25137e387471635b4b2da0a4e4380879cd49f1513470fcfbfd775269b066eac513a1ffa6860c77ec42747168e2348248f09f60c8c96
 
-Requires:       libxml2-devel
+Requires:       libxml2
 Requires:       libgcrypt
 
 BuildRequires:  libxml2-devel
@@ -24,7 +24,7 @@ The libxslt package contains XSLT libraries used for extending libxml2 libraries
 %package devel
 Summary:        Development Libraries for libxslt
 Group:          Development/Libraries
-Requires:       libxslt = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 %description devel
 Header files for doing development with libxslt.
 
@@ -42,8 +42,6 @@ sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
-%{_fixperms} %{buildroot}/*
 
 %if 0%{?with_check}
 %check
@@ -76,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.35-3
+- Fix requires
 * Sun Jul 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.35-2
 - Add libgpg-error-devel to BuildRequires
 * Mon Jun 20 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.35-1

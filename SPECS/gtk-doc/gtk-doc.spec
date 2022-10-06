@@ -8,13 +8,13 @@ Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
-%define sha512  gtk-doc=f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
+Source0: http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
+%define sha512 %{name}=f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
 
 BuildRequires:  docbook-xml >= 4.5
 BuildRequires:  docbook-xsl >= 1.78.1
 BuildRequires:  itstool >= 2.0.2
-BuildRequires:  libxslt >= 1.1.28
+BuildRequires:  libxslt-devel >= 1.1.28
 BuildRequires:  itstool
 BuildRequires:  which
 BuildRequires:  cmake

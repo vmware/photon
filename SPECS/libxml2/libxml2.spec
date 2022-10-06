@@ -1,19 +1,17 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
-URL:            http://xmlsoft.org/
+URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.gz
-%define sha512  libxml2=18cd5354228af5eb8698273e61313961ec7fb2aed880caed15d7c678eaad8a42e826c171fb514272b350479b7ceb9cb963dc535a50101edeaa321972cdda6ae2
+
+Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.gz
+%define sha512 %{name}=18cd5354228af5eb8698273e61313961ec7fb2aed880caed15d7c678eaad8a42e826c171fb514272b350479b7ceb9cb963dc535a50101edeaa321972cdda6ae2
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  zlib
 BuildRequires:  pkg-config
 
@@ -25,7 +23,7 @@ The libxml2 package contains libraries and utilities used for parsing XML files.
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
 %description -n python3-libxml2
@@ -33,7 +31,7 @@ Python3 libxml2.
 
 %package devel
 Summary:    Libraries and header files for libxml
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Static libraries and header files for the support library for libxml
@@ -42,16 +40,20 @@ Static libraries and header files for the support library for libxml
 %autosetup -p1
 
 %build
-%configure --disable-static --with-history --with-python=%{_bindir}/python3
-make %{?_smp_mflags}
+%configure \
+    --disable-static \
+    --with-history \
+    --with-python=%{python3}
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %ldconfig_scriptlets
 
@@ -60,7 +62,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libxml*
+%{_libdir}/%{name}.so.*
 %{_libdir}/xml2Conf.sh
 %{_bindir}/*
 
@@ -70,6 +72,7 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/%{name}.so
 %{_includedir}/*
 %{_mandir}/man3/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
@@ -80,6 +83,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-3
+- Fix .so packaging
 * Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-2
 - Bump version as a part of python3-lxml upgrade
 * Mon May 23 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.14-1

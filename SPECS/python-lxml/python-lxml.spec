@@ -10,7 +10,6 @@ Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464
 %define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  libxslt
 BuildRequires:  libxslt-devel
 BuildRequires:  cython3
 BuildRequires:  python3

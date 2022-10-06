@@ -25,7 +25,7 @@ BuildRequires:  libssh2-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 BuildRequires:  lvm2
 BuildRequires:  meson
 BuildRequires:  ninja-build

@@ -16,7 +16,7 @@ BuildRequires: python3
 BuildRequires: python3-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildArch:     noarch
 
 %description

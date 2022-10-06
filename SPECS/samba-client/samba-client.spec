@@ -29,7 +29,6 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: xmlto
 BuildRequires: python3-defusedxml
 BuildRequires: libxslt-devel
-BuildRequires: libxslt
 BuildRequires: docbook-xsl
 BuildRequires: docbook-xml
 BuildRequires: gcc

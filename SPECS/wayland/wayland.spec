@@ -15,7 +15,7 @@ BuildRequires:          meson
 BuildRequires:          ninja-build
 BuildRequires:          libffi-devel
 BuildRequires:          expat-devel
-BuildRequires:          libxslt
+BuildRequires:          libxslt-devel
 
 %description
 Wayland is a protocol for a compositor to talk to its clients as well as a C library implementation of that protocol. The compositor can be a standalone display server running on Linux kernel modesetting and evdev input devices, an X application, or a Wayland client itself. The clients can be traditional applications, X servers (rootless or fullscreen) or other display servers.

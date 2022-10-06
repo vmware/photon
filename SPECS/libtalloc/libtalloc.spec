@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
 %define sha512 talloc=1e4b90769b9be72421d76bf9149fd0736f43d034b1573ab2dfb5cd613b4fb3fdf67d575f81789851787e1cbbc7353cdfc114cefbccb15fc0f39e222f40aff65f
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: python3-devel
 BuildRequires: which

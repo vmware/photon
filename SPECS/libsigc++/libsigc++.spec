@@ -12,7 +12,7 @@ Source0:	http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version
 %define sha512  libsigc=b84ae7da6708e02302d08e295d6a566f12fb2c6f0d02f811661a0a541d7969e96a1e920218394dd109b3f362d102f2956aa968539710fa180d7d97e9676fb83d
 
 BuildRequires:  mm-common
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 BuildRequires:  doxygen
 
 %description
