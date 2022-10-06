@@ -43,11 +43,16 @@ The clang-devel package contains libraries, header files and documentation for d
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
+# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
+# if we use a bigger value, we will hit OOM, so don't increase it
+# unless you are absolutely sure
+
 %cmake -G Ninja \
-    -DLLVM_PARALLEL_LINK_JOBS=1 \
     -DCMAKE_INSTALL_PREFIX=%{_usr} \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
+    -DLLVM_PARALLEL_LINK_JOBS=4 \
+    -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
     -DBUILD_SHARED_LIBS=OFF \
     -Wno-dev
 

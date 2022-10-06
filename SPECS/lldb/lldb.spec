@@ -54,6 +54,10 @@ The package contains the LLDB Python3 module.
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
+# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
+# if we use a bigger value, we will hit OOM, so don't increase it
+# unless you are absolutely sure
+
 %cmake -G Ninja\
       -DCMAKE_BUILD_TYPE=Release \
       -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
@@ -62,7 +66,9 @@ The package contains the LLDB Python3 module.
       -DLLVM_BUILD_LLVM_DYLIB=ON \
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-      -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3}
+      -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
+      -DLLVM_PARALLEL_LINK_JOBS=4 \
+      -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc)
 
 %cmake_build
 

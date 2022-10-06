@@ -50,10 +50,15 @@ The libllvm package contains shared libraries for llvm
 
 %build
 mv cmake-%{version}.src/Modules/*.cmake cmake/modules
+# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
+# if we use a bigger value, we will hit OOM, so don't increase it
+# unless you are absolutely sure
+
 %cmake -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
       -DBUILD_SHARED_LIBS:BOOL=OFF \
-      -DLLVM_PARALLEL_LINK_JOBS=1 \
+      -DLLVM_PARALLEL_LINK_JOBS=4 \
+      -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
       -DLLVM_ENABLE_FFI:BOOL=ON \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
