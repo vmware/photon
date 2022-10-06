@@ -2,12 +2,12 @@
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.2.0
+Version:        4.2.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=bc9e28d9938127f91be10ea8bc6c6f638a01d74d120efad5ad1e72c5f7b893685871e83872434745bc72ecaca430355b0f59d302660e8b4a53cc88a88cc37f9c
+%define sha512  %{name}=a8a6e3228c1cb6860bb27515bd081b5c395a17bd69fab8797758b84631d08d2389e554621080e66ecc04818c1c4d132ea6ed0edfedcfea6d7886a70ebc95297d
 Source1:        dnsname-%{dnsnamevers}.tar.gz
 %define sha512  dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 Source2:        gvisor-tap-vsock-fdc231ae7b8fe1aec4cf0b8777274fa21b70d789.tar.gz
@@ -173,5 +173,7 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
+- Automatic Version Bump
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 4.2.0-1
 - Initial version
