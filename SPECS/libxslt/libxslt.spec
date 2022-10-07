@@ -42,6 +42,7 @@ sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %install
 %make_install %{?_smp_mflags}
+find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check

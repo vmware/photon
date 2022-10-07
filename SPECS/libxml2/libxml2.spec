@@ -49,6 +49,7 @@ Static libraries and header files for the support library for libxml
 
 %install
 %make_install %{?_smp_mflags}
+find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
