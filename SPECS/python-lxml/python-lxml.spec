@@ -11,6 +11,7 @@ Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libxslt-devel
+BuildRequires:  libxml2-devel
 BuildRequires:  cython3
 BuildRequires:  python3
 BuildRequires:  python3-devel
