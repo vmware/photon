@@ -1,6 +1,6 @@
 Name:           vulkan-loader
-Version:        1.3.216.0
-Release:        2%{?dist}
+Version:        1.3.230
+Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
 Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512  Vulkan-Loader-%{version}.tar.gz=2acc3385c68c6c256febf2d66f3ae39dc7e60dca98fcedd9239ead163b9580c7bb226a4e4108da742c96e158e1c0ca3fc6ce4dec77225c7f832baf8b4f54ddbd
+%define sha512  Vulkan-Loader-%{version}.tar.gz=3d7a07d01dc76d474661b2771b9ea522075d3975832db63309169cea726c51fa35e02d79d7183adc552ef70831190dac6272fd5715c12ba9ceee9c048f565f70
 
 BuildRequires:  cmake
 BuildRequires:  python3-devel
@@ -44,7 +44,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%autosetup -p1 -n Vulkan-Loader-sdk-%{version}
+%autosetup -p1 -n Vulkan-Loader-%{version}
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=Release \
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*   Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.230-1
+-   Automatic Version Bump
 *   Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.216.0-2
 -   Bump version as a part of mesa upgrade
 *   Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
