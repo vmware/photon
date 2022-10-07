@@ -23,6 +23,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  clang
 BuildRequires:  llvm-devel
 BuildRequires:  xz-devel
+BuildRequires:  libxml2-devel
 
 %description
 Rust Programming Language
