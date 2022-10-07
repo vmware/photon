@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -15,8 +15,6 @@ BuildRequires:  openssl-devel
 BuildRequires:  perl
 %endif
 
-Conflicts:      toybox >= 0.8.8
-
 %description
 The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
@@ -25,16 +23,18 @@ downloading of files from the Web.
 %autosetup
 
 %build
-%configure --with-ssl=openssl \
-           --disable-dependency-tracking \
-           --disable-silent-rules
+%configure \
+    --with-ssl=openssl \
+    --disable-dependency-tracking \
+    --disable-silent-rules
+
 %make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-%make_install
-install -vdm 755 %{buildroot}/etc
-cat >> %{buildroot}/etc/wgetrc <<-EOF
+%make_install %{?_smp_mflags}
+install -vdm 755 %{buildroot}%{_sysconfdir}
+
+cat >> %{buildroot}%{_sysconfdir}/wgetrc <<-EOF
 #   default root certs location
     ca_certificate=/etc/pki/tls/certs/ca-bundle.crt
 EOF
@@ -47,7 +47,7 @@ rm -rf %{buildroot}/%{_infodir}
 %check
 export PERL_MM_USE_DEFAULT=1
 cpan HTTP::Daemon
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 %endif
 
 %clean
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.21.3-4
+- Conflicting with toybox was a mishap, undo it.
 * Fri Sep 16 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.21.3-3
 - Added conflicts toybox >= 0.8.8
 * Mon May 2 2022 Oliver Kurth <okurth@vmware.com> 1.21.3-2
