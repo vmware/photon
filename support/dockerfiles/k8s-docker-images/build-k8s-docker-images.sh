@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -e
+#!/bin/bash -xe
 
 DIST_TAG=$1
 DIST_VER=$2

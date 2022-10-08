@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        1.2.24
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
@@ -9,9 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      x86_64
 Source0:        http://apachemirror.wuchna.com/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
-%define sha1    tomcat-native=eb278be30134136204a9d417a25b2536c0160666
+%define sha512  tomcat-native=5dae151a60f8bd5a9a29d63eca838c77174426025ee65a826f0698943494dd3656d50bcd417e220a926b9ce111ea167043d4b806264030e951873d06767b3d6f
 Patch0:         openssl_1_1_1_compatibility.patch
-BuildRequires:  openjdk8
+BuildRequires:  openjdk11
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  apr-devel
 Requires:       apr
@@ -25,10 +25,10 @@ that allows Tomcat to use certain native resources for performance, compatibilit
 %autosetup -p1 -n tomcat-native-%{version}-src
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-1.11.0
 cd native
 %configure --with-apr=%{_prefix} \
-           --with-java-home=/usr/lib/jvm/OpenJDK-1.8.0/ \
+           --with-java-home=$JAVA_HOME \
            --with-ssl=yes
 
 make %{?_smp_mflags}
@@ -53,9 +53,11 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/libtcnative-1.la
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-3
--   Bump up release for openssl
-*   Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-2
--   Openssl 1.1.1 compatibility
-*   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.2.24-1
--   Initial build.  First version
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.2.24-4
+- Use openjdk11
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-3
+- Bump up release for openssl
+* Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-2
+- Openssl 1.1.1 compatibility
+* Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.2.24-1
+- Initial build.  First version

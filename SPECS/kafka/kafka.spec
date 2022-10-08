@@ -5,7 +5,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name: 	       kafka
 Version:       3.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -16,7 +16,7 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 Provides:      kafka kafka-server
 BuildRequires: systemd
-BuildRequires: openjdk8
+BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
 Requires:      zookeeper
@@ -101,7 +101,9 @@ fi
 %doc LICENSE
 
 %changelog
-*   Thu May 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
--   Automatic Version Bump
-*   Fri Jul 31 2020 Anisha Kumari <kanisha@vmware.com> 2.5.0-1
--   initial package
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.2.0-2
+- Use openjdk11
+* Thu May 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+- Automatic Version Bump
+* Fri Jul 31 2020 Anisha Kumari <kanisha@vmware.com> 2.5.0-1
+- initial package

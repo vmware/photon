@@ -1,7 +1,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          11.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
@@ -10,11 +10,10 @@ Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
 BuildRequires:    apache-maven
-BuildRequires:    openjre8
-BuildRequires:    openjdk8
+BuildRequires:    openjdk11
 BuildRequires:    systemd-devel
 Requires:         systemd
-Requires:         openjre8
+Requires:         openjdk11
 Requires:         commons-daemon
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
@@ -108,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 11.0-2
+- Use openjdk11
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 11.0-1
 - Automatic Version Bump
 * Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 9.2-1

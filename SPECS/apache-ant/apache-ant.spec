@@ -4,7 +4,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.11
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -18,10 +18,9 @@ Source1:    http://hamcrest.googlecode.com/files/hamcrest-%{hamcrest_ver}.tar.gz
 Source2:    https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
 %define sha512  maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 
-Requires:      openjre8
+Requires:      openjdk11
 
-BuildRequires: openjre8
-BuildRequires: openjdk8
+BuildRequires: openjdk11
 
 BuildArch:      noarch
 
@@ -134,6 +133,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.10.11-3
+- Use openjdk11
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.11-2
 - Fix binary path
 * Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.11-1

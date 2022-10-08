@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -14,7 +14,7 @@ Source2:          zkEnv.sh
 Patch0:           zkSever_remove_cygwin_cypath.patch
 BuildRequires:    systemd
 Requires:         systemd
-Requires:         openjre8
+Requires:         openjdk11
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
@@ -87,54 +87,56 @@ fi
 %{_prefix}
 
 %changelog
-*   Fri Apr 22 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
--   Automatic Version Bump
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
--   Automatic Version Bump
-*   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.8-1
--   Automatic Version Bump
-*   Fri May 31 2019 Tapas Kundu <tkundu@vmware.com> 3.4.14-1
--   Updated to release 3.4.14
--   Fix for CVE-2019-0201
-*   Wed Sep 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 3.4.13-1
--   Update to latest version
-*   Wed Sep 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-7
--   Remove the update script for zookeeper.
-*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.10-6
--   Remove shadow from requires and use explicit tools for post actions
-*   Mon Sep 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-5
--   Removed the java-export.sh script reference.
-*   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4
--   Renamed openjdk to openjdk8.
-*   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
--   Provide preset to deactivate service by default
-*   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
--   Used RuntimeDirectory to create folder /var/run/zookeeper.
-*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
--   Updated to version 3.4.10.
-*   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
--   Upgrade to 3.4.9 to address CVE-2016-5017
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
--   GA - Bump release of all rpms
-*   Mon May 2 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-3
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2
--   Added logic to set classpath
-*   Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com>  3.4.8-1
--   Updating version.
-*   Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-8
--   Edit pre install script.
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-7
--   Remove init.d file.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  3.4.6-6
--   Add systemd to Requires and BuildRequires.
-*   Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
--   Add zookeeper to systemd service.
-*   Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
--   Fix conflicts between zookeeper and chkconfig
-*   Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
--   Udating the dependency after repackaging the openjdk, fixed post scripts
-*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
--   Adding ldconfig in post section.
-*   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
--   Initial build. First version. Initial build. First version
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.8.0-2
+- Use openjdk11
+* Fri Apr 22 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
+- Automatic Version Bump
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
+- Automatic Version Bump
+* Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.8-1
+- Automatic Version Bump
+* Fri May 31 2019 Tapas Kundu <tkundu@vmware.com> 3.4.14-1
+- Updated to release 3.4.14
+- Fix for CVE-2019-0201
+* Wed Sep 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 3.4.13-1
+- Update to latest version
+* Wed Sep 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-7
+- Remove the update script for zookeeper.
+* Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.10-6
+- Remove shadow from requires and use explicit tools for post actions
+* Mon Sep 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-5
+- Removed the java-export.sh script reference.
+* Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4
+- Renamed openjdk to openjdk8.
+* Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
+- Provide preset to deactivate service by default
+* Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
+- Used RuntimeDirectory to create folder /var/run/zookeeper.
+* Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
+- Updated to version 3.4.10.
+* Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
+- Upgrade to 3.4.9 to address CVE-2016-5017
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
+- GA - Bump release of all rpms
+* Mon May 2 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-3
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2
+- Added logic to set classpath
+* Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com>  3.4.8-1
+- Updating version.
+* Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-8
+- Edit pre install script.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-7
+- Remove init.d file.
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  3.4.6-6
+- Add systemd to Requires and BuildRequires.
+* Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
+- Add zookeeper to systemd service.
+* Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
+- Fix conflicts between zookeeper and chkconfig
+* Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
+- Udating the dependency after repackaging the openjdk, fixed post scripts
+* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
+- Adding ldconfig in post section.
+* Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
+- Initial build. First version. Initial build. First version

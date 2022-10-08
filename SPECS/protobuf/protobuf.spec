@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.14.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -22,8 +22,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  chkconfig
-BuildRequires:  openjre8 >= 1.8.0.45
-BuildRequires:  openjdk8 >= 1.8.0.45
+BuildRequires:  openjdk11
 BuildRequires:  apache-maven >= 3.3.3
 
 %description
@@ -60,7 +59,7 @@ This contains %{name} python3 libraries.
 %package        java
 Summary:        %{name} java
 Group:          Development/Libraries
-Requires:       openjre8 >= 1.8.0.45
+Requires:       openjdk11
 
 %description    java
 This contains %{name} java package.
@@ -68,12 +67,10 @@ This contains %{name} java package.
 %prep
 %autosetup -p1
 
-# This test is incredibly slow on arm
+# This test is incredibly slow
 # https://github.com/google/protobuf/issues/2389
-%if "%{_arch}" == "aarch64"
 rm -f java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
       java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
-%endif
 
 autoreconf -iv
 
@@ -130,6 +127,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.14.0-3
+- Use openjdk11
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.14.0-2
 - Remove .la files
 * Wed Feb 10 2021 Harinadh D <hdommaraju@vmware.com> 3.14.0-1

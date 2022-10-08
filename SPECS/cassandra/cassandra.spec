@@ -3,7 +3,7 @@
 
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        4.0.4
+Version:        4.0.6
 Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
@@ -12,17 +12,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha512  apache-%{name}=f60d8ebf73289699a6bf9ebb02b9869d62b1634d8c2e9c2aa1b1d8b5bea0f3de9eab99251db0b37d763e8c08fcf247c630e6ede81ab62ff6cd904dd06f45eda9
+%define sha512  apache-%{name}=7942f17ea148ad56de9e3324953bd94a6311c1bfc9e54606135b3925fcb3d771647cb33f65082c1dab08175999b2f5460ed5fde7fc1c0adf52b853e093a08ec4
 Source1:        %{name}.service
 
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
-BuildRequires:  openjdk8
+BuildRequires:  openjdk11
 BuildRequires:  wget
 BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
 
-Requires:       openjre8
+Requires:       openjdk11
 Requires:       gawk
 Requires:       shadow
 Requires(post): /usr/bin/chown
@@ -37,7 +37,14 @@ Cassandra brings together the distributed systems technologies from Dynamo and t
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
-ant jar javadoc -Drelease=true
+ant jar javadoc -Drelease=true -Duse.jdk11=true
+#Remove libraries of other arch
+%ifarch x86_64
+rm $(find lib/sigar-bin -type f -name "*" ! -name "libsigar-amd64-linux.so")
+%endif
+%ifarch aarch64
+rm -r lib/sigar-bin
+%endif
 
 %install
 mkdir -p %{buildroot}%{_localstatedir}/opt/%{name}/data \
@@ -108,6 +115,9 @@ fi
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Fri Oct 07 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 4.0.6-1
+- Use openjdk11
+- Upgrade to 4.0.6
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 4.0.4-1
 - Automatic Version Bump
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.0.3-2

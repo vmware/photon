@@ -87,7 +87,7 @@ def downloadFile(url, destfile):
         response.raise_for_status()
 
     with open(temp_file, 'wb') as handle:
-        for block in response.iter_content(1024):
+        for block in response.iter_content(4096):
             if not block:
                 break
             handle.write(block)
