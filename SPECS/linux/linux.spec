@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.159
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -69,7 +69,9 @@ Source9:        check_fips_canister_struct_compatibility.inc
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 
-Source17:       fips_canister-kallsyms
+Source18:       fips_canister-kallsyms
+Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+Source20:       Add-alg_request_report-cmdline.patch
 %endif
 
 # common
@@ -485,7 +487,10 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
-cp %{SOURCE17} crypto/
+cp %{SOURCE18} crypto/
+# Patch canister wrapper
+patch -p1 < %{SOURCE19}
+patch -p1 < %{SOURCE20}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -826,6 +831,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jan 12 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.159-4
+- Introduce fips=2 and alg_request_report cmdline parameters
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.159-3
 - update to latest ToT vmxnet3 driver
 - Include patch "vmxnet3: correctly report csum_level for encapsulated packet"

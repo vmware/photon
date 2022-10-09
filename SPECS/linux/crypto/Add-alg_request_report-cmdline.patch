@@ -1,0 +1,57 @@
+From 084b65c6af3a2f06f070eeb2a8d4b9b9c641b9d7 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 8 Dec 2022 10:36:03 +0000
+Subject: Add alg_request_report cmdline
+
+When set, kernel will report every crypto algorithm request.
+The intention of this feature is to understand if any in-kernel
+cryptos use are triggered by the workload.
+To get report use:
+ - dmesg | grep "alg request", or
+ - journalctl -k | grep "alg request"
+Example of the report:
+[    2.019574] alg request:  (pkcs1pad(rsa,sha512)) by swapper/0(1)
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ crypto/fips_canister_wrapper.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/crypto/fips_canister_wrapper.c b/crypto/fips_canister_wrapper.c
+index 4ea0177f5719..27776bbffe9f 100644
+--- a/crypto/fips_canister_wrapper.c
++++ b/crypto/fips_canister_wrapper.c
+@@ -24,6 +24,7 @@
+ #include <asm/fpu/api.h>
+ #include "internal.h"
+ 
++static __ro_after_init bool alg_request_report = false;
+ 
+ int fcw_cond_resched(void)
+ {
+@@ -210,6 +211,12 @@ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
+ 			    void *data)
+ {
+ 	struct crypto_alg *alg = (struct crypto_alg *)data;
++	if (msg == CRYPTO_MSG_ALG_REQUEST && alg_request_report)
++	{
++		pr_notice("alg request: %s (%s) by %s(%d)",
++			alg->cra_driver_name, alg->cra_name,
++			current->comm, current->pid);
++	}
+ 	if (msg == CRYPTO_MSG_ALG_REGISTER)
+ 	{
+ 		/* Disable non FIPS approved algos */
+@@ -233,3 +240,9 @@ static int __init wrapper_init(void)
+ }
+ arch_initcall(wrapper_init);
+ 
++static int __init alg_request_report_setup(char *__unused)
++{
++       alg_request_report = true;
++       return 1;
++}
++__setup("alg_request_report", alg_request_report_setup);
+-- 
+2.23.3
+

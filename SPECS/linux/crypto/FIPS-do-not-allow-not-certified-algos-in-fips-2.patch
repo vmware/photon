@@ -1,0 +1,210 @@
+From 3f9205b75724c59c70c66286cabdae0d7ff95270 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 7 Oct 2022 20:39:34 +0000
+Subject: FIPS: do not allow not certified algos in fips=2
+
+Introduuce fips=2 kernel parameter which (1) enables fips mode (fips=1)
+in the kernel and (2) forces to register only certified crypto algos
+from the canister.
+On registration event of non certified algo, kernel will complain:
+[ 9217.061565] alg: blake2b-160-generic (blake2b-160) not certified
+[ 9217.061582] alg: blake2b-256-generic (blake2b-256) not certified
+[ 9217.061832] alg: blake2b-384-generic (blake2b-384) not certified
+and throw -ELIBBAD error to the caller.
+
+fips=2 will allow us to confidently answer what crypto algorithms kernel
+are in use by the user.
+
+There are 3 possible scenarios to hit it:
+
+1. Userspace app accessing AF_ALG API with not allowed crypto alg
+
+void main(void)
+{
+	        struct sockaddr_alg sa = {AF_ALG, "hash", 0, 0, "blake2b-512"};
+
+		        if (bind(socket(AF_ALG, SOCK_SEQPACKET, 0), (struct sockaddr *)&sa, sizeof(sa)) == -1)
+				                printf("Errno: %d\n", errno);
+}
+
+2. Loading the module (.ko) with crypto implementation
+3. Kernel accessing not approved crypto alg. In that case "alg ... not
+certified" might be followed by pernel panic.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ crypto/fips.c                  |   4 +-
+ crypto/fips_canister_wrapper.c | 100 ++++++++++++++++++++++++++++-----
+ 2 files changed, 90 insertions(+), 14 deletions(-)
+
+diff --git a/crypto/fips.c b/crypto/fips.c
+index 7b1d8caee669..6aaeade33aba 100644
+--- a/crypto/fips.c
++++ b/crypto/fips.c
+@@ -22,7 +22,9 @@ EXPORT_SYMBOL_GPL(fips_fail_notif_chain);
+ /* Process kernel command-line parameter at boot time. fips=0 or fips=1 */
+ static int fips_enable(char *str)
+ {
+-	fips_enabled = !!simple_strtol(str, NULL, 0);
++	fips_enabled = simple_strtol(str, NULL, 0);
++	if (fips_enabled > 2 || fips_enabled < 0)
++		fips_enabled = 1;
+ 	printk(KERN_INFO "fips mode: %s\n",
+ 		fips_enabled ? "enabled" : "disabled");
+ 	return 1;
+diff --git a/crypto/fips_canister_wrapper.c b/crypto/fips_canister_wrapper.c
+index 1416e7186771..4ea0177f5719 100644
+--- a/crypto/fips_canister_wrapper.c
++++ b/crypto/fips_canister_wrapper.c
+@@ -1,4 +1,4 @@
+-// Uncomment it in 2023. des3 will not by allowed in FIPS mode.
++// Uncomment it in 2023. des3 will not be allowed in FIPS mode.
+ //#define DES3_IS_NOT_ALLOWED
+ 
+ #include <linux/kernel.h>
+@@ -9,12 +9,10 @@
+ #include <linux/sched.h>
+ #include <linux/version.h>
+ #include <linux/workqueue.h>
+-#ifdef DES3_IS_NOT_ALLOWED
+ #include <linux/notifier.h>
+ #include <linux/module.h>
+ #include <linux/fips.h>
+ #include <crypto/algapi.h>
+-#endif
+ #include <crypto/aead.h>
+ #include <crypto/hash.h>
+ #include <crypto/akcipher.h>
+@@ -24,6 +22,7 @@
+ #include <crypto/internal/hash.h>
+ #endif
+ #include <asm/fpu/api.h>
++#include "internal.h"
+ 
+ 
+ int fcw_cond_resched(void)
+@@ -122,25 +121,103 @@ void fcw_kernel_fpu_end(void)
+ 	kernel_fpu_end();
+ }
+ 
+-int fcw_fips_not_allowed_alg(char *alg_name)
++static char *canister_algs[] = {
++	"cipher_null-generic",
++	"ecb-cipher_null",
++	"rsa-generic",
++	"sha1-generic",
++	"sha256-generic",
++	"sha224-generic",
++	"sha512-generic",
++	"sha384-generic",
++	"des3_ede-generic",
++	"aes-generic",
++	"ctr(aes-generic)",
++	"drbg_pr_ctr_aes128",
++	"drbg_pr_ctr_aes192",
++	"drbg_pr_ctr_aes256",
++	"drbg_pr_sha1",
++	"drbg_pr_sha384",
++	"drbg_pr_sha512",
++	"drbg_pr_sha256",
++	"hmac(sha1-generic)",
++	"drbg_pr_hmac_sha1",
++	"hmac(sha384-generic)",
++	"drbg_pr_hmac_sha384",
++	"hmac(sha512-generic)",
++	"drbg_pr_hmac_sha512",
++	"hmac(sha256-generic)",
++	"drbg_pr_hmac_sha256",
++	"drbg_nopr_ctr_aes128",
++	"drbg_nopr_ctr_aes192",
++	"drbg_nopr_ctr_aes256",
++	"drbg_nopr_sha1",
++	"drbg_nopr_sha384",
++	"drbg_nopr_sha512",
++	"drbg_nopr_sha256",
++	"drbg_nopr_hmac_sha1",
++	"drbg_nopr_hmac_sha384",
++	"drbg_nopr_hmac_sha512",
++	"drbg_nopr_hmac_sha256",
++	"jitterentropy_rng",
++	"ecdh-generic",
++	"cbc(aes-generic)",
++	"cbc(des3_ede-generic)",
++	"ctr(des3_ede-generic)",
++	"ecb(aes-generic)",
++	"ecb(des3_ede-generic)",
++	"hmac(sha224-generic)",
++	"pkcs1pad(rsa-generic,sha256)",
++	"pkcs1pad(rsa-generic,sha512)",
++	"xts(ecb(aes-generic))",
++	"aes-aesni",
++	"__ecb-aes-aesni",
++	"__cbc-aes-aesni",
++	"__ctr-aes-aesni",
++	"__xts-aes-aesni",
++	"cryptd(__ecb-aes-aesni)",
++	"ecb-aes-aesni",
++	"cryptd(__cbc-aes-aesni)",
++	"cbc-aes-aesni",
++	"cryptd(__ctr-aes-aesni)",
++	"ctr-aes-aesni",
++	"cryptd(__xts-aes-aesni)",
++	"xts-aes-aesni",
++	// no certification require
++	"crc32c-generic",
++	"crct10dif-generic",
++};
++
++int fcw_fips_not_allowed_alg(char *name)
+ {
+ #ifdef DES3_IS_NOT_ALLOWED
+-	if (strstr(alg_name, "des3_ede"))
++	if (strstr(name, "des3_ede"))
+ 		return 1;
+ #endif
++	if (fips_enabled == 2) {
++		int i;
++		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
++			if (strcmp(name, canister_algs[i]) == 0)
++				return 0;
++		}
++		return 1;
++	}
++
+ 	return 0;
+ }
+ 
+-#ifdef DES3_IS_NOT_ALLOWED
+ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
+ 			    void *data)
+ {
++	struct crypto_alg *alg = (struct crypto_alg *)data;
+ 	if (msg == CRYPTO_MSG_ALG_REGISTER)
+ 	{
+-		struct crypto_alg *alg = (struct crypto_alg *)data;
+ 		/* Disable non FIPS approved algos */
+-		if (fcw_fips_not_allowed_alg(alg->cra_name))
+-			return NOTIFY_OK;
++		if (fcw_fips_not_allowed_alg(alg->cra_driver_name)) {
++			pr_err("alg: %s (%s) not certified", alg->cra_driver_name, alg->cra_name);
++			crypto_alg_tested(alg->cra_driver_name, -EINVAL);
++			return NOTIFY_STOP;
++		}
+ 	}
+ 
+ 	return NOTIFY_DONE;
+@@ -152,10 +229,7 @@ static struct notifier_block crypto_msg_notifier = {
+ 
+ static int __init wrapper_init(void)
+ {
+-	if (!fips_enabled)
+-		return 0;
+-
+ 	return crypto_register_notifier(&crypto_msg_notifier);
+ }
+ arch_initcall(wrapper_init);
+-#endif
++
+-- 
+2.23.3
+

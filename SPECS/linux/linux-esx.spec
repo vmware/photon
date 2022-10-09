@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.159
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -28,7 +28,6 @@ Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
-Source5:        modify_kernel_configs.inc
 
 %define i40e_version 2.15.9
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
@@ -50,8 +49,11 @@ Source9:        check_fips_canister_struct_compatibility.inc
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 
-Source17:       speedup-algos-registration-in-non-fips-mode.patch
+Source17:       modify_kernel_configs.inc
 Source18:       fips_canister-kallsyms
+Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+Source20:       Add-alg_request_report-cmdline.patch
+Source21:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 # common
@@ -407,15 +409,17 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+# Change m to y for modules that are in the canister
+%include %{SOURCE17}
 cp %{SOURCE18} crypto/
 # Patch canister wrapper
-patch -p1 < %{SOURCE17}
-# Change m to y for modules that are in the canister
-%include %{SOURCE5}
+patch -p1 < %{SOURCE19}
+patch -p1 < %{SOURCE20}
+patch -p1 < %{SOURCE21}
 %else
 %if 0%{?kat_build}
 # Change m to y for modules in katbuild
-%include %{SOURCE5}
+%include %{SOURCE17}
 %endif
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
@@ -587,6 +591,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jan 12 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.159-3
+- Introduce fips=2 and alg_request_report cmdline parameters
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.159-2
 - update to latest ToT vmxnet3 driver
 - Include patch "vmxnet3: correctly report csum_level for encapsulated packet"
