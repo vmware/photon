@@ -1,7 +1,7 @@
 Summary:    Wayland Compositor Infrastructure
 Name:       wayland
-Version:    1.20.0
-Release:    2%{?dist}
+Version:    1.21.0
+Release:    1%{?dist}
 License:    MIT
 URL:        http://wayland.freedesktop.org
 Group:      System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
-%define sha512 %{name}=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
+%define sha512 wayland=5575216d30fdf5c63caa6bcad071e15f2a4f3acb12df776806073f65db37a50b5b5b3cc7957c5497636f4ac01893e2eaab26e453ded44b287acde01762f5fdc3
 
 BuildRequires: libxml2-devel
 BuildRequires: meson
@@ -117,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Mon Oct 10 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.0-1
+- Automatic Version Bump
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.20.0-2
 - Bump version as a part of libxslt upgrade
 * Tue Jun 14 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-1
