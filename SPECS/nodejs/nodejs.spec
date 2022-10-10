@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.16.0
+Version:        16.17.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=38dea34a56093b6454055b51a86808ed6173de089b9a337278a5f3278577edc393bde4bffccc467654e85fc7bbed03f7291d7d798a35151001582875141af654
+%define         sha512 node=52dd13d3b283762602d7e8a03563b10c0973daf6c3126b7ab2c404501262279c645a85c0e0981b7a4b8b3bd016fbaa5c985251d9b261074bfe9e14cbb864f7ea
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -31,7 +31,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -p1 -n node-v%{version}
+%autosetup -p1 -n node-%{version}
 
 %build
 sh configure --prefix=%{_prefix}
@@ -69,6 +69,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Oct 10 2022 Shivani Agarwal <shivania2@vmware.com> 16.17.1-1
+-   Upgrade to 16.17.1 for  CVE-2022-32213
 *   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 16.16.0-1
 -   Upgraded to 16.16.0.
 *   Tue Mar 22 2022 Piyush Gupta <gpiyush@vmware.com> 16.14.2-1
