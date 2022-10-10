@@ -1,17 +1,17 @@
-%global dialogsubversion 20220526
+%global dialogsubversion 20220728
 
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-Release:       7.20220526%{?dist}
+Release:       7.20220728%{?dist}
 License:       LGPLv2
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       https://invisible-mirror.net/archives/dialog/%{name}-%{version}-%{dialogsubversion}.tar.gz
-%define sha512 %{name}=619d52b8123264bf586f5325443c3b85863166119c6fbaa91571a57454d761f01a53ebeb2203ea725c83dc88f2abf886c64c6eac5b56c126e4f3939eb1d24d62
+Source0:       https://invisible-mirror.net/archives/dialog/%{name}-%{version}-%{dialogsubversion}.tgz
+%define sha512 %{name}=dddceaf00bfec4b53f2cf67e51d4c54841d9db337536657c21bc8f324a0eb9c6d621f00e09bfb741bd263f171dde38cfea87568f86daf04a9e88575a0ed61218
 
 BuildRequires: ncurses-devel
 BuildRequires: gettext
@@ -83,6 +83,8 @@ rm -rf %{buildroot}%{_libdir}/.libs
 %{_mandir}/man3/dialog.*
 
 %changelog
+* Mon Oct 10 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3-7.20220728
+- Update to 20220728
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3-7.20220526
 - Remove .la files
 * Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3-6.20220526
