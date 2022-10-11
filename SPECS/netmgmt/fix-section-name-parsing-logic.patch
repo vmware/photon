@@ -1,0 +1,40 @@
+From 852152508e3f8012954ba856fc5759245f11519e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 11 Oct 2022 14:57:25 +0000
+Subject: [PATCH] src/iniparse.c: fix section name parsing logic
+
+Looks like it was assumed that systemd network file section
+names contain only alphabets but newere versions of systemd
+has section names like DHCPv4, DHCPv6. So we should look for
+alpha numeric characters while fetching sections names.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ src/iniparser.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/iniparser.c b/src/iniparser.c
+index 0342204..834479e 100644
+--- a/src/iniparser.c
++++ b/src/iniparser.c
+@@ -852,7 +852,7 @@ ini_cfg_parse_section_name(
+         bail_on_error(err);
+     }
+     // allow only (('a'-'z') || ('A'-'Z'))+
+-    while (pszCursor && *pszCursor && isalpha((int)*pszCursor))
++    while (pszCursor && *pszCursor && isalnum((int)*pszCursor))
+     {
+         pszCursor++;
+         len++;
+@@ -934,7 +934,7 @@ ini_cfg_parse_key_value(
+         bail_on_error(err);
+     }
+     // allow only (('a'-'z') || ('A'-'Z') || ('0'-'9'))+
+-    while (pszCursor && *pszCursor && (isalpha((int)*pszCursor) || isdigit((int)*pszCursor)))
++    while (pszCursor && *pszCursor && (isalnum((int)*pszCursor)))
+     {
+         pszCursor++;
+         len_key++;
+-- 
+2.37.3
+

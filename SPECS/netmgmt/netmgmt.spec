@@ -1,15 +1,17 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
-URL:           http://www.vmware.com
+URL:           https://github.com/vmware/photonos-netmgr
 Distribution:  Photon
 
-Source0: %{name}-%{version}.tar.gz
+Source0: https://github.com/vmware/photonos-netmgr/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
+
+Patch0: fix-section-name-parsing-logic.patch
 
 BuildRequires: autoconf
 BuildRequires: check-devel
@@ -48,14 +50,19 @@ header files and libraries for netmgmt cli
 %build
 autoreconf -mif
 # fix gcc 9 compilation warning/error
-export CFLAGS="-O2 -g -Wno-error=format-truncation -Wno-error=restrict -Wno-error=format-overflow -Wno-error=stringop-truncation -Wno-error=stringop-overflow"
+CFLAGS="-O2 -g -Wno-error=format-truncation -Wno-error=restrict"
+CFLAGS="${CFLAGS} -Wno-error=format-overflow -Wno-error=stringop-truncation"
+CFLAGS="${CFLAGS} -Wno-error=stringop-overflow"
+export CFLAGS
+
 %configure \
-    --libdir=%{_lib64dir}
+    --libdir=%{_libdir} \
+    --disable-static
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -63,22 +70,22 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_bindir}/netmgr
-%{_lib64dir}/libnetmgr.so.*
-%{_lib64dir}/libnetmgrcli.so.*
+%{_libdir}/libnetmgr.so.*
+%{_libdir}/libnetmgrcli.so.*
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/netmgmt/netmgr.h
-%{_lib64dir}/libnetmgr.a
-%{_lib64dir}/libnetmgr.so
+%{_includedir}/%{name}/netmgr.h
+%{_libdir}/libnetmgr.so
 
 %files cli-devel
 %defattr(-,root,root)
-%{_includedir}/netmgmt/netmgrcli.h
-%{_lib64dir}/libnetmgrcli.a
-%{_lib64dir}/libnetmgrcli.so
+%{_includedir}/%{name}/netmgrcli.h
+%{_libdir}/libnetmgrcli.so
 
 %changelog
+* Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-4
+- Fix network file section name parsing logic
 * Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
 - Fix compilation issue with gcc-8.4.0
 * Thu Jan 17 2019 Michelle Wang <michellew@vmware.com> 1.2.0-2
