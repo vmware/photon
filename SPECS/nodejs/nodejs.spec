@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.6.0
+Version:        18.10.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=a325c714b570d1f378933894bdb1808d3f8cca1e461b1e00da4c8fd32eedc7b8e9b3f06cefcd7a5a6fea0ea90c63a1f775cadeec5d4933b5eda172b6e5568d75
+%define         sha512 node=30a408b8f2ae41646f2ce3018862105ee4bd7913dd3cbbe8af8fc4d70cf64ac820342db9becff42c5a2b6f71d8dc3b539f580833f975b46628ad159712a8b109
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -66,6 +66,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Oct 10 2022 Shivani Agarwal <shivania2@vmware.com> 18.10.0-1
+-   Upgrade to 18.10.0 for  CVE-2022-32213
 *   Tue Aug 09 2022 Shivani Agarwal <shivania2@vmware.com> 18.6.0-1
 -   Update to version 18.6.0
 *   Tue Mar 08 2022 Piyush Gupta <gpiyush@vmware.com> 17.3.1-1
