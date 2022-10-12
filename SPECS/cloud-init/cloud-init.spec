@@ -45,6 +45,8 @@ BuildRequires: python3-jsonpatch
 BuildRequires: python3-pytest
 BuildRequires: python3-jsonschema
 BuildRequires: python3-pyserial
+BuildRequires: python3-attrs
+BuildRequires: python3-netifaces
 %endif
 
 Requires: iproute2
@@ -110,8 +112,8 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 conf_file='%{_sysconfdir}/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
-%define pkglist1 pytest-metadata unittest2 mock attrs iniconfig
-%define pkglist2 httpretty netifaces responses pytest-mock
+%define pkglist1 pytest-metadata unittest2 mock iniconfig
+%define pkglist2 httpretty responses pytest-mock
 
 pip3 install --upgrade %{pkglist1} %{pkglist2}
 make check %{?_smp_mflags}
