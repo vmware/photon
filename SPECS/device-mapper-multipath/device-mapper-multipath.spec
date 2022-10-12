@@ -1,38 +1,48 @@
+%define _unitdir        %{_libdir}/systemd/system
+%define _udevrulesdir   %{_libdir}/udev/rules.d
+%define _tmpfilesdir    %{_libdir}/tmpfiles.d
+
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
-Version:    0.7.3
-Release:    2%{?dist}
+Version:    0.9.1
+Release:    1%{?dist}
 License:    GPL+
 Group:      System Environment/Base
-URL:        http://christophe.varoqui.free.fr/
-Source0:    multipath-tools-a0e0752.tar.gz
-%define git_commit_short a0e0752
-%define sha1 multipath-tools=56c171d5ed567654a10996b6d9892944d9d0cb48
+Vendor:     VMware, Inc.
+URL:        http://christophe.varoqui.free.fr
+Distribution: Photon
+
+Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-tools-%{version}.tar.gz
+%define sha1 multipath-tools=ab5995b851f8b9403612c9aaab0b2d848e05dc09
+
+# fix for CVE-2022-41973, CVE-2022-41974
+Patch0: CVE-fixes.patch
+
 BuildRequires:  userspace-rcu-devel
-BuildRequires:  librados-devel >= 12.2.4
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
+
 Requires:   userspace-rcu
-Requires:   librados2
 Requires:   libaio
 Requires:   device-mapper
 Requires:   libselinux
 Requires:   libsepol
 Requires:   readline
 Requires:   ncurses
+Requires:   systemd
 Requires:   kpartx = %{version}-%{release}
 
 %description
 Device-mapper-multipath provides tools to manage multipath devices by
-instructing the device-mapper multipath kernel module what to do. 
+instructing the device-mapper multipath kernel module what to do.
 
 %package -n kpartx
 Summary:    Partition device manager for device-mapper devices
-
+Requires:   device-mapper
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
@@ -43,20 +53,21 @@ Requires: %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -qn multipath-tools-%{git_commit_short}
+%autosetup -p1 -n multipath-tools-%{version}
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} \
-	SYSTEMDPATH=/lib \
-	bindir=%{_sbindir} \
-	syslibdir=%{_libdir} \
-	libdir=%{_libdir}/multipath \
-	pkgconfdir=%{_libdir}/pkgconfig
+%make_install %{?_smp_mflags} \
+    SYSTEMDPATH=%{_libdir} \
+    bindir=%{_sbindir} \
+    syslibdir=%{_libdir} \
+    usrlibdir=%{_libdir} \
+    libdir=%{_libdir}/multipath \
+    pkgconfdir=%{_libdir}/pkgconfig
 
-install -vd %{buildroot}/etc/multipath
+install -vd %{buildroot}%{_sysconfdir}/multipath
 
 %clean
 rm -rf %{buildroot}
@@ -69,21 +80,23 @@ rm -rf %{buildroot}
 %{_sbindir}/mpathpersist
 %{_sbindir}/multipath
 %{_sbindir}/multipathd
-/lib/udev/rules.d/*
-/lib64/*.so
-/lib64/*.so.*
+%{_sbindir}/multipathc
+%{_udevrulesdir}/*
 %{_unitdir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/multipath/*.so
 %{_mandir}/man5/*
 %{_mandir}/man8/mpathpersist.8.gz
 %{_mandir}/man8/multipath.8.gz
 %{_mandir}/man8/multipathd.8.gz
-%dir /etc/multipath
+%dir %{_sysconfdir}/multipath
+%config(noreplace) %{_libdir}/modules-load.d/multipath.conf
+%{_mandir}/man8/multipathc.8.gz
+%{_tmpfilesdir}/multipath.conf
 
 %files devel
 %defattr(-,root,root,-)
+%{_libdir}/*.so
 %{_mandir}/man3/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -91,20 +104,21 @@ rm -rf %{buildroot}
 %files -n kpartx
 %defattr(-,root,root,-)
 %{_sbindir}/kpartx
-/lib/udev/kpartx_id
+%{_libdir}/udev/kpartx_id
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
-*   Mon Apr 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.7.3-2
--   Build with librados-devel 12.2.4
-*   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
--   Update to 0.7.3
-*   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
--   Update to 0.7.1
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  0.5.0-3
--   Change systemd dependency
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.0-2
--   GA - Bump release of all rpms
-*   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 0.5.0-1
--   Initial build. First version
-
+* Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.1-1
+- Upgrade to v0.9.1
+* Mon Apr 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.7.3-2
+- Build with librados-devel 12.2.4
+* Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
+- Update to 0.7.3
+* Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
+- Update to 0.7.1
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  0.5.0-3
+- Change systemd dependency
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.0-2
+- GA - Bump release of all rpms
+* Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 0.5.0-1
+- Initial build. First version
