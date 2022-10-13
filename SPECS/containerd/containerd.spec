@@ -4,7 +4,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -123,6 +123,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Oct 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-3
+- Bump up containerd to build with upgraded runc.
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
 - Bump up version to compile with new go
 * Wed Sep 14 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.6.6-1
