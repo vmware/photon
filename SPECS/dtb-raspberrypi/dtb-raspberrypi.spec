@@ -3,13 +3,13 @@ Summary:        Device trees and overlays for Raspberry Pi
 Name:           dtb-raspberrypi
 Version:        5.10.4.2021.01.07
 # Version Scheme: {kernel_ver}.{year}.{month}.{day}
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 %define rpi_linux_branch rpi-5.10.y
 %define rpi_linux_req 5.10.4
 URL:            https://github.com/raspberrypi/linux
 Source0:        https://github.com/raspberrypi/linux/archive/rpi-linux-%{version}.tar.gz
-%define sha1    rpi-linux=0f0f79dcb961a6e04b620165d47dae090db9b2a6
+%define sha512  rpi-linux=8e176075f30fa4c6847c0bc11c3d9207929247bacd518e45aeff85a3eaffce229699d953f16cd8e948b37326cea2adaa2cf518858c3813a3b30565c97af8b2fc
 Group:          System/Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,6 +21,7 @@ Patch2:         0001-spi0-overlays-files.patch
 Patch3:         0002-audio-overlays-files.patch
 
 BuildRequires:  dtc
+BuildRequires:  bison
 Requires:       dtb-rpi3 = %{version}-%{release}
 Requires:       dtb-rpi4 = %{version}-%{release}
 Requires:       dtb-rpi-overlay = %{version}-%{release}
@@ -55,18 +56,15 @@ Conflicts:      linux < %{rpi_linux_req}
 Kernel Device Tree Overlay Blob files for Raspberry Pi
 
 %prep
-%setup -q -n rpi-linux-%{version}
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n rpi-linux-%{version}
 
 %build
-make mrproper
-make bcm2711_defconfig
+make %{?_smp_mflags} mrproper
+make %{?_smp_mflags} bcm2711_defconfig
 make %{?_smp_mflags} dtbs
 
 %install
-make dtbs_install INSTALL_DTBS_PATH=%{buildroot}/boot/efi
+make dtbs_install INSTALL_DTBS_PATH=%{buildroot}/boot/efi %{?_smp_mflags}
 pushd %{buildroot}/boot/efi
 mv broadcom excluded
 mv excluded/bcm2837-rpi-3-*.dtb ./
@@ -90,6 +88,8 @@ popd
 /boot/efi/overlays
 
 %changelog
+*   Thu Oct 13 2022 Piyush Gupta <gpiyush@vmware.com> 5.10.4.2021.01.07-3
+-   Added bison as BuildRequires.
 *   Thu Jan 21 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-2
 -   Adding audio and spi overlay
 *   Thu Jan 07 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-1
