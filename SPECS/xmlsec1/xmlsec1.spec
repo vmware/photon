@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.33
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,33 +59,25 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%{_libdir}/lib%{name}.so.1
-%{_libdir}/lib%{name}.so.%{version}
-%{_libdir}/lib%{name}-nss.so.1
-%{_libdir}/lib%{name}-nss.so.%{version}
-%{_libdir}/lib%{name}-openssl.so.1
-%{_libdir}/lib%{name}-openssl.so.%{version}
+%{_libdir}/*.so.*
 %{_bindir}/%{name}
+# these .so files are needed by vgauthd, don't move them to devel
+# unless you are sure of it
+%{_libdir}/*.so
 
 %files devel
 %defattr(-, root, root)
-%{_libdir}/lib%{name}.so
-%{_libdir}/lib%{name}-nss.so
-%{_libdir}/lib%{name}-openssl.so
 %{_bindir}/%{name}-config
-%{_includedir}/%{name}/xmlsec/*.h
-%{_includedir}/%{name}/xmlsec/nss/*.h
-%{_includedir}/%{name}/xmlsec/openssl/*.h
-%{_libdir}/pkgconfig/%{name}.pc
-%{_libdir}/pkgconfig/%{name}-nss.pc
-%{_libdir}/pkgconfig/%{name}-openssl.pc
+%{_includedir}/%{name}/xmlsec/*
+%{_libdir}/pkgconfig/*.pc
 %{_libdir}/%{name}Conf.sh
 %{_docdir}/%{name}/*
 %{_datadir}/aclocal/%{name}.m4
-%{_mandir}/man1/%{name}.1.gz
-%{_mandir}/man1/%{name}-config.1.gz
+%{_mandir}/man1/*
 
 %changelog
+* Thu Oct 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.33-5
+- Package .so files in main package.
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.33-4
 - Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.33-3
