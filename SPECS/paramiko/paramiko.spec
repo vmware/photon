@@ -3,7 +3,7 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 %define         sha1 paramiko=0f1e47ec1822964aeb96974562716c834292962c
 Patch0:		paramiko-CVE-2018-1000805.patch
+Patch1:         CVE-2022-24302.patch
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -19,8 +20,12 @@ BuildRequires:  python2-devel
 BuildRequires:  ecdsa > 0.11
 BuildRequires:  pycrypto > 2.1
 BuildRequires:  python-cryptography
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
+Requires:       python3
 Requires:       pycrypto > 2.1
 Requires:       ecdsa > 0.11
 Requires:       python-cryptography
@@ -31,13 +36,8 @@ Requires:       python-cryptography
 
 %package -n     python3-paramiko
 Summary:        python3-paramiko
-BuildRequires:  python3-devel
-BuildRequires:  python3-ecdsa > 0.11
-BuildRequires:  python3-pycrypto > 2.1
-BuildRequires:  python3-cryptography
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
+Requires:       python3-devel
+Requires:       python3-xml
 Requires:       python3
 Requires:       python3-pycrypto > 2.1
 Requires:       python3-ecdsa > 0.11
@@ -49,6 +49,7 @@ Python 3 version.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 python2 setup.py build
@@ -82,6 +83,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.1.5-3
+-   Fix for CVE-2022-24302
 *   Fri Jan 11 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.1.5-2
 -   Applied patch for CVE-2018-1000805
 *   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 2.1.5-1
