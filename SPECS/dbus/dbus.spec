@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -10,6 +10,13 @@ Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 %define sha512 %{name}=93724660529fb777e2dd5207f953dd0b4c02c079293ae202ffdcabd9c4033110a7f9980b55a443770e0ea0bb8fc6b5717797d954ee268d34e13d364df0f01539
+
+# Fix for CVE-2022-42010
+Patch0:         0001-dbus-marshal-validate_Check_brackets_in_signature_nest.patch
+# Fix for CVE-2022-42011
+Patch1:         0001-dbus-marshal-validate_Validate_length_of_arrays_of.patch
+# Fix for CVE-2022-42012
+Patch2:         0001-dbus-marshal-byteswap_Byte-swap_Unix_fd_indexes_if_needed.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -71,6 +78,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Thu Oct 13 2022 Ajay Kaher <akaher@vmware.com> 1.13.18-3
+- Fix CVE-2022-42010, CVE-2022-42011, CVE-2022-42012
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.18-2
 - Remove .la files
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.18-1
