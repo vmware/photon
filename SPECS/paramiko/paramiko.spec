@@ -3,14 +3,15 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define sha1 paramiko=4375bbb1c07d078484e5cd4176b5bfb3973827af
+Patch0:         CVE-2022-24302.patch
+%define sha512  paramiko=c9bc569428a0a61814cb73941356de5bae7fea7891ba4fd3f5c00ff1ee5083454bfde7e969fb4aaf5254b909f7f0132f590d67803eda8a67503e5c02ec2bf01a
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -56,12 +57,11 @@ Requires:       python3-bcrypt
 Python 3 version.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 python2 setup.py build
 python3 setup.py build
-
 
 %install
 %{__rm} -rf %{buildroot}
@@ -89,6 +89,8 @@ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.7.2-2
+-   Fix for CVE-2022-24302
 *   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
 -   Automatic Version Bump
 *   Mon May 11 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-1
