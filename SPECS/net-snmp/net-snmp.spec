@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -15,6 +15,7 @@ Source2:        snmptrapd.service
 Patch0:         net-snmp-CVE-2019-20892.patch
 Patch1:         net-snmp-5.8-CVE-2020-15861.patch
 Patch2:         net-snmp-5.8-CVE-2020-15862.patch
+Patch3:         net-snmp-5.8-flood-messages.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  perl
@@ -126,6 +127,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Oct 13 2022 Susant Sahani <ssahani@vmware.com> 5.8-9
+- Fix excessive logging when IPv6 is disabled on Linux
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.8-8
 - Remove .la files
 * Tue May 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.8-7
