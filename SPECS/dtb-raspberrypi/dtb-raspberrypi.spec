@@ -3,7 +3,7 @@ Summary:        Device trees and overlays for Raspberry Pi
 Name:           dtb-raspberrypi
 Version:        5.10.4.2021.01.07
 # Version Scheme: {kernel_ver}.{year}.{month}.{day}
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 %define rpi_linux_branch rpi-5.10.y
 %define rpi_linux_req 5.10.4
@@ -21,6 +21,7 @@ Patch2:         0001-spi0-overlays-files.patch
 Patch3:         0002-audio-overlays-files.patch
 
 BuildRequires:  dtc
+BuildRequires:  bison
 Requires:       dtb-rpi3 = %{version}-%{release}
 Requires:       dtb-rpi4 = %{version}-%{release}
 Requires:       dtb-rpi-overlay = %{version}-%{release}
@@ -90,10 +91,12 @@ popd
 /boot/efi/overlays
 
 %changelog
-*   Thu Jan 21 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-2
--   Adding audio and spi overlay
-*   Thu Jan 07 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-1
--   Update to v5.10.4.2021.01.07
--   Enable fb in upstream-pi4 overlay
-*   Fri Sep 11 2020 Bo Gan <ganb@vmware.com> 5.9.0.2020.09.23-1
--   Initial packaging
+* Fri Mar 03 2023 Piyush Gupta <gpiyush@vmware.com> 5.10.4.2021.01.07-3
+- Added bison as BuildRequires.
+* Thu Jan 21 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-2
+- Adding audio and spi overlay
+* Thu Jan 07 2021 Ajay Kaher <akaher@vmware.com> 5.10.4.2021.01.07-1
+- Update to v5.10.4.2021.01.07
+- Enable fb in upstream-pi4 overlay
+* Fri Sep 11 2020 Bo Gan <ganb@vmware.com> 5.9.0.2020.09.23-1
+- Initial packaging
