@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.142
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -143,6 +143,17 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix for CVE-2022-41674, CVE-2022-42720, CVE-2022-42721, CVE-2022-42722
+# plus other bug fixes in the wifi subsystem
+Patch122: 0001-wifi-cfg80211-fix-u8-overflow-in-cfg80211_update_not.patch
+Patch123: 0002-wifi-cfg80211-mac80211-reject-bad-MBSSID-elements.patch
+Patch124: 0003-wifi-cfg80211-ensure-length-byte-is-present-before.patch
+Patch125: 0004-wifi-cfg80211-fix-BSS-refcounting-bugs.patch
+Patch126: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
+Patch127: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
+Patch128: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
+Patch129: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -298,7 +309,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M121
+%autopatch -p1 -m100 -M129
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -547,6 +558,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
+- Fixes for CVEs in wifi subsystem
 * Tue Oct 04 2022 Ankit Jain <ankitja@vmware.com> 5.10.142-2
 - linux-esx: Enabling VFIO,UIO and IOMMU support
 * Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1

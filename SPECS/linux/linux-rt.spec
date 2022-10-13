@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.142
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -106,6 +106,17 @@ Patch117: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch118: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch119: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch120: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix for CVE-2022-41674, CVE-2022-42720, CVE-2022-42721, CVE-2022-42722
+# plus other bug fixes in the wifi subsystem
+Patch121: 0001-wifi-cfg80211-fix-u8-overflow-in-cfg80211_update_not.patch
+Patch122: 0002-wifi-cfg80211-mac80211-reject-bad-MBSSID-elements.patch
+Patch123: 0003-wifi-cfg80211-ensure-length-byte-is-present-before.patch
+Patch124: 0004-wifi-cfg80211-fix-BSS-refcounting-bugs.patch
+Patch125: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
+Patch126: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
+Patch127: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
+Patch128: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -609,7 +620,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M120
+%autopatch -p1 -m100 -M128
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -868,8 +879,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
-*   Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
--   Update to version 5.10.142
+* Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-2
+- Fixes for CVEs in the wifi subsystem
+* Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
+- Update to version 5.10.142
 * Tue Aug 23 2022 Shivani Agarwal <shivania2@vmware.com> 5.10.132-2
 - .config: Enable MPLS and other routing related options, namely,
 - CGROUP_BPF, XFRM_INTERFACE, NFT_XFRM, NETFILTER_XT_TARGET_NOTRACK
