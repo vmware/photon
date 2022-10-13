@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -12,6 +12,12 @@ Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar
 %define sha512 dbus=8301fa716ade578bd8df2e5f7179a8f09c33e58cc57f36dd76e767bef4dceccfb20f266e20afbea687c88d2b26c1e1d52c8510d2e028008b8277e8ce21dae366
 
 Patch0:         CVE-2019-12749.patch
+# Fix for CVE-2022-42010
+Patch1:         0001-dbus-marshal-validate_Check_brackets_in_signature_nest.patch
+# Fix for CVE-2022-42011
+Patch2:         0001-dbus-marshal-validate_Validate_length_of_arrays_of.patch
+# Fix for CVE-2022-42012
+Patch3:         0001-dbus-marshal-byteswap_Byte-swap_Unix_fd_indexes_if_needed.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -76,6 +82,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Thu Oct 13 2022 Ajay Kaher <akaher@vmware.com> 1.13.8-3
+- Fix CVE-2022-42010, CVE-2022-42011, CVE-2022-42012
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.8-2
 - Remove .la files
 * Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.8-1
