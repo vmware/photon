@@ -1,0 +1,40 @@
+From 6f119cc8060471730384a357fef3bea4e77aee32 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Fri, 14 Oct 2022 07:27:54 +0000
+Subject: [PATCH] crypto: algorithm: Disable ipsec4 curve
+
+- Depending on the random number (big number) generated,
+  the EC key generation method can fail in fips_bn_mod_inverse() method.
+- It happens only for NID_ipsec4 curve
+
+Issue:
+- tdnf install -y rabbitmq-server erlang
+- systemctl restart rabbitmq-server (Do this atleast 20 times)
+- Service will fail with "low entropy" error at least once.
+
+Fix:
+- Disabling ipsec4 curve fixes this issue
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ lib/crypto/c_src/algorithms.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/lib/crypto/c_src/algorithms.c b/lib/crypto/c_src/algorithms.c
+index 53b574a..94e2bf7 100644
+--- a/lib/crypto/c_src/algorithms.c
++++ b/lib/crypto/c_src/algorithms.c
+@@ -613,10 +613,6 @@ int init_curves(ErlNifEnv* env, int fips) {
+ #ifdef NID_ipsec3
+     if (valid_curve(NID_ipsec3)) algo_curve[fips][cnt++] = enif_make_atom(env,"ipsec3");
+ #else
+-#endif
+-#ifdef NID_ipsec4
+-    if (valid_curve(NID_ipsec4)) algo_curve[fips][cnt++] = enif_make_atom(env,"ipsec4");
+-#else
+ #endif
+ 
+     if (!fips) {
+-- 
+2.23.1
+

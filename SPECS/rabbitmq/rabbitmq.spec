@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.10.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -106,6 +106,8 @@ rm -rf %{buildroot}
 /var/lib/*
 
 %changelog
+* Fri Oct 14 2022 Ankit Jain <ankitja@vmware.com> 3.10.7-3
+- Release Bump up to build with erlang-25.1-2
 * Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 3.10.7-2
 - Version bump to compile with new erlnag version
 * Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 3.10.7-1

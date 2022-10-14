@@ -1,7 +1,7 @@
 Name:         erlang
 Summary:      erlang
 Version:      25.1
-Release:      1%{?dist}
+Release:      2%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -10,8 +10,12 @@ URL:          http://erlang.com
 
 Source0:      OTP-%{version}.tar.gz
 %define sha512  OTP=d9ad3f41a01121ce1e299ce3532a4bb498bb804a28ea01715cdda3308a89d84ebe14ad3da421a400e403ccb218fb8b3b708344ff10fcfd9e3b28286cac85d81a
+#BZ-3041967, BZ-2996019
+Patch0:       0001-crypto-algorithm-Disable-ipsec4-curve.patch
+
 Requires:   ncurses-libs
 BuildRequires: unzip
+
 %description
 erlang programming language
 
@@ -35,6 +39,8 @@ sh ./configure --disable-hipe --prefix=%{_prefix} --enable-fips
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Oct 14 2022 Ankit Jain <ankitja@vmware.com> 25.1-2
+- Disable ipsec4 curve to fix low entropy issue
 * Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 25.1-1
 - Version update to fix low entropy issue
 * Mon Sep 05 2022 Harinadh D <hdommaraju@vmware.com> 24.3.4.5-1

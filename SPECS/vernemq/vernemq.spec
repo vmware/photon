@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.5
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Source0:          https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
@@ -117,6 +117,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+* Fri Oct 14 2022 Ankit Jain <ankitja@vmware.com> 1.12.5-3
+- Release Bump up to build with erlang-25.1-2
 * Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-2
 - Use erlang/otp version 25.1
 * Wed Sep 14 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-1
