@@ -25,7 +25,7 @@ Requires:  systemd
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 Requires:  glibc
-
+Obsoletes: pmd
 %global debug_package %{nil}
 
 %description
