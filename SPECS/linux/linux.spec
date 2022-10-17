@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.142
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -142,6 +142,9 @@ Patch126: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
 Patch127: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
 Patch128: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
 Patch129: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
+
+# Fix for CVE-2022-2602
+Patch130: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -381,7 +384,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M130
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -797,6 +800,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-4
+- Fix for CVE-2022-2602
 * Wed Oct 12 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
 - Fixes for CVEs in the wifi subsystem
 * Wed Sep 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.10.142-2

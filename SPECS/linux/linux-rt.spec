@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.142
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -117,6 +117,9 @@ Patch125: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
 Patch126: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
 Patch127: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
 Patch128: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
+
+# Fix for CVE-2022-2602
+Patch129: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -620,7 +623,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M128
+%autopatch -p1 -m100 -M129
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -879,6 +882,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
+- Fix for CVE-2022-2602
 * Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-2
 - Fixes for CVEs in the wifi subsystem
 * Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1

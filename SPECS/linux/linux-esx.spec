@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.142
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -154,6 +154,9 @@ Patch126: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
 Patch127: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
 Patch128: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
 Patch129: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
+
+# Fix for CVE-2022-2602
+Patch130: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -309,7 +312,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M130
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -558,6 +561,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-4
+- Fix for CVE-2022-2602
 * Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
 - Fixes for CVEs in wifi subsystem
 * Tue Oct 04 2022 Ankit Jain <ankitja@vmware.com> 5.10.142-2

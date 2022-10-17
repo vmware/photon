@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.142
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -86,6 +86,9 @@ Patch127: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
 Patch128: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
 Patch129: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
 Patch130: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
+
+# Fix for CVE-2022-2602
+Patch131: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -207,7 +210,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M130
+%autopatch -p1 -m100 -M131
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -373,6 +376,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
+- Fix for CVE-2022-2602
 * Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-2
 - Fixes for CVEs in the wifi subsystem
 * Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
