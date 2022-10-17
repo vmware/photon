@@ -1,17 +1,29 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
-Version:        5.19.0
+Version:        6.0.0
 Release:        1%{?dist}
 License:        GPLv2+
-URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
+URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha512 %{name}=eb0fffb153f7cecc89b5573b7fc211d67fb1c06789fd3b0aec75ba5032521d53c51ccc52db7367e41397993df50244af84763b0b1d5a76d9dfccf013c010131b
+%define sha512 %{name}=be30362b0df6906aa786f935d5f555b8b86c747fe05314066f4180ab2f7c952ae227b7cf04c15e75d8f99ca17bafb7c8dc0fb1c18f3a9e3222d98716bb449f7a
 
-Provides:       iproute
+Patch0: 0001-add-hcx-helper-modules.patch
+Patch1: 0002-iptrunk.patch
+Patch2: 0003-mss-clamp.patch
+Patch3: 0004-sinkport.patch
+
+BuildRequires: bison
+BuildRequires: libmnl-devel
+
+Requires: elfutils-libelf
+Requires: glibc
+Requires: libmnl
+
+Provides: iproute
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -32,26 +44,22 @@ sed -i 's/m_ipt.o//' tc/Makefile
 
 %build
 %configure
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
-export SBINDIR='%{_sbindir}'
-export LIBDIR='%{_libdir}'
+export SBINDIR=%{_sbindir}
+
 %make_install %{?_smp_mflags}
 
-%check
 %if 0%{?with_check}
-pushd testsuite
-# Fix linking issue in testsuite
-sed -i 's/<libnetlink.h>/\"..\/..\/include\/libnetlink.h\"/g' tools/generate_nlmsg.c
-sed -i 's/\"libnetlink.h\"/"..\/include\/libnetlink.h\"/g' ../lib/libnetlink.c
-pushd tools
-make %{?_smp_mflags}
-popd
-make %{?_smp_mflags}
-make alltests %{?_smp_mflags}
-popd
+%check
+# tests need to be run on an actual host,
+# because of kernel module dependency
+#make check %%{?_smp_mflags}
 %endif
+
+%clean
+rm -rf %{buildroot}/*
 
 %ldconfig_scriptlets
 
@@ -62,8 +70,7 @@ popd
 %{_libdir}/tc/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%{_datadir}/bash-completion/completions/tc
-%{_datadir}/bash-completion/completions/devlink
+%{_datadir}/bash-completion/completions/*
 
 %files devel
 %defattr(-,root,root)
@@ -71,8 +78,8 @@ popd
 %{_mandir}/man3/*
 
 %changelog
-* Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.19.0-1
-- Upgrade to v5.19.0
+* Mon Oct 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1
+- Upgrade to v6.0.0
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.12.0-3
 - Drop libdb support
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 5.12.0-2

@@ -1,0 +1,914 @@
+From 0e11d461b2586bba26f3aa30c533b7f711904885 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Fri, 24 Jun 2022 19:19:57 +0530
+Subject: [PATCH 2/4] iptrunk
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ bridge/bridge.c                |  14 +-
+ bridge/fdb.c                   |  51 +++++
+ include/uapi/linux/rtnetlink.h |  11 +-
+ include/utils.h                |   1 +
+ ip/Makefile                    |   1 +
+ ip/ip.c                        |  26 ++-
+ ip/ip_common.h                 |   1 +
+ ip/ipaddress.c                 |  33 ++++
+ ip/iptrunk.c                   | 347 +++++++++++++++++++++++++++++++++
+ ip/link_vxlan_trunk.c          | 175 +++++++++++++++++
+ 10 files changed, 650 insertions(+), 10 deletions(-)
+ create mode 100644 ip/iptrunk.c
+ create mode 100644 ip/link_vxlan_trunk.c
+
+diff --git a/bridge/bridge.c b/bridge/bridge.c
+index 704be50..5554f98 100644
+--- a/bridge/bridge.c
++++ b/bridge/bridge.c
+@@ -17,6 +17,7 @@
+ #include "br_common.h"
+ #include "namespace.h"
+ #include "color.h"
++#include "hcx_helpers.h"
+ 
+ struct rtnl_handle rth = { .fd = -1 };
+ int preferred_family = AF_UNSPEC;
+@@ -25,6 +26,7 @@ int show_stats;
+ int show_details;
+ static int color;
+ int compress_vlans;
++int explicit_output;
+ int json;
+ int timestamp;
+ static const char *batch_file;
+@@ -34,13 +36,19 @@ static void usage(void) __attribute__((noreturn));
+ 
+ static void usage(void)
+ {
+-	fprintf(stderr,
++		fprintf(stderr,
+ "Usage: bridge [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ "       bridge [ -force ] -batch filename\n"
+ "where  OBJECT := { link | fdb | mdb | vlan | monitor }\n"
+ "       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] |\n"
+-"                    -o[neline] | -t[imestamp] | -n[etns] name |\n"
++"                    -o[neline] | -t[imestamp] | -n[etns] name |\n");
++
++	if (get_mss_clamp())
++		fprintf(stderr, "                    -x[plicit] |\n");
++
++	fprintf(stderr,
+ "                    -c[ompressvlans] -color -p[retty] -j[son] }\n");
++
+ 	exit(-1);
+ }
+ 
+@@ -165,6 +173,8 @@ main(int argc, char **argv)
+ 			if (argc <= 1)
+ 				usage();
+ 			batch_file = argv[1];
++		} else if (get_mss_clamp() && matches(opt, "-xplicit") == 0) {
++			++explicit_output;
+ 		} else {
+ 			fprintf(stderr,
+ 				"Option \"%s\" is unknown, try \"bridge help\".\n",
+diff --git a/bridge/fdb.c b/bridge/fdb.c
+index 775feb1..db2a19a 100644
+--- a/bridge/fdb.c
++++ b/bridge/fdb.c
+@@ -29,6 +29,7 @@
+ #include "br_common.h"
+ #include "rt_names.h"
+ #include "utils.h"
++#include "hcx_helpers.h"
+ 
+ static unsigned int filter_index, filter_dynamic, filter_master,
+ 	filter_state, filter_vlan;
+@@ -138,6 +139,49 @@ static void fdb_print_stats(FILE *fp, const struct nda_cacheinfo *ci)
+ 	}
+ }
+ 
++static void print_fdb_explicit(struct rtattr * tb[NDA_MAX+1],
++                               struct ndmsg *r,
++                               FILE *fp)
++{
++	if (!get_mss_clamp()) {
++		return;
++	}
++
++	SPRINT_BUF(blladdr);
++	char bdev[IFNAMSIZ+1] = "<unknown>";
++	char *lladdr = "<unknown>";
++	char vlan[20] = "";
++	char masterdev[IFNAMSIZ+1] = "";
++
++	if (tb[NDA_LLADDR]) {
++		ll_addr_n2a(RTA_DATA(tb[NDA_LLADDR]),
++				RTA_PAYLOAD(tb[NDA_LLADDR]),
++				ll_index_to_type(r->ndm_ifindex),
++				blladdr, sizeof(blladdr));
++		lladdr = blladdr;
++	}
++
++	if (!filter_index && r->ndm_ifindex) {
++		strncpy(bdev, ll_index_to_name(r->ndm_ifindex), sizeof(bdev)-1);
++		bdev[sizeof(bdev)-1] = 0;
++	}
++
++	if (tb[NDA_VLAN]) {
++		__u16 vid = rta_getattr_u16(tb[NDA_VLAN]);
++		snprintf(vlan, sizeof(vlan), "%hu", vid);
++	}
++
++	if (tb[NDA_MASTER]) {
++		strncpy(masterdev, ll_index_to_name(rta_getattr_u32(tb[NDA_MASTER])),
++				sizeof(masterdev)-1);
++		masterdev[sizeof(masterdev)-1] = 0;
++	}
++
++	fprintf(fp, "%s|%s|%s|%s|%s",
++			lladdr, bdev, vlan, masterdev,
++			state_n2a(r->ndm_state));
++}
++
+ int print_fdb(struct nlmsghdr *n, void *arg)
+ {
+ 	FILE *fp = arg;
+@@ -170,6 +214,13 @@ int print_fdb(struct nlmsghdr *n, void *arg)
+ 	parse_rtattr(tb, NDA_MAX, NDA_RTA(r),
+ 		     n->nlmsg_len - NLMSG_LENGTH(sizeof(*r)));
+ 
++	if (get_mss_clamp() && explicit_output) {
++		print_fdb_explicit(tb, r, fp);
++		fprintf(fp, "\n");
++		fflush(fp);
++		return 0;
++	}
++
+ 	if (tb[NDA_VLAN])
+ 		vid = rta_getattr_u16(tb[NDA_VLAN]);
+ 
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index f4a540c..9deadc8 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -13,7 +13,8 @@
+  */
+ #define RTNL_FAMILY_IPMR		128
+ #define RTNL_FAMILY_IP6MR		129
+-#define RTNL_FAMILY_MAX			129
++#define RTNL_FAMILY_TRUNK		130
++#define RTNL_FAMILY_MAX			130
+ 
+ /****
+  *		Routing/neighbour discovery messages.
+@@ -202,7 +203,7 @@ enum {
+ #define RTM_NR_FAMILIES	(RTM_NR_MSGTYPES >> 2)
+ #define RTM_FAM(cmd)	(((cmd) - RTM_BASE) >> 2)
+ 
+-/* 
++/*
+    Generic structure for encapsulation of optional route information.
+    It is reminiscent of sockaddr, but with sa_family replaced
+    with attribute type.
+@@ -242,7 +243,7 @@ struct rtmsg {
+ 
+ 	unsigned char		rtm_table;	/* Routing table id */
+ 	unsigned char		rtm_protocol;	/* Routing protocol; see below	*/
+-	unsigned char		rtm_scope;	/* See below */	
++	unsigned char		rtm_scope;	/* See below */
+ 	unsigned char		rtm_type;	/* See below	*/
+ 
+ 	unsigned		rtm_flags;
+@@ -564,7 +565,7 @@ struct ifinfomsg {
+ };
+ 
+ /********************************************************************
+- *		prefix information 
++ *		prefix information
+  ****/
+ 
+ struct prefixmsg {
+@@ -578,7 +579,7 @@ struct prefixmsg {
+ 	unsigned char	prefix_pad3;
+ };
+ 
+-enum 
++enum
+ {
+ 	PREFIX_UNSPEC,
+ 	PREFIX_ADDRESS,
+diff --git a/include/utils.h b/include/utils.h
+index eeb23a6..b34b45b 100644
+--- a/include/utils.h
++++ b/include/utils.h
+@@ -36,6 +36,7 @@ extern int max_flush_loops;
+ extern int batch_mode;
+ extern int numeric;
+ extern bool do_all;
++extern int explicit_output;
+ 
+ #ifndef CONFDIR
+ #define CONFDIR		"/etc/iproute2"
+diff --git a/ip/Makefile b/ip/Makefile
+index 6c2e072..e3666dd 100644
+--- a/ip/Makefile
++++ b/ip/Makefile
+@@ -8,6 +8,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+     iplink_macvlan.o ipl2tp.o link_vti.o link_vti6.o link_xfrm.o \
+     iplink_vxlan.o tcp_metrics.o iplink_ipoib.o ipnetconf.o link_ip6tnl.o \
+     link_iptnl.o link_gre6.o iplink_bond.o iplink_bond_slave.o iplink_hsr.o \
++    link_vxlan_trunk.o iptrunk.o \
+     iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
+     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+diff --git a/ip/ip.c b/ip/ip.c
+index 82282ba..18a1968 100644
+--- a/ip/ip.c
++++ b/ip/ip.c
+@@ -25,6 +25,7 @@
+ #include "color.h"
+ #include "rt_names.h"
+ #include "bpf_util.h"
++#include "hcx_helpers.h"
+ 
+ #ifndef LIBDIR
+ #define LIBDIR "/usr/lib"
+@@ -43,6 +44,7 @@ int force;
+ int max_flush_loops = 10;
+ int batch_mode;
+ bool do_all;
++int explicit_output;
+ 
+ struct rtnl_handle rth = { .fd = -1 };
+ 
+@@ -61,22 +63,35 @@ static void usage(void) __attribute__((noreturn));
+ 
+ static void usage(void)
+ {
++	int hcx_enabled = get_mss_clamp();
++
+ 	fprintf(stderr,
+ 		"Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 		"       ip [ -force ] -batch filename\n"
+ 		"where  OBJECT := { address | addrlabel | amt | fou | help | ila | ioam | l2tp |\n"
+ 		"                   link | macsec | maddress | monitor | mptcp | mroute | mrule |\n"
+ 		"                   neighbor | neighbour | netconf | netns | nexthop | ntable |\n"
+-		"                   ntbl | route | rule | sr | tap | tcpmetrics |\n"
+-		"                   token | tunnel | tuntap | vrf | xfrm }\n"
++		"                   ntbl | route | rule | sr | tap | tcpmetrics |\n");
++
++	fprintf(stderr,
++		"                   token | tunnel | tuntap | vrf | xfrm %s}\n",
++					hcx_enabled ? "| trunk " : "");
++
++	fprintf(stderr,
+ 		"       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |\n"
+ 		"                    -h[uman-readable] | -iec | -j[son] | -p[retty] |\n"
+ 		"                    -f[amily] { inet | inet6 | mpls | bridge | link } |\n"
+ 		"                    -4 | -6 | -M | -B | -0 |\n"
+ 		"                    -l[oops] { maximum-addr-flush-attempts } | -br[ief] |\n"
+-		"                    -o[neline] | -t[imestamp] | -ts[hort] | -b[atch] [filename] |\n"
++		"                    -o[neline] | -t[imestamp] | -ts[hort] | -b[atch] [filename] |\n");
++
++	if (hcx_enabled)
++		fprintf(stderr, "                    -x[plicit] |\n");
++
++	fprintf(stderr,
+ 		"                    -rc[vbuf] [size] | -n[etns] name | -N[umeric] | -a[ll] |\n"
+ 		"                    -c[olor]}\n");
++
+ 	exit(-1);
+ }
+ 
+@@ -117,6 +132,7 @@ static const struct cmd {
+ 	{ "mrule",	do_multirule },
+ 	{ "netns",	do_netns },
+ 	{ "netconf",	do_ipnetconf },
++	{ "trunk",      do_iptrunk },
+ 	{ "vrf",	do_ipvrf},
+ 	{ "sr",		do_seg6 },
+ 	{ "nexthop",	do_ipnh },
+@@ -132,6 +148,8 @@ static int do_cmd(const char *argv0, int argc, char **argv, bool final)
+ 	const struct cmd *c;
+ 
+ 	for (c = cmds; c->cmd; ++c) {
++		if (!strcmp(c->cmd, "trunk") && !get_mss_clamp())
++			continue;
+ 		if (matches(argv0, c->cmd) == 0)
+ 			return -(c->func(argc-1, argv+1));
+ 	}
+@@ -257,6 +275,8 @@ int main(int argc, char **argv)
+ 			exit(0);
+ 		} else if (matches(opt, "-force") == 0) {
+ 			++force;
++		} else if (get_mss_clamp() && matches(opt, "-xplicit") == 0) {
++			++explicit_output;
+ 		} else if (matches(opt, "-batch") == 0) {
+ 			argc--;
+ 			argv++;
+diff --git a/ip/ip_common.h b/ip/ip_common.h
+index c4cb1bc..71d9842 100644
+--- a/ip/ip_common.h
++++ b/ip/ip_common.h
+@@ -85,6 +85,7 @@ int do_ipila(int argc, char **argv);
+ int do_tcp_metrics(int argc, char **argv);
+ int do_ipnetconf(int argc, char **argv);
+ int do_iptoken(int argc, char **argv);
++int do_iptrunk(int argc, char **argv);
+ int do_ipvrf(int argc, char **argv);
+ void vrf_reset(void);
+ int netns_identify_pid(const char *pidstr, char *name, int len);
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 45955e1..b93f11b 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -36,6 +36,7 @@
+ #include "ll_map.h"
+ #include "ip_common.h"
+ #include "color.h"
++#include "hcx_helpers.h"
+ 
+ enum {
+ 	IPADD_LIST,
+@@ -907,6 +908,31 @@ static void print_link_stats(FILE *fp, struct nlmsghdr *n)
+ 	print_nl();
+ }
+ 
++static void print_xplicit_linkifo(struct rtattr *tb[IFLA_MAX+1],
++                                 struct ifinfomsg *ifi,
++                                 FILE *fp)
++{
++	if (!get_mss_clamp()) {
++		return;
++	}
++
++	struct rtattr *linkinfo[IFLA_INFO_MAX+1];
++	char *linktype = "<unknown>";
++
++	if (tb[IFLA_LINKINFO]) {
++		parse_rtattr_nested(linkinfo, IFLA_INFO_MAX, tb[IFLA_LINKINFO]);
++		if (linkinfo[IFLA_INFO_KIND]) {
++			linktype = RTA_DATA(linkinfo[IFLA_INFO_KIND]);
++		}
++	}
++
++	fprintf(fp, "%d|%s|%s|%s",
++			ifi->ifi_index,
++			tb[IFLA_IFNAME] ? rta_getattr_str(tb[IFLA_IFNAME]) : "<nil>",
++			linktype,
++			tb[IFLA_MASTER] ? ll_idx_n2a(*(int*)RTA_DATA(tb[IFLA_MASTER])) : "");
++}
++
+ static int print_linkinfo_brief(FILE *fp, const char *name,
+ 				const struct ifinfomsg *ifi,
+ 				struct rtattr *tb[])
+@@ -1055,6 +1081,13 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 	if (filter.slave_kind && match_link_kind(tb, filter.slave_kind, 1))
+ 		return -1;
+ 
++	if (get_mss_clamp() && explicit_output) {
++		print_xplicit_linkifo(tb, ifi, fp);
++		fprintf(fp, "\n");
++		fflush(fp);
++		return 1;
++	}
++
+ 	if (n->nlmsg_type == RTM_DELLINK)
+ 		print_bool(PRINT_ANY, "deleted", "Deleted ", true);
+ 
+diff --git a/ip/iptrunk.c b/ip/iptrunk.c
+new file mode 100644
+index 0000000..f777c9f
+--- /dev/null
++++ b/ip/iptrunk.c
+@@ -0,0 +1,347 @@
++/*
++ * iptrunk.c  "ip trunk"
++ *
++ *        This program is free software; you can redistribute it and/or
++ *        modify it under the terms of the GNU General Public License
++ *        as published by the Free Software Foundation; either version
++ *        2 of the License, or (at your option) any later version.
++ *
++ * Authors:   Daniel Borkmann, <borkmann@redhat.com>
++ *        VMware, Inc.
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdbool.h>
++#include <unistd.h>
++#include <syslog.h>
++#include <fcntl.h>
++#include <string.h>
++#include <sys/socket.h>
++#include <netinet/in.h>
++#include <netinet/ip.h>
++#include <arpa/inet.h>
++#include <linux/types.h>
++#include <linux/if.h>
++#include <linux/netlink.h>
++
++#include "rt_names.h"
++#include "utils.h"
++#include "ip_common.h"
++#include "hcx_helpers.h"
++
++extern struct rtnl_handle rth;
++
++struct rtnl_dump_args {
++    FILE *fp;
++    int ifindex;
++};
++
++#define TRF_SRC_VLAN 0x01
++#define TRF_SRC_VNI  0x02
++#define TRF_DST_VLAN 0x04
++#define TRF_DST_VNI  0x08
++#define TRF_ENABLED  0x10
++
++#define TRF_SRC_MASK (TRF_SRC_VLAN | TRF_SRC_VNI)
++#define TRF_DST_MASK (TRF_DST_VLAN | TRF_DST_VNI)
++
++#define TRF_VNI_TO_VLAN (TRF_SRC_VNI | TRF_DST_VLAN)
++#define TRF_VLAN_TO_VLAN (TRF_SRC_VLAN | TRF_DST_VLAN)
++
++enum {
++    TRM_UNSPEC,
++    TRM_ADD,
++    TRM_DEL,
++    TRM_ENABLE,
++    TRM_DISABLE,
++    __TRM_MAX
++};
++
++#define TRM_MAX (__TRM_MAX - 1)
++
++struct trmsg {
++    __u8      trm_family;
++    __u8      trm_op;
++    __u8      trm_flags;
++    __u8      trm_pad1;
++    __s32     trm_ifindex;
++};
++
++enum {
++    TRA_UNSPEC,
++    TRA_SRC,
++    TRA_DST,
++    TRA_ENABLED,
++    /* read-only statistics */
++    TRA_RX_PCKTS,
++    TRA_TX_PCKTS,
++    TRA_RX_BYTES,
++    TRA_TX_BYTES,
++    TRA_RX_PCKTS_DISABLED,
++    TRA_TX_PCKTS_DISABLED,
++    TRA_RX_BYTES_DISABLED,
++    TRA_TX_BYTES_DISABLED,
++    __TRA_MAX
++};
++
++#define TRA_MAX (__TRA_MAX - 1)
++
++#define TRA_RTA(r) \
++    ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct trmsg))))
++
++#define XMIT_MAX_LEN    512
++
++static void usage(void) __attribute__((noreturn));
++
++static void usage(void)
++{
++    fprintf(stderr, "Usage: ip trunk [ add | del | enable | disable ] LINK src SRC dst DST\n");
++    exit(-1);
++}
++
++static int print_trunk(struct nlmsghdr *n, void *arg)
++{
++    if (!get_mss_clamp()) {
++        return -1;
++    }
++
++    struct rtnl_dump_args *args = arg;
++    FILE *fp = args->fp;
++    int ifindex = args->ifindex;
++    struct trmsg *trm = NLMSG_DATA(n);
++    int len = n->nlmsg_len;
++    struct rtattr *tb[TRA_MAX + 1];
++
++    if (n->nlmsg_type != RTM_NEWNEIGH)
++        return -1;
++
++    len -= NLMSG_LENGTH(sizeof(*trm));
++    if (len < 0)
++        return -1;
++
++    if (trm->trm_family != RTNL_FAMILY_TRUNK)
++        return -1;
++
++    if (trm->trm_ifindex == 0)
++        return -1;
++
++    if (ifindex > 0 && trm->trm_ifindex != ifindex)
++        return 0;
++
++    parse_rtattr(tb, TRA_MAX, TRA_RTA(trm), len);
++    if (!tb[TRA_SRC]) {
++        fprintf(stderr, "Src not found!\n");
++        return -1;
++    }
++
++    if (!tb[TRA_DST]) {
++        fprintf(stderr, "Dst not found!\n");
++        return -1;
++    }
++
++    fprintf(fp, "mapping %d -> %d %sabled ",
++            rta_getattr_u32(tb[TRA_SRC]),
++            rta_getattr_u32(tb[TRA_DST]),
++            rta_getattr_u32(tb[TRA_ENABLED]) ? "en" : "dis");
++
++    fprintf(fp, "dev %s ", ll_index_to_name(trm->trm_ifindex));
++    fprintf(fp, "\n");
++
++    if (show_details) {
++        fprintf(fp, "\trx packets: %llu\trx bytes: %llu\n",
++                rta_getattr_u64(tb[TRA_RX_PCKTS]),
++                rta_getattr_u64(tb[TRA_RX_BYTES]));
++
++        fprintf(fp, "\ttx packets: %llu\ttx bytes: %llu\n",
++                rta_getattr_u64(tb[TRA_TX_PCKTS]),
++                rta_getattr_u64(tb[TRA_TX_BYTES]));
++
++        fprintf(fp, "\trx packets: %llu\trx bytes: %llu\t(disabled)\n",
++                rta_getattr_u64(tb[TRA_RX_PCKTS_DISABLED]),
++                rta_getattr_u64(tb[TRA_RX_BYTES_DISABLED]));
++
++        fprintf(fp, "\ttx packets: %llu\ttx bytes: %llu\t(disabled)\n",
++                rta_getattr_u64(tb[TRA_TX_PCKTS_DISABLED]),
++                rta_getattr_u64(tb[TRA_TX_BYTES_DISABLED]));
++    }
++    fflush(fp);
++
++    return 0;
++}
++
++static int iptrunk_list(int argc, char **argv)
++{
++    if (!get_mss_clamp()) {
++        return -1;
++    }
++
++    int af = RTNL_FAMILY_TRUNK;
++    struct rtnl_dump_args da;
++
++    const struct rtnl_dump_filter_arg a[2] = {
++            { .filter = print_trunk, .arg1 = &da, },
++            { .filter = NULL, .arg1 = NULL, },
++    };
++
++    memset(&da, 0, sizeof(da));
++    da.fp = stdout;
++
++    while (argc > 0) {
++        if (strcmp(*argv, "dev") == 0) {
++            NEXT_ARG();
++            if ((da.ifindex = ll_name_to_index(*argv)) == 0)
++                invarg("dev is invalid\n", *argv);
++            break;
++        }
++        argc--; argv++;
++    }
++
++    if (rtnl_linkdump_req(&rth, af) < 0) {
++        perror("Cannot send dump request");
++        return -1;
++    }
++
++    if (rtnl_dump_filter_nc(&rth, print_trunk,
++                stdout, NLM_F_DUMP_INTR) < 0) {
++        fprintf(stderr, "Dump terminated\n");
++        return -1;
++    }
++
++    return 0;
++}
++
++static int iptrunk_op(int argc, char **argv, int operation)
++{
++    if (!get_mss_clamp()) {
++        return -1;
++    }
++
++    struct {
++        struct nlmsghdr n;
++        struct trmsg trm;
++        char buf[XMIT_MAX_LEN];
++    } req;
++
++    bool have_dev = false;
++    bool have_src = false;
++    bool have_dst = false;
++    __u32 src_id = 0;
++    __u32 dst_id = 0;
++
++    memset(&req, 0, sizeof(req));
++
++    req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct trmsg));
++    req.n.nlmsg_flags = NLM_F_REQUEST;
++    /* XXX: fix RTM_ value */
++    req.n.nlmsg_type = RTM_NEWNEIGH;
++    req.trm.trm_family = RTNL_FAMILY_TRUNK;
++    req.trm.trm_op = operation;
++
++    while (argc > 0) {
++        if (strcmp(*argv, "dev") == 0) {
++            NEXT_ARG();
++            if (!have_dev) {
++                if ((req.trm.trm_ifindex =
++                            ll_name_to_index(*argv)) == 0)
++                    invarg("dev is invalid\n", *argv);
++                have_dev = true;
++                fprintf(stderr, "dev: %d\n", req.trm.trm_ifindex);
++            }
++        } else if (!matches(*argv, "src")) {
++            unsigned uval;
++
++            NEXT_ARG();
++            if ((get_unsigned(&uval, *argv, 0) < 0) ||
++                    (uval >= (1<<24))) {
++                fprintf(stderr, "Invalid value for \"src\": \"%s\"; it should be an unsigned integer <= 2^24-1\n", *argv);
++                exit(-1);
++            }
++
++            src_id = uval;
++            have_src = true;
++        } else if (!matches(*argv, "dst")) {
++            unsigned uval;
++
++            NEXT_ARG();
++            if ((get_unsigned(&uval, *argv, 0) < 0) ||
++                    (uval >= 4095)) {
++                fprintf(stderr, "Invalid value for \"dst\": \"%s\"; it should be an unsigned integer <= 4095\n", *argv);
++                exit(-1);
++            }
++
++            dst_id = uval;
++            have_dst = true;
++        } else {
++            if (matches(*argv, "help") == 0)
++                usage();
++        }
++        argc--; argv++;
++    }
++
++    if (!have_src) {
++        fprintf(stderr, "Not enough information: src "
++                "is required.\n");
++        return -1;
++    }
++    if (!have_dst) {
++        fprintf(stderr, "Not enough information: dst "
++                "is required.\n");
++        return -1;
++    }
++    if (!have_dev) {
++        fprintf(stderr, "Not enough information: \"dev\" "
++                "argument is required.\n");
++        return -1;
++    }
++
++    /*
++     * Technically, vni can be anything < 2^24.  But ESX/NSX mgmt
++     * only allows > 5000, so if src < 4096, assume vlan, else vni.
++     */
++    if (src_id < 4096)
++        req.trm.trm_flags = TRF_VLAN_TO_VLAN;
++    else
++        req.trm.trm_flags = TRF_VNI_TO_VLAN;
++
++    addattr32(&req.n, sizeof(req.buf), TRA_SRC, src_id);
++    addattr32(&req.n, sizeof(req.buf), TRA_DST, dst_id);
++
++    if (rtnl_talk(&rth, &req.n, NULL) < 0)
++        return -2;
++
++    return 0;
++}
++
++int do_iptrunk(int argc, char **argv)
++{
++    if (!get_mss_clamp()) {
++        return -1;
++    }
++
++    ll_init_map(&rth);
++
++    if (argc < 1)
++        return iptrunk_list(0, NULL);
++
++    if (matches(argv[0], "add") == 0)
++        return iptrunk_op(argc - 1, argv + 1, TRM_ADD);
++
++    if (matches(argv[0], "del") == 0)
++        return iptrunk_op(argc - 1, argv + 1, TRM_DEL);
++
++    if (matches(argv[0], "enable") == 0)
++        return iptrunk_op(argc - 1, argv + 1, TRM_ENABLE);
++
++    if (matches(argv[0], "disable") == 0)
++        return iptrunk_op(argc - 1, argv + 1, TRM_DISABLE);
++
++    if (matches(argv[0], "list") == 0)
++        return iptrunk_list(argc - 1, argv + 1);
++
++    if (matches(argv[0], "help") == 0)
++        usage();
++
++    fprintf(stderr, "Command \"%s\" is unknown, try \"ip trunk help\".\n", *argv);
++    exit(-1);
++}
+diff --git a/ip/link_vxlan_trunk.c b/ip/link_vxlan_trunk.c
+new file mode 100644
+index 0000000..83f34b7
+--- /dev/null
++++ b/ip/link_vxlan_trunk.c
+@@ -0,0 +1,175 @@
++/*
++ * link_vxlan_trunk.c	vxlan_trunk driver module
++ *
++ *		This program is free software; you can redistribute it and/or
++ *		modify it under the terms of the GNU General Public License
++ *		as published by the Free Software Foundation; either version
++ *		2 of the License, or (at your option) any later version.
++ *
++ * Authors:	Herbert Xu <herbert@gondor.apana.org.au>
++ */
++
++#include <string.h>
++#include <net/if.h>
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <arpa/inet.h>
++
++#include <linux/ip.h>
++#include <linux/if_tunnel.h>
++#include "rt_names.h"
++#include "utils.h"
++#include "ip_common.h"
++#include "tunnel.h"
++#include "hcx_helpers.h"
++
++#define XMIT_MAX_LEN 2048
++
++static void print_usage(FILE *f)
++{
++	if (!get_mss_clamp())
++		return;
++
++	fprintf(f, "Usage: ip link { add | set | change | replace | del } NAME\n");
++	fprintf(f, "          type { vxlantrunk }\n");
++	fprintf(f, "\n");
++	fprintf(f, "Where: NAME := STRING\n");
++}
++
++static void usage(void) __attribute__((noreturn));
++static void usage(void)
++{
++	if (get_mss_clamp())
++		print_usage(stderr);
++
++	exit(-1);
++}
++
++enum blarg {
++	IFLA_VXLAN_TRUNK_UNSPEC,
++	IFLA_VXLAN_TRUNK_LINK,
++	IFLA_VXLAN_TRUNK_MAX = IFLA_VXLAN_TRUNK_LINK,
++};
++
++static int vxlan_trunk_parse_opt(struct link_util *lu, int argc, char **argv,
++		struct nlmsghdr *n)
++{
++	if (!get_mss_clamp())
++		return -1;
++
++	struct {
++		struct nlmsghdr n;
++		struct ifinfomsg i;
++		char buf[XMIT_MAX_LEN];
++	} req;
++
++	struct ifinfomsg *ifi = (struct ifinfomsg *)(n + 1);
++	struct rtattr *tb[IFLA_MAX + 1];
++	struct rtattr *linkinfo[IFLA_INFO_MAX+1];
++	struct rtattr *vxlan_trunkinfo[IFLA_VXLAN_TRUNK_MAX + 1];
++	unsigned link = 0;
++	int len;
++
++	if (!(n->nlmsg_flags & NLM_F_CREATE)) {
++		struct nlmsghdr *answer = NULL;
++
++		memset(&req, 0, sizeof(req));
++
++		req.n.nlmsg_len = NLMSG_LENGTH(sizeof(*ifi));
++		req.n.nlmsg_flags = NLM_F_REQUEST;
++		req.n.nlmsg_type = RTM_GETLINK;
++		req.i.ifi_family = preferred_family;
++		req.i.ifi_index = ifi->ifi_index;
++
++		if (rtnl_talk(&rth, &req.n, &answer) < 0) {
++get_failed:
++			free(answer);
++			fprintf(stderr,
++					"Failed to get existing tunnel info.\n");
++			return -1;
++		}
++
++		len = answer->nlmsg_len;
++		len -= NLMSG_LENGTH(sizeof(*ifi));
++		if (len < 0)
++			goto get_failed;
++
++		parse_rtattr(tb, IFLA_MAX, IFLA_RTA(answer), len);
++
++		if (!tb[IFLA_LINKINFO])
++			goto get_failed;
++
++		parse_rtattr_nested(linkinfo, IFLA_INFO_MAX, tb[IFLA_LINKINFO]);
++
++		if (!linkinfo[IFLA_INFO_DATA])
++			goto get_failed;
++
++		parse_rtattr_nested(vxlan_trunkinfo, IFLA_VXLAN_TRUNK_MAX,
++				linkinfo[IFLA_INFO_DATA]);
++
++		if (vxlan_trunkinfo[IFLA_VXLAN_TRUNK_LINK])
++			link = rta_getattr_u32(vxlan_trunkinfo[IFLA_VXLAN_TRUNK_LINK]);
++
++		free(answer);
++	}
++
++	while (argc > 0) {
++		if (!matches(*argv, "link")) {
++			NEXT_ARG();
++			link = if_nametoindex(*argv);
++			if (link == 0) {
++				fprintf(stderr, "Cannot find device \"%s\"\n",
++						*argv);
++				exit(-1);
++			}
++		} else
++			usage();
++		argc--; argv++;
++	}
++
++	if (link)
++		addattr32(n, 1024, IFLA_VXLAN_TRUNK_LINK, link);
++
++	return 0;
++}
++
++static void vxlan_trunk_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
++{
++	char s2[64] = {};
++
++	if (!get_mss_clamp() || !tb)
++		return;
++
++	if (tb[IFLA_VXLAN_TRUNK_LINK] && rta_getattr_u32(tb[IFLA_VXLAN_TRUNK_LINK])) {
++		unsigned link = rta_getattr_u32(tb[IFLA_VXLAN_TRUNK_LINK]);
++		const char *n = if_indextoname(link, s2);
++
++		if (n)
++			fprintf(f, "link %s ", n);
++		else
++			fprintf(f, "link %u ", link);
++	}
++}
++
++static void vxlan_trunk_print_help(struct link_util *lu, int argc, char **argv,
++		FILE *f)
++{
++	if (get_mss_clamp())
++		print_usage(f);
++}
++
++struct link_util vxlantrunk_link_util = {
++	.id = "vxlantrunk",
++	.maxattr = IFLA_VXLAN_TRUNK_MAX,
++	.parse_opt  = vxlan_trunk_parse_opt,
++	.print_opt  = vxlan_trunk_print_opt,
++	.print_help = vxlan_trunk_print_help,
++};
++
++struct link_util vlantrunk_link_util = {
++	.id = "vlantrunk",
++	.maxattr = IFLA_VXLAN_TRUNK_MAX,
++	.parse_opt  = vxlan_trunk_parse_opt,
++	.print_opt  = vxlan_trunk_print_opt,
++	.print_help = vxlan_trunk_print_help,
++};
+-- 
+2.37.3
+
