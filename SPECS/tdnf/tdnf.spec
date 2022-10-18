@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.2
-Release:        2%{?dist}
+Version:        3.4.1
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,34 +9,38 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=10efaa2762a3b7ab63541392041d60a094abbcc9fc8842f65b7c6eba2bd9dbd8ed0edd017266f365636a8c75414580993f8d4a7f5d6cb7b11f85db138c77b905
+%define sha512  %{name}=9e887a74d639021d20aae18208939e95afcfa5b9c468b81a66af62351de0f374da5a7f21d4b73153064c80dba53b0e796a9c18c4f886d38f916968c146491c9c
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
+Patch1:         0001-add-history-utility.patch
+Patch2:         0001-fix-skip-obsoletes-conflicts-options.patch
 
-Requires:       rpm-libs >= 4.16.1.3-1
+Requires:       rpm-libs
 Requires:       curl-libs
 Requires:       %{name}-cli-libs = %{version}-%{release}
-Requires:       libsolv >= 0.7.19
-Requires:       libxml2
+Requires:       libsolv
 Requires:       zlib
 
+BuildRequires:  curl-devel
+BuildRequires:  libsolv-devel
+BuildRequires:  openssl-devel
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  openssl-devel >= 1.1.1
-BuildRequires:  libsolv-devel >= 0.7.19
-BuildRequires:  curl-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  zlib-devel
+BuildRequires:  sqlite-devel
 BuildRequires:  systemd
-#plugin repogpgcheck
+BuildRequires:  zlib-devel
+
+#metalink plugin
+BuildRequires:  libxml2-devel
+#repogpgcheck plugin
 BuildRequires:  gpgme-devel
+
 BuildRequires:  cmake
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 %if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
-BuildRequires:  libxml2
 BuildRequires:  python3-pip
 BuildRequires:  photon-release
 BuildRequires:  photon-repos
@@ -65,18 +69,28 @@ Development files for %{name}
 
 %package    cli-libs
 Summary:    Library providing cli libs for %{name} like clients
-Group:      Development/Libraries
+Group:      Applications/RPM
 
 %description cli-libs
 Library providing cli libs for %{name} like clients.
 
+%package    plugin-metalink
+Summary:    tdnf plugin providing metalink functionality for repo configurations
+Group:      Applications/RPM
+Requires:   %{name} = %{version}-%{release}
+Requires:   libxml2
+
+%description plugin-metalink
+tdnf plugin providing metalink functionality for repo configurations
+
 %package    plugin-repogpgcheck
-Summary:    %{name} plugin providign gpg verification for repository metadata
-Group:      Development/Libraries
+Summary:    %{name} plugin providing gpg verification for repository metadata
+Group:      Applications/RPM
+Requires:   %{name} = %{version}-%{release}
 Requires:   gpgme
 
 %description plugin-repogpgcheck
-%{name} plugin providign gpg verification for repository metadata
+%{name} plugin providing gpg verification for repository metadata
 
 %package    python
 Summary:    python bindings for %{name}
@@ -88,7 +102,7 @@ python bindings for %{name}
 
 %package automatic
 Summary:   %{name} - automated upgrades
-Group:     Development/Libraries
+Group:     Applications/RPM
 Requires:  %{name} = %{version}-%{release}
 %{?systemd_requires}
 
@@ -124,7 +138,9 @@ ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
 mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
+mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfmetalink
 mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
+mv %{buildroot}%{_tdnfpluginsdir}/libtdnfmetalink.so %{buildroot}%{_tdnfpluginsdir}/tdnfmetalink/
 mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
 
 pushd %{__cmake_builddir}/python
@@ -136,6 +152,19 @@ find %{buildroot} -name '*.pyc' -delete
 
 %post
 /sbin/ldconfig
+
+%posttrans
+# Convert the auto instaled info from the old file /var/lib/tdnf/autoinstalled
+# to the new db.
+# must be postrans because we read the rpm db
+# cannot use tdnf because that is still running even in postrans
+[ -d %{_sharedstatedir}/tdnf ] || mkdir -p %{_sharedstatedir}/tdnf
+[ -f %{_sharedstatedir}/tdnf/history.db ] || %{_libdir}/tdnf/tdnf-history-util init
+if [ -f %{_sharedstatedir}/tdnf/autoinstalled ] ; then
+    %{_libdir}/tdnf/tdnf-history-util mark remove $(cat %{_sharedstatedir}/tdnf/autoinstalled) && \
+        rm %{_sharedstatedir}/tdnf/autoinstalled
+fi
+
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 1 ]; then
@@ -187,6 +216,7 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_bindir}/tdnfj
 %{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
+%{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %config %{_unitdir}/%{name}-cache-updateinfo.service
 %config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
@@ -206,6 +236,12 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %files cli-libs
 %defattr(-,root,root)
 %{_libdir}/libtdnfcli.so.*
+
+%files plugin-metalink
+%defattr(-,root,root)
+%dir %{_sysconfdir}/tdnf/pluginconf.d
+%config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfmetalink.conf
+%{_tdnfpluginsdir}/tdnfmetalink/libtdnfmetalink.so
 
 %files plugin-repogpgcheck
 %defattr(-,root,root)
@@ -229,6 +265,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Oct 18 2022 Oliver Kurth <okurth@vmware.com> 3.4.1-1
+- update to 3.4.1
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.2-2
 - Bump version as a part of libsolv upgrade
 * Tue Sep 13 2022 Oliver Kurth <okurth@vmware.com> 3.3.2-1
