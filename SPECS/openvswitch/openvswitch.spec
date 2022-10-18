@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=1372162fa94c55a541c01ac95d0015fb4ee62509
+%define sha512 openvswitch=5fe377f9b2857e238e3d40e4452e8b36c80283230f1d0f4b983324532beba725913da817e545c8d7630762f170bb5b0dfe810fd1b8b559994d5eae828beb8ec1
 Patch0:         openvswitch-CVE-2020-35498.patch
 Patch1:         openvswitch-CVE-2020-27827.patch
 Patch2:         openvswitch-CVE-2021-36980.patch
+Patch3:         openvswitch-CVE-2021-3905.patch
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -77,7 +78,7 @@ It contains the documentation and manpages for openvswitch.
 export PYTHON2=no
 %configure --enable-ssl --enable-shared
 
-make %{_smp_mflags}
+%make_build
 
 %install
 %make_install
@@ -154,6 +155,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Tue Oct 18 2022 Harinadh D <hdommaraju@vmware.com> 2.14.0-11
+- fix CVE-2021-3905
 * Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 2.14.0-10
 - Package static libs only in openvswitch-devel-static
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-9
