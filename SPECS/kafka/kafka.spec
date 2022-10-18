@@ -4,16 +4,16 @@
 %define _data_dir    %{_sharedstatedir}/%{name}
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name: 	       kafka
-Version:       3.0.0
-Release:       2%{?dist}
+Version:       3.0.2
+Release:       1%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Source0:       %{name}-%{version}-src.tgz
-%define sha1   kafka=4eee044bba66f19be20a189b5d2db9348c0c10cc
+%define sha512 kafka=02b6f06b2c05a076c5f8486e9df2f4678557c588abc77c2fd45b27ba3e5b54c83ea0545473817d62301823cc31cd31a09f4cf51390a2bd720838975b21b25d42
 Source1:       %{name}.service
 Source2:       %{name}-build-jars-%{version}.tar.gz
-%define sha1   %{name}-build-jars=86ba550a5718a601852131003a1b525265cbb596
+%define sha512 %{name}-build-jars=3e5d96d00ceffdafcb1ef814c7e3bca6be20e5ce2abc4abd05e285d1d94941d0a55f6d183e718f3b3bcd1be104ce5c98c9189cdf70898dc9c01e77c10a64041e
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 Provides:      kafka kafka-server
@@ -105,6 +105,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.2-1
+- Update to 3.0.2, Fixes CVE-2022-34917
 * Wed Dec 01 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.0-2
 - Bundled build time generated jars into a seperate source.
 * Thu Oct 14 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.0-1
