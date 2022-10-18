@@ -1,0 +1,64 @@
+From 9fe763c6821a5c7b6fc37abb1879f72e57d45a14 Mon Sep 17 00:00:00 2001
+From: Peter Eisentraut <peter@eisentraut.org>
+Date: Fri, 16 Aug 2019 12:56:50 +0200
+Subject: [PATCH] Recognize GSSENCRequest packet
+
+This is a new startup packet type introduced in PostgreSQL 12.  In
+PgBouncer, we'll for now reject GSS encryption attempts.
+
+Without this, PgBouncer would reject such connections with "bad packet
+header" errors, requiring the client to reconnect before being able to
+do the normal startup.
+---
+ include/bouncer.h | 1 +
+ src/client.c      | 8 ++++++++
+ src/proto.c       | 2 ++
+ 3 files changed, 11 insertions(+)
+
+diff --git a/include/bouncer.h b/include/bouncer.h
+index 1fa6ab6..51cf29e 100644
+--- a/include/bouncer.h
++++ b/include/bouncer.h
+@@ -136,6 +136,7 @@ extern int cf_sbuf_len;
+ #define PKT_STARTUP     0x30000
+ #define PKT_CANCEL      80877102
+ #define PKT_SSLREQ      80877103
++#define PKT_GSSENCREQ   80877104
+ 
+ #define POOL_SESSION	0
+ #define POOL_TX		1
+diff --git a/src/client.c b/src/client.c
+index 6e3c19a..e751995 100644
+--- a/src/client.c
++++ b/src/client.c
+@@ -537,6 +537,14 @@ static bool handle_client_startup(PgSocket *client, PktHdr *pkt)
+ 			return false;
+ 		}
+ 		break;
++	case PKT_GSSENCREQ:
++		/* reject GSS encryption attempt */
++		slog_noise(client, "C: req GCC enc");
++		if (!sbuf_answer(&client->sbuf, "N", 1)) {
++			disconnect_client(client, false, "failed to nak GSS enc");
++			return false;
++		}
++		break;
+ 	case PKT_STARTUP_V2:
+ 		disconnect_client(client, true, "old V2 protocol not supported");
+ 		return false;
+diff --git a/src/proto.c b/src/proto.c
+index 2f4eba3..17ffdc8 100644
+--- a/src/proto.c
++++ b/src/proto.c
+@@ -75,6 +75,8 @@ bool get_header(struct MBuf *data, PktHdr *pkt)
+ 			type = PKT_CANCEL;
+ 		} else if (code == PKT_SSLREQ) {
+ 			type = PKT_SSLREQ;
++		} else if (code == PKT_GSSENCREQ) {
++			type = PKT_GSSENCREQ;
+ 		} else if ((code >> 16) == 3 && (code & 0xFFFF) < 2) {
+ 			type = PKT_STARTUP;
+ 		} else if (code == PKT_STARTUP_V2) {
+-- 
+2.23.1
+
