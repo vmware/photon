@@ -1,11 +1,11 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.14.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
-%define sha1 pgbouncer=101147d6718347c4b6e302bbe38ed42447ec82ff
+%define sha512 %{name}=506810c9896a45d67fbc97c3027572278b3857635c222cfaa53b4f3893069cfbee2ec92facd6f387de217bb3170045410b88a7cea09a45686661a2d2ccc85271
 Source1:        pgbouncer.service
 Group:		Application/Databases.
 Vendor:		VMware, Inc.
@@ -14,15 +14,18 @@ BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  pkg-config
-Requires:		libevent
-Requires:		openssl
+Requires:	libevent
+Requires:	openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
+Patch0:         pgbouncer-CVE-2021-3935.patch
+
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -80,6 +83,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+* Tue Oct 18 2022 Ankit Jain <ankitja@vmware.com> 1.14.0-4
+- Fixes CVE-2021-3935
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-3
 - Bump up release for openssl
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-2
