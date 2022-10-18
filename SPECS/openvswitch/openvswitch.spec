@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,10 +11,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=3ee6da7f52aeaad78b816ec6d61f7e7f163902fd
+%define sha512  openvswitch=e9bf9030a1c5dbcddcf463d332a87c84326c21fb53eac743cd999da9e03f564a394e2362fe5ab2ebec35bb456fc76e10da6910c398886b41fbd28a35465b5aee
 Patch0:         openvswitch-CVE-2020-35498.patch
 Patch1:         openvswitch-CVE-2020-27827.patch
 Patch2:         openvswitch-CVE-2021-36980.patch
+Patch3:         openvswitch-CVE-2021-3905.patch
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -123,10 +124,10 @@ It contains the documentation and manpages for OVN.
 %build
 export PYTHON2=no
 %configure --enable-ssl --enable-shared
-make %{_smp_mflags}
+%make_build
 
 %install
-make %{_smp_mflags} DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/%{python2_sitelib}
 mkdir -p %{buildroot}/%{python3_sitelib}
@@ -268,6 +269,8 @@ make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Oct 18 2022 Harinadh D <hdommaraju@vmware.com> 2.12.0-6
+-   fix for CVE-2021-3905
 *   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-5
 -   Patched for CVE-2021-36980
 *   Thu Apr 01 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-4
