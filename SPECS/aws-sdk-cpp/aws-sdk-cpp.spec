@@ -4,7 +4,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -86,6 +86,7 @@ aws s3 libs
 %autosetup -p1
 
 %build
+export CXXFLAGS="%{optflags} -Wno-error=deprecated-declarations"
 %cmake \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
@@ -156,6 +157,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.33-6
+- Fix build with latest toolchain
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.33-5
 - Use cmake macros for build and install
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-4

@@ -1,11 +1,12 @@
 Summary:        Preload library to back text, data, malloc() or shared memory with hugepages
 Name:           libhugetlbfs
 Version:        2.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL-2.1
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
 Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
-%define sha1    libhuge=d84cfd845c2aab84053daec3c2337f5e9d73115b
+%define sha512  libhuge=b509ff60179e3dc52532bc16b1a414b4993bb79019733a30a7bfa69311f627606b196aced4457bdb88edccdbe7070df755aaab37c6599f4cecdfcb0015aee212
+Patch0:         Disable-hugepage-backend-malloc.patch
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -25,14 +26,15 @@ Requires:       %{name} = %{version}-%{release}
 This contains development tools and libraries for libhugetlbfs.
 
 %prep
-%setup -q
+%autosetup -p1
 %build
-make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib %{?_smp_mflags}
+%make_build PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib
 
 %install
-make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags} PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib
 
 %check
+# make doesn't support _smp_mflags
 make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 
 %files
@@ -52,7 +54,9 @@ make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 %{_mandir}/man3/*
 
 %changelog
-*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.23-1
--   Automatic Version Bump
-*   Tue Dec 17 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-1
--   Initial version.
+* Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.23-2
+- Fix build with latest toolchain
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.23-1
+- Automatic Version Bump
+* Tue Dec 17 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-1
+- Initial version.

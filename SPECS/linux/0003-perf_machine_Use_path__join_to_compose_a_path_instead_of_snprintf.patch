@@ -1,0 +1,69 @@
+From 9d5f0c36438eeae7566ca383b2b673179e3cc613 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 18 Jan 2022 09:02:43 -0300
+Subject: perf machine: Use path__join() to compose a path instead of
+ snprintf(dir, '/', filename)
+
+commit 9d5f0c36438eeae7566ca383b2b673179e3cc613 upstream.
+
+Its more intention revealing, and if we're interested in the odd cases
+where this may end up truncating we can do debug checks at one
+centralized place.
+
+Motivation, of all the container builds, fedora rawhide started
+complaining of:
+
+  util/machine.c: In function ‘machine__create_modules’:
+  util/machine.c:1419:50: error: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size between 0 and 4095 [-Werror=format-truncation=]
+   1419 |                 snprintf(path, sizeof(path), "%s/%s", dir_name, dent->d_name);
+        |                                                  ^~
+  In file included from /usr/include/stdio.h:894,
+                   from util/branch.h:9,
+                   from util/callchain.h:8,
+                   from util/machine.c:7:
+  In function ‘snprintf’,
+      inlined from ‘maps__set_modules_path_dir’ at util/machine.c:1419:3,
+      inlined from ‘machine__set_modules_path’ at util/machine.c:1473:9,
+      inlined from ‘machine__create_modules’ at util/machine.c:1519:7:
+  /usr/include/bits/stdio2.h:71:10: note: ‘__builtin___snprintf_chk’ output between 2 and 4352 bytes into a destination of size 4096
+
+There are other places where we should use path__join(), but lets get rid of
+this one first.
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Link: Link: https://lore.kernel.org/r/YebZKjwgfdOz0lAs@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/machine.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+(limited to 'tools/perf/util/machine.c')
+
+diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+index 3901440aeff92..f70ba56912d4f 100644
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -16,6 +16,7 @@
+ #include "map_symbol.h"
+ #include "branch.h"
+ #include "mem-events.h"
++#include "path.h"
+ #include "srcline.h"
+ #include "symbol.h"
+ #include "sort.h"
+@@ -1416,7 +1417,7 @@ static int maps__set_modules_path_dir(struct maps *maps, const char *dir_name, i
+ 		struct stat st;
+ 
+ 		/*sshfs might return bad dent->d_type, so we have to stat*/
+-		snprintf(path, sizeof(path), "%s/%s", dir_name, dent->d_name);
++		path__join(path, sizeof(path), dir_name, dent->d_name);
+ 		if (stat(path, &st))
+ 			continue;
+ 
+-- 
+cgit 
+

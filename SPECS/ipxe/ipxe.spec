@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        1.21.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -14,7 +14,7 @@ Distribution:   Photon
 
 #Download URL:  https://github.com/ipxe/ipxe/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=b8ad3343e78461aaa897c1404d16c26f035f87ee
+%define sha512  %{name}=47400975110ed4ab95835aa1b7c8d5a6917c19c5713c6ab88bc0741a3adcd62245a9c4251d1f46fffc45289c6b18bf893f86dbc3b67d3189c41b7f198367ecaa
 
 BuildArch:      x86_64
 
@@ -40,7 +40,7 @@ PXE implementation enhanced with additional features.
 
 %build
 cd src
-make %{_smp_mflags}
+make NO_WERROR=1 %{_smp_mflags}
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
@@ -66,6 +66,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}%{_datadir}/%{name}/
 %{_datadir}/%{name}/rtl8139.rom
 
 %changelog
+*   Sun Sep 18 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.21.1-2
+-   Fix build with latest tool chain
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.21.1-1
 -   Automatic Version Bump
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.20.1-2

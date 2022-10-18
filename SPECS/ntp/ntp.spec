@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -9,14 +9,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    %{name}=e34e5b6f48c3ed1bbcfb03080dec1b8f91e19381
+%define sha512  %{name}=f5ad765e45fc302263dd40e94c287698fd235b94f3684e49f1d5d09d7d8bdd6b8c0fb96ecdabffea3d233e1e79b3c9687b76dc204ba76bad3f554682f4a97794
 
 #https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
-%define sha1    ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
+%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 Source2:        ntp.sysconfig
 
 Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
+Patch1:         NTP_4_2_8P15+2@0x61e3f4da.patch
 
 BuildRequires:  which
 BuildRequires:  libcap-devel
@@ -182,6 +183,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Sun Oct 02 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.2.8p15-5
+- Fix build with latest toolchain
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-4
 - Bump version as a part of perl-Net-SSLeay version upgrade
 - Make ntp work when openssl fips enabled

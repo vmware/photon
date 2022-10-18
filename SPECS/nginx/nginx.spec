@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.23.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -18,6 +18,8 @@ Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.t
 %define sha512 %{name}-njs=3fd9e9b84e416e95dbdffced78eabd76a519cccec7c386d8acaccd0d891dea5ceeb702408d4450107c7e3909586753e4eeb5e38c06657cd8f273180beb8fae74
 
 Source2: %{name}.service
+
+Patch0: WebCrypto-fixed-dangling-pointer-warning-by-gcc-12.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -34,7 +36,12 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -a0 -a1 -p1
+# Using autosetup is not feasible
+%setup -a0 -a1
+
+pushd njs-%{njs_ver}
+%patch0 -p1
+popd
 
 %build
 sh ./configure \
@@ -110,6 +117,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.23.1-2
+- Fix build with latest toolchain
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23.1-1
 - Upgrade nginx to v1.23.1
 - Upgrade nginx-njs to v0.7.7

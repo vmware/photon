@@ -1,6 +1,6 @@
 Name:           hyperscan
 Version:        5.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High-performance regular expression matching library
 License:        BSD
 URL:            https://www.hyperscan.io
@@ -59,6 +59,9 @@ needed for developing Hyperscan applications.
 %autosetup -p1
 
 %build
+# https://github.com/intel/hyperscan/issues/292#issuecomment-762635447
+sed -i -e 's|\[^ \]|\[^ @\]|g' "cmake/build_wrapper.sh"
+
 # LTO seems to be losing the target prefix on ifunc targets leading to
 # multiply defined symbols.  This seems like a GCC bug
 # Disable LTO
@@ -101,5 +104,7 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/examples/*.c
 
 %changelog
+* Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.4.0-2
+- Fix build with latest toolchain
 * Thu Jul 28 2022 Mukul Sikka <msikka@vmware.com> 5.4.0-1
 - Initial Build

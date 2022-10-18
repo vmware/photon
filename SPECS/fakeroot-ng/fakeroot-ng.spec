@@ -1,18 +1,20 @@
-Summary:      Fools programs into thinking they are running with root permission
-Name:         fakeroot-ng
-Version:      0.18
-Release:      3%{?dist}
-License:      GPLv2+
-URL:          http://fakeroot-ng.lingnu.com/
-Group:        System Environment/Base
-Vendor:       VMware, Inc.
-Distribution: Photon
+Summary:       Fools programs into thinking they are running with root permission
+Name:          fakeroot-ng
+Version:       0.18
+Release:       4%{?dist}
+License:       GPLv2+
+URL:           http://fakeroot-ng.lingnu.com/
+Group:         System Environment/Base
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
-Source0:      http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
-%define sha1 %{name}=288dadbd50ff36a9eb11d4bc14213c6d1beaafaa
+Source0:       http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
+%define sha512 %{name}=8ece6830d229b92537d9c0a2eb42cb9ec4ae6b83453303004dded5eab0707b9ae8eaa2c71aac6ea68226c43cf08db6b0939a9422aab32948f5ecb185ee01d854
 
-BuildRoot:    %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-BuildArch:    x86_64
+Patch0:        Add-sched-h-to-process-cpp.patch
+
+BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildArch:     x86_64
 
 %description
 Fakeroot-ng is a clean re-implementation of fakeroot. The core idea
@@ -30,11 +32,11 @@ the result.
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -48,6 +50,8 @@ rm -rf %{buildroot}/*
 %doc %{_mandir}/man1/fakeroot-ng.1.gz
 
 %changelog
+* Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.18-4
+- Fix build with latest tool chain
 * Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.18-3
 - Adding BuildArch
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.18-2

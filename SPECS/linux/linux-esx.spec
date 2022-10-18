@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.142
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -78,6 +78,10 @@ Patch8: 9p-support-for-local-file-lock.patch
 Patch9: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch10: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch11: apparmor-af_unix-mediation.patch
+
+# To support GCC v12
+Patch12:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
+Patch13:  0004-perf_sched_Cast_PTHREAD_STACK_MIN_to_int_as_it_may_turn_into_sysconf.patch
 
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
@@ -582,6 +586,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-2
+- Fix build with latest toolchain
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
 - Update to version 5.10.142
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.132-1

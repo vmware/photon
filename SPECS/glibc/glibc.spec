@@ -3,8 +3,8 @@
 
 Summary:        Main C library
 Name:           glibc
-Version:        2.32
-Release:        8%{?dist}
+Version:        2.36
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -12,21 +12,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha512  %{name}=8460c155b7003e04f18dabece4ed9ad77445fa2288a7dc08e80a8fc4c418828af29e0649951bd71a54ea2ad2d4da7570aafd9bdfe4a37e9951b772b442afe50b
+%define sha512  %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 
 #Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch0:         glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
-Patch2:         Fix_FMA4_detection_in_ifunc.patch
-Patch3:         CVE-2019-25013.patch
-Patch4:         CVE-2021-3326.patch
-Patch5:         CVE-2020-29562.patch
-Patch6:         CVE-2020-27618.patch
-Patch7:         CVE-2021-35942.patch
-Patch8:         CVE-2021-38604.patch
-Patch9:         glibc-fix-for-semctl-ltp.patch
+Patch2:         Fix-sys-mount.h-usage-with-kernel-headers.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -203,7 +196,7 @@ else
   LOCALEDEF=../../glibc-build/locale/localedef
 fi
 
-I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C $LOCALEDEF --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
+I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C ../../glibc-build/elf/ld.so --library-path ../../glibc-build $LOCALEDEF --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
 
 mv %{buildroot}%{_libdir}/locale/en_US.utf8 %{buildroot}%{_libdir}/locale/en_US.UTF-8
 
@@ -280,7 +273,6 @@ fi
 %{_datadir}/i18n/locales/en_US
 %{_datarootdir}/locale/locale.alias
 %exclude %{_sharedstatedir}/nss_db/Makefile
-%exclude %{_bindir}/catchsegv
 %exclude %{_bindir}/iconv
 %exclude %{_bindir}/mtrace
 %exclude %{_bindir}/pcprofiledump
@@ -297,14 +289,13 @@ fi
 
 %files tools
 %defattr(-,root,root)
-%{_bindir}/catchsegv
 %{_bindir}/mtrace
 %{_bindir}/pcprofiledump
 %{_bindir}/pldd
 %{_bindir}/sotruss
 %{_bindir}/sprof
 %{_bindir}/xtrace
-%{_sbindir}/zdump
+%{_bindir}/zdump
 %{_sbindir}/zic
 %{_sbindir}/sln
 %{_libdir}/audit/*
@@ -336,6 +327,9 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 17 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.36-1
+- Upgrade to 2.36
+- catchsegv is removed, zdump is moved to /usr/bin from /usr/sbin
 * Fri Sep 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.32-8
 - Fix LTP Testcase (semctl) failure issue
 * Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.32-7

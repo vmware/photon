@@ -1,0 +1,51 @@
+From d08c84e01afa7a7eee6badab25d5420fa847f783 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Wed, 14 Jul 2021 13:06:38 -0300
+Subject: perf sched: Cast PTHREAD_STACK_MIN to int as it may turn into
+ sysconf(__SC_THREAD_STACK_MIN_VALUE)
+
+commit d08c84e01afa7a7eee6badab25d5420fa847f783 upstream
+
+In fedora rawhide the PTHREAD_STACK_MIN define may end up expanded to a
+sysconf() call, and that will return 'long int', breaking the build:
+
+    45 fedora:rawhide                : FAIL gcc version 11.1.1 20210623 (Red Hat 11.1.1-6) (GCC)
+      builtin-sched.c: In function 'create_tasks':
+      /git/perf-5.14.0-rc1/tools/include/linux/kernel.h:43:24: error: comparison of distinct pointer types lacks a cast [-Werror]
+         43 |         (void) (&_max1 == &_max2);              \
+            |                        ^~
+      builtin-sched.c:673:34: note: in expansion of macro 'max'
+        673 |                         (size_t) max(16 * 1024, PTHREAD_STACK_MIN));
+            |                                  ^~~
+      cc1: all warnings being treated as errors
+
+  $ grep __sysconf /usr/include/*/*.h
+  /usr/include/bits/pthread_stack_min-dynamic.h:extern long int __sysconf (int __name) __THROW;
+  /usr/include/bits/pthread_stack_min-dynamic.h:#   define PTHREAD_STACK_MIN __sysconf (__SC_THREAD_STACK_MIN_VALUE)
+  /usr/include/bits/time.h:extern long int __sysconf (int);
+  /usr/include/bits/time.h:# define CLK_TCK ((__clock_t) __sysconf (2))	/* 2 is _SC_CLK_TCK */
+  $
+
+So cast it to int to cope with that.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/builtin-sched.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+index 954ce2f594e96..aaf1cde476c95 100644
+--- a/tools/perf/builtin-sched.c
++++ b/tools/perf/builtin-sched.c
+@@ -670,7 +670,7 @@ static void create_tasks(struct perf_sched *sched)
+ 	err = pthread_attr_init(&attr);
+ 	BUG_ON(err);
+ 	err = pthread_attr_setstacksize(&attr,
+-			(size_t) max(16 * 1024, PTHREAD_STACK_MIN));
++			(size_t) max(16 * 1024, (int)PTHREAD_STACK_MIN));
+ 	BUG_ON(err);
+ 	err = pthread_mutex_lock(&sched->start_work_mutex);
+ 	BUG_ON(err);
+-- 
+cgit 
+

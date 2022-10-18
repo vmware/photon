@@ -1,12 +1,12 @@
-Name:       likewise-open
-Summary:    Likewise Open
-Version:    6.2.11.13
-Release:    9%{?dist}
-Group:      Development/Libraries
-Vendor:     VMware, Inc.
-License:    GPL 2.0,LGPL 2.1
-URL:        https://github.com/vmware/likewise-open
-Distribution:   Photon
+Name:         likewise-open
+Summary:      Likewise Open
+Version:      6.2.11.13
+Release:      10%{?dist}
+Group:        Development/Libraries
+Vendor:       VMware, Inc.
+License:      GPL 2.0,LGPL 2.1
+URL:          https://github.com/vmware/likewise-open
+Distribution: Photon
 
 Source0: https://github.com/vmware/likewise-open/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=8531fb95f8d26c7356e1504ee1ffd8245fa1f84cb4d83151b690f20ec4aeec1e9f9a8eb0145d568688efcfba4433fbec9ee17af112409ab4ad4ceba4520d2ee3
@@ -68,7 +68,7 @@ export LW_FEATURE_LEVEL="auth"
 export LSA_RPC_SERVERS="yes"
 export LW_DEVICE_PROFILE="photon"
 
-export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation -Wno-error=address-of-packed-member -Wno-error=nonnull -Wformat-overflow"
+export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation -Wno-stringop-overflow -Wno-error=mismatched-dealloc -Wno-error=address-of-packed-member -Wno-error=nonnull -Wformat-overflow"
 
 sh ../configure  \
      --prefix=/opt/likewise \
@@ -302,6 +302,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+* Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.2.11.13-10
+- Fix build with latest toolchain
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-9
 - Bump version as a part of sqlite upgrade
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-8

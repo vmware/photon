@@ -59,7 +59,7 @@ if [ $USE_PIE -eq 1 ]; then
   # pie flag requires shared libgcc_s during linking.
   LIBGCC_EXTRA="$LIBGCC_EXTRA %{!static:--as-needed -lgcc_s --no-as-needed}"
   # replace default startfile rules to use crt that PIE code requires.
-  STARTFILE="%{!shared: %{pg|p|profile:gcrt1.o%s;:Scrt1.o%s}} crti.o%s %{static:crtbeginT.o%s;:crtbeginS.o%s}"
+  STARTFILE="%{shared:;      pg|p|profile:%{static-pie:grcrt1.o%s;:gcrt1.o%s};      static:crt1.o%s;      static-pie:rcrt1.o%s;      !no-pie:Scrt1.o%s;      :crt1.o%s} crti.o%s    %{static:crtbeginT.o%s;      shared|static-pie|!no-pie:crtbeginS.o%s;      :crtbegin.o%s}"
   ENDFILE="%{static:crtend.o%s;:crtendS.o%s} crtn.o%s"
   LINK_EXTRA="$LINK_EXTRA %{r|nostdlib|fno-pie|fno-PIE|fno-pic|fno-PIC|shared|static:;:-pie}"
 fi

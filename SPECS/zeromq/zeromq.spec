@@ -1,14 +1,14 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
 Version:        4.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zeromq/libzmq/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    zeromq=47277a64749049123d1401600e8cfbab10a3ae28
+%define sha512 %{name}=e198ef9f82d392754caadd547537666d4fba0afd7d027749b3adae450516bcf284d241d4616cad3cb4ad9af8c10373d456de92dc6d115b037941659f141e7c0e
 
 Requires:       libstdc++
 
@@ -26,11 +26,12 @@ Requires:       %{name} = %{version}
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %configure \
     --with-libsodium=no \
+    --disable-Werror \
     --disable-static
 %make_build
 
@@ -58,6 +59,8 @@ make check %{_smp_mflags}
 %{_mandir}/*
 
 %changelog
+*   Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 4.3.4-2
+-   fix: build fails with gcc 12
 *   Fri Jul 09 2021 Nitesh Kumar <kunitesh@vmware.com> 4.3.4-1
 -   Upgrade to 4.3.4
 *   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.3-1

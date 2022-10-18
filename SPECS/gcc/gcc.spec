@@ -3,8 +3,8 @@
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        10.2.0
-Release:        2%{?dist}
+Version:        12.2.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha512  gcc=42ae38928bd2e8183af445da34220964eb690b675b1892bbeb7cd5bb62be499011ec9a93397dba5e2fb681afadfc6f2767d03b9035b44ba9be807187ae6dc65e
+%define sha512  %{name}=e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173
 
 Patch0:         PLUGIN_TYPE_CAST.patch
 
@@ -105,6 +105,8 @@ test %{_host} != %{_build} && export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-o
     --enable-clocale=gnu \
     --enable-languages=c,c++,fortran\
     --disable-multilib \
+    --enable-default-pie \
+    --enable-default-ssp \
     --disable-bootstrap \
     --disable-libstdcxx-pch \
     --enable-linker-build-id \
@@ -233,6 +235,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 12.2.0-1
+- Version update
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.2.0-2
 - Remove .la files
 * Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 10.2.0-1

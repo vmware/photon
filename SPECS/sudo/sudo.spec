@@ -1,6 +1,6 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.11
+Version:        1.9.11p3
 Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ed6f04f8f6dedeb837720524ca7e6137ca62977f739cf78e10f9502855be8af07b76a4ece422d4d7dcc0d34949606f9805bd5ebd623bfa25bfa89e19c45cacbd
+%define sha512  %{name}=ad5c3d623547d1e3016e1a721676fee6d6b7348e77b2c234041e0af40c7220e8934c8c27beef0d12fa6df11708d37de711dacfefc135d26de46abca7f91c55d1
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Wed Oct 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.9.11p3-1
+- Fix build with latest toolchain
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.11-1
 - Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.10-1

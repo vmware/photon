@@ -9,7 +9,7 @@ License:        GPLv2
 %define rpi_linux_req 5.10.4
 URL:            https://github.com/raspberrypi/linux
 Source0:        https://github.com/raspberrypi/linux/archive/rpi-linux-%{version}.tar.gz
-%define sha1    rpi-linux=0f0f79dcb961a6e04b620165d47dae090db9b2a6
+%define sha512  rpi-linux=8e176075f30fa4c6847c0bc11c3d9207929247bacd518e45aeff85a3eaffce229699d953f16cd8e948b37326cea2adaa2cf518858c3813a3b30565c97af8b2fc
 Group:          System/Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,17 +55,17 @@ Conflicts:      linux < %{rpi_linux_req}
 Kernel Device Tree Overlay Blob files for Raspberry Pi
 
 %prep
-%setup -q -n rpi-linux-%{version}
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n rpi-linux-%{version}
 
 %build
+# make doesn't support _smp_mflags
 make mrproper
+# make doesn't support _smp_mflags
 make bcm2711_defconfig
 make %{?_smp_mflags} dtbs
 
 %install
+# make doesn't support _smp_mflags
 make dtbs_install INSTALL_DTBS_PATH=%{buildroot}/boot/efi
 pushd %{buildroot}/boot/efi
 mv broadcom excluded

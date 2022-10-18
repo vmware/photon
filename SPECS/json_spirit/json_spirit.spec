@@ -37,7 +37,7 @@ This contains development tools and libraries for %{name}.
 
 %build
 # Build static lib
-CPPFLAGS="-std=c++98"
+export CXXFLAGS="-std=c++98"
 %cmake \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
@@ -47,7 +47,7 @@ CPPFLAGS="-std=c++98"
 
 sed -i s/"json_spirit STATIC"/"json_spirit SHARED"/g %{name}/CMakeLists.txt
 
-CPPFLAGS="-std=c++98 -fPIC"
+export CXXFLAGS="-std=c++98 -fPIC"
 %cmake \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \

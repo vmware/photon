@@ -47,11 +47,17 @@ The clang-devel package contains libraries, header files and documentation for d
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
 
+%ifarch aarch64
+%define link_concurrency 2
+%else
+%define link_concurrency 4
+%endif
+
 %cmake -G Ninja \
     -DCMAKE_INSTALL_PREFIX=%{_usr} \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
-    -DLLVM_PARALLEL_LINK_JOBS=4 \
+    -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
     -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
     -DBUILD_SHARED_LIBS=OFF \
     -Wno-dev

@@ -1,0 +1,92 @@
+From 85ce59830cd54186c0125982614ff9a61efdc5b0 Mon Sep 17 00:00:00 2001
+From: Dmitry Volyntsev <xeioex@nginx.com>
+Date: Tue, 6 Sep 2022 10:09:08 -0700
+Subject: [PATCH] WebCrypto: fixed dangling pointer warning by gcc-12.
+
+---
+ external/njs_webcrypto_module.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/external/njs_webcrypto_module.c b/external/njs_webcrypto_module.c
+index dc9aa1b6d..38a00d7a2 100644
+--- a/external/njs_webcrypto_module.c
++++ b/external/njs_webcrypto_module.c
+@@ -121,7 +121,7 @@ static njs_int_t njs_ext_get_random_values(njs_vm_t *vm, njs_value_t *args,
+ 
+ static void njs_webcrypto_cleanup_pkey(void *data);
+ static njs_webcrypto_key_format_t njs_key_format(njs_vm_t *vm,
+-    njs_value_t *value, njs_str_t *format);
++    njs_value_t *value);
+ static njs_int_t njs_key_usage(njs_vm_t *vm, njs_value_t *value,
+     unsigned *mask);
+ static njs_webcrypto_algorithm_t *njs_key_algorithm(njs_vm_t *vm,
+@@ -1649,7 +1649,7 @@ njs_ext_import_key(njs_vm_t *vm, njs_value_t *args, njs_uint_t nargs,
+     unsigned                    usage;
+     EVP_PKEY                    *pkey;
+     njs_int_t                   ret;
+-    njs_str_t                   key_data, format;
++    njs_str_t                   key_data;
+     njs_value_t                 value, *options;
+     const u_char                *start;
+ #if (OPENSSL_VERSION_NUMBER < 0x30000000L)
+@@ -1669,9 +1669,8 @@ njs_ext_import_key(njs_vm_t *vm, njs_value_t *args, njs_uint_t nargs,
+ 
+     pkey = NULL;
+ 
+-    fmt = njs_key_format(vm, njs_arg(args, nargs, 1), &format);
++    fmt = njs_key_format(vm, njs_arg(args, nargs, 1));
+     if (njs_slow_path(fmt == NJS_KEY_FORMAT_UNKNOWN)) {
+-        njs_type_error(vm, "unknown key format: \"%V\"", &format);
+         goto fail;
+     }
+ 
+@@ -1746,7 +1745,7 @@ njs_ext_import_key(njs_vm_t *vm, njs_value_t *args, njs_uint_t nargs,
+         break;
+ 
+     default:
+-        njs_internal_error(vm, "not implemented key format: \"%V\"", &format);
++        njs_internal_error(vm, "not implemented key format: \"jwk\"");
+         goto fail;
+     }
+ 
+@@ -2484,9 +2483,10 @@ njs_webcrypto_cleanup_pkey(void *data)
+ 
+ 
+ static njs_webcrypto_key_format_t
+-njs_key_format(njs_vm_t *vm, njs_value_t *value, njs_str_t *format)
++njs_key_format(njs_vm_t *vm, njs_value_t *value)
+ {
+     njs_int_t    ret;
++    njs_str_t    format;
+     njs_uint_t   fmt;
+     njs_value_t  string;
+ 
+@@ -2502,21 +2502,25 @@ njs_key_format(njs_vm_t *vm, njs_value_t *value, njs_str_t *format)
+ 
+     ret = njs_value_to_string(vm, &string, value);
+     if (njs_slow_path(ret != NJS_OK)) {
+-        return NJS_ERROR;
++        goto fail;
+     }
+ 
+-    njs_string_get(&string, format);
++    njs_string_get(&string, &format);
+ 
+     fmt = 0;
+ 
+     while (fmt < sizeof(formats) / sizeof(formats[0])) {
+-        if (njs_strstr_eq(format, &formats[fmt].name)) {
++        if (njs_strstr_eq(&format, &formats[fmt].name)) {
+             return formats[fmt].value;
+         }
+ 
+         fmt++;
+     }
+ 
++fail:
++
++    njs_type_error(vm, "unknown key format: \"%V\"", &format);
++
+     return NJS_KEY_FORMAT_UNKNOWN;
+ }
+ 

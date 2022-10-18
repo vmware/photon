@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.142
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -84,17 +84,21 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 
+# To support GCC v12
+Patch9:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
+Patch10: 0004-perf_sched_Cast_PTHREAD_STACK_MIN_to_int_as_it_may_turn_into_sysconf.patch
+
 # ttyXRUSB support
-Patch10: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
+Patch11: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
 #HyperV patches
-Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch12: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patchx: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+Patch13: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
-Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch14: apparmor-af_unix-mediation.patch
+Patch14: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch15: apparmor-af_unix-mediation.patch
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
 
@@ -220,6 +224,13 @@ Patch1541: 0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
 Patch1542: 0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543: 0013-release-notification-bitmap-inn-error-path.patch
 Patch1544: 0014-add-support-for-arm64.patch
+
+#Patches for tools
+Patch2001: 0001-tools-build-Add-feature-test-for-init_disassemble_in.patch
+Patch2002: 0002-tools-include-add-dis-asm-compat.h-to-handle-version.patch
+Patch2003: 0003-tools-perf-Fix-compilation-error-with-new-binutils.patch
+Patch2004: 0004-tools-bpf_jit_disasm-Fix-compilation-error-with-new-.patch
+Patch2005: 0005-tools-bpftool-Fix-compilation-error-with-new-binutil.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -423,6 +434,8 @@ popd
 
 # vmci
 %autopatch -p1 -m1521 -M1544
+
+%autopatch -p1 -m2001 -M2005
 
 %build
 make %{?_smp_mflags} mrproper
@@ -766,6 +779,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-3
+- Fix build with latest toolchain
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-2
 - Replace rpm macro 'name' with 'linux' to be consistent with other flavors.
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
