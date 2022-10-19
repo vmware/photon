@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.256
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.261
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=b7fa316b8d4a3874372da50efce932bc174803ddb0a866936b4102eb04626b1a97de4ef12a88fb5daaa70b0fd0498d329a149edf3dca54c2bef26af64ea5789b
+%define sha512 linux=6fafbec106b9e935db081aac7c4a08b214539d7ac7496a562e5978be3fd6b05a7abee180a24ed7fb7805a04860957b21b9ef9c52e47b01f992d6a2c99d3c167d
 
 Source1: config-aws
 Source2: initramfs.trigger
@@ -100,9 +100,6 @@ Patch69: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
 
 # Fix for CVE-2022-36123
 Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
-
-# Fix for CVE-2022-3028
-Patch71: 0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 
 # Fix for CVE-2021-4037
 Patch72: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
@@ -192,11 +189,7 @@ Patch177: 0008-vmxnet3-update-to-version-7.patch
 Patch178: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch179: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
-# Patchset to fix Panic due to nested priority inheritance in sched_deadline
-Patch180: 0001-sched-deadline-Unthrottle-PI-boosted-threads-while-e.patch
-Patch181: 0002-sched-deadline-Fix-stale-throttling-on-de-boosted-ta.patch
-Patch182: 0003-sched-deadline-Fix-priority-inheritance-with-multipl.patch
-Patch183: 0004-kernel-sched-Remove-dl_boosted-flag-comment.patch
+# Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch184: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 %if 0%{?kat_build}
@@ -496,6 +489,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1
+- Update to version 4.19.261
 * Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.256-4
 - Fix for CVE-2022-34918
 * Mon Sep 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.256-3
