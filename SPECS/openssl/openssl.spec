@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.3
-Release:        3%{?dist}
+Version:        3.0.6
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,13 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512  %{name}=39130a30ef6e3cdf1a7360c47a884899bcb5df5356e4187db621702d1fcc6e46489d725ca3e14e93dbb1ada0d3cfb9d39d9d974351eec33708a515c6da71f659
+%define sha512  %{name}=9eb16ae8c7c77ed45db8f575150376d70297296050946c1f3e36b312673a69c30616d0772da22357475c43840d57ff78d46874eb79d0e885d461eecbb0b2158c
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source2:        sample-fips-enable-openssl.cnf
 %endif
-Patch0:         openssl-CVE-2022-2068.patch
-Patch1:         openssl-CVE-2022-2097.patch
+
 %if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
@@ -199,6 +198,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Oct 18 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.6-1
+- update to openssl-3.0.6
 * Mon Jul 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-3
 - Fix CVE-2022-2097
 * Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-2
