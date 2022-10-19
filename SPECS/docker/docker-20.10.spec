@@ -1,10 +1,19 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
+# Must be in sync with package version
+%define DOCKER_ENGINE_GITCOMMIT 87a90dc
+%define DOCKER_CLI_GITCOMMIT a224086
+%define TINI_GITCOMMIT de40ad0
+
+%define gopath_comp_engine github.com/docker/docker
+%define gopath_comp_cli github.com/docker/cli
+%define gopath_comp_libnetwork github.com/docker/libnetwork
+
 Summary:        Docker
 Name:           docker
-Version:        20.10.11
-Release:        9%{?dist}
+Version:        20.10.14
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -12,12 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512  moby=ac947e882abb02d52aea4aecb5dcfef6e23c86aadf98b49e3312ca3079dac7a01d6c936c0a4e51b3561def926ae50b4c5587063b8c58cac5c5de3c5e7985b120
-
-# Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 847da18
-%define DOCKER_CLI_GITCOMMIT dea9396
-%define TINI_GITCOMMIT de40ad0
+%define sha512  moby=94ee555337aaf96bb95ce8cbe8fe1d9c8b87fcd4f256d2af5082fc47915f7576882929c1211ef7fba0c754097bdef5e6df59abbdf77456d3babe139f4353ed21
 
 Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -26,11 +30,7 @@ Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.
 %define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512  docker-cli=c0bd1ab77b6e8ac1b6fb094bb51ed488e0ed3ed6ead3181b9f761fcce6e4901b90a34e779a90365731e65765877a502399be2dd1af95293209b846fa69dee3b8
-
-%define gopath_comp_engine github.com/docker/docker
-%define gopath_comp_cli github.com/docker/cli
-%define gopath_comp_libnetwork github.com/docker/libnetwork
+%define sha512  docker-cli=f8b7f1040eccd404e39ec33bcef8bb8423636b0695af65f84c0612e77223844892d219f82cfbb99ccd5326e228f8af27be1870d90ebace77810ea5fce9f86e4a
 
 Source97:       docker-post19.service
 Source98:       docker-post19.socket
@@ -108,25 +108,26 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 %prep
 # Using autosetup is not feasible
 %setup -q -c -n moby-%{version}
-mkdir -p "$(dirname "src/%{gopath_comp_engine}")"
+
+mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
+         "$(dirname "src/%{gopath_comp_cli}")" \
+         "src/%{gopath_comp_libnetwork}" \
+         tini \
+         bin
+
 mv moby-%{version} src/%{gopath_comp_engine}
 
 tar -xf %{SOURCE3}
-mkdir -p "$(dirname "src/%{gopath_comp_cli}")"
 mv cli-%{version} src/%{gopath_comp_cli}
 
-mkdir tini
 tar -C tini -xf %{SOURCE1}
 
-mkdir -p "src/%{gopath_comp_libnetwork}"
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
-mkdir bin
-
 # Patch sources
-cd tini
+pushd tini
 %patch97 -p1
-cd -
+popd
 
 %build
 export GOPATH="$(pwd)"
@@ -172,7 +173,7 @@ popd
 
 # init
 pushd tini
-  cmake \
+%cmake \
     -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
     -Dgit_version_check_ret=0 \
     . && make tini-static && cp tini-static "$GOPATH/bin/docker-init"
@@ -316,6 +317,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Oct 19 2022 Nitesh Kumar <kunitesh@vmware.com> 20.10.14-1
+- Version upgrade to v20.10.14 to address CVE-2022-24769
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-9
 - Bump up version to compile with new go
 * Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-8
