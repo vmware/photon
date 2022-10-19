@@ -1,17 +1,18 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
+%define sha512    nss=0c626d709acda49378a37400ee91cd0cf38677af8f4404b2d18190977b050bb0c7f9c989e2c664e97aa906f4527cd1642925a764ee281523003430954aab71c8
 Patch0:         nss-3.44-standalone-1.patch
 Patch1:         nss-CVE-2020-12403.patch
 Patch2:         nss-CVE-2021-43527.patch
+Patch3:         nss-CVE-2019-17006.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -113,6 +114,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Wed Oct 19 2022 Harinadh D <hdommaraju@vmware.com> 3.44-8
+-   Fix CVE-2019-17006
 *   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-7
 -   Fix CVE-2021-43527
 *   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-6
