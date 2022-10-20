@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.32
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -10,7 +10,7 @@ Distribution:   Photon
 Requires:       %{name}-libs = %{version}-%{release}
 
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=cd45a512af1c8a508976c1beb4f5825b3bb89f4d
+%define sha512 binutils=d326408f12a03d9a61a9de56584c2af12f81c2e50d2d7e835d51565df8314df01575724afa1e43bd0db45cfc9916b41519b67dfce03232aa4978704492a6994a
 
 Patch0:         binutils-CVE-2019-12972.patch
 Patch1:         binutils-CVE-2019-14444.patch
@@ -29,6 +29,7 @@ Patch13:        binutils-CVE-2020-35494.patch
 Patch14:        binutils-CVE-2020-35493.patch
 Patch15:        binutils-CVE-2021-3487.patch
 Patch16:        binutils-CVE-2021-45078.patch
+Patch17:        binutils-CVE-2022-38533.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -139,6 +140,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Mon Oct 17 2022 Dweep Advani <dadani@vmware.com> 2.32-7
+-   Fix CVE-2022-38533
 *   Wed Dec 22 2021 Nitesh Kumar <kunitesh@vmware.com> 2.32-6
 -   Fix CVE-2021-45078
 *   Wed Apr 28 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-5
