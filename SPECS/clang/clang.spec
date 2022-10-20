@@ -48,8 +48,10 @@ The clang-devel package contains libraries, header files and documentation for d
 # unless you are absolutely sure
 
 %ifarch aarch64
+%define build_concurrency 4
 %define link_concurrency 2
 %else
+%define build_concurrency $(nproc)
 %define link_concurrency 4
 %endif
 
@@ -58,7 +60,7 @@ The clang-devel package contains libraries, header files and documentation for d
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
     -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
-    -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
+    -DLLVM_PARALLEL_COMPILE_JOBS=%{build_concurrency} \
     -DBUILD_SHARED_LIBS=OFF \
     -Wno-dev
 
