@@ -23,7 +23,7 @@ For each Photon OS 3.0 VM that you want to upgrade, complete the following steps
 4.	Run the upgrade script
     
     ```
-    # photon-upgrade.sh
+    # photon-upgrade.sh --upgrade-os
     ```
 
 5.	Answer y to reboot the VM. The upgrade script powers down the Photon OS 3.0 VM and powers it on as a Photon OS 4.0 VM.
