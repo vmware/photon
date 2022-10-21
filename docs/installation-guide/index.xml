@@ -61,7 +61,7 @@
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Run the upgrade script&lt;/p>
-&lt;pre>&lt;code># photon-upgrade.sh
+&lt;pre>&lt;code># photon-upgrade.sh --upgrade-os
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Answer y to reboot the VM. The upgrade script powers down the Photon OS 3.0 VM and powers it on as a Photon OS 4.0 VM.&lt;/p>
