@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        4.4.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -20,8 +20,10 @@ Provides: /bin/sh
 Provides: /bin/bash
 
 BuildRequires: readline
+BuildRequires: ncurses-devel
 
 Requires:           readline
+Requires:           ncurses-libs >= 6.1-4
 Requires(post):     /bin/grep
 Requires(post):     /bin/cp
 Requires(postun):   /bin/grep
@@ -328,6 +330,7 @@ fi
 %{_datadir}/bash-completion/
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/%{name}/*
 %{_libdir}/pkgconfig/*
 
@@ -335,6 +338,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 18 2022 Tapas Kundu <tkundu@vmware.com> 4.4.18-4
+- Add ncurses-libs to requires
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.4.18-3
 - Make bash completion work for regular user sudo commands
 * Thu Feb 06 2020 Sujay G <gsujay@vmware.com> 4.4.18-2
