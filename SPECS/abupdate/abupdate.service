@@ -1,0 +1,9 @@
+[Unit]
+Description=Finalizes partition switch on boot, if enabled.
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/abupdate finish
+
+[Install]
+WantedBy=multi-user.target
