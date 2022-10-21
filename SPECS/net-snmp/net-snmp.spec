@@ -63,7 +63,8 @@ protocol.  Both client and agent support modules are provided.
 %make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make install DESTDIR=%{buildroot}
 mkdir -p %{buildroot}%{_unitdir}
 install -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}
