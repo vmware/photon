@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.29
+Version:        8.0.31
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,8 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 
-Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=fd67f306ef8be60b4010e34e8ccc2c26577256200c183d71149743eeb5c038fd72adde107bfee34abd7df318902db6f94646a482f9f29a8396a6d57014b81b8a
+Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
+%define sha512 %{name}-boost=87b1678de8c2fd640fd6f3ae58266ea63fe240578330e3296d0e5fc209bbe9b0c22996214b6ca4cce8c0d9cc2f9897f4e6723d835b33fc4342983c82929c3d96
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -19,6 +19,11 @@ BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  protobuf-devel
 
 Requires:       protobuf
+Requires:       openssl
+Requires:       zlib
+Requires:       libtirpc
+Requires:       perl
+Requires:       ncurses-libs
 Requires:       %{name}-icu-data-files = %{version}-%{release}
 
 %description
@@ -93,6 +98,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l
 
 %changelog
+* Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-1
+- Upgrade to v8.0.31
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-1
 - Upgrade to v8.0.29 to fix bunch of CVEs
 - Disable unit tests & mysql-router while building
