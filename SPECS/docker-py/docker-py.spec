@@ -1,54 +1,68 @@
 Name:           docker-py3
-Version:        4.3.1
+Version:        6.0.0
 Release:        1%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/docker/docker-py
+URL:            https://github.com/docker/docker-py
 
-Source0:        docker-py-%{version}.tar.gz
-%define sha1    docker-py=eed3cb687f8103dd8679c672e64251b7b3bfd337
+Source0: https://github.com/docker/docker-py/releases/download/%{version}/docker-%{version}.tar.gz
+%define sha512 docker=09edf7b058d38d34d0fe0432b336d6fc494648c0e41cf4ae7f7bbf3db158143ca8fbea87e51d3b354c5f40bd7f1481e003e4b55f879ef562e91f19b62143c271
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-ipaddress
-BuildRequires:  python3-pip
-BuildRequires:  python3-requests
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-six
-BuildRequires:  python3-xml
-BuildRequires:  python3-macros
+BuildRequires: python3-devel
+BuildRequires: python3-ipaddress
+BuildRequires: python3-pip
+BuildRequires: python3-requests
+BuildRequires: python3-setuptools
+BuildRequires: python3-six
+BuildRequires: python3-xml
+BuildRequires: python3-macros
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       docker-pycreds3
-Requires:       python3-backports.ssl_match_hostname
-Requires:       python3-ipaddress
-Requires:       python3-requests
-Requires:       python3-six
-Requires:       python3-websocket-client
+%if 0%{?with_check}
+BuildRequires: python3-pytest
+BuildRequires: python3-websocket-client
+BuildRequires: python3-paramiko
+%endif
 
-BuildArch:      noarch
+Requires: python3
+Requires: docker-pycreds3
+Requires: python3-backports.ssl_match_hostname
+Requires: python3-ipaddress
+Requires: python3-requests
+Requires: python3-six
+Requires: python3-websocket-client
+
+BuildArch: noarch
 
 %description
 Python API for docker
 
 %prep
-%autosetup -p1 -n docker-py-%{version}-release
+%autosetup -p1 -n docker-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
+%{py3_install}
+
+%if 0%{?with_check}
+%check
+%{pytest} tests/unit
+%endif
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1
+- Upgrade to v6.0.0
 * Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 4.3.1-1
 - Upgrade to 4.3.1 release.
 * Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 3.5.0-2
