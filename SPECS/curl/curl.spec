@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.83.1
-Release:        3%{?dist}
+Version:        7.85.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,13 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0b909b7ed55f9a9789584fd9d2033d5838dcf29e33adf6657258e97ebe7c91b26282007687a729c8385594fd8220bd718fd008154926b87b8da254d586fab3c7
-Patch0:         curl-CVE-2022-32205.patch
-Patch1:         curl-CVE-2022-32206.patch
-Patch2:         curl-CVE-2022-32207.patch
-Patch3:         curl-libcurl-fix-for-Curl_fopen.patch
-Patch4:         curl-CVE-2022-32208.patch
-Patch5:         curl-CVE-2022-35252.patch
+%define sha512  %{name}=bbad693bcde9c55e5942499950d76011f53ad43d3270eee2c8db486bcf46f5fc92b32dd8752caf4c5976fe493d083e2d34fa299cb96fb8e76d8f5fcc2cc56a36
+Patch0:         curl-CVE-2022-42915.patch
+Patch1:         curl-CVE-2022-42916.patch
+Patch2:         curl-CVE-2022-32221.patch
+Patch3:         curl-CVE-2022-35260.patch
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -98,6 +96,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon Oct 24 2022 Harinadh D <hdommaraju@vmware.com> 7.85.0-1
+- fix for CVE-2022-42915, CVE-2022-42916
+- CVE-2022-32221 and CVE-2022-35260
 * Wed Aug 24 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-3
 - Fixed CVE-2022-35252
 * Tue Jun 28 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-2
