@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.29
-Release:        2%{?dist}
+Version:        8.0.31
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,9 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 mysql-boost=fd67f306ef8be60b4010e34e8ccc2c26577256200c183d71149743eeb5c038fd72adde107bfee34abd7df318902db6f94646a482f9f29a8396a6d57014b81b8a
-
-Patch0:         0001-mysql-compatibility-with-openssl-3.0.patch
+%define sha512 mysql-boost=87b1678de8c2fd640fd6f3ae58266ea63fe240578330e3296d0e5fc209bbe9b0c22996214b6ca4cce8c0d9cc2f9897f4e6723d835b33fc4342983c82929c3d96
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -26,6 +24,8 @@ Requires:       libtirpc
 Requires:       libevent
 Requires:       zlib
 Requires:       openssl
+Requires:       ncurses-libs
+Requires:       perl
 Requires:       %{name}-icu-data-files = %{version}-%{release}
 
 %description
@@ -48,7 +48,7 @@ This package contains ICU data files needed by MySQL regular expressions.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
    -DWITH_BOOST=boost \
    -DINSTALL_MANDIR=share/man \
@@ -65,10 +65,10 @@ This package contains ICU data files needed by MySQL regular expressions.
    -DWITH_UNIT_TESTS=OFF \
    -DWITH_LIBEVENT=system
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 %if 0%{?with_check}
 %check
@@ -103,6 +103,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+* Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-1
+- Upgrade to v8.0.31
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.29-2
 - Use cmake macros
 * Mon May 02 2022 Nitesh Kumar <kunitesh@vmware.com> 8.0.29-1
