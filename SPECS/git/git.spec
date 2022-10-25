@@ -1,23 +1,18 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.23.3
-Release:        3%{?dist}
+Version:        2.35.5
+Release:        1%{?dist}
 License:        GPLv2
-URL:            http://git-scm.com/
+URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 git=29b1344fed72c588e9a04d3fb493f2f91490f61853d48644a2d36c23c3251cf1fd549c256def25865e9f33b50135cdfa5108814105d9fcf360d6d1938487d2bf
-
-Patch0:         CVE-2021-21300-1.patch
-Patch1:         CVE-2021-21300-2.patch
-Patch2:         CVE-2021-21300-3.patch
-Patch3:         CVE-2021-40330.patch
+%define sha512  %{name}=f8fab6ca37d42eec74047b95edc1f83deeb6f1d61f7a7785b571bbc32f2615651fec67126900d98cc45d5ed892bbbc6ac5ea3cb7cbe3ebcd46775adbb58fcd67
 
 BuildRequires:  curl-devel
-BuildRequires:  python2
+BuildRequires:  python3-devel
 
 Requires:       openssl
 Requires:       curl
@@ -27,7 +22,7 @@ Requires:       perl-YAML
 Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
-Requires:       python2
+Requires:       python3
 
 %description
 Git is a free and open source, distributed version control system
@@ -98,6 +93,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 25 2022 Nitesh Kumar <kunitesh@vmware.com> 2.35.5-1
+- Upgrade version to 2.35.5
 * Fri Sep 10 2021 Nitesh Kumar <kunitesh@vmware.com> 2.23.3-3
 - Fix CVE-2021-40330
 * Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.3-2
