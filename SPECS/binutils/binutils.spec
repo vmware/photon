@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -26,6 +26,7 @@ Patch8:         binutils-libtool-no-rpath.patch
 Patch9:         binutils-package-metadata.patch
 Patch10:        binutils-gas-dwarf-skip-empty-functions.patch
 Patch11:        binutils-CVE-38128-dwarf-abbrev-parsing.patch
+Patch12:        binutils-CVE-2022-38533.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -150,6 +151,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Mon Oct 17 2022 Dweep Advani <dadani@vmware.com> 2.39-2
+- Fix CVE-2022-38533
 * Tue Aug 23 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.39-1
 - Update binutils to 2.39
 - bfd_stdint.h is removed
