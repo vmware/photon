@@ -1,7 +1,7 @@
 Summary:    C++ XML Signature and Encryption library.
 Name:       xml-security-c
 Version:    2.0.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache Software License
 URL:        https://santuario.apache.org/cindex.html
 Group:      Applications/System
@@ -68,6 +68,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_includedir}/*
 
 %changelog
+* Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.4-2
+- Bump version as part of xerces-c upgrade
 * Wed Jan 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.4-1
 - Upgrade to v2.0.4
 - Abort when MD5 is used and fips enabled

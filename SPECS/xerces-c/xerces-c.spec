@@ -1,7 +1,7 @@
 Summary:        C++ xml parser.
 Name:           xerces-c
-Version:        3.2.3
-Release:        2%{?dist}
+Version:        3.2.4
+Release:        1%{?dist}
 License:        Apache License
 URL:            http://xerces.apache.org
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
-%define sha512 xerces-c=8b8ac9a8377788753a918af2bd4437af5bb94b275e50fe1ab7cc6af88a8531248518705bc794da702a3e06a82a064cbd25e4149c2526aff7f61cf49ded4fdfab
+%define sha512 xerces-c=4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
 
 Requires:       libstdc++
 
@@ -52,6 +52,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.a
 
 %changelog
+* Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-1
+- Updated to version 3.2.4
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.3-2
 - Remove .la files
 * Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.3-1
