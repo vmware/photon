@@ -1,6 +1,6 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.30.5
+Version:        2.35.5
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=1bccb5ce3c4268df6100a2fb8f37a128c381d4a66d1028fc55ec4ce19d5719b9dec9e42c93c4740c4ed8f969f3f5cd592812a4cb2c79f2917bd560e5300bd71f
+%define sha512  %{name}=f8fab6ca37d42eec74047b95edc1f83deeb6f1d61f7a7785b571bbc32f2615651fec67126900d98cc45d5ed892bbbc6ac5ea3cb7cbe3ebcd46775adbb58fcd67
 
 BuildRequires:  curl-devel
 BuildRequires:  python3
@@ -20,10 +20,6 @@ Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
 Requires:       perl
-Requires:       perl-YAML
-Requires:       perl-DBI
-Requires:       perl-CGI
-Requires:       subversion-perl
 Requires:       python3
 
 %description
@@ -95,6 +91,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 25 2022 Nitesh Kumar <kunitesh@vmware.com> 2.35.5-1
+- Upgrade version to 2.35.5
 * Thu Jul 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.30.5-1
 - Minor version upgrade to address CVE-2022-29187
 * Tue May 10 2022 Nitesh Kumar <kunitesh@vmware.com> 2.30.3-1
