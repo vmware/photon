@@ -1,6 +1,6 @@
 Summary:        Bash Automated Testing System
 Name:           bats
-Version:        1.8.0
+Version:        1.8.2
 Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Tool
@@ -9,7 +9,7 @@ Distribution:   Photon
 
 URL:            https://github.com/bats-core/bats-core
 SOURCE0:        https://github.com/bats-core/bats-core/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e51ea85bf2f455881a90220d783b4a261bd91331326a7184eb31ea9adf31c18a79a062fd77af12d082ccef953d992382ec19ca9a27395b2a03c4a9a120bdda76
+%define sha512  %{name}=7eace32f19789e081112af1ce8ab33ff210d52bd3ea84962bbec226349b3b8d8912b6a495f5524f9cc7cfe692f1d23d684c93c24e182752e2b30731670d6eeea
 
 BuildArch:      noarch
 
@@ -45,6 +45,8 @@ program.
 %{_mandir}/man7/%{name}.7.gz
 
 %changelog
+* Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.2-1
+- Automatic Version Bump
 * Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
 - Automatic Version Bump
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1.7.0-1
