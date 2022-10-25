@@ -1,6 +1,6 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.37.3
+Version:        2.38.1
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
@@ -8,7 +8,7 @@ Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=9120050b01d8ac8d9f9e85f19cb84dc90c28f3beadc3ea94da94845f2eb5e35aa83eee8447a7ecef5190b8eb5d01be621be2e82bb3020e51e05037cd1fa9b58f
+%define sha512  %{name}=e62ca6f54f01d2e4ccffb5f94e8e5cd2f3e098b766d909c694a8daf4d00d5cdeb9cc5ff8e9bc55d888406f292ba99433d334d4da9689c0ce5d7299a3c67c90e0
 
 BuildRequires:  curl-devel
 BuildRequires:  python3
@@ -19,10 +19,6 @@ Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
 Requires:       perl
-Requires:       perl-YAML
-Requires:       perl-DBI
-Requires:       perl-CGI
-Requires:       subversion-perl
 Requires:       python3
 
 %description
@@ -97,6 +93,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 25 2022 Nitesh Kumar <kunitesh@vmware.com> 2.38.1-1
+- Upgrade version to 2.38.1
 * Sun Sep 11 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.37.3-1
 - Update version to 2.37.3
 * Fri Jul 29 2022 Nitesh Kumar <kunitesh@vmware.com> 2.35.4-1
