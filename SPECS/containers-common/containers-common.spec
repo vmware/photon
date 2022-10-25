@@ -1,3 +1,10 @@
+# Please handle this spec with care, As this a custom spec file created
+# for podman so it should be manually upgraded when required. Because
+# it has specific files from multiple repos as mention in spec comment
+# section itself. Also whenever upgrading podman please check the
+# compaitable version of containers-common and upgrade this by picking
+# the required files like below.
+
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
 Version:        1
