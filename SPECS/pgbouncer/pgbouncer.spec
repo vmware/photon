@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Group:		Application/Databases.
@@ -21,6 +21,9 @@ Requires:		libevent
 Requires:		openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
+Patch0:         0001-Recognize-GSSENCRequest-packet.patch
+Patch1:         pgbouncer-CVE-2021-3935.patch
 
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
@@ -84,6 +87,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+* Tue Oct 18 2022 Ankit Jain <ankitja@vmware.com> 1.7.2-8
+- Fixes CVE-2021-3935
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.2-7
 - Remove shadow from requires and use explicit tools for post actions
 * Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.7.2-6
