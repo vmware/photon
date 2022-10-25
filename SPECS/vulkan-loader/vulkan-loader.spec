@@ -1,5 +1,5 @@
 Name:           vulkan-loader
-Version:        1.3.230
+Version:        1.3.232
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
@@ -9,7 +9,7 @@ License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
 Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512  Vulkan-Loader-%{version}.tar.gz=3d7a07d01dc76d474661b2771b9ea522075d3975832db63309169cea726c51fa35e02d79d7183adc552ef70831190dac6272fd5715c12ba9ceee9c048f565f70
+%define sha512  Vulkan-Loader-%{version}.tar.gz=eb84564d25ede8734ee312813f1c4426f6a6c30d835d5dde9ee9a1064d5fa38faa48467046a24fa491b7353a7c423c4f515f0e62740b124c8a5ee00cd8543ba8
 
 BuildRequires:  cmake
 BuildRequires:  python3-devel
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.232-1
+-   Automatic Version Bump
 *   Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.230-1
 -   Automatic Version Bump
 *   Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.216.0-2
