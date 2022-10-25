@@ -1,5 +1,5 @@
 Name:           vulkan-loader
-Version:        1.3.232
+Version:        1.3.234
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
@@ -8,8 +8,8 @@ Distribution:   Photon
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
-Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512  Vulkan-Loader-%{version}.tar.gz=eb84564d25ede8734ee312813f1c4426f6a6c30d835d5dde9ee9a1064d5fa38faa48467046a24fa491b7353a7c423c4f515f0e62740b124c8a5ee00cd8543ba8
+Source0: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
+%define sha512 Vulkan-Loader=185c0d9bc529884fcfdc9f49bd1d2a01b998cd0e7511b6918baf1f8cbef22dd78e2837c43ce9a9df2a554a9ce5a801f6ac9c8a3bc1d20fc8704c29fa8e472624
 
 BuildRequires:  cmake
 BuildRequires:  python3-devel
@@ -47,17 +47,18 @@ developing applications that use %{name}.
 %autosetup -p1 -n Vulkan-Loader-%{version}
 
 %build
-%cmake -DCMAKE_BUILD_TYPE=Release \
-        -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \
-        -DLIB_INSTALL_DIR:PATH=%{_libdir} \
-        -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} \
-        -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
-        -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir}
+%{cmake} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \
+    -DLIB_INSTALL_DIR:PATH=%{_libdir} \
+    -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} \
+    -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir}
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 # create the filesystem
 mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
@@ -65,10 +66,10 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
          %{buildroot}{%{_sysconfdir},%{_datadir}}/vulkan/icd.d/ \
          %{buildroot}%{_libdir}
 
-%ldconfig_scriptlets
+%{ldconfig_scriptlets}
 
 %check
-%meson_test
+%{meson_test}
 
 %clean
 rm -rf %{buildroot}/*
@@ -93,11 +94,13 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
-*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.232-1
--   Automatic Version Bump
-*   Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.230-1
--   Automatic Version Bump
-*   Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.216.0-2
--   Bump version as a part of mesa upgrade
-*   Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
--   Initial version
+* Fri Nov 11 2022 Michelle Wang <michellew@vmware.com> 1.3.234-1
+- Automatic Version Bump since mesa is bump up
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.232-1
+- Automatic Version Bump
+* Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.230-1
+- Automatic Version Bump
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.216.0-2
+- Bump version as a part of mesa upgrade
+* Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
+- Initial version

@@ -1,6 +1,6 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        22.2.0
+Version:        22.2.2
 Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.mesa3d.org/%{name}-%{version}.tar.xz
-%define sha512 %{name}=13a21b9ed6b0a5dfd0293b73df271a929c3155d83e8beb3d958fe18d79277f3611bf5b26a1186d446f4e1479a36bb13d0a13d6ac68937989fe7a0d917e12171e
+%define sha512 %{name}=a1eb67e1ae4880c79b1fdc570f4389baba0b8ba796da7e695c9af19a7d92b6c06b95570e6c796548b61355989025fb7efbf9acac74cbd695f7e297dc913b933c
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -47,7 +47,7 @@ The drivers with support for the Vulkan API.
 %autosetup -p1
 
 %build
-%meson \
+%{meson} \
     -Dgallium-vdpau=disabled \
     -Dgallium-xvmc=disabled \
     -Dgallium-omx=disabled \
@@ -78,10 +78,10 @@ The drivers with support for the Vulkan API.
     -Dbuild-aco-tests=false \
     %{nil}
 
-%meson_build
+%{meson_build}
 
 %install
-%meson_install
+%{meson_install}
 
 %clean
 rm -rf %{buildroot}/*
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 22.2.2-1
+- Automatic Version Bump
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.2.0-1
 - Upgrade to v22.2.0
 * Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-1
