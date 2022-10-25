@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
-Version:        2.0.20
-Release:        2%{?dist}
+Version:        2.0.21
+Release:        1%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            https://github.com/unbit/uwsgi
 
 Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=22677a8ad1ea886e1a3a153f486474ce064a55e5b12515322345116980f699f4e2e73267f991c300d904284e06f265ea821e71ba3c97832b6f25705475b498ff
+%define sha512 %{name}=36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
 
 Source1:        photon.ini
 Source2:        %{name}.service
@@ -239,6 +239,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.21-1
+- Automatic Version Bump
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.20-2
 - Bump version as a part of libxslt upgrade
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.20-1
