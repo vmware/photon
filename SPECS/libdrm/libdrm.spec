@@ -1,6 +1,6 @@
 Summary:        user space library for accessing the DRM.
 Name:           libdrm
-Version:        2.4.110
+Version:        2.4.113
 Release:        1%{?dist}
 License:        MIT
 URL:            http://dri.freedesktop.org/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dri.freedesktop.org/libdrm/%{name}-%{version}.tar.xz
-%define sha512  libdrm=52f92ef1fe4c218a1d7dba53ef43334dbfca80e3209afe59f3a32c4bf67473126534e990df07a931a12d46a3b997c21ef17c1c4d8a0c88d44d5c6c040e3b6be3
+%define sha512  libdrm=fca9834ce090f63ce6dc6d04491a2c5e86162fdddfc8ea70d55a6cdeb401be656388aae1577e58f463a78d8dc502be0a641908784819874e20bbec9a39a057e0
 
 BuildRequires:  meson
 BuildRequires:  libpciaccess-devel
@@ -31,12 +31,15 @@ libdrm provides a user space library for accessing the DRM, direct rendering man
 
 %build
 CONFIGURE_OPTS=(
-        -Dintel=false
-        -Dradeon=false
-        -Damdgpu=true
-        -Dnouveau=false
-        -Dvmwgfx=false
-        -Dlibkms=false
+        -Dintel=disabled
+        -Dradeon=disabled
+        -Damdgpu=enabled
+        -Dnouveau=disabled
+        -Dvmwgfx=disabled
+        -Dvalgrind=disabled
+        -Dtests=false
+        -Dman-pages=disabled
+        -Dcairo-tests=disabled
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -66,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig*
 
 %changelog
+* Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.113-1
+- Automatic Version Bump
 * Thu Jun 9 2022 Shivani Agarwal <shivania2@vmware.com> 2.4.110-1
 - Upgrade to 2.4.110
 * Thu Jun 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.4.98-1
