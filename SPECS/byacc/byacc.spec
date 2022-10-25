@@ -1,22 +1,22 @@
-%define byaccdate 20220128
+%define byaccdate 20221106
 
-Summary:    Berkeley Yacc, a parser generator
-Name:       byacc
-Version:    2.0.20220128
-Release:    2%{?dist}
-License:    Public Domain
-Group:      Development/Tools
-Vendor:     VMware, Inc.
-URL:        https://byaccj.sourceforge.net
-Distribution: Photon
+Summary:       Berkeley Yacc, a parser generator
+Name:          byacc
+Version:       2.0.20221106
+Release:       1%{?dist}
+License:       Public Domain
+Group:         Development/Tools
+Vendor:        VMware, Inc.
+URL:           https://byaccj.sourceforge.net
+Distribution:  Photon
 
-Source0: https://invisible-island.net/archives/%{name}/%{name}-%{byaccdate}.tgz
-%define sha512 %{name}=e8ae4c56f5be4cc0ef1d281c43f02c6296fdc40f630269f2a61af511f270ae059ad185b9718190b8133018f7b74b7ca6f84ced5d63a359960b52ea2a3ef562ea
+Source0:       https://invisible-island.net/archives/%{name}/%{name}-%{byaccdate}.tgz
+%define sha512 %{name}=866933b4eb2296565ce70b4ade565e4679f3b652715f0066072bbcc42b95389fa47a2f96cd03de577807dcc49bf453b1d4f7e22b96c80fef1aa66898d3de5d5c
 
 BuildRequires: gcc
 BuildRequires: make
 
-Conflicts: bison
+Conflicts:     bison
 
 %description
 This package provides a parser generator utility that reads a grammar
@@ -53,6 +53,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.20221106-1
+- Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.20220128-2
 - Spec fixes
 * Tue Sep 13 2022 Roye Eshed <eshedr@vmware.com> 2.0.20220128-1
