@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.22.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            https://nginx.org
 Group:          Applications/System
@@ -18,6 +18,7 @@ Source1: https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar
 %define sha512 %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
 
 Source2: %{name}.service
+Patch0:  CVE-2022-41741-41742.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -111,6 +112,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Oct 26 2022 Keerthana K <keerthanak@vmware.com> 1.22.0-3
+- Fix CVE-2022-41741 & CVE-2022-41742
 * Tue Aug 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.22.0-2
 - Fix sevice handling and run in nginx user context
 * Tue Jul 19 2022 Harinadh D <hdommaraju@vmware.com> 1.22.0-1
