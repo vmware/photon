@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       29%{?dist}
+Release:       30%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -1167,6 +1167,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-30
+- Bump up version to compile with new go
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-29
 - Remove .la files
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-28
