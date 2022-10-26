@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -9,11 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    %{name}=e34e5b6f48c3ed1bbcfb03080dec1b8f91e19381
+%define sha512  %{name}=f5ad765e45fc302263dd40e94c287698fd235b94f3684e49f1d5d09d7d8bdd6b8c0fb96ecdabffea3d233e1e79b3c9687b76dc204ba76bad3f554682f4a97794
 
 #https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
-%define sha1    ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
+%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 Source2:        ntp.sysconfig
 
 Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
@@ -65,12 +65,11 @@ state of the NTP daemon running on the local machine.
     --enable-system-libevent \
     --enable-linuxcaps
 
-make %{?_smp_mflags}
+%make_build
 make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -v -m755 -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/* %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
@@ -145,8 +144,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %dir /var/lib/ntp/drift
 %attr(0755, ntp, ntp) /var/lib/ntp/drift
-%attr(0750, root, root) %config(noreplace) /etc/ntp.conf
-%attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
+%config(noreplace) /etc/ntp.conf
+%config(noreplace) /etc/sysconfig/ntp
 %{_unitdir}/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
 %{_bindir}/ntpd
@@ -185,6 +184,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Wed Oct 26 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p15-7
+- Change permission to ntp.conf as non-executable
 * Thu Apr 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p15-6
 - Use system libevent instead of bundled libevent source
 - to fix CVE-2016-10195
