@@ -1,42 +1,64 @@
+%global debug_package %{nil}
+
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
-Version:        1.3.0
-Release:        18%{?dist}
+Version:        2.3.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  nginx-ingress=f6ceb4911323b696af8128ccee83fba356d751377f646792f08743a07eb9fc10ebf8982f3e0d283c400c782a504593f9c065c75c76bde73d6f3cc1f4dc01ef35
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=fd2877490c5fe3eba1946af9c4d675c60f7944bd0535f3e35814af3f3f4ccf2c935da22e32392a0f16c2d7cfb9902e1cfce3753a90ee603b3936e614bec706ee
+
 BuildRequires:  go >= 1.7
+BuildRequires:  ca-certificates
+BuildRequires:  docker
+BuildRequires:  git
 
 %description
 This is an implementation of kubernetes ingress controller for NGINX.
 
 %prep
-%autosetup -n kubernetes-ingress-%{version}
+%autosetup -Sgit -n kubernetes-ingress-%{version}
 
 %build
 mkdir -p ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress
-cp -r * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
-pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/nginx-controller
-CGO_ENABLED=0 GOOS=linux GO111MODULE=auto go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress *.go
+cp -pr * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
+
+%make_build build TARGET=local \
+     GIT_TAG="v%{version}" \
+     VERSION="%{version}" \
+     GIT_COMMIT="979db22d8065b22fedb410c9b9c5875cf0a6dc66"
 
 %install
-pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/nginx-controller
+topdir="${PWD}"
 install -vdm 755 %{buildroot}%{_bindir}
-install -vpm 0755 -t %{buildroot}%{_bindir} nginx-ingress
-install -vdm 0755 %{buildroot}/usr/share/nginx-ingress/docker
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ nginx/templates/nginx.ingress.tmpl
-install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ nginx/templates/nginx.tmpl
+install -vpm 0755 -t %{buildroot}%{_bindir} %{name}
+install -vdm 0755 %{buildroot}%{_datadir}/%{name}/docker
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version1/nginx.ingress.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version1/nginx.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version2/nginx.virtualserver.tmpl
+
+install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
+            ${topdir}/internal/configs/version2/nginx.transportserver.tmpl
 
 %files
 %defattr(-,root,root)
-%{_bindir}/nginx-ingress
-/usr/share/nginx-ingress/docker/nginx.*
+%{_bindir}/%{name}
+%{_datadir}/%{name}/docker/nginx.*
 
 %changelog
+* Mon Oct 31 2022 Keerthana K <keerthanak@vmware.com> 2.3.0-1
+- Update to 2.3.0
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.0-18
 - Bump up version to compile with new go
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.0-17

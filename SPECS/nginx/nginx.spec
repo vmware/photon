@@ -1,10 +1,10 @@
-%define njs_ver 0.2.1
+%define njs_ver 0.7.5
 %define nginx_user %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.16.1
-Release:        7%{?dist}
+Version:        1.22.0
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -12,16 +12,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://nginx.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=17e95b43fa47d4fef5e652dea587518e16ab5ec562c9c94355c356440166d4b6a6a41ee520d406e5a34791a327d2e3c46b3f9b105ac9ce07afdd495c49eca437
+%define sha512 %{name}=074782dba9cd5f8f493fbb57e20bda6dc9171814d919a47ee9f825d93f12c9f9d496e25d063c983191b55ad6a236bcef252ce16ecc1d253dc8b23433557559b1
 
 Source1:        https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512  %{name}-njs=b924be63b3d8a996dfd5dd120a3103619c52a9193ca442a21f85f2d5e0a30690fa67401125e775cdf2127f659a61e34b8defe63f7fd33e318cca2a7f99c44154
+%define sha512  %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
 
 Source2:        %{name}.service
-
-Patch0:         nginx-CVE-2019-20372.patch
-Patch1:         0001-nginx-DNS-Resolver-Off-by-One-Heap-Write-in-ngx_reso.patch
-Patch2:         nginx-CVE-2021-3618.patch
+Patch0:         CVE-2022-41741-41742.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -115,6 +112,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/nginx
 
 %changelog
+* Wed Oct 26 2022 Keerthana K <keerthanak@vmware.com> 1.22.0-1
+- Update to 1.22.0 and Fix CVE-2022-41741 CVE-2022-41742
 * Mon Jul 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.1-7
 - Fix sevice handling and run in nginx user context
 * Tue Apr 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.16.1-6
