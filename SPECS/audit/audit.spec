@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -148,6 +148,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-4
+- Bump up version to compile with new go
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-3
 - Remove .la files
 * Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-2
