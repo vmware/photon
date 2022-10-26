@@ -6,12 +6,12 @@
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.2.0
-Release:        20%{?dist}
+Version:        1.7.1
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
-%define sha512  coredns=c4b9c18337f4b55ed90b0c48ce278042c540017b556587075d4bb74666f98a7e2317416d1105cdb92e7fc0111d4bb953473e8ab25798b67da75b9114868394e3
+%define sha512  coredns=4ac92d040afb145d0b721ba381704741d2e0eb32f0f7e53788195fb72c06bcd7c915ac698396d5f7c27df899c7f526045e39d08cb37ae04d2ca871930d299ac0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,9 +43,7 @@ cp -rf . ${GOPATH}/src/${PKG}
 pushd ${GOPATH}/src/${PKG}
 # Just download (do not compile), since it's not compilable with go-1.9.
 # TODO: use prefetched tarball instead.
-find . -type f -exec sed -i 's|github.com/mholt/caddy|github.com/caddyserver/caddy|' {} +
-sed -i 's#go get -u github.com/caddyserver/caddy#go get -u -d github.com/caddyserver/caddy#' Makefile
-sed -i 's#v0.10.11#v0.10.11 \&\& find . -type f -exec sed -i "s\|github.com/mholt/caddy\|github.com/caddyserver/caddy\|" {} + #g' Makefile
+sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
 sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
 make %{?_smp_mflags}
 
@@ -61,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.7.1-1
+- Upgraded to 1.7.1.
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.0-20
 - Bump up version to compile with new go
 * Thu Aug 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.2.0-19
