@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -14,6 +14,8 @@ Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source2:        sample-fips-enable-openssl.cnf
 %endif
+
+Patch0:         0001-punycode-Fix-CVE-in-punycode-decoder.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -198,6 +200,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed Oct 26 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.6-2
+- Fix for CVE-2022-3602.
 * Tue Oct 18 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.6-1
 - update to openssl-3.0.6
 * Mon Jul 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-3
