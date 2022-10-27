@@ -1,6 +1,6 @@
 #! /bin/bash
 
-BUILD_SCRIPT_VERSION=1.0
+BUILD_SCRIPT_VERSION=1.1
 
 # Target to Photon OS version
 VERSION=4
@@ -18,16 +18,27 @@ WITH_CHECK=0
 # Example: RPM_MACROS=( --define \"vmxnet3_sw_timestamp 1\" )
 RPM_MACROS=()
 
-test "$#" -ne 1 && echo "Usage: $0 spec-file-to-build.spec" && exit 1
+test "$#" -lt 1 && echo "Usage: $0 <spec-file-to-build.spec> [path-to-output-directory]" && exit 1
 
 CONTAINER=build_spec
 SOURCES_BASEURL=https://packages.vmware.com/photon/photon_sources/1.0
 SPECPATH=$(readlink -m "$1")
 SPECFILE=$(basename "$SPECPATH")
 SPECDIR=$(dirname "$SPECPATH")
-mkdir -p "$SPECDIR/stage/LOGS"
-LOGFILE=$SPECDIR/stage/LOGS/$(basename "$SPECFILE" .spec).log
+
+if [ -z "$2" ]; then
+  STAGE="$SPECDIR/stage"
+else
+  STAGE=$(readlink -m "$2")
+fi
+
+mkdir -p "$STAGE/LOGS"
+LOGFILE=stage/LOGS/$(basename "$SPECFILE" .spec).log
+
 RPM_MACROS+=( --define \"dist .ph$VERSION\" --define \"with_check $WITH_CHECK\" )
+
+mkdir -p "$STAGE/RPMS"
+mkdir -p "$STAGE/SRPMS"
 
 # use &3 for user output
 exec 3>&1
@@ -93,7 +104,7 @@ function create_sandbox() {
     # image is less then 2 weeks
     if [ "$cdate" -gt "$vdate" ]; then
       # use this image
-      run "Use local build template image" docker run --privileged -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
+      run "Use local build template image" docker run -v $STAGE/RPMS:/usr/src/photon/RPMS -v $STAGE/SRPMS:/usr/src/photon/SRPMS --privileged -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
       return 0
     else
       # remove old image
@@ -102,12 +113,13 @@ function create_sandbox() {
   fi
 
 
-  run "Pull photon image" docker run --privileged -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
+  run "Pull photon image" docker run -v $STAGE/RPMS:/usr/src/photon/RPMS -v $STAGE/SRPMS:/usr/src/photon/SRPMS --privileged -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
   run "Upgrade Packages" in_sandbox tdnf upgrade -y
-  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential gmp-devel mpfr-devel tar sed findutils file gzip patch bzip2
+  run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential gmp-devel mpfr-devel tar sed findutils file gzip patch bzip2 createrepo
+  run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file:///usr/src/photon/RPMS\nenabled=1\nskip_if_unavailable=1" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
 
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" photon_build_spec:$VERSION.0
 }
@@ -127,6 +139,9 @@ function prepare_buildenv() {
     [ $? -eq 0 ] || run "Download $url" wget "$url" -O "$SPECDIR/SOURCES/$file" && docker cp "$SPECDIR/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
   done
 
+  run "createrepo " in_sandbox createrepo /usr/src/photon/RPMS/.
+  run "makecache" in_sandbox tdnf makecache
+
   local br
   br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ "$br" != "" ]; then
@@ -140,11 +155,6 @@ function build() {
   in_sandbox rpmbuild $WITH_CHECK_PARAM -ba ${RPM_MACROS[@]} /usr/src/photon/SOURCES/"$SPECFILE" &
   wait_for_result 1
   run "Delete SOURCES" rm -rf $SPECDIR/SOURCES
-}
-
-function get_rpms() {
-  run "Copy RPMS" docker cp $CONTAINER:/usr/src/photon/RPMS "$SPECDIR/stage"
-  run "Copy SRPMS" docker cp $CONTAINER:/usr/src/photon/SRPMS "$SPECDIR/stage"
 }
 
 function destroy_sandbox() {
@@ -180,11 +190,7 @@ prepare_buildenv
 echo "3. Build Binary and Source Package" >&3
 build
 
-echo "4. Get binaries" >&3
-get_rpms
-
-echo "5. Destroy sandbox" >&3
+echo "4. Destroy sandbox" >&3
 destroy_sandbox
 
-echo "Build completed. RPMS are in '$SPECDIR/stage' folder" >&3
-
+echo "Build completed. RPMS are in '$STAGE' folder" >&3
