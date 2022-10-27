@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.1
+Version:        3.4.2
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,11 +9,10 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9e887a74d639021d20aae18208939e95afcfa5b9c468b81a66af62351de0f374da5a7f21d4b73153064c80dba53b0e796a9c18c4f886d38f916968c146491c9c
+%define sha512  %{name}=18b48de2db50b465889cf75b9059b3d56906a1890b081f39420f104ebcb5b28f982c427f4b4a553509f397a64d87f7e4469f5b564439b587aeefd74708fdd656
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
-Patch1:         0001-add-history-utility.patch
-Patch2:         0001-fix-skip-obsoletes-conflicts-options.patch
+Patch1:         0001-bump-version-to-3.4.2.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -154,7 +153,7 @@ find %{buildroot} -name '*.pyc' -delete
 /sbin/ldconfig
 
 %posttrans
-# Convert the auto instaled info from the old file /var/lib/tdnf/autoinstalled
+# Convert the auto installed info from the old file /var/lib/tdnf/autoinstalled
 # to the new db.
 # must be postrans because we read the rpm db
 # cannot use tdnf because that is still running even in postrans
@@ -265,6 +264,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Oct 27 2022 Oliver Kurth <okurth@vmware.com> 3.4.2-1
+- update to 3.4.2
 * Tue Oct 18 2022 Oliver Kurth <okurth@vmware.com> 3.4.1-1
 - update to 3.4.1
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.2-2
