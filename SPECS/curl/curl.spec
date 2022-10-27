@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.85.0
+Version:        7.86.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -9,11 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=bbad693bcde9c55e5942499950d76011f53ad43d3270eee2c8db486bcf46f5fc92b32dd8752caf4c5976fe493d083e2d34fa299cb96fb8e76d8f5fcc2cc56a36
-Patch0:         curl-CVE-2022-42915.patch
-Patch1:         curl-CVE-2022-42916.patch
-Patch2:         curl-CVE-2022-32221.patch
-Patch3:         curl-CVE-2022-35260.patch
+%define sha512  %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -96,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Thu Oct 27 2022 Harinadh D <hdommaraju@vmware.com> 7.86.0-1
+- Version update, also fix the missed changes for CVE-2022-42915
 * Mon Oct 24 2022 Harinadh D <hdommaraju@vmware.com> 7.85.0-1
 - fix for CVE-2022-42915, CVE-2022-42916
 - CVE-2022-32221 and CVE-2022-35260
