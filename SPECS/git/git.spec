@@ -20,6 +20,10 @@ Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
 Requires:       perl
+Requires:       perl-YAML
+Requires:       perl-DBI
+Requires:       perl-CGI
+Requires:       subversion-perl
 Requires:       python3
 
 %description
