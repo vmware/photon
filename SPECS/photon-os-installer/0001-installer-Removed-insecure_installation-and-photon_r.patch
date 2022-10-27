@@ -1,0 +1,201 @@
+From d616091e0f16b1c4f6401473dae6764cbd3d452c Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Thu, 20 Oct 2022 07:06:25 +0000
+Subject: [PATCH] installer: Removed 'insecure_installation' and
+ 'photon_release_version' from ks
+
+- fixes f44fda4ffd1f36026c9779138c1dc61428940243
+  (installer: Add support for insecure_installation)
+  - Default value of insecure_installation is False
+  - It can be set to true only via commandline
+  - Once insecure_installation is set to true, then
+    only we allow ks_config and rpms to download from
+    unsecure link.
+    If insecure_installation is False then we don't allow
+    ks_config and rpms to download from unsecure link.
+- fixes 02fb97af5d28ca4d00ca7deee139badf4bc48d76
+  (photon-os-installer: Added --releasever to tdnf install)
+  - photon_release_version should always be passed to installer
+  - We should not allow user to pass any value to photon_release_version
+
+Change-Id: Ic4fb69e3204265d713b57c2af55bb89cc769af27
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ photon_installer/installer.py    | 27 +++++++--------------------
+ photon_installer/isoInstaller.py | 17 ++++-------------
+ photon_installer/ks_config.txt   | 11 -----------
+ 3 files changed, 11 insertions(+), 44 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index c72ceb1..81301cd 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -56,7 +56,6 @@ class Installer(object):
+         'disk',
+         'eject_cdrom',
+         'hostname',
+-        'insecure_installation',
+         'install_linux_esx',
+         'linux_flavor',
+         'live',
+@@ -66,7 +65,6 @@ class Installer(object):
+         'packagelist_file',
+         'partition_type',
+         'partitions',
+-        'photon_release_version',
+         'network',
+         'password',
+         'postinstall',
+@@ -85,7 +83,8 @@ class Installer(object):
+     linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb"]
+ 
+     def __init__(self, working_directory="/mnt/photon-root",
+-                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):
++                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS",
++                 insecure_installation=False, photon_release_version='4.0'):
+         self.exiting = False
+         self.interactive = False
+         self.install_config = None
+@@ -94,6 +93,8 @@ class Installer(object):
+         self.logger = None
+         self.cmd = None
+         self.working_directory = working_directory
++        self.insecure_installation = insecure_installation
++        self.photon_release_version = photon_release_version
+ 
+         if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory) and working_directory == '/mnt/photon-root':
+             shutil.rmtree(self.working_directory)
+@@ -117,12 +118,6 @@ class Installer(object):
+     create, append and validate configuration date - install_config
+     """
+     def configure(self, install_config, ui_config=None):
+-        if install_config and 'insecure_installation' in install_config:
+-            insecure_installation = install_config.pop('insecure_installation')
+-
+-        if install_config and 'photon_release_version' in install_config:
+-            photon_release_version = install_config.pop('photon_release_version')
+-
+         # Initialize logger and cmd first
+         if not install_config:
+             # UI installation
+@@ -141,11 +136,6 @@ class Installer(object):
+             config = IsoConfig()
+             install_config = curses.wrapper(config.configure, ui_config)
+ 
+-        if 'insecure_installation' in locals():
+-            install_config['insecure_installation'] = insecure_installation
+-
+-        if 'photon_release_version' in locals():
+-            install_config['photon_release_version'] = photon_release_version
+         self._add_defaults(install_config)
+ 
+         issue = self._check_install_config(install_config)
+@@ -262,9 +252,6 @@ class Installer(object):
+         if 'photon_docker_image' not in install_config:
+             install_config['photon_docker_image'] = "photon:latest"
+ 
+-        if 'insecure_installation' not in install_config:
+-            install_config['insecure_installation'] = False
+-
+     def _check_install_config(self, install_config):
+         """
+         Sanity check of install_config before its execution.
+@@ -674,7 +661,7 @@ class Installer(object):
+         # Install filesystem rpm
+         tdnf_cmd = ("tdnf install -y filesystem --releasever {0} "
+                     "--installroot {1} -c {2} "
+-                    "--setopt=reposdir={3}").format(self.install_config['photon_release_version'],
++                    "--setopt=reposdir={3}").format(self.photon_release_version,
+                                                     self.photon_root,
+                                                     self.tdnf_conf_path,
+                                                     self.working_directory)
+@@ -883,7 +870,7 @@ class Installer(object):
+                 repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
+                 keepcache = True
+             repo_file.write("gpgcheck=0\nenabled=1\n")
+-            if self.install_config['insecure_installation']:
++            if self.insecure_installation:
+                 repo_file.write("sslverify=0\n")
+         with open(self.tdnf_conf_path, "w") as conf_file:
+             conf_file.writelines([
+@@ -918,7 +905,7 @@ class Installer(object):
+         stderr = None
+         tdnf_cmd = ("tdnf install -y --releasever {0} --installroot {1} "
+                     "-c {2} --setopt=reposdir={3} "
+-                    "{4}").format(self.install_config['photon_release_version'],
++                    "{4}").format(self.photon_release_version,
+                                   self.photon_root,
+                                   self.tdnf_conf_path,
+                                   self.working_directory,
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index b369f26..fd0b860 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -30,7 +30,7 @@ class IsoInstaller(object):
+         # if not provided - use /RPMS path from photon_media,
+         # exit otherwise.
+         repo_path = options.repo_path
+-        self.insecure_installation = None
++        self.insecure_installation = False
+ 
+         with open('/proc/cmdline', 'r') as f:
+             kernel_params = shlex.split(f.read().replace('\n', ''))
+@@ -60,17 +60,6 @@ class IsoInstaller(object):
+         if ks_path:
+             install_config = self._load_ks_config(ks_path)
+ 
+-
+-        # insecure_installation flag added through commandline overrides that of ks_config
+-        if self.insecure_installation:
+-            if not install_config:
+-                install_config = {}
+-            install_config['insecure_installation'] = self.insecure_installation
+-
+-        if not install_config:
+-            install_config = {}
+-        install_config['photon_release_version'] = options.photon_release_version
+-
+         if options.ui_config_file:
+             ui_config = (JsonWrapper(options.ui_config_file)).read()
+         else:
+@@ -85,7 +74,9 @@ class IsoInstaller(object):
+ 
+ 
+         # Run installer
+-        installer = Installer(rpm_path=repo_path, log_path="/var/log")
++        installer = Installer(rpm_path=repo_path, log_path="/var/log",
++                                insecure_installation=self.insecure_installation,
++                                photon_release_version=options.photon_release_version)
+ 
+         installer.configure(install_config, ui_config)
+         installer.execute()
+diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
+index dc79beb..a6a3a5d 100644
+--- a/photon_installer/ks_config.txt
++++ b/photon_installer/ks_config.txt
+@@ -71,13 +71,6 @@ Kickstart config file is a json format with following possible parameters:
+ 	Default value: "photon-<randomized string>"
+ 	Example: { "hostname": "photon-machine" }
+ 
+-"insecure_installation" (optional)
+-	Allow untrusted(selfsigned) https in kickstart iso and
+-	deactivate ssl cert verification in repo for rpms installation.
+-	Boolean: true or false
+-	Default value: false
+-	Example: { "insecure_installation": false }
+-
+ "live" (optional)
+ 	Should be set to flase if target system will not be run on
+ 	host machine. When it set to false, installer will not add EFI boot
+@@ -279,8 +272,4 @@ Kickstart config file is a json format with following possible parameters:
+         Default value: "photon:latest"
+ 	Example: { "photon_docker_image": "photon:3.0" }
+ 
+-"photon_release_version"
+-	Contains the photon release version
+-	Acceptable values are: "4.0"
+-	Example: {"photon_release_version": "4.0"}
+ For reference, look at "sample_ks.cfg" file
+-- 
+2.30.5
+

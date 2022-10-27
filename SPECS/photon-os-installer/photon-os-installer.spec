@@ -3,7 +3,7 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -16,6 +16,8 @@ Source0:    %{name}-%{version}.tar.gz
 Patch0:     error_screen_selectdisk.patch
 Patch1:     fix-installroot-commands.patch
 Patch2:     0001-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
+Patch3:     0001-installer-Adding-support-for-dev-disk-by-path.patch
+Patch4:     0001-installer-Removed-insecure_installation-and-photon_r.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -47,6 +49,9 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Mon Oct 17 2022 Ankit Jain <ankitja@vmware.com> 2.0-4
+- Added support for /dev/disk/by-path
+- Removed 'insecure_installation' and 'photon_release_version' from ks
 * Fri Aug 05 2022 Ankit Jain <ankitja@vmware.com> 2.0-3
 - Added refresh_devices in retries if mount fails
 * Wed Dec 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-2

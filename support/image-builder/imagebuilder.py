@@ -200,7 +200,6 @@ def createImage(options):
 
     install_config = config['installer']
 
-    install_config['photon_release_version'] = options.photon_release_version
     image_type = config['image_type']
     image_name = config.get('image_name', 'photon-' + image_type)
     workingDir = os.path.abspath(options.stage_path + "/" + image_type)
