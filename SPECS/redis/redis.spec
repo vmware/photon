@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    7.0.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -15,13 +15,13 @@ Patch0: %{name}-conf.patch
 Patch1: CVE-2022-33105.patch
 Patch2: CVE-2022-31144.patch
 Patch3: CVE-2022-35951.patch
+Patch4: CVE-2022-3647.patch
 
-BuildRequires:  gcc
+BuildRequires:  build-essential
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  make
-BuildRequires:  which
 BuildRequires:  tcl-devel
+BuildRequires:  which
 
 Requires:   systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -92,6 +92,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-5
+- Fix CVE-2022-3647
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-4
 - Fix CVE-2022-35951
 * Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-3
