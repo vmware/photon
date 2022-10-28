@@ -1,6 +1,6 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
-Version:         3.2.0
+Version:         3.2.1
 Release:         1%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
@@ -8,8 +8,8 @@ Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha512 %{name}=e4dc4cda297ec2c2e8ced82d141e00c186b552c9308eb0d05d55a1397de1b037d8fe053ea0ada12691ce7c0ff42c03f5f8177049005a1455cc3b0e1df77c99ea
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.tar.xz
+%define sha512 %{name}=e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
 
 BuildRequires:   glib-devel
 BuildRequires:   libxml2-devel
@@ -94,6 +94,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1
+- Automatic Version Bump
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
 - Upgrade to v3.2.0
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-5
