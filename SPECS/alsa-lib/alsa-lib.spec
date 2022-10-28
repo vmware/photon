@@ -1,6 +1,6 @@
 Summary:        ALSA library
 Name:           alsa-lib
-Version:        1.2.7.2
+Version:        1.2.8
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=79e5920384e570a1acd8ecd1eb8812879333c3cedb1d15780080afc40125b97df893c33f4163d9dd863871b628bc6026265f8ace2c8634fc1af5b52b62ac9cfe
+%define sha512  %{name}=865ff05a8f589996f8d63d43a91c961f1b64144f3e1d17c7074b7ac16f25b3fd1c371d46ed63a8cc20fa01e63c76b75f1a9802b56889ae1073854dd050d27688
 
 BuildRequires:  python3-devel
 
@@ -50,6 +50,8 @@ rm -f %{buildroot}%{_libdir}/*.la
 %{_includedir}/*
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.8-1
+- Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.7.2-1
 - Automatic Version Bump
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6.1-2
