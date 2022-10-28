@@ -1,13 +1,13 @@
-%define upstreamversion 20221009.0
+%define upstreamversion 20230212.0
 
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
-Version:        5.9
+Version:        6.0
 Release:        1%{?dist}
 License:        GPL
 URL:            https://ctags.io/
 Source:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
-%define sha512 ctags=7a317f3e7e7dc90da6f0f86235b8775dd7bf8e90bff4780e8a2d4d51b4f2c820fd7955b36ee6a2bfb9b8bffdd7e78a42cd9ed26af11f6bf606035d8fd2b96764
+%define sha512 ctags=976aaf8c87ab35019ea621ed67781f652ac43250a042708a80e063faa827fa9ecf69ad751a28a09ecb56a9f767a3c79d3a91fbb6cf9625daf3426f8c7f4eb871
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Feb 17 2023 Anmol Jain <anmolja@vmware.com> 6.0-1
+- Automatic Version Bump
 * Mon Sep 19 2022 Anmol Jain <anmolja@vmware.com> 5.9-1
 - Migrate to Universal ctags
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.8-2
