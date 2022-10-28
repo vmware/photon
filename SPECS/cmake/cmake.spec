@@ -2,7 +2,7 @@
 
 Summary:    Cross-platform make system
 Name:       cmake
-Version:    3.24.1
+Version:    3.25.1
 Release:    1%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=67bfafcf9ceba617d7ebbb0ac88b689a2d90ab51fea4a83bd073ee082fb55de8962ce7fb283f3db5f455d286f2199843ffa595a1de207d4fa3e4472d951eb289
+%define sha512 %{name}=ec4203cac569e3c340bf6535d193d9ccff9c4e4d59a7a7ae5b9156172f647d9f9212bdc37b3c12cbd676b1351b9a64364c563aaa968a2f41e0f402410ed78d57
 
 Source1: macros.cmake
 
@@ -51,7 +51,6 @@ operating system and in a compiler-independent manner.
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 sed -i -e "s|@@CMAKE_VERSION@@|%{version}|" -e "s|@@CMAKE_MAJOR_VERSION@@|%{major_version}|" %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
@@ -73,6 +72,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.25.1-1
+- Upgrade to v3.25.1
 * Wed Sep 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.24.1-1
 - Upgrade to v3.24.1
 * Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.23.2-1
