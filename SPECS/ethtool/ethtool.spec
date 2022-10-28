@@ -1,6 +1,6 @@
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
-Version:        5.19
+Version:        6.0
 Release:        1%{?dist}
 License:        GPLv2
 URL:            https://www.kernel.org/pub/software/network/ethtool
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/network/%{name}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=71103c6856a889161ef2bf81eadec69b2f3a84c94aa776d545f889dc1c55b91d566d3b7394dbd2cb70ed92ac19d5f26967b1f829c204f23831d1fb81a0464972
+%define sha512 %{name}=4a8b17ab71aaae3a74e2a82eab19e4ce147fda01af618aa1baaf4c337df22f968ab1f90569118c83ce0405bf0950cdab08212977e43dc0293239bb8e2ceb868a
 
 BuildRequires:  libmnl-devel
 
@@ -47,6 +47,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 6.0-1
+- Automatic Version Bump
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.19-1
 - Upgrade to v5.19
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.17-2
