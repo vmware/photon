@@ -1,6 +1,6 @@
 Summary:        ALSA Utilities
 Name:           alsa-utils
-Version:        1.2.7
+Version:        1.2.8
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
@@ -8,7 +8,7 @@ Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.alsa-project.org/files/pub/utils/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=1be8f617315193e6033653ac96a14bd1c3272cd9d8f3776cdb1357f35f5353652acd5975cfc5bd16278cd496f5bf409bb60432818a526282edad9a4c718a97c9
+%define sha512  %{name}=882e6f67467596ed273bf554fcce87d8ef287806bbdabd6c103de4980981f9e2102fb3800c6e8628ee8e86ffb165c1c92f9370c8145f28a6cb7cca563942330b
 
 Patch0:         ens1371.patch
 
@@ -55,6 +55,8 @@ alsactl -L store
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.8-1
+- Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.7-1
 - Automatic Version Bump
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.4-2
