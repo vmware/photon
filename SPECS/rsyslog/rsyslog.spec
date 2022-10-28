@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2208.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
@@ -98,6 +98,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+* Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.2208.0-2
+- Bump release as a part of libgpg-error upgrade to 1.46
 * Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 8.2208.0-1
 - Automatic Version Bump
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2202.0-3

@@ -1,7 +1,7 @@
 Summary:    Provides IPC between GnuPG Components
 Name:       libassuan
 Version:    2.5.5
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        https://www.gnupg.org/(fr)/related_software/libassuan/index.html
 Group:      Development/Libraries
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/%{name}.m4
 
 %changelog
+* Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.5.5-3
+- Bump release as a part of libgpg-error upgrade to 1.46
 * Tue May 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.5.5-2
 - Fix packaging, add devel sub package
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.5.5-1

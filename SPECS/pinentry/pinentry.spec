@@ -1,7 +1,7 @@
 Summary:        A collection of PIN or passphrase entry dialogs
 Name:           pinentry
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://gnupg.org/software/pinentry/index.html
 Group:          Applications/Cryptography.
@@ -42,6 +42,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+* Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.2.0-2
+- Bump release as a part of libgpg-error upgrade to 1.46
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
 - Automatic Version Bump
 * Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 1.1.0-1

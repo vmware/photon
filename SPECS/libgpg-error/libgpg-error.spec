@@ -1,12 +1,12 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.45
+Version:      	1.46
 Release:      	1%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha512  libgpg-error=882f2dd617e89137d7a9d61b60488dac32321dd4fdb699e9687b6bd9380c056c027da502837f4482289c0fe00e7de01210e804428f05a0843ae2ca23fdcc6457
+%define sha512  libgpg-error=b06223bb2b0f67d3db5d0d9ab116361a0eda175d4667352b5c0941408d37f2b0ba8e507297e480ccebb88cbba9d0a133820b896914b07d264fb3edaac7b8c99d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -34,7 +34,7 @@ These are the additional language files of libgpg-error.
 %autosetup
 
 %build
-%configure
+%configure --enable-install-gpg-error-config
 make %{?_smp_mflags}
 
 %install
@@ -74,6 +74,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46-1
+-   Automatic Version Bump. Added --enable-install-gpg-error-config to configure.
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.45-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.42-1

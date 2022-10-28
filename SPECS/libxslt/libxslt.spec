@@ -1,7 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1.37-2
+- Bump release as a part of libgpg-error upgrade to 1.46
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.37-1
 - Upgrade to v1.1.37
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.35-3

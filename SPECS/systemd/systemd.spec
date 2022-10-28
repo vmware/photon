@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -676,6 +676,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 252.4-2
+- Bump release as a part of libgpg-error upgrade to 1.46
 * Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 252.4-1
 - Version bump. Use `SendRelease=no` drop false same as IPv6AcceptRA=
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 252.2-3
