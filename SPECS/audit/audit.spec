@@ -2,8 +2,8 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        3.0.8
-Release:        5%{?dist}
+Version:        3.0.9
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9791dfac3e4d9f5cb2a6bb0d04717f93403957cf140d9a5b8beb9e97d15c0a8ed5534bb7781a6f1e70832319325f7f96dc2fcc59519fb00aa402415f8bd91fc5
+%define sha512  %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
 
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
@@ -148,6 +148,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Thu Dec 01 2022 Harinadh D <hdommaraju@vmware.com> 3.0.9-1
+- Version update
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-5
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-4
