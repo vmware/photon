@@ -1,6 +1,6 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
-Version:          0.7.5
+Version:          0.8.0
 Release:          1%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
@@ -8,14 +8,15 @@ Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:        http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=229b3a934eb82e193219a3c536b405080061d216
+Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
 
 BuildRequires:    systemd
+BuildRequires:    pcre2-devel
 
 Requires:         systemd
+Requires:         pcre2-libs
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides:         tftp-server
 Obsoletes:        tftp-server
@@ -40,32 +41,31 @@ files using the TFTP protocol.
 
 %prep
 %autosetup -p1
-sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
+sh ./autogen.sh
 %configure
 %make_build
 
 %install
-[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
-%makeinstall
+%make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}/%{_var}/lib/tftpboot
-mkdir -p %{buildroot}/%{_unitdir}
-cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.service
+mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot
+mkdir -p %{buildroot}%{_unitdir}
+cat << EOF >> %{buildroot}%{_unitdir}/atftpd.service
 [Unit]
 Description=The tftp server serves files using the trivial file transfer protocol.
 
 [Service]
-EnvironmentFile=/etc/sysconfig/atftpd
-ExecStart=/usr/sbin/atftpd --user \$ATFTPD_USER --group \$ATFTPD_GROUP \$ATFTPD_DIRECTORY
+EnvironmentFile=%{_sysconfdir}/sysconfig/atftpd
+ExecStart=%{_sbindir}/atftpd --user \$ATFTPD_USER --group \$ATFTPD_GROUP \$ATFTPD_DIRECTORY
 StandardInput=socket
 
 [Install]
 Also=atftpd.socket
 EOF
 
-cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.socket
+cat << EOF >> %{buildroot}%{_unitdir}/atftpd.socket
 [Unit]
 Description=Tftp Server Socket
 
@@ -82,13 +82,14 @@ ATFTPD_USER=tftp
 ATFTPD_GROUP=tftp
 ATFTPD_OPTIONS=
 ATFTPD_USE_INETD=false
-ATFTPD_DIRECTORY=/var/lib/tftpboot
+ATFTPD_DIRECTORY=%{_sharedstatedir}/tftpboot
 ATFTPD_BIND_ADDRESSES=
 EOF
 
+%if 0%{?with_check}
 %check
-sed -i 's/^start_server$/chown -R nobody $DIRECTORY\nstart_server/g' test/test.sh || true
 make %{?_smp_mflags} check
+%endif
 
 %pre
 if [ $1 -eq 1 ] ; then
@@ -105,20 +106,13 @@ fi
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-  if getent passwd tftp >/dev/null; then
-    userdel tftp
-  fi
-  if getent group tftp >/dev/null; then
-    groupdel tftp
-  fi
-fi
 %systemd_postun_with_restart atftpd.socket
 
 %clean
-[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
+%defattr(-,root,root)
 %dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
 %{_mandir}/man8/atftpd.8.gz
 %{_mandir}/man8/in.tftpd.8.gz
@@ -129,10 +123,13 @@ fi
 %{_sysconfdir}/sysconfig/atftpd
 
 %files client
+%defattr(-,root,root)
 %{_mandir}/man1/atftp.1.gz
 %{_bindir}/atftp
 
 %changelog
+* Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-1
+- Upgrade to v0.8.0
 * Mon Sep 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.5-1
 - Upgrade to v0.7.5, fixes CVE-2021-41054
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.7.4-1
