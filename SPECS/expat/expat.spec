@@ -1,6 +1,6 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.4.8
+Version:        2.5.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha512    %{name}=d19b0d6469537aed20c54bd9cfa4089d39e4acaaddde57809de7c6aec55dc870677c02480e7f65dac5620bd5454b889370453613518f9da647c74a831a2a1b7b
+%define sha512    %{name}=2da73b991b7c0c54440485c787e5edeb3567230204e31b3cac1c3a6713ec6f9f1554d3afffc0f8336168dfd5df02db4a69bcf21b4d959723d14162d13ab87516
 
 Requires:       expat-libs = %{version}-%{release}
 
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+- Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.8-1
 - Automatic Version Bump
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
