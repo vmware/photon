@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.13.3
-Release:        2%{?dist}
+Version:        2.13.5
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512  %{name}=06d3e322980eb61b0f73b93b43d0bf3b5542feacbf11e8dc7862150f13bcc3c46d7f7a34ca1866cd6f4a09881e464a63714e9e645ca1367cee05dd192f375c4b
+%define sha512  %{name}=d8da949dd24795c2fb4d5f022202b60243d2fe7cbaf1d7c5773b669e267abfd16f5e4a652adb71df2b07e8b58580ebffdc17bf547b52382333dd1dfa306ade59
 
 Source1:        tdnf.py
 Source2:        macros.ansible
@@ -74,6 +74,8 @@ touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1
+- Automatic Version Bump
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.13.3-2
 - Adding devel sub package
 * Sat Sep 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.3-1
