@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -131,8 +131,8 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-%attr(0750, root, root) %config(noreplace) /etc/ntp.conf
-%attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
+%config(noreplace) /etc/ntp.conf
+%config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
 %{_bindir}/ntpd
@@ -171,6 +171,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Fri Oct 28 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p14-4
+- remove executable permission to ntp.conf
 * Thu Apr 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p14-3
 - Use system libevent instead of bundled libevent source
 - to fix CVE-2016-10195
