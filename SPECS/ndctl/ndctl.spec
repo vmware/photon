@@ -1,6 +1,6 @@
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
-Version:        73
+Version:        74
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a52a1fb655f044e5cd48b95b3abd89b4f6a991d6439c02e66da6b55947b8a08c279fec873def0b5a18a4e0b670d40e246c333b619fb62f0c6808357d15d847a5
+%define sha512 %{name}=b8c4f8ee39aeb85679a97c46cb1ec345041ad91074be35f04de3a688957164374f92b3efc4f745c3b28098086689db861fd22799b056230267b3327406749473
 
 BuildRequires:  meson
 BuildRequires:  asciidoc3
@@ -151,6 +151,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libcxl.pc
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 74-1
+- Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 73-1
 - Upgrade to v73
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 71-1
