@@ -1,16 +1,16 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
-Version:        1.3.1
-Release:        2%{?dist}
+Version:        1.3.3
+Release:        1%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
-%define sha512  commons-daemon-%{version}-src=b810ac152f8296d980a4fb3786eff9d147b234dc2377df5fe1bded0824c694c9e82a7ef50b0a63c3e6432dfc4684a3aa2ce8d583aacb740bd4664c3dfb8b8f16
+%define sha512  commons-daemon-%{version}-src=ec246e2c05d66408374ba56b3715b13f8f24f89af11fa00c2381dc19c188f1b6228f19351c97d5774808a804b83fdbdfb8f537d099db062c39ffd281c142ee77
 Source1:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
-%define sha512  commons-daemon-%{version}-bin=101fa25c723694ed7b1475a178aec40b5c94c6e8bdcfb17411841606148db25dc46825539a5afca02413fefa2566002d69310203f132edfb4e49f3018f158504
+%define sha512  commons-daemon-%{version}-bin=6600f3c182a46005928a77ade2a7f7e32ba29ebdfdc2255275cbd07445c4d278a96de4d8555031fa90eef29c4f50325b3b79eec0e4e09308d152583807189578
 BuildRequires:  openjdk11
 BuildRequires:  apache-ant
 Requires:       openjdk11
@@ -58,6 +58,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
+- Automatic Version Bump
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.3.1-2
 - Use openjdk11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.1-1
