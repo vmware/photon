@@ -1,12 +1,12 @@
 Summary:        Scripts to bring up network interfaces and legacy utilities
 Name:           initscripts
-Version:        10.16
+Version:        10.17
 License:        GPLv2
 Group:          System Environment/Base
 Release:        1%{?dist}
 URL:            https://github.com/fedora-sysv/initscripts
 Source0:        https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
-%define sha512  initscripts=a9465d8cb6e49c62e36d91f01833048cf215cb8e43bc163db406426eab8a42f95eb4cfbbcb9a7381565be85d53216cba846c51fed60c73343f0d85bad9cc5602
+%define sha512  initscripts=6c99a7b52b5bc0ced1877a7b2a280b885778bb12e89dc0d606a5b5eda1aa87feecdea6c19803afab01953c9d352c409e59665914832f7107b6b3816d4740594c
 Source1:        adjtime
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -199,6 +199,8 @@ EOF
 %{_prefix}/lib/systemd/system/readonly-root.service
 
 %changelog
+*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 10.17-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 10.16-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 10.09-1
