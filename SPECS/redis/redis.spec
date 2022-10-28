@@ -1,24 +1,23 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    6.2.7
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://download.redis.io/releases/%{name}-%{version}.tar.gz
+Source0: http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4c1fc37c2c68587efc38695cdbf76dacc0dac809bed564e510f32fe1a005bf5bcf9b2a43bf6a40c756e779ceb22a5ad85f6ed9ecd1ceac5bfb669383c79ffa1
 
-Patch0:         redis-conf.patch
+Patch0: %{name}-conf.patch
+Patch1: CVE-2022-3647.patch
 
-BuildRequires:  gcc
+BuildRequires:  build-essential
 BuildRequires:  systemd-devel
-BuildRequires:  make
-BuildRequires:  which
-BuildRequires:  tcl
 BuildRequires:  tcl-devel
+BuildRequires:  which
 
 Requires:   systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -38,29 +37,29 @@ make PREFIX=%{buildroot}%{_usr} install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
-          %{buildroot}/var/log \
-          %{buildroot}/var/opt/%{name}/log \
+          %{buildroot}%{_var}/log \
+          %{buildroot}%{_var}/opt/%{name}/log \
           %{buildroot}%{_unitdir}
 
-ln -sfv /var/opt/%{name}/log %{buildroot}/var/log/%{name}
+ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 
-cat << EOF >>  %{buildroot}%{_unitdir}/redis.service
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=Redis in-memory key-value database
 After=network.target
 
 [Service]
-ExecStart=%{_bindir}/redis-server %{_sysconfdir}/redis.conf --daemonize no
-ExecStop=%{_bindir}/redis-cli shutdown
-User=redis
-Group=redis
+ExecStart=%{_bindir}/%{name}-server %{_sysconfdir}/%{name}.conf --daemonize no
+ExecStop=%{_bindir}/%{name}-cli shutdown
+User=%{name}
+Group=%{name}
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-%check
 %if 0%{?with_check}
+%check
 make check %{?_smp_mflags}
 %endif
 
@@ -73,22 +72,24 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 
 %post
 /sbin/ldconfig
-%systemd_post  redis.service
+%systemd_post %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart redis.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, redis, redis) /var/lib/redis
-%dir %attr(0750, redis, redis) /var/opt/%{name}/log
-%attr(0750, redis, redis) %{_var}/log/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_sharedstatedir}/%{name}
+%dir %attr(0750, %{name}, %{name}) %{_var}/opt/%{name}/log
+%attr(0750, %{name}, %{name}) %{_var}/log/%{name}
 %{_bindir}/*
 %{_unitdir}/*
-%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
+%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-2
+- Fix CVE-2022-3647
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-1
 - Upgrade to v6.2.7
 - This fixes CVE-2022-24735, CVE-2022-24736
