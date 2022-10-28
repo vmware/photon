@@ -1,7 +1,7 @@
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  4%{?dist}
+Release:  5%{?dist}
 License:  LGPLv2 or MPLv1.1
 URL:      https://cairographics.org
 Group:    System Environment/Libraries
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.17.6-5
+- Bump release as a part of libpng upgrade
 * Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.6-4
 - Enabled xlib
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.17.6-3

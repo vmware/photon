@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.50.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.50.11-3
+- Bump release as a part of libpng upgrade
 * Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 1.50.11-2
 - Enabled introspection
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.50.11-1

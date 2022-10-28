@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://libgd.github.io
 Group:          System/Libraries
@@ -66,6 +66,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.3.3-2
+- Bump release as a part of libpng upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.3-1
 - Remove .la files
 - Upgrade to v2.3.3

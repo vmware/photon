@@ -1,7 +1,7 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
 Version:	1.2.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
 Group:		System Environment/Libraries
@@ -61,6 +61,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.2.4-2
+- Bump release as a part of libpng upgrade
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
 - Automatic Version Bump
 * 	Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com>  1.2.0-2
