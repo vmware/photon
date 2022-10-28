@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.84.0
+Version:        7.86.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  curl=8133baf48dfd93531ce0a226b54cb153fd58bb0c1ffe8159cee0c0aa23ce210192c572e8ee01f3d75a87b609a580e76929df1e66635be59c177b0cb8076043b2
+%define sha512  curl=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 7.86.0-1
+- Automatic Version Bump
 * Tue Jun 28 2022 Dweep Advani <dadvani@vmware.com> 7.84.0-1
 - Upgrade to latest version 7.84.0 to fix multiple CVEs
 * Thu Jun 16 2022 Dweep Advani <dadvani@vmware.com> 7.83.1-1
