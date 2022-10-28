@@ -2,7 +2,7 @@
 
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.14.0
+Version:         1.14.1
 Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
@@ -11,7 +11,7 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=74fa0364260710e7139474437846035aaa764fcc138bedd7c15dd729c72242f56a9d99232524d99701b811e2ddebed84c27586351f4b88cb0091f89fada43ad6
+%define sha512 %{name}=8f4c531f36ba1f2f775b1b45075790bfbdcc1c2995cb127809ac9cbb4d6163bf784d9db402119afbcd5f5d75725870cc59968bf751910d29b43f075328265573
 
 BuildRequires:   git
 BuildRequires:   sed
@@ -55,6 +55,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{
 %{_datadir}/%{name}
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.1-1
+- Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-1
 - Upgrade to v1.14.0
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.13.4-1
