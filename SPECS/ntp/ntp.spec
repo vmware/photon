@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -63,12 +63,11 @@ state of the NTP daemon running on the local machine.
     --with-binsubdir=sbin \
     --enable-linuxcaps
 
-make %{?_smp_mflags}
+%make_build
 make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -v -m755 -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/* %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
@@ -143,8 +142,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %dir /var/lib/ntp/drift
 %attr(0755, ntp, ntp) /var/lib/ntp/drift
-%attr(0750, root, root) %config(noreplace) /etc/ntp.conf
-%attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
+%config(noreplace) /etc/ntp.conf
+%config(noreplace) /etc/sysconfig/ntp
 %{_unitdir}/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
 %{_bindir}/ntpd
@@ -183,6 +182,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Fri Oct 28 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p15-6
+- remove executable permission to ntp.conf
 * Sun Oct 02 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.2.8p15-5
 - Fix build with latest toolchain
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-4
