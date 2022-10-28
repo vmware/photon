@@ -1,14 +1,14 @@
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
-Version:        2.14.0
-Release:        2%{?dist}
+Version:        2.14.1
+Release:        1%{?dist}
 License:        BSD/GPL
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/fontconfig/release/%{name}-%{version}.tar.gz
-%define sha512  fontconfig=0ba2fc31057d7b2c6521cb850b413f337b0ae39b50cf0ed8d5360ec01e880e1f32489a0d31ea380770c238e217485cebbbb8bd92d42118bcc928aa7d08f7e651
+%define sha512  fontconfig=5ad0b2ba0ffe9d50fa995543f5560360505d846f758696b8be8c01965e0f8ca17b53baee145d7fae861a1e1052935111b9879736f9dc6805cc98eae2ecf867c9
 BuildRequires:  freetype2-devel
 BuildRequires:  libxml2
 BuildRequires:  expat-devel
@@ -79,6 +79,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.1-1
+-   Automatic Version Bump
 *   Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.14.0-2
 -   Fix fontconfig -> freetype2 dependency
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
