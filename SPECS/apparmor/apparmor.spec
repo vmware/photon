@@ -1,6 +1,6 @@
 Name:           apparmor
-Version:        3.0.4
-Release:        3%{?dist}
+Version:        3.1.1
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -9,7 +9,7 @@ Distribution:   Photon
 Group:          Productivity/Security
 
 Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=1edd800771f46fab9bc5274842e64482b7fd4a5ba4de9855d621baf1d08c8236bfa7752dd9ab3dee095f8e0798129241a9aebf68ed1c994ae5597086a4a1a8ca
+%define sha512  %{name}=ece3a0c45fec0477d49c223559ee46b28affeb7da488ba972ae032dc61a27d5e293686a0745da96e2cd3761cf4e0695130c326d42ba6f667d6b5110a824965f5
 
 BuildRequires:  python3
 BuildRequires:  perl
@@ -287,7 +287,9 @@ cd ../../profiles
 %config(noreplace) %{_sysconfdir}/%{name}.d/sbin.*
 %config(noreplace) %{_sysconfdir}/%{name}.d/usr.*
 %config(noreplace) %{_sysconfdir}/%{name}.d/local/*
-%config(noreplace) %{_sysconfdir}/%{name}.d/samba-bgqd
+%config(noreplace) %{_sysconfdir}/%{name}.d/samba-*
+%config(noreplace) %{_sysconfdir}/%{name}.d/zgrep
+/lib/%{name}/profile-load
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/extra-profiles/*
 
@@ -371,6 +373,8 @@ cd ../../profiles
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Thu Nov 03 2022 Nitesh Kumar <kunitesh@vmware.com> 3.1.1-1
+- Version upgrade to v3.1.1
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-3
 - Remove .la files
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 3.0.4-2
