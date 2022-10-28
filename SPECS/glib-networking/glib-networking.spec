@@ -1,15 +1,15 @@
-Summary:    Glib networking modules
-Name:       glib-networking
-Version:    2.66.0
-Release:    4%{?dist}
-License:    GPLv2
-URL:        http://wiki.gnome.org/glib-networking
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
+Summary:        Glib networking modules
+Name:           glib-networking
+Version:        2.66.0
+Release:        5%{?dist}
+License:        GPLv2
+URL:            http://wiki.gnome.org/glib-networking
+Group:          System Environment/Development
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
-%define sha1 %{name}=1843ede2d02e5f90fca0cf05792122345340e055
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
+%define sha512  %{name}=697798864746b40542873257a789290cacee425467e32c0eb096c87e124b37510753a990ef5d350f1db85c24da88e448bca9d8d8b4308123a74feac299176de5
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -25,11 +25,11 @@ BuildRequires:  meson
 BuildRequires:  gnome-common
 BuildRequires:  ninja-build
 
-Requires:   nettle
-Requires:   gnutls
-Requires:   libtasn1
-Requires:   openssl
-Requires:   ca-certificates
+Requires:       nettle
+Requires:       gnutls
+Requires:       libtasn1
+Requires:       openssl
+Requires:       ca-certificates
 
 %description
 Glib-netowkring contains networking related gio modules for Glib.
@@ -45,11 +45,10 @@ These are the additional language files of glib-networking.
 %autosetup -p1
 
 %build
-mkdir build && cd build && \
-meson --prefix=%{_prefix} \
-      -Dlibproxy_support=false \
-      -Dgnome_proxy_support=false \
-      -Dpkcs11_support=false .. && \
+mkdir build &&
+cd build &&
+meson --prefix=%{_prefix}  \
+      -Dlibproxy=disabled .. &&
 ninja
 
 %install
@@ -75,6 +74,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+* Fri Oct 28 2022 Michelle Wang <michellew@vmware.com> 2.66.0-5
+- Update meson build parameters after meson bump up to 0.60.2
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-4
 - Exclude debug symbols properly
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-3

@@ -1,14 +1,14 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.13.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=3940cfcd4815843ccef2e58de856408456693e95
+%define sha512  %{name}-%{version}=212fd2a6797ea003d11d58d47bdb249fd3cb67fe2188c46a90c9b4fc46147817444e5aa068d2eaeb6b19670b1b05a21823e1f29ae611a14bd1ea428001d7d371
 BuildRequires:  meson
 BuildRequires:  clang-devel
 BuildRequires:  gcc
@@ -42,7 +42,7 @@ It contains the libraries and header files.
 %autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
-meson -Dprefix=%{_prefix} -Ddeveloper_build=false -Dwith_py2=false \
+meson -Dprefix=%{_prefix} -Dwith_py2=false \
       -Dwith_manpages=disabled api1
 cd api1
 ninja
@@ -69,6 +69,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+*   Mon Oct 31 2022 Piyush Gupta <gpiyush@vmware.com> 2.13.0-3
+-   Remove unkonw option developer_build.
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.13.0-2
 -   Bump up to compile with python 3.10
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2.13.0-1

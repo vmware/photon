@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20200821
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
-%define sha1      iputils=2fd13a7fb75184f3a0082aa748fb80ec85e12600
+%define sha512    iputils=4a57c3637cdd9aab2600682774e27370716cbdf1c7ac8ae61bf86c21c08701a5b697792df4aa95309b196eaa74f3cb6b2836a40f04da0e602156e982ac99d8c9
 BuildRequires:    libcap-devel libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
@@ -21,12 +21,11 @@ Obsoletes:        inetutils
 The Iputils package contains programs for basic networking.
 
 %prep
-%setup -q -n %{name}-s%{version}
+%autosetup -p1 -n %{name}-s%{version}
 
 %build
 meson --prefix /usr --buildtype=plain builddir \
       -DUSE_IDN=false \
-      -DUSE_GCRYPT=true \
       -DBUILD_MANS=false \
       -DBUILD_TRACEROUTE6=true
 ninja -v -C builddir
@@ -73,6 +72,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*   Tue Nov 01 2022 Piyush Gupta <gpiyush@vmware.com> 20200821-2
+-   Removed unknown option -DUSE_GCRYPT after meson upgrade.
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 20190709-2
