@@ -1,6 +1,6 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
-Version:       2.1.2
+Version:       2.2.1
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -8,7 +8,7 @@ Distribution:  Photon
 License:       GPLv2
 URL:           https://github.com/linux-nvme/nvme-cli
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 nvme-cli=2162a6967a221a4ae7e0261748c26a10ff43d5b592039e29578d8310cf176428d528c2d510c0b58419b70bd6d28f4d2c77f0cd27606d87079c64289d5d14f930
+%define sha512 nvme-cli=8efa94d49a4d443cdb0310386733e88117f17719b05044f11e63e2a09143fce55918171b457a467371263ebb2e36552558aad249ae4dbd27941af79fe9722e26
 BuildRequires: meson
 BuildRequires: cmake git
 BuildRequires: pkg-config
@@ -58,7 +58,7 @@ make install PREFIX=%{_prefix} DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_libdir}/libnvme.so.*
 %{_libdir}/libnvme-mi.so
 %{_libdir}/libnvme-mi.so.1
-%{_libdir}/libnvme-mi.so.1.1.0
+%{_libdir}/libnvme-mi.so.1.2.0
 %{_libdir}/pkgconfig/libnvme-mi.pc
 %{_libdir}/pkgconfig/json-c.pc
 %{_libdir}/pkgconfig/libnvme.pc
@@ -75,6 +75,8 @@ make install PREFIX=%{_prefix} DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_sysconfdir}/nvme/*
 
 %changelog
+*  Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.1-1
+-  Automatic Version Bump
 *  Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.2-1
 -  Automatic Version Bump
 *  Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0-1
