@@ -6,15 +6,16 @@
 Summary:    OpenJDK
 Name:       openjdk11
 Version:    11.0.12
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GNU General Public License V2
 URL:        https://openjdk.java.net
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
+Source0: http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
 %define sha512 openjdk-11.0=1bc7878ccb73e495907c02718573b63c88f61581340e8038ab4f0abf6161ac355d7a1a420de4949192b7df951cd39a1d890f251cba4647d8fd425c72d92d0164
+
 Patch0:     CVE-2022-34169.patch
 
 BuildArch:      x86_64
@@ -67,8 +68,8 @@ This package provides the runtime library class sources.
 
 %build
 chmod a+x ./configur*
-unset JAVA_HOME &&
-ENABLE_HEADLESS_ONLY="true" &&
+unset JAVA_HOME
+ENABLE_HEADLESS_ONLY="true"
 sh ./configur* \
     --with-target-bits=64 \
     --enable-headless-only \
@@ -98,7 +99,7 @@ make install
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
@@ -211,6 +212,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-6
+- Bump version as a part of icu upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-5
 - Bump up due to change in elfutils
 * Thu Oct 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4

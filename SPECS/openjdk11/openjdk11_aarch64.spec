@@ -6,16 +6,20 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
+
+Source0: http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
 %define sha512 openjdk-11.0=1bc7878ccb73e495907c02718573b63c88f61581340e8038ab4f0abf6161ac355d7a1a420de4949192b7df951cd39a1d890f251cba4647d8fd425c72d92d0164
-Patch0:         CVE-2022-34169.patch
+
+Patch0: CVE-2022-34169.patch
+
 BuildArch:      aarch64
+
 BuildRequires:  pcre-devel
 BuildRequires:  which
 BuildRequires:  zip
@@ -24,10 +28,17 @@ BuildRequires:  zlib-devel
 BuildRequires:  ca-certificates
 BuildRequires:  chkconfig
 BuildRequires:  freetype2
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  glib-devel
+BuildRequires:  harfbuzz-devel
+BuildRequires:  elfutils-libelf-devel
+
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
+
 AutoReqProv:    no
+
 %define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk11, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
 %define jdk_major_version 1.11.0
 
@@ -62,12 +73,12 @@ ENABLE_HEADLESS_ONLY="true" &&
         --enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
         --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-        --with-freetype-include=/usr/include/freetype2 \
-        --with-freetype-lib=/usr/lib \
+        --with-freetype-include=%{_includedir}/freetype2 \
+        --with-freetype-lib=%{_libdir} \
         --with-stdc++lib=dynamic \
         --disable-warnings-as-errors
 
-mkdir /usr/share/java -p
+mkdir %{_datadir}/java -p
 # make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -79,14 +90,14 @@ make \
     LOG=trace
 
 %install
-unset JAVA_HOME &&
+unset JAVA_HOME
 # make doesn't support _smp_mflags
 make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %posttrans
@@ -133,16 +144,15 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_v
 
 %postun
 # Do alternative remove only in case of uninstall
-if [ $1 -eq 0 ]
-then
+if [ $1 -eq 0 ]; then
   alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
   alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
 fi
 /sbin/ldconfig
 
 %clean
-rm -rf %{buildroot}/*
-rm -rf %{_libdir}/jvm/OpenJDK-*
+rm -rf %{buildroot}/* \
+       %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
@@ -200,6 +210,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-5
+- Bump version as a part of icu upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
 - Bump up due to change in elfutils
 * Tue Sep 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-3

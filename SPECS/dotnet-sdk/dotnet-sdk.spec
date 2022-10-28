@@ -3,7 +3,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        7.0.102
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -43,6 +43,8 @@ cp -pr sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
 %{_libdir}/*
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-2
+- Bump version as a part of icu upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-1
 - Upgrade to v7.0.102
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.100-rc1.1

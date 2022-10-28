@@ -1,23 +1,23 @@
-Summary:    International Components for Unicode
-Name:       icu
-Version:    71.1
-Release:    1%{?dist}
-License:    MIT and UCD and Public Domain
-URL:        http://www.icu-project.org
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
+Summary:        International Components for Unicode
+Name:           icu
+Version:        72.1
+Release:        1%{?dist}
+License:        MIT and UCD and Public Domain
+URL:            http://www.icu-project.org
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/unicode-org/icu/archive/refs/tags/%{name}4c-71_1-src.tgz
-%define sha512 %{name}=1fd2a20aef48369d1f06e2bb74584877b8ad0eb529320b976264ec2db87420bae242715795f372dbc513ea80047bc49077a064e78205cd5e8b33d746fd2a2912
+Source0: https://github.com/unicode-org/icu/archive/refs/tags/%{name}4c-72_1-src.tgz
+%define sha512 %{name}=848c341b37c0ff077e34a95d92c6200d5aaddd0ee5e06134101a74e04deb08256a5e817c8aefab020986abe810b7827dd7b2169a60dacd250c298870518dcae8
 
 %description
 The International Components for Unicode (ICU) package is a mature,
 widely used set of C/C++ libraries providing Unicode and Globalization support for software applications.
 
-%package    devel
-Summary:    Header and development files
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications.
 
@@ -47,6 +47,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 72.1-1
+- Upgrade to v72.1
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 71.1-1
 - Upgrade to v71.1
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 70.1-2

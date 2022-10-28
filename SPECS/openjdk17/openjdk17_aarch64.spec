@@ -5,14 +5,16 @@
 Summary:        OpenJDK
 Name:           openjdk17
 Version:        17.0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.java.net/download/openjdk/jdk/jdk17/openjdk-%{version}.tar.gz
+
+Source0: http://www.java.net/download/openjdk/jdk/jdk17/openjdk-%{version}.tar.gz
 %define sha512 openjdk-17.0=9521a700f2f850109fb7069ac892767764081a4215b1ed09e8c783a73835bab7f1f24969e228dba9313f373529a194281d9dd648345ff808b11b74fba5c9f4a7
+
 BuildArch:      aarch64
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -22,10 +24,17 @@ BuildRequires:  zlib-devel
 BuildRequires:  ca-certificates
 BuildRequires:  chkconfig
 BuildRequires:  freetype2
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  glib-devel
+BuildRequires:  harfbuzz-devel
+BuildRequires:  elfutils-libelf-devel
+
 Requires:       chkconfig
 Requires:       libstdc++
+
 AutoReqProv:    no
+
 %define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk17, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
 
 %description
@@ -50,19 +59,20 @@ This package provides the runtime library class sources.
 
 %build
 chmod a+x ./configur*
-unset JAVA_HOME &&
-ENABLE_HEADLESS_ONLY="true" &&
+unset JAVA_HOME
+ENABLE_HEADLESS_ONLY="true"
+
 ./configur* \
         --with-target-bits=64 \
         --enable-headless-only \
         --with-extra-cxxflags="-Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
         --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-        --with-freetype-include=/usr/include/freetype2 \
-        --with-freetype-lib=/usr/lib \
+        --with-freetype-include=%{_includedir}/freetype2 \
+        --with-freetype-lib=%{_libdir} \
         --with-stdc++lib=dynamic \
         --disable-warnings-as-errors
 
-mkdir /usr/share/java -p
+mkdir %{_datadir}/java -p
 # make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -74,14 +84,14 @@ make \
     LOG=trace
 
 %install
-unset JAVA_HOME &&
+unset JAVA_HOME
 # make doesn't support _smp_mflags
 make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README.md LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %posttrans
@@ -128,16 +138,15 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_v
 
 %postun
 # Do alternative remove only in case of uninstall
-if [ $1 -eq 0 ]
-then
+if [ $1 -eq 0 ]; then
   alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
   alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
 fi
 /sbin/ldconfig
 
 %clean
-rm -rf %{buildroot}/*
-rm -rf %{_libdir}/jvm/OpenJDK-*
+rm -rf %{buildroot}/* \
+       %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
@@ -190,6 +199,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.5-3
+- Bump version as a part of icu upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-2
 - Bump up due to change in elfutils
 * Fri Oct 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-1
