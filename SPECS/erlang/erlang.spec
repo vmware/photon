@@ -1,6 +1,6 @@
 Name:          erlang
 Summary:       erlang
-Version:       24.3.4.5
+Version:       25.1.2
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ License:       ASL2.0
 URL:           https://www.erlang.org
 
 Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
-%define sha512 OTP=7f9826be5d5afd9d9adaaebdb55165e536c5d2efaa4bbd11cb826bf255b2d89feac8abe5a805bf7ad717fdd0c1633ea2e12692366e2d38fcb8c3d0c452ae17cd
+%define sha512 OTP=a478799cb7df70a552043da55757b811e8b97182be15ab928e05b58537bb7bc4899aee406648767f538d8bd5c09e0a9d7e3655c99a8df0e6a0b77db83a720fb8
 
 Patch0: 0001-erlang-fix-vernemq-build-fail.patch
 
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 25.1.2-1
+- Automatic Version Bump
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 24.3.4.5-1
 - Upgrade to v24.3.4.5
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-4
