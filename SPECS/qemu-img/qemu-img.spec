@@ -2,8 +2,8 @@
 
 Summary:        QEMU disk image utility
 Name:           qemu-img
-Version:        7.0.0
-Release:        2%{?dist}
+Version:        7.1.0
+Release:        1%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
 Group:          Development/Tools
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha512  qemu=44ecd10c018a3763e1bc87d1d35b98890d0d5636acd69fe9b5cadf5024d5af6a31684d60cbe1c3370e02986434c1fb0ad99224e0e6f6fe7eda169992508157b1
+%define sha512  qemu=c60c5ff8ec99b7552e485768908920658fdd8035ff7a6fa370fb6881957dc8b7e5f18ff1a8f49bd6aa22909ede2a7c084986d8244f12074ccd33ebe40a0c411f
 
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
@@ -85,7 +85,6 @@ sh ../configure \
         --disable-sdl-image \
         --disable-seccomp \
         --disable-slirp \
-        --disable-vhost-vsock \
         --disable-virglrenderer \
         --disable-virtfs \
         --disable-vnc \
@@ -119,10 +118,8 @@ sh ../configure \
         --disable-vde \
         --disable-vdi \
         --disable-vhost-crypto \
-        --disable-vhost-scsi \
         --disable-vhost-user \
         --disable-vnc-jpeg \
-        --disable-vnc-png \
         --disable-vnc-sasl \
         --disable-docs \
         --audio-drv-list= \
@@ -159,6 +156,8 @@ make %{?_smp_mflags} check
 %{_libexecdir}/qemu-bridge-helper
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0-1
+- Automatic Version Bump
 * Sun Jun 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-2
 - Fix file packaging & spec improvements
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 7.0.0-1
