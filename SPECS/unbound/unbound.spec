@@ -1,6 +1,6 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.16.3
+Version:        1.17.0
 Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
@@ -8,7 +8,7 @@ License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha512  unbound=ef5cda926dd1082a750615d8687bccd756869c66e9f24f984fda4c6613f94f3e4884db328b8d7b490777a75d3e616dcb61c5258e7777923c0590e6fabacd207c
+%define sha512  unbound=f6b9f279330fb19b5feca09524959940aad8c4e064528aa82b369c726d77e9e8e5ca23f366f6e9edcf2c061b96f482ed7a2c26ac70fc15ae5762b3d7e36a5284
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
@@ -79,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
+-  Automatic Version Bump
 *  Tue Sep 27 2022 Gerrit Photon <photon-checkins@vmware.com> 1.16.3-1
 -  Automatic Version Bump
 *  Wed Aug 24 2022 Srish Srinivasan <ssrish@vmware.com> 1.16.2-1
