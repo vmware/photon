@@ -1,19 +1,27 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.9.7
+Version:          5.9.8
 Release:          1%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha512    %{name}=6e28a8ae0e4606a55661ae63a61d7bca445e8f62e91b37d32c957f03300d27ba05e099891c1160aae477b1f93ef844b66bb46da6cce5553eb03206c87e5e0d9a
+
+Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=16d3afc80704f896f3f97addf452b4bb29fc1911c54e980f76ac48bdbe2340ce3bd4e79024848cb7961bbe9ad5458d93389343878ca042af658d51b11219666b
+
+%if 0%{?with_check}
+Patch0: strongswan-fix-make-check.patch
+%endif
+
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
-Patch0:           strongswan-fix-make-check.patch
 %{?systemd_requires}
+
+Requires: systemd
+Requires: gmp
 
 %description
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
@@ -22,18 +30,19 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 %autosetup -p1
 
 %build
-%configure --enable-systemd
-sed -i '/stdlib.h/a #include <stdint.h>' src/libstrongswan/utils/utils.h &&
-make %{?_smp_mflags}
+%configure \
+    --enable-systemd
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -51,17 +60,24 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/charon/*.conf
+%config(noreplace) %{_sysconfdir}/ipsec.secrets
+%{_sysconfdir}/swanctl/*
+%{_sysconfdir}/ipsec.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/ipsec/*
 %{_libexecdir}/*
 %{_mandir}/man[158]/*
-%{_datadir}/strongswan/*
-%{_unitdir}/strongswan-starter.service
-%{_unitdir}/strongswan.service
+%{_datadir}/%{name}/*
+%{_unitdir}/%{name}-starter.service
+%{_unitdir}/%{name}.service
 
 %changelog
+* Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9.8-1
+- Upgrade to v5.9.8
 * Thu Aug 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.7-1
 - Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.6-1
