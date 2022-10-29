@@ -1,0 +1,39 @@
+From c33685a218018630f050f3268eb5c1207b10eb8e Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Sat, 29 Oct 2022 16:11:10 +0000
+Subject: [PATCH] photon-installer: fixes remove 'photon_release_version' key
+
+- Fixes: 26308bc244f0e855bafe6689f77c9160593c1ef0
+(installer: Removed 'insecure_installation' and 'photon_release_version' from ks)
+- fixes working_dir
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ photon-installer.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/photon-installer.py b/photon-installer.py
+index 4f0ea56..4c697ce 100644
+--- a/photon-installer.py
++++ b/photon-installer.py
+@@ -13,7 +13,7 @@ if __name__ == '__main__':
+     parser.add_argument("-u", "--ui-config", dest="ui_config_file")
+     parser.add_argument("-r", "--repo-path", dest="repo_path")
+     parser.add_argument("-o", "--options-file", dest="options_file")
+-    parser.add_argument("-w", "--working-dir", dest="working_dir")
++    parser.add_argument("-w", "--working-directory", dest="working_directory")
+     parser.add_argument("-p", "--rpm-path", dest="rpm_path")
+     parser.add_argument("-l", "--log-path", dest="log_path")
+     parser.add_argument("-e", "--eula-file", dest="eula_file_path", default=None)
+@@ -36,6 +36,7 @@ if __name__ == '__main__':
+         else:
+             raise Exception('install config file not provided')
+ 
+-        installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,log_path=options.log_path)
++        installer = Installer(working_directory=options.working_directory, rpm_path=options.rpm_path,
++                            log_path=options.log_path, photon_release_version=options.photon_release_version)
+         installer.configure(install_config)
+         installer.execute()
+-- 
+2.30.5
+

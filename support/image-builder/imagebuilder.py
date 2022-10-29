@@ -17,7 +17,7 @@ def runInstaller(options, install_config, working_directory):
 
     # Run the installer
     installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
-                          log_path=options.log_path)
+                          log_path=options.log_path, photon_release_version=options.photon_release_version)
     installer.configure(install_config)
     installer.execute()
 
