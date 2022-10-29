@@ -1,6 +1,6 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.11p3
+Version:        1.9.12p1
 Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ad5c3d623547d1e3016e1a721676fee6d6b7348e77b2c234041e0af40c7220e8934c8c27beef0d12fa6df11708d37de711dacfefc135d26de46abca7f91c55d1
+%define sha512  %{name}=6f564112aa1e0e9cd223adb280bd430d513109c031e52deca308501234dedc0d7418f13cbb9b4249ac58d997cfdae1908c280c26733acbc55dbf9db45dff239a
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -20,7 +20,7 @@ The Sudo package allows a system administrator to give certain users (or groups 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup
+%autosetup -n sudo-%{version}
 
 %build
 %configure --host=%{_host} --build=%{_build} \
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Mon Dec 05 2022 Anmol Jain <anmolja@vmware.com> 1.9.12p1-1
+- Version Bump
 * Wed Oct 12 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.9.11p3-1
 - Fix build with latest toolchain
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.11-1
