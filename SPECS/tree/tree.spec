@@ -3,7 +3,7 @@
 
 Summary:        Recursive directory listing command.
 Name:           tree
-Version:        2.0.2
+Version:        2.0.4
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://mama.indstate.edu/users/ice/tree/
@@ -11,7 +11,7 @@ Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://mama.indstate.edu/users/ice/tree/src/tree-%{version}.tgz
-%define sha512  %{name}=5b9612ada9e3b1414d06daf5d7589f18480f232ba6ea29a004ceb7ff5b46c57610766bdb2babe9c20047dfea39cb233a6d92a60fcf2c38beccbebc94fb1eb20f
+%define sha512  %{name}=9939c8f891f74576cff5afb27975ac40c402c07182a110a1d28d2e1e9bf93ce8da27fbc593d0aaee45eb68878c52f625154e728b12fd76c8b2c82431c803e861
 
 %description
 Tree is a recursive directory listing command that produces a depth indented listing of files, which is colorized ala dircolors if the LS_COLORS environment variable is set and output is to tty. Tree has been ported and reported to work under the following operating systems: Linux, FreeBSD, OS X, Solaris, HP/UX, Cygwin, HP Nonstop and OS/2.
@@ -34,6 +34,8 @@ make install PREFIX=%{buildroot}/usr \
 %{_mandir}/man1/*
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.4-1
+- Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1
 - Automatic Version Bump
 * Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
