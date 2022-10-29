@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2022c
+Version:        2022g
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha512  tzdata=e2ae92abac6d87ce4ab4ba9012e868e1791b842e083293489debc0c671b9cf135b5b70426dacb6dbebbf6eba24463205225ae45bb7df891a086b25475f85ee0b
+%define sha512  tzdata=7f79394295e00e3a24ebdbf9af3bc454a65f432a93b517e7e96c7f9db9949f6f5fdae9892a9d3789ff44ae0eb1bfe4744d36976b4624659af951d26414f94e65
 BuildArch:      noarch
 %define blddir  %{name}-%{version}
 
@@ -43,6 +43,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 2022g-1
+-   Automatic Version Bump
 *   Thu Aug 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2022c-1
 -   Automatic Version Bump
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2022a-1
