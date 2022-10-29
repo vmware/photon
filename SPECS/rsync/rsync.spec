@@ -1,6 +1,6 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.2.6
+Version:        3.2.7
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d141d04732c91e055708e8d1f14b976f9483208a93076bb66dc75cbf87d54f2dcbffc11423f0c9c005d2d4e20cb9c147a7672f7a9c0b987f4e2c39b4c3645cfe
+%define sha512  %{name}=c2afba11a352fd88133f9e96e19d6df80eb864450c83eced13a7faa23df947bccf2ef093f2101df6ee30abff4cbbd39ac802e9aa5f726e42c9caff274fad8377
 
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
@@ -86,6 +86,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.7-1
+- Automatic Version Bump
 * Tue Oct 04 2022 Oliver Kurth <okurth@vmware.com> 3.2.6-1
 - Update to 3.2.6
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.4-3
