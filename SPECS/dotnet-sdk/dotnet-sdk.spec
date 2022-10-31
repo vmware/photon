@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        6.0.100
-Release:        2%{?dist}
+Version:        6.0.105
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -17,7 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}=eabf5a5f5b03881e9ddbc2a692288000343622b7
+%define sha512    %{name}=a5a45994e30b390a91110989d725fd5c3e639d0a79183dcd0f49a49909036195b694b413a85b935adfb2b22bb8ff7d6a6b6294fd7a633143cd907218b3285ad2
 
 BuildArch:      x86_64
 
@@ -29,7 +29,7 @@ Requires:       icu >= 70.1
 applications, microservices and modern websites.
 
 %prep
-%autosetup -c dotnet-sdk-%{version} -p1
+%autosetup -c sdk-%{version} -p1
 
 %build
 
@@ -44,6 +44,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
 %{_docdir}/*
 
 %changelog
+* Mon Oct 31 2022 Anmol Jain <anmolja@vmware.com> 6.0.105-1
+- Upgrade to version 6.0.105
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 6.0.100-2
 - Release bump to build with icu-70.1
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.100-1

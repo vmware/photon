@@ -4,7 +4,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -46,8 +46,8 @@ Source5:        omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 6.0.100
-BuildRequires:  dotnet-runtime = 6.0.0
+BuildRequires:  dotnet-sdk = 6.0.105
+BuildRequires:  dotnet-runtime = 6.0.5
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -151,6 +151,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Mon Oct 31 2022 Anmol Jain <anmolja@vmware.com> 7.2.0-4
+- Fixed CVE-2022-23267
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.2.0-3
 - Exclude debug symbols properly
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 7.2.0-2
