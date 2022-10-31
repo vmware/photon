@@ -319,8 +319,11 @@ Summary:        This package contains the 'perf' performance analysis tools for 
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs
-Requires:       xz-libs libunwind slang
-Requires:       python3 traceevent-plugins
+Requires:       xz-libs
+Requires:       libunwind
+Requires:       slang
+Requires:       python3
+Requires:       traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
 %endif
