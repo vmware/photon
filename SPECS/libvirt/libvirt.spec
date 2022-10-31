@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        8.2.0
-Release:        4%{?dist}
+Version:        8.8.0
+Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha512 %{name}=fbdc2953e86117643aafb3198a3d9327188d94abfd155eae4439ee0e722737a57ee44dbb2929746c0a28e10e275c35f4a8190e99668e4cba4025555358591544
+%define sha512 %{name}=868e49b369afe200c5af6e2cd0606de2eeebfa92523b5ad3c653203c8838d304bd0cdc5acfb3c4d4c33c0a87ab8e769b84cc62e3f06e055936c43573a23d7190
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl
@@ -136,7 +136,6 @@ CONFIGURE_OPTS=(
     -Dlibiscsi=disabled \
     -Dstorage_gluster=disabled \
     -Dstorage_rbd=disabled \
-    -Dstorage_sheepdog=disabled \
     -Dstorage_zfs=disabled \
     -Dlibiscsi=disabled \
     -Dstorage_fs=enabled \
@@ -198,6 +197,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/libvirt/schemas/*.rng
 
 %changelog
+* Thu Nov 03 2022 Nitesh Kumar <kunitesh@vmware.com> 8.8.0-1
+- Version upgrade to v8.8.0
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.0-4
 - Bump version as a part of libxslt upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.0-3
