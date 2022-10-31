@@ -3,17 +3,23 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.4.33
-Release:        6%{?dist}
+Version:        1.10.20
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
-Url:            https://github.com/aws/aws-sdk-cpp
+URL:            https://github.com/aws/aws-sdk-cpp
 
-Source0:        https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ebe8e402107b7b70a9b397c94ad981ff02d97e10e6fd8337f19b732185ecbb79e132eecd513300ce733a765fd780dd765c1d2b34479e5e1d891fa771722bad81
-
-Patch0:         %{name}-Build-foxes-for-GCC9.patch
+# Steps to create source tarball
+# Download the tag from github, extract it
+# Then run `prefetch_crt_dependency.sh` script to get all dependencies
+# Example:
+# wget https://github.com/aws/aws-sdk-cpp/archive/refs/tags/1.10.20.tar.gz
+# tar xf 1.10.20.tar.gz
+# cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
+# tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
+Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=117fa0a198d8e8a38582be1bfdb2b5d44d8980949429c9845015244e8f533f6eadf13cde34469c235376849d4b0eb4f7af708c85203048cc6a9a32d7bf545320
 
 Requires:       openssl-devel
 Requires:       curl-devel
@@ -86,23 +92,24 @@ aws s3 libs
 %autosetup -p1
 
 %build
-export CXXFLAGS="%{optflags} -Wno-error=deprecated-declarations"
-%cmake \
+# TODO: try to remove -Wno-stringop-truncation flag in future version upgrades
+export CXXFLAGS="%{optflags} -Wno-stringop-truncation"
+%{cmake} \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
 cd %{__cmake_builddir}
 for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-$component
-  make %{?_smp_mflags}
+  pushd aws-cpp-sdk-${component}
+  %make_build
   popd
 done
 
 %install
 cd %{__cmake_builddir}
 for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-$component
-  make DESTDIR=%{buildroot} install %{?_smp_mflags}
+  pushd aws-cpp-sdk-${component}
+  %make_install %{?_smp_mflags}
   popd
 done
 
@@ -157,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.20-1
+- Upgrade to v1.10.20
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.33-6
 - Fix build with latest toolchain
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.33-5
