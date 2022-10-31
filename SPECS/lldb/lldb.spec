@@ -2,8 +2,8 @@
 
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        15.0.1
-Release:        2%{?dist}
+Version:        15.0.6
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
-%define sha512 %{name}=77824fe6c70760048d5c97e429185281530f5755cab859c08d857ce686f4a338896fd51cc29daec6718490e08e170840755993f38da7bdafaef1b3ba303d6fed
+%define sha512 %{name}=13d4cdd68f72c1b7bc6175e3f6b47edce069f48665837971f650fd679346ad2ced401a2e492c457f42469adb8fe6dc73c761be1a118db8229c55b769215cb720
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.6-1
+- Upgrade to v15.0.6
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 15.0.1-2
 - Update release to compile with python 3.11
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1

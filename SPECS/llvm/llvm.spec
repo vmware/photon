@@ -1,9 +1,10 @@
-%global debug_package %{nil}
+%global debug_package   %{nil}
+%define llvm_maj_ver    15
 
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        15.0.1
-Release:        2%{?dist}
+Version:        15.0.6
+Release:        1%{?dist}
 License:        NCSA
 URL:            https://llvm.org
 Group:          Development/Tools
@@ -11,10 +12,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
-%define sha512 %{name}=ec61b6d061ba71e00f6e9c1042705ab3512ff71a823e18ce75a3b8fd2ef40efff186b42d4be6ef948019e5bb5b3fb28f0c615ebb7872ec89f7643261eadf276a
+%define sha512 %{name}=91b53674c140f8eda6e8373a9e3ea013807236e98702b6666f3b4144d95d97dcfa0a59591ab74aa7a320c32f88d579a585dc5a6db6666f1754f68493f95cff1e
 
 Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
-%define sha512 cmake=fbb29395a337be4e591567cc0f990857a2663cb2335b5ef30945c6b516dbc65e86f022ef3acc1dc572cf6791e1cd20f6754256e00b60cdbf579c04ed74460522
+%define sha512 cmake=a078b9b426515414dae41c8732d7cd955e8ddc9638b4ba9c7dd0925db68e5ea760096f08fd7e1cb9d55b6d73da75f9b4318a2fac36d7aa64f47536ac383b3edc
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -24,6 +25,7 @@ BuildRequires:  ninja-build
 BuildRequires:  glibc-devel
 
 Requires:       libxml2
+Requires:       libllvm = %{version}-%{release}
 
 %description
 The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
@@ -92,6 +94,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
+%exclude %{_libdir}/libLLVM-%{version}.so
+%exclude %{_libdir}/libLLVM-%{llvm_maj_ver}.so
+%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -111,6 +116,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Fri Dec 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.6-1
+- Upgrade to v15.0.6
+- Don't package libLLVM shared libraries
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 15.0.1-2
 - Update release to compile with python 3.11
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1
