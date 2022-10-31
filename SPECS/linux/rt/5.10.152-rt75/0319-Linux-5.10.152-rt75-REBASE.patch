@@ -1,0 +1,20 @@
+From d51c8b05e95597aad901bfcddc8152eb9a8bcf01 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Sun, 30 Oct 2022 11:00:23 -0300
+Subject: [PATCH 319/319] Linux 5.10.152-rt75 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index d42c0971b041d..54e7da6f49fb2 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt66
++-rt75
+-- 
+2.38.1
+

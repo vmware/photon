@@ -54,10 +54,10 @@ index 7fdf505022bb..0aad0938e685 100644
  		err = xenbus_printf(xbt, dev->nodename, "ring-page-order", "%u",
  				    ring_page_order);
  		if (err) {
-@@ -2425,10 +2429,13 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+@@ -2395,10 +2395,13 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+ 	if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
  		blkfront_setup_discard(info);
  
- 	info->feature_persistent_parm = feature_persistent;
 -	if (info->feature_persistent_parm)
 +	if (info->feature_persistent_parm || xen_blkif_feature_persistent)
  		info->feature_persistent =

@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.142
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.152
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+%define sha512 linux=d5e09db8d446641a074e0e98d9b3f0074c97b415df9a1e8bd1cce842e810cecc50d748c0a18899e8b626934f60e587d66a74702622f4d8cb1b84084007712fed
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 %define ena_version 2.4.0
@@ -131,20 +131,6 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Fix for CVE-2022-41674, CVE-2022-42720, CVE-2022-42721, CVE-2022-42722
-# plus other bug fixes in the wifi subsystem
-Patch122: 0001-wifi-cfg80211-fix-u8-overflow-in-cfg80211_update_not.patch
-Patch123: 0002-wifi-cfg80211-mac80211-reject-bad-MBSSID-elements.patch
-Patch124: 0003-wifi-cfg80211-ensure-length-byte-is-present-before.patch
-Patch125: 0004-wifi-cfg80211-fix-BSS-refcounting-bugs.patch
-Patch126: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
-Patch127: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
-Patch128: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
-Patch129: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
-
-# Fix for CVE-2022-2602
-Patch130: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -384,7 +370,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M130
+%autopatch -p1 -m100 -M121
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -800,6 +786,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
+- Update to version 5.10.152
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-5
 - Replace rpm macro 'name' with 'linux' to be consistent with other flavors.
 * Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-4

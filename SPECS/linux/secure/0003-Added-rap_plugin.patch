@@ -1023,12 +1023,12 @@ index 7f57110f958e..b00d2f8f9cbd 100644
  	return __e820__mapped_all(start, end, type);
  }
 diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index e3a375185a1b..13d8bf9fc0b8 100644
+index 5b2dabedcf66..3f23b433e3ce 100644
 --- a/arch/x86/kernel/ftrace_64.S
 +++ b/arch/x86/kernel/ftrace_64.S
-@@ -172,7 +172,7 @@ SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL)
+@@ -171,7 +171,7 @@ SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL)
+ /*
   * This is weak to keep gas from relaxing the jumps.
-  * It is also used to copy the RET for trampolines.
   */
 -SYM_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
 +RAP_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)

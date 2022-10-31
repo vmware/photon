@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.142
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.152
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt73
+%define rt_version rt75
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+%define sha512 linux=d5e09db8d446641a074e0e98d9b3f0074c97b415df9a1e8bd1cce842e810cecc50d748c0a18899e8b626934f60e587d66a74702622f4d8cb1b84084007712fed
 Source1:    config-rt
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -106,20 +106,6 @@ Patch117: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch118: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch119: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch120: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Fix for CVE-2022-41674, CVE-2022-42720, CVE-2022-42721, CVE-2022-42722
-# plus other bug fixes in the wifi subsystem
-Patch121: 0001-wifi-cfg80211-fix-u8-overflow-in-cfg80211_update_not.patch
-Patch122: 0002-wifi-cfg80211-mac80211-reject-bad-MBSSID-elements.patch
-Patch123: 0003-wifi-cfg80211-ensure-length-byte-is-present-before.patch
-Patch124: 0004-wifi-cfg80211-fix-BSS-refcounting-bugs.patch
-Patch125: 0005-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch
-Patch126: 0006-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch
-Patch127: 0007-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch
-Patch128: 0008-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch
-
-# Fix for CVE-2022-2602
-Patch129: 0001-io_uring-af_unix-defer-registered-files-gc-to-io_uri.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -448,7 +434,7 @@ Patch616: 0316-rt-remove-extra-parameter-from-__trace_stack.patch
 Patch617: 0317-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
 Patch618: 0318-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
 # Keep rt_version matched up with this patch.
-Patch619: 0319-Linux-5.10.140-rt73-REBASE.patch
+Patch619: 0319-Linux-5.10.152-rt75-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -623,7 +609,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M120
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -882,6 +868,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
+- Update to version 5.10.152
 * Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
 - Fix for CVE-2022-2602
 * Thu Oct 13 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-2
