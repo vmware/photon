@@ -4,8 +4,8 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.6
-Release:        6%{?dist}
+Version:        1.6.9
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512 %{name}=f16f23384dbaa67075f2d35b7fc752938dd15601bbe3a919bc8eaa53fa1b2dea2e2d7f613a0f2f492910213dc2f7e96f0a1d38dde35bfb6d15f18167313f9817
+%define sha512 %{name}=fabe29103c431fb02ba55342e7cd3d41865803389b941fca9fea4449180d4dbc8eafafd6a8a1174997a7cd3bc2b6111960ccf51042792809b145ea500a534f53
 
 # Must be in sync with package version
 %define CONTAINERD_GITCOMMIT 10c12954828e7c7c9b6e0ea9b0c02b01407d3ae1
@@ -127,33 +127,35 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Wed Nov 30 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.9-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-6
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-5
 - Bump up version to compile with new go
-*   Thu Sep 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.6.6-4
--   Restore GO111MODULE to off.
-*   Mon Aug 8 2022 Shivani Agarwal <shivania2@vmware.com> 1.6.6-3
--   Enable selinux
-*   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
--   Bump up version to compile with new go.
-*   Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.6.6-1
--   Update to version 1.6.6
-*   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4.12-1
--   Upgrading to 1.4.12 to use latest runc.
-*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-2
--   Bump up version to compile with new go
-*   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.4.4-1
--   Update to 1.4.4
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.4.1-4
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.1-3
--   Bump up version to compile with new go
-*   Wed Oct 07 2020 Tapas Kundu <tkundu@vmware.com> 1.4.1-2
--   Use latest runc
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
--   Automatic Version Bump
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
--   Automatic Version Bump
-*   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 1.2.8-1
--   Initial version of containerd spec.
+* Thu Sep 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.6.6-4
+- Restore GO111MODULE to off.
+* Mon Aug 8 2022 Shivani Agarwal <shivania2@vmware.com> 1.6.6-3
+- Enable selinux
+* Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
+- Bump up version to compile with new go.
+* Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.6.6-1
+- Update to version 1.6.6
+* Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4.12-1
+- Upgrading to 1.4.12 to use latest runc.
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-2
+- Bump up version to compile with new go
+* Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.4.4-1
+- Update to 1.4.4
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.4.1-4
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.1-3
+- Bump up version to compile with new go
+* Wed Oct 07 2020 Tapas Kundu <tkundu@vmware.com> 1.4.1-2
+- Use latest runc
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
+- Automatic Version Bump
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
+- Automatic Version Bump
+* Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 1.2.8-1
+- Initial version of containerd spec.
