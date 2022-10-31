@@ -1,6 +1,6 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
-Version:          1.7.4.3
+Version:          1.7.4.4
 Release:          1%{?dist}
 License:          GPL2
 URL:              http://www.dest-unreach.org/socat
@@ -8,7 +8,7 @@ Group:            Applications/Internet
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          http://www.dest-unreach.org/socat/download/%{name}-%{version}.tar.bz2
-%define sha512    socat=50c13924b76461feac8d8dab416e23566f834a52ab882ed3b691245c1a635caf2d8185d30a84efef1fb82d8f1edf5a463a9cb31b3d4ce6dc45521f86c29d2dcb
+%define sha512    socat=3eedfbf599ecf1d6fd391d03d710044bc5e18a762395bc4cb151b96fe673d405a6630da3070ecddd5ac558126b56aa65feaa74d528eeb755a04aa0ec61690651
 
 %description
 Socat is a command line based utility that establishes two bidirectional byte streams and transfers data between them. Because the streams can be constructed from a large set of different types of data sinks and sources (see address types), and because lots of address options may be applied to the streams, socat can be used for many different purposes.
@@ -39,6 +39,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.4.4-1
+-   Automatic Version Bump
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.4.3-1
 -   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-3
