@@ -1,7 +1,7 @@
 Summary:        NUMA support for Linux
 Name:           numactl
-Version:        2.0.14
-Release:        3%{?dist}
+Version:        2.0.16
+Release:        1%{?dist}
 License:        GPLv2
 URL:            https://github.com/numactl/numactl
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=28b95985d6b2f26c5f6f15fe235224c998c86f534adf5fdaa355a292cf2fd65515c91ba2a76c899d552d439b18ea1209a1712bd6755f8ee3a442f3935993b2e6
+%define sha512  %{name}=de89bd9f4a9be0e27b21d096aa17a554c209414b5d08b6a2dbd03f8f4830fe4fc5adc88fa8cb08ae1cf75884835dacbde5b6f5d31386244a2582924d2260fcb6
 
 %if 0%{?with_check}
 Patch0: 0001-numactl-fix-physcpubind-for-single-cpu.patch
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.16-1
+- Automatic Version Bump
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.14-3
 - Remove .la files
 * Thu Oct 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.14-2
