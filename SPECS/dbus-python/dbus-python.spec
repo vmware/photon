@@ -2,14 +2,14 @@
 %global __python3 \/usr\/bin\/python3
 
 Name:           dbus-python3
-Version:        1.2.16
-Release:        2%{?dist}
+Version:        1.3.2
+Release:        1%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
-%define         sha1 dbus-python=de05308c75baa2ce5434de73d60428c005ac0cc1
+%define         sha512 dbus-python=9b2885c9c2914142c72487f766b1cdd28a255d9f5a87eaf8f4eb420c6e096a77f210ac5a4fac9843c6531974872880cc28b7e45940e198856e984dcc0715519a
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -38,18 +38,19 @@ Requires:       dbus-devel
 Developer files for Python bindings for D-Bus.
 
 %prep
-%setup -q -n dbus-python-%{version}
+%autosetup  -n dbus-python-%{version}
 
 %build
 %configure PYTHON="%{__python3}"
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 cp -r dbus_python*egg-info %{buildroot}%{python3_sitelib}
 rm -f %{buildroot}%{python3_sitelib}/*.la
 
 %check
+# make doesn't support _smp_mflags
 make check
 
 %files
@@ -67,7 +68,9 @@ make check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
-*   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
--   Add build requires
-*   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1
--   Initial release
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.3.2-1
+- version bump
+* Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
+- Add build requires
+* Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1
+- Initial release
