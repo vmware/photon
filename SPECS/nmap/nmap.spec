@@ -1,18 +1,18 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
-Version:        7.92
+Version:        7.93
 Release:        1%{?dist}
 License:        Nmap
-URL:            http://nmap.org/
-Source0:        https://nmap.org/dist/%{name}-%{version}.tar.bz2
-%define sha512  nmap=7828367f9dc76ff4d1e8c821260e565fb0c3cb6aba0473d24759133a3006cdf2cb087574f0dd7d2ba47a63754ba4f72e0b78cdae1333a58f05c41d428b56ad59
+URL:            http://nmap.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  autoconf
-BuildRequires:  automake
+
+Source0: https://nmap.org/dist/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=4ec9295e25bd7a215e718c3dbbf09bfe6339b60850f4a8d09b5ad0cbf41a0da8ece0168efc5ca91ba1ecbd83b1d31735d77dacd5f1ec1a9fd212454dd1f0f0fd
+
+BuildRequires:  build-essential
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  gnupg
 BuildRequires:  gpgme-devel
@@ -20,13 +20,17 @@ BuildRequires:  krb5-devel
 BuildRequires:  libcap-devel
 BuildRequires:  libgpg-error
 BuildRequires:  libpcap-devel
-BuildRequires:  make
-BuildRequires:  openssh
 BuildRequires:  pcre-devel
 BuildRequires:  zlib-devel
+BuildRequires:  lua-devel
+
 Requires:       libpcap
 Requires:       pcre
 Requires:       gnupg
+Requires:       lua
+Requires:       openssl
+Requires:       zlib
+Requires:       libgcc
 
 %description
 nmap is a utility for network exploration or security auditing. It supports
@@ -42,7 +46,8 @@ analysis tool (nping)
 
 %package ncat
 Summary: Nmap's Netcat replacement
-Provides: nc nc6
+Provides: nc
+Provides: nc6
 
 %description ncat
 Ncat is a feature packed networking utility which will read and
@@ -57,32 +62,34 @@ uses.
 %autosetup -p1
 
 %build
-%configure  --with-libpcap=yes --with-liblua=included \
-            --without-zenmap --without-ndiff \
-            --enable-dbus
+%configure \
+    --with-libpcap=%{_prefix} \
+    --with-liblua=%{_prefix} \
+    --without-zenmap \
+    --without-ndiff \
+    --enable-dbus
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} STRIP=true %{?_smp_mflags} install
+%make_install STRIP=true %{?_smp_mflags}
 
-rm -f %{buildroot}%{_datadir}/ncat/ca-bundle.crt
-rmdir %{buildroot}%{_datadir}/ncat
-rm -rf %{buildroot}%{_datadir}/man/
+rm -rf %{buildroot}%{_datadir}/man/ \
+       %{buildroot}%{_datadir}/ncat/
 
 %files
 %defattr(-,root,root)
-%license LICENSE
-%doc docs/README
-%doc docs/nmap.usage.txt
 %{_bindir}/nmap
 %{_bindir}/nping
 %{_datadir}/nmap
 
 %files ncat
-%license LICENSE
-%doc ncat/docs/AUTHORS ncat/docs/README ncat/docs/THANKS ncat/docs/examples
+%defattr(-,root,root)
 %{_bindir}/ncat
 
 %changelog
+* Fri Nov 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.93-1
+- Upgrade to v7.93
 * Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 7.92-1
 - Automatic Version Bump
 * Wed Apr 28 2021 Susant Sahani <ssahani@vmware.com> 7.91-1
