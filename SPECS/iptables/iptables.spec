@@ -22,6 +22,7 @@ BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
+BuildRequires:  bison
 
 Requires:       systemd
 Requires:       libmnl

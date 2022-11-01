@@ -9,7 +9,7 @@ Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
-%define sha1 u-boot=f50493fd92e926b8558671bc248e78de2b57299f
+%define sha512  u-boot=2c8cad0d7900544e7eab6ef334ad221f8858746631bf8077ce1282bf83b17a2d016b66b61b296c2e402d3dd6a9003dfa49e4e4af7ddf32aaea655ef7b592d4aa
 Source1:        rpi_3_photon_defconfig
 Source2:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
@@ -20,6 +20,8 @@ Patch4:         add-saveenv-in-bootcmd.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
+
+BuildRequires:  bison
 
 %description
 U-Boot is Open Source Firmware.
@@ -32,12 +34,7 @@ This utility will provide the binary to modify the u boot
 env variables from linux shell prompt.
 
 %prep
-%setup -q -n u-boot-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 cp %{SOURCE1} configs/

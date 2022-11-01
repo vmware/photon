@@ -8,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=731252dac79ad80f7c8d2ea4ce876d174fed0ebf
+%define sha512  %{name}=a48260308a12b11b584fcf4658ec2c4c1adb2801c9cf9a73fc259e5c30d2fbe401aca21e931972413f03e415f98fbf9bd678d2126faa6c6d5748e8a652e58f1a
 Source1:        conntrackd.service
 Patch0:         conntrack-tools-compiling-support-libtirpc.patch
 BuildRequires:  libnetfilter_conntrack-devel
@@ -19,6 +19,7 @@ BuildRequires:  libnetfilter_cttimeout-devel
 BuildRequires:  libnetfilter_cthelper-devel
 BuildRequires:  libnetfilter_queue-devel
 BuildRequires:  systemd-devel
+BuildRequires:  bison
 Requires:       libmnl
 Requires:       libnetfilter_conntrack
 Requires:       libnfnetlink

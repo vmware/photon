@@ -8,13 +8,15 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha1    iproute2=ff02c7352bae407a76d71b36558700bb489026fc
+%define sha512  iproute2=c7c8e8e76c78faf63548da641769cf9f51811a308cd8eeec171f5f46423f116ff123033f11a554609825aba6d078c95dbbe36aa7ab23bd8d87b3a0d5100be1a9
 Provides:       iproute
 Patch0:         replace_killall_by_pkill.patch
 # Fix for CVE-2019-20795
 Patch1:         0001-ipnetns-use-after-free-problem-in-get_netnsid_from_n.patch
 # Add Support for HCX patches
 Patch2:         0001-iproute2-Add-HCX-patches-to-iproute2.patch
+
+BuildRequires:  bison
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -30,22 +32,18 @@ This package contains the header files for %{name}. If you like to develop progr
 you will need to install %{name}-devel.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
+%autosetup -p1
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
-make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
+%make_build
+
 %install
-make    DESTDIR=%{buildroot} \
-    MANDIR=%{_mandir} \
-    LIBDIR=%{_libdir} \
-    DOCDIR=%{_defaultdocdir}/%{name}-%{version} install
+# Disable parallel make. make install is not happy with -j
+# make doesn't support _smp_mflags
+make DESTDIR=%{buildroot} install
 
 %check
 cd testsuite
@@ -66,7 +64,7 @@ cd ..
 %{_sysconfdir}/%{name}/*
 /sbin/*
 %{_libdir}/tc/*
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/tc

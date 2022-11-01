@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    %{name}=0e61e92b22a620fe7f833fa8b2a56f2db96f7335
+%define sha512  %{name}=c6712d491ce5e166ef72724cf855d742d88da825ffc25585612d7f2eb7770343e3ae48fa78e0af3e5d5efdde3a9686a7361dac3b546a4378de22448ea6e4026c
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -17,6 +17,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
+BuildRequires:  bison
 
 Requires:       libstdc++-devel
 Requires:       ncurses

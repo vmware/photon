@@ -240,6 +240,7 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
+BuildRequires:  bison
 
 Requires:       filesystem
 Requires:       kmod

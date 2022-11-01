@@ -10,12 +10,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
-%define sha1    autofs=3b981e6e94103c2f950017d92ff88fc4d79b93ee
+%define sha512  autofs=dc8b2bd86c140905dd1bc461bfc469f92363d9c2687fe422e1e751cc7ad64c0733b011c80bf4840e510e5909176cd1a066968b9a5ba835b62c4cf27537863cf2
 Source1:        %{name}.service
 
 BuildRequires:  systemd
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
+BuildRequires:  bison
 
 Requires:       systemd
 Requires:       libtirpc

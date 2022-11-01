@@ -9,13 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=a12bb094bf0baf0275b6d5cc718c938639712e97
+%define sha512  %{name}=7839ef748ea55df8c02c727047f65bd235b5e3b8ab23157246071e1b9954fa269594da9fbd0fabf6a850e3b5dfda962a0a067c1507411c92a84d1db2666ecf37
 
 Requires: libevent
 Requires: ncurses
 
 BuildRequires: libevent-devel
 BuildRequires: ncurses-devel
+BuildRequires: bison
 
 %description
 Terminal multiplexer

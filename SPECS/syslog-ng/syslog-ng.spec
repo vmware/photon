@@ -36,6 +36,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  paho-c-devel
+BuildRequires:  bison
 Obsoletes:      eventlog
 
 %description

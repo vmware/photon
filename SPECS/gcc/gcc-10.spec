@@ -18,6 +18,8 @@ BuildRequires:  gmp-devel
 BuildRequires:  mpfr-devel
 BuildRequires:  mpc
 BuildRequires:  zlib-devel
+
+BuildRequires:  bison
 %if 0%{?with_check}
 BuildRequires:  autogen
 BuildRequires:  dejagnu

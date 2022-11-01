@@ -476,6 +476,7 @@ BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
 BuildRequires: elfutils-libelf-devel
+BuildRequires: bison
 
 Requires:      filesystem
 Requires:      kmod

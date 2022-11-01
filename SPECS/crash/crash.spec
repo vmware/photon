@@ -7,12 +7,12 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=20865107a4a2ffcb31d9b2f390f72e1dcc3a5dbc
+%define sha512 crash=57b7b7780ad71bad09d962bfb2d5ad729dd167d9aaffd86f7b5467c98f52e8cb2c6ebb317bf1ad285dcb78ffa300b5dd733c63efd7aaa4ef03ddfe076c269984
 %define GCORE_VERSION	1.6.0
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha1 crash-gcore=ccea791bec2229bdf1d164bc6773d8ce5597024c
+%define sha512 crash-gcore=877cb46c54f9059ca0b89f793a0e907102db3921994fa676124bdd688f219a07761fffea6c3369fed836e7049b3611da164d780e7ba8741a4d0a30f7601290c2
 Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
-%define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
+%define sha512 gdb=02d9c62fa73bcb79138d14c7fc182443f0ca82d4545b4d260b67d3f0074ed75f899a657814a56727e601032a668b0ddd7b48aabd49215fc012eeea6077bca368
 Source3:       gcore_defs.patch
 Source4:       CVE-2017-7226.patch
 Patch0:        apply-patch-to-nested-gdb.patch
@@ -22,6 +22,7 @@ BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
+BuildRequires: bison
 Requires:      binutils
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -39,22 +40,22 @@ The core analysis suite is a self-contained tool that can be used to investigate
 This package contains libraries and header files need for development.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
+# Using autosetup is not feasible
 %setup -a 1
-%patch0 -p1
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
 cp %{SOURCE2} .
 cp %{SOURCE4} .
-make GDB=gdb-7.6 RPMPKG=%{version}-%{release}
+make GDB=gdb-7.6 RPMPKG=%{version}-%{release} %{?_smp_mflags}
 cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
-make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
+make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64 %{?_smp_mflags}
 %endif
 %ifarch aarch64
 patch -p1 < %{SOURCE3}
-make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
+make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64 %{?_smp_mflags}
 %endif
 
 %install

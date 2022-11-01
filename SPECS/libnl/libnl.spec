@@ -13,6 +13,7 @@ Source0:    http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
 
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
+BuildRequires:  bison
 
 Requires:   glib
 Requires:   dbus

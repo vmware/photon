@@ -602,6 +602,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
+BuildRequires:  bison
 
 Requires:       filesystem
 Requires:       kmod

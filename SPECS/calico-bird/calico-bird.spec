@@ -9,9 +9,10 @@ URL:           https://github.com/projectcalico/bird
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-bird=5a74a55574493d467bc940e853c287b458a2e0a4
+%define sha512 calico-bird=eeb0d839521f6f66c64bc752c92703a5ade7743967674b322a676b8f1fe702555815a4b16b270dc2d66292409e05e5303c993c96f82a76e55fd2abec5f173623
 
 BuildRequires: autoconf
+BuildRequires: bison
 
 %description
 Project Calico fork of the BIRD Internet Routing Daemon.

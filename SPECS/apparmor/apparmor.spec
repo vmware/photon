@@ -44,6 +44,7 @@ BuildRequires:  dejagnu
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools, python3-xml
+BuildRequires:  bison
 
 %description
 AppArmor is a file and network mandatory access control

@@ -210,6 +210,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
+BuildRequires:  bison
 
 Requires:       filesystem
 Requires:       kmod

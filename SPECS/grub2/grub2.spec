@@ -11,13 +11,14 @@ Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
-%define sha1 grub=c9f93f1e195ec7a5a21d36a13b469788c0b29f0f
+%define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
 Patch0:     Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
+BuildRequires:  bison
 
 Requires:   xz
 Requires:   device-mapper

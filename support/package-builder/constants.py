@@ -202,7 +202,6 @@ class constants(object):
         "libtool",
         "flex",
         "flex-devel",
-        "bison",
         "readline-devel",
         "popt",
         "popt-devel",

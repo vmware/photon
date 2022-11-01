@@ -52,6 +52,8 @@ Patch32:        CVE-2021-3999.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
+%define ExtraBuildRequires bison
+
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and

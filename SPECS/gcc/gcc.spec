@@ -10,7 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
+%define sha512  gcc=ad41a7e4584e40e92cdf860bc0288500fbaf5dfb7e8c3fcabe9eba809c87bcfa85b46c19c19921b0cdf6d05483faede8287bb9ea120c0d1559449a70e602c8d4
 Patch0:         PLUGIN_TYPE_CAST.patch
 Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
 Patch2:         090_all_pr55930-dependency-tracking.patch
@@ -20,6 +20,8 @@ Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
+%define ExtraBuildRequires bison
+
 %if %{with_check}
 BuildRequires:  autogen
 BuildRequires:  dejagnu

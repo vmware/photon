@@ -7,7 +7,7 @@ Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0: 	%{name}-%{version}.tar.gz
-%define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+%define sha512  likewise-open=8531fb95f8d26c7356e1504ee1ffd8245fa1f84cb4d83151b690f20ec4aeec1e9f9a8eb0145d568688efcfba4433fbec9ee17af112409ab4ad4ceba4520d2ee3
 Patch0:         likewise-FIPS-support.patch
 Patch1:         likewise-Use-machine-account-as-the-Kerberos-salt-for-decrypt.patch
 Distribution:   Photon
@@ -29,6 +29,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  openldap >= 2.4
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:  sqlite-devel
+BuildRequires:  bison
 
 %define _likewise_prefix /opt/likewise
 %define _likewise_bin %{_likewise_prefix}/bin
@@ -68,6 +69,7 @@ export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-d
              --lw-bundled-libs='libedit' \
              --enable-vmdir-provider=yes \
              --disable-static
+# make doesn't support _smp_mflags
 make
 
 %install

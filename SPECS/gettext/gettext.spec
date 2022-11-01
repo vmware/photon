@@ -8,27 +8,28 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
+%define sha512  gettext=3553227b62f2a7d9b67c881ef889c030a6a21d5ecd210c4bf3d649df0b37193a99a68cf8fd5f2c69b6a87e847035dd9576f9bcb9363422866e26b04f4f6dd431
 Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
 Patch1:		libcroco-CVE-2020-12825.patch
+
+BuildRequires:  bison
+
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
 messages in the user's native language.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
 rm -rf %{buildroot}%{_infodir}

@@ -5,7 +5,7 @@ Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=f9cc77c6d07315047956e8f92936e19b2b862b5e
+%define sha512  rsyslog=b1c68099236cc0722f52822f8b46d7f2a4a023e0809907f2b0173d5593df3c6f914516310bd832ac028252fb2c467dc90756d4472950e4244f3919b328a8bd6e
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -21,6 +21,7 @@ BuildRequires:  librelp-devel
 BuildRequires:  autogen
 BuildRequires:  gnutls-devel
 BuildRequires:  curl-devel
+BuildRequires:  bison
 Requires:       gnutls
 Requires:       systemd
 Requires:       libestr
@@ -48,11 +49,10 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-imptcp \
     --enable-imtcp \
     --enable-openssl
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -vd %{buildroot}%{_sysconfdir}/rsyslog.d

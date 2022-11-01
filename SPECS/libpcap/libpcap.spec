@@ -5,10 +5,12 @@ Release:	1%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 libpcap=04d6e619defad5bb17af15f6d2304e79b649786c
+%define sha512  libpcap=ae0d6b0ad8253e7e059336c0f4ed3850d20d7d2f4dc1d942c2951f99a5443a690f0cc42c6f8fdc4a0ccb19e9e985192ba6f399c4bde2c7076e420f547fddfb08
 Group:		Networking/Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+
+BuildRequires:  bison
 
 %description
 Libpcap provides a portable framework for low-level network
@@ -31,20 +33,20 @@ This package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %check
+# make doesn't support _smp_mflags
 make testprogs
 testprogs/opentest
 testprogs/findalldevstest
 
-
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig

@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=0c404b081db9c996c581f636ce450ee28778f338
+%define sha512  %{name}=7462a578b936bd17f155a362dbb5d388e157a80a096549028be6c55400b11361c7f8a28e424fd5674801873651df4e694d536cae66728b7ae5e840e532358c52
 
 Patch0:         krb5-CVE-2020-28196.patch
 Patch1:         krb5-CVE-2021-36222.patch
@@ -20,6 +20,7 @@ Requires:       e2fsprogs-libs
 
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  bison
 
 Provides:       pkgconfig(mit-krb5)
 Provides:       pkgconfig(mit-krb5-gssapi)
