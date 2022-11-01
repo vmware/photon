@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.0
+Version:        4.0.1
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
@@ -8,8 +8,8 @@ Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512 %{name}=d16b67bacca479af419f47e000800bbc33098a00cdb56c789e6c0f354fbd4f13c3d25c496239a8836c4e5754af2e36d4baf5e8ae55eae71f80c93630b78128bc
+Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
+%define sha512  %{name}=10ac8e738b4bd70ba4a1a9124e8c8e6238feb7c5a4cef79a03dae6adef08230700bb8ba700d2f89a5aad28cabdaf06b8825a1124d9d466de4e2e10cc55968525
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -45,13 +45,13 @@ information for each packet. Wireshark has several features,
 including a rich display filter language and the ability to view the
 reconstructed stream of a TCP session.
 
-%package devel
-Summary:    Development headers and libraries for %{name}
-Requires:   %{name} = %{version}-%{release}
-Requires:   glibc-devel
-Requires:   glib-devel
+%package        devel
+Summary:        Development headers and libraries for %{name}
+Requires:       %{name} = %{version}-%{release}
+Requires:       glibc-devel
+Requires:       glib-devel
 
-%description devel
+%description    devel
 The %{name}-devel package contains the header files, developer
 documentation, and libraries required for development of %{name} scripts
 and plugins.
@@ -99,6 +99,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 4.0.1-1
+- Automatic Version Bump
 * Wed Oct 12 2022 Susant Sahani <ssahani@vmware.com> 4.0.0-1
 - Update version
 * Tue Sep 20 2022 Susant Sahani <ssahani@vmware.com> 3.6.8-1
