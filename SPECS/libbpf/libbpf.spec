@@ -1,6 +1,6 @@
 Summary:        Libbpf library
 Name:           libbpf
-Version:        1.0.0
+Version:        1.0.1
 Release:        1%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
@@ -9,9 +9,7 @@ License:        GPL-2.1 OR BSD-2-Clause
 URL:            https://github.com/libbpf/libbpf
 
 Source0: https://github.com/libbpf/libbpf/archive/refs/tags/libbpf-%{version}.tar.gz
-%define sha512 %{name}=e99aea1ff477114549b41c272a975169a79ffc1daf4bcaba586cd13d0fc0b23c336cb406fd8e64b73350fe16e2d423fa68a29601d15e2477955c7a92358fb7f8
-
-Patch0: btf_enum64.patch
+%define sha512 %{name}=2ee6d85c0a33f723e5b93ddddf97118e67754c9e44ca0449ceb49126820f89fea9ddc282a5add764dc4da090af6164cc6641b497489253d192ed01bc397df9be
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  elfutils-devel
@@ -54,6 +52,8 @@ rm -rf %{buildroot}
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
 
 %changelog
+* Fri Dec 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-1
+- Upgrade to v1.0.1
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.0-1
 - Upgrade to v1.0.0
 * Mon Feb 21 2022 Mukul Sikka <msikka@vmware.com> 0.6.1-2
