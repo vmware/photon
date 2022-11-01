@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        251.4
-Release:        3%{?dist}
+Version:        252
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=7bbfadd80b88a4c3510a5e4e3572e4eab71dafbf6289da038e552988e09ee8da16da3c9bb8a4fbbde6c6236e0e3c352b0a33f9ee0b84f10241f3499383387738
+%define sha512 %{name}=5734d8778e5e2b8f456a08b2b306c20f282451258fe7a1fd6e71c40f588c6e0e738ff99a69e547fcd566e94208cbef928d6431cc18777bbf61d9600809850970
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -457,6 +457,7 @@ rm -rf %{_libdir}/%{name}/tests
 %{_tmpfilesdir}/legacy.conf
 %{_tmpfilesdir}/portables.conf
 %{_tmpfilesdir}/static-nodes-permissions.conf
+%{_tmpfilesdir}/provision.conf
 %{_tmpfilesdir}/%{name}-nologin.conf
 %{_tmpfilesdir}/%{name}-tmp.conf
 %{_tmpfilesdir}/%{name}.conf
@@ -675,6 +676,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 252-1
+- Version bump
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 251.4-3
 - Bump version as a part of libxslt upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 251.4-2
