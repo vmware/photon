@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.6
-Release:        2%{?dist}
+Version:        3.0.7
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,13 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9eb16ae8c7c77ed45db8f575150376d70297296050946c1f3e36b312673a69c30616d0772da22357475c43840d57ff78d46874eb79d0e885d461eecbb0b2158c
+%define sha512  %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source2:        sample-fips-enable-openssl.cnf
 %endif
-
-Patch0:         0001-punycode-Fix-CVE-in-punycode-decoder.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -200,6 +198,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Nov 01 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-1
+- Update to version 3.0.7
 * Wed Oct 26 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.6-2
 - Fix for CVE-2022-3602.
 * Tue Oct 18 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.6-1
