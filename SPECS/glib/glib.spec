@@ -1,15 +1,15 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
-Version:      2.70.2
-Release:      2%{?dist}
+Version:      2.74.1
+Release:      1%{?dist}
 License:      LGPLv2+
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/2.70.2/glib-%{version}.tar.bz2
-%define sha512  %{name}=8642c50e21e1a68f1018988aac57bc321e0cbe4a079d7e0fd3fe1efc5c2dfd120625cd9096e9afafe6af72bfc5bc44b511b4b8bbd4b89119a0b3a3dafe3e8377
+Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/{version}/glib-%{version}.tar.xz
+%define sha512  %{name}=21176cb95fcab49a781d02789bf21191a96a34a6391f066699b3c20b414b3169c958bd86623deb34ca55912083862885f7a7d12b67cc041467da2ba94d9e83c3
 
 BuildRequires:  pcre-devel
 BuildRequires:  libffi-devel
@@ -92,6 +92,7 @@ CONFIGURE_OPTS=(
 %{_libdir}/libgmodule-*.so.*
 %{_libdir}/libgio-*.so.*
 %{_libdir}/libgobject-*.so.*
+%{_libexecdir}/gio-launch-desktop
 
 %files devel
 %defattr(-, root, root)
@@ -109,6 +110,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 2.74.1-1
+- Update version
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.2-2
 - Bump version as a part of libffi upgrade
 * Mon Dec 13 2021 Susant Sahani <ssahani@vmware.com> 2.70.2-1

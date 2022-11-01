@@ -1,15 +1,15 @@
 Summary:      Glib networking modules
 Name:         glib-networking
-Version:      2.70.1
-Release:      3%{?dist}
+Version:      2.74.0
+Release:      1%{?dist}
 License:      GPLv2
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0: http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.70.1/%{name}-%{version}.tar.xz
-%define sha512 %{name}=a06b4df4481f95193f9ed4be6d39bbe9ecaf4de8e11a48750f7110d4cfa71aa56b7ec5b36af70b7128150447f1a39ce3aeadf71e2ac516f61708f1212f8f855d
+Source0: http://ftp.gnome.org/pub/GNOME/sources/glib-networking/%{version}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=f266c106f2c9379b95773a852c1b5c62ae1d6a758d25c436c3558f620d8e0a211201b3c4dfd89cdbe28b88430bba0cca621e62c01ea23d473983e203919bb1e6
 
 Patch0: disable-pkcs-related-tests.patch
 
@@ -75,8 +75,11 @@ CONFIGURE_OPTS=(
 %doc NEWS README
 %{_libdir}/gio/modules/libgioopenssl.so
 %{_libdir}/gio/modules/libgiognutls.so
+%{_libdir}/gio/modules/libgioenvironmentproxy.so
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <sshedi@vmware.com> 2.74.0-1
+- Bump version
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.1-3
 - Bump version as a part of gnutls upgrade
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.1-2
