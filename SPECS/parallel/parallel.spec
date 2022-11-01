@@ -1,6 +1,6 @@
 Summary:        Shell tool for executing jobs in parallel
 Name:           parallel
-Version:        20220622
+Version:        20221122
 Release:        1%{?dist}
 License:        GPLv3+ and GFDL
 Group:          Productivity/File utilities
@@ -9,7 +9,7 @@ Distribution:   Photon
 BuildArch:      noarch
 Url:            https://www.gnu.org/software/parallel/
 Source0:        https://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  parallel=d01d86cd2ac373534d147eee8aa666fe26e7207362ea9c036c3744125f72c936d15cf2059429636454f21c8e8c6b3a60c8d761ddfde97ba7388d2cd00495bfa4
+%define sha512  parallel=cdae4ec3a5aaf1ae6c0d9dc35bad930c2b34ad4f91209de80d55258f1945e2df345708000a2facef3b647b6e0d4c275c909faf073961ae0b80b89efa8831211f
 
 %description
 GNU parallel is a shell tool for executing jobs concurrently locally or using remote computers.
@@ -58,5 +58,7 @@ make %{?_smp_mflags} install DESTDIR=%{buildroot}
 %{_mandir}/man7/*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221122-1
+- Automatic Version Bump
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 20220622-1
 - parallel initial build
