@@ -1,6 +1,6 @@
 Summary:        DBus message bus
 Name:           dbus
-Version:        1.15.0
+Version:        1.15.2
 Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512  %{name}=6f7e1d4ff525ce13c5f671f1b045a089c379cbfb777662ce7a55ffe4893a8ab2aaf38877a7b8f261823067a20f3b336437449eb353a97d30699496375e00bf1a
+%define sha512  %{name}=486eab8c4f87d75e988558724bff1b0708c969341ecb62bcb9d0b0612a653ac2674aa7caa4d129dd81c00af7989b122ee7837599262c9a0c5c7f9335ed3dacaf
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -75,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.2-1
+- Version bump
 * Sat Oct 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.0-1
 - Version bump
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-2
