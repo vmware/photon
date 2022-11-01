@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        5.6
-Release:        3%{?dist}
+Version:        5.7
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
-%define sha512 %{name}=940a4d21ea8e3384642951d80c501a192178d1220f06a59a7bc54ce86d49caea0a86b6e789e28bcb7125ffa2a564ca1aca886a96cccf6356314121a81f38221a
-
-Patch0:         squid-5.6-openssl3.patch
+%define sha512 %{name}=624a39041a6ceda6c470dc0937616f1aa67200f3db02b4d74095d8d706ed31d6df5e0417dcacde45f6be40b617bee018849793d52c96a626aab32a2b182972aa
 
 Source1:        %{name}.sysconfig
 Source2:        %{name}.pam
@@ -227,6 +225,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 5.7-1
+- Version bump.
 * Mon Sep 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6-3
 - Add squid.conf to create runtime directories at boot
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6-2
