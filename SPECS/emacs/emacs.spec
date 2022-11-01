@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
-Version:        28.1
-Release:        2%{?dist}
+Version:        28.2
+Release:        1%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/emacs/%{name}-%{version}.tar.xz
-%define sha512 %{name}=c146ff7086aba49fa6c18adf4e485a59eb4c6525fddb9d385034446830b8bb0ac9e6fb76e7b6d94a9fddc41643415f36acad57a1ae16a841c97f61bc211459d9
+%define sha512 %{name}=a7cec7e3e82367815a1442f69af54102dbfc434069810a9dec5938a6660cb8b076e6f1fb0bfff9695b15603dbbe05eb9c7dfd92e90cf40fc4d1e5746bce83bd8
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -74,6 +74,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 28.2-1
+- Bump version
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 28.1-2
 - Bump version as a part of gnutls upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 28.1-1
