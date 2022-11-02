@@ -2,12 +2,12 @@
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.2.1
-Release:        2%{?dist}
+Version:        4.3.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=a8a6e3228c1cb6860bb27515bd081b5c395a17bd69fab8797758b84631d08d2389e554621080e66ecc04818c1c4d132ea6ed0edfedcfea6d7886a70ebc95297d
+%define sha512  %{name}=b5b70e83a67ccfea149cb7df87a452d51fbb5e87ab3d1c6b4f623ba0f8f8a25442cee6ae8b8d31ea844f08c3ea4962e865ddb90e61c185dfad29d3b23aa8338f
 Source1:        dnsname-%{dnsnamevers}.tar.gz
 %define sha512  dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 Source2:        gvisor-tap-vsock-fdc231ae7b8fe1aec4cf0b8777274fa21b70d789.tar.gz
@@ -173,6 +173,8 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Nov 2 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3.0-1
+- Automatic Version Bump
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 4.2.1-2
 - Bump up version to compile with new go
 * Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
