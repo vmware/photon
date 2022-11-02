@@ -1,38 +1,48 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
-Version:        0.3.1
-Release:        6%{?dist}
+Version:        0.6.10
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
 URL:            https://github.com/aquasecurity/%{name}
 Group:          Development/Tools
-Source0:        https://github.com/aquasecurity/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=54e46221040ac45a787ff9078de2af7b638b5f67ef5616fed532c09607aae049d4bd7496065ade72a5df07b99d7ff6f70683731783f5c651aff56dfc06d61d97
+
+Source0: https://github.com/aquasecurity/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=183ae317008a278f148318b72bdffb954a95527db46189bc88147c6847cf787a625dcb00dcd2ad6d3e89ba65f3ce7c8c074c25ba6f08ed29dfc2493935aa522d
+
 BuildRequires:  git
 BuildRequires:  go
 
 %description
-The Kubernetes Bench for Security is a Go application that checks whether Kubernetes is deployed according to security best practices
+The Kubernetes Bench for Security is a Go application that checks
+whether Kubernetes is deployed according to security best practices.
 
 %prep
 %autosetup -p1
 
 %build
-KUBEBENCH_VERSION=v%{version} make %{?_smp_mflags}
+export GOPATH=%{_builddir}
+export KUBEBENCH_VERSION=%{version}-%{release}
+%make_build build
 
 %install
 mkdir -p %{buildroot}%{_bindir}
 cp %{name} %{buildroot}%{_bindir}
 
+%if 0%{?with_check}
 %check
 make tests %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root,0755)
 %{_bindir}/%{name}
+%exclude %dir %{_libdir}/debug
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.6.10-1
+- Upgrade to v0.6.10
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 0.3.1-6
 - Bump up version to compile with new go
 * Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 0.3.1-5
