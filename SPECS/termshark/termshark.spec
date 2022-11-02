@@ -6,12 +6,13 @@
 
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
-Version:        2.3.0
-Release:        3%{?dist}
+Version:        2.4.0
+Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0ed780ec1ba86d2a6eb11c940f00475c750075d5e1ae4a6022f465572717126df941e933e2db7123d802b721f8e1187014f02d4c5dfd84c1a55009045dce5a88
+%define sha512  %{name}=378bb67ff50a8dfa80f614540371f326627e73bdf63bceb183ed73afbbf9dead4e0597fb969ba49c4ee3d3de00ac7bb91166421c19c788df47ff8d9fcbc5b9fc
+
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.0-1
+- Automatic Version Bump
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 2.3.0-3
 - Bump up version to compile with new go
 * Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 2.3.0-2
