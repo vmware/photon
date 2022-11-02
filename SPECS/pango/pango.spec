@@ -1,58 +1,72 @@
-Summary:	library for laying out and rendering of text.
-Name:		pango
-Version:	1.40.4
-Release:	1%{?dist}
-License:	LGPLv2 or MPLv1.1
-URL:		http://pango.org
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://download.gnome.org/sources/pango/1.40/%{name}-%{version}.tar.xz
-%define sha1 pango=761458faab28cb70ba62e01ec9379d03bc5339c0
-BuildRequires:	glib-devel
-BuildRequires:	cairo
-BuildRequires:	cairo-devel
-BuildRequires:	libpng-devel
-BuildRequires:	fontconfig
-BuildRequires:	fontconfig-devel
-BuildRequires:	harfbuzz
-BuildRequires:	harfbuzz-devel
-BuildRequires:	freetype2
-Requires:	harfbuzz-devel
-%description
-Pango is a library for laying out and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed, though most of the work on Pango so far has been done in the context of the GTK+ widget toolkit.
+Summary:        library for laying out and rendering of text.
+Name:           pango
+Version:        1.50.11
+Release:        1%{?dist}
+License:        LGPLv2 or MPLv1.1
+URL:            http://pango.org
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-%description	devel
-It contains the libraries and header files to create applications 
+Source0: https://gitlab.gnome.org/GNOME/pango/-/archive/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=695b6d11dcb72918f699ea6441d67f4f9a9fa930131c6079b0aa689ee6910903a79cd308c5054fd3ccdd8efd390b3b56f1d0cbf27eaef7247315db2fe9710b7a
+
+BuildRequires:  glib-devel
+BuildRequires:  cairo-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  harfbuzz-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  meson
+BuildRequires:  pkg-config
+BuildRequires:  fribidi-devel
+BuildRequires:  cmake
+
+Requires: freetype2
+Requires: fontconfig
+Requires: fribidi
+Requires: glib
+Requires: harfbuzz
+
+%description
+Pango is a library for laying out and rendering of text, with an emphasis on internationalization.
+Pango can be used anywhere that text layout is needed, though most of the work on Pango so far has been done in the context of the GTK+ widget toolkit.
+
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       harfbuzz-devel
+
+%description    devel
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-./configure \
-	--prefix=%{_prefix}
-make %{?_smp_mflags}
+%meson \
+    -Dlibthai=disabled \
+    -Dxft=disabled \
+    -Dintrospection=disabled
+
+%meson_build
+
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+%meson_install
 
+%if 0%{?with_check}
 %check
-#These tests are known to fail. Hence sending exit 0
-make %{?_smp_mflags} -k check || exit 0
+%meson_test
+%endif
 
-%post
-/sbin/ldconfig
+%ldconfig_scriptlets
 
-%postun
-/sbin/ldconfig
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
-%{_datadir}/*
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -61,5 +75,7 @@ make %{?_smp_mflags} -k check || exit 0
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
--       Initial version
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.50.11-1
+- Upgrade to v1.50.11
+* Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
+- Initial version

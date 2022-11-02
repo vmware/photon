@@ -1,28 +1,31 @@
-Summary:    C++ interface to the glib
-Name:       glibmm
-Version:    2.65.3
-Release:    2%{?dist}
-License:    LGPLv2+
-URL:        http://ftp.gnome.org/pub/GNOME/sources/glibmm
-Group:      Applications/System
-Vendor:     VMware, Inc.
+Summary:        C++ interface to the glib
+Name:           glibmm
+Version:        2.74.0
+Release:        1%{?dist}
+License:        LGPLv2+
+URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
+Group:          Applications/System
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.53/%{name}-%{version}.tar.xz
-%define sha512  %{name}=d9b9dae4fd9c67bbf6892b9e834d104699592d8aa2ac816cd9690945ddc5b8a8adf06ff8ec4f3ff943a85336f63172d23219e3f7f1e31b65d3eb2ac1ab0a3b80
+Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.74/%{name}-%{version}.tar.xz
+%define sha512 %{name}=29c16a6c921fb135721c39b5328e0b45e09c500c65175199c1ec5ee75bdd5fb907072389c6980da3bf8fac0846235af5580f692706eb00d26947804daa1c99c9
 
 BuildRequires:  python3-devel
-BuildRequires:  libsigc++-devel >= 2.10.0
-BuildRequires:  glib-devel glib-schemas
+BuildRequires:  libsigc++-devel >= 3.2.0
+BuildRequires:  glib-devel >= 2.74.1
+BuildRequires:  glib-schemas >= 2.74.1
+BuildRequires:  meson
 
 %if 0%{?with_check}
 BuildRequires:  glib-networking
 %endif
 
-Requires:   libsigc++ >= 2.10.0
-Requires:   glib >= 2.50.0
-Requires:   gobject-introspection >= 1.50.0
-Requires:   XML-Parser
+Requires:       libsigc++ >= 3.2.0
+Requires:       glib >= 2.74.1
+Requires:       gobject-introspection >= 1.74.0
+Requires:       XML-Parser
+Requires:       perl
 
 %description
 gtkmm provides a C++ interface to the GTK+ GUI library. gtkmm2 wraps GTK+ 2.
@@ -33,7 +36,8 @@ a comprehensive set of widget classes that can be freely combined to quickly cre
 Summary:        Header files for glibmm
 Group:          Applications/System
 Requires:       %{name} = %{version}-%{release}
-Requires:       glib-devel libsigc++
+Requires:       glib-devel >= 2.74.1
+Requires:       libsigc++ >= 3.2.0
 
 %description    devel
 These are the header files of glibmm.
@@ -42,37 +46,38 @@ These are the header files of glibmm.
 %autosetup -p1
 
 %build
-%configure
-%make_build
+%meson
+%meson_build
 
 %install
-%make_install %{?_smp_mflags}
+%meson_install
 
 %if 0%{?with_check}
 %check
-#need read content from /etc/fstab, which couldn't be empty
-echo '#test' > /etc/fstab
-export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
+%meson_test
 %endif
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%clean
+rm -rf %{buildroot}/*
+
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/*.pc
-%{_libdir}/glibmm-2.66/proc/*
+%{_libdir}/glibmm-2.68/proc/*
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/glibmm-2.66/include/*
-%{_libdir}/giomm-2.66/include/*
+%{_libdir}/glibmm-2.68/include/*
+%{_libdir}/giomm-2.68/include/*
 %{_includedir}/*
-%{_datadir}/*
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-1
+- Upgrade to v2.74.0
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.65.3-2
 - Remove .la files
 * Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.65.3-1

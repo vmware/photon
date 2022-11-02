@@ -1,19 +1,21 @@
-Summary:    Library that Implements a typesafe callback system for standard C++.
-Name:       libsigc++
-Version:    3.0.4
-Release:    5%{?dist}
-License:    LGPLv2+
-URL:        http://libsigc.sourceforge.net
-Group:      Applications/System
-Vendor:     VMware, Inc.
+Summary:        Library that Implements a typesafe callback system for standard C++.
+Name:           libsigc++
+Version:        3.2.0
+Release:        1%{?dist}
+License:        LGPLv2+
+URL:            http://libsigc.sourceforge.net
+Group:          Applications/System
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version}.tar.xz
-%define sha512 libsigc=b84ae7da6708e02302d08e295d6a566f12fb2c6f0d02f811661a0a541d7969e96a1e920218394dd109b3f362d102f2956aa968539710fa180d7d97e9676fb83d
+%define sha512 libsigc=91315cecc79a1ad6ea165b66a13a5afd4e5bc101842f9d4c58811ea78536c07fc8821c51aa5110a032ed71c09f85790b3a02f2ad7fe8cc3aed6e03b2bafcd70c
 
 BuildRequires:  mm-common
 BuildRequires:  libxslt-devel
 BuildRequires:  doxygen
+
+Requires: libgcc
 
 %description
 It allows to define signals and to connect those signals to any callback function,
@@ -21,11 +23,11 @@ either global or a member function, regardless of whether it is static or virtua
 It also contains adaptor classes for connection of dissimilar callbacks,
 and has an ease of use unmatched by other C++ callback libraries.
 
-%package devel
-Summary:    Development & header files for %{name}
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Development & header files for %{name}
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 Development & header files for %{name}
 
 %prep
@@ -39,11 +41,16 @@ sh ./autogen.sh --prefix=%{_prefix}
 %install
 %make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -57,6 +64,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
+- Upgrade to v3.2.0
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-5
 - Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-4

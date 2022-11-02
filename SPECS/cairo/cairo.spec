@@ -1,14 +1,16 @@
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  2%{?dist}
+Release:  3%{?dist}
 License:  LGPLv2 or MPLv1.1
-URL:      http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
+URL:      https://cairographics.org
 Group:    System Environment/Libraries
 Vendor:   VMware, Inc.
 Distribution:   Photon
-Source0:  http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha512  cairo=15d9a82097b9c5a43071ff9fbfe90d7aaee5fddb84f519cdddfe312c5fc7248a50b73a5351922de2aaafa4b2e86f911b3147609538346f8a7635f34d631c9146
+
+Source0: http://cairographics.org/releases/%{name}-%{version}.tar.xz
+%define sha512 %{name}=15d9a82097b9c5a43071ff9fbfe90d7aaee5fddb84f519cdddfe312c5fc7248a50b73a5351922de2aaafa4b2e86f911b3147609538346f8a7635f34d631c9146
+
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -16,40 +18,46 @@ BuildRequires:  pixman-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  glib-devel
+
 Requires: pixman
 Requires: glib
 Requires: libpng
 Requires: expat
+Requires: freetype2
+Requires: fontconfig
+Requires: binutils-libs
 
 %description
 Cairo is a 2D graphics library with support for multiple output devices.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	freetype2-devel
-Requires:	pixman-devel
+%package    devel
+Summary:    Header and development files
+Requires:   %{name} = %{version}-%{release}
+Requires:   freetype2-devel
+Requires:   pixman-devel
+Requires:   libpng-devel
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 export CFLAGS="-O3 -fPIC"
 # Fix build with latest binutils
 sed 's/PTR/void */' -i util/cairo-trace/lookup-symbol.c
+
 %configure \
-    --enable-xlib=no  \
+    --enable-xlib=no \
     --enable-xlib-render=no \
     --enable-win32=no \
-    --disable-static
-make %{?_smp_mflags}
+    --disable-static \
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %post
 /sbin/ldconfig
@@ -57,11 +65,14 @@ find %{buildroot} -name '*.la' -delete
 %postun
 /sbin/ldconfig
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/cairo/*.so*
+%{_libdir}/%{name}/*.so
 
 %files devel
 %defattr(-,root,root)
@@ -72,6 +83,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.17.6-3
+- Fix packaging and spec improvements
 * Thu Sep 01 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.17.6-2
 - Fix build with latest binutils
 * Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.6-1
