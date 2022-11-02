@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
-Version:        2.9.0
+Version:        2.13.0
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
-%define sha1    Pygments=e0277b8dd2ebce5121a68bec62173b9e0b057742
+%define sha512  Pygments=d492acf112423fa997f35d6d3cae18b89bf11619c696879c6df49697dca933b6d54d7cb22907e06812e0a562f03e8ed5ccefde5247bc1c51cf2d3d69e7d65422
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -21,7 +19,6 @@ BuildRequires:  openssl-devel
 %endif
 Requires:       python3
 Requires:       python3-setuptools
-Requires:       python3-libs
 BuildArch:      noarch
 
 %description
@@ -34,13 +31,13 @@ a number of output formats, presently HTML, LaTeX, RTF, SVG, all image formats t
 it is usable as a command-line tool and as a library.
 
 %prep
-%setup -q -n Pygments-%{version}
+%autosetup -n Pygments-%{version}
 
 %build
-python3 setup.py build
+%{py3_build}
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{py3_install}
 
 %check
 #pushd ../p3dir
@@ -56,6 +53,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/*
 
 %changelog
+*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.0-1
+-   Automatic Version Bump
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.9.0-1
 -   Update to 2.9.0, Fixes CVE-2021-20270, CVE-2021-27291
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2

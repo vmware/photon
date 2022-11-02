@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        14.16.0
+Version:        18.10.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,11 +8,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=d5d92abc160dc4ca4a27a6d43bcf78c42b7aff06
-BuildRequires:  coreutils >= 8.22, zlib
-BuildRequires:  python3
+%define         sha512 node=30a408b8f2ae41646f2ce3018862105ee4bd7913dd3cbbe8af8fc4d70cf64ac820342db9becff42c5a2b6f71d8dc3b539f580833f975b46628ad159712a8b109
+BuildRequires:  coreutils, zlib
+BuildRequires:  python3-devel
 BuildRequires:  which
-Requires:       (coreutils >= 8.22 or toybox)
+Requires:       (coreutils or toybox)
 Requires:       python3
 
 %description
@@ -28,16 +28,17 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%setup -q -n node-v%{version}
+%autosetup -n node-%{version}
 
 %build
-sh configure --prefix=%{_prefix}
-
+%{__python3} configure.py \
+             --enable-lto \
+             --prefix=%{_prefix} \
+             --libdir=%{_libdir}
 make %{?_smp_mflags}
 
 %install
-
-make install DESTDIR=$RPM_BUILD_ROOT
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 rm -fr %{buildroot}%{_libdir}/dtrace/  # No systemtap support.
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
@@ -49,7 +50,7 @@ for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
 done
 
 %check
-make cctest
+make %{?_smp_mflags} cctest
 
 %post -p /sbin/ldconfig
 
@@ -68,31 +69,33 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
-*   Thu Mar 18 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-1
--   Upgrade to 14.16.0
-*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 14.13.1-1
--   Update to 14.13.1 to build with python3.9
-*   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 14.5.0-1
--   Update nodejs
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 10.15.2-2
--   Build with python2
-*   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
--   Updated to 10.15.2
-*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 10.14.1-2
--   Added BuildRequires python2, which
-*   Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
--   Upgrade to 10.14.1 LTS
-*   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1
--   Updated to version 9.11.2
-*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.9.0-1
--   Updated to version 9.9.0
-*   Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
--   Updated to version 8.3.0
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-4
--   Remove BuildArch
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-3
--   Requires coreutils or toybox
-*   Fri Jul 14 2017 Chang Lee <changlee@vmware.com> 7.7.4-2
--   Updated %check
-*   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1
--   Initial packaging for Photon
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 18.10.0-1
+- Update to 18.10.0 to compile with python 3.11
+* Thu Mar 18 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-1
+- Upgrade to 14.16.0
+* Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 14.13.1-1
+- Update to 14.13.1 to build with python3.9
+* Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 14.5.0-1
+- Update nodejs
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 10.15.2-2
+- Build with python2
+* Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
+- Updated to 10.15.2
+* Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 10.14.1-2
+- Added BuildRequires python2, which
+* Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
+- Upgrade to 10.14.1 LTS
+* Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1
+- Updated to version 9.11.2
+* Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.9.0-1
+- Updated to version 9.9.0
+* Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
+- Updated to version 8.3.0
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-4
+- Remove BuildArch
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-3
+- Requires coreutils or toybox
+* Fri Jul 14 2017 Chang Lee <changlee@vmware.com> 7.7.4-2
+- Updated %check
+* Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1
+- Initial packaging for Photon

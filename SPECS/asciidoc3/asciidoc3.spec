@@ -2,18 +2,20 @@
 
 Summary:        AsciiDoc is a human readable text document format
 Name:           asciidoc3
-Version:        3.2.0
-Release:        2%{?dist}
+Version:        3.2.3
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.com/asciidoc3/asciidoc3
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://asciidoc3.org/%{name}-%{version}.tar.gz
-%define sha512 %{name}=31ea277aeb037b7b217e17a2ba54c86b4c7cf923669538b6732120fccd6582097815e5d5ea832ea39c3514068887d4dc5ecafc0d65359794d729cf4711c8e693
+Source0:        https://asciidoc3.org/%{name}-%{version}.tar.gz
+%define sha512 %{name}=926f367b1740a40a03beb9c45a05de855e69d8c2ac9b9a66c19dd21f65f8250b3fad02b283f7f8b2fb7ea131d4836d5aa623647e1931b682a9a9e91f62863f6c
+Patch0:         asciidoc3-py311.patch
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 
 Requires:       python3-setuptools
@@ -33,7 +35,7 @@ both the AsciiDoc3 source file syntax and the backend output markups
 and extended by the user.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-v%{version}
 
 %build
 %{py3_build}
@@ -55,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.3-1
+- Update to 3.2.3
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-2
 - Provde asciidoc from asciidoc3
 * Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.2.0-1

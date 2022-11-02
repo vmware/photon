@@ -1,6 +1,6 @@
 Name:           pycurl3
-Version:        7.43.0.6
-Release:        4%{?dist}
+Version:        7.45.1
+Release:        1%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -8,21 +8,21 @@ URL:            http://pycurl.sourceforge.net
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha512 pycurl=ea0160794d30758c8163f1f82fc6315c27f2cfd1b9981a7c349a48cee892fc2307e3edd25456378f1a780bc134fca199d8d6431310fd47b2ca6126a8822fea40
-
-Patch0:         add_convert_docstring.patch
+Source0: http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
+%define sha512 pycurl=05639d484aac6d6688677589e391975158c5ef778456a47df575ad13fb8bd0db67ff8f5a39bdd99d82a67926aca421c01e687eec9d4fd87f32822b492b429635
 
 %if 0%{?with_check}
-Patch1:         Fix_makecheck.patch
+Patch0: Fix_makecheck.patch
 %endif
 
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
+
 %if 0%{?with_check}
 BuildRequires: python3-setuptools
 BuildRequires: vsftpd
+BuildRequires: curl-libs
 BuildRequires: python3-xml
 %endif
 
@@ -44,15 +44,10 @@ Documentation and examples for pycurl
 
 %prep
 # Using autosetup is not feasible
-%setup -cqn pycurl-%{version}
+%autosetup -p1 -cn pycurl-%{version}
 mv pycurl-*/* .
 rm -r pycurl-*
 rm -f doc/*.xml_validity
-#chmod a-x examples/*
-%patch0 -p1
-%if 0%{?with_check}
-%patch1 -p1
-%endif
 # removing prebuilt-binaries
 rm -f tests/fake-curl/libcurl/*.so
 
@@ -86,6 +81,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 7.45.1-1
+- Automatic Version Bump
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-4
 - Bump up release for openssl
 * Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.6-3

@@ -1,8 +1,5 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-asn1crypto
-Version:        1.4.0
+Version:        1.5.1
 Release:        1%{?dist}
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
 License:        MIT
@@ -12,16 +9,13 @@ Distribution:   Photon
 Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
 
 Source0:        asn1crypto-%{version}.tar.gz
-%define sha1    asn1crypto=dc957cec576a75a7d915b1c01ca0337736d98c1c
+%define sha512  asn1crypto=6b75e77c29c90577e0a7fc85972a60d324c3450e4257918caa4307a997a5ce7abc5c7cefa0bbf693592f4dceb8bc5c87f8fe6df1185d0f2dca18511d9d747859
 
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -45,6 +39,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.1-1
+- Update to 1.5.1
 * Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.0-1

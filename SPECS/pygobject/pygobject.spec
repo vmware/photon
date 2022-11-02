@@ -1,6 +1,6 @@
 Name:           python3-pygobject
-Version:        3.38.0
-Release:        4%{?dist}
+Version:        3.42.2
+Release:        1%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 
 Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
-%define sha512  PyGObject=92a53824688d91516ccadeec42fd72c2598afb2d26cd46229a88e6b2fbf915bd7cab75d4cfd63594f54b7277d8f209e1dd225c4b87df2d2615abf7b9d8dd3ddf
+%define sha512  PyGObject=ba48ba470c78d76f4090460df286d926e15c4063374a1d3afa89dd374230a042aca53d864fc0efaf67efdba5723fe15440d34888a0b45c97d73c5c4cfe17559c
 
 %if 0%{?with_check}
 Patch0:         pygobject-makecheck-fixes.patch
@@ -22,10 +22,8 @@ Requires:       glib
 BuildRequires:  python3-setuptools
 BuildRequires:  glib-devel
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  which
-BuildRequires:  python3
 
 %if 0%{?with_check}
 BuildRequires:  python3-gobject-introspection
@@ -78,6 +76,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.42.2-1
+- Automatic Version Bump
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.38.0-4
 - Bump version as a part of libffi upgrade
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.38.0-3

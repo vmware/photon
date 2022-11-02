@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
-Version:        0.70
+Version:        0.71
 Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
@@ -11,21 +9,19 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py
 
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
-%define         sha1 Js2Py=cf6cd95d87d331dec2e99747b926a3340e79e4ba
+%define sha512  Js2Py=32615af67d3ac237f55e2c98de399e153dbe36a30f9ca1f66a554ad8ff1016721d6121dd3123f969bc8df87f4b7585e8d6b9ca3159f82ec832a0822d44e6ae72
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-six
 BuildRequires:  python3-py
+BuildRequires:  python3-packaging
 %if %{with_check}
 BuildRequires:  python3-pyjsparser
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-six
 Requires:       python3-tzlocal
 Requires:       python3-pyjsparser
@@ -53,6 +49,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.71-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.70-1
 - Automatic Version Bump
 * Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.66-2
