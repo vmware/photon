@@ -450,14 +450,14 @@ Patch548: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patches for i40e driver
-Patch801: 0001-Add-support-for-gettimex64-interface.patch
+Patch801: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 
 #Patches for iavf driver
-Patch811: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch811: iavf-v4.4.2-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch812: no-aux-symvers.patch
 
 # Patches for ice driver
-Patch821: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch821: ice-v1.8.3-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch822: no-aux-bus.patch
 
 # ptp_vmw

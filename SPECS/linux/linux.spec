@@ -480,14 +480,14 @@ Patch514: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch515: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 
 #Patches for i40e driver
-Patch1500: 0001-Add-support-for-gettimex64-interface.patch
+Patch1500: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 
 #Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1511: iavf-v4.4.2-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: no-aux-symvers.patch
 
 #Patches for ice driver
-Patch1521: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1521: ice-v1.8.3-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: no-aux-bus.patch
 %endif
 
