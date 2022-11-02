@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.152
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -419,6 +419,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 5.10.152-8
+- Enable CONFIG_NET_CLS_FLOWER=m
 * Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-7
 - Fix for CVE-2022-3564
 * Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-6
