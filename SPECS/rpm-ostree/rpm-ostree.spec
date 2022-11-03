@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -16,6 +16,7 @@ Source2:        function.inc
 Source3:        mkostreerepo
 
 Patch0:         rpm-ostree-libdnf-build.patch
+Patch1:         util-Fix-fpermissive-warning.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -161,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Thu Nov 03 2022 Ankit Jain <ankitja@vmware.com> 2022.13-3
+- Fix build issue after glib update
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-2
 - Bump version as a part of libxslt upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-1
