@@ -1363,7 +1363,7 @@ def set_default_value_of_config():
 def process_env_build_params(ph_build_param):
     env_build_param_dict = {
         "INPUT_PHOTON_BUILD_NUMBER": "input-photon-build-number",
-        "BASE_COMMIT": "input-photon-build-number",
+        "BASE_COMMIT": "base-commit",
         "THREADS": "threads",
         "LOGLEVEL": "loglevel",
         "PHOTON_PULLSOURCES_CONFIG": "pull-sources-config",
