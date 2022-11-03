@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        6.0.5
+Version:        6.0.10
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}=c228f0ba0ecc4ccda708e97529b248dd6d70f7f747ead6453623be77e8e1529b54db52f5df1b5e00b5b7f92b73389560832f80607fc07e50879d55ce905afcf7
+%define sha512    %{name}=8a074c93845416f69f035f2d0e16251dd2bd5abcdfcb7863afd59a5ddc78fa03aede8f79b42c7ca857fc19c8dea53d43da4e4a311f35f6f2eaf9fd64afc8f9e4
 
 BuildArch:      x86_64
 
@@ -61,6 +61,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Thu Nov 03 2022 Anmol Jain <anmolja@vmware.com> 6.0.10-1
+- Upgrade to version 6.0.10
 * Mon Oct 31 2022 Anmol Jain <anmolja@vmware.com> 6.0.5-1
 - Upgrade to version 6.0.5
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.0-1

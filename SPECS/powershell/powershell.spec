@@ -3,8 +3,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.2.0
-Release:        4%{?dist}
+Version:        7.2.7
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -20,8 +20,7 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0:        %{name}-%{version}.tar.gz
-%define sha512 %{name}=30777e55c85880b31d974eb882cec3559739710121b875b8fcad7f7296686d850e9cd394eeba06284a8013f4c2fbbfdf628bd29082e87c908920e970836ba6df
-
+%define sha512 %{name}=618f9ed0877be556d0d5bd05c1beb22f12475fbec9d2d9b35deeb3602e3a73f6a5c5be95955c587f8978a9d5f9d04dd443b4552f5189beecbb7ac090a721898a
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
@@ -32,8 +31,7 @@ Source1:        %{name}-native-%{ps_native_ver}.tar.gz
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=f07a038ef8e7c4894f78139c08739a605ce0deb79d2f0e9d5abb8be5fda31a1636804c99c0dceedd5798e08e353263c338b98b7477eb40ebfb875545b0cbf3fb
-
+%define sha512 %{name}-%{version}-linux=fcc48d5767f735c6348fdcf47eb3826f8b5d3efc48d97770796d0806ee6e2fe2989491bbd40ac1d3f2fbaf534a723ba3197037a54424c921958786f6b652e99e
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
@@ -46,8 +44,8 @@ Source5:        omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 6.0.105
-BuildRequires:  dotnet-runtime = 6.0.5
+BuildRequires:  dotnet-sdk = 6.0.402
+BuildRequires:  dotnet-runtime = 6.0.10
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -151,6 +149,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Mon Oct 31 2022 Anmol Jain <anmolja@vmware.com> 7.2.7-1
+- Fixed CVE-2022-26788
 * Mon Oct 31 2022 Anmol Jain <anmolja@vmware.com> 7.2.0-4
 - Fixed CVE-2022-23267
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.2.0-3
