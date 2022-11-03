@@ -2,7 +2,7 @@
 
 specs="linux-api-headers/linux-api-headers.spec linux/linux.spec linux/linux-esx.spec linux/linux-secure.spec linux/linux-aws.spec linux/linux-rt.spec"
 
-tarball_url=`curl -s https://www.kernel.org  | grep -Eo 'https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.[0-9]*.tar.xz' | uniq`
+tarball_url=`curl -k -s https://www.kernel.org  | grep -Eo 'https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.[0-9]*.tar.xz' | uniq`
 tarball=$(basename $tarball_url)
 version=`echo $tarball | sed 's/linux-//; s/.tar.xz//'`
 echo latest linux version: $version
@@ -14,5 +14,5 @@ for spec in $specs; do
 	sed -i '/^Version:/ s/4.19.[0-9]*/'$version'/' SPECS/$spec
 	sed -i '/^Release:/ s/[0-9]*%/1%/' SPECS/$spec
 	sed -i '/^%define sha512 linux/ s/=[0-9a-f]*$/='$sha512sum'/' SPECS/$spec
-	sed -i '/^%changelog/a*   '"$changelog_entry"'\n-   Update to version '"$version"'' SPECS/$spec
+	sed -i '/^%changelog/a* '"$changelog_entry"'\n- Update to version '"$version"'' SPECS/$spec
 done

@@ -2,7 +2,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.261
+Version:        4.19.264
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=6fafbec106b9e935db081aac7c4a08b214539d7ac7496a562e5978be3fd6b05a7abee180a24ed7fb7805a04860957b21b9ef9c52e47b01f992d6a2c99d3c167d
+%define sha512 linux=ce7a54a6f12b31bb67dede6810d43ad3230a63e949c1870220ef1ad87606c1c6733fa9c7ddb7dc654277ba31fc9f987488cd5270cc5aa0f88d7fee84848dd1cc
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -472,6 +472,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
+- Update to version 4.19.264
 * Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1
 - Update to version 4.19.261
 * Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.256-4
