@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.264
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -481,14 +481,17 @@ Patch515: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 
 #Patches for i40e driver
 Patch1500: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch1501: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
 Patch1511: iavf-v4.4.2-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: no-aux-symvers.patch
+Patch1513: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 #Patches for ice driver
 Patch1521: ice-v1.8.3-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: no-aux-bus.patch
+Patch1523: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 %endif
 
 %if 0%{?kat_build}
@@ -667,17 +670,17 @@ ApplyPatch "281" "515"
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%patch1500 -p1
+ApplyPatch "1500" "1501"
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-ApplyPatch "1511" "1512"
+ApplyPatch "1511" "1513"
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-ApplyPatch "1521" "1522"
+ApplyPatch "1521" "1523"
 popd
 
 %endif
@@ -1071,6 +1074,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-3
+- Fix IRQ affinities of i40e, iavf and ice drivers
 * Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1

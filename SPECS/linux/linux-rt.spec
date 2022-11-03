@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.264
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -601,23 +601,29 @@ Patch1000: fips-kat-tests.patch
 
 # Patches for i40e v2.16.11 driver
 Patch1500: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch1501: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 # Patches for i40e v2.15.9 driver
-Patch1501: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
+Patch1502: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
+Patch1503: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 # Patches for iavf v4.4.2 driver
 Patch1511: iavf-v4.4.2-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: no-aux-symvers.patch
+Patch1513: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 # Patches for iavf v4.2.7 driver
-Patch1513: iavf-v4.2.7-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1514: iavf-v4.2.7-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1515: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 # Patches for ice v1.8.3 driver
 Patch1521: ice-v1.8.3-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: no-aux-bus.patch
+Patch1523: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 # Patches for ice v1.6.4 driver
-Patch1523: ice-v1.6.4-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1524: ice-v1.6.4-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1525: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 BuildArch: x86_64
 
@@ -750,32 +756,32 @@ ApplyPatch "0" "636"
 
 # Patches for i40e v2.16.11 driver
 pushd ../i40e-%{i40e_version_2_16_11}
-ApplyPatch "1500" "1500"
+ApplyPatch "1500" "1501"
 popd
 
 # Patches for i40e v2.15.9 driver
 pushd ../i40e-%{i40e_version_2_15_9}
-ApplyPatch "1501" "1501"
+ApplyPatch "1502" "1503"
 popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-ApplyPatch "1511" "1512"
+ApplyPatch "1511" "1513"
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-ApplyPatch "1513" "1513"
+ApplyPatch "1514" "1515"
 popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-ApplyPatch "1521" "1522"
+ApplyPatch "1521" "1523"
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-ApplyPatch "1523" "1523"
+ApplyPatch "1524" "1525"
 popd
 
 %build
@@ -1086,6 +1092,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-4
+- Fix IRQ affinities of i40e, iavf and ice drivers
 * Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-3
 - Package Intel i40e, iavf and ice drivers as sub-packages, and provide
 - multiple versions of these drivers, namely, i40e-v2.16.11, i40e-v2.15.9,

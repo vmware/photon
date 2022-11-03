@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.264
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -451,14 +451,17 @@ Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patches for i40e driver
 Patch801: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch802: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
 Patch811: iavf-v4.4.2-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch812: no-aux-symvers.patch
+Patch813: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 # Patches for ice driver
 Patch821: ice-v1.8.3-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch822: no-aux-bus.patch
+Patch823: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 # ptp_vmw
 Patch831: 0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
@@ -561,17 +564,17 @@ ApplyPatch "540" "549"
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%patch801 -p1
+ApplyPatch "801" "802"
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-ApplyPatch "811" "812"
+ApplyPatch "811" "813"
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-ApplyPatch "821" "822"
+ApplyPatch "821" "823"
 popd
 
 # Patches for ptp_vmw driver
@@ -785,6 +788,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-3
+- Fix IRQ affinities of i40e, iavf and ice drivers
 * Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
