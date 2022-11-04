@@ -32,9 +32,6 @@ class PackageUtils(object):
         else:
             self.rpmbuildBuildallOption = f"-bb {self.rpmbuildBuildallOption}"
 
-        if not constants.buildDbgInfoRpm:
-            self.rpmbuildBuildallOption = "-D \"debug_package %{nil}\" " + f"{self.rpmbuildBuildallOption}"
-
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildCheckOption = "-bi --clean"
         self.queryRpmPackageOptions = "-qa"
@@ -321,6 +318,9 @@ class PackageUtils(object):
 
     def _buildRPM(self, sandbox, specFile, logFile, package, version, macros):
         rpmBuildcmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
+
+        if not constants.buildDbgInfoRpm and package not in constants.buildDbgInfoRpmList:
+            rpmBuildcmd += " -D \"debug_package %{nil}\" "
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.debug("#" * (68 + 2 * len(package)))
