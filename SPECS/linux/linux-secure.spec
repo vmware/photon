@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.152
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -98,6 +98,14 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch122: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch123: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch124: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch125: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -218,7 +226,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M121
+%autopatch -p1 -m100 -M127
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -377,6 +385,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
 - Update to version 5.10.152
 * Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3

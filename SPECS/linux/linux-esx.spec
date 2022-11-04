@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.152
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -143,6 +143,14 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch122: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch123: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch124: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch125: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -298,7 +306,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M121
+%autopatch -p1 -m100 -M127
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -547,6 +555,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-3
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Fri Nov 04 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-2
 - tarfs: fix readdir incase dir_emit fails
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1

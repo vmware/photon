@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.152
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -75,6 +75,14 @@ Patch119: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch120: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch121: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch122: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch123: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch124: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch125: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -196,7 +204,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M122
+%autopatch -p1 -m100 -M128
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -362,6 +370,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
 - Update to version 5.10.152
 * Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-3
