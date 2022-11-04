@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.152
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -547,6 +547,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 04 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-2
+- tarfs: fix readdir incase dir_emit fails
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
 - Update to version 5.10.152
 * Mon Oct 17 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.142-4
