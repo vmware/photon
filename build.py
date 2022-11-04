@@ -1324,6 +1324,7 @@ def initialize_constants():
     constants.buildDbgInfoRpm = int(
         configdict["photon-build-param"]["build-dbginfo-rpm"]
     )
+    constants.buildDbgInfoRpmList = configdict["photon-build-param"]["build-dbginfo-rpm-list"]
 
     constants.initialize()
 

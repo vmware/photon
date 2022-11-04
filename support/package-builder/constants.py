@@ -44,6 +44,7 @@ class constants(object):
     phBuilderTag = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
+    buildDbgInfoRpmList = []
 
     noDepsPackageList = [
         "texinfo",
