@@ -7,10 +7,13 @@ URL:            http://www.vmware.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       docker-engine
+
 Source0:        dockerd-vsock.c
 Source1:        dockerd-vsock.conf
+
 BuildRequires:  systemd-devel
+
+Requires:       docker-engine
 
 %description
 docker-vsock provides an wrapper utility that make docker engine (dockerd) listen on vsock.
@@ -38,5 +41,5 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 %{_unitdir}/docker.service.d/dockerd-vsock.conf
 
 %changelog
-*   Mon Nov 29 2021 Bo Gan <ganb@vmware.com> 0.0.1-1
--   Initial packaging
+* Mon Nov 29 2021 Bo Gan <ganb@vmware.com> 0.0.1-1
+- Initial packaging

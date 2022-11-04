@@ -8,7 +8,6 @@ COPY [ "./tmp/calico/opt/cni/bin/calico", \
        "./tmp/calico/opt/cni/bin/calico-ipam", \
        "./tmp/calico/opt/cni/bin/install", \
        "./tmp/calico/opt/cni/bin/portmap", \
-       "./tmp/calico/opt/cni/bin/flannel", \
        "./tmp/calico/opt/cni/bin/host-local", \
        "./tmp/calico/opt/cni/bin/loopback", \
        "/opt/cni/bin/" ]

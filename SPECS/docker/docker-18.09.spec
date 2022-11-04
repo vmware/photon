@@ -1,35 +1,39 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
+
+# Must be in sync with package version
+%define DOCKER_GITCOMMIT 039a7df
+%define TINI_GITCOMMIT fec3683
+%define gopath_comp_engine github.com/docker/docker
+%define gopath_comp_cli github.com/docker/cli
+%define gopath_comp_libnetwork github.com/docker/libnetwork
+
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        24%{?dist}
+Release:        25%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha512  docker=e0019ec85f094f24e09926c93b7ef954a85051bbdbb9b4c5a3c07ddcf0fd7bb904d85114eec355cdbbb3246fb70c967c2baca1236b81d46f1ff5797500377a68
-# Must be in sync with package version
-%define DOCKER_GITCOMMIT 039a7df
-%define TINI_GITCOMMIT fec3683
-Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha512  tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
-%define sha512  libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
 
-%define gopath_comp_engine github.com/docker/docker
-%define gopath_comp_cli github.com/docker/cli
-%define gopath_comp_libnetwork github.com/docker/libnetwork
+Source0: https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
+%define sha512 docker=e0019ec85f094f24e09926c93b7ef954a85051bbdbb9b4c5a3c07ddcf0fd7bb904d85114eec355cdbbb3246fb70c967c2baca1236b81d46f1ff5797500377a68
+
+Source1: https://github.com/krallin/tini/archive/tini-%{TINI_GITCOMMIT}.tar.gz
+%define sha512 tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
+
+Source2: https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
+%define sha512 libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
 
 Source99:       default-disable.preset
-Patch99:        remove-firewalld-1809.patch
-Patch98:        disable-docker-cli-md2man-install.patch
-Patch97:        tini-disable-git.patch
-Patch100:       CVE-2021-41089.patch
 
-BuildRequires:  systemd
+Patch0: tini-disable-git.patch
+Patch1: disable-docker-cli-md2man-install.patch
+Patch2: remove-firewalld-1809.patch
+Patch3: CVE-2021-41089.patch
+
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
@@ -43,8 +47,8 @@ BuildRequires:  go-md2man
 BuildRequires:  cmake
 BuildRequires:  sed
 BuildRequires:  jq
-BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
+
 Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
 # bash completion uses awk
@@ -60,7 +64,7 @@ Requires:       libseccomp >= 2.4.0
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
-Requires:       containerd >= 1.2.10, containerd < 1.5.0
+Requires:       containerd
 Requires:       shadow
 
 %description    engine
@@ -84,27 +88,29 @@ Documentation and vimfiles for docker
 %prep
 # Using autosetup is not feasible
 %setup -q -c
-mkdir -p "$(dirname "src/%{gopath_comp_engine}")"
-mkdir -p "$(dirname "src/%{gopath_comp_cli}")"
-mkdir -p "src/%{gopath_comp_libnetwork}"
-mkdir tini
-mkdir bin
+mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
+         "$(dirname "src/%{gopath_comp_cli}")" \
+         "src/%{gopath_comp_libnetwork}" \
+         tini \
+         bin
+
 tar -C tini -xf %{SOURCE1}
-cd tini
-%patch97 -p1
-cd -
+pushd tini
+%patch0 -p1
+popd
+
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 cd %{name}-%{version}
-%patch99 -p1
-%patch98 -p1
+%patch1 -p1
+%patch2 -p1
 #CVE patches
-%patch100 -p1
+%patch3 -p1
 mv components/engine ../src/%{gopath_comp_engine}
 mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
 
 %build
-export GOPATH="$(pwd)"
+export GOPATH="${PWD}"
 export GO111MODULE=auto
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
@@ -119,7 +125,7 @@ pushd "src/%{gopath_comp_cli}"
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   GITCOMMIT=%{DOCKER_GITCOMMIT} \
-  make dynbinary manpages
+  make dynbinary manpages %{?_smp_mflags}
 popd
 
 # Don't use trimpath for now, see https://github.com/golang/go/issues/16860
@@ -149,7 +155,7 @@ pushd tini
   cmake \
     -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
     -Dgit_version_check_ret=0 \
-    . && make tini-static && cp tini-static "$GOPATH/bin/docker-init"
+    . && make tini-static %{?_smp_mflags} && cp tini-static "$GOPATH/bin/docker-init"
 popd
 
 jq -n \
@@ -166,8 +172,8 @@ install -d -m755 %{buildroot}%{_mandir}/man5
 install -d -m755 %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_unitdir}
-install -d -m755 %{buildroot}%{_localstatedir}/lib/docker-engine
-install -d -m755 %{buildroot}/lib/udev/rules.d
+install -d -m755 %{buildroot}%{_sharedstatedir}/docker-engine
+install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
@@ -181,14 +187,15 @@ install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
-install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
+install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules \
+            %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
 install -p -m 644 packaging/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
 install -p -m 644 packaging/systemd/docker.socket %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
-install -p -m 644 distribution_based_engine.json %{buildroot}%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 # add bash completions
 install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
@@ -221,12 +228,12 @@ if [ $1 -gt 0 ] ; then
     # package upgrade scenario, before new files are installed
 
     # clear any old state
-    rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+    rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
 
     # check if docker service is running
     if systemctl is-active docker.service > /dev/null 2>&1; then
         systemctl stop docker > /dev/null 2>&1 || :
-        touch %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        touch %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -250,9 +257,9 @@ if [ $1 -ge 0 ] ; then
     # package upgrade scenario, after new files are installed
 
     # check if docker was running before upgrade
-    if [ -f %{_localstatedir}/lib/rpm-state/docker-is-active ]; then
+    if [ -f %{_sharedstatedir}/rpm-state/docker-is-active ]; then
         systemctl start docker > /dev/null 2>&1 || :
-        rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -270,8 +277,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/docker-proxy
 %{_bindir}/docker-init
 %{_bindir}/dockerd
-/lib/udev/rules.d/80-docker.rules
-%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+%{_udevrulesdir}/80-docker.rules
+%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 %files cli
 %defattr(-,root,root)
@@ -291,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.09.9-25
+- Bump version as a part of containerd upgrade
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-24
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 18.09.9-23

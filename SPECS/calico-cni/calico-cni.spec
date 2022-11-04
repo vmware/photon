@@ -1,17 +1,21 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
 Version:        3.21.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  calico-cni=56428498eb2c92b9d45f2e54d8698b3f9099c757049b8072167033df8ae74bf371e97b8634e3662c3c95b9adf6c19b0d723e69d2ff3f9ff59761968e4d0f80d0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 calico-cni=56428498eb2c92b9d45f2e54d8698b3f9099c757049b8072167033df8ae74bf371e97b8634e3662c3c95b9adf6c19b0d723e69d2ff3f9ff59761968e4d0f80d0
+
 BuildRequires:  git
 BuildRequires:  go
+
 Requires:       cni
+
 %define debug_package %{nil}
 
 %description
@@ -40,6 +44,8 @@ install -vpm 0755 -t %{buildroot}/opt/cni/bin/ dist/install
 /opt/cni/bin/install
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.0-8
+- Bump version as a part of cni upgrade
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 3.21.0-7
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 3.21.0-6

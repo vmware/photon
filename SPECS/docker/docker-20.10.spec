@@ -13,30 +13,30 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512  moby=94ee555337aaf96bb95ce8cbe8fe1d9c8b87fcd4f256d2af5082fc47915f7576882929c1211ef7fba0c754097bdef5e6df59abbdf77456d3babe139f4353ed21
+Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
+%define sha512 moby=94ee555337aaf96bb95ce8cbe8fe1d9c8b87fcd4f256d2af5082fc47915f7576882929c1211ef7fba0c754097bdef5e6df59abbdf77456d3babe139f4353ed21
 
-Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
-%define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
+Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
+%define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
 
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
-%define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
+Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
+%define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
-Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512  docker-cli=f8b7f1040eccd404e39ec33bcef8bb8423636b0695af65f84c0612e77223844892d219f82cfbb99ccd5326e228f8af27be1870d90ebace77810ea5fce9f86e4a
+Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
+%define sha512 docker-cli=f8b7f1040eccd404e39ec33bcef8bb8423636b0695af65f84c0612e77223844892d219f82cfbb99ccd5326e228f8af27be1870d90ebace77810ea5fce9f86e4a
 
 Source97:       docker-post19.service
 Source98:       docker-post19.socket
 Source99:       default-disable.preset
 
-Patch97:        tini-disable-git.patch
+Patch0: tini-disable-git.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -126,7 +126,7 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%patch97 -p1
+%patch0 -p1
 popd
 
 %build
@@ -193,8 +193,8 @@ install -d -m755 %{buildroot}%{_mandir}/man5
 install -d -m755 %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_unitdir}
-install -d -m755 %{buildroot}%{_localstatedir}/lib/docker-engine
-install -d -m755 %{buildroot}/lib/udev/rules.d
+install -d -m755 %{buildroot}%{_sharedstatedir}/docker-engine
+install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
@@ -208,17 +208,20 @@ install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
-install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
+install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules \
+            %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
 install -p -m 644 %{SOURCE97} %{buildroot}%{_unitdir}/docker.service
 install -p -m 644 %{SOURCE98} %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
-install -p -m 644 distribution_based_engine.json %{buildroot}%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+install -p -m 644 distribution_based_engine.json \
+            %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 # add bash completions
-install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
+install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker \
+            %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 # install manpages
 install -p -m 644 src/%{gopath_comp_cli}/man/man1/*.1 %{buildroot}%{_mandir}/man1
@@ -246,12 +249,12 @@ if [ $1 -gt 0 ] ; then
     # package upgrade scenario, before new files are installed
 
     # clear any old state
-    rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+    rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
 
     # check if docker service is running
     if systemctl is-active docker.service > /dev/null 2>&1; then
         systemctl stop docker > /dev/null 2>&1 || :
-        touch %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        touch %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -275,9 +278,9 @@ if [ $1 -ge 0 ] ; then
     # package upgrade scenario, after new files are installed
 
     # check if docker was running before upgrade
-    if [ -f %{_localstatedir}/lib/rpm-state/docker-is-active ]; then
+    if [ -f %{_sharedstatedir}/rpm-state/docker-is-active ]; then
         systemctl start docker > /dev/null 2>&1 || :
-        rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -295,8 +298,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/docker-proxy
 %{_bindir}/docker-init
 %{_bindir}/dockerd
-/lib/udev/rules.d/80-docker.rules
-%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+%{_udevrulesdir}/80-docker.rules
+%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 %files cli
 %defattr(-,root,root)
@@ -317,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-5
+- Bump version as a part of containerd upgrade
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-4
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-3

@@ -11,21 +11,21 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
+Source0: https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
 
-Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha512  tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
+Source1: https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
+%define sha512 tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
 
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-2fe6352.tar.gz
-%define sha512  libnetwork=320232cc49a383f8f541c57d8a6b18432b5cc71ee8f10908c40bbcb345112f213c78c284a7f92cacd7183d89b0f0d2093391121891ab80796a3bab5430ae5fba
+Source2: https://github.com/docker/libnetwork/archive/libnetwork-2fe6352.tar.gz
+%define sha512 libnetwork=320232cc49a383f8f541c57d8a6b18432b5cc71ee8f10908c40bbcb345112f213c78c284a7f92cacd7183d89b0f0d2093391121891ab80796a3bab5430ae5fba
 
 Source3:       default-disable.preset
 
@@ -66,7 +66,7 @@ Requires:       libseccomp >= 2.4.0
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
-Requires:       containerd >= 1.2.10, containerd < 1.5.0
+Requires:       containerd
 Requires(post): /usr/sbin/groupadd
 Requires(postun): /usr/sbin/groupdel
 
@@ -173,8 +173,8 @@ install -d -m755 %{buildroot}%{_mandir}/man5
 install -d -m755 %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_unitdir}
-install -d -m755 %{buildroot}%{_localstatedir}/lib/docker-engine
-install -d -m755 %{buildroot}/lib/udev/rules.d
+install -d -m755 %{buildroot}%{_sharedstatedir}/docker-engine
+install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
@@ -188,14 +188,15 @@ install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
-install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
+install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules \
+            %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
 install -p -m 644 packaging/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
 install -p -m 644 packaging/systemd/docker.socket %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
-install -p -m 644 distribution_based_engine.json %{buildroot}%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 # add bash completions
 install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
@@ -228,12 +229,12 @@ if [ $1 -gt 0 ] ; then
     # package upgrade scenario, before new files are installed
 
     # clear any old state
-    rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+    rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
 
     # check if docker service is running
     if systemctl is-active docker.service > /dev/null 2>&1; then
         systemctl stop docker > /dev/null 2>&1 || :
-        touch %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        touch %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -257,9 +258,9 @@ if [ $1 -ge 0 ] ; then
     # package upgrade scenario, after new files are installed
 
     # check if docker was running before upgrade
-    if [ -f %{_localstatedir}/lib/rpm-state/docker-is-active ]; then
+    if [ -f %{_sharedstatedir}/rpm-state/docker-is-active ]; then
         systemctl start docker > /dev/null 2>&1 || :
-        rm -f %{_localstatedir}/lib/rpm-state/docker-is-active > /dev/null 2>&1 || :
+        rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
     fi
 fi
 
@@ -277,8 +278,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/docker-proxy
 %{_bindir}/docker-init
 %{_bindir}/dockerd
-/lib/udev/rules.d/80-docker.rules
-%{_localstatedir}/lib/docker-engine/distribution_based_engine.json
+%{_udevrulesdir}/80-docker.rules
+%{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 %files cli
 %defattr(-,root,root)
@@ -298,6 +299,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-22
+- Bump version as a part of containerd upgrade
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-21
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-20

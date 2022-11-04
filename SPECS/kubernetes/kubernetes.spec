@@ -10,22 +10,26 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        kubernetes-%{version}.tar.gz
 %define sha512  kubernetes-%{version}.tar.gz=af67745f84efe1e340187e510d42db231bbeef29d59fae3408b8a560bf5a336d3afa21d4a6bdd6a748ebd018aae0b15edcb4ebda594367aae3f91bae173c3a98
+
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
+
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 
 BuildRequires:  go >= 1.16.2
 BuildRequires:  rsync
 BuildRequires:  which
+
 Requires:       cni
 Requires:       ebtables
 Requires:       etcd >= 3.5.0
@@ -48,12 +52,6 @@ Group:          Development/Tools
 Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
-
-%package	kubectl-extras
-Summary:	kubectl binaries for extra platforms
-Group:		Development/Tools
-%description	kubectl-extras
-Contains kubectl binaries for additional platforms.
 
 %package        pause
 Summary:        pause binary
@@ -82,20 +80,9 @@ gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
 popd
 
-%ifarch x86_64
-# make doesn't support _smp_mflags
-make -j8 WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
-%endif
-
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/%{archname}
-%ifarch x86_64
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
-%endif
 
 # binaries install
 binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
@@ -105,12 +92,6 @@ for bin in "${binaries[@]}"; do
 done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
-# kubectl-extras
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
-%ifarch x86_64
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
-%endif
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
@@ -231,15 +212,10 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
-%files kubectl-extras
-%defattr(-,root,root)
-/opt/vmware/kubernetes/linux/%{archname}/kubectl
-%ifarch x86_64
-/opt/vmware/kubernetes/darwin/%{archname}/kubectl
-/opt/vmware/kubernetes/windows/%{archname}/kubectl.exe
-%endif
-
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.2-8
+- Bump version as a part of cni upgrade
+- Remove kubectl-extra s subpackage
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.2-7
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.2-6

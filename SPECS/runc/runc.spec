@@ -1,42 +1,41 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
-%define RUNC_COMMIT_SHORT f46b6ba
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.1.3
-%define RUNC_GITTAG v%{RUNC_VERSION}
-%define gopath_comp github.com/opencontainers/runc
+%define RUNC_VERSION 1.1.4
+%define RUNC_BRANCH  v%{RUNC_VERSION}
+%define gopath_comp  github.com/opencontainers/runc
 
-Summary:        CLI tool for spawning and running containers per OCI spec.
-Name:           runc
-Version:        1.1.3
-Release:        6%{?dist}
-License:        ASL 2.0
-URL:            https://runc.io
-Group:          Virtualization/Libraries
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Summary:             CLI tool for spawning and running containers per OCI spec.
+Name:                runc
+Version:             1.1.4
+Release:             1%{?dist}
+License:             ASL 2.0
+URL:                 https://runc.io
+Group:               Virtualization/Libraries
+Vendor:              VMware, Inc.
+Distribution:        Photon
 
-Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.xz
-%define sha512  %{name}=529dcb7935e12b590ce67c1e49505cad3c789756bfb331d159e100ebe8c99234c55c49d7b74bb9e8b69c2b858f430f71451278f4cf3f5f6510cc7f9603184546
+Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+%define sha512 %{name}=c8e79ad839964680d29ab56a4de255f91192741951673025da6889c544a232d4d392db2da8005d8e22999a37bfbc9c9fe7f6043b165bc4edc2f2a29261d8a3d6
 
-BuildRequires:  go
-BuildRequires:  which
-BuildRequires:  go-md2man
-BuildRequires:  pkg-config
-BuildRequires:  libseccomp >= 2.4.0
-BuildRequires:  libseccomp-devel
+BuildRequires:       go
+BuildRequires:       which
+BuildRequires:       go-md2man
+BuildRequires:       pkg-config
+BuildRequires:       libseccomp-devel
 
 Requires:   libseccomp >= 2.4.0
 
 %description
-runC is a CLI tool for spawning and running containers according to the OCI specification. Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
+runC is a CLI tool for spawning and running containers according to the OCI specification.
+Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
 
-%package        doc
-Summary:        Documentation for runc
-Requires:       %{name} = %{version}-%{release}
+%package             doc
+Summary:             Documentation for runc
+Requires:            %{name} = %{version}-%{release}
 
-%description    doc
+%description doc
 Documentation for runc
 
 %prep
@@ -46,20 +45,19 @@ mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
-export GO111MODULE=auto
 cd src/%{gopath_comp}
-# Use the format of `git describe --long` as COMMIT
-make %{?_smp_mflags} GIT_BRANCH=%{RUNC_GITTAG} COMMIT=%{RUNC_GITTAG}-0-g%{RUNC_COMMIT_SHORT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} BUILDTAGS='seccomp selinux apparmor' EXTRA_LDFLAGS=-w %{name} man
 
 %install
 cd src/%{gopath_comp}
+#BINDIR is pointing to absolute path so DESTDIR is not required.
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-bash install-man %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bindir} install install-bash install-man
 
 %files
 %defattr(-,root,root)
-%{_bindir}/runc
-%{_datadir}/bash-completion/completions/runc
+%{_bindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/licenses/%{name}
 
 %files doc
@@ -67,6 +65,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.4-1
+- Upgrade to v1.1.4
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-6
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-5
