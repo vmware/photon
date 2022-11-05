@@ -3,7 +3,7 @@ title:  Building Cloud Images
 weight: 1
 ---
 
-Perform the following steps to build the cloud images on Ubuntu: 
+On Ubuntu, perform the following steps to build the cloud images.
 
 1. Install the packages: 
 
@@ -23,31 +23,25 @@ Perform the following steps to build the cloud images on Ubuntu:
     sudo apt install python3-pip
     pip3 install git+https://github.com/vmware/photon-os-installer.git
     git clone https://github.com/vmware/photon.git
+    ```
     
-    
-    
-   If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:
-    
-   
-       `export LC_ALL="en_US.UTF-8"`
+   If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:     
+   `export LC_ALL="en_US.UTF-8"`   
    ` export LC_CTYPE="en_US.UTF-8"`
 
-3.  Clone`the Photon project:
-   
-    `git clone https://github.com/vmware/photon.git`
+4.  Clone the Photon project:    
+    `git clone https://github.com/vmware/photon.git`   
     `cd $HOME/workspaces/photon`
 
-4. Make the cloud image for AMI. 
-
-    
+5. Make the cloud image for AMI.    
     `sudo make image IMG_NAME=ami`
 
-4. Make the cloud image for Azure. 
+6. Make the cloud image for Azure. 
   
    
     `sudo make image IMG_NAME=azure`
 
-4. Make the cloud image for GCE. 
+7. Make the cloud image for GCE. 
     
    
     `sudo make image IMG_NAME=gce`
@@ -68,4 +62,4 @@ $HOME/workspaces/photon/stage/:
     ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
 ```
 
-The cloud image is created at `$HOME/workspaces/photon.
+The cloud image is created at `$HOME/workspaces/photon`.
