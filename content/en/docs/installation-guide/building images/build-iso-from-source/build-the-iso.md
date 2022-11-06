@@ -3,7 +3,7 @@ title: Building the ISO
 weight: 3
 ---
 
-Perform the following steps to install the packages on Ubuntu: 
+On Ubuntu, perform the following steps to install the packages.
 
 1. Install the packages: 
 
@@ -31,12 +31,11 @@ Perform the following steps to install the packages on Ubuntu:
     export LC_CTYPE="en_US.UTF-8"
     ```
 4. The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location:
-    ```
     [https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
 
-5. Clone`the Photon project:
+5. Clone the Photon project:   
    
-    `git clone https://github.com/vmware/photon.git`
+    `git clone https://github.com/vmware/photon.git`   
      `cd $HOME/workspaces/photon`
     
 
@@ -46,7 +45,6 @@ Perform the following steps to install the packages on Ubuntu:
 
 
 5. Make Minimal ISO as follows:
-    
     
     `sudo make minimal-iso`
     
