@@ -1,5 +1,7 @@
 #! /bin/bash
 
+BUILD_SCRIPT_VERSION=1.0
+
 # Target to Photon OS version
 VERSION=4
 
@@ -91,7 +93,7 @@ function create_sandbox() {
     # image is less then 2 weeks
     if [ "$cdate" -gt "$vdate" ]; then
       # use this image
-      run "Use local build template image" docker run -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
+      run "Use local build template image" docker run --privileged -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
       return 0
     else
       # remove old image
@@ -100,28 +102,29 @@ function create_sandbox() {
   fi
 
 
-  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
+  run "Pull photon image" docker run --privileged -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
+  run "Upgrade Packages" in_sandbox tdnf upgrade -y
   run "Install default build tools" in_sandbox tdnf install -y rpm-build build-essential gmp-devel mpfr-devel tar sed findutils file gzip patch bzip2
 
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" photon_build_spec:$VERSION.0
 }
 
 function prepare_buildenv() {
-  mkdir -p "$SPECDIR/stage/SOURCES"
+  mkdir -p "$SPECDIR/SOURCES"
   in_sandbox mkdir -p /usr/src/photon/SOURCES
-  run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/stage/SOURCES" \;
-  run "Copy sources from $SPECDIR" docker cp "$SPECDIR/stage/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
+  run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/SOURCES" \;
+  run "Copy sources from $SPECDIR" docker cp "$SPECDIR/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
 
   for url in $(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^[:space:]]\+$');
   do
     file=$(basename "$url")
-    test -f "$SPECDIR/stage/SOURCES/$file" && continue
-    tryrun "Download $file" wget "$SOURCES_BASEURL/$file" -O "$SPECDIR/stage/SOURCES/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
+    test -f "$SPECDIR/SOURCES/$file" && continue
+    tryrun "Download $file" wget "$SOURCES_BASEURL/$file" -O "$SPECDIR/SOURCES/$file" && docker cp "$SPECDIR/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
     # Retry from original URL
-    [ $? -eq 0 ] || run "Download $url" wget "$url" -O "$SPECDIR/stage/SOURCES/$file" && docker cp "$SPECDIR/stage/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
+    [ $? -eq 0 ] || run "Download $url" wget "$url" -O "$SPECDIR/SOURCES/$file" && docker cp "$SPECDIR/SOURCES/$file" $CONTAINER:/usr/src/photon/SOURCES
   done
 
   local br
@@ -134,8 +137,9 @@ function prepare_buildenv() {
 function build() {
   echo -ne "\tRun rpmbuild " >&3
   [ $WITH_CHECK -eq 0 ] && WITH_CHECK_PARAM="--nocheck"
-  in_sandbox rpmbuild $WITH_CHECK_PARAM -bb ${RPM_MACROS[@]} /usr/src/photon/SOURCES/"$SPECFILE" &
+  in_sandbox rpmbuild $WITH_CHECK_PARAM -ba ${RPM_MACROS[@]} /usr/src/photon/SOURCES/"$SPECFILE" &
   wait_for_result 1
+  run "Delete SOURCES" rm -rf $SPECDIR/SOURCES
 }
 
 function get_rpms() {
@@ -165,13 +169,15 @@ function fail() {
 
 trap clean_up SIGINT SIGTERM
 
+echo "0. Build Script Version:" $BUILD_SCRIPT_VERSION >&3
+
 echo "1. Create sandbox" >&3
 create_sandbox
 
 echo "2. Prepare build environment" >&3
 prepare_buildenv
 
-echo "3. Build" >&3
+echo "3. Build Binary and Source Package" >&3
 build
 
 echo "4. Get binaries" >&3
