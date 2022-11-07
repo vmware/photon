@@ -1,10 +1,10 @@
-%define hamcrest_ver 1.3
+%define hamcrest_ver 2.2
 %define maven_tasks_ver 2.1.3
 
 Summary:    Apache Ant
 Name:       apache-ant
-Version:    1.10.11
-Release:    3%{?dist}
+Version:    1.10.12
+Release:    1%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -12,9 +12,9 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
-%define sha512  %{name}=7ae0f3f224ad0f56a21404514d3435ecbb0931700536790cd4824ffa2528cf20c51e96adadbc1c4a9867a90602310a6b4c2297e4e16a02def7943a35f29e0af4
-Source1:    http://hamcrest.googlecode.com/files/hamcrest-%{hamcrest_ver}.tar.gz
-%define sha512  hamcrest=5672bc627bc71d6fd64b6f776b89ac16ed68819fa4a0748c1250b57f1065c1e7e18ba184d9fe3392e54000ddeb353d0d8d67f4eecdf464974563f05c6b226fc2
+%define sha512  %{name}=1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
+Source1:    https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/hamcrest-%{hamcrest_ver}.jar
+%define sha512  hamcrest=6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
 Source2:    https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
 %define sha512  maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 
@@ -42,13 +42,13 @@ This package contains additional perl and python scripts for Apache Ant.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -T -D -b0 -a1 -a2
+%setup -q -T -D -b0 -a2
 
 %build
 
 %install
 ANT_DIST_DIR=%{buildroot}%{ant_prefix}
-cp -v ./hamcrest-%{hamcrest_ver}/hamcrest-core-%{hamcrest_ver}.jar ./lib/optional
+cp %{SOURCE1} ./lib/optional
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 mkdir -p -m 700 ${ANT_DIST_DIR}
 ./bootstrap.sh && ./build.sh -Ddist.dir=${ANT_DIST_DIR}
@@ -133,6 +133,9 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Mon Nov 07 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.10.12-1
+- Bump to version 1.10.12
+- Update hamcrest to latest version
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.10.11-3
 - Use openjdk11
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.11-2
