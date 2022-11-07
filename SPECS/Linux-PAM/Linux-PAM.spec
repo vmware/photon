@@ -1,19 +1,20 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD and GPLv2+
-URL:            https://github.com/linux-pam/linux-pam/releases
+URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
+Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512  %{name}=26eda95c45598a500bc142da4d1abf93d03b3bbb0f2390fa87c72dcbffa208dbfa115c0b411095c31ee9955e36422ccf3e2df3bd486818fafffef8c4310798c4
 
-Source1:        pamtmp.conf
+Source1: pamtmp.conf
+Source2: default-faillock.conf
 
-Patch0:         faillock-add-support-to-print-login-failures.patch
+Patch0: faillock-add-support-to-print-login-failures.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -82,15 +83,17 @@ ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
-install -d -m 755 %{buildroot}/var/run/faillock
-install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
+cat %{SOURCE2} >> %{buildroot}%{_sysconfdir}/security/faillock.conf
+
+install -d -m 755 %{buildroot}%{_var}/run/faillock
+install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %{find_lang} %{name}
 
 %{_fixperms} %{buildroot}/*
 
-%check
 %if 0%{?with_check}
+%check
 install -v -m755 -d /etc/pam.d
 cat > /etc/pam.d/other << "EOF"
 auth     required       pam_deny.so
@@ -118,8 +121,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_unitdir}/pam_namespace.service
-%dir /var/run/faillock
-%{_libdir}/tmpfiles.d/pam.conf
+%dir %{_var}/run/faillock
+%{_tmpfilesdir}/pam.conf
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -131,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-6
+- Add a default faillock.conf
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-5
 - Further fixes to faillock patch
 * Wed Mar 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-4
