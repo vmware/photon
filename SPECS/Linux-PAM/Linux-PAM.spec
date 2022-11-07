@@ -1,19 +1,20 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
+Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=fa16350c132d3e5fb82b60d991768fb596582639841b8ece645c684705467305ccf1302a0147ec222ab78c01b2c9114c5496dc1ca565d2b56bf315f29a815144
 
-Source1:        pamtmp.conf
+Source1: pamtmp.conf
+Source2: default-faillock.conf
 
-Patch0:         faillock-add-support-to-print-login-failures.patch
+Patch0: faillock-add-support-to-print-login-failures.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
@@ -82,15 +83,17 @@ ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
+cat %{SOURCE2} >> %{buildroot}%{_sysconfdir}/security/faillock.conf
+
 install -d -m 755 %{buildroot}%{_var}/run/faillock
-install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
+install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %{find_lang} %{name}
 
 %{_fixperms} %{buildroot}/*
 
-%check
 %if 0%{?with_check}
+%check
 install -v -m755 -d %{_sysconfdir}/pam.d
 cat > %{_sysconfdir}/pam.d/other << "EOF"
 auth     required       pam_deny.so
@@ -116,7 +119,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_libdir}/tmpfiles.d/pam.conf
+%{_tmpfilesdir}/pam.conf
 %{_unitdir}/pam_namespace.service
 %dir %{_var}/run/faillock
 
@@ -131,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-3
+- Add a default faillock.conf
 * Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-2
 - Remove libdb support from pam
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-1
