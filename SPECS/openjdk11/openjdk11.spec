@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	11.0.12
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -25,6 +25,7 @@ BuildRequires:	chkconfig
 BuildRequires:  freetype2
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
 Requires:       chkconfig
+Requires:       libstdc++
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjre10, openjdk10
@@ -200,25 +201,27 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-*   Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
--   Fix for CVE-2022-34169.
-*   Tue May 17 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
--   Added alternative for java
-*   Wed Mar 23 2022 Tapas Kundu <tkundu@vmware.com> 11.0.12-1
--   Update to tag jdk-11.0.12-ga
-*   Wed Dec 15 2021 Tapas Kundu <tkundu@vmware.com> 11.0.9-2
--   Use openjdk10 from PublishXrpms
-*   Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
--   Updated to 11.0.9 tag - jdk-11.0.9+10
-*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
--   Added a check in %postun to avoid alternatives --remove
--   after new version is installed.
--   Do alternative remove only in case of uninstall.
-*   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
--   Updating to jdk-11.0.8-ga
-*   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
--   Updating to jdk-11.0.7-ga
-*   Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
--   Updated to jdk11 tag: 11+28
-*   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
--   Initial build. First version
+* Mon Nov 07 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
+- Add missing requires on libstdc++
+* Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
+- Fix for CVE-2022-34169.
+* Tue May 17 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
+- Added alternative for java
+* Wed Mar 23 2022 Tapas Kundu <tkundu@vmware.com> 11.0.12-1
+- Update to tag jdk-11.0.12-ga
+* Wed Dec 15 2021 Tapas Kundu <tkundu@vmware.com> 11.0.9-2
+- Use openjdk10 from PublishXrpms
+* Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
+- Updated to 11.0.9 tag - jdk-11.0.9+10
+* Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
+- Added a check in %postun to avoid alternatives --remove
+- after new version is installed.
+- Do alternative remove only in case of uninstall.
+* Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
+- Updating to jdk-11.0.8-ga
+* Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
+- Updating to jdk-11.0.7-ga
+* Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
+- Updated to jdk11 tag: 11+28
+* Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
+- Initial build. First version

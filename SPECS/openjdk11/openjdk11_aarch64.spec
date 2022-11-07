@@ -6,7 +6,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -25,6 +25,7 @@ BuildRequires:  chkconfig
 BuildRequires:  freetype2
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
 Requires:       chkconfig
+Requires:       libstdc++
 Obsoletes:      openjdk <= %{version}
 AutoReqProv:    no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk11, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
@@ -198,5 +199,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-*   Mon Jun 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.12-1
--   Initial build. First version
+* Mon Nov 07 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-2
+- Add missing requires on libstdc++
+* Mon Jun 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.12-1
+- Initial build. First version
