@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.264
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -138,6 +138,14 @@ Patch79: 0005-ovl-check-permission-to-open-real-file.patch
 
 # Fix for CVE-2022-34918
 Patch80: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
+
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch81: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch82: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch83: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch84: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch85: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch86: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 # inherit tcp_limit_output_bytes
 Patch90: tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -777,6 +785,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
 - Update to version 4.19.264
 * Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.264
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -109,18 +109,26 @@ Patch74: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 # Fix for CVE-2022-34918
 Patch75: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
-# Upgrade vmxnet3 driver to version 4
-Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
-Patch81: 0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch82: 0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch83: 0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch84: 0004-vmxnet3-update-to-version-4.patch
-Patch85: 0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch86: 0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch87: 0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
-Patch88: 0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch76: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch77: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch78: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch79: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch80: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch81: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
-Patch89: 0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+# Upgrade vmxnet3 driver to version 4
+Patch86: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+Patch87: 0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch88: 0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch89: 0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch90: 0004-vmxnet3-update-to-version-4.patch
+Patch91: 0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch92: 0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch93: 0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch94: 0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+
+Patch95: 0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch97: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -490,6 +498,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
 - Update to version 4.19.264
 * Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1

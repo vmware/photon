@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.264
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -75,6 +75,15 @@ Patch40: efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
 #Fix for CVE-2019-19338
 Patch41: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch52: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch53: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch54: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch55: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch56: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
 # Fix for CVE-2020-16119
 Patch58: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch59: 0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -869,6 +878,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
 - Update to version 4.19.264
 * Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1

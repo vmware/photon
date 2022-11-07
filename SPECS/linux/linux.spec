@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.264
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -131,9 +131,17 @@ Patch69: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 #Fix for CVE-2022-1055
 Patch70: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
+# Fix for CVE-2022-3524 and CVE-2022-3567
+Patch71: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
+Patch72: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
+Patch73: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
+Patch74: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
+Patch75: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
+Patch76: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
 #Fix for 9p
-Patch71: 0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
-Patch72: 0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
+Patch77: 0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch78: 0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -647,7 +655,7 @@ ApplyPatch "1" "13"
 %patch17 -p1
 %endif
 
-ApplyPatch "25" "188"
+ApplyPatch "25" "187"
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1063,6 +1071,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
+- Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1
 - Update to version 4.19.264
 * Wed Oct 19 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.261-1
