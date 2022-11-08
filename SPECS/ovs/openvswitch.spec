@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -15,6 +15,7 @@ Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 Patch0:         ovs-CVE-2020-35498.patch
 Patch1:         ovs-CVE-2020-27827.patch
 Patch2:         ovs-CVE-2021-36980.patch
+Patch3:         ovs-CVE-2021-3905.patch
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -117,6 +118,7 @@ It contains the documentation and manpages for OVN.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 # AM_INIT_AUTOMAKE macro was generated using automake 1.15.1 and we are using
 # different version of automake, thus, aclocal.m4 needs to be recreated
 %{__aclocal}
@@ -278,6 +280,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Nov 08 2022 Harinadh D  <hdommaraju@vmware.com> 2.12.0-5
+-   Patched for CVE-2021-3905
 *   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-4
 -   Patched for CVE-2021-36980
 *   Thu Apr 01 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-3
