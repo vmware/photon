@@ -1,22 +1,32 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.0
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          GPLv2+
-URL:              https://www.strongswan.org/
+URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      strongswan=8bb52214f72f2571f55dababfe76ff97fd31ca1f
+
+Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=b982ce7c3e940ad75ab71b02ce3e2813b41c6b098cde5b6f3f3513d095f409fe989ae6e38a31eff51c57423bf452c3610cd5cd8cd7f45ff932581d9859df1821
+
+%if 0%{?with_check}
+Patch0: strongswan-fix-make-check.patch
+%endif
+
+Patch1: CVE-2021-41990.patch
+Patch2: CVE-2021-41991.patch
+Patch3: CVE-2021-45079.patch
+Patch4: CVE-2022-40617.patch
+
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
-Patch0:           strongswan-fix-make-check.patch
-Patch1:           CVE-2021-41990.patch
-Patch2:           CVE-2021-41991.patch
-Patch3:           CVE-2021-45079.patch
 %{?systemd_requires}
+
+Requires: systemd
+Requires: gmp
 
 %description
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
@@ -25,18 +35,19 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 %autosetup -p1
 
 %build
-%configure --enable-systemd
-sed -i '/stdlib.h/a #include <stdint.h>' src/libstrongswan/utils/utils.h &&
-make %{?_smp_mflags}
+%configure \
+    --enable-systemd
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
 
+%if 0%{?with_check}
 %check
 make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -54,17 +65,24 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/charon/*.conf
+%config(noreplace) %{_sysconfdir}/ipsec.secrets
+%{_sysconfdir}/swanctl/*
+%{_sysconfdir}/ipsec.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/ipsec/*
 %{_libexecdir}/*
 %{_mandir}/man[158]/*
-%{_datadir}/strongswan/*
-%{_unitdir}/strongswan-starter.service
-%{_unitdir}/strongswan.service
+%{_datadir}/%{name}/*
+%{_unitdir}/%{name}-starter.service
+%{_unitdir}/%{name}.service
 
 %changelog
+* Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9.0-5
+- Fix CVE-2022-40617
 * Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.9.0-4
 - Fix CVE-2021-45079
 * Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-3
