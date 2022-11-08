@@ -1,26 +1,33 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.5.2
-Release:          8%{?dist}
+Version:          5.6.3
+Release:          1%{?dist}
 License:          GPLv2+
-URL:              https://www.strongswan.org/
+URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      %{name}=0f181715fd25a98a9e0d3227b594c6fc8ed429c2
+Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
+%define sha1 %{name}=749e8b5ad0c9480c2303bc6caf4c9c6452ce00ed
 
-Patch0:           CVE-2017-9022.patch
-Patch1:           CVE-2017-9023.patch
-Patch2:           CVE-2017-11185.patch
-Patch3:           CVE-2018-5388.patch
-Patch4:           CVE-2018-10811.patch
-Patch5:           CVE-2018-16151-16152.patch
-Patch6:           CVE-2021-41991.patch
-Patch7:           CVE-2021-45079.patch
+%if 0%{?with_check}
+Patch0: strongswan-fix-make-check.patch
+%endif
+
+Patch1: CVE-2018-16151-16152.patch
+Patch2: CVE-2021-41990.patch
+Patch3: CVE-2021-41991.patch
+Patch4: CVE-2021-45079.patch
+Patch5: CVE-2022-40617.patch
 
 BuildRequires:    autoconf
+BuildRequires:    gmp-devel
+BuildRequires:    systemd-devel
+%{?systemd_requires}
+
+Requires: systemd
+Requires: gmp
 
 %description
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
@@ -29,33 +36,55 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 %autosetup -p1
 
 %build
-%configure
-sed -i '/stdlib.h/a #include <stdint.h>' src/libstrongswan/utils/utils.h &&
-make %{?_smp_mflags}
+%configure \
+    --enable-systemd
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%if 0%{?with_check}
+%check
+make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}/*
 
+%post
+/sbin/ldconfig
+%systemd_post %{name}.service
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+/sbin/ldconfig
+%systemd_postun_with_restart %{name}.service
+
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}.d/charon/*.conf
+%config(noreplace) %{_sysconfdir}/ipsec.secrets
+%{_sysconfdir}/swanctl/*
+%{_sysconfdir}/ipsec.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/ipsec/*
 %{_libexecdir}/*
 %{_mandir}/man[158]/*
-%{_datadir}/strongswan/*
+%{_datadir}/%{name}/*
+%{_unitdir}/%{name}-swanctl.service
+%{_unitdir}/%{name}.service
 
 %changelog
+* Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6.3-1
+- Upgrade to v5.6.3
+- Fix CVE-2022-40617
 * Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.5.2-8
 - Fix CVE-2021-45079
 * Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.5.2-7
