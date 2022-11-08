@@ -184,7 +184,7 @@ class Scheduler(object):
 
     @staticmethod
     def printStatus():
-        Scheduler.logger.info("Package Status: Total: {} Building: {} Failed: {} Pending: {} Done: {}"
+        Scheduler.logger.info("Package Status: Total: {} Building: {} Broken: {} Pending: {} Done: {}"
         .format(
             len(Scheduler.sortedList),
             len(Scheduler.listOfPackagesCurrentlyBuilding),

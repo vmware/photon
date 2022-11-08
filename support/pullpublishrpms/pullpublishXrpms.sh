@@ -1,4 +1,5 @@
 #!/bin/bash
+
 PRGNAME=${0##*/}
 
 if [ $# -lt 1 ]; then
