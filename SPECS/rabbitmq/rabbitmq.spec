@@ -1,30 +1,36 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.10.7
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
-source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512  rabbitmq=34b7d0cbc8dafe8d7394aa3f6002f19bceea30266dc19d00bff367ec526fa528c9a3eb4a6da5e6054454d361e7bf14adc6a88e4178dc2fa9bcd6425819cdeccb
-Source1:       rabbitmq.config
-Requires:      erlang >= 24
-Requires:      erlang-sd_notify
-Requires:      /bin/sed
-Requires:      socat
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+
+Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha512 rabbitmq=34b7d0cbc8dafe8d7394aa3f6002f19bceea30266dc19d00bff367ec526fa528c9a3eb4a6da5e6054454d361e7bf14adc6a88e4178dc2fa9bcd6425819cdeccb
+
+Source1: rabbitmq.config
+
 BuildRequires: erlang
-BuildRequires: python3
+BuildRequires: python3-devel
 BuildRequires: python3-xml
 BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: git
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: xmlto
-BuildRequires: python-xml
 BuildRequires: elixir
+BuildRequires: systemd-devel
+
+Requires:      erlang >= 24
+Requires:      erlang-sd_notify
+Requires:      /bin/sed
+Requires:      socat
+Requires:      systemd
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+
 BuildArch:     noarch
 
 %description
@@ -38,18 +44,20 @@ LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %make_build
 
 %install
-%make_install RMQ_ROOTDIR=/usr/lib/rabbitmq/
+%make_install %{?_smp_mflags} RMQ_ROOTDIR=%{_libdir}/rabbitmq
 
-install -vdm755 %{buildroot}/var/lib/rabbitmq/
-install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
-install -vdm755 %{buildroot}/usr/lib/systemd/system/
-mkdir -p %{buildroot}/var/log
-mkdir -p %{buildroot}/var/opt/rabbitmq/log
-ln -sfv /var/opt/rabbitmq/log %{buildroot}/var/log/rabbitmq
+install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
+install -vdm755 %{buildroot}%{_sysconfdir}/rabbitmq
+install -vdm755 %{buildroot}%{_unitdir}
 
-cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/rabbitmq/
-mkdir -p %{buildroot}/usr/lib/systemd/system
-cat << EOF >>  %{buildroot}/usr/lib/systemd/system/rabbitmq-server.service
+mkdir -p %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/rabbitmq/log
+
+ln -sfv %{_var}/opt/rabbitmq/log %{buildroot}%{_var}/log/rabbitmq
+
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/rabbitmq
+
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=RabbitMQ broker
 After=network.target epmd@0.0.0.0.socket
@@ -61,16 +69,18 @@ User=rabbitmq
 Group=rabbitmq
 NotifyAccess=all
 TimeoutStartSec=3600
-WorkingDirectory=/var/lib/rabbitmq
-ExecStart=/usr/lib/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmq-server
-ExecStop=/usr/lib/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
+WorkingDirectory=%{_sharedstatedir}/rabbitmq
+ExecStart=%{_libdir}/rabbitmq/lib/rabbitmq_server-%{version}/sbin/%{name}
+ExecStop=%{_libdir}/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} tests
+%endif
 
 %pre
 if ! getent group rabbitmq >/dev/null; then
@@ -78,20 +88,22 @@ if ! getent group rabbitmq >/dev/null; then
 fi
 
 if ! getent passwd rabbitmq >/dev/null; then
-  useradd -r -g rabbitmq -d %{_localstatedir}/lib/rabbitmq rabbitmq \
-  -s /sbin/nologin -c "RabbitMQ messaging server"
+  useradd -r -g rabbitmq -d %{_sharedstatedir}/rabbitmq rabbitmq \
+      -s /sbin/nologin -c "RabbitMQ messaging server"
 fi
 
 %post
-chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
-chown -R rabbitmq:rabbitmq /etc/rabbitmq
-chmod g+s /etc/rabbitmq
+/sbin/ldconfig
+chown -R rabbitmq:rabbitmq %{_sharedstatedir}/rabbitmq
+chown -R rabbitmq:rabbitmq %{_sysconfdir}/rabbitmq
+chmod g+s %{_sysconfdir}/rabbitmq
 %systemd_post %{name}.service
 
 %preun
 %systemd_preun %{name}.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
 
 %clean
@@ -99,13 +111,17 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, rabbitmq, rabbitmq) /var/opt/rabbitmq/log
-%attr(0750, rabbitmq, rabbitmq) /var/log/rabbitmq
+%dir %attr(0750, rabbitmq, rabbitmq) %{_var}/opt/rabbitmq/log
+%{_var}/log/rabbitmq
 %{_libdir}/*
+%{_unitdir}/*.service
 %{_sysconfdir}/*
-/var/lib/*
+%{_sharedstatedir}/*
 
 %changelog
+* Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-4
+- Fix build failure
+- Spec improvements
 * Fri Oct 14 2022 Ankit Jain <ankitja@vmware.com> 3.10.7-3
 - Release Bump up to build with erlang-25.1-2
 * Tue Oct 04 2022 Harinadh D <hdommaraju@vmware.com> 3.10.7-2
