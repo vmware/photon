@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Patch0:         CVE-2021-3156_1.patch
 Patch1:         CVE-2021-3156_2.patch
 Patch2:         CVE-2021-3156_3.patch
 Patch3:         CVE-2021-3156_4.patch
+Patch4:         sudo-CVE-2022-43995.patch
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -99,6 +100,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+* Tue Nov 08 2022 Ankit Jain <ankitja@vmware.com> 1.9.5-4
+- Fixes CVE-2022-43995
 * Thu Jan 28 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-3
 - Fix "/etc/sudoers" to allow group wheel.
 * Fri Jan 22 2021 Tapas Kundu <tkundu@vmware.com> 1.9.5-2
