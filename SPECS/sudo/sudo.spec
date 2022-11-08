@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    %{name}=1e9fccda4beccca811ecb48866776388c9c377ae
+%define sha512  %{name}=7044bbe83194171f0514b9d4809be037c01d8e1daacf4444165019c19346c4bc89f20e679b4dd6d25a7de5edfcc1ba710ae0a02b49fdbe8b46d0f1fc7ce1ab47
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -22,6 +22,7 @@ Patch0:         CVE-2021-3156_1.patch
 Patch1:         CVE-2021-3156_2.patch
 Patch2:         CVE-2021-3156_3.patch
 Patch3:         CVE-2021-3156_4.patch
+Patch4:         sudo-CVE-2022-43995.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
@@ -115,6 +116,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+* Tue Nov 08 2022 Ankit Jain <ankitja@vmware.com> 1.9.5-2
+- Fixes CVE-2022-43995
 * Fri Jan 29 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-1
 - Upgrade sudo to v1.9.5
 * Thu Jan 21 2021 Tapas Kundu <tkundu@vmware.com> 1.8.30-3
