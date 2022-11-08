@@ -1,29 +1,29 @@
 diff --git a/Makefile b/Makefile
-index 2c6e16b..881628b 100644
+index 972ad4c..33fa683 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,6 +1,6 @@
  BASE_DIR         = $(shell pwd)
  ERLANG_BIN       = $(shell dirname $(shell which erl))
 -GIT_VERSION      = $(shell git describe --tags --always)
-+GIT_VERSION      = 1.12.0
++GIT_VERSION      = 1.12.5
  OVERLAY_VARS    ?=
  REBAR ?= $(BASE_DIR)/rebar3
  
 diff --git a/rebar.config b/rebar.config
-index 64849f5..8925d87 100644
+index e327d10..a689804 100644
 --- a/rebar.config
 +++ b/rebar.config
-@@ -60,7 +60,7 @@
+@@ -59,7 +59,7 @@
     {schema_discovery, false}]}.
  
  {relx,
 - [{release, {vernemq, semver},
-+ [{release, {vernemq, "1.12.0"},
++ [{release, {vernemq, "1.12.5"},
     [
      sasl,
      inets,
-@@ -133,10 +133,10 @@
+@@ -133,9 +133,9 @@
  
               {template, "files/vmq.schema", "share/schema/30-vmq.schema"},
  
@@ -36,6 +36,3 @@ index 64849f5..8925d87 100644
  
               {mkdir, "lib/erlio-patches"}
              ]}
--]}.
-\ No newline at end of file
-+]}.

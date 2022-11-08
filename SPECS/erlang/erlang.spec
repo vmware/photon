@@ -1,18 +1,17 @@
-Name:         erlang
-Summary:      erlang
-Version:      23.1
-Release:      5%{?dist}
-Group:        Development/Languages
-Vendor:       VMware, Inc.
-Distribution: Photon
-License:      ASL2.0
-URL:          http://erlang.com
+Name:          erlang
+Summary:       erlang
+Version:       25.1.2
+Release:       1%{?dist}
+Group:         Development/Languages
+Vendor:        VMware, Inc.
+Distribution:  Photon
+License:       ASL2.0
+URL:           https://www.erlang.org
 
-Source0:      OTP-%{version}.tar.gz
-%define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
+Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
+%define sha512 OTP=a478799cb7df70a552043da55757b811e8b97182be15ab928e05b58537bb7bc4899aee406648767f538d8bd5c09e0a9d7e3655c99a8df0e6a0b77db83a720fb8
 
-Patch0:       0001-erlang-fix-vernemq-build-fail.patch
-Patch1:       0001-crypto-declare-extern-for-BN_GENCB-APIs.patch
+Patch0: 0001-erlang-fix-vernemq-build-fail.patch
 
 Requires:     ncurses-libs
 
@@ -20,28 +19,26 @@ BuildRequires: unzip
 BuildRequires: openssl-devel
 
 %description
-erlang programming language
+Erlang is a general-purpose programming language and runtime
+environment. Erlang has built-in support for concurrency, distribution
+and fault tolerance. Erlang is used in several large telecommunication
+systems from Ericsson.
 
 %prep
 %autosetup -p1 -n otp-OTP-%{version}
 
 %build
-export ERL_TOP=$(pwd)
-export CFLAGS="-Wno-error=implicit-function-declaration"
-./otp_build autoconf
+export ERL_TOP="${PWD}"
+export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
+
 %configure \
-    --with-ssl=%{_libdir} \
-    --with-ssl-incl=%{_includedir}/openssl \
-    --with-ssl-rpath=%{_libdir} \
     --enable-dynamic-ssl-lib \
     --enable-fips
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-
-%post
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -51,6 +48,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Nov 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 25.1.2-1
+- Upgrade to v25.1.2
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.1-5
 - Exclude debug symbols properly
 * Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 23.1-4
