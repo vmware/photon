@@ -1,15 +1,15 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        22.2.2
-Release:        3%{?dist}
+Version:        22.3.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://archive.mesa3d.org/%{name}-%{version}.tar.xz
-%define sha512 %{name}=a1eb67e1ae4880c79b1fdc570f4389baba0b8ba796da7e695c9af19a7d92b6c06b95570e6c796548b61355989025fb7efbf9acac74cbd695f7e297dc913b933c
+Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=654c91666eb231e6952da1cdc4fc694252707ab3aa5ab806dde45a74edcb551bad5ca127c768cafe93b0564d5f3e58cd9d9c6390c037207da948c9fa093290fe
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -31,6 +31,8 @@ BuildRequires:  glslang-devel
 
 Requires:       libllvm
 Requires:       expat-libs
+Requires:       libdrm
+Requires:       libwayland-client
 
 Provides:       pkg-config(dri)
 
@@ -62,12 +64,11 @@ Provides:       libgbm-devel
 Mesa libgbm development package.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-%{name}-%{version} -p1
 
 %build
 %{meson} \
     -Dgallium-vdpau=disabled \
-    -Dgallium-xvmc=disabled \
     -Dgallium-omx=disabled \
     -Dgallium-va=disabled \
     -Dgallium-xa=disabled \
@@ -104,6 +105,8 @@ Mesa libgbm development package.
 %clean
 rm -rf %{buildroot}/*
 
+%ldconfig_scriptlets
+
 %files
 %defattr(-,root,root)
 
@@ -117,8 +120,10 @@ rm -rf %{buildroot}/*
 %ifarch x86_64
 %{_libdir}/libvulkan_radeon.so
 %{_libdir}/libvulkan_intel.so
+%{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/drirc.d/00-radv-defaults.conf
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
+%{_datadir}/vulkan/icd.d/intel_hasvk_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 %endif
 
@@ -134,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Tue Jan 10 2023 Shivani Agarwal <shivania2@vmware.com> 22.3.0-1
+- Upgrade mesa to 22.3.0 and enabled intel and Nvidia driver support
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 22.2.2-3
 - Bump up due to change in elfutils
 * Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 22.2.2-2

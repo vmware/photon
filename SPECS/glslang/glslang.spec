@@ -1,6 +1,6 @@
 Name:           glslang
 Version:        11.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 License:        BSD and GPLv3+ and ASL 2.0
 URL:            https://github.com/KhronosGroup/glslang
@@ -35,7 +35,6 @@ interpretation of the specifications for these languages.
 
 %build
 %cmake \
-    -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Debug
 
@@ -44,19 +43,28 @@ interpretation of the specifications for these languages.
 %install
 %cmake_install
 
+%ldconfig_scriptlets
+
 %files
 %defattr(-,root,root)
 %doc README.md README-spirv-remap.txt
 %{_bindir}/%{name}Validator
 %{_bindir}/spirv-remap
+%{_libdir}/libglslang.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/
-%{_libdir}/*.a
+%{_libdir}/libHLSL.so
+%{_libdir}/libSPIRV.so
+%{_libdir}/libSPVRemapper.so
+%{_libdir}/libglslang.so
+%{_libdir}/libglslang-default-resource-limits.so
 %{_libdir}/cmake/*
 
 %changelog
+*   Thu Dec 15 2022 Shivani Agarwal <shivania2@vmware.com> 11.13.0-2
+-   Add support for shared libraries
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 11.13.0-1
 -   Automatic Version Bump
 *   Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 11.12.0-1

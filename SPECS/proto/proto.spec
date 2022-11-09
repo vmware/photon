@@ -24,23 +24,23 @@ BuildArch:      noarch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.x.org/pub/individual/proto/xproto-%{xproto_ver}.tar.bz2
-%define sha512 xproto=bba6141525c21fd9a3cf210853658cc7af69f82e1ac15bacfffb9280efc3fe3c6fa708095b541b6f33f114c11e808bde8c8839ae63ff88e30963abdfac12702b
+Source0:        http://ftp.x.org/pub/individual/proto/xproto-%{xproto_ver}.tar.bz2
+%define sha512  xproto=bba6141525c21fd9a3cf210853658cc7af69f82e1ac15bacfffb9280efc3fe3c6fa708095b541b6f33f114c11e808bde8c8839ae63ff88e30963abdfac12702b
 
-Source1: http://ftp.x.org/pub/individual/proto/xextproto-%{xextproto_ver}.tar.bz2
-%define sha512 xextproto=238beed85fcf6fe5b0809e52814dd44fa45fe6868239990086cb8dd2c446292dd4794698abd07ed10bd146a7096c1679f7160da226f9e861dfaf6c8e22315d61
+Source1:        http://ftp.x.org/pub/individual/proto/xextproto-%{xextproto_ver}.tar.bz2
+%define sha512  xextproto=238beed85fcf6fe5b0809e52814dd44fa45fe6868239990086cb8dd2c446292dd4794698abd07ed10bd146a7096c1679f7160da226f9e861dfaf6c8e22315d61
 
-Source2: http://ftp.x.org/pub/individual/proto/inputproto-%{inputproto_ver}.tar.bz2
-%define sha512 inputproto=84f8acff3d54e929af6da088624adcd8dffe2eba0d9ef672e136f76d12f3814fbf6a7962de27becfaa0aa5e70d874eb5297d9eed8809576d7b0d96f8c29d9d72
+Source2:        http://ftp.x.org/pub/individual/proto/inputproto-%{inputproto_ver}.tar.bz2
+%define sha512  inputproto=84f8acff3d54e929af6da088624adcd8dffe2eba0d9ef672e136f76d12f3814fbf6a7962de27becfaa0aa5e70d874eb5297d9eed8809576d7b0d96f8c29d9d72
 
-Source3: http://ftp.x.org/pub/individual/proto/kbproto-%{kbproto_ver}.tar.bz2
-%define sha512 kbproto=49f24bfd11ee4ef0de658a1f55bcfb4b3a1f7057d90137b899ea3d4ecc40cebde97926a3f4315ddca4ae28d32b2d15f16fda993296acffdb4c007d2f84a39a22
+Source3:        http://ftp.x.org/pub/individual/proto/kbproto-%{kbproto_ver}.tar.bz2
+%define sha512  kbproto=49f24bfd11ee4ef0de658a1f55bcfb4b3a1f7057d90137b899ea3d4ecc40cebde97926a3f4315ddca4ae28d32b2d15f16fda993296acffdb4c007d2f84a39a22
 
-Source4: http://ftp.x.org/pub/individual/proto/renderproto-%{renderproto_ver}.tar.bz2
-%define sha512 renderproto=c38bc7247fd7b89732c892ee41c061b20397f4e79195601b7015dd55054b966f0797ac3990b147f80234596ba2c201ce90e292ecefed2e133167955bca70acc5
+Source4:        http://ftp.x.org/pub/individual/proto/renderproto-%{renderproto_ver}.tar.bz2
+%define sha512  renderproto=c38bc7247fd7b89732c892ee41c061b20397f4e79195601b7015dd55054b966f0797ac3990b147f80234596ba2c201ce90e292ecefed2e133167955bca70acc5
 
-Source5: http://ftp.x.org/pub/individual/proto/randrproto-%{randrproto_ver}.tar.bz2
-%define sha512 randrproto=5c56f6acfe3a9da5ffda45e4af2da5081a5116d53f4d2dafe399eae168656727927ca0fb4c29fc6583e87709ac83b025ae206fba9356ebf9e26d3ff545da57f4
+Source5:        http://ftp.x.org/pub/individual/proto/randrproto-%{randrproto_ver}.tar.bz2
+%define sha512  randrproto=5c56f6acfe3a9da5ffda45e4af2da5081a5116d53f4d2dafe399eae168656727927ca0fb4c29fc6583e87709ac83b025ae206fba9356ebf9e26d3ff545da57f4
 
 Source6: http://ftp.x.org/pub/individual/proto/fixesproto-%{fixesproto_ver}.tar.bz2
 %define sha512 fixesproto=93c6a8b6e4345c3049c08f2f3960f5eb5f92c487f26d227430964361bf82041b49e61f873fbbb8ee0e111556f90532b852c20e6082ee8008be641373251fa78c

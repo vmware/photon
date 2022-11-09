@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.0.7
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -492,6 +492,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 27 2023 Shivani Agarwal <shivania2@vmware.com> 6.0.7-5
+- Enable CONFIG_DRM_I915
 * Wed Jan 18 2023 Ajay Kaher <akaher@vmware.com> 6.0.7-4
 - Fix aarch64 rpm build issue
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
