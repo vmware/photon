@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.326
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.332
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
+%define sha1 linux=9c74f8b89fc89e3ade7fc0b1f0c021e0dfd46a5c
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -178,9 +178,6 @@ Patch127:       0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
 Patch128:       0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
 Patch129:       0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
 Patch130:       0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
-
-# Fix for CVE-2022-3028
-Patch131:       0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 
 # Fix for CVE-2022-36123
 Patch132:       0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
@@ -373,7 +370,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch128 -p1
 %patch129 -p1
 %patch130 -p1
-%patch131 -p1
 %patch132 -p1
 %patch133 -p1
 %patch134 -p1
@@ -548,6 +544,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 4.9.332-1
+-   Update to version 4.9.332
 *   Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.326-5
 -   Fix for CVE-2022-34918
 *   Tue Sep 27 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-4

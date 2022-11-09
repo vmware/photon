@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.326
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.332
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c9af7252daeeebf16684a1b63d8c4e7821bfe3b7
+%define sha1 linux=9c74f8b89fc89e3ade7fc0b1f0c021e0dfd46a5c
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -215,9 +215,6 @@ Patch164:        0002-ALSA-pcm-Fix-races-among-concurrent-read-write-and-b.patch
 Patch165:        0003-ALSA-pcm-Fix-races-among-concurrent-prepare-and-hw_p.patch
 Patch166:        0004-ALSA-pcm-Fix-races-among-concurrent-prealloc-proc-wr.patch
 Patch167:        0005-ALSA-pcm-Fix-potential-AB-BA-lock-with-buffer_mutex-.patch
-
-# Fix for CVE-2022-3028
-Patch168:       0001-af_key-Do-not-call-xfrm_probe_algs-in-parallel.patch
 
 # Fix for CVE-2022-36123
 Patch169:       0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
@@ -444,7 +441,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch165 -p1
 %patch166 -p1
 %patch167 -p1
-%patch168 -p1
 %patch169 -p1
 %patch170 -p1
 %patch171 -p1
@@ -596,6 +592,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 4.9.332-1
+-   Update to version 4.9.332
 *   Tue Sep 27 2022 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.326-5
 -   Fix for CVE-2022-34918
 *   Tue Sep 27 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.326-4
