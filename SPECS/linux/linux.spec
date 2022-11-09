@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.152
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -121,6 +121,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-3623
+Patch105: 0001-mm_hugetlb_fix_races_when_looking_up_a_CONT-PTE_PMD_size_hugetlb_page.patch
 
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -794,6 +797,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-3
+- Fix for CVE-2022-3623
 * Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1

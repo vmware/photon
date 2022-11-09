@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.152
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -65,6 +65,9 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-3623
+Patch106: 0001-mm_hugetlb_fix_races_when_looking_up_a_CONT-PTE_PMD_size_hugetlb_page.patch
 
 # Fix for CVE-2022-0500
 Patch115: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -370,6 +373,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-3
+- Fix for CVE-2022-3623
 * Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
