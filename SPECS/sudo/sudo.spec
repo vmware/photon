@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -9,12 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    %{name}=1e9fccda4beccca811ecb48866776388c9c377ae
+%define sha512  %{name}=7044bbe83194171f0514b9d4809be037c01d8e1daacf4444165019c19346c4bc89f20e679b4dd6d25a7de5edfcc1ba710ae0a02b49fdbe8b46d0f1fc7ce1ab47
 
 Patch0:         CVE-2021-3156_1.patch
 Patch1:         CVE-2021-3156_2.patch
 Patch2:         CVE-2021-3156_3.patch
 Patch3:         CVE-2021-3156_4.patch
+Patch4:         sudo-CVE-2022-43995.patch
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -114,54 +115,56 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
-*   Thu Jan 28 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-3
--   Fix "/etc/sudoers" to allow group wheel.
-*   Fri Jan 22 2021 Tapas Kundu <tkundu@vmware.com> 1.9.5-2
--   Fix CVE-2021-3156
-*   Mon Jan 18 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
--   Bump version to 1.9.5 to fix CVE-2021-23240
-*   Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
--   Fix - Set RLIMIT_CORE to zero when it's failed to set to RLIM_INFINITY.
-*   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
--   Upgrade sudo to v1.8.30 for fixing the CVE-2019-19232 & CVE-2019-19234.
-*   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.23-2
--   Fix for CVE-2019-14287.
-*   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.8.23-1
--   Update to version 1.8.23.
-*   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
--   Move includedir sudoers.d to end of sudoers file
-*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-4
--   No direct toybox dependency, shadow depends on toybox
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-3
--   Requires shadow or toybox
-*   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 1.8.20p2-2
--   Including /usr/lib/tmpfiles.d/sudo.conf from %files
-*   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
--   Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
-*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
--   Update to version 1.8.19p2
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.18p1-3
--   BuildRequires Linux-PAM-devel
-*   Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-2
--   Remove --with-pam-login to use /etc/pam.d/sudo for `sudo -i`
--   Fix groupadd wheel warning during the %post action
-*   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-1
--   Update to 1.8.18p1
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.8.15-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
--   GA - Bump release of all rpms
-*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
--   Fix for upgrade issues
-*   Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
--   Update to 1.8.15-1.
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
--   Edit post script.
-*   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
--   Fixing permissions on /etc/sudoers file
-*   Fri May 29 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-3
--   Adding sudo configuration and PAM config file
-*   Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-2
--   Adding PAM support
-*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
--   Initial build.  First version
+* Tue Nov 08 2022 Ankit Jain <ankitja@vmware.com> 1.9.5-4
+- Fixes CVE-2022-43995
+* Thu Jan 28 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-3
+- Fix "/etc/sudoers" to allow group wheel.
+* Fri Jan 22 2021 Tapas Kundu <tkundu@vmware.com> 1.9.5-2
+- Fix CVE-2021-3156
+* Mon Jan 18 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
+- Bump version to 1.9.5 to fix CVE-2021-23240
+* Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
+- Fix - Set RLIMIT_CORE to zero when it's failed to set to RLIM_INFINITY.
+* Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
+- Upgrade sudo to v1.8.30 for fixing the CVE-2019-19232 & CVE-2019-19234.
+* Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.23-2
+- Fix for CVE-2019-14287.
+* Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.8.23-1
+- Update to version 1.8.23.
+* Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
+- Move includedir sudoers.d to end of sudoers file
+* Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-4
+- No direct toybox dependency, shadow depends on toybox
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-3
+- Requires shadow or toybox
+* Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 1.8.20p2-2
+- Including /usr/lib/tmpfiles.d/sudo.conf from %files
+* Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
+- Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
+* Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
+- Update to version 1.8.19p2
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.18p1-3
+- BuildRequires Linux-PAM-devel
+* Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-2
+- Remove --with-pam-login to use /etc/pam.d/sudo for `sudo -i`
+- Fix groupadd wheel warning during the %post action
+* Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-1
+- Update to 1.8.18p1
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.8.15-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
+- GA - Bump release of all rpms
+* Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
+- Fix for upgrade issues
+* Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
+- Update to 1.8.15-1.
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
+- Edit post script.
+* Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
+- Fixing permissions on /etc/sudoers file
+* Fri May 29 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-3
+- Adding sudo configuration and PAM config file
+* Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-2
+- Adding PAM support
+* Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
+- Initial build.  First version
