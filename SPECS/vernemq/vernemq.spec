@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.5
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -49,6 +49,8 @@ A high-performance, distributed MQTT message broker.
 # Using autosetup is not feasible
 %setup -D -b 1
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
@@ -124,6 +126,8 @@ rm -rf %{buildroot}
 %{_tmpfilesdir}/%{name}.conf
 
 %changelog
+* Wed Nov 09 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-2
+- fix applying patches in prep section
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12.5-1
 - Upgrade to v1.12.5
 * Tue Jul 13 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-2
