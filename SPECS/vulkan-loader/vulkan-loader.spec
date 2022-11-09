@@ -1,5 +1,5 @@
 Name:           vulkan-loader
-Version:        1.3.216.0
+Version:        1.3.237
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
@@ -9,7 +9,7 @@ License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
 Source0: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512 Vulkan-Loader-%{version}.tar.gz=2acc3385c68c6c256febf2d66f3ae39dc7e60dca98fcedd9239ead163b9580c7bb226a4e4108da742c96e158e1c0ca3fc6ce4dec77225c7f832baf8b4f54ddbd
+%define sha512 Vulkan-Loader-%{version}.tar.gz=54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -45,7 +45,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%autosetup -p1 -n Vulkan-Loader-sdk-%{version}
+%autosetup -p1 -n Vulkan-Loader-%{version}
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=Release \
@@ -94,5 +94,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+* Mon Nov 7 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.237-1
+- Upgrade version and enabled intel and Nvidia driver support
 * Mon Jun 13 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.216.0-1
 - Initial version

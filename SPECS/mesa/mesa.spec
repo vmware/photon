@@ -1,15 +1,15 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        22.1.1
-Release:        2%{?dist}
+Version:        22.3.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=04f827ac800e22c24923606fa5a3b6707db876ee973b2442efbd439675596f7481fb4eefcb94bc013afa7b223663324af8592af566d379bbb9c0601f2b700807
+Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512  %{name}=654c91666eb231e6952da1cdc4fc694252707ab3aa5ab806dde45a74edcb551bad5ca127c768cafe93b0564d5f3e58cd9d9c6390c037207da948c9fa093290fe
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -28,9 +28,13 @@ BuildRequires:  libwayland-server
 BuildRequires:  libwayland-egl
 BuildRequires:  libpciaccess-devel
 BuildRequires:  bison
+BuildRequires:  clang-devel
+BuildRequires:  glslang-devel
 
 Requires:       libllvm
 Requires:       expat-libs
+Requires:       libdrm
+Requires:       libwayland-client
 Provides:       pkg-config(dri)
 
 %description
@@ -66,13 +70,12 @@ Mesa libgbm development package.
 %build
 meson --prefix=%{_prefix} build/ \
         -Dgallium-vdpau=disabled \
-        -Dgallium-xvmc=disabled \
         -Dgallium-omx=disabled \
         -Dgallium-va=disabled \
         -Dgallium-xa=disabled \
         -Dgallium-nine=false \
         -Dgallium-opencl=disabled \
-        -Dvulkan-drivers=amd \
+        -Dvulkan-drivers=auto \
         -Dplatforms=wayland \
         -Dosmesa=false \
         -Dvulkan-layers=device-select \
@@ -88,7 +91,6 @@ meson --prefix=%{_prefix} build/ \
         -Dvalgrind=disabled \
         -Dbuild-tests=false \
         -Dselinux=false \
-        -Dvulkan-drivers=auto \
         -Dintel-clc=disabled \
         -Dgles2=disabled \
         -Ddri3=disabled \
@@ -100,6 +102,8 @@ DESTDIR=%{buildroot}/ ninja -C build install
 
 %clean
 rm -rf %{buildroot}/*
+
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -114,7 +118,9 @@ rm -rf %{buildroot}/*
 %ifarch x86_64
 %{_libdir}/libvulkan_radeon.so
 %{_libdir}/libvulkan_intel.so
+%{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/drirc.d/00-radv-defaults.conf
+%{_datadir}/vulkan/icd.d/intel_hasvk_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 %endif
@@ -131,6 +137,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Mon Nov 7 2022 Shivani Agarwal <shivania2@vmware.com> 22.3.0-1
+- Upgrade mesa to 22.3.0 and enabled intel and Nvidia driver support
 * Mon Sep 19 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-2
 - Enable libgbm
 * Fri Jun 10 2022 Shivani Agarwal <shivania2@vmware.com> 22.1.1-1
