@@ -1,6 +1,6 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        11.3
+Version:        11.4
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
@@ -9,8 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512  wavefront=8c540f413a47396e6618fa800a22928252f7ec13e6ba68c3bf7ccdaa09e6bfa10ac25629ea176c2a89970ebbb4ccf1aa2c5cc7a67c0ecd56544d69f9767ce3fb
+%define sha512  wavefront=bf815c3ffa8f08afd31453a404cd41a14aa5c7fc14f8b44ae1f4da4c3836edf9ac6d35724e7c0e2b4450610c9e1a7949de1947ef2e32dcbb35a82fd2caf2b5c2
 Patch0:         0001-Added-Main-class-for-proxy-11.3-jar-with-dependencies.patch
+Patch1:         0002-proxy-pom.xml-skip-format-code-plugin.patch
 BuildRequires:  apache-maven
 BuildRequires:  openjdk11
 BuildRequires:  systemd-devel
@@ -50,7 +51,7 @@ sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
 export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*11.0*)
-mvn -f proxy install -DskipTests
+mvn -f proxy install -DskipTests -DskipFormatCode
 
 %install
 install -m 755 -D pkg/opt/wavefront/%{name}/bin/autoconf-%{name}.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-%{name}.sh
@@ -110,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.4-1
+- Update to version 11.4
 * Tue May 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.3-1
 - Use openjdk11 to build wavefront-proxy, Update to 11.3
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.1-2
