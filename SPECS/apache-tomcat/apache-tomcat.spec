@@ -1,18 +1,18 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.78
-Release:        2%{?dist}
+Version:        10.1.1
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512  apache-tomcat=b58fdaa57420fcf7759420fba26bfd6edaa5174f5d3a81fdf8783f19d5385e2502d2ad4bfa0e4a77c6a084bf6d97a6d3cd274ab0ab3f2311d23079e273c41b32
+Source0:        https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha512  apache-tomcat=417415001ff5d20c5c9fbc70c90df492f04d4b86c594da190202c439fd9e75d4cd4a51c5dcc57e525026363a8cbb89826219509ee41a4f05f8ef58a469bfe14c
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha512  base=e094562d3ddc4da45867422e64d5fe4788b961f9c10b49ebcf7ce522aa3a5a4a2b1cfdf18dce2b0f88c87af835ea9c7a4c1b0cc462b1d6ac4eb22e41eec9bc60
+%define sha512  base=418eff060eecc02ec55e4fcc961b8e7ad44db8163d2dc2c937255d34b0f953aa4f802f584f2368ca86f12c22ef8a40dac0fbf1b1263d2ae5a116cef1e08d106b
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjdk11
 BuildRequires:  apache-ant
@@ -99,6 +99,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+* Thu Nov 10 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.1-1
+- Upgrade to 10.1.1
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 8.5.78-2
 - Use openjdk11
 * Mon Apr 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.78-1
