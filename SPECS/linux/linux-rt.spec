@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.264
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -164,9 +164,13 @@ Patch100: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch101: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+# Remove unnecessary io/memory decoding disabling/enabling.
+# Toggling decoding settings (command register/bar) could introduce latency
+# spikes across all vcpus due to nested pagetable synchronization
+Patch102: 0001-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
 # Next 2 patches are about to be merged into stable
-Patch102: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Update vmxnet3 driver to version 6
 Patch110: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
@@ -1092,6 +1096,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Nov 17 2022 Bo Gan <ganb@vmware.com> 4.19.264-5
+- Reduce latency spikes when process using vfio-pci terminates,
+- by avoiding vfio-pci toggling io/memory decoding.
 * Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-4
 - Fix IRQ affinities of i40e, iavf and ice drivers
 * Wed Nov 16 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.264-3
