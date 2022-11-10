@@ -47,10 +47,8 @@ A high-performance, distributed MQTT message broker.
 # Using autosetup is not feasible
 %setup -q
 # Using autosetup is not feasible
-%setup -D -b 1
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%setup -q -D -b 1
+%autopatch -p1 -m0 -M2
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
