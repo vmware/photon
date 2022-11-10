@@ -9,7 +9,7 @@
 
     "automatic_version_prefix": "4.0_minimal",
 
-    "repos": ["photon"],
+    "repos": ["photon-ostree"],
 
     "selinux": false,
 
