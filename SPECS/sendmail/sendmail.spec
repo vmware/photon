@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.sendmail.org
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.sendmail.org/sendmail.%{version}.tar.gz
-%define sha1 %{name}=d4d2568fe48da0e0fe8209a9cbc6f842e9014e46
+%define sha512 %{name}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
 
 BuildRequires:  systemd-devel
 BuildRequires:  openldap
@@ -122,13 +122,16 @@ make -C test check %{?_smp_mflags}
 %endif
 
 %pre
-if [ $1 -eq 1 ]; then
+if ! getent group smmsp >/dev/null; then
   groupadd -g 26 smmsp
+fi
+if ! getent passwd smmsp >/dev/null; then
   useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
         -s /bin/false -u 26 smmsp
-  chmod -v 1777 /var/mail
-  install -v -m700 -d /var/spool/mqueue
 fi
+
+chmod -v 1775 /var/mail
+install -v -m700 -d /var/spool/mqueue
 
 %post
 if [ $1 -eq 1 ]; then
@@ -141,6 +144,7 @@ EOF
 
   cd %{_sysconfdir}/mail
   m4 m4/cf.m4 %{name}.mc > %{name}.cf
+  m4 m4/cf.m4 submit.mc > submit.cf
 
 fi
 
@@ -154,17 +158,14 @@ chown smmsp:smmsp /var/spool/clientmqueue
 
 %postun
 if [ $1 -eq 0 ] ; then
-  userdel smmsp
-  groupdel smmsp
-
   rm -rf %{_sysconfdir}/mail
 fi
 %systemd_postun_with_restart %{name}.service
 
 %files
 %config(noreplace)%{_sysconfdir}/mail/%{name}.mc
-%config(noreplace)%{_sysconfdir}/mail/%{name}.cf
-%config(noreplace)%{_sysconfdir}/mail/submit.cf
+%{_sysconfdir}/mail/%{name}.cf
+%{_sysconfdir}/mail/submit.cf
 %config(noreplace)%{_sysconfdir}/mail/submit.mc
 %{_sysconfdir}/mail/feature/*
 %{_sysconfdir}/mail/hack/*
@@ -191,6 +192,8 @@ fi
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Nov 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-2
+- Config file noplace fixed
 * Mon Apr 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-1
 - Upgrade to v8.17.1 to address CVE-2021-3618
 * Fri Nov 29 2019 Tapas Kundu <tkundu@vmware.com> 8.15.2-16
