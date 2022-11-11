@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.152
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -111,6 +111,11 @@ Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2022-3623
 Patch105: 0001-mm_hugetlb_fix_races_when_looking_up_a_CONT-PTE_PMD_size_hugetlb_page.patch
+
+# Fix for CVE-2022-3522
+Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
+Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
+Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -408,6 +413,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 28 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-5
+- Fix for CVE-2022-3522
 * Mon Nov 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-4
 - vmxnet3 version 6, 7 patches
 * Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-3

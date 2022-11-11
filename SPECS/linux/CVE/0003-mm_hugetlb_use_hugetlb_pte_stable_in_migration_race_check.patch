@@ -1,0 +1,47 @@
+From 8e461341b6757b133180c8546e5600a1b885d3ab Mon Sep 17 00:00:00 2001
+From: Peter Xu <peterx@redhat.com>
+Date: Fri, 11 Nov 2022 16:48:58 +0530
+Subject: [PATCH v5.10.y 3/3] mm/hugetlb: use hugetlb_pte_stable in migration race check
+
+commit f9bf6c03eca1077cae8de0e6d86427656fa42a9b upstream
+
+After hugetlb_pte_stable() introduced, we can also rewrite the migration
+race condition against page allocation to use the new helper too.
+
+Link: https://lkml.kernel.org/r/20221004193400.110155-3-peterx@redhat.com
+Signed-off-by: Peter Xu <peterx@redhat.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[Ajay: Modified for v5.10.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ mm/hugetlb.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 19be2a9..af2202a 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4444,13 +4444,10 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+ 			 * here.  Before returning error, get ptl and make
+ 			 * sure there really is no pte entry.
+ 			 */
+-			ptl = huge_pte_lock(h, mm, ptep);
+-			if (!huge_pte_none(huge_ptep_get(ptep))) {
++			if (!hugetlb_pte_stable(h, mm, ptep, old_pte)) {
+ 				ret = 0;
+-				spin_unlock(ptl);
+ 				goto out;
+ 			}
+-			spin_unlock(ptl);
+ 			ret = vmf_error(PTR_ERR(page));
+ 			goto out;
+ 		}
+-- 
+2.7.4
+
