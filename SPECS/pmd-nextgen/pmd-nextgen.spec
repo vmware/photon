@@ -7,7 +7,7 @@
 Summary:        pmd-nextgen is an open source, super light weight remote management API Gateway
 Name:           pmd-nextgen
 Version:        1.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        pmd-nextgen-%{version}.tar.gz
@@ -92,6 +92,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+* Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-6
+- Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-5
 - Bump up version to compile with new go
 * Thu Sep 15 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-4
