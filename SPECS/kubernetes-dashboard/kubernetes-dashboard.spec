@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -60,6 +60,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+* Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-20
+- Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-19
 - Bump up version to compile with new go
 * Sat Sep 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-18
@@ -68,43 +70,43 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 - Bump up version to compile with new go
 * Tue Jul 12 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-16
 - Bump up version to compile with new go
-*   Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-15
--   Bump up version to compile with new go
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-14
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-13
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-12
--   Bump up version to compile with new go
-*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-11
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-10
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.10.1-9
--   Bump up version to compile with go 1.13.5-2
-*    Wed Feb 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-8
--    To use nodejs-8.17.0
-*    Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-7
--    Bump up version to compile with new go
-*    Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-6
--    Use npm source to build.
-*    Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-5
--    Bump up version to compile with new go
-*    Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-4
--    Dashboard works with Nodejs latest version as well
--    so removed version dependency
-*    Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-3
--    Added version number to Requires of nodejs
-*    Wed Apr 17 2019 Michelle Wang <michellew@vmware.com> 1.10.1-2
--    Convert roboto-mono into a source
--    due to source code not available on github
-*    Mon Jan 07 2019 Girish Sadhani <gsadhani@vmware.com> 1.10.1-1
--    Updating kubernetes-dashboard to 1.10.1 for security fix
-*    Tue Apr 17 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.8.3-2
--    Fix build issue
-*    Tue Mar 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.8.3-1
--    kubernetes-dashboard 1.8.3.
-*    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
--    kubernetes-dashboard 1.6.3.
-*    Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
--    Initial version of kubernetes-dashboard package for Photon.
+* Mon May 09 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-15
+- Bump up version to compile with new go
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-14
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-13
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-12
+- Bump up version to compile with new go
+* Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.1-11
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-10
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.10.1-9
+- Bump up version to compile with go 1.13.5-2
+* Wed Feb 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-8
+- To use nodejs-8.17.0
+* Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-7
+- Bump up version to compile with new go
+* Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-6
+- Use npm source to build.
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-5
+- Bump up version to compile with new go
+* Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-4
+- Dashboard works with Nodejs latest version as well
+- so removed version dependency
+* Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-3
+- Added version number to Requires of nodejs
+* Wed Apr 17 2019 Michelle Wang <michellew@vmware.com> 1.10.1-2
+- Convert roboto-mono into a source
+- due to source code not available on github
+* Mon Jan 07 2019 Girish Sadhani <gsadhani@vmware.com> 1.10.1-1
+- Updating kubernetes-dashboard to 1.10.1 for security fix
+* Tue Apr 17 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.8.3-2
+- Fix build issue
+* Tue Mar 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.8.3-1
+- kubernetes-dashboard 1.8.3.
+* Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
+- kubernetes-dashboard 1.6.3.
+* Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
+- Initial version of kubernetes-dashboard package for Photon.
