@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          44%{?dist}
+Release:          45%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -70,6 +70,7 @@ Patch48:          bus-socket-Fix-line_begins-to-accept-word-matching-f.patch
 Patch49:          sd-bus-make-bus_slot_disconnect-also-unref-the-slot-object.patch
 Patch50:          meson-debug.patch
 Patch51:          systemd-239-CVE-2022-2526.patch
+Patch52:          systemd-239-CVE--2022-3821-time-util-fix-buffer-over-run.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -335,6 +336,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Mon Nov 14 2022 Susant Sahani <ssahani@vmware.com> 239-45
+- Fix CVE-2022-3821
 * Tue Sep 20 2022 Mukul Sikka <msikka@vmware.com> 239-44
 - Fix for CVE-2022-2526
 * Tue Aug 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 239-43
