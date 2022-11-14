@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # Target to Photon OS version
 VERSION=3
@@ -181,4 +181,3 @@ echo "5. Destroy sandbox" >&3
 destroy_sandbox
 
 echo "Build completed. RPMS are in '$SPECDIR/stage' folder" >&3
-

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 ruby_spec="ruby/ruby.spec"
 
@@ -18,11 +18,8 @@ if [ -z $gem_bin ]; then
   echo "Gem not found"
   echo "Please install ruby and gem using rvm"
   echo "Please follow this link to install https://www.digitalocean.com/community/tutorials/how-to-install-ruby-and-set-up-a-local-programming-environment-on-ubuntu-16-04"
-
 else
-
   echo "gem is installed"
-
 fi
 
 echo latest ruby version: $version
@@ -35,22 +32,18 @@ ruby_tar="ruby-$version.tar.bz2"
 old_ruby_ver=`grep -m 1 -w "Version:" ./SPECS/$RUBY_SPEC | sed -e 's/^\(.*\)Version://' | tr -s " "`
 
 if [ "$version" != "$old_ruby_ver" ]; then
-
   #test -f stage/SOURCES/ruby-$version* && echo up to date && exit 0
   $(cd stage/SOURCES && wget $tar_url)
-  sha1=`sha1sum stage/SOURCES/$ruby_tar | awk '{print $1}'`
-  echo $sha1
+  sha512=`sha512sum stage/SOURCES/$ruby_tar | awk '{print $1}'`
+  echo $sha512
   changelog_entry=$(echo "`date +"%a %b %d %Y"` `git config user.name` <`git config user.email`> $version-1")
 
   sed -i '/^Version:/ s/2.[0-9]*.[0-9]*/'$version'/' ./SPECS/ruby/ruby.spec
   sed -i '/^Release:/ s/[0-9]*%/1%/' ./SPECS/ruby/ruby.spec
-  sed -i '/^%define sha1\s*ruby/ s/=[0-9a-f]*$/='$sha1'/' ./SPECS/ruby/ruby.spec
+  sed -i '/^%define sha512\s*ruby/ s/=[0-9a-f]*$/='$sha512'/' ./SPECS/ruby/ruby.spec
   sed -i '/^%changelog/a*   '"$changelog_entry"'\n-   Update to version '"$version"'' ./SPECS/ruby/ruby.spec
-
 else
-  
   echo "Ruby is up to date"
-
 fi
 
 rubygem_download_url="https://rubygems.org/downloads"
@@ -71,26 +64,19 @@ for dir in $gem_spec_dirs; do
   echo "Got $gem_name-$new_ver"
   ##gem fetch $gem_name-$new_ver
 
-  gem_exists="./stage/SOURCES/$gem_name-$new_ver*"
-
   if [ $new_ver != $old_ver ]; then
-
     echo "updating $gem_name-$new_ver"
 
     $(cd stage/SOURCES && wget $rubygem_download_url/$gem_name-$new_ver.gem)
-    gem_sha1=`sha1sum stage/SOURCES/$gem_name-$new_ver.gem | awk '{print $1}'`
-    echo "$gem_sha1"
+    gem_sha512=`sha512sum stage/SOURCES/$gem_name-$new_ver.gem | awk '{print $1}'`
+    echo "$gem_sha512"
     gem_chng_log=$(echo "`date +"%a %b %d %Y"` `git config user.name` <`git config user.email`> $new_ver-1")
 
     sed -i '/^Version:/ s/[0-9].[0-9]*.[0-9]*..$/'$new_ver'/' $file
     sed -i '/^Release:/ s/[0-9]*%/1%/' $file
-    sed -i '/^%define sha1\s*'"$gem_name"'/ s/=[0-9a-f]*$/='$gem_sha1'/' $file
+    sed -i '/^%define sha512\s*'"$gem_name"'/ s/=[0-9a-f]*$/='$gem_sha512'/' $file
     sed -i '/^%changelog/a*   '"$gem_chng_log"'\n-   Update to version '"$new_ver"'' $file
-
   else
-
     echo "Gem $gem_name is up to date $new_ver"
-
   fi
-
 done

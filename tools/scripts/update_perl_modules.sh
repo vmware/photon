@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 PROG=$0                                   # The script name
 PERL_PACKAGE_LIST=""                      # List of spec directories of perl packages
 tmpJsonFile=$(mktemp /tmp/perl.XXXXXXXXX) # Temporary file to hold package json
@@ -8,38 +9,36 @@ latestVersion=""                          # Package version number
 SPECSDIR=SPECS                            # Parent directory of  all SPEC files
 SOURCESDIR="stage/SOURCES"                # Directory where sources are downloaded
 latestSrcFileName=""                      # Base name of source file
-srcSha1Sum=""                             # sha1sum of the sources
 changeMsgLine1=""                         # first line of the changelog message to record
 changeMsgLine2=""                         # second line of the changelog message to record
 
 function _help()
 {
-    echo "
+  echo "
 Usage: $PROG [--help|-h]
 
 Run the script from git workspace root of photon where .git directory exists.
 This script upgrades the Perl modules used in Photon to their latest versions.
 "
-    exit ${1:-0}
+  exit ${1:-0}
 }
 
 function _isRunningFromGitWorkspace()
 {
-    local folderName
-    local rc=0
+  local folderName
+  local rc=0
 
-    for folderName in .git SPECS
-    do
-        if [ ! -d ".git" ]
-        then
-            rc=$?
-            echo "Expected directory $folderName does not exist." \
-                 "Please run this script from git workspace of Photon."
-            return $rc
-        fi
-    done
-    return $rc
+  for folderName in .git SPECS; do
+    if [ ! -d ".git" ]; then
+      rc=$?
+      echo "Expected directory $folderName does not exist." \
+           "Please run this script from git workspace of Photon."
+      return $rc
+    fi
+  done
+  return $rc
 }
+
 ################################################################################
 # Converts spec dir name of a Perl package to a module name
 #
@@ -48,9 +47,8 @@ function _isRunningFromGitWorkspace()
 ################################################################################
 function _specDirToPackageName()
 {
-    echo "$1" | cut -d '-' -f 2- | sed -e 's/-/::/g'
+  echo "$1" | cut -d '-' -f 2- | sed -e 's/-/::/g'
 }
-
 
 ################################################################################
 # Gets the Json of package information from metacpan.org
@@ -66,7 +64,7 @@ function _specDirToPackageName()
 ################################################################################
 function _downloadJsonForPackage()
 {
-    curl -s "http://fastapi.metacpan.org/v1/download_url/$1" > $tmpJsonFile
+  curl -s "http://fastapi.metacpan.org/v1/download_url/$1" > $tmpJsonFile
 }
 
 ################################################################################
@@ -76,9 +74,9 @@ function _downloadJsonForPackage()
 ################################################################################
 function _downloadSourceFromUrl()
 {
-    local fromUrl="$1"
-    local toFile="$2"
-    curl -s "$fromUrl" > "$toFile"
+  local fromUrl="$1"
+  local toFile="$2"
+  curl -s "$fromUrl" > "$toFile"
 }
 
 ################################################################################
@@ -95,17 +93,16 @@ function _updateSpecFile()
     local localSrcArchive="$4"
     local changeLogMsg1="$5"
     local changeLogMsg2="$6"
-    local sha1sum=""
+    local sha512sum=""
     local existingVersion=""
     local downloadUrl="$(echo $srcUrl | sed -E "s/$latestVersion/%{version}/g")"
     downloadUrl="$(echo "$downloadUrl" | sed -E 's#/#\\/#g')"
     _downloadSourceFromUrl "$srcUrl" "$localSrcArchive"
-    sha1sum="$(sha1sum $localSrcArchive | awk '{print $1}')"
+    sha512sum="$(sha512sum $localSrcArchive | awk '{print $1}')"
 
     existingVersion="$(awk '/^Version:/{print $2}' $specFile)"
 
-    if [ "$existingVersion" == "$latestVersion" ]
-    then
+    if [ "$existingVersion" = "$latestVersion" ]; then
         echo "$specFile is already at latest version $latestVersion. Skipping..."
         return 0
     fi
@@ -116,12 +113,12 @@ function _updateSpecFile()
 
     # Update %release
     sed -i -e "s/^\(Release:[[:space:]]*\)[^[:space:]]*%\(.*\)$/\11%\2/" $specFile
-    
+
     # Update %Source/%Source0
     sed -i -e "s/^\(Source[0]*:[[:space:]]*\).*$/\1$downloadUrl/" $specFile
 
-    # Update sha1sum
-    sed -i -e "s/^\(%define[[:space:]]\+sha1.*\)=.*$/\1=$sha1sum/" $specFile
+    # Update sha512sum
+    sed -i -e "s/^\(%define[[:space:]]\+sha512.*\)=.*$/\1=$sha512sum/" $specFile
 
     # Update changelog
     sed -i -e "/^%changelog/a\
@@ -131,11 +128,9 @@ function _updateSpecFile()
     echo "Done"
 }
 
-if [ $# -gt 1 ]
-then
+if [ $# -gt 1 ]; then
     _help 1
-elif [ $# -eq 1 ]
-then
+elif [ $# -eq 1 ]; then
     echo "$1" | grep -q -E -- '(^--help$)|(^-h$)' && _help 0
     echo "Invalid option '$1'" 1>&2
     _help 1
@@ -144,19 +139,15 @@ fi
 _isRunningFromGitWorkspace || _help $?
 PERL_PACKAGE_LIST="$(find SPECS/ -type d -name 'perl-*' -exec basename {} \;)"
 mkdir -p "$SOURCESDIR"
-for p in $PERL_PACKAGE_LIST
-do
+for p in $PERL_PACKAGE_LIST; do
     perlModuleName="$(_specDirToPackageName $p)"
     _downloadJsonForPackage "$perlModuleName"
-    while read line
-    do
-        if echo $line | grep -q '"download_url"'
-        then
+    while read line; do
+        if echo $line | grep -q '"download_url"'; then
             srcUrl="$(echo \"$line\" | cut -d ':' -f 2- | sed -e 's/[,\" ]//g')";
             continue
         fi
-        if echo $line | grep -q '"version"'
-        then
+        if echo $line | grep -q '"version"'; then
             latestVersion="$(echo \"$line\" | cut -d ':' -f 2- | sed -e 's/[,\" ]//g')";
             continue
         fi

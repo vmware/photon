@@ -611,7 +611,7 @@ check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo chec
 
 ph3-docker-img-import: check-docker
 	@echo ""
-	@./tools/scripts/ph3-docker-img-import.sh $(PH3_DOCKER_IMG_URL) $(PHOTON_DOCKER_IMAGE) $(PHOTON_BUILDER_TAG) || exit 1
+	@$(SRCROOT)/tools/scripts/ph3-docker-img-import.sh $(PH3_DOCKER_IMG_URL) $(PHOTON_DOCKER_IMAGE) $(PHOTON_BUILDER_TAG) || exit 1
 
 check-docker:
 ifeq (,$(wildcard $(DOCKER_ENV)))
@@ -746,3 +746,6 @@ clean-stage-for-incremental-build:
 	else \
 		echo "$(PHOTON_RPMS_DIR) does not exist, return ..."; \
 	fi
+
+clean-stage-rpms:
+	@python3 $(SRCROOT)/tools/scripts/clean-stage-rpms.py --top-dir $(SRCROOT)

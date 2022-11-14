@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 if [ -z "$(git diff --name-only $1 HEAD --)" ]; then
   SPECS=($(git diff --name-only $1 @~ | grep -e "SPECS/.*.spec$"))
