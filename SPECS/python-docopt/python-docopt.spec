@@ -1,25 +1,24 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-docopt
 Version:        0.6.2
 Release:        3%{?dist}
 Summary:        Pythonic argument parser to create command line interfaces.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/docopt
-Source0:        docopt-%{version}.tar.gz
-%define sha1    docopt=224a3ec08b56445a1bd1583aad06b00692671e04
+URL:            https://pypi.python.org/pypi/docopt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
+Source0: docopt-%{version}.tar.gz
+%define sha512 docopt=af138feccf8c37b374ee44fcda4938a88107d434df13c173214021b1a3348b152a595095a86982b66ac03a11db8e0f1e9e6a3a65c98deea92330311daeb831a3
+
+BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-setuptools
 
 BuildArch:      noarch
@@ -28,25 +27,27 @@ BuildArch:      noarch
 docopt helps easily create most beautiful command-line interfaces.
 
 %prep
-%setup -n docopt-%{version}
+%autosetup -p1 -n docopt-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.6.2-3
--   Fix build with new rpm
-*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.2-2
--   Mass removal python2
-*   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.6.2-1
--   Initial version of python-docopt package for Photon.
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.6.2-3
+- Fix build with new rpm
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.2-2
+- Mass removal python2
+* Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.6.2-1
+- Initial version of python-docopt package for Photon.

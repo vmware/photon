@@ -37,7 +37,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 # Using autosetup is not feasible
-%setup -a0 -a1
+%setup -q -a0 -a1
 
 pushd njs-%{njs_ver}
 %patch0 -p1
@@ -67,7 +67,7 @@ sh ./configure \
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
