@@ -9,9 +9,7 @@ https://github.com/PowerShell/PowerShell/pull/14038/commits/d22ae8dd0a26b78b9e28
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  build.psm1                                         | 5 -----
- nuget.config                                       | 1 -
- tools/releaseBuild/azureDevOps/templates/nuget.yml | 7 -------
- 3 files changed, 13 deletions(-)
+ 1 files changed, 5 deletions(-)
 
 diff --git a/build.psm1 b/build.psm1
 index 926d085f9..e6507aa22 100644
@@ -29,36 +27,4 @@ index 926d085f9..e6507aa22 100644
      Push-Location $PSScriptRoot/tools
  
      try {
-diff --git a/nuget.config b/nuget.config
-index 9b513db4b..760e780c8 100644
---- a/nuget.config
-+++ b/nuget.config
-@@ -2,7 +2,6 @@
- <configuration>
-   <packageSources>
-     <clear />
--    <add key="dotnet5-rtm" value="https://pkgs.dev.azure.com/dnceng/public/_packaging/5.0.100-rtm.20526.5/nuget/v3/index.json" />
-     <add key="dotnet5" value="https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json" />
-     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
-   </packageSources>
-diff --git a/tools/releaseBuild/azureDevOps/templates/nuget.yml b/tools/releaseBuild/azureDevOps/templates/nuget.yml
-index 532defe8b..b2a4697b0 100644
---- a/tools/releaseBuild/azureDevOps/templates/nuget.yml
-+++ b/tools/releaseBuild/azureDevOps/templates/nuget.yml
-@@ -55,13 +55,6 @@ jobs:
-     displayName: 'Use .NET Core SDK from global.json'
-     inputs:
-       version: '$(SDKVersion)'
--    condition: ne(variables['SDKVersion'], '5.0.100')
--
--  - pwsh: |
--      Import-Module $env:REPOROOT\build.psm1 -Force
--      Install-Dotnet -Version '5.0.100-rtm.20526.5'
--    displayName: Install-DotNet
--    condition: eq(variables['SDKVersion'], '5.0.100')
- 
-   - task: DownloadBuildArtifacts@0
-     displayName: 'Download PowerShell build artifacts'
--- 
-2.25.1
 

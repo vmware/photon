@@ -3,8 +3,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.1.5
-Release:        3%{?dist}
+Version:        7.1.7
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -20,19 +20,19 @@ Group:          shells
 # git checkout -b v7.1.5 tags/v7.1.5
 # cd .. && tar czf powershell-7.1.5.tar.gz PowerShell-7.1.5
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=c49308ce4ba68862c1747fae94af2179363e7da1
+%define sha512    %{name}=0d205576730f97066e9a73984be10563362067e797bc8f613821a72cca9bd8d601edd05b08e17f6c2fd310a1f5c2d9c736bb6bbee7f139beb24f820260e8370d
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1:        %{name}-native-%{ps_native_ver}.tar.gz
-%define sha1    %{name}-native=0aa26684c8aded1e34527bc1d322621c941f960c
+%define sha512    %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.1.5/powershell-7.1.5-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}-%{version}-linux=f27146aa4348b3c7d588f4099e8da5c56533d7c9
+%define sha512    %{name}-%{version}-linux=91b7a3f0bc5234a58cbd78643ca497eb1193581364b75a8f8192a9f67250aa847feea0d412f526108c741e3f074780fcc2b5dbe0488bfd44776e5a9563faecd5
 
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
@@ -42,14 +42,14 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 # Hence we need to re-build it.
 # https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
 Source5:        omi-%{libmi_tag}.tar.gz
-%define sha1    omi-%{libmi_tag}=823cbc445b631a094217d36050d35b59772a1407
+%define sha512    omi-%{libmi_tag}=97dbd968bd4a3075b534af9ebfe03c7003e3dfa07b0cc3923842fe6aecfbebff29fd2537195eb2ee27ff8e8e7a3779a4ba26156b7029a916c4a5eba4024d8009
 
 Patch0:         Remove-workarounds-for-.NET-5-RTM-builds.patch
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 5.0.402
-BuildRequires:  dotnet-runtime = 5.0.11
+BuildRequires:  dotnet-sdk = 5.0.407
+BuildRequires:  dotnet-runtime = 5.0.16
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -151,6 +151,8 @@ fi
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Nov 15 2022 Anmol Jain <anmolja@vmware.com> 7.1.7-1
+- Upgrade to version 7.1.7
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.1.5-3
 - Exclude debug symbols properly
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 7.1.5-2
