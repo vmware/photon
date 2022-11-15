@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-appdirs
 Version:        1.4.4
 Release:        2%{?dist}
@@ -9,13 +7,13 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/appdirs
-Source0:        https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
-%define sha1    appdirs=1fa04e44b1084338cb7b21e9cf44fce5efb81840
-BuildRequires:  python3
+
+Source0: https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
+%define sha512 appdirs=8b0cdd9fd471d45b186aa47607691cf378dabd3edc7b7026a57bd6d6f57698e86f440818a5e23ba4288b35d6bb8cb6eb0106eae8aab09d8863ee15025d300883
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
+
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -25,35 +23,37 @@ Provides:       python3.9dist(appdirs) = %{version}
 A small Python module for determining appropriate platform-specific dirs, e.g. a "user data dir".
 
 %prep
-%setup -n appdirs-%{version}
+%autosetup -p1 -n appdirs-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
-cd test
-
-PATH=%{buildroot}%{_bindir}:${PATH} \
- PYTHONPATH=%{buildroot}%{python3_sitelib} \
+pushd test
+export PATH=%{buildroot}%{_bindir}:${PATH}
+export PYTHONPATH=%{buildroot}%{python3_sitelib}
 python3 test_api.py
+popd
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2
--   Fix build with new rpm
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
--   Automatic Version Bump
-*   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 1.4.3-4
--   Mass removal python2
-*   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-3
--   Changes to check section
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-2
--   Change python to python2
-*   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.4.3-1
--   Create appdirs 1.4.3
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2
+- Fix build with new rpm
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
+- Automatic Version Bump
+* Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 1.4.3-4
+- Mass removal python2
+* Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-3
+- Changes to check section
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-2
+- Change python to python2
+* Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.4.3-1
+- Create appdirs 1.4.3

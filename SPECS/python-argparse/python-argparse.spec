@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-argparse
 Version:        1.4.0
 Release:        1%{?dist}
@@ -7,16 +5,19 @@ Url:            https://pypi.org/project/argparse
 Summary:        Python command-line parsing library
 License:        Python Software Foundation License
 Group:          Development/Languages/Python
-Source0:        argparse-%{version}.tar.gz
-%define sha1    argparse=50f36429b2989461ee541093e7229257ee950c07
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-Requires:       python3
-Requires:       python3-setuptools
-BuildArch:      noarch
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: argparse-%{version}.tar.gz
+%define sha512 argparse=9941f9d26c43169f947c9efadda6239349e1f9df80ff5fcdba3070bc7b43c43ab6bb4b7f0c7eee8e5d06231a17a7e9ee9eb73c7a9bb68ebe5d13f879686d61b2
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+
+Requires:       python3
+Requires:       python3-setuptools
+
+BuildArch:      noarch
 
 %description
 The argparse module provides an easy, declarative interface for
@@ -38,19 +39,18 @@ in a number of ways including:
 * providing a much simpler interface for custom types and actions
 
 %prep
-%setup -n argparse-%{version}
+%autosetup -p1 -n argparse-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
 %files
 %defattr(-,root,root,-)
-%doc NEWS.txt README.txt doc/*
 %python3_sitelib/*
 
 %changelog
-*   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 1.4.0-1
--   Initial build.  First version
+* Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 1.4.0-1
+- Initial build.  First version
