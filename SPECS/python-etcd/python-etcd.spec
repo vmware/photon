@@ -1,24 +1,23 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-etcd
 Version:        0.4.5
 Release:        4%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/python-etcd
-Source0:        python-etcd-%{version}.tar.gz
-Patch0:         auth-api-compatibility.patch
-%define sha1    python-etcd=9e79ae82429cf2ffbe2b5647e14bc29571afd766
+Url:            https://github.com/jplana/python-etcd
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python3
+Source0: https://github.com/jplana/python-etcd/archive/refs/tags/python-etcd-%{version}.tar.gz
+%define sha512 python-etcd=c59d7a67492a2e4e72b1ae3ea73ac85a073b9d4516d1ebc48601ba67ac9609fbc45574d97e8dfae3ed4f511f090343ff980160043676252125ce2e2edc7bd154
+
+Patch0:         auth-api-compatibility.patch
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:  python3-dnspython
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-pyOpenSSL
@@ -27,40 +26,41 @@ BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  libffi-devel
 %endif
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-setuptools
+
 BuildArch:      noarch
 
 %description
 Python API for etcd
 
-
 %prep
-%setup -n python-etcd-%{version}
-%patch0 -p1
+%autosetup -p1 -n python-etcd-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.4.5-4
--   openssl 1.1.1
-*   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.4.5-3
--   Mass removal python2
-*   Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2
--   Add %check
-*   Sat Aug 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.5-1
--   Initial version of python etcd for PhotonOS.
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.4.5-4
+- openssl 1.1.1
+* Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.4.5-3
+- Mass removal python2
+* Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2
+- Add %check
+* Sat Aug 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.5-1
+- Initial version of python etcd for PhotonOS.
