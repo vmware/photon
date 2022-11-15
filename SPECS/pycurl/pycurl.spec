@@ -1,33 +1,33 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Name:           pycurl3
 Version:        7.43.0.6
 Release:        4%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
-URL:            http://pycurl.sourceforge.net/
-Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha1    pycurl=b9ba304bb5b6f1cb3a90a264aa31d000ff7065a2
-Patch0:         add_convert_docstring.patch
-%if %{with_check}
-Patch1:         Fix_makecheck.patch
-%endif
+URL:            http://pycurl.sourceforge.net
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
+%define sha512 pycurl=ea0160794d30758c8163f1f82fc6315c27f2cfd1b9981a7c349a48cee892fc2307e3edd25456378f1a780bc134fca199d8d6431310fd47b2ca6126a8822fea40
+
+Patch0:         add_convert_docstring.patch
+
+%if 0%{?with_check}
+Patch1:         Fix_makecheck.patch
+%endif
+
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-%if %{with_check}
-BuildRequires: python3-setuptools, vsftpd, curl-libs
+%if 0%{?with_check}
+BuildRequires: python3-setuptools
+BuildRequires: vsftpd
 BuildRequires: python3-xml
 %endif
+
 Requires:       curl
 Requires:       python3
-Requires:       python3-libs
 
 %description
 PycURL is a Python interface to libcurl. PycURL can be used to fetch
@@ -37,7 +37,7 @@ of features.
 
 %package doc
 Summary:    Documentation and examples for pycurl
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description doc
 Documentation and examples for pycurl
@@ -50,27 +50,29 @@ rm -r pycurl-*
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 %patch0 -p1
-%if %{with_check}
+%if 0%{?with_check}
 %patch1 -p1
 %endif
 # removing prebuilt-binaries
 rm -f tests/fake-curl/libcurl/*.so
 
 %build
-CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python3 setup.py build
+export CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL"
+%py3_build
 
 %install
-rm -rf %{buildroot}
-python3 setup.py install -O1 --skip-build --root %{buildroot}
+%py3_install
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 
+%if 0%{?with_check}
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose nose-show-skipped bottle==0.12.16 flaky pyflakes
 rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
 LANG=en_US.UTF-8  make test PYTHON=python%{python3_version} NOSETESTS="nosetests-3.4 -v"
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -84,37 +86,37 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-4
--   Bump up release for openssl
-*   Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.6-3
--   Fix make check
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-2
--   openssl 1.1.1
-*   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 7.43.0.6-1
--   Automatic Version Bump
-*   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.5-1
--   Update to 7.43.0.5
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0-5
--   Mass removal python2
-*   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 7.43.0-4
--   Fixed the make check.
-*   Mon Aug 14 2017 Chang Lee <changlee@vmware.com> 7.43.0-3
--   Added check requires and fixed check
-*   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.43.0-2
--   Using python2 explicitly while building
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 7.43.0-1
--   Upgrade to 7.43.0  and add pycurl3
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.21.5-5
--   BuildRequires curl-devel.
-*   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 7.21.5-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.21.5-3
--   GA - Bump release of all rpms
-*   Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 7.21.5-2
--   Removing prebuilt binaries
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 7.21.5-1
--   Upgrade version
-*   Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5.1-2
--   Added Doc subpackage. Removed chmod a-x for examples.
-*   Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 7.19.5.1
--   Initial build.  First version
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-4
+- Bump up release for openssl
+* Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.6-3
+- Fix make check
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-2
+- openssl 1.1.1
+* Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 7.43.0.6-1
+- Automatic Version Bump
+* Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.5-1
+- Update to 7.43.0.5
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0-5
+- Mass removal python2
+* Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 7.43.0-4
+- Fixed the make check.
+* Mon Aug 14 2017 Chang Lee <changlee@vmware.com> 7.43.0-3
+- Added check requires and fixed check
+* Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.43.0-2
+- Using python2 explicitly while building
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 7.43.0-1
+- Upgrade to 7.43.0  and add pycurl3
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.21.5-5
+- BuildRequires curl-devel.
+* Mon Oct 10 2016 ChangLee <changlee@vmware.com> 7.21.5-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.21.5-3
+- GA - Bump release of all rpms
+* Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 7.21.5-2
+- Removing prebuilt binaries
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 7.21.5-1
+- Upgrade version
+* Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5.1-2
+- Added Doc subpackage. Removed chmod a-x for examples.
+* Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 7.19.5.1
+- Initial build.  First version
