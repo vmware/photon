@@ -69,7 +69,7 @@ Command line tools for BPF Compiler Collection (BCC)
 # Using autosetup is not feasible
 %setup -q -n %{name}-%{version}
 # Using autosetup is not feasible
-%setup -D -c -T -a1 -n %{name}-%{version}
+%setup -q -D -c -T -a1 -n %{name}-%{version}
 cp -rf %{name}/* .
 rm -r %{name}
 
