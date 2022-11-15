@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-cql
 Version:        1.4.0
 Release:        1%{?dist}
@@ -8,15 +6,15 @@ License:        Apache Software License
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/s/cql/cql-%{version}.tar.gz
-Source0:        cql-%{version}.tar.gz
-%define sha1    cql=9bf5d1fa9874885bd2d0419081e5d3a7708167c9
+Url:            https://pypi.org/project/cql
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
+Source0: cql-%{version}.tar.gz
+%define sha512 cql=082ada585b81c3b836a6cce218c276c550608e7260083ca2c60d46316f8f203fd9773ffe820d387a09cf00c7d75b0230e99373766fc0b394ee87049f77cf96b1
+
+BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -25,21 +23,23 @@ A Python driver for CQL that adheres to py-dbapi v2
 (PEP249, Python Database API Specification v2.0: http://www.python.org/dev/peps/pep-0249/).
 
 %prep
-%setup -n cql-%{version}
+%autosetup -p1 -n cql-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 1.4.0-1
--   Initial packaging for Photon
+* Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 1.4.0-1
+- Initial packaging for Photon
