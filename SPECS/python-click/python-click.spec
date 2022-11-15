@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-click
 Version:        8.0.1
 Release:        1%{?dist}
@@ -8,15 +6,15 @@ License:        BSD License
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/s/click/click-%{version}.tar.gz
-Source0:        click-%{version}.tar.gz
-%define sha1    click=0998d30c09384201260d92705ce0223e9b97e31a
+URL:            https://palletsprojects.com/p/click
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
+Source0: https://github.com/pallets/click/archive/refs/tags/click-%{version}.tar.gz
+%define sha512 click=6a6d66c68dae4cfcfdab5d77dab4ab280b18f8e9ec326b4860012253d8f6b4fa57a5a3794ddebd228da85f893b0c6a737d8be3ad361d31098ef0a2ad684d6d0a
+
+BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -26,21 +24,23 @@ It's the "Command Line Interface Creation Kit". It’s highly configurable but c
 It aims to make the process of writing command line tools quick and fun while also preventing any frustration caused by the inability to implement an intended CLI API.
 
 %prep
-%setup -n click-%{version}
+%autosetup -p1 -n click-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 8.0.1-1
--   Initial packaging for Photon
+* Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 8.0.1-1
+- Initial packaging for Photon

@@ -1,14 +1,16 @@
-Summary:	C++ port of Junit test framework
-Name:		cppunit
-Version:	1.12.1
-Release:	2%{?dist}
-License:	LGPLv2
-URL:		https://sourceforge.net/projects/cppunit/
-Source0:	https://sourceforge.net/projects/cppunit/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 cppunit=f1ab8986af7a1ffa6760f4bacf5622924639bf4a
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:    C++ port of Junit test framework
+Name:       cppunit
+Version:    1.12.1
+Release:    2%{?dist}
+License:    LGPLv2
+URL:        https://sourceforge.net/projects/cppunit
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    https://sourceforge.net/projects/cppunit/files/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512 cppunit=7af3569d028d5fa49106ece281f478cc2757cc5deca8c2512406796a7dbd6473928a1e730f28880467d19c6e59b31e55bf4f92f5cf2498a3a875ab32c5b2a081
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  make
@@ -28,16 +30,19 @@ Group:          Development/Tools
 This contains headers and libs for development with cppunit.
 
 %prep
-%setup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %configure \
     --disable-silent-rules
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -50,10 +55,10 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libcppunit.a
 %{_libdir}/libcppunit.so
 %{_libdir}/pkgconfig*
-/usr/share/*
+%{_datadir}/*
 
 %changelog
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-2
--   Use standard configure macros
-*   Sun Mar 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.12.1-1
--   Initial version of cppunit for Photon.
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-2
+- Use standard configure macros
+* Sun Mar 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.12.1-1
+- Initial version of cppunit for Photon.
