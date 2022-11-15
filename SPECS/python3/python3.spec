@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -20,6 +20,8 @@ Patch1:         mailcap_deprecation_warning.patch
 Patch2:         CVE-2015-20107.patch
 Patch3:         Handle-the-EPERM-error-gracefully-in-crypt.patch
 Patch4:         CVE-2021-28861.patch
+Patch5:         CVE-2022-42919.patch
+Patch6:         CVE-2022-45061.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -324,6 +326,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+* Tue Nov 15 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-8
+- Fix CVE-2022-45061, CVE-2022-42919
 * Sun Aug 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-7
 - Fix CVE-2021-28861
 * Mon Jul 25 2022 Piyush Gupta <gpiyush@vmware.com> 3.10.0-6
