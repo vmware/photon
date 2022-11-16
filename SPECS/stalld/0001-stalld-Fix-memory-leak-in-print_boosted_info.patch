@@ -1,0 +1,41 @@
+From 597de795dc336e8c2b0cff94e79a45241d1945cf Mon Sep 17 00:00:00 2001
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
+Date: Fri, 14 Oct 2022 10:34:26 +0200
+Subject: [PATCH] stalld: Fix memory leak in print_boosted_info()
+
+get_process_comm() returns a pointer to an allocated memory on success.
+
+Free after using it.
+
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ src/stalld.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index 23f3e89..b63ad01 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -1108,14 +1108,15 @@ void print_boosted_info(int pid, struct cpu_info *cpu, char *type)
+ 	char *comm;
+ 
+ 	comm = get_process_comm(pid);
+-	if (comm == NULL)
+-		comm = "undef";
+ 
+ 	if (cpu)
+-		log_msg("boosted pid %d (%s) (cpu %d) using %s\n", pid, comm,
++		log_msg("boosted pid %d (%s) (cpu %d) using %s\n", pid, comm ? : "undef",
+ 			cpu->id, type);
+ 	else
+-		log_msg("boosted pid %d (%s) using %s\n", pid, comm, type);
++		log_msg("boosted pid %d (%s) using %s\n", pid, comm ? : "undef" , type);
++
++	if (comm)
++		free(comm);
+ }
+ 
+ int boost_with_deadline(int pid, struct cpu_info *cpu)
+-- 
+2.28.0
+

@@ -1,0 +1,163 @@
+From a8df2809371ff3d3235dec0a110a0bf8fd8e8dd5 Mon Sep 17 00:00:00 2001
+From: Marcelo Tosatti <mtosatti@redhat.com>
+Date: Tue, 23 Aug 2022 16:13:23 -0300
+Subject: [PATCH] stalld: print process comm and cpu when boosting
+
+Print additional information when boosting tasks.
+
+This can avoid additional debugging steps.
+
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+---
+ src/stalld.c | 46 +++++++++++++++++++++++++++++++---------------
+ 1 file changed, 31 insertions(+), 15 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index ff12cac..23f3e89 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -1103,7 +1103,22 @@ int get_current_policy(int pid, struct sched_attr *attr)
+ 	return ret;
+ }
+ 
+-int boost_with_deadline(int pid)
++void print_boosted_info(int pid, struct cpu_info *cpu, char *type)
++{
++	char *comm;
++
++	comm = get_process_comm(pid);
++	if (comm == NULL)
++		comm = "undef";
++
++	if (cpu)
++		log_msg("boosted pid %d (%s) (cpu %d) using %s\n", pid, comm,
++			cpu->id, type);
++	else
++		log_msg("boosted pid %d (%s) using %s\n", pid, comm, type);
++}
++
++int boost_with_deadline(int pid, struct cpu_info *cpu)
+ {
+ 	struct sched_attr attr;
+ 	int flags = 0;
+@@ -1122,11 +1137,11 @@ int boost_with_deadline(int pid)
+ 	    return ret;
+ 	}
+ 
+-	log_msg("boosted pid %d using SCHED_DEADLINE\n", pid);
++	print_boosted_info(pid, cpu, "SCHED_DEADLINE");
+ 	return ret;
+ }
+ 
+-int boost_with_fifo(int pid)
++int boost_with_fifo(int pid, struct cpu_info *cpu)
+ {
+ 	struct sched_attr attr;
+ 	int flags = 0;
+@@ -1142,7 +1157,8 @@ int boost_with_fifo(int pid)
+ 	    log_msg("boost_with_fifo failed to boost pid %d: %s\n", pid, strerror(errno));
+ 	    return ret;
+ 	}
+-	log_msg("boosted pid %d using SCHED_FIFO\n", pid);
++
++	print_boosted_info(pid, cpu, "SCHED_FIFO");
+ 	return ret;
+ }
+ 
+@@ -1165,7 +1181,7 @@ int restore_policy(int pid, struct sched_attr *attr)
+  * for the remainder of the period, repeating until all the
+  * periods are done.
+  */
+-void do_fifo_boost(int pid, struct sched_attr *old_attr)
++void do_fifo_boost(int pid, struct sched_attr *old_attr, struct cpu_info *cpu)
+ {
+ 	size_t nr_periods = (config_boost_duration * NS_PER_SEC) / config_dl_period;
+ 	struct timespec remainder_ts;
+@@ -1188,7 +1204,7 @@ void do_fifo_boost(int pid, struct sched_attr *old_attr)
+ 	normalize_timespec(&remainder_ts);
+ 
+ 	for (i=0; i < nr_periods; i++) {
+-		boost_with_fifo(pid);
++		boost_with_fifo(pid, cpu);
+ 		ts = runtime_ts;
+ 		clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, 0);
+ 		restore_policy(pid, old_attr);
+@@ -1197,7 +1213,7 @@ void do_fifo_boost(int pid, struct sched_attr *old_attr)
+ 	}
+ }
+ 
+-int boost_starving_task(int pid)
++int boost_starving_task(int pid, struct cpu_info *cpu)
+ {
+ 	struct sched_attr attr;
+ 	int ret;
+@@ -1214,7 +1230,7 @@ int boost_starving_task(int pid)
+ 	 * Boost.
+ 	 */
+ 	if (boost_policy == SCHED_DEADLINE) {
+-		ret = boost_with_deadline(pid);
++		ret = boost_with_deadline(pid, cpu);
+ 		if (ret < 0)
+ 			return ret;
+ 		sleep(config_boost_duration);
+@@ -1222,7 +1238,7 @@ int boost_starving_task(int pid)
+ 		if (ret < 0)
+ 			return ret;
+ 	} else {
+-		do_fifo_boost(pid, &attr);
++		do_fifo_boost(pid, &attr, cpu);
+ 	}
+ 
+ 	/*
+@@ -1327,7 +1343,7 @@ int check_starving_tasks(struct cpu_info *cpu)
+ 				continue;
+ 			}
+ 
+-			boost_starving_task(task->pid);
++			boost_starving_task(task->pid, cpu);
+ 		}
+ 	}
+ 
+@@ -1681,7 +1697,7 @@ skipped:
+ 	}
+ }
+ 
+-int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus)
++int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus, struct cpu_info *cpus)
+ {
+ 	struct cpu_starving_task_info *cpu;
+ 	struct sched_attr attr[nr_cpus];
+@@ -1732,7 +1748,7 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
+ 			/*
+ 			 * Boost!
+ 			 */
+-			ret = boost_with_deadline(cpu->pid);
++			ret = boost_with_deadline(cpu->pid, &cpus[i]);
+ 			/*
+ 			 * It is ok if a task die.
+ 			 */
+@@ -1871,7 +1887,7 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+ 
+ 		}
+ 
+-		boosted = boost_cpu_starving_vector(cpu_starving_vector, nr_cpus);
++		boosted = boost_cpu_starving_vector(cpu_starving_vector, nr_cpus, cpus);
+ 		if (!boosted)
+ 			goto skipped;
+ 
+@@ -1949,10 +1965,10 @@ int check_policies(void)
+ 		die("unable to get scheduling policy!");
+ 
+ 	// try boosting to SCHED_DEADLINE
+-	ret = boost_with_deadline(0);
++	ret = boost_with_deadline(0, NULL);
+ 	if (ret < 0) {
+ 		// try boosting with fifo to see if we have permission
+-		ret = boost_with_fifo(0);
++		ret = boost_with_fifo(0, NULL);
+ 		if (ret < 0) {
+ 			log_msg("check_policies: unable to change policy to either deadline or fifo,"
+ 				"defaulting to logging only\n");
+-- 
+2.28.0
+

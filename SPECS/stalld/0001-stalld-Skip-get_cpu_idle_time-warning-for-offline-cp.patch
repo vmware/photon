@@ -1,0 +1,52 @@
+From e0d4ba13742c2b38cd43fd74ea2890edb45c1529 Mon Sep 17 00:00:00 2001
+From: Fernando Pacheco <fpacheco@redhat.com>
+Date: Fri, 6 Aug 2021 16:08:31 -0700
+Subject: [PATCH] stalld: Skip get_cpu_idle_time() warning for offline cpus
+
+Statistics for offline cpus do not appear in /proc/stat.
+For systems with several offline cpus we end up spamming
+warn messages when attempting to get the idle time from
+said file. Use -ENODEV to indicate the cpu might be offline
+and skip the warn().
+
+Signed-off-by: Fernando Pacheco <fpacheco@redhat.com>
+---
+ src/stalld.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index 30d5641..ff12cac 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -293,7 +293,7 @@ static long get_cpu_idle_time(char *buffer, size_t buffer_size, int cpu)
+ 	/* CPU */
+ 	idle_start = strstr(buffer, cpuid);
+ 	if (!idle_start)
+-		return -EINVAL;
++		return -ENODEV; /* cpu might be offline */
+ 
+ 	/* find and skip space before user */
+ 	idle_start = strstr(idle_start, " ");
+@@ -350,7 +350,8 @@ int cpu_had_idle_time(struct cpu_info *cpu_info)
+ 
+ 	idle_time = get_cpu_idle_time(sched_stat, STAT_MAX_SIZE, cpu_info->id);
+ 	if (idle_time < 0) {
+-		warn("unable to parse idle time for cpu%d\n", cpu_info->id);
++		if (idle_time != -ENODEV)
++			warn("unable to parse idle time for cpu%d\n", cpu_info->id);
+ 		return 0;
+ 	}
+ 
+@@ -402,7 +403,8 @@ int get_cpu_busy_list(struct cpu_info *cpus, int nr_cpus, char *busy_cpu_list)
+ 
+ 		idle_time = get_cpu_idle_time(sched_stat, STAT_MAX_SIZE, cpu->id);
+ 		if (idle_time < 0) {
+-			warn("unable to parse idle time for cpu%d\n", cpu->id);
++			if (idle_time != -ENODEV)
++				warn("unable to parse idle time for cpu%d\n", cpu->id);
+ 			continue;
+ 		}
+ 
+-- 
+2.28.0
+
