@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql10
-Version:        10.22
+Version:        10.23
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha512  postgresql=2e1ea75be7696ffbbb947351a8e8e55aaf067f86ad318308499a6a58797f0bf86227ed33e257e261c5c71ebba2f73ba514ef195a2394b91414ce6a0c3ab62532
+%define sha512  postgresql=9fd031cad0c3caacae105215167abd5dc4fdd15dea77a12cb0a977fab6e245e3fda163f202cc7786e50c69e5c3f180d32676a3b18ea30a9a14f0bcab56aa19dd
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 10
@@ -171,6 +171,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/libpgtypes.a
 
 %changelog
+*   Wed Nov 16 2022 Tapas Kundu <tkundu@vmware.com> 10.23-1
+-   Upgraded to version 10.23.
 *   Tue Aug 16 2022 Julien Rouhaud <jrouhaud@vmware.com> 10.22-1
 -   Upgraded to version 10.22.
 *   Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 10.21-1
