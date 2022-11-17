@@ -8,8 +8,8 @@ Distribution:   Photon
 License:        MIT
 URL:            https://github.com/ousret/charset_normalizer
 
-Source0:        charset-normalizer-%{version}.tar.gz
-%define sha1 charset-normalizer=2b1503b228da06710f574b6226fede5e390f9389
+Source0: charset-normalizer-%{version}.tar.gz
+%define sha512 charset-normalizer=0dea4ada59c197a1f7090b0c06218774746f77c2007eaff37dae4589cab1382ed670c98327d890347d2b72869b6053eb8c3362587b034921958624b9db9aff95
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -35,15 +35,13 @@ sed -i "/addopts = --cov/d" setup.cfg
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 %pytest
 %endif
 
 %files
 %defattr(-,root,root)
-%license LICENSE
-%doc README.md
 %{_bindir}/normalizer
 %{python3_sitelib}/*
 

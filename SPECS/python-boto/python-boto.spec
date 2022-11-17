@@ -6,24 +6,22 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/boto/2.48.0
+Url:            https://github.com/boto/boto
 
-Source0:        https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
-%define sha1    boto=300e6b7abd04a77a94f769e6cad6fb9e6e84ffbb
+Source0: https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
+%define sha512 boto=2175cf30cd25bbc05812e83e5ade7668c3e21b1bb09aa1b43f0f0ac7d6967a646394fb52c9be673ebb65618c5b33a52d6f31f6da702f5cd1d6c9a18169476dd4
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 Patch0:         makecheck.patch
 BuildRequires:  python3-requests
 BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-requests
 Requires:       python3-xml
 
@@ -40,12 +38,12 @@ Boto is a Python package that provides interfaces to Amazon Web Services. Curren
 
 %install
 %py3_install -- --single-version-externally-managed
-for item in %{buildroot}%{_bindir}/*
-  do mv ${item} "${item}-%{python3_version}" ;
+for item in %{buildroot}%{_bindir}/*; do
+  mv ${item} "${item}-%{python3_version}"
 done
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 # nose is not maintained anymore
 #pip3 install nose httpretty mock
 #python3 ./tests/test.py unit

@@ -8,8 +8,8 @@ URL:            https://pypi.org/project/deepmerge
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://pypi.python.org/packages/source/n/deepmerge/deepmerge-%{version}.tar.gz
-%define sha1    deepmerge=537f9701b5c94494589904873d92d1d54d059565
+Source0: https://pypi.python.org/packages/source/n/deepmerge/deepmerge-%{version}.tar.gz
+%define sha512 deepmerge=12586720388a9604ef5f3ffc05b00fd9a50c7a80322bf9a29afe07739eae591cb2cbd6671f497aec2d95d39314ae1099f38b06cd8e71fb685037cc681e4565d5
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -18,17 +18,15 @@ BuildRequires:  curl-devel
 BuildRequires:  python3-pyparsing
 BuildRequires:  python3-pip
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-attrs
 BuildRequires:  python3-six
 BuildRequires:  python3-requests
-BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -44,8 +42,8 @@ A tools to handle merging of nested data structures in python.
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 pushd deepmerge/tests/
 pip3 install pluggy more-itertools funcsigs
 pytest3
@@ -57,7 +55,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc README.rst
 %{python3_sitelib}/*
 
 %changelog

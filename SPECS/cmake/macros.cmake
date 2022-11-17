@@ -19,7 +19,7 @@
 # - Set default install prefixes and library install directories
 # - Turn on shared libraries by default
 %cmake \
-%if 0%{?set_build_flags:1} \
+%if 0%{?set_build_flags} \
   %set_build_flags \
 %else \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \

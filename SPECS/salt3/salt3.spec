@@ -3,19 +3,21 @@
 %define _salttesting_ver 2016.5.11
 
 Name:           salt3
-Version:	3005.1
+Version:        3005.1
 Release:        1%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
-URL:            http://saltstack.org/
+URL:            http://saltstack.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha512  salt=391f995f0129f3d7104a0eea4fd83b18aa6ecae0fd7a2c77c1154e24b0bcd52cef4b63db12597c85737bb33ddf605e0c23370cef3bf47f9ea85af5b77d74dc50
-Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-%{_salttesting_ver}.tar.gz
-%define sha512  SaltTesting=5fc362ba6cf41efd0d3197c832f05b14267c9d92bbb0c34d872bd3ae1383996e0918dc6b01052076ecea70bbf4687fde3d5de2915aab7d07f961f2b6badac6ff
+Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
+%define sha512 salt=391f995f0129f3d7104a0eea4fd83b18aa6ecae0fd7a2c77c1154e24b0bcd52cef4b63db12597c85737bb33ddf605e0c23370cef3bf47f9ea85af5b77d74dc50
+
+Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-%{_salttesting_ver}.tar.gz
+%define sha512 SaltTesting=5fc362ba6cf41efd0d3197c832f05b14267c9d92bbb0c34d872bd3ae1383996e0918dc6b01052076ecea70bbf4687fde3d5de2915aab7d07f961f2b6badac6ff
+
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service
@@ -24,13 +26,11 @@ Source6:        logrotate.salt
 
 Patch0:         requirements.patch
 
-BuildRoot:      %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
-
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  python3-distro
 
 Requires:       pciutils
@@ -44,7 +44,7 @@ Requires:       python3-zmq
 Requires:       python3-tornado
 Requires:       python3-psutil
 
-%ifarch %{ix86} x86_64
+%ifarch x86_64
 Requires:       dmidecode
 %endif
 
@@ -130,11 +130,10 @@ Salt Package Manager
 %autosetup -n salt-%{version} -p1
 
 %build
+%{py3_build}
 
 %install
-rm -rf %{buildroot}
-cd $RPM_BUILD_DIR/salt-%{version}
-python3 setup.py install -O1 --root %{buildroot}
+%{py3_install}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/cache/salt
@@ -162,9 +161,79 @@ install -p -m 0644 %{SOURCE6} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 %clean
 rm -rf %{buildroot}
 
+%preun master
+%if 0%{?systemd_preun}
+  %systemd_preun salt-master.service
+%else
+  if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    %{_bindir}/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-master.service > /dev/null 2>&1 || :
+  fi
+%endif
+
+%preun syndic
+%if 0%{?systemd_preun}
+  %systemd_preun salt-syndic.service
+%else
+  if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    %{_bindir}/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
+  fi
+%endif
+
+%preun minion
+%if 0%{?systemd_preun}
+  %systemd_preun salt-minion.service
+%else
+  if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    %{_bindir}/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-minion.service > /dev/null 2>&1 || :
+  fi
+%endif
+
+%post master
+%if 0%{?systemd_post}
+  %systemd_post salt-master.service
+%else
+  %{_bindir}/systemctl daemon-reload &>/dev/null || :
+%endif
+
+%post minion
+%if 0%{?systemd_post}
+  %systemd_post salt-minion.service
+%else
+  %{_bindir}/systemctl daemon-reload &>/dev/null || :
+%endif
+
+%postun master
+%if 0%{?systemd_post}
+  %systemd_postun salt-master.service
+%else
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-master.service &>/dev/null || :
+%endif
+
+%postun syndic
+%if 0%{?systemd_post}
+  %systemd_postun salt-syndic.service
+%else
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-syndic.service &>/dev/null || :
+%endif
+
+%postun minion
+%if 0%{?systemd_post}
+  %systemd_postun salt-minion.service
+%else
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-minion.service &>/dev/null || :
+%endif
+
 %files
 %defattr(-,root,root,-)
-%doc $RPM_BUILD_DIR/salt-%{version}/LICENSE
 %{python3_sitelib}/salt/*
 %{python3_sitelib}/salt-*-py%{python3_version}.egg-info
 %{_sysconfdir}/logrotate.d/salt
@@ -196,6 +265,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/minion
 
 %files syndic
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-syndic.1.*
 %{_bindir}/salt-syndic
 %config(noreplace) %{_unitdir}/salt-syndic.service
@@ -207,6 +277,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_unitdir}/salt-api.service
 
 %files cloud
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-cloud.1.*
 %{_bindir}/salt-cloud
 %{_sysconfdir}/salt/cloud.conf.d
@@ -217,88 +288,20 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/cloud
 
 %files ssh
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-ssh.1.*
 %{_bindir}/salt-ssh
 %{_sysconfdir}/salt/roster
 
 %files proxy
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-proxy.1.*
 %{_bindir}/salt-proxy
 
 %files spm
+%defattr(-,root,root)
 %doc %{_mandir}/man1/spm.1.*
 %{_bindir}/spm
-
-%preun master
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-master.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-master.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%preun syndic
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-syndic.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%preun minion
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-minion.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-minion.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%post master
-%if 0%{?systemd_post:1}
-  %systemd_post salt-master.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null || :
-%endif
-
-%post minion
-%if 0%{?systemd_post:1}
-  %systemd_post salt-minion.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null || :
-%endif
-
-%postun master
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-master.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-master.service &>/dev/null || :
-%endif
-
-%postun syndic
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-syndic.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-syndic.service &>/dev/null || :
-%endif
-
-%postun minion
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-minion.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-minion.service &>/dev/null || :
-%endif
 
 %changelog
 * Tue Oct 04 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005.1-1

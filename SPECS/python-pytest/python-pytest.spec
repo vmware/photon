@@ -8,8 +8,8 @@ URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
-%define sha1    pytest=0cf5f7e3495f89faf5e4cc9797fd16cef4a27230
+Source0: https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
+%define sha512 pytest=7624563a9d967da4cbf82cfff90bae8c0cca07b32e291dc7c5efa787725ed1a255edd066bf0d5fbd89b8cbed8cf5b619fe7c7017f44a7f8a014e3310c06bdbf9
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -24,7 +24,6 @@ BuildRequires:  python3-toml
 BuildRequires:  python3-wcwidth
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-pluggy
 Requires:       python3-iniconfig
 Requires:       python3-packaging
@@ -53,9 +52,9 @@ ln -snf pytest%{python3_version} %{buildroot}%{_bindir}/pytest-%{python3_version
 mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test%{python3_version}
 ln -snf py.test%{python3_version} %{buildroot}%{_bindir}/py.test3
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
-make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{_smp_mflags} check
 %endif
 
 %files

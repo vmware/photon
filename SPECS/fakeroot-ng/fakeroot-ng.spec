@@ -3,17 +3,16 @@ Name:          fakeroot-ng
 Version:       0.18
 Release:       4%{?dist}
 License:       GPLv2+
-URL:           http://fakeroot-ng.lingnu.com/
+URL:           http://fakeroot-ng.lingnu.com
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
+Source0: http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
 %define sha512 %{name}=8ece6830d229b92537d9c0a2eb42cb9ec4ae6b83453303004dded5eab0707b9ae8eaa2c71aac6ea68226c43cf08db6b0939a9422aab32948f5ecb185ee01d854
 
 Patch0:        Add-sched-h-to-process-cpp.patch
 
-BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch:     x86_64
 
 %description
@@ -35,19 +34,20 @@ the result.
 %make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/fakeroot-ng
-%doc %{_mandir}/man1/fakeroot-ng.1.gz
+%{_bindir}/%{name}
+%doc %{_mandir}/man1/%{name}.1.gz
 
 %changelog
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.18-4

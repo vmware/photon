@@ -8,8 +8,8 @@ URL:            https://metacpan.org/pod/Net::SSLeay
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:         https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-%{version}.tar.gz
-%define sha1 Net-SSLeay=675c9df74163d48477ecf06601a589f3c3b096dd
+Source0: https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-%{version}.tar.gz
+%define sha512 Net-SSLeay=8a5f251b5ef1d8c2d619d984594a7a22ddeed2e5e726fe683a45f299d7878f4ca8ffab00480ebf5ef7a94ae1fcf6be05dfdaa68b8bfe2ad68443150765adb891
 
 Requires:       perl
 Requires:       openssl
@@ -31,16 +31,15 @@ Net::SSLeay module basically comprise of:
 
 %build
 env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
-make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name .packlist -delete
 find %{buildroot} -type f -name '*.bs' -empty -delete
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 # Install required modules for test - Test::Pod, Test::Exception, Test::Warn and Test::NoWarnings
 export PERL_MM_USE_DEFAULT=1
 echo "yes" | cpan -a
@@ -49,6 +48,7 @@ make test %{?_smp_mflags}
 %endif
 
 %files
+%defattr(-,root,root)
 %{perl_vendorlib}/*
 %{_mandir}/man?/*
 

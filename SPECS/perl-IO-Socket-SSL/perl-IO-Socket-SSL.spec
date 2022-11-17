@@ -8,8 +8,8 @@ URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source:         https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
-%define sha1 IO-Socket-SSL=9d7583f5fb80085795ae55471adbc1840ca749fa
+Source0: https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
+%define sha512 IO-Socket-SSL=9bccce1a85d24a4e06394a7a0eb8c1c834a71d1fecf99e3a7c0fea1828dcad0da24768bfe0db996d70f3e153135fc958d85ae65fab300ebfd8b520441aa27cfa
 
 BuildArch:      noarch
 
@@ -27,20 +27,21 @@ IO::Socket::SSL makes using SSL/TLS much easier by wrapping the necessary functi
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
-make %{?_smp_mflags}
+%make_build
 
 %install
-make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR=%{buildroot} pure_install
 find %{buildroot} -type f \( -name .packlist -o \
             -name '*.bs' -size 0 \) -exec rm -f {} ';'
 find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 make test %{?_smp_mflags}
 %endif
 
 %files
+%defattr(-,root,root)
 %{perl_vendorlib}/*
 %{_mandir}/man?/*
 

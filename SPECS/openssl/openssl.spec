@@ -23,7 +23,7 @@ Source4:        jitterentropy.c
 Patch0:         openssl-providers.patch
 Patch1:         openssl-CVE-2022-2068.patch
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 
@@ -122,7 +122,7 @@ gcc -shared -Wall -O2 -g -fPIC -I%{buildroot}%{_includedir} -lcrypto -L%{buildro
 %endif
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 make tests %{?_smp_mflags}
 %endif
 

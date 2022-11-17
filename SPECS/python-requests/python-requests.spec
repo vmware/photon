@@ -8,20 +8,19 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://python-requests.org
 
-Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
-%define sha1    requests=8c7a89d183d3e9b70bf91ba5b75eccf7111b9d8d
+Source0: http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
+%define sha512 requests=c3397d77f0d2f1afb05661c4b98adad6c1ddaf360906254150b33ab0d9479fd306905bd6d61b8cf8becd9a40bdcf9b03542e8267c644ef19f03f44bfca0bc461
 
-%if 0%{?with_check:1}
-Patch0:         fix_makecheck.patch
+%if 0%{?with_check}
+Patch0: fix_makecheck.patch
 %endif
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-charset-normalizer
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  ca-certificates
 BuildRequires:  curl-devel
 BuildRequires:  python3-atomicwrites
@@ -35,7 +34,6 @@ BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-urllib3
 Requires:       python3-chardet
 Requires:       python3-pyOpenSSL
@@ -78,8 +76,8 @@ Features:
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 pip3 install pathlib2 funcsigs pluggy more_itertools \
              pysocks pytest-mock pytest-httpbin trustme
 pytest3 -v -k "not test_https_warnings"
@@ -87,7 +85,6 @@ pytest3 -v -k "not test_https_warnings"
 
 %files
 %defattr(-,root,root)
-%doc LICENSE
 %{python3_sitelib}/*
 
 %changelog

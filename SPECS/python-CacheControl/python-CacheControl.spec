@@ -6,10 +6,10 @@ License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/ionrock/cachecontrol/archive/v%{version}.tar.gz
+Url:            https://github.com/ionrock/cachecontrol
 
-Source0:        CacheControl-%{version}.tar.gz
-%define sha1    CacheControl=213bd9dd49b9a4b8ea6aa797cd86f4ce19ed13a7
+Source0: CacheControl-%{version}.tar.gz
+%define sha512 CacheControl=5269624dd523c4f94b258ba4d35d2fce65779377c601c1ade01b1058a6616319725fde10b188fbc7015ac263537fb11085272fbbb9b595e87c187521066a567a
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -35,8 +35,8 @@ The same is true of requests in terms of caching.
 %py3_install
 mv %{buildroot}%{_bindir}/doesitcache %{buildroot}%{_bindir}/doesitcache3
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 python3 setup.py test
 %endif
 

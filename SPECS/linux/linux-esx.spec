@@ -408,7 +408,7 @@ patch -p1 < %{SOURCE18}
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
-%if 0%{?kat_build:1}
+%if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %endif
 

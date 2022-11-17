@@ -8,21 +8,18 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/chardet/chardet/archive/chardet-%{version}.tar.gz
-%define sha1    chardet=2384f6cfba4685d901262e073a4455d4cf76d102
+Source0: https://github.com/chardet/chardet/archive/chardet-%{version}.tar.gz
+%define sha512 chardet=ebd7f420e1094445270db993f6373ffe7370419e002b0bb13299dc6c9b0f7c4e77b0f44f871fba6371e6869e7c86728514367db377e3137487a3acf50cb81e96
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-setuptools
 
 BuildArch:      noarch
@@ -39,8 +36,8 @@ chardet is a universal character encoding detector in Python.
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
-%if 0%{?with_check:1}
 %pytest -v
 %endif
 
