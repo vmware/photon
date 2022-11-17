@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          https://ftp.sendmail.org/sendmail.%{version}.tar.gz
-%define sha1      %{name}.%{version}=d4d2568fe48da0e0fe8209a9cbc6f842e9014e46
+%define sha512    %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
 
 Patch0:           0001-sendmail-fix-compatibility-with-openssl-3.0.patch
 
@@ -26,8 +26,6 @@ Requires: m4
 Requires: openldap
 Requires(pre): /usr/sbin/useradd
 Requires(pre): /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel
-Requires(postun): /usr/sbin/groupdel
 Requires: /bin/sed
 Requires: (net-tools or toybox)
 
@@ -65,7 +63,7 @@ groupadd -g 26 smmsp
 useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
 
 pushd cf/cf
-install -v -d -m755 %{buildroot}/etc/mail
+install -v -d -m755 %{buildroot}%{_sysconfdir}/mail
 sh Build DESTDIR=%{buildroot} install-cf
 popd
 
@@ -75,8 +73,8 @@ install -v -d -m755 %{buildroot}%{_mandir}/man1
 install -v -d -m755 %{buildroot}%{_mandir}/man8
 sh Build DESTDIR=%{buildroot} install
 
-install -v -m644 cf/cf/{submit,%{name}}.mc %{buildroot}/etc/mail
-cp -v -R cf/* %{buildroot}/etc/mail
+install -v -m644 cf/cf/{submit,%{name}}.mc %{buildroot}%{_sysconfdir}/mail
+cp -v -R cf/* %{buildroot}%{_sysconfdir}/mail
 
 install -v -m755 -d %{buildroot}%{_docdir}/%{name}-%{version}/{cf,%{name}}
 
@@ -97,9 +95,9 @@ install -v -m644 %{name}/mailq.1 %{buildroot}%{_mandir}/man1
 install -v -m644 %{name}/newaliases.1 %{buildroot}%{_mandir}/man1
 install -v -m644 vacation/vacation.1 %{buildroot}%{_mandir}/man1
 
-mkdir -p %{buildroot}%{_unitdir} %{buildroot}/etc/sysconfig
+mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sysconfdir}/sysconfig
 
-cat > %{buildroot}/etc/sysconfig/%{name} <<- "EOF"
+cat > %{buildroot}%{_sysconfdir}/sysconfig/%{name} <<- "EOF"
 DAEMON=yes
 QUEUE=1h
 EOF
@@ -112,7 +110,7 @@ After=network-online.target syslog.target network.target
 
 [Service]
 Environment=QUEUE=1h
-EnvironmentFile=/etc/sysconfig/sendmail
+EnvironmentFile=%{_sysconfdir}/sysconfig/sendmail
 Type=forking
 ExecStart=/usr/sbin/sendmail -bd -q $QUEUE $SENDMAIL_OPTARG
 
@@ -126,24 +124,28 @@ make -C test check %{?_smp_mflags}
 %endif
 
 %pre
-if [ $1 -eq 1 ]; then
+if ! getent group smmsp >/dev/null; then
   groupadd -g 26 smmsp
-  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
-  chmod -v 1777 /var/mail
-  install -v -m700 -d /var/spool/mqueue
 fi
+if ! getent passwd smmsp >/dev/null; then
+  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
+fi
+
+chmod -v 1775 /var/mail
+install -v -m700 -d /var/spool/mqueue
 
 %post
 if [ $1 -eq 1 ]; then
-  echo $(hostname -f) > /etc/mail/local-host-names
-  cat > /etc/mail/aliases << "EOF"
+  echo $(hostname -f) > %{_sysconfdir}/mail/local-host-names
+  cat > %{_sysconfdir}/mail/aliases << "EOF"
 postmaster: root
 MAILER-DAEMON: root
 EOF
   /bin/newaliases
 
-  cd /etc/mail
+  cd %{_sysconfdir}/mail
   m4 m4/cf.m4 %{name}.mc > %{name}.cf
+  m4 m4/cf.m4 submit.mc > submit.cf
 fi
 
 chmod 700 /var/spool/clientmqueue
@@ -156,17 +158,14 @@ chown smmsp:smmsp /var/spool/clientmqueue
 
 %postun
 if [ $1 -eq 0 ]; then
-  userdel smmsp
-  groupdel smmsp
-
-  rm -rf /etc/mail
+  rm -rf %{_sysconfdir}/mail
 fi
 %systemd_postun_with_restart %{name}.service
 
 %files
 %config(noreplace)%{_sysconfdir}/mail/%{name}.mc
-%config(noreplace)%{_sysconfdir}/mail/%{name}.cf
-%config(noreplace)%{_sysconfdir}/mail/submit.cf
+%{_sysconfdir}/mail/%{name}.cf
+%{_sysconfdir}/mail/submit.cf
 %config(noreplace)%{_sysconfdir}/mail/submit.mc
 %{_sysconfdir}/mail/feature/*
 %{_sysconfdir}/mail/hack/*
@@ -193,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Thu Nov 17 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-2
+- Config file noplace fixed
 * Mon Apr 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-1
 - Upgrade to v8.17.1 to address CVE-2021-3618
 * Thu Mar 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.16.1-5
