@@ -337,7 +337,9 @@ class constants(object):
         "/usr/sbin/groupadd":"shadow",
         "/usr/bin/which":"which",
         "/bin/sed":"sed",
-        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
+        "/usr/bin/containerd-shim-runc-v2":"containerd-extras",
+        "postgresql10-libs": "postgresql-libs",
+        "postgresql10-devel": "postgresql-devel",
     }
 
     @staticmethod

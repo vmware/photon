@@ -315,28 +315,28 @@ class SpecParser(object):
             totalContents = len(listContents)
             i = 0
             while i < totalContents:
-                dpkg = dependentPackageData()
                 compare = None
                 packageName = listContents[i]
-                if listContents[i].startswith("/"):
-                    provider = constants.providedBy.get(listContents[i], None)
+
+                if (packageName not in constants.providedBy and
+                        packageName.startswith("/")):
                     i += 1
-                    if provider is not None:
-                        packageName = provider
-                    else:
-                        continue
+                    continue
+
+                if packageName in constants.providedBy:
+                    packageName = constants.providedBy[packageName]
+
                 if i + 2 < len(listContents):
                     if listContents[i+1] in (">=", "<=", "=", "<", ">"):
-                        compare = listContents[i+1]
+                        compare = listContents[i + 1]
 
+                dpkg = dependentPackageData()
+                dpkg.package = packageName
+                i += 1
                 if compare is not None:
-                    dpkg.package = packageName
                     dpkg.compare = compare
-                    dpkg.version = listContents[i+2]
-                    i = i + 3
-                else:
-                    dpkg.package = packageName
-                    i = i + 1
+                    dpkg.version = listContents[i + 1]
+                    i += 2
                 listdependentpkgs.append(dpkg)
         return listdependentpkgs
 
