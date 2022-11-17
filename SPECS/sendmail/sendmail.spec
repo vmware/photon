@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -25,7 +25,6 @@ Requires:         systemd
 Requires:         m4
 Requires:         openldap
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 Requires:         /bin/sed
 Requires:         (net-tools or toybox)
 
@@ -124,12 +123,15 @@ make -C test check %{?_smp_mflags}
 %endif
 
 %pre
-if [ $1 -eq 1 ] ; then
+if ! getent group smmsp >/dev/null; then
   groupadd -g 26 smmsp
-  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
-  chmod -v 1777 /var/mail
-  install -v -m700 -d /var/spool/mqueue
 fi
+if ! getent passwd smmsp >/dev/null; then
+  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
+fi
+
+chmod -v 1775 /var/mail
+install -v -m700 -d /var/spool/mqueue
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -142,6 +144,7 @@ EOF
 
   cd %{_sysconfdir}/mail
   m4 m4/cf.m4 %{name}.mc > %{name}.cf
+  m4 m4/cf.m4 submit.mc > submit.cf
 fi
 
 chmod 700 /var/spool/clientmqueue
@@ -154,17 +157,14 @@ chown smmsp:smmsp /var/spool/clientmqueue
 
 %postun
 if [ $1 -eq 0 ] ; then
-  userdel smmsp
-  groupdel smmsp
-
   rm -rf %{_sysconfdir}/mail
 fi
 %systemd_postun_with_restart %{name}.service
 
 %files
 %config(noreplace)%{_sysconfdir}/mail/%{name}.mc
-%config(noreplace)%{_sysconfdir}/mail/%{name}.cf
-%config(noreplace)%{_sysconfdir}/mail/submit.cf
+%{_sysconfdir}/mail/%{name}.cf
+%{_sysconfdir}/mail/submit.cf
 %config(noreplace)%{_sysconfdir}/mail/submit.mc
 %{_sysconfdir}/mail/feature/*
 %{_sysconfdir}/mail/hack/*
@@ -191,6 +191,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Thu Nov 17 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-4
+- Config file noplace fixed
 * Sat Jul 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-3
 - Drop libdb support
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-2
