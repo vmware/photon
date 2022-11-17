@@ -1,3 +1,5 @@
+%define with_fips 1
+
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
@@ -8,20 +10,22 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
-Source1:        rehash_ca_certificates.sh
-%if 0%{?with_fips:1}
-Source2:        sample-fips-enable-openssl.cnf
+Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
+
+Source1: rehash_ca_certificates.sh
+
+%if 0%{?with_fips}
+Source2: sample-fips-enable-openssl.cnf
 %endif
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 
-Requires:       bash
-Requires:       glibc
-Requires:       libgcc
+Requires: bash
+Requires: glibc
+Requires: libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -37,7 +41,7 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
 
-%if 0%{?with_fips:1}
+%if 0%{?with_fips}
 %package fips-provider
 Summary:    FIPS Libraries for openssl
 Group:      Applications/Internet
@@ -89,31 +93,30 @@ export MACHINE=%{_arch}
 ./config \
     --prefix=%{_prefix} \
     --libdir=%{_libdir} \
-    --openssldir=/%{_sysconfdir}/ssl \
+    --openssldir=%{_sysconfdir}/ssl \
     --api=1.1.1 \
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
     -Wl,-z,noexecstack \
-%if 0%{?with_fips:1}
+%if 0%{?with_fips}
     enable-fips
 %endif
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} MANDIR=%{_mandir} MANSUFFIX=ssl install %{?_smp_mflags}
-install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
+%make_install %{?_smp_mflags}
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
 
-%check
 %if 0%{?with_check}
+%check
 make tests %{?_smp_mflags}
 %endif
 
 %ldconfig_scriptlets
 
-%if 0%{?with_fips:1}
+%if 0%{?with_fips}
 %post fips-provider
 OPENSSL_CFG='/etc/ssl/openssl.cnf'
 openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
@@ -164,7 +167,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
 
-%if 0%{?with_fips:1}
+%if 0%{?with_fips}
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
