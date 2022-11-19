@@ -1,29 +1,31 @@
+%define srcname python-daemon
+
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python3-daemon
-Version:        2.2.4
-Release:        3%{?dist}
+Version:        2.3.2
+Release:        1%{?dist}
 License:        Apache-2
-Url:            https://pypi.python.org/pypi/python-daemon/
+URL:            https://pypi.org/project/python-daemon
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://files.pythonhosted.org/packages/source/p/python-daemon/python-daemon-%{version}.tar.gz
-%define sha512  python-daemon=9a7a4e23e126f05e4c1c503f15401cddd758c5f9195c370997060ca1bbfe71cc51d82d3ae16bcf0023c28fa50b0b8d6cd406e515b27725ffa9fec10fde3ed64a
+Source0: https://files.pythonhosted.org/packages/source/p/python-daemon/python-daemon-%{version}.tar.gz
+%define sha512 %{srcname}=d9f6e6c376a496fae96bd9efed0a56d00a137617a3d1d5ef74802ef176bc813bb1d49bbb9164cdbec03213529f944b32b257bcc64283abfa4a3522ff00826bfd
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-docutils
-BuildRequires:  python3-lockfile
-BuildRequires:  python3-xml
-BuildRequires:  curl-devel
-BuildRequires:  libffi-devel
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-docutils
+BuildRequires: python3-lockfile
+BuildRequires: python3-xml
+BuildRequires: curl-devel
+BuildRequires: libffi-devel
 
-Requires:       libffi
-Requires:       python3
-Requires:       python3-lockfile
+Requires: libffi
+Requires: python3
+Requires: python3-lockfile
 
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 This library implements the well-behaved daemon specification of PEP 3143, “Standard daemon process library”.
@@ -31,30 +33,28 @@ This library implements the well-behaved daemon specification of PEP 3143, “St
 A well-behaved Unix daemon process is tricky to get right, but the required steps are much the same for every daemon program. A DaemonContext instance holds the behaviour and configured process environment for the program; use the instance as a context manager to enter a daemon state.
 
 %prep
-%autosetup -p1 -n python-daemon-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 sed -i 's/distclass=version.ChangelogAwareDistribution,/ /g' setup.py
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-rm -rf %{buildroot}
-python3 setup.py install --root=%{buildroot}
+%py3_install
 
-%check
 %if 0%{?with_check}
-easy_install_3=$(ls /usr/bin | grep easy_install | grep 3)
-$easy_install_3 mock
-$easy_install_3 testscenarios
-$easy_install_3 testtools
-python3 -m unittest discover
+%check
+export PYTHONPATH=%{buildroot}%{python3_sitelib}
+%{python3} -m setup test --quiet
 %endif
 
 %files
-%defattr(-, root, root, -)
+%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sat Nov 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.2-1
+- Upgrade to v2.3.2
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.4-3
 - Bump version as a part of libffi upgrade
 * Thu Aug 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.2.4-2
