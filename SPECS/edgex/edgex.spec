@@ -5,7 +5,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        2.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -102,6 +102,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_unitdir}/%{name}-core-data.service
 %{_var}/log/*
 
 %changelog
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 2.2.0-3
+- Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 2.2.0-2
 - Bump up version to compile with new go
 * Sun Aug 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.0-1

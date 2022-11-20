@@ -3,7 +3,7 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.22.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
@@ -41,6 +41,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.0-4
+- Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.0-3
 - Bump up version to compile with new go
 * Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.0-2
