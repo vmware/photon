@@ -1,6 +1,6 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        12.2.0
+Version:        12.7.1
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
@@ -8,10 +8,9 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=aa9e72132093d1e24e77415a998e1f2d50c1fcf9
+%define sha512    sysstat=8aa1b98e4aaa86cbdc522ba292e5d2c4a881bf2bd4c2332a34e666302597de3545818360b821b2c5206a4e8e6d2e1c3821379fd75e996e4942b99ddeec9c338f
 
 Patch0:         sysstat.sysconfig.in.patch
-Patch1:         CVE-2019-19725.patch
 
 BuildRequires:  cronie
 Requires:       cronie
@@ -19,9 +18,7 @@ Requires:       cronie
  The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -33,7 +30,7 @@ Requires:       cronie
 make %{?_smp_mflags}
 
 %install
-make install
+make install %{?_smp_mflags}
 mkdir -p %{buildroot}/usr/lib/systemd/system/
 install -D -m 0644 %{_builddir}/%{name}-%{version}/sysstat.service %{buildroot}/usr/lib/systemd/system/
 install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-summary.timer %{buildroot}/usr/lib/systemd/system/
@@ -44,7 +41,7 @@ install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-collect.service 
 %find_lang %{name}
 
 %check
-make test
+make test %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -60,8 +57,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man*/*
 %{_libdir}/systemd/system/*
 
-
 %changelog
+*   Fri Nov 18 2022 Srinidhi Rao <srinidhir@vmware.com> 12.7.1-1
+-   Update to version 12.7.1
 *   Mon Dec 16 2019 Shreyas B. <shreyasb@vmware.com> 12.2.0-1
 -   Update to 12.2.0 & fix CVE-2019-19725.
 *   Wed Nov 20 2019 Shreyas B. <shreyasb@vmware.com> 12.1.6-2
