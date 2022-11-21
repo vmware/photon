@@ -1,0 +1,101 @@
+From 3569fb5bbcb7ee8cf047907655559e878d0c6c98 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Tue, 5 Jul 2022 10:00:00 -0700
+Subject: [PATCH] Do not install auxiliary module from ice driver sources
+
+Both iavf-4.5.3 and ice-1.9.11 driver sources include a backported
+kernel module called auxiliary.ko, which they both depend on. Since we
+just need one copy of auxiliary.ko in the final rpm, install it only
+from the iavf driver sources and skip the installation from the ice
+driver.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/Makefile  |  4 ++--
+ src/common.mk | 46 +++++++++++++++++++++++-----------------------
+ 2 files changed, 25 insertions(+), 25 deletions(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index d94e327..cc0a8d6 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -153,7 +153,7 @@ DDP_PKG_DEST := ${DDP_PKG_DEST_PATH}/${DDP_PKG_NAME}
+ DDP_PKG_LINK := ${DRIVER}.pkg
+ modules_install: all
+ 	+$(call kernelbuild,modules_install)
+-	$(MAKE) auxiliary_install
++#	$(MAKE) auxiliary_install
+ ifneq (${DDP_PKG_ORIGIN},)
+ 	@# Install DDP package file if provided/required with ice module
+ 	install -D -m 644 ${DDP_PKG_ORIGIN} ${DDP_PKG_DEST}
+@@ -191,7 +191,7 @@ install: modules_install mandocs_install
+ # build root. Thus, it must not update the initramfs image or run depmod.
+ modules_uninstall:
+ 	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/${DRIVER}.ko
+-	$(MAKE) auxiliary_uninstall
++#	$(MAKE) auxiliary_uninstall
+ ifneq (${DDP_PKG_ORIGIN},)
+ 	@# Uninstall DDP package file if provided/required with ice module
+ 	(cd ${DDP_PKG_DEST_PATH} && \
+diff --git a/src/common.mk b/src/common.mk
+index 960c15e..106e059 100644
+--- a/src/common.mk
++++ b/src/common.mk
+@@ -417,32 +417,32 @@ endif # check_aux_bus exists
+ 
+ # The out-of-tree auxiliary module we ship should be moved into this
+ # directory as part of installation.
+-export INSTALL_AUX_DIR ?= updates/drivers/net/ethernet/intel/auxiliary
++#export INSTALL_AUX_DIR ?= updates/drivers/net/ethernet/intel/auxiliary
+ 
+ # If we're installing auxiliary bus out-of-tree, the following steps are
+ # necessary to ensure the relevant files get put in place.
+-AUX_BUS_HEADER ?= linux/auxiliary_bus.h
+-ifeq (${NEED_AUX_BUS},2)
+-define auxiliary_post_install
+-	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
+-	install -d ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}
+-	mv -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/auxiliary.ko \
+-	      ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
+-	install -D -m 644 ${AUX_BUS_HEADER} ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
+-endef
+-else
+-auxiliary_post_install =
+-endif
+-
+-ifeq (${NEED_AUX_BUS},2)
+-define auxiliary_post_uninstall
+-	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
+-	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
+-	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
+-endef
+-else
+-auxiliary_post_uninstall =
+-endif
++#AUX_BUS_HEADER ?= linux/auxiliary_bus.h
++#ifeq (${NEED_AUX_BUS},2)
++#define auxiliary_post_install
++#	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
++#	install -d ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}
++#	mv -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/auxiliary.ko \
++#	      ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
++#	install -D -m 644 ${AUX_BUS_HEADER} ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
++#endef
++#else
++#auxiliary_post_install =
++#endif
++
++#ifeq (${NEED_AUX_BUS},2)
++#define auxiliary_post_uninstall
++#	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/auxiliary.symvers
++#	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/auxiliary.ko
++#	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
++#endef
++#else
++#auxiliary_post_uninstall =
++#endif
+ 
+ ######################
+ # Kernel Build Macro #
+-- 
+2.23.1
