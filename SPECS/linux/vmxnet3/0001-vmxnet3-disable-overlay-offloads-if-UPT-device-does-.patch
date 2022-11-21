@@ -1,0 +1,67 @@
+From a56b158a5078b8120d3d72fc9fd44efed5123b12 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Sun, 19 Jun 2022 17:10:13 -0700
+Subject: [PATCH] vmxnet3: disable overlay offloads if UPT device does not
+ support
+
+commit a56b158a5078b8120d3d72fc9fd44efed5123b12 upstream
+
+'Commit 6f91f4ba046e ("vmxnet3: add support for capability registers")'
+added support for capability registers. These registers are used
+to advertize capabilities of the device.
+
+The patch updated the dev_caps to disable outer checksum offload if
+PTCR register does not support it. However, it missed to update
+other overlay offloads. This patch fixes this issue.
+
+Fixes: 6f91f4ba046e ("vmxnet3: add support for capability registers")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 9 ++++++++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 6 ++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 1565e1808a19..19c414733747 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3365,10 +3365,17 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter)
+ 		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_TSO)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_TSO))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++			netdev->hw_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++		}
+ 		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
+ 		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
+ 			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-			netdev->features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			netdev->hw_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		}
+ 	}
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index ce3993282c0f..c3eaf1b864ed 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -346,6 +346,12 @@ static void vmxnet3_enable_encap_offloads(struct net_device *netdev, netdev_feat
+ 		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_TSO)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_TSO))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++		}
+ 		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
+ 		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
+ 			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-- 
+2.38.1
+

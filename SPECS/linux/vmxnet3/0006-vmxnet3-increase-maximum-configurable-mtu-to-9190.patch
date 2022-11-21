@@ -1,0 +1,52 @@
+From 8c5663e461e6914304bbbf2c1cf67e5dce18740f Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Fri, 16 Jul 2021 15:36:25 -0700
+Subject: [PATCH 6/7] vmxnet3: increase maximum configurable mtu to 9190
+
+commit 8c5663e461e6914304bbbf2c1cf67e5dce18740f upstream
+
+This patch increases the maximum configurable mtu to 9190
+to accommodate jumbo packets of overlay traffic.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h | 1 +
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 7 +++++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index bc82bbbcb1ab..74d4e8bc4abc 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -795,6 +795,7 @@ struct Vmxnet3_DriverShared {
+ 	((vfTable[vid >> 5] & (1 << (vid & 31))) != 0)
+ 
+ #define VMXNET3_MAX_MTU     9000
++#define VMXNET3_V6_MAX_MTU  9190
+ #define VMXNET3_MIN_MTU     60
+ 
+ #define VMXNET3_LINK_UP         (10000 << 16 | 1)    /* 10 Gbps, up */
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 4fd6ce15a860..9f52f9c254f4 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3641,9 +3641,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	vmxnet3_set_ethtool_ops(netdev);
+ 	netdev->watchdog_timeo = 5 * HZ;
+ 
+-	/* MTU range: 60 - 9000 */
++	/* MTU range: 60 - 9190 */
+ 	netdev->min_mtu = VMXNET3_MIN_MTU;
+-	netdev->max_mtu = VMXNET3_MAX_MTU;
++	if (VMXNET3_VERSION_GE_6(adapter))
++		netdev->max_mtu = VMXNET3_V6_MAX_MTU;
++	else
++		netdev->max_mtu = VMXNET3_MAX_MTU;
+ 
+ 	INIT_WORK(&adapter->work, vmxnet3_reset_work);
+ 	set_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state);
+-- 
+2.38.1
+

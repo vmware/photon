@@ -1,0 +1,156 @@
+From 543fb67405410cc548a72d7a9a4087688d2f56ac Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Tue, 7 Jun 2022 20:23:48 -0700
+Subject: [PATCH 3/8] vmxnet3: add support for large passthrough BAR register
+
+commit 543fb67405410cc548a72d7a9a4087688d2f56ac upstream
+
+For vmxnet3 to work in UPT mode, the BAR sizes have been increased.
+The PT page has been extended to 2 pages and also includes OOB pages
+as a part of PT BAR. This patch enhances vmxnet3 to use appropriate
+BAR offsets based on the capability registered. To use new offsets,
+VMXNET3_CAP_LARGE_BAR needs to be set by the device. If it is not set
+then the device will use legacy PT page layout.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h    | 14 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 25 ++++++++++++++++++++-----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  6 +++---
+ drivers/net/vmxnet3/vmxnet3_int.h     |  3 +++
+ 4 files changed, 38 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 0157155ff677..8d626611ab2d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -57,8 +57,18 @@ enum {
+ 	VMXNET3_REG_RXPROD2	= 0xA00	 /* Rx Producer Index for ring 2 */
+ };
+ 
+-#define VMXNET3_PT_REG_SIZE     4096	/* BAR 0 */
+-#define VMXNET3_VD_REG_SIZE     4096	/* BAR 1 */
++/* For Large PT BAR, the following offset to DB register */
++enum {
++	VMXNET3_REG_LB_TXPROD   = 0x1000, /* Tx Producer Index */
++	VMXNET3_REG_LB_RXPROD   = 0x1400, /* Rx Producer Index for ring 1 */
++	VMXNET3_REG_LB_RXPROD2  = 0x1800, /* Rx Producer Index for ring 2 */
++};
++
++#define VMXNET3_PT_REG_SIZE         4096		/* BAR 0 */
++#define VMXNET3_LARGE_PT_REG_SIZE   8192		/* large PT pages */
++#define VMXNET3_VD_REG_SIZE         4096		/* BAR 1 */
++#define VMXNET3_LARGE_BAR0_REG_SIZE (4096 * 4096)	/* LARGE BAR 0 */
++#define VMXNET3_OOB_REG_SIZE        (4094 * 4096)	/* OOB pages */
+ 
+ #define VMXNET3_REG_ALIGN       8	/* All registers are 8-byte aligned. */
+ #define VMXNET3_REG_ALIGN_MASK  0x7
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index edc4f23d4965..93f237db463d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1207,7 +1207,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
+ 		tq->shared->txNumDeferred = 0;
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				       VMXNET3_REG_TXPROD + tq->qid * 8,
++				       adapter->tx_prod_offset + tq->qid * 8,
+ 				       tq->tx_ring.next2fill);
+ 	}
+ 
+@@ -1359,8 +1359,8 @@ static int
+ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		       struct vmxnet3_adapter *adapter, int quota)
+ {
+-	static const u32 rxprod_reg[2] = {
+-		VMXNET3_REG_RXPROD, VMXNET3_REG_RXPROD2
++	u32 rxprod_reg[2] = {
++		adapter->rx_prod_offset, adapter->rx_prod2_offset
+ 	};
+ 	u32 num_pkts = 0;
+ 	bool skip_page_frags = false;
+@@ -2783,9 +2783,9 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				VMXNET3_REG_RXPROD + i * VMXNET3_REG_ALIGN,
++				adapter->rx_prod_offset + i * VMXNET3_REG_ALIGN,
+ 				adapter->rx_queue[i].rx_ring[0].next2fill);
+-		VMXNET3_WRITE_BAR0_REG(adapter, (VMXNET3_REG_RXPROD2 +
++		VMXNET3_WRITE_BAR0_REG(adapter, (adapter->rx_prod2_offset +
+ 				(i * VMXNET3_REG_ALIGN)),
+ 				adapter->rx_queue[i].rx_ring[1].next2fill);
+ 	}
+@@ -3608,6 +3608,10 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	if (VMXNET3_VERSION_GE_7(adapter)) {
+ 		adapter->devcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_DCR);
+ 		adapter->ptcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_PTCR);
++		if (adapter->devcap_supported[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++			adapter->dev_caps[0] = adapter->devcap_supported[0] &
++							(1UL << VMXNET3_CAP_LARGE_BAR);
++		}
+ 		if (adapter->dev_caps[0])
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
+ 
+@@ -3617,6 +3621,17 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter) &&
++	    adapter->dev_caps[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++		adapter->tx_prod_offset = VMXNET3_REG_LB_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_LB_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_LB_RXPROD2;
++	} else {
++		adapter->tx_prod_offset = VMXNET3_REG_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_RXPROD2;
++	}
++
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 458f2da1ebab..397b268f7bc5 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -520,7 +520,7 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_tx_queues; i++) {
+ 		struct vmxnet3_tx_queue *tq = &adapter->tx_queue[i];
+ 
+-		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_TXPROD +
++		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, adapter->tx_prod_offset +
+ 						 i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(tq->tx_ring.basePA);
+@@ -548,9 +548,9 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		struct vmxnet3_rx_queue *rq = &adapter->rx_queue[i];
+ 
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD2 +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod2_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(rq->rx_ring[0].basePA);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index a7c8f80702c2..a4f832f0ad5b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -406,6 +406,9 @@ struct vmxnet3_adapter {
+ 	u32    devcap_supported[8];
+ 	u32    ptcap_supported[8];
+ 	u32    dev_caps[8];
++	u16    tx_prod_offset;
++	u16    rx_prod_offset;
++	u16    rx_prod2_offset;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+-- 
+2.38.1
+

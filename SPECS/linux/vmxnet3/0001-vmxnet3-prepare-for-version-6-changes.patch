@@ -1,0 +1,111 @@
+From 69dbef0d1c22476c422ee255e99d0e112ddd829d Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Fri, 16 Jul 2021 15:36:20 -0700
+Subject: [PATCH 1/7] vmxnet3: prepare for version 6 changes
+
+commit 69dbef0d1c22476c422ee255e99d0e112ddd829d upstream
+
+vmxnet3 is currently at version 4 and this patch initiates the
+preparation to accommodate changes for upto version 6. Introduced
+utility macros for vmxnet3 version 6 comparison and update Copyright
+information.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/Makefile       | 2 +-
+ drivers/net/vmxnet3/upt1_defs.h    | 2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h | 2 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 2 +-
+ drivers/net/vmxnet3/vmxnet3_int.h  | 8 +++++++-
+ 5 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/Makefile b/drivers/net/vmxnet3/Makefile
+index c5a167a1c85c..7a38925f4165 100644
+--- a/drivers/net/vmxnet3/Makefile
++++ b/drivers/net/vmxnet3/Makefile
+@@ -2,7 +2,7 @@
+ #
+ # Linux driver for VMware's vmxnet3 ethernet NIC.
+ #
+-# Copyright (C) 2007-2020, VMware, Inc. All Rights Reserved.
++# Copyright (C) 2007-2021, VMware, Inc. All Rights Reserved.
+ #
+ # This program is free software; you can redistribute it and/or modify it
+ # under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/upt1_defs.h b/drivers/net/vmxnet3/upt1_defs.h
+index 8c014c98471c..f9f3a23d1698 100644
+--- a/drivers/net/vmxnet3/upt1_defs.h
++++ b/drivers/net/vmxnet3/upt1_defs.h
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index a8d5ebd47c71..ce76ebc376da 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 6e87f1fc4874..1f072cfdff3d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index e910596b79cf..075c1f56aecc 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -1,7 +1,7 @@
+ /*
+  * Linux driver for VMware's vmxnet3 ethernet NIC.
+  *
+- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
++ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -81,6 +81,8 @@
+ 	#define VMXNET3_RSS
+ #endif
+ 
++#define VMXNET3_REV_6		5	/* Vmxnet3 Rev. 6 */
++#define VMXNET3_REV_5		4	/* Vmxnet3 Rev. 5 */
+ #define VMXNET3_REV_4		3	/* Vmxnet3 Rev. 4 */
+ #define VMXNET3_REV_3		2	/* Vmxnet3 Rev. 3 */
+ #define VMXNET3_REV_2		1	/* Vmxnet3 Rev. 2 */
+@@ -421,6 +423,10 @@ struct vmxnet3_adapter {
+ 	(adapter->version >= VMXNET3_REV_3 + 1)
+ #define VMXNET3_VERSION_GE_4(adapter) \
+ 	(adapter->version >= VMXNET3_REV_4 + 1)
++#define VMXNET3_VERSION_GE_5(adapter) \
++	(adapter->version >= VMXNET3_REV_5 + 1)
++#define VMXNET3_VERSION_GE_6(adapter) \
++	(adapter->version >= VMXNET3_REV_6 + 1)
+ 
+ /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
+ #define VMXNET3_DEF_TX_RING_SIZE    512
+-- 
+2.38.1
+

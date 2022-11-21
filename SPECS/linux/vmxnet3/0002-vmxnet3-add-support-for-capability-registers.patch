@@ -1,0 +1,383 @@
+From 6f91f4ba046e5de6a6e579620b32b8ecf56873f7 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Tue, 7 Jun 2022 20:23:47 -0700
+Subject: [PATCH 2/8] vmxnet3: add support for capability registers
+
+commit 6f91f4ba046e5de6a6e579620b32b8ecf56873f7 upstream
+
+This patch enhances vmxnet3 to suuport capability registers which
+allows it to enable features selectively. The DCR register tracks
+the capabilities vmxnet3 device supports. The PTCR register states
+the capabilities that the passthrough device supports.
+
+With the help of these registers, vmxnet3 can enable only those
+features which the passthrough device supoprts. This allows
+smooth trasition to Uniform-Passthrough (UPT) mode if the virtual
+nic requests it. If PTCR register returns nothing or error it means
+UPT is not being requested and vnic will continue in emulation mode.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  37 +++++++++-
+ drivers/net/vmxnet3/vmxnet3_drv.c     |  97 +++++++++++++++++++++++++
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 101 ++++++++++++++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h     |   4 +
+ 4 files changed, 233 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 9f91ebb10..0157155ff 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -40,7 +40,13 @@ enum {
+ 	VMXNET3_REG_MACL	= 0x28,	/* MAC Address Low */
+ 	VMXNET3_REG_MACH	= 0x30,	/* MAC Address High */
+ 	VMXNET3_REG_ICR		= 0x38,	/* Interrupt Cause Register */
+-	VMXNET3_REG_ECR		= 0x40	/* Event Cause Register */
++	VMXNET3_REG_ECR		= 0x40, /* Event Cause Register */
++	VMXNET3_REG_DCR         = 0x48, /* Device capability register,
++					 * from 0x48 to 0x80
++					 */
++	VMXNET3_REG_PTCR        = 0x88, /* Passthru capbility register
++					 * from 0x88 to 0xb0
++					 */
+ };
+ 
+ /* BAR 0 */
+@@ -101,6 +107,9 @@ enum {
+ 	VMXNET3_CMD_GET_RESERVED2,
+ 	VMXNET3_CMD_GET_RESERVED3,
+ 	VMXNET3_CMD_GET_MAX_QUEUES_CONF,
++	VMXNET3_CMD_GET_RESERVED4,
++	VMXNET3_CMD_GET_MAX_CAPABILITIES,
++	VMXNET3_CMD_GET_DCR0_REG,
+ };
+ 
+ /*
+@@ -801,4 +810,30 @@ struct Vmxnet3_DriverShared {
+ #define VMXNET3_LINK_UP         (10000 << 16 | 1)    /* 10 Gbps, up */
+ #define VMXNET3_LINK_DOWN       0
+ 
++#define VMXNET3_DCR_ERROR                          31   /* error when bit 31 of DCR is set */
++#define VMXNET3_CAP_UDP_RSS                        0    /* bit 0 of DCR 0 */
++#define VMXNET3_CAP_ESP_RSS_IPV4                   1    /* bit 1 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD        2    /* bit 2 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_TSO                     3    /* bit 3 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD         4    /* bit 4 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_TSO                      5    /* bit 5 of DCR 0 */
++#define VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD  6    /* bit 6 of DCR 0 */
++#define VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD   7    /* bit 7 of DCR 0 */
++#define VMXNET3_CAP_PKT_STEERING_IPV4              8    /* bit 8 of DCR 0 */
++#define VMXNET3_CAP_VERSION_4_MAX                  VMXNET3_CAP_PKT_STEERING_IPV4
++#define VMXNET3_CAP_ESP_RSS_IPV6                   9    /* bit 9 of DCR 0 */
++#define VMXNET3_CAP_VERSION_5_MAX                  VMXNET3_CAP_ESP_RSS_IPV6
++#define VMXNET3_CAP_ESP_OVER_UDP_RSS               10   /* bit 10 of DCR 0 */
++#define VMXNET3_CAP_INNER_RSS                      11   /* bit 11 of DCR 0 */
++#define VMXNET3_CAP_INNER_ESP_RSS                  12   /* bit 12 of DCR 0 */
++#define VMXNET3_CAP_CRC32_HASH_FUNC                13   /* bit 13 of DCR 0 */
++#define VMXNET3_CAP_VERSION_6_MAX                  VMXNET3_CAP_CRC32_HASH_FUNC
++#define VMXNET3_CAP_OAM_FILTER                     14   /* bit 14 of DCR 0 */
++#define VMXNET3_CAP_ESP_QS                         15   /* bit 15 of DCR 0 */
++#define VMXNET3_CAP_LARGE_BAR                      16   /* bit 16 of DCR 0 */
++#define VMXNET3_CAP_OOORX_COMP                     17   /* bit 17 of DCR 0 */
++#define VMXNET3_CAP_VERSION_7_MAX                  18
++/* when new capability is introduced, update VMXNET3_CAP_MAX */
++#define VMXNET3_CAP_MAX                            VMXNET3_CAP_VERSION_7_MAX
++
+ #endif /* _VMXNET3_DEFS_H_ */
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 65f20b99a..f491961c6 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -130,6 +130,20 @@ vmxnet3_tq_stop(struct vmxnet3_tx_queue *tq, struct vmxnet3_adapter *adapter)
+ 	netif_stop_subqueue(adapter->netdev, (tq - adapter->tx_queue));
+ }
+ 
++/* Check if capability is supported by UPT device or
++ * UPT is even requested
++ */
++bool
++vmxnet3_check_ptcapability(u32 cap_supported, u32 cap)
++{
++	if (cap_supported & (1UL << VMXNET3_DCR_ERROR) ||
++	    cap_supported & (1UL << cap)) {
++		return true;
++	}
++
++	return false;
++}
++
+ 
+ /*
+  * Check the link state. This may start or stop the tx queue.
+@@ -2671,6 +2685,36 @@ vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
+ 		adapter->rss_fields =
+ 			VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 	} else {
++		if (VMXNET3_VERSION_GE_7(adapter)) {
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_UDPIP4 ||
++			     adapter->rss_fields & VMXNET3_RSS_FIELDS_UDPIP6) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_UDP_RSS)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_UDP_RSS;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_UDP_RSS);
++			}
++
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_ESPIP4) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_ESP_RSS_IPV4)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV4;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV4);
++			}
++
++			if ((adapter->rss_fields & VMXNET3_RSS_FIELDS_ESPIP6) &&
++			    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++						       VMXNET3_CAP_ESP_RSS_IPV6)) {
++				adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV6;
++			} else {
++				adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV6);
++			}
++
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++			adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		}
+ 		cmdInfo->setRssFields = adapter->rss_fields;
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+ 				       VMXNET3_CMD_SET_RSS_FIELDS);
+@@ -3185,6 +3229,47 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter, bool dma64)
+ 			NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD;
++		}
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			netdev->features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		}
++	}
++
+ 	if (dma64)
+ 		netdev->hw_features |= NETIF_F_HIGHDMA;
+ 	netdev->vlan_features = netdev->hw_features &
+@@ -3535,6 +3620,18 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_ver;
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		adapter->devcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_DCR);
++		adapter->ptcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_PTCR);
++		if (adapter->dev_caps[0])
++			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++	}
++
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index b66957045..c5afd7638 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -313,7 +313,7 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
+ 	return features;
+ }
+ 
+-static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
++static void vmxnet3_enable_encap_offloads(struct net_device *netdev, netdev_features_t features)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+ 
+@@ -321,8 +321,50 @@ static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
+ 		netdev->hw_enc_features |= NETIF_F_SG | NETIF_F_RXCSUM |
+ 			NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
+ 			NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
+-			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
+-			NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			NETIF_F_LRO;
++		if (features & NETIF_F_GSO_UDP_TUNNEL)
++			netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
++		if (features & NETIF_F_GSO_UDP_TUNNEL_CSUM)
++			netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
++	}
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_TSO)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_TSO;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD;
++		}
++		if (vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++					       VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD)) {
++			adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD;
++		}
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		}
+ 	}
+ }
+ 
+@@ -337,6 +379,22 @@ static void vmxnet3_disable_encap_offloads(struct net_device *netdev)
+ 			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
+ 			NETIF_F_GSO_UDP_TUNNEL_CSUM);
+ 	}
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		unsigned long flags;
++
++		adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD |
++					  1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD  |
++					  1UL << VMXNET3_CAP_GENEVE_TSO |
++					  1UL << VMXNET3_CAP_VXLAN_TSO  |
++					  1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD |
++					  1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD);
++
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
++		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++	}
+ }
+ 
+ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+@@ -372,8 +430,8 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+ 			adapter->shared->devRead.misc.uptFeatures &=
+ 			~UPT1_F_RXVLAN;
+ 
+-		if ((features & tun_offload_mask) != 0 && !udp_tun_enabled) {
+-			vmxnet3_enable_encap_offloads(netdev);
++		if ((features & tun_offload_mask) != 0) {
++			vmxnet3_enable_encap_offloads(netdev, features);
+ 			adapter->shared->devRead.misc.uptFeatures |=
+ 			UPT1_F_RXINNEROFLD;
+ 		} else if ((features & tun_offload_mask) == 0 &&
+@@ -926,6 +984,39 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
+ 			union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
+ 			unsigned long flags;
+ 
++			if (VMXNET3_VERSION_GE_7(adapter)) {
++				if ((rss_fields & VMXNET3_RSS_FIELDS_UDPIP4 ||
++				     rss_fields & VMXNET3_RSS_FIELDS_UDPIP6) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_UDP_RSS)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_UDP_RSS;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_UDP_RSS);
++				}
++				if ((rss_fields & VMXNET3_RSS_FIELDS_ESPIP4) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_ESP_RSS_IPV4)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV4;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV4);
++				}
++				if ((rss_fields & VMXNET3_RSS_FIELDS_ESPIP6) &&
++				    vmxnet3_check_ptcapability(adapter->ptcap_supported[0],
++							       VMXNET3_CAP_ESP_RSS_IPV6)) {
++					adapter->dev_caps[0] |= 1UL << VMXNET3_CAP_ESP_RSS_IPV6;
++				} else {
++					adapter->dev_caps[0] &= ~(1UL << VMXNET3_CAP_ESP_RSS_IPV6);
++				}
++
++				VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR,
++						       adapter->dev_caps[0]);
++				spin_lock_irqsave(&adapter->cmd_lock, flags);
++				VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
++						       VMXNET3_CMD_GET_DCR0_REG);
++				adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter,
++									     VMXNET3_REG_CMD);
++				spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++			}
+ 			spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 			cmdInfo->setRssFields = rss_fields;
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 5251c3439..a7c8f8070 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -403,6 +403,9 @@ struct vmxnet3_adapter {
+ 	dma_addr_t pm_conf_pa;
+ 	dma_addr_t rss_conf_pa;
+ 	bool   queuesExtEnabled;
++	u32    devcap_supported[8];
++	u32    ptcap_supported[8];
++	u32    dev_caps[8];
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+@@ -497,6 +500,7 @@ void vmxnet3_set_ethtool_ops(struct net_device *netdev);
+ 
+ void vmxnet3_get_stats64(struct net_device *dev,
+ 			 struct rtnl_link_stats64 *stats);
++bool vmxnet3_check_ptcapability(u32 cap_supported, u32 cap);
+ 
+ extern char vmxnet3_driver_name[];
+ #endif
+-- 
+2.38.1
+

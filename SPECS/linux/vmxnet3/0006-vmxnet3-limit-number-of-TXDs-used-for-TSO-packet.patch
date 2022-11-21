@@ -1,0 +1,64 @@
+From d2857b99a74b082368ee80f359372faa1d051043 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Tue, 7 Jun 2022 20:23:51 -0700
+Subject: [PATCH 6/8] vmxnet3: limit number of TXDs used for TSO packet
+
+commit d2857b99a74b082368ee80f359372faa1d051043 upstream
+
+Currently, vmxnet3 does not have a limit on number of descriptors
+used for a TSO packet. However, with UPT, for hardware performance
+reasons, this patch limits the number of transmit descriptors to 24
+for a TSO packet.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h |  2 ++
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 17 +++++++++++++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 415e4c9993ef..cb9dc72f2b3d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -400,6 +400,8 @@ union Vmxnet3_GenericDesc {
+ 
+ /* max # of tx descs for a non-tso pkt */
+ #define VMXNET3_MAX_TXD_PER_PKT 16
++/* max # of tx descs for a tso pkt */
++#define VMXNET3_MAX_TSO_TXD_PER_PKT 24
+ 
+ /* Max size of a single rx buffer */
+ #define VMXNET3_MAX_RX_BUF_SIZE  ((1 << 14) - 1)
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index c2f99c01a130..2ee3a2e39f10 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1061,6 +1061,23 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			}
+ 			tq->stats.copy_skb_header++;
+ 		}
++		if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++			/* tso pkts must not use more than
++			 * VMXNET3_MAX_TSO_TXD_PER_PKT entries
++			 */
++			if (skb_linearize(skb) != 0) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
++			tq->stats.linearized++;
++
++			/* recalculate the # of descriptors to use */
++			count = VMXNET3_TXD_NEEDED(skb_headlen(skb)) + 1;
++			if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
++		}
+ 		if (skb->encapsulation) {
+ 			vmxnet3_prepare_inner_tso(skb, &ctx);
+ 		} else {
+-- 
+2.38.1
+

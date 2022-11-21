@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.152
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -77,13 +77,33 @@ Patch19: 0001-cgroup-v1-cgroup_stat-support.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+# Upgrade to version 6
+Patch21: 0001-vmxnet3-prepare-for-version-6-changes.patch
+Patch22: 0002-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch23: 0003-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+Patch24: 0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch25: 0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch26: 0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch27: 0007-vmxnet3-update-to-version-6.patch
+Patch28: 0001-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+# Upgrade to version 7
+Patch29: 0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch30: 0002-vmxnet3-add-support-for-capability-registers.patch
+Patch31: 0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch32: 0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch33: 0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch34: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch36: 0008-vmxnet3-update-to-version-7.patch
+Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # VMW:
-Patch30: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch31: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch32: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch33: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch34: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch40: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch41: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch42: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch43: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch44: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
 Patch50: init-do_mounts-recreate-dev-root.patch
@@ -300,10 +320,10 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M20
+%autopatch -p1 -m0 -M38
 
 # VMW
-%autopatch -p1 -m30 -M34
+%autopatch -p1 -m40 -M44
 
 # -esx
 %autopatch -p1 -m50 -M92
@@ -558,6 +578,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-5
+- vmxnet3 version 6,7 patches
 * Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-4
 - Fix for CVE-2022-3623
 * Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-3

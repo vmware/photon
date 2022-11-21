@@ -1,0 +1,48 @@
+From 5b91884bf50b21d34bd3daa5c8f8b7e92e0a2c46 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Wed, 27 Jul 2022 10:30:37 -0700
+Subject: [PATCH] vmxnet3: do not reschedule napi for rx processing
+
+commit 5b91884bf50b21d34bd3daa5c8f8b7e92e0a2c46 upstream
+
+Commit '2c5a5748105a ("vmxnet3: add support for out of order rx
+completion")' added support for out of order rx completion. Within
+that patch, an enhancement was done to reschedule napi for processing
+rx completions.
+
+However, it can lead to missing an interrupt. So, this patch reverts
+that part of the code.
+
+Fixes: 2c5a5748105a ("vmxnet3: add support for out of order rx completion")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c |  9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index dd831ad..53b3b24 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -2075,17 +2075,8 @@ vmxnet3_poll_rx_only(struct napi_struct *napi, int budget)
+ 	rxd_done = vmxnet3_rq_rx_complete(rq, adapter, budget);
+ 
+ 	if (rxd_done < budget) {
+-		struct Vmxnet3_RxCompDesc *rcd;
+-#ifdef __BIG_ENDIAN_BITFIELD
+-		struct Vmxnet3_RxCompDesc rxComp;
+-#endif
+ 		napi_complete_done(napi, rxd_done);
+ 		vmxnet3_enable_intr(adapter, rq->comp_ring.intr_idx);
+-		/* after unmasking the interrupt, check if any descriptors were completed */
+-		vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
+-				  &rxComp);
+-		if (rcd->gen == rq->comp_ring.gen && napi_reschedule(napi))
+-			vmxnet3_disable_intr(adapter, rq->comp_ring.intr_idx);
+ 	}
+ 	return rxd_done;
+ }
+--
+libgit2 1.3.1
+

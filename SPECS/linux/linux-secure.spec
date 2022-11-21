@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.152
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -60,9 +60,29 @@ Patch14: apparmor-af_unix-mediation.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+# Upgrade to version 6
+Patch21: 0001-vmxnet3-prepare-for-version-6-changes.patch
+Patch22: 0002-vmxnet3-add-support-for-32-Tx-Rx-queues.patch
+Patch23: 0003-vmxnet3-remove-power-of-2-limitation-on-the-queues.patch
+Patch24: 0004-vmxnet3-add-support-for-ESP-IPv6-RSS.patch
+Patch25: 0005-vmxnet3-set-correct-hash-type-based-on-rss-informati.patch
+Patch26: 0006-vmxnet3-increase-maximum-configurable-mtu-to-9190.patch
+Patch27: 0007-vmxnet3-update-to-version-6.patch
+Patch28: 0001-vmxnet3-fix-minimum-vectors-alloc-issue.patch
+# Upgrade to version 7
+Patch29: 0001-vmxnet3-prepare-for-version-7-changes.patch
+Patch30: 0002-vmxnet3-add-support-for-capability-registers.patch
+Patch31: 0003-vmxnet3-add-support-for-large-passthrough-BAR-regist.patch
+Patch32: 0004-vmxnet3-add-support-for-out-of-order-rx-completion.patch
+Patch33: 0005-vmxnet3-add-command-to-set-ring-buffer-sizes.patch
+Patch34: 0006-vmxnet3-limit-number-of-TXDs-used-for-TSO-packet.patch
+Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
+Patch36: 0008-vmxnet3-update-to-version-7.patch
+Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
+Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch21: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch39: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -218,7 +238,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M21
+%autopatch -p1 -m0 -M39
 
 %ifarch x86_64
 # VMW x86
@@ -388,6 +408,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-4
+- vmxnet3 version 6, 7 patches
 * Wed Nov 09 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-3
 - Fix for CVE-2022-3623
 * Fri Nov 04 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-2

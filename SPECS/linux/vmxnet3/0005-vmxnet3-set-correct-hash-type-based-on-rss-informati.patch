@@ -1,0 +1,83 @@
+From b3973bb40041eb336188d16fcc249000ea3c4bf4 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Fri, 16 Jul 2021 15:36:24 -0700
+Subject: [PATCH 5/7] vmxnet3: set correct hash type based on rss information
+
+commit b3973bb40041eb336188d16fcc249000ea3c4bf4 upstream
+
+As vmxnet3 supports IP/TCP/UDP RSS, this patch sets appropriate
+hash type based on the type of RSS performed.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h | 16 +++++++++-------
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 22 ++++++++++++++++++++--
+ 2 files changed, 29 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index a9c108166a52..bc82bbbcb1ab 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -344,13 +344,15 @@ struct Vmxnet3_RxCompDescExt {
+ #define VMXNET3_TXD_EOP_SIZE 1
+ 
+ /* value of RxCompDesc.rssType */
+-enum {
+-	VMXNET3_RCD_RSS_TYPE_NONE     = 0,
+-	VMXNET3_RCD_RSS_TYPE_IPV4     = 1,
+-	VMXNET3_RCD_RSS_TYPE_TCPIPV4  = 2,
+-	VMXNET3_RCD_RSS_TYPE_IPV6     = 3,
+-	VMXNET3_RCD_RSS_TYPE_TCPIPV6  = 4,
+-};
++#define VMXNET3_RCD_RSS_TYPE_NONE     0
++#define VMXNET3_RCD_RSS_TYPE_IPV4     1
++#define VMXNET3_RCD_RSS_TYPE_TCPIPV4  2
++#define VMXNET3_RCD_RSS_TYPE_IPV6     3
++#define VMXNET3_RCD_RSS_TYPE_TCPIPV6  4
++#define VMXNET3_RCD_RSS_TYPE_UDPIPV4  5
++#define VMXNET3_RCD_RSS_TYPE_UDPIPV6  6
++#define VMXNET3_RCD_RSS_TYPE_ESPIPV4  7
++#define VMXNET3_RCD_RSS_TYPE_ESPIPV6  8
+ 
+ 
+ /* a union for accessing all cmd/completion descriptors */
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 41e694d13c92..4fd6ce15a860 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1478,10 +1478,28 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 
+ #ifdef VMXNET3_RSS
+ 			if (rcd->rssType != VMXNET3_RCD_RSS_TYPE_NONE &&
+-			    (adapter->netdev->features & NETIF_F_RXHASH))
++			    (adapter->netdev->features & NETIF_F_RXHASH)) {
++				enum pkt_hash_types hash_type;
++
++				switch (rcd->rssType) {
++				case VMXNET3_RCD_RSS_TYPE_IPV4:
++				case VMXNET3_RCD_RSS_TYPE_IPV6:
++					hash_type = PKT_HASH_TYPE_L3;
++					break;
++				case VMXNET3_RCD_RSS_TYPE_TCPIPV4:
++				case VMXNET3_RCD_RSS_TYPE_TCPIPV6:
++				case VMXNET3_RCD_RSS_TYPE_UDPIPV4:
++				case VMXNET3_RCD_RSS_TYPE_UDPIPV6:
++					hash_type = PKT_HASH_TYPE_L4;
++					break;
++				default:
++					hash_type = PKT_HASH_TYPE_L3;
++					break;
++				}
+ 				skb_set_hash(ctx->skb,
+ 					     le32_to_cpu(rcd->rssHash),
+-					     PKT_HASH_TYPE_L3);
++					     hash_type);
++			}
+ #endif
+ 			skb_put(ctx->skb, rcd->len);
+ 
+-- 
+2.38.1
+
