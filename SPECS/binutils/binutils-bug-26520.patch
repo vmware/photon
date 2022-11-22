@@ -1,0 +1,37 @@
+From 269d40a2ef3b020b5beb3f3de5b8e909c43ab53b Mon Sep 17 00:00:00 2001
+From: Nick Clifton <nickc@redhat.com>
+Date: Thu, 24 Sep 2020 13:42:04 +0100
+Subject: [PATCH] Import patch from mainline to fix decoding DWARF information
+ in the BFD library.
+
+	PR 26520
+	* dwarf2.c (scan_unit_for_symbols): Add member entries to the
+	variable table.
+---
+ bfd/ChangeLog | 9 +++++++++
+ bfd/dwarf2.c  | 5 +++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/bfd/dwarf2.c b/bfd/dwarf2.c
+index b8f0008a10da..977bf43a6a18 100644
+--- a/bfd/dwarf2.c
++++ b/bfd/dwarf2.c
+@@ -3404,7 +3404,8 @@ scan_unit_for_symbols (struct comp_unit *unit)
+       else
+ 	{
+ 	  func = NULL;
+-	  if (abbrev->tag == DW_TAG_variable)
++	  if (abbrev->tag == DW_TAG_variable
++	      || abbrev->tag == DW_TAG_member)
+ 	    {
+ 	      size_t amt = sizeof (struct varinfo);
+ 	      var = (struct varinfo *) bfd_zalloc (abfd, amt);
+@@ -3516,7 +3517,7 @@ scan_unit_for_symbols (struct comp_unit *unit)
+ 		      spec_var = lookup_var_by_offset (attr.u.val,
+ 						       unit->variable_table);
+ 		      if (spec_var == NULL)
+-			{	
++			{
+ 			  _bfd_error_handler (_("DWARF error: could not find "
+ 						"variable specification "
+ 						"at offset %lx"),

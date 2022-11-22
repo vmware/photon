@@ -1,5 +1,5 @@
 Name:           bpftrace
-Version:        0.11.4
+Version:        0.16.0
 Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 
 Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=611a7e61dbd1f4cc52b7e51a1a143296ff7b2df115b3a28034c674d8eefb5d482cac551ab82d6b7cc2f6fc0668b07d2d9e283dff371fd9a3f649c80113fdca82
+%define sha512 %{name}=52ca4fea4e2f8d2cbf0f9f1bc69af0ee3408201f019006dd2e838b9458cfc01761eba3df24c39e05cf93220d85d0cecc69bb44ec72f9f44cec0eb94479bff734
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -19,15 +19,17 @@ BuildRequires:  zlib-devel
 BuildRequires:  llvm-devel
 BuildRequires:  clang-devel
 BuildRequires:  bcc-devel >= 0.11.0-2
-BuildRequires:  libbpf-devel
+BuildRequires:  libbpf-devel >= 1.0.0
 BuildRequires:  binutils-devel
+BuildRequires:  cereal-devel
+BuildRequires:  curl-devel
 
 Requires:       bcc
 Requires:       bcc-tools
 Requires:       clang
 Requires:       llvm
 Requires:       zlib
-Requires:       libbpf
+Requires:       libbpf >= 1.0.0
 
 %description
 BPFtrace is a high-level tracing language for Linux enhanced Berkeley Packet
@@ -42,13 +44,13 @@ and predecessor tracers such as DTrace and SystemTap
 %autosetup -p1
 
 %build
-%cmake . \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DBUILD_TESTING:BOOL=OFF \
-        -DBUILD_SHARED_LIBS:BOOL=OFF \
-        -DENABLE_TESTS:BOOL=OFF \
-        -DBUILD_DEPS=OFF \
-        -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+%cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DBUILD_TESTING:BOOL=OFF \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DENABLE_TESTS:BOOL=OFF \
+    -DBUILD_DEPS=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
 %cmake_build
 
@@ -58,20 +60,24 @@ and predecessor tracers such as DTrace and SystemTap
 find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
   sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%doc README.md CONTRIBUTING-TOOLS.md
-%doc docs/reference_guide.md docs/tutorial_one_liners.md
-%license LICENSE
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/tools
 %dir %{_datadir}/%{name}/tools/doc
 %{_bindir}/%{name}
+%{_bindir}/%{name}-aotrt
 %{_mandir}/man8/*
 %attr(0755,-,-) %{_datadir}/%{name}/tools/*.bt
+%attr(0755,-,-) %{_datadir}/%{name}/tools/old/*.bt
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-1
+- Upgrade to v0.16.0
 * Mon Feb 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.4-1
 - Upgrade to v0.11.4
 * Sat Oct 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-2

@@ -1,15 +1,17 @@
 Summary:        Libbpf library
 Name:           libbpf
-Version:        0.6.1
-Release:        2%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        GPL-2.1 OR BSD-2-Clause
 URL:            https://github.com/libbpf/libbpf
 
-Source0:        libbpf-%{version}.tar.gz
-%define sha1 %{name}=ae84df3705c3d20464e4d257c2182680e4eb0afa
+Source0: https://github.com/libbpf/libbpf/archive/refs/tags/libbpf-%{version}.tar.gz
+%define sha512 %{name}=e99aea1ff477114549b41c272a975169a79ffc1daf4bcaba586cd13d0fc0b23c336cb406fd8e64b73350fe16e2d423fa68a29601d15e2477955c7a92358fb7f8
+
+Patch0: btf_enum64.patch
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  elfutils-devel
@@ -41,16 +43,19 @@ developing applications that use libbpf.
 rm -rf %{buildroot}
 
 %files
-%attr(0755,-,-) %{_libdir}/libbpf.so.*
-%{_libdir}/libbpf.so.0
-%{_libdir}/libbpf.so
+%defattr(-,root,root)
+%{_libdir}/libbpf.so.*
 
 %files devel
+%defattr(-,root,root)
+%{_libdir}/libbpf.so
 %attr(0644,-,-) %{_includedir}/bpf/*
 %attr(0644,-,-) %{_libdir}/libbpf.a
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
 
 %changelog
+* Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.0-1
+- Upgrade to v1.0.0
 * Thu Mar 17 2022 Shreenidhi Shedi <msikka@vmware.com> 0.6.1-2
 - Fix aarch64 build
 * Wed Jan 12 2022 Susant Sahani <ssahani@vmware.com>  0.6.1-1

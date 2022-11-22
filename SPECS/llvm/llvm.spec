@@ -1,15 +1,15 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        11.0.1
-Release:        5%{?dist}
+Version:        12.0.0
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha512 llvm=b42c67ef88e09dd94171f85cdf49a421a15cfc82ff715c7ce6de22f98cefbe6c7cdf6bf4af7ca017d56ecf6aa3e36df3d823a78cf2dd5312de4301b54b43dbe8
+Source0: http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
+%define sha512 %{name}=ec17153ef774a1e08085763bda7d0dfce6802fbaa17e89831695ce1b2eb015a6c2aebfaa9fe7985a83b9c51bd75d40bb4f1fc706dc16d4c0dc2b2722a1d8a24e
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -18,6 +18,9 @@ BuildRequires:  python3-devel
 BuildRequires:  ninja-build
 
 Requires:       libxml2
+Requires:       libffi
+Requires:       zlib
+Requires:       libgcc
 Requires:       libllvm = %{version}-%{release}
 
 %description
@@ -77,11 +80,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
-%exclude %{_libdir}/libLLVM-11.0.1.so
-%exclude %{_libdir}/libLLVM-11.so
-%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -91,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/opt-viewer/style.css
 
 %files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
@@ -100,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
+- Upgrade to v12.0.0
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-5
 - Bump up to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-4

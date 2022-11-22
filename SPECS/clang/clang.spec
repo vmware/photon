@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        11.0.1
-Release:        3%{?dist}
+Version:        12.0.0
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
-%define sha512 %{name}=bb98ffb0a992c9907795f7bb7492196f7195fdb5e292e8a764a7a1a8cc078dcf60bebf26ed3db116f78b7022a600c996fd2645e5f6e5d24e4ed99392e1f08df3
+%define sha512 %{name}=f5613b9bffc962467d3bedb7f66b4e057e2781eb63c5dadfd3cf0b02453e29eff0a4f844889031292f06a8b4c081d4d41c515b7f719826ce5c4209a09df9f1f6
 
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
@@ -81,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
+- Upgrade to v12.0.0
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-3
 - Bump up to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2
