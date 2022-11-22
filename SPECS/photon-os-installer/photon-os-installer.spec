@@ -3,7 +3,7 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -20,6 +20,7 @@ Patch3:     0001-installer-Adding-support-for-dev-disk-by-path.patch
 Patch4:     0001-installer-Removed-insecure_installation-and-photon_r.patch
 Patch5:     0001-photon-installer-fixes-remove-photon_release_version.patch
 Patch6:     0001-installer-Adding-support-for-preinstall-script.patch
+Patch7:     isoInstaller-dynamic-retry-mount-media-count.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -51,6 +52,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Tue Nov 22 2022 Ankit Jain <ankitja@vmware.com> 2.0-8
+- commandline parameter for mount retry of media
 * Fri Nov 04 2022 Ankit Jain <ankitja@vmware.com> 2.0-7
 - Added support for 'preinstall' scripts feature
 * Sat Oct 29 2022 Ankit Jain <ankitja@vmware.com> 2.0-6
