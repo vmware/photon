@@ -1,3 +1,6 @@
+%define GCORE_VERSION   1.6.0
+%define GDB_VERSION     7.6
+
 Name:          crash
 Version:       7.3.0
 Release:       1%{?dist}
@@ -9,13 +12,12 @@ URL:           http://people.redhat.com/anderson
 License:       GPL
 
 Source0: http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha512 crash=bc288821892c3d7ecbf192d9fe6ea9e73216f8074a24d12a00fbcaf967a1faa38ee69c4a5a97aa93bf75426293f5b275f5ab496c154b4e7be265ba0e263b2bc8
+%define sha512 %{name}=bc288821892c3d7ecbf192d9fe6ea9e73216f8074a24d12a00fbcaf967a1faa38ee69c4a5a97aa93bf75426293f5b275f5ab496c154b4e7be265ba0e263b2bc8
 
-%define GCORE_VERSION   1.6.0
 Source1: http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
 %define sha512 crash-gcore=877cb46c54f9059ca0b89f793a0e907102db3921994fa676124bdd688f219a07761fffea6c3369fed836e7049b3611da164d780e7ba8741a4d0a30f7601290c2
 
-Source2: https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
+Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
 %define sha512 gdb=02d9c62fa73bcb79138d14c7fc182443f0ca82d4545b4d260b67d3f0074ed75f899a657814a56727e601032a668b0ddd7b48aabd49215fc012eeea6077bca368
 
 %ifarch aarch64
@@ -49,17 +51,21 @@ This package contains libraries and header files need for development.
 %setup -q -n %{name}-%{version}
 # Using autosetup is not feasible
 %setup -q -a 1
+%ifarch aarch64
+pushd crash-gcore-command-%{GCORE_VERSION}
+%patch0 -p1
+popd
+%endif
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
 cp %{SOURCE2} .
-make %{?_smp_mflags} GDB=gdb-7.6 RPMPKG=%{version}-%{release}
+make %{?_smp_mflags} GDB=gdb-%{GDB_VERSION} RPMPKG=%{version}-%{release}
 cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
 make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
 %endif
 %ifarch aarch64
-%patch0 -p1
 make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
 %endif
 
