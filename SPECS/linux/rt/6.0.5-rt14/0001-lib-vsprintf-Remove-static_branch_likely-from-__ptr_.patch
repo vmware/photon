@@ -1,0 +1,66 @@
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 29 Jul 2022 15:52:45 +0200
+Subject: [PATCH 1/2] lib/vsprintf: Remove static_branch_likely() from
+ __ptr_to_hashval().
+
+Using static_branch_likely() to signal that ptr_key has been filled is a
+bit much given that it is not a fast path.
+
+Replace static_branch_likely() with bool for condition and a memory
+barrier for ptr_key.
+
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/20220729154716.429964-2-bigeasy@linutronix.de
+---
+ lib/vsprintf.c |   19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -750,12 +750,7 @@ static int __init debug_boot_weak_hash_e
+ }
+ early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
+ 
+-static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
+-
+-static void enable_ptr_key_workfn(struct work_struct *work)
+-{
+-	static_branch_enable(&filled_random_ptr_key);
+-}
++static bool filled_random_ptr_key;
+ 
+ /* Maps a pointer to a 32 bit unique identifier. */
+ static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
+@@ -763,24 +758,26 @@ static inline int __ptr_to_hashval(const
+ 	static siphash_key_t ptr_key __read_mostly;
+ 	unsigned long hashval;
+ 
+-	if (!static_branch_likely(&filled_random_ptr_key)) {
++	if (!READ_ONCE(filled_random_ptr_key)) {
+ 		static bool filled = false;
+ 		static DEFINE_SPINLOCK(filling);
+-		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
+ 		unsigned long flags;
+ 
+-		if (!system_unbound_wq || !rng_is_initialized() ||
++		if (!rng_is_initialized() ||
+ 		    !spin_trylock_irqsave(&filling, flags))
+ 			return -EAGAIN;
+ 
+ 		if (!filled) {
+ 			get_random_bytes(&ptr_key, sizeof(ptr_key));
+-			queue_work(system_unbound_wq, &enable_ptr_key_work);
++			/* Pairs with smp_rmb() before reading ptr_key. */
++			smp_wmb();
++			WRITE_ONCE(filled_random_ptr_key, true);
+ 			filled = true;
+ 		}
+ 		spin_unlock_irqrestore(&filling, flags);
+ 	}
+-
++	/* Pairs with smp_wmb() after writing ptr_key. */
++	smp_rmb();
+ 
+ #ifdef CONFIG_64BIT
+ 	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
