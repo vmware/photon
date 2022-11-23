@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.64.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -24,6 +24,15 @@ BuildRequires:  clang
 BuildRequires:  llvm-devel
 BuildRequires:  xz-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  ncurses-devel
+
+Requires:  glibc
+Requires:  gcc
+Requires:  libstdc++
+Requires:  openssl
+Requires:  ncurses-libs
+Requires:  libgcc
+Requires:  zlib
 
 %description
 Rust Programming Language
@@ -93,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.64.0-2
+- Add appropriate Requires
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.64.0-1
 - Upgrade to v1.64.0
 * Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.55.0-2
