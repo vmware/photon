@@ -1,17 +1,18 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.10.7
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
+# use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512 rabbitmq=34b7d0cbc8dafe8d7394aa3f6002f19bceea30266dc19d00bff367ec526fa528c9a3eb4a6da5e6054454d361e7bf14adc6a88e4178dc2fa9bcd6425819cdeccb
 
-Source1: rabbitmq.config
+Source1: %{name}.tmpfiles
 
 BuildRequires: erlang
 BuildRequires: python3-devel
@@ -23,6 +24,7 @@ BuildRequires: libxslt-devel
 BuildRequires: xmlto
 BuildRequires: elixir
 BuildRequires: systemd-devel
+BuildRequires: which
 
 Requires:      erlang >= 24
 Requires:      erlang-sd_notify
@@ -40,11 +42,17 @@ rabbitmq messaging server
 %autosetup -p1
 
 %build
-LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+export PROJECT_VERSION="%{version}"
+# https://github.com/rabbitmq/rabbitmq-server/discussions/5246
+export DIST_AS_EZS=1
 %make_build
 
 %install
-%make_install %{?_smp_mflags} RMQ_ROOTDIR=%{_libdir}/rabbitmq
+export PROJECT_VERSION="%{version}"
+export RMQ_ROOTDIR="%{_libdir}/rabbitmq"
+export DIST_AS_EZS=1
+%make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
 install -vdm755 %{buildroot}%{_sysconfdir}/rabbitmq
@@ -54,8 +62,6 @@ mkdir -p %{buildroot}%{_var}/log \
          %{buildroot}%{_var}/opt/rabbitmq/log
 
 ln -sfv %{_var}/opt/rabbitmq/log %{buildroot}%{_var}/log/rabbitmq
-
-cp %{SOURCE1} %{buildroot}%{_sysconfdir}/rabbitmq
 
 cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
@@ -76,6 +82,11 @@ ExecStop=%{_libdir}/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl sto
 [Install]
 WantedBy=multi-user.target
 EOF
+
+install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
+            %{buildroot}%{_sysconfdir}/rabbitmq/rabbitmq.conf
+
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 
 %if 0%{?with_check}
 %check
@@ -115,10 +126,13 @@ rm -rf %{buildroot}
 %{_var}/log/rabbitmq
 %{_libdir}/*
 %{_unitdir}/*.service
-%{_sysconfdir}/*
+%{_tmpfilesdir}/%{name}.conf
 %{_sharedstatedir}/*
+%config(noreplace) %attr(0644, rabbitmq, rabbitmq) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-5
+- Spec improvements & create conf file properly
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-4
 - Fix build failure
 - Spec improvements
