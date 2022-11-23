@@ -3,18 +3,19 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.11.0
-Release:       3%{?dist}
+Version:       3.11.3
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
-Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 rabbitmq=141830314392a30c6b36ffc46224fd003513e97ef18f31d96180260ecee18818dc2e918e3179c0e24f156e4f0aeb46bbf3a3a77be60ed4a586aa6e1c55376637
+# use only .xz bundle from release page of github
+Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha512 rabbitmq=6f010a9b7286ce3960435f201c771cc317c9b97f733649eae43ca4db2f839904aad08e7285bccf889a295cfcdc9b34b169d00f90118c75c11850c375ac2bb8a9
 
-Source1:       rabbitmq.conf
+Source1: %{name}.tmpfiles
 
 Requires:      erlang
 Requires:      erlang-sd_notify
@@ -33,6 +34,7 @@ BuildRequires: python3-xml
 BuildRequires: python3-devel
 BuildRequires: elixir
 BuildRequires: systemd-rpm-macros
+BuildRequires: which
 
 BuildArch:     noarch
 
@@ -43,11 +45,16 @@ rabbitmq messaging server
 %autosetup -p1
 
 %build
-LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+export PROJECT_VERSION="%{version}"
+# https://github.com/rabbitmq/rabbitmq-server/discussions/5246
+export DIST_AS_EZS=1
 %make_build
 
 %install
-export RMQ_ROOTDIR=%{_rabbit_libdir}
+export PROJECT_VERSION="%{version}"
+export RMQ_ROOTDIR="%{_rabbit_libdir}"
+export DIST_AS_EZS=1
 %make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
@@ -58,8 +65,6 @@ mkdir -p %{buildroot}%{_var}/log \
          %{buildroot}%{_unitdir}
 
 ln -sfv %{_var}/opt/rabbitmq/log %{buildroot}%{_var}/log/rabbitmq
-
-cp %{SOURCE1} %{buildroot}%{_sysconfdir}/rabbitmq
 
 cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
@@ -81,6 +86,11 @@ ExecStop=%{_rabbit_libdir}/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
 WantedBy=multi-user.target
 EOF
 
+install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
+            %{buildroot}%{_sysconfdir}/rabbitmq/rabbitmq.conf
+
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
 %if 0%{?with_check}
 %check
 make %{?_smp_mflags} tests
@@ -96,7 +106,7 @@ fi
 
 if ! getent passwd %{_rabbit_user} >/dev/null; then
   useradd -r -g %{_rabbit_user} -d %{_sharedstatedir}/rabbitmq %{_rabbit_user} \
-  -s /sbin/nologin -c "RabbitMQ messaging server"
+      -s /sbin/nologin -c "RabbitMQ messaging server"
 fi
 
 %post
@@ -119,10 +129,13 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %{_var}/log/rabbitmq
 %{_rabbit_libdir}/*
 %{_unitdir}/*
+%{_tmpfilesdir}/%{name}.conf
 %{_sharedstatedir}/*
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.3-1
+- Upgrade to v3.11.3
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-3
 - Spec fixes
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-2
