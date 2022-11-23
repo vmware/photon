@@ -90,6 +90,31 @@ function abort() {
   exit $rc
 }
 
+# discover any regular file in /etc/systemd/system/multi-user.target.wants,
+# whcih is meant for enabled services. If found, terminate the upgrade process
+function find_wrongly_enabled_services()
+{
+  local f
+  local p=/etc/systemd/system/multi-user.target.wants
+  local wes=''  # holds space separated Wrongly Enabled Services list
+
+  pushd $p
+  for f in *; do
+    if [ ! -L $f ]; then
+      wes="${wes}${p}/${f} "
+    fi
+  done
+  popd
+  if [ -n "$wes" ]; then
+    echoerr "Incorrect service configuratiion of following regular file(s) was found - " \
+        "'$wes'.\nThese files must be removed for the upgrade to continue.\n" \
+        "Those files may be removed and corresponding 'systemctl enable' command " \
+        "may be, subsequently, used for enabling those systemd units.\n"
+    exit 22 # EINVAL
+  fi
+}
+
+
 # displays the space separated list of systemd managed services which have
 # provided state
 # e.g. get_services_by_state(enabled) - will return space separated list of
@@ -104,14 +129,34 @@ function get_services_by_state(){
 
 # Remember what services are enabled or disabled before upgrade
 function record_enabled_disabled_services() {
-  enabled_services=$(get_services_by_state enabled)
-  disabled_services=$(get_services_by_state disabled)
+  enabled_services="$(get_services_by_state enabled)"
+  disabled_services="$(get_services_by_state disabled)"
 }
 
 # Reset states of services where they were before upgrade
 function reset_enabled_disabled_services() {
-  ${SYSTEMCTL} enable $enabled_services
-  ${SYSTEMCTL} disable $disabled_services
+  local svc
+
+  for svc in $disabled_services; do
+    ${SYSTEMCTL} disable $svc
+  done
+  for svc in $enabled_services; do
+    ${SYSTEMCTL} enable $svc
+  done
+}
+
+# Take care of pre upgrade config changes
+function fix_pre_upgrade_config() {
+  local python_link=/usr/bin/python
+
+  # fix pam
+  echo "Fixing PAM config to avoid authentication failures after upgrading."
+  ${SED} -i -E 's/^(\s*\w+\s+\w+\s+pam_tally2?\.so).*$/\1/' /etc/pam.d/*
+  echo "Fixing unsupported FipsMode config in ssh*_config for avoiding post upgrade ssh issues."
+  ${SED} -i -E 's/^(\s*FipsMode\s+yes\s*)$/#\1/' /etc/ssh/sshd_config /etc/ssh/ssh_config
+  if ${SYSTEMCTL} status sshd | grep -q 'Active: active (running)'; then
+    ${SYSTEMCTL} restart sshd
+  fi
 }
 
 # The packages replacing any of the existing already installed packages will
@@ -217,7 +262,7 @@ function rebuilddb() {
 }
 
 function post_upgrade_remove_pkgs() {
-  local pkgs='libmetalink'
+  local pkgs='libmetalink libdb'
   local err_rm_pkg_list=''
   local rc=0
   local p=''
@@ -242,14 +287,9 @@ function fix_post_upgrade_config() {
   local python_link=/usr/bin/python
 
   # fix pam
-  echo "Fixing PAM config post upgrade."
-  ${SED} -i -E 's/pam_tally2?.so/pam_faillock.so/' /etc/pam.d/*
+  echo "Fixing PAM config post upgrade for pam_faillock.so and pam_pwquality.so."
+  ${SED} -i -E 's/^(\s*\w+\s+\w+\s+)pam_tally2?\.so.*$/\1pam_faillock.so/' /etc/pam.d/*
   ${SED} -i -E 's/pam_cracklib.so/pam_pwquality.so/' /etc/pam.d/*
-  echo "Fixing unsupported FipsMode config in sshd_config post upgrade."
-  ${SED} -i -E 's/^(\s*FipsMode\s+yes\s*)$/#\1/' /etc/ssh/sshd_config /etc/ssh/ssh_config
-  if ${SYSTEMCTL} status sshd | grep -q 'Active: active (running)'; then
-    ${SYSTEMCTL} restart sshd
-  fi
   echo "Setting $python_link."
   test -e $python_link || ln -s python3 $python_link
 }
@@ -367,6 +407,8 @@ function verify_version_and_upgrade() {
     echo "Your current version $FROM_VERSION is the latest version. Nothing to do."
     exit 0
   fi
+  find_wrongly_enabled_services # Terminates upgrade on finding any regular file in
+                                # /etc/systemd/system/multi-user.target.wants/
   backup_rpms_list_n_db
   find_installed_deprecated_packages
   if [ -z "$ASSUME_YES_OPT" ]; then
@@ -384,7 +426,6 @@ function verify_version_and_upgrade() {
   echo
   case "$yn" in
     [Yy]*)
-      record_enabled_disabled_services
       if [ "$UPDATE_PKGS" = 'y' ]; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances control builds so do not need this.
@@ -393,7 +434,9 @@ function verify_version_and_upgrade() {
       fi
       remove_unsupported_packages
       rebuilddb
+      record_enabled_disabled_services
       upgrade_photon_release
+      fix_pre_upgrade_config
       install_replacement_packages
       remove_replaced_packages
       distro_upgrade $TO_VERSION
