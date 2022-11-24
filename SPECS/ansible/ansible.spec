@@ -1,43 +1,32 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.12.1
-Release:        2%{?dist}
+Version:        2.12.7
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6ffbb0106afff0e6cdb013d43e55d8e5d1857c64edd08efc9302d543891f1331cbbd95af3bc19f7058b831a2e6ce0d504e6116286c28a4c9dab9c08600469718
+Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8600fc96950ec1c0490bf3cbed88a1729bf4505b82879192ea9560ac6a90d27a382072e5d4aa92072f21e804867932c37ec7e5e75ffd08a383c4bf7d0e030607
 
-Source1:        macros.ansible
+Source1: macros.ansible
 
-Patch0:         Add-Photon-OS-tdnf-support.patch
+Patch0: Add-Photon-OS-tdnf-support.patch
 
-BuildArch:      noarch
+BuildArch: noarch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-macros
-BuildRequires:  python3-resolvelib
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-resolvelib
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-jinja2
-Requires:       python3-PyYAML
-Requires:       python3-xml
-Requires:       python3-paramiko
-Requires:       python3-resolvelib
-
-%if %{with_check}
-BuildRequires:  python3-devel
-BuildRequires:  python3-pip
-BuildRequires:  python3-cryptography
-BuildRequires:  python3-PyYAML
-BuildRequires:  python3-jinja2
-%endif
+Requires: python3
+Requires: python3-jinja2
+Requires: python3-PyYAML
+Requires: python3-xml
+Requires: python3-paramiko
+Requires: python3-resolvelib
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
@@ -53,16 +42,12 @@ Development files for ansible packages
 %autosetup -p1
 
 %build
-python3 setup.py build
+%{py3_build}
 
 %install
-%{__rm} -rf %{buildroot}
-python3 setup.py install -O1 --skip-build --root "%{buildroot}"
+%{py3_install}
 install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
-
-%check
-python3 setup.py test
 
 %files
 %defattr(-, root, root)
@@ -74,6 +59,8 @@ python3 setup.py test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Thu Nov 24 2022 Nitesh Kumar <kunitesh@vmware.com> 2.12.7-1
+- Version upgrade to v2.12.7
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.12.1-2
 - Adding devel sub package
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
