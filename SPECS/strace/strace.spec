@@ -1,6 +1,6 @@
 Summary:       Tracks system calls that are made by a running process
 Name:          strace
-Version:       5.19
+Version:       6.0
 Release:       1%{?dist}
 License:       BSD
 URL:           https://strace.io/
@@ -8,7 +8,7 @@ Group:         Development/Debuggers
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha512 strace=1ea1c6e12d05bf145bc3c74f8d06b08dfc3eae3a5a21bfe8ab080053dc4c2da8a95be5956652ea62bb083462015a55f9bc1d1023919dcf2929a05211b7dde963
+%define sha512 strace=2f5aa18949b9f64769eee4e7720e41bf4a61e3b552acad693ff7baed2e662407a7b5e8bfba94ac49bb71639d21cd54084de902fb4337904f48480b25b8e72b54
 BuildRequires: gcc gzip libacl-devel libaio-devel
 
 %description
@@ -35,11 +35,11 @@ useful for finding out what complex commands do
 %configure --enable-mpers=check
 %endif
 
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 cp src/strace-graph %{buildroot}%{_bindir}/
 
 %check
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace-graph
 
 %changelog
+* Thu Nov 24 2022 Susant Sahani <ssahani@vmware.com> 6.0-1
+- Version Bump
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.19-1
 - Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.18-1
