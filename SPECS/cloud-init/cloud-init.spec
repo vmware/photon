@@ -1,5 +1,5 @@
 Name:           cloud-init
-Version:        22.3
+Version:        22.4.2
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -8,14 +8,13 @@ URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=50675caf75d5b5535782b87d7bdefa92740f575bb82d86bf72ed696a00713da4c6e15f06b6001497e84f5ec11e0a90d7322d118cd5d931f57805af2ca43fc646
+Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=b7d4629205ef2b184786908a3f922d635c811fed8f468649b1a892e93fbcbd54bc9eb366a49ceefb33acd32de1fc8d1a9a34c577c3b9d77825deb5f24e4fe18e
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
-Patch4: cloud-init-interface-match-without-mac.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -46,8 +45,10 @@ BuildRequires: python3-mock
 BuildRequires: python3-attrs
 BuildRequires: python3-iniconfig
 BuildRequires: python3-netifaces
+BuildRequires: shadow
 %endif
 
+Requires: shadow
 Requires: iproute2
 Requires: systemd
 Requires: (net-tools or toybox)
@@ -89,7 +90,7 @@ find systemd -name "cloud*.service*" | \
 
 %{python3} tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
-%if "%{_arch}" == "aarch64"
+%ifarch aarch64
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
@@ -134,7 +135,6 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%license LICENSE
 %{python3_sitelib}/*
 %{_docdir}/%{name}/*
 %{_libdir}/%{name}/*
@@ -154,6 +154,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-1
+- Upgrade to v22.4.2
 * Tue Aug 23 2022 Shivani Agarwal <shivania2@vmware.com> 22.3-1
 - Upgrade to v22.3
 - Add patch to fix interface matching when no MAC
