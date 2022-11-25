@@ -1,6 +1,6 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.13.5
+Version:        2.14.0
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d8da949dd24795c2fb4d5f022202b60243d2fe7cbaf1d7c5773b669e267abfd16f5e4a652adb71df2b07e8b58580ebffdc17bf547b52382333dd1dfa306ade59
+%define sha512 %{name}=5941edbc6537d20431d8825b71c549fab03f619c715f65d798da539c636f9ea20d613f093e1e12ab66d70f17a6bfda3694ddaf54fc264bba89d68f35329ea0d9
 
-Source1:        tdnf.py
-Source2:        macros.ansible
+Source1: tdnf.py
+Source2: macros.ansible
 
 BuildArch:      noarch
 
@@ -57,13 +57,6 @@ cp -vp %{SOURCE1} lib/%{name}/modules/
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
-%if 0%{?with_check}
-%check
-# make check is unstable at the moment
-#pip3 install pytest-forked
-#make tests-py3 %%{?_smp_mflags}
-%endif
-
 %files
 %defattr(-, root, root)
 %{_bindir}/*
@@ -74,6 +67,8 @@ touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Nov 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-1
+- Upgrade to v2.14.0
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1
 - Automatic Version Bump
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.13.3-2
