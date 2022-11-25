@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.264
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -371,6 +371,7 @@ Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484: 0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
 Patch485: 0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
 Patch486: 0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
+Patch487: 0001-x86-sev-es_Use_GHCB_accessor_for_setting_the_MMIO_scratch_buffer.patch
 
 # SEV-ES: Security Mitigate
 Patch491: 0001-x86-boot-compressed-64-Introduce-sev_status.patch
@@ -789,6 +790,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Nov 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-5
+- SEV-ES: fix MMIO scratch buffer
 * Mon Nov 21 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4
 - Updated ice driver to v1.9.11
 - Updated iavf driver to v4.5.3

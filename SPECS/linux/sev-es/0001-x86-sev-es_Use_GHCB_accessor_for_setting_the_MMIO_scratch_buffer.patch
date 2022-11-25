@@ -1,0 +1,35 @@
+From 0ddfb1cf3b6b07c97cff16ea69931d986f9622ee Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Fri, 25 Sep 2020 08:38:26 -0500
+Subject: x86/sev-es: Use GHCB accessor for setting the MMIO scratch buffer
+
+commit 0ddfb1cf3b6b07c97cff16ea69931d986f9622ee upstream
+
+Use ghcb_set_sw_scratch() to set the GHCB scratch field, which will also
+set the corresponding bit in the GHCB valid_bitmap field to denote that
+sw_scratch is actually valid.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lkml.kernel.org/r/ba84deabdf44a7a880454fb351d189c6ad79d4ba.1601041106.git.thomas.lendacky@amd.com
+---
+ arch/x86/kernel/sev-es.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 6fcfdd32769f0..4a96726fbaf88 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -751,7 +751,7 @@ static enum es_result vc_do_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt,
+ 	/* Can never be greater than 8 */
+ 	exit_info_2 = bytes;
+ 
+-	ghcb->save.sw_scratch = ghcb_pa + offsetof(struct ghcb, shared_buffer);
++	ghcb_set_sw_scratch(ghcb, ghcb_pa + offsetof(struct ghcb, shared_buffer));
+ 
+ 	return sev_es_ghcb_hv_call(ghcb, ctxt, exit_code, exit_info_1, exit_info_2);
+ }
+-- 
+cgit 
+
