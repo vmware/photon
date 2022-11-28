@@ -29,6 +29,7 @@ class constants(object):
     buildNumber = None
     releaseVersion = None
     katBuild = False
+    canisterBuild = False
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
@@ -430,6 +431,10 @@ class constants(object):
         constants.katBuild = katBuild
 
     @staticmethod
+    def setCanisterBuild(canisterBuild):
+        constants.canisterBuild = canisterBuild
+
+    @staticmethod
     def setCompressionMacro(compressionMacro):
         constants.addMacro("_source_payload", compressionMacro)
         constants.addMacro("_binary_payload", compressionMacro)
@@ -457,6 +462,9 @@ class constants(object):
 
         if constants.katBuild:
             constants.addMacro("kat_build", "1")
+
+        if constants.canisterBuild:
+            constants.addMacro("canister_build","1")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):

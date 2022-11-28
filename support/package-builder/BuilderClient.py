@@ -62,6 +62,7 @@ class BuilderClient:
         constants.setPublishBuildDependencies(constant_dict['publishBuildDependencies'])
         constants.setPackageWeightsPath(constant_dict['packageWeightsPath'])
         constants.setKatBuild(constant_dict['katBuild'])
+        constants.setCanisterBuild(const_dict['canisterBuild'])
         constants.extrasourcesURLs = constant_dict['extrasourcesURLs']
         constants.userDefinedMacros = constant_dict['userDefinedMacros']
         constants.tmpDirPath =  constant_dict['tmpDirPath']

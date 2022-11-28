@@ -1,4 +1,5 @@
 %global security_hardening none
+%global lkcm_version 4.0.1
 
 # Set this flag to 0 to build without canister
 %global fips 0
@@ -8,10 +9,14 @@
 %global fips 0
 %endif
 
+%if 0%{?canister_build}
+%global fips 0
+%endif
+
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -21,7 +26,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 %define _modulesdir /lib/modules/%{uname_r}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
 %define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
 Source1:        config-secure
 Source2:        initramfs.trigger
@@ -36,6 +41,16 @@ Source9:        check_fips_canister_struct_compatibility.inc
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 Source17:       fips_canister-kallsyms
+%endif
+
+%if 0%{?canister_build}
+Source18: fips_canister_wrapper.c
+Source19: fips_canister_wrapper.h
+Source20: fips_integrity.c
+Source21: fips_integrity.h
+Source22: update_canister_hmac.sh
+Source23: canister_combine.lds
+Source24: gen_canister_relocs.c
 %endif
 
 # common
@@ -101,6 +116,12 @@ Patch510: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
 Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 
+%if 0%{?canister_build}
+Patch10000:      0001-FIPS-canister-binary-usage.patch
+Patch10001:      0002-FIPS-canister-creation.patch
+Patch10002:      0002-FIPS-canister-creation-secure.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -149,6 +170,16 @@ Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%if 0%{?canister_build}
+%package fips-canister
+Summary:       FIPS canister tarball
+Group:         System Environment/Kernel
+Requires:      python3
+Requires:      %{name} = %{version}-%{release}
+%description fips-canister
+The kernel fips-canister
+%endif
+
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
@@ -180,6 +211,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m510 -M511
 %endif
 
+%if 0%{?canister_build}
+%autopatch -p1 -m10000 -M10002
+%endif
+
 %build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
@@ -189,7 +224,30 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    crypto/
 cp %{SOURCE17} crypto/
 %endif
+
+%if 0%{?canister_build}
+cp %{SOURCE18} crypto/
+cp %{SOURCE19} crypto/
+cp %{SOURCE20} crypto/
+cp %{SOURCE21} crypto/
+cp %{SOURCE22} crypto/
+cp %{SOURCE23} crypto/
+cp %{SOURCE24} crypto/
+%endif
+
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
+
+%if 0%{?canister_build}
+sed -i "s/CONFIG_DEBUG_LIST=y/# CONFIG_DEBUG_LIST is not set/" .config
+sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not set/" .config
+# Disable struct layout randomization
+sed -i "s/CONFIG_GCC_PLUGIN_RANDSTRUCT=y/# CONFIG_GCC_PLUGIN_RANDSTRUCT is not set/" .config
+sed -i "/CONFIG_GCC_PLUGIN_RANDSTRUCT_PERFORMANCE=y/d" .config
+#sed -i "/# CONFIG_DEBUG_INFO_DWARF4 is not set/a  # CONFIG_DEBUG_INFO_BTF is not set" .config
+
+sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
+%endif
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
@@ -197,7 +255,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE4}
 
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
+make V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 %if 0%{?fips}
@@ -222,6 +280,19 @@ done \
 %{nil}
 
 %install
+
+%if 0%{?canister_build}
+install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
+pushd crypto/
+mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+cp fips_canister.o fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+cp fips_canister-kallsyms fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+cp fips_canister_wrapper.c fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+popd
+cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+%endif
+
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
@@ -300,7 +371,15 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/build
 %{_usrsrc}/linux-headers-%{uname_r}
 
+%if 0%{?canister_build}
+%files fips-canister
+%defattr(-,root,root)
+%{_libdir}/fips-canister/*
+%endif
+
 %changelog
+* Fri Dec 09 2022 Mukul Sikka <msikka@vmware.com> 6.0.7-2
+- Moving fips canister from support to spec
 * Mon Nov 28 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-1
 - Update to 6.0.7
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-2

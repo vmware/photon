@@ -151,20 +151,7 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 	n_entries = data->d_size / sizeof (Elf64_Rela);
 
 	/* Extend output canister_relocs table by n_entries */
-	{
-		size_t size;
-		struct _relocation *_canister_relocs;
-
-		size = (size_t)(n_relocs + n_entries) * sizeof(struct _relocation);
-
-		_canister_relocs = (struct _relocation *)realloc(canister_relocs, size);
-		if (!_canister_relocs) {
-			free(canister_relocs);
-			error("%s: realloc of canister_relocs failed", __func__);
-		}
-		canister_relocs = _canister_relocs;
-	}
-
+	canister_relocs = (struct _relocation *)realloc(canister_relocs, (n_relocs + n_entries) * sizeof (struct _relocation));
 	r = &canister_relocs[n_relocs];
 	n_relocs += n_entries;
 
@@ -295,6 +282,8 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		 * fips_integrity_init() before sort_main_extable()
 		 * The same situation is with __jump_table which got sorted
 		 * by jump_label_init().
+		 * skip ".note.gnu.property" section from canister measurement
+		 * as this section is stripped off from vmlinux
 		 */
 		if (!strncmp(name, ".discard.", 9) ||
 		    !strcmp(name, ".exitcall.exit") ||
@@ -303,7 +292,8 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		    !strncmp(name, "___ksymtab", 10) ||
 		    !strncmp(name, "___kcrctab", 10) ||
 		    !strcmp(name, "__ex_table") ||
-		    !strcmp(name, "__jump_table"))
+		    !strcmp(name, "__jump_table") ||
+		    !strcmp(name, ".note.gnu.property"))
 			continue;
 
 		/*
