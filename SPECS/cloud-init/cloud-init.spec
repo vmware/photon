@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        22.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -90,7 +90,7 @@ find systemd -name "cloud*.service*" | \
 
 %{python3} tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
-%ifarch aarch64
+%if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
@@ -154,6 +154,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-2
+- Fix ifarch mishap
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-1
 - Upgrade to v22.4.2
 * Tue Aug 23 2022 Shivani Agarwal <shivania2@vmware.com> 22.3-1
