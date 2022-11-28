@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -12,6 +12,15 @@ Distribution:   Photon
 
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha512  %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
+
+# patches for audit workaround for linux-headers >= 5.17
+# https://github.com/linux-audit/audit-userspace/issues/252
+# https://github.com/linux-audit/audit-userspace/issues/236
+# https://listman.redhat.com/archives/linux-audit/2022-February/msg00085.html
+# patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-flex-array-workaround.patch
+Patch0:         audit-3.0.8-flex-array-workaround.patch
+# patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-undo-flex-array.patch
+Patch1:         audit-3.0.8-undo-flex-array.patch
 
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
@@ -57,7 +66,10 @@ The python3-audit package contains the python2 bindings for libaudit
 and libauparse.
 
 %prep
-%autosetup -p1
+# Using autosetup is not feasible
+%setup -q
+cp /usr/include/linux/audit.h lib/
+%patch0 -p1
 
 %build
 %configure \
@@ -87,6 +99,13 @@ ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
+
+# undo the workaround
+cur=`pwd`
+cd %{buildroot}
+patch --fuzz=1 -p0 < %{PATCH1}
+find . -name '*.orig' -delete
+cd $cur
 
 %check
 make %{?_smp_mflags} check
@@ -148,6 +167,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Keerthana K <keerthanak@vmware.com> 3.0.9-2
+- Workaround for audit build failures with linux headers >= v5.17
 * Thu Dec 01 2022 Harinadh D <hdommaraju@vmware.com> 3.0.9-1
 - Version update
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-5

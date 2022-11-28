@@ -1,21 +1,25 @@
 From 4eb745c8cb5c82a2e01e407648c708de5c5a7d3e Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
 Date: Tue, 2 Oct 2018 17:17:36 -0700
-Subject: [PATCH] bpf, ext4, bonding: Fix compilation errors
+Subject: [PATCH 1/6] bpf, ext4, bonding: Fix compilation errors
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 In file included from kernel/bpf/core.c:24:0:
 kernel/bpf/core.c: In function ‘___bpf_prog_run’:
-./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
+./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long
+long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(l
+ong long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
   ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
                                                   ^
 kernel/bpf/core.c:1132:13: note: in expansion of macro ‘__bpf_call_base_args’
    BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
              ^~~~~~~~~~~~~~~~~~~~
 kernel/bpf/core.c: In function ‘bpf_patch_call_args’:
-./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
+./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long
+long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(l
+ong long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
   ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
                                                   ^
 kernel/bpf/core.c:1410:3: note: in expansion of macro ‘__bpf_call_base_args’
@@ -46,10 +50,10 @@ index 60586fb82..1dd1be224 100644
 +
 +OBJECT_FILES_NON_STANDARD := y
 diff --git a/drivers/gpu/drm/nouveau/dispnv50/wndw.h b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
-index 3278e2880..839fcc830 100644
+index 591c852f3..8cbf02d0d 100644
 --- a/drivers/gpu/drm/nouveau/dispnv50/wndw.h
 +++ b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
-@@ -38,8 +38,8 @@ struct nv50_wndw {
+@@ -35,8 +35,8 @@ struct nv50_wndw {
  
  int nv50_wndw_new_(const struct nv50_wndw_func *, struct drm_device *,
  		   enum drm_plane_type, const char *name, int index,
@@ -57,14 +61,14 @@ index 3278e2880..839fcc830 100644
 -		   u32 interlock_data, u32 heads, struct nv50_wndw **);
 +		   const u32 *format, u32 heads, enum nv50_disp_interlock_type,
 +		   u32 interlock_data, struct nv50_wndw **);
- void nv50_wndw_init(struct nv50_wndw *);
- void nv50_wndw_fini(struct nv50_wndw *);
  void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
+ 			 struct nv50_wndw_atom *);
+ void nv50_wndw_flush_clr(struct nv50_wndw *, u32 *interlock, bool flush,
 diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
-index 4e27fe6ed..7e3dd6d8d 100644
+index d233c24ea..35c63ca08 100644
 --- a/fs/ext4/sysfs.c
 +++ b/fs/ext4/sysfs.c
-@@ -494,7 +494,7 @@ static struct kobj_type ext4_sb_ktype = {
+@@ -505,7 +505,7 @@ static struct kobj_type ext4_sb_ktype = {
  static struct kobj_type ext4_feat_ktype = {
  	.default_groups = ext4_feat_groups,
  	.sysfs_ops	= &ext4_attr_ops,
@@ -72,9 +76,9 @@ index 4e27fe6ed..7e3dd6d8d 100644
 +	.release	= (void (*)(struct kobject *))((void *)kfree),
  };
  
- static struct kobject *ext4_root;
+ void ext4_notify_error_sysfs(struct ext4_sb_info *sbi)
 diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index f6af76c87..67d687608 100644
+index 191c36afa..9dc082b2d 100644
 --- a/include/net/bond_alb.h
 +++ b/include/net/bond_alb.h
 @@ -156,8 +156,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
@@ -89,5 +93,5 @@ index f6af76c87..67d687608 100644
  				      struct sk_buff *skb);
  struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
 -- 
-2.17.1
+2.37.3
 

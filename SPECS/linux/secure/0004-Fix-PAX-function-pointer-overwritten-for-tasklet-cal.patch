@@ -1,7 +1,7 @@
 From bbcfac6abd6a009e7e59703072a5f6619d62575d Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 6 Jan 2021 07:35:04 +0000
-Subject: [PATCH] Fix PAX function pointer overwritten for tasklet callback
+Subject: [PATCH 4/5] Fix PAX function pointer overwritten for tasklet callback
 
 Tasklet_struct has union of function pointers which is called based on
 use_callback bool value. GCC RAP plugin has a bug which does not generate

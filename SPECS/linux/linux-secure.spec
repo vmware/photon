@@ -1,7 +1,7 @@
 %global security_hardening none
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.142
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        6.0.7
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,11 +22,11 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
-Source3:    scriptlets.inc
+Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
 %if 0%{?fips}
@@ -39,119 +39,67 @@ Source17:       fips_canister-kallsyms
 %endif
 
 # common
-Patch0: net-Double-tcp_mem-limits.patch
-Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch2: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch3: 9p-transport-for-9p.patch
-Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
-Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+Patch0:  net-Double-tcp_mem-limits.patch
+Patch1:  SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch2:  6.0-9p-transport-for-9p.patch
+Patch3:  9p-trans_fd-extend-port-variable-to-u32.patch
+Patch4:  vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
-
-# To support GCC v12
-Patch9:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
-Patch10: 0004-perf_sched_Cast_PTHREAD_STACK_MIN_to_int_as_it_may_turn_into_sysconf.patch
+Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
 
 #HyperV patches
-Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+Patch20:  vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch21:  6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 
 # Out-of-tree patches from AppArmor:
-Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch14: apparmor-af_unix-mediation.patch
-
-#vmxnet3
-Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+Patch30:  6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch31: 6.0-0002-apparmor-af_unix-mediation.patch
+Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch21: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMW:
-Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch40: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
 #Secure:
-Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
-Patch91: 0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch92: 0002-Added-PAX_RANDKSTACK.patch
-Patch93: 0003-Added-rap_plugin.patch
-Patch94: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch50: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
+Patch51: 0002-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
+Patch52: 0003-Added-rap_plugin.patch
+Patch53: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch54: 0005-rap_plugin-reduce-padding-size.patch
 
 # CVE:
-Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix for CVE-2019-12379
-Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-4204
-Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-0500
-Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
-Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
-Patch116: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
-Patch117: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
-Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
-Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
-Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
-Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Next 2 patches are about to be merged into stable
-Patch130: 0001-mm-fix-panic-in-__alloc_pages.patch
+Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503: 0002-FIPS-crypto-self-tests.patch
+Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
 Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
-#Patch to introduce wrappers for random callback functions
-Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-%else
+%endif
 %if 0%{?kat_build}
 Patch510: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
 Patch511: 0003-FIPS-broken-kattest.patch
 %endif
-%endif
-
-%if 0%{?fips}
-#retpoline
-Patch512: 0001-retpoline-re-introduce-alternative-for-r11.patch
-%endif
-
-#Patches for vmci driver
-Patch1521: 001-return-correct-error-code.patch
-Patch1522: 002-switch-to-kvfree_rcu-API.patch
-Patch1523: 003-print-unexpanded-names-of-ioctl.patch
-Patch1524: 004-enforce-queuepair-max-size-for-IOCTL_VMCI_QUEUEPAIR_ALLOC.patch
-Patch1531: 0001-whitespace-formatting-change-for-vmci-register-defines.patch
-Patch1532: 0002-add-MMIO-access-to-registers.patch
-Patch1533: 0003-detect-DMA-datagram-capability.patch
-Patch1534: 0004-set-OS-page-size.patch
-Patch1535: 0005-register-dummy-IRQ-handlers-for-DMA-datagrams.patch
-Patch1536: 0006-allocate-send-receive-buffers-for-DMAdatagrams.patch
-Patch1537: 0007-add-support-for-DMA-datagrams-send.patch
-Patch1538: 0008-add-support-for-DMA-datagrams-receive.patch
-Patch1539: 0009-fix-the-description-of-vmci_check_host_caps.patch
-Patch1540: 0010-no-need-to-clear-memory-after-dma_alloc_coherent.patch
-Patch1541: 0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
-Patch1542: 0012-check-exclusive-vectors-when-freeing-interrupt1.patch
-Patch1543: 0013-release-notification-bitmap-inn-error-path.patch
-Patch1544: 0014-add-support-for-arm64.patch
 
 BuildArch:      x86_64
 
@@ -209,39 +157,28 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M21
+%autopatch -p1 -m0 -M33
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m40 -M41
 %endif
 
 #Secure
-%autopatch -p1 -m90 -M94
+%autopatch -p1 -m50 -M54
 
 # CVE
-%autopatch -p1 -m100 -M121
-
-# mm and scsi fixes
-%autopatch -p1 -m130 -M130
+%autopatch -p1 -m100 -M100
 
 # crypto
-%autopatch -p1 -m500 -M507
+%autopatch -p1 -m500 -M506
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M509
-%else
+%endif
 %if 0%{?kat_build}
 %autopatch -p1 -m510 -M511
 %endif
-%endif
-
-%if 0%{?fips}
-%patch512 -p1
-%endif
-
-# vmci
-%autopatch -p1 -m1521 -M1544
 
 %build
 make %{?_smp_mflags} mrproper
@@ -305,7 +242,7 @@ install -vm 644 vmlinux %{buildroot}%{_libdir}/debug%{_modulesdir}/vmlinux-%{una
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slub_debug=P page_poison=1 slab_nomerge pti=on
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge pti=on
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -364,6 +301,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 28 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-1
+- Update to 6.0.7
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-2
 - Fix build with latest toolchain
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1

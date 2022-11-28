@@ -1,0 +1,41 @@
+From 0d31f225faef8da3fcd0f69f6544aa274102fe53 Mon Sep 17 00:00:00 2001
+From: Steve Grubb <sgrubb@redhat.com>
+Date: Feb 23 2022 19:24:50 +0000
+Subject: workaround a kernel change that breaks the build
+
+diff -urp audit-3.0.8.orig/bindings/swig/src/auditswig.i audit-3.0.8/bindings/swig/src/auditswig.i
+--- audit-3.0.8.orig/bindings/swig/src/auditswig.i	2022-03-29 16:52:34.000000000 -0400
++++ audit-3.0.8/bindings/swig/src/auditswig.i	2022-03-29 17:31:15.810268855 -0400
+@@ -39,7 +39,7 @@ signed
+ #define __attribute(X) /*nothing*/
+ typedef unsigned __u32;
+ typedef unsigned uid_t;
+-%include "/usr/include/linux/audit.h"
++%include "../lib/audit.h"
+ #define __extension__ /*nothing*/
+ %include <stdint.i>
+ %include "../lib/libaudit.h"
+diff -urp audit-3.0.8.orig/lib/audit.h audit-3.0.8/lib/audit.h
+--- audit-3.0.8.orig/lib/audit.h	2022-03-29 17:29:30.358211892 -0400
++++ audit-3.0.8/lib/audit.h	2022-03-29 17:31:15.811268833 -0400
+@@ -514,7 +514,7 @@ struct audit_rule_data {
+ 	__u32		values[AUDIT_MAX_FIELDS];
+ 	__u32		fieldflags[AUDIT_MAX_FIELDS];
+ 	__u32		buflen;	/* total length of string fields */
+-	char		buf[];	/* string fields buffer */
++	char		buf[0];	/* string fields buffer */
+ };
+ 
+ #endif /* _LINUX_AUDIT_H_ */
+diff -urp audit-3.0.8.orig/lib/libaudit.h audit-3.0.8/lib/libaudit.h
+--- audit-3.0.8.orig/lib/libaudit.h	2022-03-29 16:52:34.000000000 -0400
++++ audit-3.0.8/lib/libaudit.h	2022-03-29 17:31:15.812268812 -0400
+@@ -27,7 +27,7 @@
+ #include <stdint.h>
+ #include <sys/socket.h>
+ #include <linux/netlink.h>
+-#include <linux/audit.h>
++#include "audit.h"
+ #include <stdarg.h>
+ #include <syslog.h>
+ #ifndef __attr_access

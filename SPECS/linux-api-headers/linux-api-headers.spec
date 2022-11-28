@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	5.10.142
+Version:	6.0.7
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -23,7 +23,6 @@ make %{?_smp_mflags} mrproper
 [ "%{_arch}" = "aarch64" ] && ARCH=arm64
 [ "%{_arch}" = "i686" ] && ARCH=i386
 cd %{_builddir}/linux-%{version}
-make %{?_smp_mflags} ARCH=$ARCH headers_check
 # 'make headers_install' needs rsync, but we would prefer not to add
 # that dependency to linux-api-headers. So prepare the headers and
 # copy them using 'cp' instead.
@@ -40,6 +39,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %{_includedir}/*
 
 %changelog
+* Mon Nov 28 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-1
+- Update to 6.0.7
 * Wed Sep 28 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.142-1
 - Update to version 5.10.142
 * Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.132-1
