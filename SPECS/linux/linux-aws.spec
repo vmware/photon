@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.152
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -111,6 +111,9 @@ Patch125: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+# Fix for CVE-2022-4139
+Patch129: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -232,7 +235,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M128
+%autopatch -p1 -m100 -M129
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -398,6 +401,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-6
+- Fix for CVE-2022-4139
 * Mon Nov 28 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-5
 - Fix for CVE-2022-3522
 * Mon Nov 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-4

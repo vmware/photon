@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.152
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -135,6 +135,9 @@ Patch125: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
+# Fix for CVE-2022-4139
+Patch128: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -254,7 +257,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M127
+%autopatch -p1 -m100 -M128
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -413,6 +416,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-6
+- Fix for CVE-2022-4139
 * Mon Nov 28 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-5
 - Fix for CVE-2022-3522
 * Mon Nov 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-4
