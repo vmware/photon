@@ -1,18 +1,19 @@
 Summary:	Build tool
 Name:		pkg-config
 Version:	0.29.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://www.freedesktop.org/wiki/Software/pkg-config
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
-%define sha1 pkg-config=76e501663b29cb7580245720edfb6106164fad2b
+%define sha512 pkg-config=4861ec6428fead416f5cbbbb0bbad10b9152967e481d4b0ff2eb396a9f297f552984c9bb72f6864a37dcd8fca1d9ccceda3ef18d8f121938dbe4fdf2b870fe75
 Patch0:         pkg-config-glib-CVE-2018-16428.patch
 Patch1:         pkg-config-glib-CVE-2018-16429.patch
 Patch2:         pkg-config-glib-CVE-2020-35457.patch
 Patch3:         pkg-config-glib-CVE-2021-27218.patch
+Patch4:         pkg-config-glib-CVE-2021-3800.patch
 
 %description
 Contains a tool for passing the include path and/or library paths
@@ -36,11 +37,10 @@ fi
     --disable-host-tool \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-silent-rules
-make %{?_smp_mflags}
+%make_build
 
 %install
-# make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -51,7 +51,10 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/pkg.m4
 %{_docdir}/pkg-config-*/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
+
 %changelog
+* Mon Nov 28 2022 Harinadh D <hdommaraju@vmware.com> 0.29.2-5
+- fix CVE-2021-3800
 * Tue Dec 07 2021 Mukul Sikka <msikka@vmware.com> 0.29.2-4
 - Fix internal glib for CVE-2020-35457 and CVE-2021-27218
 * Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 0.29.2-3
