@@ -1,34 +1,32 @@
 Summary:        Apache Ant
 Name:           apache-ant
-Version:        1.10.8
-Release:        3%{?dist}
+Version:        1.10.12
+Release:        1%{?dist}
 License:        Apache
 URL:            http://ant.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:        http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
-Source1:        http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
-%define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
-Source2:        https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
-%define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Patch0:         apache-ant-CVE-2020-11979.patch
-Patch1:         apache-ant-CVE-2021-36373-CVE-2021-36374.patch
+Source0:        https://downloads.apache.org/ant/source/%{name}-%{version}-src.tar.gz
+%define sha512  %{name}=1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
 Requires:       openjre8
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
-%define _prefix /var/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _libdir %{_prefix}/lib
+
+Patch0: 0001-Maven-Ant-tasks-has-been-EOLed-https-maven.apache.or.patch
+Patch1: 0001-optional-Add-maven.resolver-ant-task-jar.patch
+
+%define ant_prefix /var/opt/%{name}
+%define ant_bindir %{ant_prefix}/bin
+%define ant_libdir %{ant_prefix}/lib
 
 %description
 The Ant package contains binaries for a build system
 
 %package -n ant-scripts
 Summary:        Additional scripts for ant
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 %description -n ant-scripts
 Apache Ant is a Java-based build tool.
@@ -37,49 +35,36 @@ This package contains additional perl and python scripts for Apache
 Ant.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-tar xf %{SOURCE1} --no-same-owner
-tar xf %{SOURCE2} --no-same-owner
+%autosetup -p1
 
 %clean
 rm -rf %{buildroot}
 
 %build
-ANT_DIST_DIR=%{buildroot}%{_prefix}
-cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
+ANT_DIST_DIR=%{buildroot}%{ant_prefix}
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
+# Required to build maven-resolver-ant-task.jar
+./build.sh -k -f fetch.xml -Ddest=optional
 
 %install
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/
-mkdir -p %{buildroot}%{_datadir}/java/ant
+mkdir -p %{buildroot}%{_datadir}/java/ant %{buildroot}%{_bindir}
 
-for jar in %{buildroot}/%{_libdir}/*.jar
+cp lib/optional/maven-resolver-ant-tasks*.jar %{buildroot}/%{ant_libdir}/
+for jar in %{buildroot}/%{ant_libdir}/*.jar
 do
     jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/ant/${jarname}.jar
+    ln -sfv %{ant_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/ant/${jarname}.jar
 done
-rm -rf %{buildroot}%{_bindir}/*.bat
-rm -rf %{buildroot}%{_bindir}/*.cmd
+rm -rf %{buildroot}%{ant_bindir}/*.bat
+rm -rf %{buildroot}%{ant_bindir}/*.cmd
 
-mkdir -p %{buildroot}/bin
-for b in %{buildroot}%{_bindir}/*
+for b in %{buildroot}%{ant_bindir}/*
 do
     binaryname=$(basename $b)
-    ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+    ln -sfv %{ant_bindir}/${binaryname} %{buildroot}%{_bindir}/${binaryname}
 done
-
-MAVEN_ANT_TASKS_DIR=%{buildroot}%{_prefix}/maven-ant-tasks
-
-mkdir -p -m 700 $MAVEN_ANT_TASKS_DIR
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/LICENSE $MAVEN_ANT_TASKS_DIR/
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/NOTICE $MAVEN_ANT_TASKS_DIR/
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/README.txt $MAVEN_ANT_TASKS_DIR/
-chown -R root:root $MAVEN_ANT_TASKS_DIR
-chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
 %check
 # Disable following tests which are currently failing in chrooted environment -
@@ -100,32 +85,31 @@ bootstrap/bin/ant -v run-tests
 
 %files
 %defattr(-,root,root)
-%dir %{_bindir}
-%dir %{_libdir}
+%dir %{ant_bindir}
+%dir %{ant_libdir}
 %dir %{_datadir}/java/ant
-%dir %{_prefix}/maven-ant-tasks
-/bin/ant
-/bin/antRun
 %{_bindir}/ant
 %{_bindir}/antRun
-%{_libdir}/*
+%{ant_bindir}/ant
+%{ant_bindir}/antRun
+%{ant_libdir}/*
 %{_datadir}/java/ant/*.jar
-%{_prefix}/maven-ant-tasks/LICENSE
-%{_prefix}/maven-ant-tasks/README.txt
-%{_prefix}/maven-ant-tasks/NOTICE
 
 %files -n ant-scripts
 %defattr(-,root,root)
-/bin/antRun.pl
-/bin/complete-ant-cmd.pl
-/bin/runant.py
-/bin/runant.pl
 %{_bindir}/antRun.pl
 %{_bindir}/complete-ant-cmd.pl
 %{_bindir}/runant.py
 %{_bindir}/runant.pl
+%{ant_bindir}/antRun.pl
+%{ant_bindir}/complete-ant-cmd.pl
+%{ant_bindir}/runant.py
+%{ant_bindir}/runant.pl
 
 %changelog
+*   Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 1.10.12-1
+-   Updated to 1.10.12
+-   Replaced obsolete maven-ant-task with maven-resolver-ant-task
 *   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.8-3
 -   Fix CVE-2021-36373, CVE-2021-36374
 *   Fri Oct 16 2020 Dweep Advani <dadvani@vmware.com> 1.10.8-2

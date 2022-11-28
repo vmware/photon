@@ -1,0 +1,27 @@
+From c5b030b82b3beb3b88c6dda31ecd1de8a312da70 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Thu, 1 Dec 2022 09:45:25 +0000
+Subject: [PATCH] optional: Add maven.resolver ant task jar
+
+- Replacement for maven-ant-task.jar
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ fetch.xml | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/fetch.xml b/fetch.xml
+index be855f4..a5226af 100644
+--- a/fetch.xml
++++ b/fetch.xml
+@@ -407,6 +406,5 @@ Set -Ddest=LOCATION on the command line
+ 
+   <target name="all"
+     description="load all the libraries (except jython)"
+-    depends="antunit,ivy,logging,junit,junitlauncher,xml,networking,regexp,antlr,bcel,jdepend,bsf,debugging,script,
+-      jakartamail,jspc,jai,xz,netrexx,junit-engine-vintage,junit-engine-jupiter"/>
++    depends="macros"/>
+ </project>
+-- 
+2.23.1
+
