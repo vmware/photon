@@ -17,9 +17,9 @@ The following procedure turns on network debugging by adding a drop-in file in `
 
     ```console
     cat > /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf << "EOF"
-    	[Service]
-    	Environment=SYSTEMD_LOG_LEVEL=debug
-    	EOF
+    \[Service\]
+    Environment=SYSTEMD_LOG_LEVEL=debug
+    EOF
     ```
  
 1. Reload the `systemctl` daemon and restart the `systemd-networkd` service for the changes to take effect:
@@ -32,12 +32,12 @@ The following procedure turns on network debugging by adding a drop-in file in `
 1. Verify that your changes took effect:
 	
 	```console
-	systemd-delta --type=extended`
+	systemd-delta --type=extended
 	```
 
 1. View the log files by running this command:
 	```console
-	journalctl -u systemd-networkd`
+	journalctl -u systemd-networkd
 	```
 
 1. After debugging the network connections, turn debugging off by deleting the drop-in file:
