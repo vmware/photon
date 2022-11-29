@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.162
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -136,6 +136,11 @@ Patch68: 0009-esx-vmxnet3-software-timestamping.patch
 
 #TARFS
 Patch80:    0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
+# initialize MMCONFIG
+Patch81: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
+Patch82: 0001-MMIO_should_have_more_priority_then_IO.patch
+Patch83: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch85: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -597,6 +602,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.162-3
+- initialize MMCONFIG, if already not initialized
 * Fri Jan 20 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
 - Support for missing Sienna Cichlid AMD GPU card.
 * Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
