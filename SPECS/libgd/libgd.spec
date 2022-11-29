@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -19,11 +19,15 @@ BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libltdl-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  fontconfig-devel
 
 Requires:       libpng
 Requires:       libwebp
 Requires:       libtiff
 Requires:       libjpeg-turbo
+Requires:       freetype2
+Requires:       fontconfig
 Provides:       pkgconfig(libgd)
 
 %description
@@ -46,7 +50,7 @@ cd %{name}-gd-%{version}
 cd %{name}-gd-%{version}
 # To use the system installed automake latest version instead of given version in source
 ./bootstrap.sh
-%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+%configure --with-webp --with-tiff --with-jpeg --with-png --with-freetype --with-fontconfig --disable-werror --disable-static
 make %{?_smp_mflags}
 %install
 cd %{name}-gd-%{version}
@@ -67,6 +71,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Jan 11 2023 Mukul Sikka <msikka@vmware.com> 2.3.0-7
+- Adding new configs freetype and fontconfig
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.0-6
 - Remove .la files
 * Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com>  2.3.0-5
