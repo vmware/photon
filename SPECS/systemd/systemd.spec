@@ -1,6 +1,6 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        252.1
+Version:        252.2
 Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=7e9cd4b53522459d919252ff9343630f48e4ae94ff85138829257072c345e3636a2e52152e9080e6cf847c50c076b3e28a60a0d6e1896f183e442140fa97f92f
+%define sha512 %{name}=4a4f7382a6a2d7aea3a2866034a4562d1b45a4e18f733a371bb83d67bf4ef5d31d480e703fd353ee847fadc76005f9191a9a44d95c57f6849fdd451cc1b9e21d
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -676,6 +676,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Nov 29 2022 Susant Sahani <ssahani@vmware.com> 252.2-1
+- Version bump
 * Fri Nov 18 2022 Susant Sahani <ssahani@vmware.com> 252.1-1
 - Version bump
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 252-1
