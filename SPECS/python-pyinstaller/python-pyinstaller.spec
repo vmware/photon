@@ -3,14 +3,14 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
-%define sha1    PyInstaller=381cbd30dcfc2d1ef8761afb602a0e0ae547c988
+%define sha512  PyInstaller=d0cff91a5cb1cfe297e33dc89013849f139161a000c0449b590b0ac1c4bb0ccd01e8dc6bf10ed3b5b6fb21a280e567d23dbaed8cab8bf0ec50db5ff5a09a5a19
 Patch0:         pyinstaller-gcc-10.patch
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -38,8 +38,7 @@ PyInstaller is tested against Windows, Mac OS X, and Linux. However, it is not a
 to make a Linux app you run it in Linux, etc. PyInstaller has been used successfully with AIX, Solaris, and FreeBSD, but is not tested against them.
 
 %prep
-%setup -q -n pyinstaller-%{version}
-%patch0 -p1
+%autosetup -n pyinstaller-%{version} -p1
 
 %build
 pushd bootloader
@@ -71,6 +70,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 4.0-5
+-   Release Bump-up to build with updated pyOpenSSL version
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4
 -   GCC-10 support.
 *   Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3

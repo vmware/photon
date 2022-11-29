@@ -1,6 +1,6 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        22.1.0
+Version:        22.0.0
 Release:        1%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
@@ -8,7 +8,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha512  pyOpenSSL=7cccb48cbb1655414d21c5e66e7defee7ec370cb6b46294ae0307208f9a9bc13708345b2c088a43292262f5d5bb3d45241c18ae66d2ad6824046ffe30f0c707e
+%define sha512  pyOpenSSL=3d7695f27b7909eb82f05527ab7551fe90a85a70f20ea980293b59672a62f9b015966180407fa0786e94b01ad1d1acfaa7d40426bb63410efd24a144e559e2f0
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -63,6 +63,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 22.0.0-1
+- Downgraded to version 22.0.0 due to an upstream issue #1154
 * Mon Nov 07 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.1.0-1
 - Update to 22.1.0
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 19.1.0-2
