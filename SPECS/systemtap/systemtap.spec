@@ -7,8 +7,8 @@
 %define with_sqlite    1
 
 Name:          systemtap
-Version:       4.7
-Release:       3%{?dist}
+Version:       4.8
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -17,7 +17,7 @@ URL:           http://sourceware.org/systemtap
 License:       GPLv2+
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7d7c213dc4f7c5430f81763668da21403fbc351d1701b1096eb1ad233e3f0325e35f01dfd0a33e75f277b26fdde88c46d42dd32e32e4d4f27a45d53e2dd0f831
+%define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -390,6 +390,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Tue Nov 29 2022 Srinidhi Rao <srinidhir@vmware.com> 4.8-1
+- Update to 4.8 release
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7-3
 - Bump version as a part of libtirpc upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7-2
