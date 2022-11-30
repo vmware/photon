@@ -5,7 +5,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        11%{?dist}
+Release:        12%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -20,6 +20,8 @@ Source0:        %{name}-%{version}.tar.gz
 # GSSAPI-Unix URL: https://github.com/vmware/gssapi-unix
 Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
 %define sha512  gssapi-unix-%{gssapi_unix_ver}=cc8044da827ee688c9d6b99709ff1f55e609787a47d4c992035750f3e8727fa2ee86897ceba8f754c48f21676ff547d0b7c0b5f7ac798bde38337d6e4dbd3212
+
+Patch0: Add-new-cli-commands.patch
 
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
@@ -342,6 +344,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/gssapi_unix/*.a
 
 %changelog
+* Thu Dec 01 2022 Susant Sahani <ssahani@vmware.com> 0.0.7-12
+- Bump with latest network-config-manager
 * Mon Sep 19 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-11
 - Bump to consume latest tdnf (3.3.2)
 * Mon May 09 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-10

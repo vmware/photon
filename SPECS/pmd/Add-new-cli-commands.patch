@@ -1,0 +1,563 @@
+From ac8f6e4698cb5a43ba17fa7490abbf3947b2fa49 Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@vmware.com>
+Date: Wed, 30 Nov 2022 23:12:56 +0530
+Subject: [PATCH] Add new cli commands
+
+---
+ privsep/netmgmt_utils.c      |  30 +--
+ privsep/netmgmt_utils.h      |   2 +-
+ tools/cli/netmgmt/net_help.c | 404 +++++++++++++++++++----------------
+ tools/cli/netmgmt/structs.h  |   2 +-
+ 4 files changed, 237 insertions(+), 201 deletions(-)
+
+diff --git a/privsep/netmgmt_utils.c b/privsep/netmgmt_utils.c
+index 4d0a3f7..9d26889 100644
+--- a/privsep/netmgmt_utils.c
++++ b/privsep/netmgmt_utils.c
+@@ -50,15 +50,15 @@ netmgmt_cli_manager_new(
+         { "add-dns",                      ncm_add_dns_server },
+         { "add-domain",                   ncm_add_dns_domains },
+         { "revert-resolve-link",          ncm_revert_resolve_link },
+-        { "set-link-local-address",       ncm_link_set_network_section_bool },
+-        { "set-ipv4ll-route",             ncm_link_set_network_section_bool },
+-        { "set-llmnr",                    ncm_link_set_network_section_bool },
+-        { "set-multicast-dns",            ncm_link_set_network_section_bool },
+-        { "set-lldp",                     ncm_link_set_network_section_bool },
+-        { "set-emit-lldp",                ncm_link_set_network_section_bool },
+-        { "set-ipforward",                ncm_link_set_network_section_bool },
+-        { "set-ipv6acceptra",             ncm_link_set_network_section_bool },
+-        { "set-ipmasquerade",             ncm_link_set_network_section_bool },
++        { "set-link-local-address",       ncm_link_set_network_section },
++        { "set-ipv4ll-route",             ncm_link_set_network_section },
++        { "set-llmnr",                    ncm_link_set_network_section },
++        { "set-multicast-dns",            ncm_link_set_network_section },
++        { "set-lldp",                     ncm_link_set_network_section },
++        { "set-emit-lldp",                ncm_link_set_network_section },
++        { "set-ipforward",                ncm_link_set_network_section },
++        { "set-ipv6acceptra",             ncm_link_set_network_section },
++        { "set-ipmasquerade",             ncm_link_set_network_section },
+         { "set-dhcp4-use-dns",            ncm_link_set_dhcp4_section },
+         { "set-dhcp4-use-domains",        ncm_link_set_dhcp4_section },
+         { "set-dhcp4-use-ntp",            ncm_link_set_dhcp4_section },
+@@ -104,11 +104,11 @@ netmgmt_cli_manager_new(
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+     *pNetCliMgr = (NetmgmtCliManager) {
+-        .hash = g_hash_table_new(g_str_hash, g_str_equal),
+-            .commands = (NetmgmtCli *) cli_commands,
++        .table = g_hash_table_new(g_str_hash, g_str_equal),
++        .commands = (NetmgmtCli *) cli_commands,
+     };
+ 
+-    if (!pNetCliMgr->hash)
++    if (!pNetCliMgr->table)
+     {
+         dwError = ERROR_PMD_NET_ALLOCATE_FAIL;
+         BAIL_ON_PMD_ERROR(dwError);
+@@ -116,7 +116,7 @@ netmgmt_cli_manager_new(
+ 
+     for (i = 0; cli_commands[i].name; i++)
+     {
+-        if (!g_hash_table_insert(pNetCliMgr->hash, (gpointer *) cli_commands[i].name, (gpointer *) &cli_commands[i]));
++        if (!g_hash_table_insert(pNetCliMgr->table, (gpointer *) cli_commands[i].name, (gpointer *) &cli_commands[i]));
+     }
+ 
+     *ppNetCliMgr = pNetCliMgr;
+@@ -139,7 +139,7 @@ netmgmt_cli_unrefp(
+ {
+     if (ppNetCliMgr && *ppNetCliMgr)
+     {
+-        g_hash_table_unref((*ppNetCliMgr)->hash);
++        g_hash_table_unref((*ppNetCliMgr)->table);
+         PMD_SAFE_FREE_MEMORY(*ppNetCliMgr);
+     }
+ }
+@@ -159,7 +159,7 @@ netmgmt_cli_get_command(
+         BAIL_ON_PMD_ERROR(dwError);
+     }
+ 
+-    pNetCli = g_hash_table_lookup(pNetCliMgr->hash, pszCmdName);
++    pNetCli = g_hash_table_lookup(pNetCliMgr->table, pszCmdName);
+ cleanup:
+     return pNetCli;
+ error:
+diff --git a/privsep/netmgmt_utils.h b/privsep/netmgmt_utils.h
+index 095b1fb..c8180bf 100644
+--- a/privsep/netmgmt_utils.h
++++ b/privsep/netmgmt_utils.h
+@@ -24,7 +24,7 @@ typedef struct Cli {
+ } NetmgmtCli;
+ 
+ typedef struct CliManager {
+-    GHashTable *hash;
++    GHashTable *table;
+     NetmgmtCli *commands;
+ } NetmgmtCliManager;
+ 
+diff --git a/tools/cli/netmgmt/net_help.c b/tools/cli/netmgmt/net_help.c
+index 3700481..6a347b6 100644
+--- a/tools/cli/netmgmt/net_help.c
++++ b/tools/cli/netmgmt/net_help.c
+@@ -20,102 +20,129 @@ net_show_help(
+     )
+ {
+     printf("usage: %s [connection options] net <command> [command options]\n\n"
+-            "Query and control the netmanager subsystem.\n\n"
+-            "  -h --help                    Show this help message and exit\n"
+-            "  -v --version                 Show package version\n"
+-            "\nCommands:\n"
+-            "  set-mtu                      [LINK] [MTU] Set Link MTU\n"
+-            "  set-mac                      [LINK] [MAC] Set Link MAC\n"
+-            "  set-link-mode                [LINK] [MODE { yes | no | on | off | 1 | 0} ] Set Link managed by networkd\n"
+-            "  set-dhcp-mode                [LINK] [DHCP-MODE { yes | no | ipv4 | ipv6 } ] Set Link DHCP setting\n"
+-            "  set-dhcp4-client-identifier  [LINK] [IDENTIFIER { mac | duid | duid-only}\n"
+-            "  set-dhcp-iaid                [LINK] [IAID] Sets the DHCP Identity Association Identifier (IAID) for the interface, a 32-bit unsigned integer.\n"
+-            "  set-dhcp-duid                [LINK | system] [DUID { link-layer-time | vendor | link-layer | uuid } ] [RAWDATA] Sets the DHCP Client\n"
+-            "                                      DUID type which specifies how the DUID should be generated and [RAWDATA] to overides the global DUIDRawData.\n"
+-            "  set-link-state               [LINK] [STATE { up | down } ] Set Link State\n"
+-            "  add-link-address             [LINK] [ADDRESS] [PEER] ] Add Link Address\n"
+-            "  delete-link-address          [LINK] Removes Address from Link\n"
+-            "  add-default-gateway          [LINK] [GW address] onlink [ONLINK { yes | no | on | off | 1 | 0}] Add Link Default Gateway\n"
+-            "  delete-gateway               [LINK] Removes Gateway from Link\n"
+-            "  add-route                    [LINK] [GW address] metric [METRIC { number }] Set Link route\n"
+-            "  delete-route                 [LINK] Removes route from Link\n"
+-            "  add-additional-gw            [LINK] [ADDRESS] [ROUTE address] [GW address] [ROUTING POLICY TABLE number] configures additional gateway for"
+-            "\n\t\t\t\t\t\t another NIC with routing policy rules\n"
+-            "  set-hostname                 [HOSTNAME] Sets hostname\n"
+-            "  add-dns                      [LINK | system] [ADDRESS] Set Link DNS servers\n"
+-            "  add-domain                   [LINK | system] [DOMAIN] Set Link DOMAIN \n"
+-            "  revert-resolve-link          [LINK] Flushes all DNS server and Domain settings of the link\n"
+-            "  set-link-local-address       [LINK] [LinkLocalAddressing { yes | no | on | off | 1 | 0}] Set Link link-local address autoconfiguration\n"
+-            "  set-ipv4ll-route             [LINK] [IPv4LLRoute { yes | no | on | off | 1 | 0}] Set the route needed for non-IPv4LL hosts to communicate\n"
+-            "                                      with IPv4LL-only hosts\n"
+-            "  set-llmnr                    [LINK] [LLMNR { yes | no | on | off | 1 | 0}] Set Link Link-Local Multicast Name Resolution\n"
+-            "  set-multicast-dns            [LINK] [MulticastDNS { yes | no | on | off | 1 | 0}] Set Link Multicast DNS\n"
+-            "  set-lldp                     [LINK] [LLDP { yes | no | on | off | 1 | 0}] Set Link Ethernet LLDP packet reception\n"
+-            "  set-emit-lldp                [LINK] [EmitLLDP { yes | no | on | off | 1 | 0}] Set Link Ethernet LLDP packet emission\n"
+-            "  set-ipforward                [LINK] [IPForward { yes | no | on | off | 1 | 0}] Set Link IP packet forwarding for the system\n"
+-            "  set-ipv6acceptra             [LINK] [IPv6AcceptRA { yes | no | on | off | 1 | 0}] Set Link IPv6 Router Advertisement (RA) reception support for the interface\n"
+-            "  set-ipmasquerade             [LINK] [IPMasquerade { yes | no | on | off | 1 | 0}] Set IP masquerading for the network interface\n"
+-            "  set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}] Set Link DHCP4 Use DNS\n"
+-            "  set-dhcp4-use-domains        [LINK] [UseDomains { yes | no | on | off | 1 | 0}] Set Link DHCP4 Use DOMAINS\n"
+-            "  set-dhcp4-use-mtu            [LINK] [UseMTU { yes | no | on | off | 1 | 0}] Set Link DHCP4 Use MTU\n"
+-            "  set-dhcp4-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}] Set Link DHCP4 Use NTP\n"
+-            "  set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}] Set Link DHCP4 Use DNS\n"
+-            "  set-dhcp6-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}] Set Link DHCP6 Use DNS\n"
+-            "  set-dhcp6-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}] Set Link DHCP6 Use NTP\n"
+-            "  add-ntp                      [LINK] [NTP] Add Link NTP server address. This option may be specified more than once.\n"
+-            "                                      This setting is read by systemd-timesyncd.service(8)\n"
+-            "  set-ntp                      [LINK] [NTP] Set Link NTP server address. This option may be specified more than once.\n"
+-            "                                      This setting is read by systemd-timesyncd.service(8)\n"
+-            "  delete-ntp                   [LINK] Delete Link NTP server addresses.\n"
+-            "                                      This setting is read by systemd-timesyncd.service(8)\n"
+-            "  disable-ipv6                 [LINK] Disables IPv6 on the interface.\n"
+-            "  enable-ipv6                  [LINK] Enables IPv6 on the interface.\n"
+-            "  create-vlan                  [VLAN name] dev [LINK master] id [ID INTEGER] Creates vlan netdev and sets master to device\n"
+-            "  create-bridge                [BRIDGE name] [LINK] [LINK] ... Creates bridge netdev and sets master to device\n"
+-            "  create-bond                  [BOND name] mode [MODE {balance-rr | active-backup | balance-xor | broadcast | 802.3ad | balance-tlb | balance-alb}]"
+-            "\n\t\t\t\t[LINK] [LINK] ... Creates bond netdev and sets master to device\n"
+-            "  create-vxlan                 [VXLAN name] [dev LINK] vni [INTEGER] [local ADDRESS] [remote ADDRESS] [port PORT] [independent { yes | no | on | off | 1 | 0}]."
+-            "\n\t\t\t\tCreates vxlan VXLAN (Virtual eXtensible Local Area Network) tunneling.\n"
+-            "  create-macvlan               [MACVLAN name] dev [LINK] mode [MODE {private | vepa | bridge | passthru | source}] Creates macvlan virtualized bridged networking.\n"
+-            "  create-macvtap               [MACVTAP name] dev [LINK] mode [MODE {private | vepa | bridge | passthru | source}] Creates macvtap virtualized bridged networking.\n"
+-            "  create-ipvlan                [IPVLAN name] dev [LINK] mode [MODE {l2 | l3 | l3s}] Creates ipvlan, virtual LAN, separates broadcast domains by adding tags to network packet.\n"
+-            "  create-ipvtap                [IPVTAP name] dev [LINK] mode [MODE {l2 | l3 | l3s}] Create ipvtap.\n"
+-            "  create-vrf                   [VRF name] table [INTEGER}] Creates Virtual routing and forwarding (VRF).\n"
+-            "  create-veth                  [VETH name] peer [PEER name}] Creates virtual Ethernet devices\n"
+-            "  create-ipip                  [IPIP name] [dev LINK] local [ADDRESS] remote [ADDRESS] [independent { yes | no | on | off | 1 | 0}] Creates ipip tunnel.\n"
+-            "  create-sit                   [SIT name] [dev LINK] local [ADDRESS] remote [ADDRESS] [independent { yes | no | on | off | 1 | 0}] Creates sit tunnel.\n"
+-            "  create-vti                   [VTI name] [dev LINK] local [ADDRESS] remote [ADDRESS] [independent { yes | no | on | off | 1 | 0}] Creates vti tunnel.\n"
+-            "  create-gre                   [GRE name] [dev LINK] local [ADDRESS] remote [ADDRESS] [independent { yes | no | on | off | 1 | 0}] Creates gre tunnel.\n"
+-            "  create-wg                    [WIREGUARD name] private-key [PRIVATEKEY] listen-port [PORT INTEGER] public-key [PUBLICKEY] preshared-key [PRESHAREDKEY]"
+-            "\n\t\t\t\t\t\t allowed-ips [IP,IP ...] endpoint [IP:PORT] Creates a wireguard tunnel.\n"
+-            "  reload                       Reload .network and .netdev files.\n"
+-            "  reconfigure                  [LINK] Reconfigure Link.\n"
+-            "  add-nft-table                [FAMILY {ipv4 | ipv6 | ip}] [TABLE] adds a new table.\n"
+-            "  get-nft-tables               [FAMILY {ipv4 | ipv6 | ip}] [TABLE] shows nftable's tables.\n"
+-            "  delete-nft-table             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] deletes a existing nftable's table.\n"
+-            "  add-nft-chain                [FAMILY {ipv4 | ip}] [TABLE] [CHAIN] adds a new nftable's chain.\n"
+-            "  get-nft-chains               [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN] shows nftable's chains.\n"
+-            "  delete-nft-chain             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN] deletes a nftable's chain from table\n"
+-            "  add-nft-rule                 [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN] [PROTOCOL { tcp | udp}] [SOURCE PORT / DESTINATION PORT {sport|dport}]"
+-            "\n\t\t\t\t\t\t [PORT] [ACTION {accept | drop}] configures a nft rule for a port.\n"
+-            "  get-nft-rules                [TABLE] shows nftable's rules.\n"
+-            "  delete-nft-rule              [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN] [HANDLE] deletes a nftable's rule from table\n"
+-            "  nft-run                      runs a nft command.  See man NFT(8)\n"
+-            "  is-networkd-running                 Check if systemd-networkd is running or not. \n"
+-            "  get-hostname                        Gets hostname\n"
+-            "  get-dns-servers                     Gets DNS Servers\n"
+-            "  get-dns-domains                     Gets DNS Server DOMAINS\n"
+-            "  get-ntp                      [LINK] Get Link NTP server address\n"
+-            "  get-link-address             [LINK] Get Link Address\n"
+-            "  get-link-route               [LINK] Get Link route\n"
+-            "  get-dhcp-mode                [LINK] Get Link DHCP setting. DHCP-MODE { yes | no | ipv4 | ipv6 }\n"
+-            "  get-mac                      [LINK] Get Link MAC\n"
+-            "  get-mtu                      [LINK] Get Link MTU\n"
+-            "  get-dhcp-iaid                [LINK] Gets the DHCP Identity Association Identifier (IAID) for the interface, a 32-bit unsigned integer.\n"
+-            "  get-dhcp4-client-identifier  [LINK] Get Link DHCP4 Client Identifier.\n"
+-
+-            , program_invocation_short_name
+-            );
++               "Query and control the network config manager subsystem.\n\n"
++               "  -h --help                    Show this help message and exit\n"
++               "  -v --version                 Show package version\n"
++               "  -j --json                    Show in JSON format\n"
++               "  -b --no-beautify             Show without colors and headers\n"
++               "  -a --alias                   Show command alias\n"
++               "\nCommands:\n"
++               "  status                       [DEVICE] Show system or device status\n"
++               "  status-devs                  List all devices.\n"
++               "  set-mtu                      dev [DEVICE] mtu [MTU NUMBER] Configures device MTU.\n"
++               "  set-mac                      dev [DEVICE] mac [MAC] Configures device MAC address.\n"
++               "  set-manage                   dev [DEVICE] manage [MANAGE BOOLEAN] Configures whether device managed by networkd.\n"
++               "  set-link-group               dev [DEVICE] group [GROUP NUMBER] Configures device group.\n"
++               "  set-dhcp                     dev [DEVICE] dhcp [DHCP {yes|no|ipv4|ipv6}] Configures device DHCP kind client.\n"
++               "  set-dhcp4-cid                dev [DEVICE] id [IDENTIFIER {mac|duid|duid-only} Configures device DHCPv4 identifier.\n"
++               "  set-dhcp-iaid                dev [DEVICE] family|f iaid [IAID] Configures the DHCP Identity Association Identifier (IAID)\n"
++               "  set-dhcp-duid                dev|system [DEVICE] family|f [ipv4|ipv6|4|6] duid [DUID {link-layer-time|vendor|link-layer|uuid}] data [RAWDATA]"
++                                                      "\n\t\t\t\t      Sets DUID of DHCPv4 or DHCPv6 Client.\n"
++               "  set-link-state               dev [DEVICE] [STATE {up|down}] Configures device State.\n"
++               "  show-addr                    dev [DEVICE] [family|f ipv4|ipv6|4|6] Show device addresses\n"
++               "  add-addr                     dev [DEVICE] address|a|addr [ADDRESS] peer [ADDRESS]] label [STRING] pref-lifetime|pl [{forever|infinity|0}]"
++                                                      "\n\t\t\t\t      scope {global|link|host|NUMBER}] dad [DAD {none|ipv4|ipv6|both}] prefix-route|pr [PREFIXROUTE BOOLEAN]"
++                                                      "\n\t\t\t\t      dad [DAD {none|ipv4|ipv6|both}] prefix-route|pr [PREFIXROUTE BOOLEAN] Configures device Address.\n"
++               "  del-addr                     dev [DEVICE] address|a|addr [ADDRESS] Removes address from device.\n"
++               "  add-default-gw               dev [DEVICE] gw [GATEWAY ADDRESS] onlink [ONLINK BOOLEAN] Configures device default Gateway.\n"
++               "  delete-gw                    dev [DEVICE] Removes Gateway from device.\n"
++               "  add-route                    dev [DEVICE] gw [GATEWAY ADDRESS] dest [DESTINATION ADDRESS] src [SOURCE ADDRESS] pref-src [PREFFREDSOURCE ADDRESS]"
++                                                     "\n\t\t\t\t      metric [METRIC NUMBER] scope [SCOPE {global|site|link|host|nowhere}] mtu [MTU NUMBER]"
++                                                     "\n\t\t\t\t      table [TABLE {default|main|local|NUMBER}] proto [PROTOCOL {boot|static|ra|dhcp|NUMBER}]"
++                                                     "\n\t\t\t\t      type [TYPE {unicast|local|broadcast|anycast|multicast|blackhole|unreachable|prohibit|throw|nat|resolve}]"
++                                                     "\n\t\t\t\t      ipv6-pref [IPV6PREFERENCE {low|medium|high}] onlink [{ONLINK BOOLEN}] Configures Link route.\n"
++               "  delete-route                 dev [DEVICE] Removes route from device\n"
++               "  add-addl-gw                  dev [DEVICE] address|addr|a [ADDRESS] destination|dest [DESTINATION address] gw [GW address] table [TABLE NUMBER]"
++                                                      "\n\t\t\t\t Configures additional gateway for another NIC/DEVICE with routing policy rules.\n"
++               "  add-rule                     dev [DEVICE] table [TABLE NUMBER] from [ADDRESS] to [ADDRESS] oif [DEVICE] iif [DEVICE] priority [NUMBER] tos [NUMBER]"
++                                                      "\n\t\t\t\t      Configures Routing Policy Rule.\n"
++               "  remove-rule                  dev [DEVICE] Removes Routing Policy Rule.\n"
++               "  set-hostname                 [HOSTNAME] Configures hostname.\n"
++               "  show-dns                            Show DNS servers.\n"
++               "  add-dns                      dev|global|system [DEVICE] dns [ADDRESS] Configures Link or global DNS servers.\n"
++               "  add-domain                   dev|global|system [DEVICE] domains [DOMAIN] Configures Link or global Domain.\n"
++               "  show-domains                        Show DNS server Domains.\n"
++               "  revert-resolve-link          dev [DEVICE] Flushes all DNS server and Domain settings of the link.\n"
++               "  set-lla                      dev [DEVICE] [LinkLocalAddressing BOOLEAN|ipv6|ipv4] Configures link local address.\n"
++               "  set-ipv4ll-route             dev [DEVICE] [IPv4LLRoute BOOLEAN] Configures the route needed for non-IPv4LL hosts to communicate.\n"
++               "                                      with IPv4LL-only hosts.\n"
++               "  set-llmnr                    dev [DEVICE] [LLMNR BOOLEAN|resolve] Configures Link Local Multicast Name Resolution.\n"
++               "  set-mcast-dns                dev [DEVICE] [MulticastDNS BOOLEAN|resolve] Configures Link Multicast DNS.\n"
++               "  set-lldp                     dev [DEVICE] [LLDP BOOLEAN] Configures Link Ethernet LLDP packet reception.\n"
++               "  set-emit-lldp                dev [DEVICE] [EmitLLDP BOOLEAN] Configures Link Ethernet LLDP packet emission.\n"
++               "  set-ipforward                dev [DEVICE] [IPForward BOOLEAN] Configures Link IP packet forwarding for the system.\n"
++               "  set-ipv6acceptra             dev [DEVICE] [IPv6AcceptRA BOOLEAN] Configures Link IPv6 Router Advertisement (RA) reception support for the interface.\n"
++               "  set-ipv6mtu                  dev [DEVICE] [MTU NUMBER] Configures IPv6 maximum transmission unit (MTU).\n"
++               "  set-ipmasquerade             dev [DEVICE] [IPMasquerade BOOLEAN] Configures IP masquerading for the network interface.\n"
++               "  set-ipv4proxyarp             dev [DEVICE] [IPv4ProxyARP BOOLEAN] Configures Link proxy ARP for IPv4.\n"
++               "  set-ipv6proxyndp             dev [DEVICE] [IPv6ProxyNDP BOOLEAN] Configures Link proxy NDP for IPv6.\n"
++               "  set-conf-wc                  dev [DEVICE] [ConfigureWithoutCarrier BOOLEAN] Allows networkd to configure link even if it has no carrier.\n"
++               "  set-dhcp4                    dev [DEVICE] [use-dns BOOLEAN] [use-domains BOOLEAN] [use-mtu BOOLEAN] [use-ntp BOOLEAN] [send-release BOOLEAN]."
++                                                     "\n\t\t\t\t     [use-hostname BOOLEAN] [use-routes BOOLEAN] [use-gw BOOLEAN] [use-tz BOOLEAN] Configures Link DHCPv4\n"
++               "  set-dhcp6                    dev [DEVICE] [use-dns BOOLEAN] [use-domains BOOLEAN] [rapid-commit BOOLEAN] [use-addr BOOLEAN] [use-delegataed-prefix BOOLEAN]"
++                                                     "\n\t\t\t\t     [without-ra BOOLEAN] Configures DHCPv6.\n"
++               "  add-ntp                      dev [DEVICE] ntp [NTP] [NTP] ... Add Link NTP server address. This option may be specified more than once.\n"
++               "  set-ntp                      dev [DEVICE] ntp [NTP] [NTP] ... Set Link NTP server address. This option may be specified more than once.\n"
++               "  delete-ntp                   dev [DEVICE] Delete Link NTP server addresses.\n"
++               "  add-dhcpv4-server            dev [DEVICE] pool-offset [PoolOffset NUMBER] pool-size [PoolSize NUMBER] default-lease-time [DefaultLeaseTimeSec NUMBER]"
++                                                      "\n\t\t\t\t      max-lease-time [MaxLeaseTimeSec NUMBER] emit-dns [EmitDNS BOOLEAN]"
++                                                      "\n\t\t\t\t      dns [DNS ADDRESS] emit-ntp [EmitNTP BOOLEAN] ntp [NTP ADDRESS]"
++                                                      "\n\t\t\t\t      emit-router [EmitRouter BOOLEAN] Configures DHCPv4 server.\n"
++               "  remove-dhcpv4-server         dev [DEVICE] Removes DHCPv4 server.\n"
++               "  add-ipv6ra                   dev [DEVICE] prefix [Prefix ADDRESS] pref-lifetime [PreferredLifetimeSec NUMBER] valid-lifetime [ValidLifetimeSec NUMBER]"
++                                                      "\n\t\t\t\t      assign [Assign BOOLEAN] managed [Managed BOOLEAN]"
++                                                      "\n\t\t\t\t      other [Other BOOLEAN] dns [DNS ADDRESS] emit-dns [EmitDNS BOOLEAN]"
++                                                      "\n\t\t\t\t      domain [DOMAIN ADDRESS] emit-domain [EmitDOMAIN BOOLEAN]"
++                                                      "\n\t\t\t\t      router-pref [RouterPreference {low | med | high}]"
++                                                      "\n\t\t\t\t      route [Prefix ADDRESS] route-lifetime [LifetimeSec NUMBER] Configures IPv6 Router Advertisement.\n"
++               "  remove-ipv6ra                dev [DEVICE] Removes Ipv6 Router Advertisement.\n"
++               "  disable-ipv6                 dev [DEVICE] Disables IPv6 on the link.\n"
++               "  enable-ipv6                  dev [DEVICE] Enables IPv6 on the link.\n"
++               "  add-sr-iov                   [DEVICE] [vf INTEGER] [vlanid INTEGER] [qos INTEGER] [vlanproto STRING] [macspoofck BOOLEAN] [qrss BOOLEAN]"
++                                                     "\n\t\t\t\t      [trust BOOLEAN] [linkstate BOOLEAN or STRING] [macaddr ADDRESS] Configures SR-IOV VirtualFunction, "
++                                                     "\n\t\t\t\t      VLANId, QualityOfService, VLANProtocol, MACSpoofCheck, QueryReceiveSideScaling, Trust, LinkState, MACAddress \n"
++               "  create-vlan                  [VLAN name] dev [MASTER DEVICE] id [ID INTEGER] proto [PROTOCOL {802.1q|802.1ad}] Creates vlan netdev and network file\n"
++               "  create-bridge                [BRIDGE name] dev [DEVICE] [DEVICE] ... Creates bridge netdev and sets master to device\n"
++               "  create-bond                  [BOND name] mode [MODE {balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb}]"
++                                               "\n\t\t\t\tdev [DEVICE] [DEVICE] ... Creates bond netdev and sets master to device\n"
++               "  create-vxlan                 [VXLAN name] [dev DEVICE] vni [INTEGER] [local ADDRESS] [remote ADDRESS] [port PORT] [independent BOOLEAN]."
++                                               "\n\t\t\t\tCreates vxlan VXLAN (Virtual eXtensible Local Area Network) tunneling.\n"
++               "  create-macvlan               [MACVLAN name] dev [DEVICE] mode [MODE {private|vepa|bridge|passthru|source}] Creates macvlan virtualized bridged networking.\n"
++               "  create-macvtap               [MACVTAP name] dev [DEVICE] mode [MODE {private|vepa|bridge|passthru|source}] Creates macvtap virtualized bridged networking.\n"
++               "  create-ipvlan                [IPVLAN name] dev [DEVICE] mode [MODE {l2|l3|l3s}] Creates ipvlan, virtual LAN, separates broadcast domains by adding tags to network"
++                                                     "\n\t\t\t\t      packet.\n"
++               "  create-ipvtap                [IPVTAP name] dev [DEVICE] mode [MODE {l2|l3|l3s}] Create ipvtap.\n"
++               "  create-vrf                   [VRF name] table [INTEGER}] Creates Virtual routing and forwarding (VRF).\n"
++               "  create-veth                  [VETH name] peer [PEER name}] Creates virtual Ethernet devices\n"
++               "  create-ipip                  [IPIP name] [dev DEVICE] local [ADDRESS] remote [ADDRESS] [independent BOOLEAN] Creates ipip tunnel.\n"
++               "  create-sit                   [SIT name] [dev DEVICE] local [ADDRESS] remote [ADDRESS] [independent BOOLEAN] Creates sit tunnel.\n"
++               "  create-vti                   [VTI name] [dev DEVICE] local [ADDRESS] remote [ADDRESS] [independent BOOLEAN] Creates vti tunnel.\n"
++               "  create-gre                   [GRE name] [dev DEVICE] local [ADDRESS] remote [ADDRESS] [independent BOOLEAN] Creates gre tunnel.\n"
++               "  create-wg                    [WIREGUARD name] private-key [PRIVATEKEY] listen-port [PORT INTEGER] public-key [PUBLICKEY] preshared-key [PRESHAREDKEY]"
++                                               "\n\t\t\t\t\t\t allowed-ips [IP,IP ...] endpoint [IP:PORT] Creates a wireguard tunnel.\n"
++               "  create-tun                   [TUN name] user [USER STRING] group [GROUP string] mq [MULTIQUEUE BOOL] pkt-info [PACKETINFO BOOL] vnet-hdr [VNETHEADER BOOL]"
++                                               "\n\t\t\t\t\t\t kc [KEEPCARRIER bool] Creates tun.\n"
++               "  create-tap                   [TAP name] user [USER STRING] group [GROUP string] mq [MULTIQUEUE BOOL] pkt-info [PACKETINFO BOOL] vnet-hdr [VNETHEADER BOOL]"
++                                               "\n\t\t\t\t\t\t kc [KEEPCARRIER bool] Creates tap.\n"
++               "  remove-netdev                [DEVICE] kind [KIND {vlan|bridge|bond|vxlan|macvlan|macvtap|ipvlan|ipvtap|vrf|veth|ipip|sit|vti|gre|wg] \n"
++               "                                      Removes .netdev and .network files.\n"
++               "  reload                       Reload .network and .netdev files.\n"
++               "  reconfigure                  dev [DEVICE] Reconfigure device.\n"
++               "  show-config                  dev [DEVICE] Displays network configuration of device.\n"
++               "  edit                         dev [DEVICE] Edit network configuration of device.\n"
++               "  add-nft-table                [FAMILY {ipv4|ipv6|ip}] [TABLE] adds a new table.\n"
++               "  show-nft-tables              [FAMILY {ipv4|ipv6|ip}] shows nftable's tables.\n"
++               "  delete-nft-table             [FAMILY {ipv4|ipv6|ip}] [TABLE] deletes a existing nftable's table.\n"
++               "  add-nft-chain                [FAMILY {ipv4 |ip}] [TABLE] [CHAIN] adds a new nftable's chain.\n"
++               "  show-nft-chains              [FAMILY {ipv4|ipv6|ip}] [TABLE] shows nftable's chains.\n"
++               "  delete-nft-chain             [FAMILY {ipv4|ipv6|ip}] [TABLE] [CHAIN] deletes a nftable's chain from table\n"
++               "  add-nft-rule                 [FAMILY {ipv4|ipv6|ip}] [TABLE] [CHAIN] [PROTOCOL {tcp|udp}] [SOURCE PORT/DESTINATION PORT {sport|dport}]"
++                                                       "\n\t\t\t\t\t\t [PORT] [ACTION {accept | drop}] configures a nft rule for a port.\n"
++               "  show-nft-rules               [TABLE] shows nftable's rules.\n"
++               "  delete-nft-rule              [FAMILY {ipv4|ipv6|ip}] [TABLE] [CHAIN] [HANDLE] deletes a nftable's rule from table\n"
++               "  nft-run                      runs a nft command. See man NFT(8)\n"
++               , program_invocation_short_name
++        );
+ 
+     return 0;
+ }
+@@ -201,88 +228,97 @@ net_cli_manager_new(
+     }
+ 
+     static const NetCli cli_commands[] = {
+-        { "help",                         WORD_ANY, WORD_ANY, true,  net_show_help },
+-        { "version",                      WORD_ANY, WORD_ANY, false, ncmcli_get_version },
+-        { "set-mtu",                      2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-mac",                      2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-link-mode",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp-mode",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-client-identifier",  2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp-iaid",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp-duid",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-link-state",               2,        WORD_ANY, false, ncmcli_configure },
+-        { "add-link-address",             2,        WORD_ANY, false, ncmcli_configure },
+-        { "delete-link-address",          1,        WORD_ANY, false, ncmcli_configure },
+-        { "add-default-gateway",          2,        WORD_ANY, false, ncmcli_configure },
+-        { "delete-gateway",               1,        WORD_ANY, false, ncmcli_configure },
+-        { "add-route",                    2,        WORD_ANY, false, ncmcli_configure },
+-        { "delete-route",                 1,        WORD_ANY, false, ncmcli_configure },
+-        { "add-additional-gw",            5,        WORD_ANY, false, ncmcli_configure },
+-        { "set-hostname",                 1,        WORD_ANY, false, ncmcli_configure },
+-        { "add-dns",                      2,        WORD_ANY, false, ncmcli_configure },
+-        { "add-domain",                   1,        WORD_ANY, false, ncmcli_configure },
+-        { "revert-resolve-link",          1,        WORD_ANY, false, ncmcli_configure },
+-        { "set-link-local-address",       2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-ipv4ll-route",             2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-llmnr",                    2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-multicast-dns",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-lldp",                     2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-emit-lldp",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-ipforward",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-ipv6acceptra",             2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-ipmasquerade",             2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-dns",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-domains",        2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-ntp",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-mtu",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-timezone",       2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp4-use-routes",         2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp6-use-dns",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-dhcp6-use-ntp",            2,        WORD_ANY, false, ncmcli_configure },
+-        { "add-ntp",                      2,        WORD_ANY, false, ncmcli_configure },
+-        { "set-ntp",                      2,        WORD_ANY, false, ncmcli_configure },
+-        { "delete-ntp",                   1,        WORD_ANY, false, ncmcli_configure },
+-        { "disable-ipv6",                 1,        WORD_ANY, false, ncmcli_configure },
+-        { "enable-ipv6",                  1,        WORD_ANY, false, ncmcli_configure },
+-        { "create-vlan",                  4,        WORD_ANY, false, ncmcli_configure },
+-        { "create-bridge",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "create-bond",                  5,        WORD_ANY, false, ncmcli_configure },
+-        { "create-vxlan",                 2,        WORD_ANY, false, ncmcli_configure },
+-        { "create-macvlan",               5,        WORD_ANY, false, ncmcli_configure },
+-        { "create-macvtap",               5,        WORD_ANY, false, ncmcli_configure },
+-        { "create-ipvlan",                5,        WORD_ANY, false, ncmcli_configure },
+-        { "create-ipvtap",                5,        WORD_ANY, false, ncmcli_configure },
+-        { "create-vrf",                   3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-veth",                  3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-ipip",                  3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-sit",                   3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-gre",                   3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-vti",                   3,        WORD_ANY, false, ncmcli_configure },
+-        { "create-wg",                    3,        WORD_ANY, false, ncmcli_configure },
+-        { "reload",                       WORD_ANY, WORD_ANY, false, ncmcli_configure },
+-        { "reconfigure",                  1,        WORD_ANY, false, ncmcli_configure },
+-        { "add-nft-table",                2,        WORD_ANY, false, ncmcli_configure },
+-        { "get-nft-tables",               2,        WORD_ANY, false, ncmcli_nft_get_tables },
+-        { "delete-nft-table",             2,        WORD_ANY, false, ncmcli_configure },
+-        { "add-nft-chain",                3,        WORD_ANY, false, ncmcli_configure },
+-        { "get-nft-chains",               3,        WORD_ANY, false, ncmcli_nft_get_chains },
+-        { "delete-nft-chain",             3,        WORD_ANY, false, ncmcli_configure },
+-        { "add-nft-rule",                 7,        WORD_ANY, false, ncmcli_configure },
+-        { "get-nft-rules",                1,        WORD_ANY, false, ncmcli_get_nft_rules },
+-        { "delete-nft-rule",              2,        WORD_ANY, false, ncmcli_configure },
+-        { "nft-run",                      WORD_ANY, WORD_ANY, false, ncmcli_configure },
+-        { "is-networkd-running",          WORD_ANY, WORD_ANY, false, ncmcli_is_networkd_running },
+-        { "get-hostname",                 WORD_ANY, WORD_ANY, false, ncmcli_get_system_hostname },
+-        { "get-dns-servers",              WORD_ANY, WORD_ANY, false, ncmcli_get_dns_server },
+-        { "get-dns-domains",              WORD_ANY, WORD_ANY, false, ncmcli_get_dns_domains },
+-        { "get-ntp",                      1,        WORD_ANY, false, ncmcli_link_get_ntp },
+-        { "get-link-address",             1,        WORD_ANY, false, ncmcli_link_get_addresses },
+-        { "get-link-route",               1,        WORD_ANY, false, ncmcli_link_get_routes },
+-        { "get-dhcp-mode",                1,        WORD_ANY, false, ncmcli_link_get_dhcp_mode },
+-        { "get-mac",                      1,        WORD_ANY, false, ncmcli_link_get_mac_addr },
+-        { "get-mtu",                      1,        WORD_ANY, false, ncmcli_link_get_mtu },
+-        { "get-dhcp-iaid",                1,        WORD_ANY, false, ncmcli_link_get_dhcp_client_iaid },
+-        { "get-dhcp4-client-identifier",  1,        WORD_ANY, false, ncmcli_link_get_dhcp4_client_identifier },
++        { "help",                                     WORD_ANY, WORD_ANY, true,  net_show_help },
++        { "version",                                  WORD_ANY, WORD_ANY, false, ncmcli_get_version },
++        { "set-mtu",                                  3,        WORD_ANY, false, ncmcli_configure },
++        { "set-mac",                                  3,        WORD_ANY, false, ncmcli_configure },
++        { "set-manage",                               3,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp",                                 4,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp4-cid",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp-iaid",                            4,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp-duid",                            4,        WORD_ANY, false, ncmcli_configure },
++        { "set-link-state",                           3,        WORD_ANY, false, ncmcli_configure },
++        { "add-addr",                                 4,        WORD_ANY, false, ncmcli_configure },
++        { "show-addr",                                1,        WORD_ANY, false, ncmcli_configure },
++        { "del-addr",                                 3,        WORD_ANY, false, ncmcli_configure },
++        { "add-default-gw",                           4,        WORD_ANY, false, ncmcli_configure },
++        { "delete-gw",                                2,        WORD_ANY, false, ncmcli_configure },
++        { "add-route",                                4,        WORD_ANY, false, ncmcli_configure },
++        { "delete-route",                             4,        WORD_ANY, false, ncmcli_configure },
++        { "add-addl-gw",                              9,        WORD_ANY, false, ncmcli_configure },
++        { "add-rule",                                 4,        WORD_ANY, false, ncmcli_configure },
++        { "remove-rule",                              1,        WORD_ANY, false, ncmcli_configure },
++        { "set-hostname",                             1,        WORD_ANY, false, ncmcli_configure },
++        { "show-dns",                                 WORD_ANY, WORD_ANY, false, ncmcli_configure },
++        { "add-dns",                                  2,        WORD_ANY, false, ncmcli_configure },
++        { "add-domain",                               1,        WORD_ANY, false, ncmcli_configure },
++        { "show-domains",                             WORD_ANY, WORD_ANY, false, ncmcli_configure },
++        { "revert-resolve-link",                      1,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipv6mtu",                              3,        WORD_ANY, false, ncmcli_configure },
++        { "set-lla",                                  3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipv4ll-route",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "set-llmnr",                                3,        WORD_ANY, false, ncmcli_configure },
++        { "set-mcast-dns",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "set-lldp",                                 3,        WORD_ANY, false, ncmcli_configure },
++        { "set-emit-lldp",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipforward",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipv6acceptra",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipmasquerade",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipv4proxyarp",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "set-ipv6proxyndp",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "set-conf-wc",                              3,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp4",                                4,        WORD_ANY, false, ncmcli_configure },
++        { "set-dhcp6",                                4,        WORD_ANY, false, ncmcli_configure },
++        { "add-dhcpv4-server",                        2,        WORD_ANY, false, ncmcli_configure },
++        { "remove-dhcpv4-server",                     2,        WORD_ANY, false, ncmcli_configure },
++        { "add-ipv6ra",                               2,        WORD_ANY, false, ncmcli_configure },
++        { "remove-ipv6ra",                            2,        WORD_ANY, false, ncmcli_configure },
++        { "add-ntp",                                  2,        WORD_ANY, false, ncmcli_configure },
++        { "set-ntp",                                  2,        WORD_ANY, false, ncmcli_configure },
++        { "delete-ntp",                               1,        WORD_ANY, false, ncmcli_configure },
++        { "enable-ipv6",                              2,        WORD_ANY, false, ncmcli_configure },
++        { "create-vlan",                              4,        WORD_ANY, false, ncmcli_configure },
++        { "create-bridge",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "create-bond",                              5,        WORD_ANY, false, ncmcli_configure },
++        { "create-vxlan",                             2,        WORD_ANY, false, ncmcli_configure },
++        { "create-macvlan",                           5,        WORD_ANY, false, ncmcli_configure },
++        { "create-macvtap",                           5,        WORD_ANY, false, ncmcli_configure },
++        { "create-ipvlan",                            5,        WORD_ANY, false, ncmcli_configure },
++        { "create-ipvtap",                            5,        WORD_ANY, false,ncmcli_configure },
++        { "create-vrf",                               3,        WORD_ANY, false, ncmcli_configure },
++        { "create-veth",                              3,        WORD_ANY, false, ncmcli_configure },
++        { "create-ipip",                              3,        WORD_ANY, false, ncmcli_configure },
++        { "create-sit",                               3,        WORD_ANY, false, ncmcli_configure },
++        { "create-gre",                               3,        WORD_ANY, false, ncmcli_configure },
++        { "create-vti",                               3,        WORD_ANY, false, ncmcli_configure },
++        { "create-wg",                                3,        WORD_ANY, false, ncmcli_configure },
++        { "create-tun",                               1,        WORD_ANY, false, ncmcli_configure },
++        { "create-tap",                               1,        WORD_ANY, false, ncmcli_configure },
++        { "remove-netdev",                            1,        WORD_ANY, false, ncmcli_configure },
++        { "reload",                                   WORD_ANY, WORD_ANY, false, ncmcli_configure },
++        { "reconfigure",                              1,        WORD_ANY, false, ncmcli_configure },
++        { "add-nft-table",                            2,        WORD_ANY, false, ncmcli_configure },
++        { "show-nft-tables",                          WORD_ANY, WORD_ANY, false, ncmcli_nft_get_tables },
++        { "delete-nft-table",                         2,        WORD_ANY, false, ncmcli_configure },
++        { "add-nft-chain",                            3,        WORD_ANY, false, ncmcli_configure },
++        { "show-nft-chains",                          WORD_ANY, WORD_ANY, false, ncmcli_nft_get_chains },
++        { "delete-nft-chain",                         3,        WORD_ANY, false, ncmcli_configure },
++        { "add-nft-rule",                             7,        WORD_ANY, false, ncmcli_configure },
++        { "show-nft-rules",                           1,        WORD_ANY, false, ncmcli_get_nft_rules },
++        { "delete-nft-rule",                          2,        WORD_ANY, false, ncmcli_configure },
++        { "nft-run",                                  WORD_ANY, WORD_ANY, false, ncmcli_configure },
++        { "is-networkd-running",                      WORD_ANY, WORD_ANY, false, ncmcli_is_networkd_running },
++        { "get-hostname",                             WORD_ANY, WORD_ANY, false, ncmcli_get_system_hostname },
++        { "get-dns-servers",                          WORD_ANY, WORD_ANY, false, ncmcli_get_dns_server },
++        { "get-dns-domains",                          WORD_ANY, WORD_ANY, false, ncmcli_get_dns_domains },
++        { "get-ntp",                                  1,        WORD_ANY, false, ncmcli_link_get_ntp },
++        { "get-link-address",                         1,        WORD_ANY, false, ncmcli_link_get_addresses },
++        { "get-link-route",                           1,        WORD_ANY, false, ncmcli_link_get_routes },
++        { "get-dhcp-mode",                            1,        WORD_ANY, false, ncmcli_link_get_dhcp_mode },
++        { "get-mac",                                  1,        WORD_ANY, false, ncmcli_link_get_mac_addr },
++        { "get-mtu",                                  1,        WORD_ANY, false, ncmcli_link_get_mtu },
++        { "get-dhcp-iaid",                            1,        WORD_ANY, false, ncmcli_link_get_dhcp_client_iaid },
++        { "get-dhcp4-client-identifier",              1,        WORD_ANY, false, ncmcli_link_get_dhcp4_client_identifier },
+         {}
+     };
+ 
+@@ -291,18 +327,18 @@ net_cli_manager_new(
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+     *pNetCliMgr = (NetCliManager) {
+-        .hash = g_hash_table_new(g_str_hash, g_str_equal),
+-            .commands = (NetCli *) cli_commands,
++        .table = g_hash_table_new(g_str_hash, g_str_equal),
++        .commands = (NetCli *) cli_commands,
+     };
+ 
+-    if (!pNetCliMgr->hash)
++    if (!pNetCliMgr->table)
+     {
+         dwError = ERROR_PMD_NET_ALLOCATE_FAIL;
+         BAIL_ON_PMD_ERROR(dwError);
+     }
+     for (i = 0; cli_commands[i].name; i++)
+     {
+-        if (!g_hash_table_insert(pNetCliMgr->hash, (gpointer *) cli_commands[i].name, (gpointer *) &cli_commands[i]));
++        if (!g_hash_table_insert(pNetCliMgr->table, (gpointer *) cli_commands[i].name, (gpointer *) &cli_commands[i]));
+     }
+ 
+     *ppNetCliMgr = pNetCliMgr;
+@@ -323,7 +359,7 @@ net_cli_unrefp(
+     )
+ {
+     if (ppNetCliMgr && *ppNetCliMgr) {
+-        g_hash_table_unref((*ppNetCliMgr)->hash);
++        g_hash_table_unref((*ppNetCliMgr)->table);
+         PMD_SAFE_FREE_MEMORY(*ppNetCliMgr);
+     }
+ }
+@@ -343,7 +379,7 @@ net_cli_get_command(
+         BAIL_ON_PMD_ERROR(dwError);
+     }
+ 
+-    pNetCli = g_hash_table_lookup(pNetCliMgr->hash, pszCmd);
++    pNetCli = g_hash_table_lookup(pNetCliMgr->table, pszCmd);
+ cleanup:
+     return pNetCli;
+ error:
+diff --git a/tools/cli/netmgmt/structs.h b/tools/cli/netmgmt/structs.h
+index 5b978ef..e3cbfe2 100644
+--- a/tools/cli/netmgmt/structs.h
++++ b/tools/cli/netmgmt/structs.h
+@@ -25,7 +25,7 @@ typedef struct Cli {
+ } NetCli;
+ 
+ typedef struct CliManager {
+-        GHashTable *hash;
++        GHashTable *table;
+         NetCli *commands;
+ } NetCliManager;
+ 
+-- 
+2.35.5
+
