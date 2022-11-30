@@ -1,6 +1,6 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
-Version:        3.11.0
+Version:        3.12.0
 Release:        1%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
@@ -8,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha512  fuse3=b4b6cd3a4ee9ace6ec8d8143f80417b10e34444f8432b4a506b4f45e19193bb7b29020ab0c59cb50ff7ce2fb81d37ac6955aec778a1cef9e7831b2a6e8cf19b5
+%define sha512  fuse3=70acaa11ba976f4fb83ce25017725aa486d490ba8f7c1cdf9f98e93e6e0a331b5e3fd78c746d1b4dbb783987397ff30ccc5f6e49e150e34c5b2dfc977fc22d01
 
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
@@ -91,6 +91,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Wed Nov 30 2022 Piyush Gupta <gpiyush@vmware.com> 3.12.0-1
+-   Upgrade to 3.12.0.
 *   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
