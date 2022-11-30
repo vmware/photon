@@ -1,6 +1,6 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.5.2
+Version:        0.6.a
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=b190b258b31600e317cdf316f54969299b375db7
+%define sha512  %{name}-%{version}=4e8d2abd3212f4406e0335776464ea369ef609e44b4d528d6ab6fae8f2035e4e84b1648e9d4d3d0b25ea54676a98e39f2b80e938adc1892962b996fa4fdf0c92
 
 BuildRequires:  glib-devel
 BuildRequires:  json-c-devel
@@ -76,6 +76,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Nov 30 2022 Susant Sahani <ssahani@vmware.com> 0.6.a-1
+- Update to 0.60.a
 * Wed Mar 02 2022 Nitesh Kumar <kunitesh@vmware.com> 0.5.2-1
 - Update to v0.5.2
 * Wed Feb 02 2022 Susant Sahani <ssahani@vmware.com> 0.5.1-1
