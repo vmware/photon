@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.152
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -183,6 +183,9 @@ Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 # Fix for CVE-2022-4139
 Patch128: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
 
+#Fix for CVE-2022-3564
+Patch129: Bluetooth-L2CAP-Fix-use-after-free-caused-by-l2cap_reassemble_sdu.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -337,7 +340,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M128
+%autopatch -p1 -m100 -M129
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -586,6 +589,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-8
+- Fix for CVE-2022-3564
 * Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-7
 - Fix for CVE-2022-4139
 * Mon Nov 28 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-6

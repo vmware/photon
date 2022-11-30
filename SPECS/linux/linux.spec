@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.152
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -170,6 +170,9 @@ Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 # Fix for CVE-2022-4139
 Patch128: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
+
+#Fix for CVE-2022-3564
+Patch129: Bluetooth-L2CAP-Fix-use-after-free-caused-by-l2cap_reassemble_sdu.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -409,7 +412,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M128
+%autopatch -p1 -m100 -M129
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -825,6 +828,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-7
+- Fix for CVE-2022-3564
 * Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 5.10.152-6
 - Fix for CVE-2022-4139
 * Mon Nov 28 2022 Ajay Kaher <akaher@vmware.com> 5.10.152-5
