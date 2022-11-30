@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -11,8 +11,7 @@ Distribution:   Photon
 Source0: https://git.kernel.org/pub/scm/utils/stalld/stalld.git/snapshot/%{name}-%{version}.tar.gz
 %define sha512 %{name}=db5e2c129afe9f3ce90981250e1804b55b044bd3d8787695100cd5c9030f080e1c58866754bbd9e40448481c02c77bac758368b632ce2383c39508b8b70c5763
 
-Source1: %{name}.conf
-Source2: %{name}.service
+Source1: %{name}-tca.conf
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -26,7 +25,10 @@ Patch2: 0003-stalld-Expose-verbose-parameter-in-the-config-file.patch
 Patch3: 0004-stalld-Assign-name-to-stalld-thread.patch
 Patch4: 0005-stalld-Fix-gcc-options-in-Makefile.patch
 Patch5: 0006-stalld-Fix-single-threaded-mode-starvation-threshold.patch
-Patch6: bash-rpm-provides-only-bin-bash-and-bin-is-a-symboli.patch
+Patch6: 0001-stalld-Add-debug-print-for-starving-tasks.patch
+Patch7: 0001-stalld-change-default-config_granularity-value-to-2s.patch
+Patch8: 0001-stalld-Include-FF-and-CG-config-params-in-service-fi.patch
+Patch9: 0001-stalld-fix-bin-bash.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -48,7 +50,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/sysconfig
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 chmod 644 %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 install -vdm 755 %{buildroot}%{_unitdir}
-install -vm 644 %{SOURCE2} %{buildroot}%{_unitdir}
+install -vm 644 redhat/stalld.service %{buildroot}/%{_unitdir}
 install -p scripts/throttlectl.sh %{buildroot}/%{_bindir}/throttlectl
 
 %clean
@@ -74,6 +76,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Nov 29 2022 Keerthana K <keerthanak@vmware.com> 1.17.1-2
+- Fix service file and update stalld-tca.conf
 * Wed Nov 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.17.1-1
 - Upgrade to v1.17.1
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1

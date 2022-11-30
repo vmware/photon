@@ -1,10 +1,12 @@
-From a33b577e1c64c4a32a1cbcbeac35815e444f17f5 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Wed, 16 Nov 2022 18:25:10 +0530
-Subject: [PATCH] bash rpm provides only /bin/bash and /bin is a symbolic link
- to /usr/bin
+From 1bc62850c525eed947431fff0470232d772884de Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 18 Nov 2022 07:13:06 +0000
+Subject: [PATCH 2/2] stalld: fix /bin/bash
 
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+bash rpm provides only /bin/bash and /bin is a symbolic
+link to /usr/bin
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  scripts/throttlectl.sh | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -20,5 +22,5 @@ index a01ba14..4737bee 100755
  # This script is called to either turn off or turn on RT throttling
  # The 'off' argument causes the current values of the throttling
 -- 
-2.38.1
+2.28.0
 
