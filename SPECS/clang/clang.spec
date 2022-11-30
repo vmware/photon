@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        12.0.0

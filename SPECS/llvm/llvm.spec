@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        12.0.0
