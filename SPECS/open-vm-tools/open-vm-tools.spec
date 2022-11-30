@@ -1,10 +1,10 @@
-%global gosc_scripts gosc-scripts
-%define gosc_ver 1.3.2
+%global gosc_scripts    gosc-scripts
+%define gosc_ver        1.3.2
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.1.0
-Release:        3%{?dist}
+Version:        12.1.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,48 +12,48 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=9280decf20381de56174bfdbab9a86c525f992ce35eda499938c9b6b00e59a012a4410fd2972bbc52f8951bb071042cc7bf77fc1d687acc7980cc54a26461aed
+%define sha512 %{name}=539181a02c3534a35da53c9b01c2234021612f3cb83d5ddca78c7124a7e191d05e96654c35c802c86daf707e1bfe641615fe49a6b8c31af636ca1addea095655
 
-Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
+Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 
-Source2:        vmtoolsd.service
-Source3:        vgauthd.service
+Source2: vmtoolsd.service
+Source3: vgauthd.service
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
-Patch0:     ovt-linux-deployment.patch
-Patch1:     gosc-root-password-update.patch
+Patch0: ovt-linux-deployment.patch
+Patch1: gosc-root-password-update.patch
 
 %if "%{_arch}" == "aarch64"
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch2:     ovt-unknown-ioctl.patch
+Patch2: ovt-unknown-ioctl.patch
 %endif
 
-BuildRequires:  glib-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  xmlsec1-devel
-BuildRequires:  libltdl-devel
-BuildRequires:  libmspack-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  openssl-devel
-BuildRequires:  procps-ng-devel
-BuildRequires:  fuse-devel
-BuildRequires:  systemd
-BuildRequires:  rpcsvc-proto-devel
-BuildRequires:  libtirpc-devel
+BuildRequires: glib-devel
+BuildRequires: libxml2-devel
+BuildRequires: xmlsec1-devel
+BuildRequires: libltdl-devel
+BuildRequires: libmspack-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: openssl-devel
+BuildRequires: procps-ng-devel
+BuildRequires: fuse-devel
+BuildRequires: systemd-devel
+BuildRequires: rpcsvc-proto-devel
+BuildRequires: libtirpc-devel
 
-Requires:       fuse
-Requires:       libmspack
-Requires:       glib
-Requires:       openssl
-Requires:       libstdc++
-Requires:       libtirpc
-Requires:       xmlsec1 >= 1.2.32
-Requires:       which
+Requires: fuse
+Requires: libmspack
+Requires: glib
+Requires: openssl
+Requires: libstdc++
+Requires: libtirpc
+Requires: xmlsec1 >= 1.2.32
+Requires: which
 
 %if "%{_arch}" == "x86_64"
-Requires:  systemd
+Requires: systemd
 %endif
 
 %if "%{_arch}" == "aarch64"
@@ -97,23 +97,22 @@ autoreconf -i
            --without-icu \
            --disable-static \
            --with-tirpc \
-           --enable-servicediscovery
+           --enable-servicediscovery \
+           --with-udev-rules-dir=%{_udevrulesdir}
 
 %make_build
 
 %install
-#collecting hacks to manually drop the vmhgfs module
-install -vdm 755 %{buildroot}/%{_unitdir}
+install -vdm 755 %{buildroot}%{_unitdir}
 install -vdm 755 %{buildroot}%{_datadir}/%{name}
 cp -r %{gosc_scripts} %{buildroot}%{_datadir}/%{name}
-install -p -m 644 %{SOURCE2} %{buildroot}/%{_unitdir}
-install -p -m 644 %{SOURCE3} %{buildroot}/%{_unitdir}
+install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}
 
 cd %{name}
 %make_install %{?_smp_mflags}
 
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post
 /sbin/ldconfig
@@ -159,7 +158,7 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/*
 %{_datadir}/%{name}/messages
 %{_unitdir}/*
-/lib/*
+%{_udevrulesdir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -180,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Wed Nov 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.1.5-1
+- Upgrade to v12.1.5
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.1.0-3
 - Bump version as a part of libtirpc upgrade
 * Fri Oct 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 12.1.0-2
