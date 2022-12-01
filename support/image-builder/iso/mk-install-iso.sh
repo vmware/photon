@@ -182,6 +182,7 @@ chmod 755 ${INITRD}/init
 # and set TERM=linux for installer
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I linux/g" ${INITRD}/lib/systemd/system/getty@.service
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --keep-baud 115200,38400,9600 %I screen/g" ${INITRD}/lib/systemd/system/serial-getty@.service
+rm -rf ${INITRD}/etc/systemd/system/getty.target.wants/console-getty.service
 
 #- Step 7 - Create installer script
 sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${INITRD}/etc/passwd
