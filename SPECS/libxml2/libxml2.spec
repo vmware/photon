@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -18,6 +18,8 @@ Patch1:         libxml2-CVE-2022-23308.patch
 Patch2:         libxml2-CVE-2022-29824.patch
 Patch3:         libxml2-CVE-2022-2309-fix1.patch
 Patch4:         libxml2-CVE-2022-2309-fix2.patch
+Patch5:         libxml2-CVE-2022-40303.patch
+Patch6:         libxml2-CVE-2022-40304.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -105,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Wed Nov 30 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.11-9
+- Fix for CVE-2022-40303
 * Tue Aug 09 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.11-8
 - Fix for CVE-2022-2309
 * Mon May 23 2022 Nitesh Kumar <kunitesh@vmware.com> 2.9.11-7
