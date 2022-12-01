@@ -8,7 +8,6 @@ from Logger import Logger
 from constants import constants
 import PullSources
 from SpecData import SPECS
-from distutils.version import LooseVersion
 
 class PackageUtils(object):
 
