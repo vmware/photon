@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.152
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -173,6 +173,12 @@ Patch128: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
 
 #Fix for CVE-2022-3564
 Patch129: Bluetooth-L2CAP-Fix-use-after-free-caused-by-l2cap_reassemble_sdu.patch
+
+#Fix for CVE-2022-43945
+Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -412,7 +418,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M133
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -828,6 +834,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-9
+- Fix for CVE-2022-43945
 * Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 5.10.152-8
 - Enable CONFIG_NET_CLS_FLOWER=m
 * Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-7

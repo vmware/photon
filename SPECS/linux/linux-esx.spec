@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.152
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -186,6 +186,12 @@ Patch128: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
 #Fix for CVE-2022-3564
 Patch129: Bluetooth-L2CAP-Fix-use-after-free-caused-by-l2cap_reassemble_sdu.patch
 
+#Fix for CVE-2022-43945
+Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -340,7 +346,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M133
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -589,6 +595,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-10
+- Fix for CVE-2022-43945
 * Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 5.10.152-9
 - Enable CONFIG_NET_CLS_FLOWER=m
 * Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-8
