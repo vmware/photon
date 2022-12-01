@@ -12,7 +12,6 @@ import traceback
 
 from argparse import ArgumentParser
 from pathlib import PurePath
-from distutils.util import strtobool
 from subprocess import PIPE, Popen
 
 # photon imports
@@ -1001,7 +1000,7 @@ class CheckTools:
             return
 
         key = "SKIP_INSTALLER_UPDATE"
-        if key in os.environ and strtobool(os.environ[key]):
+        if key in os.environ and Utils.strtobool(os.environ[key]):
             print("%s is enabled, not checking for updates" % key)
             return
 

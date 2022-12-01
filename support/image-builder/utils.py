@@ -41,6 +41,7 @@ class Utils(object):
         if ret != 0:
             raise RuntimeError(
                 "Cannot umount {} : {}".format(destination, os.strerror(ctypes.get_errno())))
+
     @staticmethod
     def jsonread(filename):
         json_data = open(filename)
@@ -100,3 +101,15 @@ class Utils(object):
             filename = os.path.join(src, file)
             if os.path.isfile(filename):
                 shutil.copy(filename, target)
+
+    @staticmethod
+    def strtobool(val):
+        val = val.lower()
+
+        if val in ('y', 'yes', 't', 'true', 'on', '1'):
+            return 1
+
+        if val in ('n', 'no', 'f', 'false', 'off', '0'):
+            return 0
+
+        raise ValueError("invalid truth value {!r}".format(val))

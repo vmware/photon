@@ -3,11 +3,11 @@ import queue
 import json
 import operator
 import re
-from distutils.version import StrictVersion
 from Logger import Logger
 from constants import constants
 from StringUtils import StringUtils
-from distutils.version import LooseVersion
+from distutilsversion import StrictVersion
+from distutilsversion import LooseVersion
 from SpecParser import SpecParser
 
 
