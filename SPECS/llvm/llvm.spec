@@ -1,9 +1,10 @@
-%global debug_package %{nil}
+%global debug_package   %{nil}
+%define llvm_maj_ver    12
 
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        12.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -82,7 +83,11 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+%{_libdir}/*.so
 %{_libdir}/*.so.*
+%exclude %{_libdir}/libLLVM-%{version}.so
+%exclude %{_libdir}/libLLVM-%{llvm_maj_ver}.so
+%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -93,7 +98,6 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
@@ -103,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Sat Dec 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-2
+- Don't package libLLVM shared libraries
 * Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
 - Upgrade to v12.0.0
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-5
