@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -16,6 +16,7 @@ Patch2:         libxml2-CVE-2022-29824.patch
 Patch3:         libxml2-CVE-2022-2309-fix1.patch
 Patch4:         libxml2-CVE-2022-2309-fix2.patch
 Patch5:         libxml2-CVE-2022-40303.patch
+Patch6:         libxml2-CVE-2022-40304.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -48,15 +49,15 @@ Static libraries and header files for the support library for libxml
 
 %build
 %configure --disable-static --with-history --with-python=%{_bindir}/python3
-make %{?_smp_mflags}
+%make_build
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install DESTDIR=%{buildroot}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 %check
-make %{?_smp_mflags} check
+%make_check
 
 %ldconfig_scriptlets
 
@@ -85,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*   Fri Dec 02 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-7
+-   Fix for CVE-2022-40304
 *   Wed Nov 30 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-6
 -   Fix for CVE-2022-40303
 *   Tue Aug 09 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-5
