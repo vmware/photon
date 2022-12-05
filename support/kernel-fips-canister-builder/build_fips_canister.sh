@@ -275,7 +275,7 @@ function create_sandbox() {
   fi
 
 
-  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photonos-docker-local.artifactory.eng.vmware.com/photon$VERSION:20220624 tail -f /dev/null
+  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
