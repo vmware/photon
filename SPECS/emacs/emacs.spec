@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        27.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -9,7 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    emacs=d1b6b9efa666614c5628dda9ea78628796a73f7f
+%define sha512  emacs=dfb26531d2c19cf9fb56505f03d799654b45e5f9528e777900e8280ed2c1d21e04c52f510528e31e015977c471ae63164cedee6174b7439ebcf479a21fc18064
+
+# CVE:
+# Fix for CVE-2022-45939
+Patch0: Fix-CVE-2022-45939.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -28,12 +32,10 @@ language (elisp), and the capability to read mail, news, and more
 without leaving the editor.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-%configure  --prefix=/usr            \
-            --localstatedir=/var     \
-            --without-xpm            \
+%configure  --without-xpm            \
             --without-jpeg           \
             --without-tiff           \
             --without-gif            \
@@ -47,10 +49,10 @@ without leaving the editor.
             --without-xaw3d          \
             --without-xim            \
             --without-makeinfo
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 rm -rf %{buildroot}%{_infodir}
 rm -rf %{buildroot}%{_mandir}
@@ -79,5 +81,7 @@ rm %{buildroot}%{_datadir}/applications/emacs.desktop
 %{_datadir}/metainfo/emacs.appdata.xml
 
 %changelog
+*  Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 27.1-2
+-  Fix for CVE-2022-45939
 *  Mon Nov 09 2020 Susant Sahani <ssahani@vmware.com>  27.1-1
 -  Initial rpm release.
