@@ -4,7 +4,7 @@ Date: Sat, 4 Feb 2017 04:15:14 +0000
 Subject: [PATCH 2/3] Added PAX_RANDKSTACK
 
    Reworked to randomize kernel stack at entry of each syscall instead of exit
-   
+
    Documentation of the original patch
 
    1. Design
@@ -81,15 +81,14 @@ Subject: [PATCH 2/3] Added PAX_RANDKSTACK
    selectively to specific tasks only.
 
 Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
-
 ---
- arch/x86/entry/entry_64.S    | 37 +++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/process_64.c | 15 +++++++++++++++
- security/Kconfig             | 16 ++++++++++++++++
- 3 files changed, 68 insertions(+)
+ arch/x86/entry/entry_64.S    | 38 +++++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/process_64.c | 15 ++++++++++++++
+ security/Kconfig             | 16 +++++++++++++++
+ 3 files changed, 68 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 8ae7ffd..f7c721d 100644
+index 3f418aede..970dd6413 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -53,6 +53,15 @@ ENTRY(native_usergs_sysret64)
@@ -108,7 +107,7 @@ index 8ae7ffd..f7c721d 100644
  .macro TRACE_IRQS_FLAGS flags:req
  #ifdef CONFIG_TRACE_IRQFLAGS
  	btl	$9, \flags		/* interrupts off? */
-@@ -233,9 +242,28 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+@@ -233,13 +242,31 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
  	TRACE_IRQS_OFF
  
  	/* IRQs are off. */
@@ -118,26 +117,30 @@ index 8ae7ffd..f7c721d 100644
 +	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
 +	 */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	pushq	%rax
-+	movq	%rsp, %rdi
-+	call	pax_randomize_kstack
-+	popq	%rdi
++	pushq   %rax
++	movq    %rsp, %rdi
++	call    pax_randomize_kstack
++	popq    %rdi
 +	movq    %rsp, %rsi
 +	movq    %rax, %rsp
 +
-+	pushq	%rsi
++	pushq   %rsi
 +#else
  	movq	%rax, %rdi
  	movq	%rsp, %rsi
+-
 +#endif
+ 	/* clobbers %rax, make sure it is after saving the syscall nr */
+ 	IBRS_ENTER
+ 
  	call	do_syscall_64		/* returns with IRQs disabled */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq	%rsp
++	popq    %rsp
 +#endif
  
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -401,8 +429,17 @@ ENTRY(ret_from_fork)
+@@ -405,8 +432,17 @@ ENTRY(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
@@ -156,10 +159,10 @@ index 8ae7ffd..f7c721d 100644
  	jmp	swapgs_restore_regs_and_return_to_usermode
  
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 0091a73..31b697c 100644
+index 59f71d0f2..7dc6e5e4f 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
-@@ -61,6 +61,21 @@
+@@ -63,6 +63,21 @@
  
  __visible DEFINE_PER_CPU(unsigned long, rsp_scratch);
  
@@ -182,7 +185,7 @@ index 0091a73..31b697c 100644
  void __show_regs(struct pt_regs *regs, enum show_regs_mode mode)
  {
 diff --git a/security/Kconfig b/security/Kconfig
-index 564e975..7ef4ec8 100644
+index 73b44860e..48417b43a 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -80,6 +80,22 @@ config PAX_MPROTECT
@@ -209,4 +212,5 @@ index 564e975..7ef4ec8 100644
  
  source security/keys/Kconfig
 -- 
-2.7.4
+2.23.1
+

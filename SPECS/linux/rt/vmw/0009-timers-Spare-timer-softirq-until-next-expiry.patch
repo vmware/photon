@@ -1,7 +1,7 @@
-From d4f7dae87096dfe722bf32aa82076ece1063746c Mon Sep 17 00:00:00 2001
+From b372d970b81e4b195318ace072ff94b350d232ca Mon Sep 17 00:00:00 2001
 From: Frederic Weisbecker <frederic@kernel.org>
 Date: Fri, 17 Jul 2020 16:05:49 +0200
-Subject: [PATCH 9/11] timers: Spare timer softirq until next expiry
+Subject: [PATCH] timers: Spare timer softirq until next expiry
 
 commit d4f7dae87096dfe722bf32aa82076ece1063746c upstream
 
@@ -22,13 +22,13 @@ Link: https://lkml.kernel.org/r/20200717140551.29076-11-frederic@kernel.org
  1 file changed, 8 insertions(+), 41 deletions(-)
 
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 6a8f03d44f6a..a6436a04fc62 100644
+index ff5059659..1b9696d25 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -1411,10 +1411,10 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
+@@ -1476,10 +1476,10 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
  	}
  }
-
+ 
 -static int __collect_expired_timers(struct timer_base *base,
 -				    struct hlist_head *heads)
 +static int collect_expired_timers(struct timer_base *base,
@@ -39,7 +39,7 @@ index 6a8f03d44f6a..a6436a04fc62 100644
  	struct hlist_head *vec;
  	int i, levels = 0;
  	unsigned int idx;
-@@ -1637,40 +1637,6 @@ void timer_clear_idle(void)
+@@ -1702,40 +1702,6 @@ void timer_clear_idle(void)
  	 */
  	base->is_idle = false;
  }
@@ -78,29 +78,29 @@ index 6a8f03d44f6a..a6436a04fc62 100644
 -	return __collect_expired_timers(base, heads);
 -}
  #endif
-
+ 
  /*
-@@ -1703,7 +1669,7 @@ static inline void __run_timers(struct timer_base *base)
+@@ -1768,7 +1734,7 @@ static inline void __run_timers(struct timer_base *base)
  	struct hlist_head heads[LVL_DEPTH];
  	int levels;
-
+ 
 -	if (!time_after_eq(jiffies, base->clk))
 +	if (time_before(jiffies, base->next_expiry))
  		return;
-
- 	spin_lock(&base->expiry_lock);
-@@ -1716,7 +1682,8 @@ static inline void __run_timers(struct timer_base *base)
+ 
+ 	timer_base_lock_expiry(base);
+@@ -1781,7 +1747,8 @@ static inline void __run_timers(struct timer_base *base)
  	 */
  	base->must_forward_clk = false;
-
+ 
 -	while (time_after_eq(jiffies, base->clk)) {
 +	while (time_after_eq(jiffies, base->clk) &&
 +	       time_after_eq(jiffies, base->next_expiry)) {
-
+ 
  		levels = collect_expired_timers(base, heads);
  		base->clk++;
-@@ -1753,12 +1720,12 @@ void run_local_timers(void)
-
+@@ -1818,12 +1785,12 @@ void run_local_timers(void)
+ 
  	hrtimer_run_queues();
  	/* Raise the softirq only if required. */
 -	if (time_before(jiffies, base->clk)) {
@@ -114,6 +114,6 @@ index 6a8f03d44f6a..a6436a04fc62 100644
  			return;
  	}
  	raise_softirq(TIMER_SOFTIRQ);
---
-2.17.1
+-- 
+2.23.1
 

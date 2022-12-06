@@ -1,7 +1,7 @@
-From 1f8a4212dc83f8353843fabf6465fd918372fbbf Mon Sep 17 00:00:00 2001
+From 8804621d953ebf9b25b788096fcd290f242952ed Mon Sep 17 00:00:00 2001
 From: Frederic Weisbecker <frederic@kernel.org>
 Date: Fri, 17 Jul 2020 16:05:48 +0200
-Subject: [PATCH 08/11] timers: Expand clk forward logic beyond nohz
+Subject: [PATCH] timers: Expand clk forward logic beyond nohz
 
 commit 1f8a4212dc83f8353843fabf6465fd918372fbbf upstream
 
@@ -22,16 +22,16 @@ Link: https://lkml.kernel.org/r/20200717140551.29076-10-frederic@kernel.org
  1 file changed, 4 insertions(+), 22 deletions(-)
 
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 0ce57decae4d..6a8f03d44f6a 100644
+index 545394f46..ff5059659 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -902,19 +902,12 @@ get_target_base(struct timer_base *base, unsigned tflags)
-
+@@ -905,19 +905,12 @@ get_target_base(struct timer_base *base, unsigned tflags)
+ 
  static inline void forward_timer_base(struct timer_base *base)
  {
 -#ifdef CONFIG_NO_HZ_COMMON
  	unsigned long jnow;
-
+ 
 -	/*
 -	 * We only forward the base when we are idle or have just come out of
 -	 * idle (must_forward_clk logic), and have a delta between base clock
@@ -40,21 +40,21 @@ index 0ce57decae4d..6a8f03d44f6a 100644
 -	if (likely(!base->must_forward_clk))
 +	if (!base->must_forward_clk)
  		return;
-
+ 
  	jnow = READ_ONCE(jiffies);
 -	base->must_forward_clk = base->is_idle;
  	if ((long)(jnow - base->clk) < 2)
  		return;
-
-@@ -929,7 +922,6 @@ static inline void forward_timer_base(struct timer_base *base)
+ 
+@@ -932,7 +925,6 @@ static inline void forward_timer_base(struct timer_base *base)
  			return;
  		base->clk = base->next_expiry;
  	}
 -#endif
  }
-
-
-@@ -1620,10 +1612,8 @@ u64 get_next_timer_interrupt(unsigned long basej, u64 basem)
+ 
+ 
+@@ -1685,10 +1677,8 @@ u64 get_next_timer_interrupt(unsigned long basej, u64 basem)
  		 * logic is only maintained for the BASE_STD base, deferrable
  		 * timers may still see large granularity skew (by design).
  		 */
@@ -65,8 +65,8 @@ index 0ce57decae4d..6a8f03d44f6a 100644
 -		}
  	}
  	raw_spin_unlock(&base->lock);
-
-@@ -1722,16 +1712,7 @@ static inline void __run_timers(struct timer_base *base)
+ 
+@@ -1787,16 +1777,7 @@ static inline void __run_timers(struct timer_base *base)
  	/*
  	 * timer_base::must_forward_clk must be cleared before running
  	 * timers so that any timer functions that call mod_timer() will
@@ -83,15 +83,15 @@ index 0ce57decae4d..6a8f03d44f6a 100644
 +	 * not try to forward the base.
  	 */
  	base->must_forward_clk = false;
-
-@@ -1744,6 +1725,7 @@ static inline void __run_timers(struct timer_base *base)
+ 
+@@ -1809,6 +1790,7 @@ static inline void __run_timers(struct timer_base *base)
  		while (levels--)
  			expire_timers(base, heads + levels);
  	}
 +	base->must_forward_clk = true;
  	raw_spin_unlock_irq(&base->lock);
- 	spin_unlock(&base->expiry_lock);
+ 	timer_base_unlock_expiry(base);
  }
---
-2.17.1
+-- 
+2.23.1
 

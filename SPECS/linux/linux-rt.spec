@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.264
-Release:        8%{?kat_build:.%kat}%{?dist}
+Version:        4.19.268
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt113
+%define rt_version rt117
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=ce7a54a6f12b31bb67dede6810d43ad3230a63e949c1870220ef1ad87606c1c6733fa9c7ddb7dc654277ba31fc9f987488cd5270cc5aa0f88d7fee84848dd1cc
+%define sha512 linux=ffaea6200b7b9f82742a0473fc17b8bbd12c13384ffb8470d288579480f89e0ab264b333dbbcaf2fe97d6c2b7d1e87692820e5ba554d14e314c9749b544aebd2
 
 Source1: config-rt
 Source2: initramfs.trigger
@@ -100,7 +100,6 @@ Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch52: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
 Patch53: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch54: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch55: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
@@ -557,10 +556,21 @@ Patch537: 0337-fscache-fix-initialisation-of-cookie-hash-table-raw-.patch
 Patch538: 0338-rt-PREEMPT_RT-safety-net-for-backported-patches.patch
 Patch539: 0339-net-Add-missing-xmit_lock_owner-hunks.patch
 Patch540: 0340-genirq-Add-lost-hunk-to-irq_forced_thread_fn.patch
-Patch541: 0341-random-Use-local-locks-for-crng-context-access.patch
+Patch541: 0341-random-Bring-back-the-local_locks.patch
+Patch542: 0342-local_lock-Provide-INIT_LOCAL_LOCK.patch
+Patch543: 0343-Revert-workqueue-Use-local-irq-lock-instead-of-irq-d.patch
+Patch544: 0344-timers-Keep-interrupts-disabled-for-TIMER_IRQSAFE-ti.patch
+Patch545: 0345-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
+Patch546: 0346-rcu-Update-rcuwait.patch
+Patch547: 0347-workqueue-Use-rcuwait-for-wq_manager_wait.patch
+Patch548: 0348-timers-Prepare-support-for-PREEMPT_RT.patch
+Patch549: 0349-timers-Move-clearing-of-base-timer_running-under-bas.patch
+Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 # Keep rt_version matched up with this patch.
-Patch542: 0342-Linux-4.19.255-rt113-REBASE.patch
+Patch551: 0351-Linux-4.19.265-rt117-REBASE.patch
 
+#revert one of the RT patch due to build failure
+Patch598: 0001-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
 
@@ -1208,6 +1218,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.268-1
+- Update to version 4.19.268
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-8
 - Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-7

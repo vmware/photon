@@ -1,7 +1,10 @@
-From 64e56f1662f908f0c5e3d27f151a313c8473a0e7 Mon Sep 17 00:00:00 2001
+From c209abaf8974bf85f8b53b0fa9ddb4c3605f340c Mon Sep 17 00:00:00 2001
 From: Andy Lutomirski <luto@kernel.org>
 Date: Wed, 10 Jun 2020 13:28:49 +0530
-Subject: [PATCH 28/30] x86-irq-64-Split-the-IRQ-stack-into-its-own-pages
+Subject: [PATCH] x86-irq-64-Split-the-IRQ-stack-into-its-own-pages
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 commit e6401c13093173aad709a5c6de00cf8d692ee786 upstream.
 
@@ -51,32 +54,32 @@ Cc: xen-devel@lists.xenproject.org
 Link: https://lkml.kernel.org/r/20190414160146.267376656@linutronix.de
 ---
  arch/x86/entry/entry_64.S             |  4 ++--
- arch/x86/include/asm/processor.h      | 32 ++++++++++++++------------------
- arch/x86/include/asm/stackprotector.h |  6 +++---
+ arch/x86/include/asm/processor.h      | 32 ++++++++++++---------------
+ arch/x86/include/asm/stackprotector.h |  6 ++---
  arch/x86/kernel/asm-offsets_64.c      |  2 +-
- arch/x86/kernel/cpu/common.c          |  8 ++++----
+ arch/x86/kernel/cpu/common.c          |  8 +++----
  arch/x86/kernel/head_64.S             |  2 +-
  arch/x86/kernel/irq_64.c              |  5 ++++-
  arch/x86/kernel/setup_percpu.c        |  5 -----
- arch/x86/kernel/vmlinux.lds.S         |  7 ++++---
+ arch/x86/kernel/vmlinux.lds.S         |  7 +++---
  arch/x86/tools/relocs.c               |  2 +-
- arch/x86/xen/xen-head.S               | 10 +++++-----
+ arch/x86/xen/xen-head.S               | 10 ++++-----
  11 files changed, 39 insertions(+), 44 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index aa5a281..2a6d6cb 100644
+index f6e2f07d5..56a20099a 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -360,7 +360,7 @@ ENTRY(__switch_to_asm)
+@@ -364,7 +364,7 @@ ENTRY(__switch_to_asm)
  
  #ifdef CONFIG_STACKPROTECTOR
  	movq	TASK_stack_canary(%rsi), %rbx
 -	movq	%rbx, PER_CPU_VAR(irq_stack_union)+stack_canary_offset
-+	movq	%rbx, PER_CPU_VAR(fixed_percpu_data) + stack_canary_offset
++	movq	%rbx, PER_CPU_VAR(fixed_percpu_data)+stack_canary_offset
  #endif
  
- #ifdef CONFIG_RETPOLINE
-@@ -505,7 +505,7 @@ END(spurious_entries_start)
+ 	/*
+@@ -507,7 +507,7 @@ END(spurious_entries_start)
  	 * it before we actually move ourselves to the IRQ stack.
  	 */
  
@@ -86,7 +89,7 @@ index aa5a281..2a6d6cb 100644
  
  #ifdef CONFIG_DEBUG_ENTRY
 diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index 88cb338..497ed1b 100644
+index f68fb45ef..d3aeff6fe 100644
 --- a/arch/x86/include/asm/processor.h
 +++ b/arch/x86/include/asm/processor.h
 @@ -372,6 +372,13 @@ DECLARE_PER_CPU_PAGE_ALIGNED(struct tss_struct, cpu_tss_rw);
@@ -155,7 +158,7 @@ index 88cb338..497ed1b 100644
  #endif	/* X86_64 */
  
 diff --git a/arch/x86/include/asm/stackprotector.h b/arch/x86/include/asm/stackprotector.h
-index 9c556ea..9804a79 100644
+index 9c556ea2e..9804a7957 100644
 --- a/arch/x86/include/asm/stackprotector.h
 +++ b/arch/x86/include/asm/stackprotector.h
 @@ -13,7 +13,7 @@
@@ -186,7 +189,7 @@ index 9c556ea..9804a79 100644
  	this_cpu_write(stack_canary.canary, canary);
  #endif
 diff --git a/arch/x86/kernel/asm-offsets_64.c b/arch/x86/kernel/asm-offsets_64.c
-index 0a70c2a..a46b4c3 100644
+index 0a70c2a7b..a46b4c3d0 100644
 --- a/arch/x86/kernel/asm-offsets_64.c
 +++ b/arch/x86/kernel/asm-offsets_64.c
 @@ -70,7 +70,7 @@ int main(void)
@@ -199,10 +202,10 @@ index 0a70c2a..a46b4c3 100644
  #endif
  
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 4d2f7b1..da2a59c 100644
+index 995957f2a..33202c974 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1555,9 +1555,9 @@ static __init int setup_clearcpuid(char *arg)
+@@ -1697,9 +1697,9 @@ static __init int setup_clearcpuid(char *arg)
  __setup("clearcpuid=", setup_clearcpuid);
  
  #ifdef CONFIG_X86_64
@@ -215,7 +218,7 @@ index 4d2f7b1..da2a59c 100644
  
  /*
   * The following percpu variables are hot.  Align current_task to
-@@ -1567,7 +1567,7 @@ DEFINE_PER_CPU(struct task_struct *, current_task) ____cacheline_aligned =
+@@ -1709,7 +1709,7 @@ DEFINE_PER_CPU(struct task_struct *, current_task) ____cacheline_aligned =
  	&init_task;
  EXPORT_PER_CPU_SYMBOL(current_task);
  
@@ -225,7 +228,7 @@ index 4d2f7b1..da2a59c 100644
  
  DEFINE_PER_CPU(int, __preempt_count) = INIT_PREEMPT_COUNT;
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index a3618cf..71d0e0d 100644
+index a3618cf04..71d0e0d7c 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -265,7 +265,7 @@ ENDPROC(start_cpu0)
@@ -238,7 +241,7 @@ index a3618cf..71d0e0d 100644
  	/*
  	 * The SIZEOF_PTREGS gap is a convention which helps the in-kernel
 diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
-index c0bea0d..c0f89d1 100644
+index c0bea0d7d..c0f89d136 100644
 --- a/arch/x86/kernel/irq_64.c
 +++ b/arch/x86/kernel/irq_64.c
 @@ -23,6 +23,9 @@
@@ -261,7 +264,7 @@ index c0bea0d..c0f89d1 100644
  	per_cpu(hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE;
  	return 0;
 diff --git a/arch/x86/kernel/setup_percpu.c b/arch/x86/kernel/setup_percpu.c
-index 688827b..328f040 100644
+index 688827be7..328f040c0 100644
 --- a/arch/x86/kernel/setup_percpu.c
 +++ b/arch/x86/kernel/setup_percpu.c
 @@ -242,11 +242,6 @@ void __init setup_per_cpu_areas(void)
@@ -277,10 +280,10 @@ index 688827b..328f040 100644
  		per_cpu(x86_cpu_to_node_map, cpu) =
  			early_per_cpu_map(x86_cpu_to_node_map, cpu);
 diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 85e6d56..7286d41 100644
+index 138395364..38afdebaa 100644
 --- a/arch/x86/kernel/vmlinux.lds.S
 +++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -413,7 +413,8 @@ SECTIONS
+@@ -407,7 +407,8 @@ SECTIONS
   */
  #define INIT_PER_CPU(x) init_per_cpu__##x = ABSOLUTE(x) + __per_cpu_load
  INIT_PER_CPU(gdt_page);
@@ -290,7 +293,7 @@ index 85e6d56..7286d41 100644
  
  /*
   * Build-time check on the image size:
-@@ -422,8 +423,8 @@ INIT_PER_CPU(irq_stack_union);
+@@ -416,8 +417,8 @@ INIT_PER_CPU(irq_stack_union);
  	   "kernel image bigger than KERNEL_IMAGE_SIZE");
  
  #ifdef CONFIG_SMP
@@ -302,7 +305,7 @@ index 85e6d56..7286d41 100644
  
  #endif /* CONFIG_X86_32 */
 diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index 3a6c8eb..305439f 100644
+index aa046d46f..55326b2b1 100644
 --- a/arch/x86/tools/relocs.c
 +++ b/arch/x86/tools/relocs.c
 @@ -737,7 +737,7 @@ static void percpu_init(void)
@@ -315,7 +318,7 @@ index 3a6c8eb..305439f 100644
   */
  static int is_percpu_sym(ElfW(Sym) *sym, const char *symname)
 diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
-index 5077ead..c1d8b90 100644
+index 5077ead5e..c1d8b90aa 100644
 --- a/arch/x86/xen/xen-head.S
 +++ b/arch/x86/xen/xen-head.S
 @@ -40,13 +40,13 @@ ENTRY(startup_xen)
@@ -338,5 +341,5 @@ index 5077ead..c1d8b90 100644
  	wrmsr
  #endif
 -- 
-2.7.4
+2.23.1
 

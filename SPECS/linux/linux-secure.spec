@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.264
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.268
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=ce7a54a6f12b31bb67dede6810d43ad3230a63e949c1870220ef1ad87606c1c6733fa9c7ddb7dc654277ba31fc9f987488cd5270cc5aa0f88d7fee84848dd1cc
+%define sha512 linux=ffaea6200b7b9f82742a0473fc17b8bbd12c13384ffb8470d288579480f89e0ab264b333dbbcaf2fe97d6c2b7d1e87692820e5ba554d14e314c9749b544aebd2
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -118,7 +118,6 @@ Patch78: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch79: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch80: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
 Patch81: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch82: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch83: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
@@ -489,6 +488,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.268-1
+- Update to version 4.19.268
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4
 - Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-3
