@@ -1,6 +1,6 @@
 Name:           python3-backports_abc
 Version:        0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A backport of recent additions to the 'collections.abc' module.
 License:        PSFL
 Group:          Development/Languages/Python
@@ -40,6 +40,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.5-5
+- Update release to compile with python 3.11
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.5-4
 - Mass removal python2
 * Tue Dec 17 2019 Vinothkumar D <vinothkumard@vmware.com> 0.5-3

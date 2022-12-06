@@ -1,6 +1,6 @@
 Name:           python3-vcversioner
 Version:        2.16.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python version extractor
 License:        ISC
 Group:          Development/Languages/Python
@@ -37,6 +37,8 @@ python3 setup test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.16.0.0-3
+- Update release to compile with python 3.11
 * Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 2.16.0.0-2
 - Mass removal python2
 * Tue Oct 23 2018 Sujay G <gsujay@vmware.com> 2.16.0.0-1

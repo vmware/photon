@@ -1,6 +1,6 @@
 Name:           python3-pyasn1
 Version:        0.4.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
@@ -42,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.8-2
+- Update release to compile with python 3.11
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.8-1
 - Automatic Version Bump
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.4.4-2

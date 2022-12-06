@@ -1,14 +1,14 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
-%define sha1    serf=26015c63e3bbb108c1689bf2090e4c26351db674
+%define sha512  serf=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
 Patch0:         0001-openssl-3.0.0-compatibility.patch
 Requires:       openldap
 BuildRequires:  python3-setuptools
@@ -57,17 +57,18 @@ scons check
 %{_libdir}/libserf-1.so
 %{_libdir}/pkgconfig/*
 
-
 %changelog
-*   Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-5
--   openssl 3.0.0 compatibility
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-4
--   openssl 1.1.1
-*   Sat Aug 15 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-3
--   Add setuptools in requires
-*   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-2
--   Build with python3
--   Mass removal python2
--   Remove static
-*   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.9-1
--   Initial build. First version
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.9-6
+- Update release to compile with python 3.11
+* Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-5
+- openssl 3.0.0 compatibility
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-4
+- openssl 1.1.1
+* Sat Aug 15 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-3
+- Add setuptools in requires
+* Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-2
+- Build with python3
+- Mass removal python2
+- Remove static
+* Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.9-1
+- Initial build. First version

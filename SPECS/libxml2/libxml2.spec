@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.14-4
+- Update release to compile with python 3.11
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-3
 - Fix .so packaging
 * Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-2

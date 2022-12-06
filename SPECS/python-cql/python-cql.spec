@@ -1,6 +1,6 @@
 Name:           python3-cql
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cassandra Query Language driver
 License:        Apache Software License
 Vendor:         VMware, Inc.
@@ -41,5 +41,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.0-2
+- Update release to compile with python 3.11
 * Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 1.4.0-1
 - Initial packaging for Photon

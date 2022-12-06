@@ -1,12 +1,12 @@
 Name:           btrfs-progs
 Version:        5.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 License:        GPLv2+
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha1    %{name}=a794b3ffa52398bc85c073b7d99643d7a422f7bf
+%define sha512  %{name}=c7fab6241e5598a3279bb0e221d721c8d51480eb965dc0c16e8d1e98c7fab008e10196f2033a8b1158f27e68985ef8d11f3057cd1304f1d8c6d7ae00ae33e40e
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -82,23 +82,25 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.1-1
--   Automatic Version Bump
-*   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 5.7-2
--   Use asciidoc3
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
--   Automatic Version Bump
-*   Mon Nov 19 2018 Sujay G <gsujay@vmware.com> 4.19-1
--   Bump btrfs-progs version to 4.19
-*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
--   Fix compilation issue againts e2fsprogs-1.44
-*   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
--   Upgrade to 4.10.2
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
--   GA - Bump release of all rpms
-*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
--   Upgrade to 4.4
-*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
--   Initial version
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.11.1-2
+- Update release to compile with python 3.11
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.1-1
+- Automatic Version Bump
+* Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 5.7-2
+- Use asciidoc3
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
+- Automatic Version Bump
+* Mon Nov 19 2018 Sujay G <gsujay@vmware.com> 4.19-1
+- Bump btrfs-progs version to 4.19
+* Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
+- Fix compilation issue againts e2fsprogs-1.44
+* Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
+- Upgrade to 4.10.2
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
+- GA - Bump release of all rpms
+* Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
+- Upgrade to 4.4
+* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
+- Initial version

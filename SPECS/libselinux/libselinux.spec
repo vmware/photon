@@ -1,7 +1,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -122,6 +122,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2
+- Update release to compile with python 3.11
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
 - Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1

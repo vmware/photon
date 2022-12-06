@@ -2,7 +2,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        22.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.0-2
+- Update release to compile with python 3.11
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.0-1
 - Update release to compile with python 3.11
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2

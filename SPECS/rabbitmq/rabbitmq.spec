@@ -12,7 +12,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.11.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -142,6 +142,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.3-2
+- Update release to compile with python 3.11
 * Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.3-1
 - Upgrade to v3.11.3
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-3

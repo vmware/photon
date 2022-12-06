@@ -1,6 +1,6 @@
 Name:           docker-pycreds3
 Version:        0.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -46,6 +46,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2
+- Update release to compile with python 3.11
 * Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 0.4.0-1
 - Upgrade to 0.4.0 release.
 * Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.3.0-2

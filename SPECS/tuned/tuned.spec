@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -141,6 +141,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.19.0-4
+- Update release to compile with python 3.11
 * Fri Dec 02 2022 Srinidhi Rao <srinidhir@vmware.com> 2.19.0-3
 - Bump version as a part of systemtap upgrade
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.19.0-2

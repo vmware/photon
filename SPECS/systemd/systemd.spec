@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -676,6 +676,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 252.2-3
+- Update release to compile with python 3.11
 * Wed Nov 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 252.2-2
 - Add `SendRelease=false` to default network file.
 * Tue Nov 29 2022 Susant Sahani <ssahani@vmware.com> 252.2-1

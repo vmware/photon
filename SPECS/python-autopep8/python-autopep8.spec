@@ -1,6 +1,6 @@
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
-Version:        1.7.0
+Version:        2.0.0
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 License:        MIT
@@ -8,7 +8,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        autopep8-%{version}.tar.gz
-%define sha512  autopep8=e93ddf90ff989af71790f70f7e7101f7cc60890c8a976552a097c13b0a0e10c16dfd8770214b19d7fabd59403e6d87a9a37d75a2c6f3ed27f8c82a7d8da95dad
+%define sha512  autopep8=883b79f7011a374a2ef88073a45748268a20449a3bc8da519c036c71700352dd8c4accc60fcb592f1a53ceac06984fcbe6ede8a272bc718c2b79873be5f35dd8
 
 BuildArch:      noarch
 
@@ -45,15 +45,17 @@ python3 setup.py test
 %{_bindir}/autopep8
 
 %changelog
-*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
--   Automatic Version Bump
-*   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2
--   Add python3-toml to requires
-*   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.4-1
--   Automatic Version Bump
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
--   Automatic Version Bump
-*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
--   Mass removal python2
-*   Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 1.4.4-1
--   Initial packaging for Photon
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-1
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+- Automatic Version Bump
+* Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2
+- Add python3-toml to requires
+* Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.4-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
+- Automatic Version Bump
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
+- Mass removal python2
+* Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 1.4.4-1
+- Initial packaging for Photon

@@ -1,7 +1,7 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
@@ -87,6 +87,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.6-2
+- Update release to compile with python 3.11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.6-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1

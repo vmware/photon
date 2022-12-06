@@ -1,7 +1,7 @@
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       31
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
@@ -53,6 +53,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 31-3
+- Update release to compile with python 3.11
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 31-2
 - Bump version as a part of libxslt upgrade
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 31-1

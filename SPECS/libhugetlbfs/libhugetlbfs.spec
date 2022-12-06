@@ -1,7 +1,7 @@
 Summary:        Preload library to back text, data, malloc() or shared memory with hugepages
 Name:           libhugetlbfs
 Version:        2.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL-2.1
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
 Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
@@ -54,6 +54,8 @@ make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 %{_mandir}/man3/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.23-3
+- Update release to compile with python 3.11
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.23-2
 - Fix build with latest toolchain
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.23-1

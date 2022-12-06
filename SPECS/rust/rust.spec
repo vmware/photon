@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.64.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -102,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.64.0-3
+- Update release to compile with python 3.11
 * Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.64.0-2
 - Add appropriate Requires
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.64.0-1

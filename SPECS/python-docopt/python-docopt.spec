@@ -1,6 +1,6 @@
 Name:           python3-docopt
 Version:        0.6.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Pythonic argument parser to create command line interfaces.
 License:        MIT
 Group:          Development/Languages/Python
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.2-4
+- Update release to compile with python 3.11
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.6.2-3
 - Fix build with new rpm
 * Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.2-2

@@ -1,6 +1,6 @@
 Name:           python3-alabaster
 Version:        0.7.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 License:        BSD
 Group:          Development/Languages/Python
@@ -38,6 +38,8 @@ Alabaster is a visually (c)lean, responsive, configurable theme for the Sphinx d
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.12-2
+- Update release to compile with python 3.11
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.12-1
 - Automatic Version Bump
 * Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.11-2

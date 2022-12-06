@@ -1,7 +1,7 @@
 Summary:        A fast and easy to use template engine written in pure Python
 Name:           python3-jinja2
 Version:        3.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ expressions and an optional sandboxed environment.
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.2-2
+- Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-1
 - Upgrade to v3.1.2, needed for ansible-2.13.3
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.11.2-1

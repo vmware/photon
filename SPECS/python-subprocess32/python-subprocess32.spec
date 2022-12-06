@@ -2,7 +2,7 @@
 
 Name:           python3-subprocess32
 Version:        3.5.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 License:        PSF
 Group:          Development/Languages/Python
@@ -46,6 +46,8 @@ PYTHONPATH=build/lib.linux-%{_arch}-%{python3_version} python3 test_subprocess32
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.4-3
+- Update release to compile with python 3.11
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.5.4-2
 - Fix build with new rpm
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.4-1

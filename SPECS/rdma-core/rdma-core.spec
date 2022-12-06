@@ -1,7 +1,7 @@
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        42.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
@@ -519,6 +519,8 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 42.0-2
+- Update release to compile with python 3.11
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 42.0-1
 - Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 40.0-1

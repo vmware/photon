@@ -1,7 +1,7 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       5.1.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           www.sphinx-doc.org
@@ -96,6 +96,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.1-2
+- Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-1
 - Upgrade to v5.1.1
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-3

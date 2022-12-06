@@ -1,7 +1,7 @@
 Summary:        A JSON implementation in C++
 Name:           jsoncpp
 Version:        1.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/open-source-parsers/jsoncpp
 Group:          System Environment/Base
@@ -79,6 +79,8 @@ cd %{__cmake_builddir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.5-2
+- Update release to compile with python 3.11
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
 - Automatic Version Bump
 * Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.4-1

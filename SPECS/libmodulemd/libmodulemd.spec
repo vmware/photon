@@ -1,7 +1,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-2
+- Update release to compile with python 3.11
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-1
 - Upgrade to v2.14.0
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.0-2

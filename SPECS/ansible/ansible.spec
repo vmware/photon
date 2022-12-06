@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -67,6 +67,8 @@ touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-2
+- Update release to compile with python 3.11
 * Fri Nov 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-1
 - Upgrade to v2.14.0
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1

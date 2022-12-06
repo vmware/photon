@@ -1,7 +1,7 @@
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
 Version:        2.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.1-2
+- Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.1-1
 - Upgrade to 2.1.1, required for python3-jinja2
 * Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.1.1-1

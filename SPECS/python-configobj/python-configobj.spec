@@ -1,6 +1,6 @@
 Name:           python3-configobj
 Version:        5.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python
@@ -39,6 +39,8 @@ python3 validate.py
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.6-6
+- Update release to compile with python 3.11
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 5.0.6-5
 - Mass removal python2
 * Mon May 15 2017 Kumar Kaushik <kaushikk@vmware.com> 5.0.6-4

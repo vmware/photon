@@ -1,6 +1,6 @@
 Name:           python3-ipaddress
 Version:        1.0.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
@@ -40,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.23-2
+- Update release to compile with python 3.11
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.23-1
 - Automatic Version Bump
 * Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.0.22-3

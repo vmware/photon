@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -49,6 +49,8 @@ make %{?_smp_mflags} check
 %{_bindir}/%{name}
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.5-2
+- Update release to compile with python 3.11
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.9.5-1
 - Version update
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.9.4-2

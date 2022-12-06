@@ -3,7 +3,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        15.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            https://llvm.org
 Group:          Development/Tools
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 15.0.1-2
+- Update release to compile with python 3.11
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.1-1
 - Upgrade to v15.0.1
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-4

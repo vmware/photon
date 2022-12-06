@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.7.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -80,6 +80,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.3.0-2
+- Update release to compile with python 3.11
 * Fri Aug 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-1
 - Upgrade to v2.7.3.0
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.1.0-1

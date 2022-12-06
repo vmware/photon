@@ -3,7 +3,7 @@
 Summary:        QEMU disk image utility
 Name:           qemu-img
 Version:        7.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
 Group:          Development/Tools
@@ -156,6 +156,8 @@ make %{?_smp_mflags} check
 %{_libexecdir}/qemu-bridge-helper
 
 %changelog
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 7.1.0-2
+- Update release to compile with python 3.11
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0-1
 - Automatic Version Bump
 * Sun Jun 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-2

@@ -1,7 +1,7 @@
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -53,27 +53,29 @@ it is usable as a command-line tool and as a library.
 %{_bindir}/*
 
 %changelog
-*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.0-1
--   Automatic Version Bump
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.9.0-1
--   Update to 2.9.0, Fixes CVE-2021-20270, CVE-2021-27291
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2
--   Fix build with new rpm
-*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-2
--   openssl 1.1.1
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
--   Automatic Version Bump
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
--   Automatic Version Bump
-*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
--   Mass removal python2
-*   Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
--   Update to release 2.4.2
-*   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 2.2.0-3
--   Fix makecheck
-*   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-2
--   Fixed make check errors
-*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.2.0-1
--   Initial packaging for Photon
+* Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.13.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.0-1
+- Automatic Version Bump
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.9.0-1
+- Update to 2.9.0, Fixes CVE-2021-20270, CVE-2021-27291
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2
+- Fix build with new rpm
+* Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-2
+- openssl 1.1.1
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.1-1
+- Automatic Version Bump
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
+- Mass removal python2
+* Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
+- Update to release 2.4.2
+* Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 2.2.0-3
+- Fix makecheck
+* Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-2
+- Fixed make check errors
+* Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.2.0-1
+- Initial packaging for Photon
