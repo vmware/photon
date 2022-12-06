@@ -1,11 +1,11 @@
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
-Version:	4.2
-Release:	4%{?dist}
+Version:	5.2
+Release:	1%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
-%define sha512 gcovr=bf9e22a58b8390eca391dc8f6ba58c4ca0765e66f18ac6f8d8f80609411df2bab74a846eb179a1aded81b7774fa8a8121bb2d586556aeaf43fd729205b0d0c72
+%define sha512  gcovr=d1a4dd63129ac1d2b9a892ced9b4a0644dc49dc3a115d81ddf348e43fea0e7809c6533104106da8f89a666a4af9ff5a62429b4270ff2272ca61bbebecb7fb921
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -48,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}*
 
 %changelog
+* Mon Dec 05 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.2-1
+- Update to v5.2
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-4
 - Update release to compile with python 3.11
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-3
