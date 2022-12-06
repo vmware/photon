@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.159
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -906,6 +906,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 22 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.159-2
+- Enable CONFIG_PCI_PF_STUB
 * Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 5.10.159-1
 - Update to version 5.10.159
 * Wed Dec 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.158-2
