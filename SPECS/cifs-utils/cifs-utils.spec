@@ -1,7 +1,7 @@
 Summary:	cifs client utils
 Name:		cifs-utils
 Version:	6.14
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
@@ -51,6 +51,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+*       Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.14-2
+-       Bump version as a part of libtalloc upgrade
 *       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.14-1
 -       Automatic Version Bump
 *       Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 6.13-1
