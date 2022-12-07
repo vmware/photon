@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.152
-Release:        8%{?dist}
+Version:        5.10.158
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=d5e09db8d446641a074e0e98d9b3f0074c97b415df9a1e8bd1cce842e810cecc50d748c0a18899e8b626934f60e587d66a74702622f4d8cb1b84084007712fed
+%define sha512 linux=45bcb3c145500607d6328662776a5bd4e2fabe882677fefb5fcbf0377504ed1ca4ccddf1aff0a0f6b85ab79f6e9f91fb1377c33a7e14c7f352fa02ec40e67f4e
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -106,17 +106,10 @@ Patch122: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch123: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch124: 0002-tcp-udp-Fix-memory-leak-in-ipv6_renew_options.patch
 Patch125: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
-
-# Fix for CVE-2022-4139
-Patch129: 0001-drm-i915-fix-TLB-invalidation-for-Gen12-video-and-co.patch
-
-#Fix for CVE-2022-3564
-Patch130: Bluetooth-L2CAP-Fix-use-after-free-caused-by-l2cap_reassemble_sdu.patch
 
 #Fix for CVE-2022-43945
 Patch131: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -410,6 +403,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 12 2022 Ankit Jain <ankitja@vmware.com> 5.10.158-1
+- Update to version 5.10.158
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-8
 - Fix for CVE-2022-43945
 * Wed Nov 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-7

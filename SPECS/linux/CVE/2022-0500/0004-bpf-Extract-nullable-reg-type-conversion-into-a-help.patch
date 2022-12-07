@@ -19,7 +19,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  1 file changed, 52 insertions(+), 31 deletions(-)
 
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 8c92cef86..537b7a2b8 100644
+index 83a18d3f8..f79388fa6 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
 @@ -1068,6 +1068,51 @@ static void mark_reg_known_zero(struct bpf_verifier_env *env,
@@ -74,7 +74,7 @@ index 8c92cef86..537b7a2b8 100644
  static bool reg_is_pkt_pointer(const struct bpf_reg_state *reg)
  {
  	return type_is_pkt_pointer(reg->type);
-@@ -7730,43 +7775,19 @@ static void mark_ptr_or_null_reg(struct bpf_func_state *state,
+@@ -7734,43 +7779,19 @@ static void mark_ptr_or_null_reg(struct bpf_func_state *state,
  		}
  		if (is_null) {
  			reg->type = SCALAR_VALUE;
@@ -123,8 +123,8 @@ index 8c92cef86..537b7a2b8 100644
 +
 +		if (!reg_may_point_to_spin_lock(reg)) {
  			/* For not-NULL ptr, reg->ref_obj_id will be reset
- 			 * in release_reg_references().
+ 			 * in release_reference().
  			 *
 -- 
-2.37.1
+2.23.1
 

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	5.10.152
+Version:	5.10.158
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=d5e09db8d446641a074e0e98d9b3f0074c97b415df9a1e8bd1cce842e810cecc50d748c0a18899e8b626934f60e587d66a74702622f4d8cb1b84084007712fed
+%define sha512 linux=45bcb3c145500607d6328662776a5bd4e2fabe882677fefb5fcbf0377504ed1ca4ccddf1aff0a0f6b85ab79f6e9f91fb1377c33a7e14c7f352fa02ec40e67f4e
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -40,6 +40,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %{_includedir}/*
 
 %changelog
+* Mon Dec 12 2022 Ankit Jain <ankitja@vmware.com> 5.10.158-1
+- Update to version 5.10.158
 * Mon Oct 31 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.152-1
 - Update to version 5.10.152
 * Fri Sep 09 2022 srinidhira0 <srinidhir@vmware.com> 5.10.142-1
