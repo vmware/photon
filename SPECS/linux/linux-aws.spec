@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.264
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -116,6 +116,12 @@ Patch78: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch79: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch80: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch81: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+# CVE-2022-43945
+Patch82: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch83: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch84: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch85: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch86: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -498,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-3
+- Fix for CVE-2022-43945
 * Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.264
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -231,6 +231,12 @@ Patch189: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch192: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# CVE-2022-43945
+Patch193: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch194: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch195: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch196: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -312,7 +318,7 @@ pushd ..
 %patch99 -p0
 popd
 
-ApplyPatch "100" "192"
+ApplyPatch "100" "196"
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -480,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-3
+- Fix for CVE-2022-43945
 * Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2
 - Fix CVE-2022-3524 and CVE-2022-3567
 * Thu Nov 03 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.264
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -241,6 +241,12 @@ Patch186: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # CVE-2022-2586
 Patch187: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
+
+# CVE-2022-43945
+Patch188: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch189: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch190: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch191: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -660,7 +666,7 @@ ApplyPatch "1" "13"
 %patch17 -p1
 %endif
 
-ApplyPatch "25" "187"
+ApplyPatch "25" "191"
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1076,6 +1082,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-6
+- Fix for CVE-2022-43945
 * Fri Nov 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-5
 - SEV-ES: fix MMIO scratch buffer
 * Mon Nov 21 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4

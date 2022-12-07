@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.264
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -147,8 +147,14 @@ Patch84: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch85: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch86: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
+#Fix for CVE-2022-43945
+Patch87: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch88: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch89: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch90: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
 # inherit tcp_limit_output_bytes
-Patch90: tcp-inherit-TSQ-limit-from-root-namespace.patch
+Patch91: tcp-inherit-TSQ-limit-from-root-namespace.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -790,6 +796,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-6
+- Fix for CVE-2022-43945
 * Fri Nov 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-5
 - SEV-ES: fix MMIO scratch buffer
 * Mon Nov 21 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4

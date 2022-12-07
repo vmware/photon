@@ -1,0 +1,109 @@
+From a2f31fbffeaa2957aad3fbe3a892a1c8c72a7ba3 Mon Sep 17 00:00:00 2001
+From: Chuck Lever <chuck.lever@oracle.com>
+Date: Mon, 12 Dec 2022 02:27:15 -0600
+Subject: [PATCH 1/4] NFSD: Cap rsize_bop result based on send buffer size
+
+commit 76ce4dcec0dc08a032db916841ddc4e3998be317 upstream.
+
+Since before the git era, NFSD has conserved the number of pages
+held by each nfsd thread by combining the RPC receive and send
+buffers into a single array of pages. This works because there are
+no cases where an operation needs a large RPC Call message and a
+large RPC Reply at the same time.
+
+Once an RPC Call has been received, svc_process() updates
+svc_rqst::rq_res to describe the part of rq_pages that can be
+used for constructing the Reply. This means that the send buffer
+(rq_res) shrinks when the received RPC record containing the RPC
+Call is large.
+
+Add an NFSv4 helper that computes the size of the send buffer. It
+replaces svc_max_payload() in spots where svc_max_payload() returns
+a value that might be larger than the remaining send buffer space.
+Callers who need to know the transport's actual maximum payload size
+will continue to use svc_max_payload().
+
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+[Replaced svc_max_payload only in applicable methods - vbrahmajosyula]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ fs/nfsd/nfs4proc.c | 35 +++++++++++++++++++++--------------
+ 1 file changed, 21 insertions(+), 14 deletions(-)
+
+diff --git a/fs/nfsd/nfs4proc.c b/fs/nfsd/nfs4proc.c
+index a696a9b90..96d2c300c 100644
+--- a/fs/nfsd/nfs4proc.c
++++ b/fs/nfsd/nfs4proc.c
+@@ -1839,6 +1839,22 @@ nfsd4_proc_compound(struct svc_rqst *rqstp)
+ 
+ #define op_encode_channel_attrs_maxsz	(6 + 1 + 1)
+ 
++/*
++ * The _rsize() helpers are invoked by the NFSv4 COMPOUND decoder, which
++ * is called before sunrpc sets rq_res.buflen. Thus we have to compute
++ * the maximum payload size here, based on transport limits and the size
++ * of the remaining space in the rq_pages array.
++ */
++static u32 nfsd4_max_payload(const struct svc_rqst *rqstp)
++{
++	u32 buflen;
++
++	buflen = (rqstp->rq_page_end - rqstp->rq_next_page) * PAGE_SIZE;
++	buflen -= rqstp->rq_auth_slack;
++	buflen -= rqstp->rq_res.head[0].iov_len;
++	return min_t(u32, buflen, svc_max_payload(rqstp));
++}
++
+ static inline u32 nfsd4_only_status_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ {
+ 	return (op_encode_hdr_size) * sizeof(__be32);
+@@ -1879,9 +1895,9 @@ static inline u32 nfsd4_getattr_rsize(struct svc_rqst *rqstp,
+ 	u32 ret = 0;
+ 
+ 	if (bmap0 & FATTR4_WORD0_ACL)
+-		return svc_max_payload(rqstp);
++		return nfsd4_max_payload(rqstp);
+ 	if (bmap0 & FATTR4_WORD0_FS_LOCATIONS)
+-		return svc_max_payload(rqstp);
++		return nfsd4_max_payload(rqstp);
+ 
+ 	if (bmap1 & FATTR4_WORD1_OWNER) {
+ 		ret += IDMAP_NAMESZ + 4;
+@@ -1936,20 +1952,14 @@ static inline u32 nfsd4_open_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ 
+ static inline u32 nfsd4_read_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ {
+-	u32 maxcount = 0, rlen = 0;
+-
+-	maxcount = svc_max_payload(rqstp);
+-	rlen = min(op->u.read.rd_length, maxcount);
++	u32 rlen = min(op->u.read.rd_length, nfsd4_max_payload(rqstp));
+ 
+ 	return (op_encode_hdr_size + 2 + XDR_QUADLEN(rlen)) * sizeof(__be32);
+ }
+ 
+ static inline u32 nfsd4_readdir_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ {
+-	u32 maxcount = 0, rlen = 0;
+-
+-	maxcount = svc_max_payload(rqstp);
+-	rlen = min(op->u.readdir.rd_maxcount, maxcount);
++	u32 rlen = min(op->u.readdir.rd_maxcount, nfsd4_max_payload(rqstp));
+ 
+ 	return (op_encode_hdr_size + op_encode_verifier_maxsz +
+ 		XDR_QUADLEN(rlen)) * sizeof(__be32);
+@@ -2052,10 +2062,7 @@ static inline u32 nfsd4_copy_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ #ifdef CONFIG_NFSD_PNFS
+ static inline u32 nfsd4_getdeviceinfo_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
+ {
+-	u32 maxcount = 0, rlen = 0;
+-
+-	maxcount = svc_max_payload(rqstp);
+-	rlen = min(op->u.getdeviceinfo.gd_maxcount, maxcount);
++	u32 rlen = min(op->u.getdeviceinfo.gd_maxcount, nfsd4_max_payload(rqstp));
+ 
+ 	return (op_encode_hdr_size +
+ 		1 /* gd_layout_type*/ +
+-- 
+2.38.1
+

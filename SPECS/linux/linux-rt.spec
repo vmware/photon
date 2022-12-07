@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.264
-Release:        6%{?kat_build:.%kat}%{?dist}
+Release:        7%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -208,6 +208,12 @@ Patch134: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Backport netfilter patch to allow checking if dst has xfrm attached
 Patch141: 0001-netfilter-nf_tables-rt-allow-checking-if-dst-has-xfr.patch
+
+# CVE-2022-43945
+Patch151: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
+Patch152: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+Patch153: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
+Patch154: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -1199,6 +1205,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-7
+- Fix for CVE-2022-43945
 * Mon Nov 21 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-6
 - Added ice driver v1.9.11 as sub-package
 - Added iavf driver v4.5.3 as sub-package
