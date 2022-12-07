@@ -1,0 +1,134 @@
+From 1757846891ff08055b763a9bf0c95f48c66882e4 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Wed, 7 Dec 2022 09:37:59 +0000
+Subject: [PATCH] newca: Add newca make check test
+
+---
+ tests/Makefile.am  |  1 +
+ tests/Makefile.in  |  1 +
+ tests/newca.at     | 76 ++++++++++++++++++++++++++++++++++++++++++++++
+ tests/testsuite.at |  1 +
+ 4 files changed, 79 insertions(+)
+ create mode 100644 tests/newca.at
+
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 65bf470..493befd 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -44,6 +44,7 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
+ TESTSUITE_AT = \
+  testsuite.at\
+  inout.at\
++ newca.at\
+  interdir.at\
+  setstat01.at\
+  setstat02.at\
+diff --git a/tests/Makefile.in b/tests/Makefile.in
+index 5d9b42e..ae91c55 100644
+--- a/tests/Makefile.in
++++ b/tests/Makefile.in
+@@ -1126,6 +1126,7 @@ MAINTAINERCLEANFILES = Makefile.in $(TESTSUITE)
+ TESTSUITE_AT = \
+  testsuite.at\
+  inout.at\
++ newca.at\
+  interdir.at\
+  setstat01.at\
+  setstat02.at\
+diff --git a/tests/newca.at b/tests/newca.at
+new file mode 100644
+index 0000000..2caf8fa
+--- /dev/null
++++ b/tests/newca.at
+@@ -0,0 +1,76 @@
++# Process this file with autom4te to create testsuite.  -*- Autotest -*-
++# Copyright (C) 2004, 2006-2007, 2010, 2014-2015, 2017 Free Software
++# Foundation, Inc.
++
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 3, or (at your option)
++# any later version.
++
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
++# 02110-1301 USA.
++
++AT_SETUP([newca functionality: copyin_newca/copyout_newca])
++AT_KEYWORDS([copyin_newca copyout_newca])
++
++AT_DATA([filelist],[a 4096
++b       8192
++c       16384
++d       0
++e       20000
++])
++
++AT_CHECK([
++while read NAME LENGTH
++do
++        genfile --length $LENGTH > $NAME
++        echo $NAME
++done < filelist > filelist_raw
++
++find . | cpio -o -v --format=newca -C 4096 < filelist_raw > archive.newca
++rm -rf output
++mkdir output && cd output
++cpio -idmv --format=newca -C 4096 < ../archive.newca
++
++while read file
++do
++    test -f $file || echo "$file not found"
++    if [[ $(md5sum $file ../$file | awk '{print $1}' | uniq | wc -l) == 1 ]]
++    then
++        echo "Identical files"
++    else
++        echo "There are differences"
++    fi
++done < ../filelist_raw
++
++cd ..
++],
++[0],
++[Identical files
++Identical files
++Identical files
++Identical files
++Identical files
++],
++[a
++b
++c
++d
++e
++16 blocks
++a
++b
++c
++d
++e
++16 blocks
++])
++
++AT_CLEANUP
+diff --git a/tests/testsuite.at b/tests/testsuite.at
+index aa56bb9..ac7d8f8 100644
+--- a/tests/testsuite.at
++++ b/tests/testsuite.at
+@@ -31,6 +31,7 @@ AT_TESTED([cpio])
+ m4_include([version.at])
+ 
+ m4_include([inout.at])
++m4_include([newca.at])
+ m4_include([symlink.at])
+ m4_include([symlink-bad-length.at])
+ m4_include([symlink-long.at])
+-- 
+2.35.5
+
