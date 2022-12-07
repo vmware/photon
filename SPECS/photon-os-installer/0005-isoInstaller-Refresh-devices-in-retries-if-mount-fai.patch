@@ -1,11 +1,12 @@
-From 8bb02c6ec227fe45b2020354f62659760366b6af Mon Sep 17 00:00:00 2001
+From 861b6c6a4a437579ee5fd8e617bf67d5409f699f Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Fri, 5 Aug 2022 05:58:25 +0000
-Subject: [PATCH] isoInstaller: Refresh devices in retries if mount fails
+Subject: [PATCH 05/14] isoInstaller: Refresh devices in retries if mount fails
 
 - Device not detected properly and mount fails
 - Fixed by adding refresh_devices() in retries
 
+Change-Id: Ia7cdfa041b2d7a3a9fc9685166e3c19d49a1240e
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  photon_installer/isoInstaller.py | 6 ++++--
@@ -36,5 +37,5 @@ index 799d29a..b369f26 100755
          print("check the logs for more details")
          raise Exception("Can not mount the device")
 -- 
-2.23.1
+2.23.3
 

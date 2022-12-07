@@ -1,32 +1,35 @@
 %global debug_package %{nil}
 
-Summary:    Photon OS Installer
-Name:       photon-os-installer
-Version:    2.0
-Release:    8%{?dist}
-License:    Apache 2.0 and GPL 2.0
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
-Distribution:   Photon
-URL:        https://github.com/vmware/photon-os-installer
-
-Source0:    %{name}-%{version}.tar.gz
+Summary:       Photon OS Installer
+Name:          photon-os-installer
+Version:       2.0
+Release:       9%{?dist}
+License:       Apache 2.0 and GPL 2.0
+Group:         System Environment/Base
+Vendor:        VMware, Inc.
+Distribution:  Photon
+URL:           https://github.com/vmware/photon-os-installer
+Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=3a7567802a6b94cf9e51fcaaab5d2dbfbc42cd1d92427a2b0739a9df9994df01a2eb81e3133832fd39d575376ecf859451a8a3049d6993a42861544de9b4f3fe
-
-Patch0:     error_screen_selectdisk.patch
-Patch1:     fix-installroot-commands.patch
-Patch2:     0001-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
-Patch3:     0001-installer-Adding-support-for-dev-disk-by-path.patch
-Patch4:     0001-installer-Removed-insecure_installation-and-photon_r.patch
-Patch5:     0001-photon-installer-fixes-remove-photon_release_version.patch
-Patch6:     0001-installer-Adding-support-for-preinstall-script.patch
-
+Patch0:        0001-Correct-brand-and-project-names-in-installer.py.patch
+Patch1:        0002-Update-installer.py.patch
+Patch2:        0003-selectdisk.py-Display-appropriate-error-if-no-block-.patch
+Patch3:        0004-installer.py-fix-installroot-commands.patch
+Patch4:        0005-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
+Patch5:        0006-installer.py-check-if-host-rpm-supports-sqlite-backe.patch
+Patch6:        0007-installer.py-Added-support-to-provide-fs-options-wit.patch
+Patch7:        0008-installer-Adding-support-for-dev-disk-by-path.patch
+Patch8:        0009-installer-Removed-insecure_installation-and-photon_r.patch
+Patch9:        0010-installer-Adding-support-for-preinstall-script.patch
+Patch10:       0011-photon-installer-fixes-remove-photon_release_version.patch
+Patch11:       0012-custompartition.py-support-xfs-and-btrfs-filesystem.patch
+Patch12:       0013-isoInstaller-dynamic-retry-mount-media-count.patch
+Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
-
 Requires:      zlib
 Requires:      glibc
 
@@ -51,6 +54,9 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Tue Dec 06 2022 Piyush Gupta <gpiyush@vmware.com> 2.0-9
+- Add missing commits from photon-os-installer repo.
+- Fix installer.py: Parse string before passing to int().
 * Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0-8
 - Update release to compile with python 3.11
 * Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 2.0-7

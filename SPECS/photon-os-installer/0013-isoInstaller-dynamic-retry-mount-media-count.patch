@@ -1,0 +1,54 @@
+From 8a8227c4357667cdbadf8d81acd72afc5ed205c5 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Mon, 21 Nov 2022 11:30:52 +0000
+Subject: [PATCH 13/14] isoInstaller: dynamic retry mount media count
+
+- For baremetal case, different servers takes different amount
+  time to load the /dev/sr0 due to which mount fails.
+- Fox example:
+  XR11 servers takes around 10seconds to load sr0 while
+  supermicro server takes around 35seconds to load sr0
+- Thus, added a commandline param for dynamic media mount retries.
+
+Change-Id: I71381a3b68a8a25c24fe2f8ca5a0e7fc4544ac57
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ photon_installer/isoInstaller.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index fd0b860..8ccf102 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -31,6 +31,10 @@ class IsoInstaller(object):
+         # exit otherwise.
+         repo_path = options.repo_path
+         self.insecure_installation = False
++        # On Baremetal, time to emulate /dev/cdrom on different
++        # servers varies. So, adding a commandline parameter
++        # for retry count.
++        self.retry_mount_media = 3
+ 
+         with open('/proc/cmdline', 'r') as f:
+             kernel_params = shlex.split(f.read().replace('\n', ''))
+@@ -46,6 +50,8 @@ class IsoInstaller(object):
+                 photon_media = arg[len("photon.media="):]
+             elif arg.startswith("insecure_installation="):
+                 self.insecure_installation = bool(int(arg[len("insecure_installation="):]))
++            elif arg.startswith("photon.media.mount_retry="):
++                self.retry_mount_media = int(arg[len("photon.media.mount_retry="):])
+ 
+         if photon_media:
+             self.media_mount_path = self.mount_media(photon_media)
+@@ -150,7 +156,7 @@ class IsoInstaller(object):
+         cmdline.extend(['-o', 'ro', mount_path])
+ 
+         # Retry mount the CD
+-        for _ in range(0, 3):
++        for _ in range(0, self.retry_mount_media):
+             process = subprocess.Popen(cmdline)
+             retval = process.wait()
+             if retval == 0:
+-- 
+2.23.3
+

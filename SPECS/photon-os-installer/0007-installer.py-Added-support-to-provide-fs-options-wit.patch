@@ -1,0 +1,73 @@
+From 9121b4702598db76398e9c59dbf7b3d935d1b4bd Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Thu, 1 Sep 2022 05:51:22 +0000
+Subject: [PATCH 07/14] installer.py: Added support to provide fs-options with
+ mount.
+
+While mounting parition use user provided fs options to mount.
+
+Ex-
+
+"partitions": [{
+  "mountpoint":"/tmp",
+  "size":3072,
+  "filesystem":"ext4",
+  "fs_options":"nodev,noexec,nosuid"}]
+
+Renamed fs_options with mkfs_options in ks to differentiate between
+both.
+
+Change-Id: I2b02b2bf4144da5967947d86d929d49c99b33b24
+---
+ photon_installer/installer.py  | 10 +++++++---
+ photon_installer/ks_config.txt |  5 ++++-
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 5d019e7..d89ab78 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -636,7 +636,11 @@ class Installer(object):
+                 continue
+             mountpoint = self.photon_root + partition["mountpoint"]
+             self.cmd.run(['mkdir', '-p', mountpoint])
+-            retval = self.cmd.run(['mount', '-v', partition["path"], mountpoint])
++            mount_cmd = ['mount', '-v']
++            if "fs_options" in partition:
++                mount_cmd.extend(['-o', partition['fs_options']])
++            mount_cmd.extend([partition["path"], mountpoint])
++            retval = self.cmd.run(mount_cmd)
+             if retval != 0:
+                 self.logger.error("Failed to mount partition {}".format(partition["path"]))
+                 self.exit_gracefully()
+@@ -1302,8 +1306,8 @@ class Installer(object):
+             else:
+                 mkfs_cmd = ['mkfs', '-t', partition['filesystem']]
+ 
+-            if 'fs_options' in partition:
+-                options = re.sub(r"[^\S]", " ", partition['fs_options']).split()
++            if 'mkfs_options' in partition:
++                options = re.sub(r"[^\S]", " ", partition['mkfs_options']).split()
+                 mkfs_cmd.extend(options)
+ 
+             mkfs_cmd.extend([partition['path']])
+diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
+index dc3a1fa..9b57151 100644
+--- a/photon_installer/ks_config.txt
++++ b/photon_installer/ks_config.txt
+@@ -142,8 +142,11 @@ Kickstart config file is a json format with following possible parameters:
+ 		Size of the partition in MB. If 0 then partition is considered
+ 		as expansible to fill rest of the disk. Only one expansible
+ 		partition is allowed.
+-	"fs_options" (optional)
++	"mkfs_options" (optional)
+ 		Additional parameters for the mkfs command as a string
++	"fs_options" (optional)
++		fs options to be passed to mount command as a string
++                ex - "fs_options": "nodev,noexec,nosuid"
+ 	"lvm" (optional)
+ 		Will logical volume (LVM) for this partition.
+ 		Value is a dictionary with 2 required keys:
+-- 
+2.23.3
+

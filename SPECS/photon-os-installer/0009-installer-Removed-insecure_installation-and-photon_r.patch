@@ -1,7 +1,7 @@
-From d616091e0f16b1c4f6401473dae6764cbd3d452c Mon Sep 17 00:00:00 2001
+From 26308bc244f0e855bafe6689f77c9160593c1ef0 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Thu, 20 Oct 2022 07:06:25 +0000
-Subject: [PATCH] installer: Removed 'insecure_installation' and
+Subject: [PATCH 09/14] installer: Removed 'insecure_installation' and
  'photon_release_version' from ks
 
 - fixes f44fda4ffd1f36026c9779138c1dc61428940243
@@ -197,5 +197,5 @@ index dc79beb..a6a3a5d 100644
 -	Example: {"photon_release_version": "4.0"}
  For reference, look at "sample_ks.cfg" file
 -- 
-2.30.5
+2.23.3
 

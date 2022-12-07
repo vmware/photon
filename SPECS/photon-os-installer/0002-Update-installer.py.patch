@@ -1,0 +1,25 @@
+From b8efd0d75f1db2b282e83d766b4060b927148a1b Mon Sep 17 00:00:00 2001
+From: Ryan Johnson <johnsonryan@vmware.com>
+Date: Wed, 13 Oct 2021 15:43:21 -0400
+Subject: [PATCH 02/14] Update installer.py
+
+---
+ photon_installer/installer.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 1b3bd71..e09941f 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -861,7 +861,7 @@ class Installer(object):
+         keepcache = False
+         with open(self.tdnf_repo_path, "w") as repo_file:
+             repo_file.write("[photon-local]\n")
+-            repo_file.write("name=VMware Photon OS installer repo\n")
++            repo_file.write("name=VMware Photon OS Installer\n")
+             if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+                 repo_file.write("baseurl={}\n".format(self.rpm_path))
+             else:
+-- 
+2.23.3
+

@@ -1,12 +1,14 @@
-From c33685a218018630f050f3268eb5c1207b10eb8e Mon Sep 17 00:00:00 2001
+From d4473d80274e6d107276bc81ccc40be9bda16b0f Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sat, 29 Oct 2022 16:11:10 +0000
-Subject: [PATCH] photon-installer: fixes remove 'photon_release_version' key
+Subject: [PATCH 11/14] photon-installer: fixes remove 'photon_release_version'
+ key
 
 - Fixes: 26308bc244f0e855bafe6689f77c9160593c1ef0
 (installer: Removed 'insecure_installation' and 'photon_release_version' from ks)
 - fixes working_dir
 
+Change-Id: Id08a2c4a7b102cc3eff3c387f5f6c2127b782cd1
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  photon-installer.py | 5 +++--
@@ -35,5 +37,5 @@ index 4f0ea56..4c697ce 100644
          installer.configure(install_config)
          installer.execute()
 -- 
-2.30.5
+2.23.3
 

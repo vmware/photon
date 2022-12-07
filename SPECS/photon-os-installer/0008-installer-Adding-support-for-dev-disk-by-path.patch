@@ -1,7 +1,7 @@
-From d0a333a3b9ed9184dba5c63b57c46e84af46941d Mon Sep 17 00:00:00 2001
+From f4b08b6e81feffc190b6930e35b7c88b6a49914e Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Mon, 17 Oct 2022 10:58:25 +0000
-Subject: [PATCH] installer: Adding support for /dev/disk/by-path
+Subject: [PATCH 08/14] installer: Adding support for /dev/disk/by-path
 
 Usecase:
 - 'disk' : '/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:1:0'
@@ -16,10 +16,10 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  2 files changed, 9 insertions(+)
 
 diff --git a/photon_installer/installer.py b/photon_installer/installer.py
-index b19f186..1d01139 100755
+index 6636d90..c72ceb1 100755
 --- a/photon_installer/installer.py
 +++ b/photon_installer/installer.py
-@@ -1114,9 +1114,16 @@ class Installer(object):
+@@ -1129,9 +1129,16 @@ class Installer(object):
          # 3) to create physical partition representation for VG
          vg_partitions = {}
  
@@ -37,7 +37,7 @@ index b19f186..1d01139 100755
              if disk not in ptv:
                  ptv[disk] = []
 diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
-index dc3a1fa..335a019 100644
+index 9b57151..dc79beb 100644
 --- a/photon_installer/ks_config.txt
 +++ b/photon_installer/ks_config.txt
 @@ -57,6 +57,8 @@ Kickstart config file is a json format with following possible parameters:
@@ -50,5 +50,5 @@ index dc3a1fa..335a019 100644
  "eject_cdrom" (optional)
  	Eject or not cdrom after installation completed.
 -- 
-2.30.5
+2.23.3
 
