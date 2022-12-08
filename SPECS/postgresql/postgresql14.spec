@@ -1,17 +1,17 @@
-%define srcname postgresql
-
-%global pgmajorversion  13
+%define srcname         postgresql
+%global pgmajorversion  14
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
 %global _pgincludedir   %{_pgbaseinstdir}/include/%{srcname}
 %global _pgdatadir      %{_pgbaseinstdir}/share/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
-%define alter_weight    200
+%define alter_weight    300
+%define obsoletes_version 14.5-1
 
 Summary:        PostgreSQL database engine
-Name:           postgresql13
-Version:        13.10
+Name:           postgresql14
+Version:        14.7
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=328c81f7c2ca2bad92fa62f4b0377d7cc104f294636db019c68ceccb580003eebe79455bbafa24eab2b3cce305e3d9c702a8544b38556f9c3431cc3c78d00cff
+%define sha512 %{srcname}=931c3850d09a90b44b986f0ea6eb96eb549919ffd28ca71a7f1896e40dbbbc77601179d480c614f80cf67e5c1a4ccb4d38e06c846c13262723de621463a95508
 
 BuildRequires:  diffutils
 BuildRequires:  gcc
@@ -35,18 +35,23 @@ BuildRequires:  openssl-devel
 BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
+BuildRequires:  lz4-devel
 BuildRequires:  systemd-devel
 
-Requires:   krb5
-Requires:   libedit
-Requires:   libxml2
-Requires:   openldap
-Requires:   openssl
-Requires:   readline
-Requires:   tzdata
-Requires:   zlib
-Requires:   systemd
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:       krb5
+Requires:       libedit
+Requires:       libxml2
+Requires:       openldap
+Requires:       openssl
+Requires:       readline
+Requires:       tzdata
+Requires:       zlib
+Requires:       lz4
+Requires:       systemd
+Requires:       %{name}-libs = %{version}-%{release}
+
+Provides:       postgresql = %{version}-%{release}
+Obsoletes:      postgresql < %{obsoletes_version}
 
 %description
 PostgreSQL is an object-relational database management system.
@@ -56,9 +61,11 @@ Summary:    Libraries for use with PostgreSQL
 Group:      Applications/Databases
 Requires:   chkconfig
 Requires(postun): chkconfig
+Provides:   postgresql-libs = %{version}-%{release}
+Obsoletes:  postgresql-libs < %{obsoletes_version}
 
 %description libs
-The postgresql13-libs package provides the essential shared libraries for any
+The postgresql-libs package provides the essential shared libraries for any
 PostgreSQL client program or interface. You will need to install this package
 to use any other PostgreSQL package or any clients that need to connect to a
 PostgreSQL server.
@@ -67,25 +74,26 @@ PostgreSQL server.
 Summary:        Development files for postgresql.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Provides:       postgresql-devel = %{version}-%{release}
+Obsoletes:      postgresql-devel < %{obsoletes_version}
 
 %description    devel
-The postgresql13-devel package contains libraries and header files for
+The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%autosetup -n %{srcname}-%{version} -p1
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
 
-# Note that %configure is not used here as this command relies on non-default
-# values.
 sh ./configure \
     --prefix=%{_pgbaseinstdir} \
     --enable-thread-safety \
     --with-ldap \
     --with-libxml \
-    --with-openssl \
+    --with-ssl=openssl \
+    --with-lz4 \
     --with-uuid=e2fs \
     --with-systemd \
     --with-gssapi \
@@ -117,7 +125,7 @@ echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 %if 0%{?with_check}
 %check
-sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
+sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g' src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %endif
@@ -138,7 +146,7 @@ alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weig
     --slave %{_bindir}/pg_resetwal pg_resetwal %{_pgbindir}/pg_resetwal \
     --slave %{_bindir}/pg_resetxlog pg_resetxlog %{_pgbindir}/pg_resetxlog \
     --slave %{_bindir}/pg_rewind pg_rewind %{_pgbindir}/pg_rewind \
-    --slave %{_bindir}/pg_standby pg_standby %{_pgbindir}/pg_standby \
+    --slave %{_bindir}/pg_amcheck pg_amcheck %{_pgbindir}/pg_amcheck \
     --slave %{_bindir}/pg_test_fsync pg_test_fsync %{_pgbindir}/pg_test_fsync \
     --slave %{_bindir}/pg_test_timing pg_test_timing %{_pgbindir}/pg_test_timing \
     --slave %{_bindir}/pg_upgrade pg_upgrade %{_pgbindir}/pg_upgrade \
@@ -199,6 +207,7 @@ rm -rf %{buildroot}/*
 %dir %{_pgdatadir}
 %dir %{_pgdocdir}
 %{_pgbindir}/initdb
+%{_pgbindir}/pg_amcheck
 %{_pgbindir}/oid2name
 %{_pgbindir}/pg_archivecleanup
 %{_pgbindir}/pg_basebackup
@@ -210,7 +219,6 @@ rm -rf %{buildroot}/*
 %{_pgbindir}/pg_resetwal
 %{_pgbindir}/pg_resetxlog
 %{_pgbindir}/pg_rewind
-%{_pgbindir}/pg_standby
 %{_pgbindir}/pg_test_fsync
 %{_pgbindir}/pg_test_timing
 %{_pgbindir}/pg_upgrade
@@ -267,18 +275,94 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
-* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.10-1
-- Upgrade to v13.10 to fix CVE-2022-41862
+* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-1
+- Upgrade to v14.7 to fix CVE-2022-41862
 - Use alternatives for creating files in standard locations
-* Tue Aug 16 2022 Julien Rouhaud <jrouhaud@vmware.com> 13.8-1
-- Upgraded to version 13.8.
-* Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 13.7-2
+- Rename package to postgresql14
+* Tue Aug 16 2022 Julien Rouhaud <jrouhaud@vmware.com> 14.5-1
+- Upgraded to version 14.5.
+* Mon Jul 18 2022 Harinadh D <hdommaraju@vmware.com> 14.4-2
 - add uuid with e2fs and systemd to configuration
-* Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 13.7-1
-- Upgraded to version 13.7.
-* Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 13.6-1
-- Upgraded to version 13.6.
-* Thu Feb 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 13.5-2
+* Fri Jun 17 2022 Michael Paquier <mpaquier@vmware.com> 14.4-1
+- Upgraded to version 14.4.
+* Fri May 13 2022 Michael Paquier <mpaquier@vmware.com> 14.3-1
+- Upgraded to version 14.3.
+* Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 14.2-1
+- Upgraded to version 14.2.
+* Mon Jan 31 2022 Susant Sahani <ssahani@vmware.com> 14.1-2
 - Rebuild with libedit
-* Wed Jan 5 2022 Michael Paquier <mpaquier@vmware.com> 13.5-1
-- Addition of new package for PostgreSQL 13
+* Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 14.1-1
+- Upgraded to version 14.1.
+- Add support for LZ4
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
+- Release bump up to use libxml2 2.9.12-1.
+* Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
+- Upgraded to version 13.5.
+* Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.4-2
+- Bump up release for openssl
+* Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
+- Upgraded to version 13.4
+* Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
+- Upgraded to version 13.3
+* Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
+- Upgraded to version 13.2
+* Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
+- Fix and reorganize list of BuildRequires
+- Removal of custom patch for CVE-2016-5423 committed in upstream.
+- Upgraded to version 13.1
+* Wed Sep 30 2020 Dweep Advani <dadvani@vmware.com> 13.0-3
+- Prefer libedit over readline
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
+- openssl 1.1.1
+* Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 13.0-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 12.3-1
+- Automatic Version Bump
+* Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 11.5-1
+- Upgraded to version 11.5
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
+- Updated to version 10.5
+* Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
+- Updated to version 9.6.8 to fix CVE-2018-1058
+* Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
+- Updated to version 9.6.7
+* Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
+- Updated to version 9.6.6
+* Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
+- Updated to version 9.6.5
+* Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
+- Updated to version 9.6.4
+* Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
+- add sleep 5 when initdb in make check for bug 1900371
+* Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
+- Added postgresql-devel
+* Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
+- Upgraded to 9.6.3
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
+- Upgrade to 9.6.2 for Photon upgrade bump
+* Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
+- Applied CVE-2016-5423.patch
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
+- Required krb5-devel.
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
+- Modified %check
+* Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+- Add tzdata to buildrequires and requires.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+- GA - Bump release of all rpms
+* Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
+- Updated to version 9.5.3
+* Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+- Updated to version 9.5.2
+* Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+- Updated to version 9.5.1
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+- Updated to version 9.5.0
+* Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
+- Update to version 9.4.4.
+* Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
+- Exclude /usr/lib/debug
+* Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+- Initial build. First version

@@ -1,24 +1,24 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GNU Public License (GPL) v3
-URL:            https://repmgr.org/
+URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://repmgr.org/download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=2c233183daaf766353312d1693e394d1c1753dd9
+Source0: https://repmgr.org/download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1b3c64a9746b7b3f7faf4475750913822b918d415fb0fc19fff5ee8f51c92aeb886d1c6f35b749fc76895b4512ca40c3b5bece57eb012d7d77467c4da72bb8db
 
-BuildRequires:  postgresql-devel
+BuildRequires:  postgresql14-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  cpio
 BuildRequires:  libedit-devel
 
-Requires:       postgresql-libs
+Requires:       (postgresql14-libs or postgresql13-libs or postgresql10-libs)
 Requires:       readline
 Requires:       openssl
 Requires:       zlib
@@ -32,10 +32,24 @@ repmgr is an open-source tool suite for managing replication and failover in a c
 
 %build
 %configure CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
-make %{_smp_mflags} CFLAGS="-O2 -g -fcommon"
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{_smp_mflags}
+%make_install %{?_smp_mflags}
+
+mkdir -p %{buildroot}%{_usr}
+
+pg_ver="$(pg_config --version | cut -d' ' -f2 | cut -d. -f1)"
+
+pushd %{buildroot}%{_usr}/pgsql/"${pg_ver}"
+mv bin share lib %{buildroot}%{_usr}
+popd
+
+rmdir %{buildroot}%{_usr}/pgsql/"${pg_ver}" \
+      %{buildroot}%{_usr}/pgsql
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -48,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Fri Dec 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-4
+- Fix pgsql requires
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-3
 - Exclude debug symbols properly
 * Mon Jan 31 2022 Susant Sahani  <ssahani@vmware.com> 5.3.0-2

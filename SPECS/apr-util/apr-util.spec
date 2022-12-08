@@ -3,15 +3,15 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    Apache License 2.0
-URL:        https://apr.apache.org/
+URL:        https://apr.apache.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 
-Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha512  %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
+Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
+%define sha512 %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
 
 BuildRequires:   apr-devel
 BuildRequires:   sqlite-devel
@@ -19,12 +19,12 @@ BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
 BuildRequires:   expat-devel
 BuildRequires:   openldap
-BuildRequires:   postgresql-devel >= 10.5
+BuildRequires:   postgresql14-devel
 
 Requires:   apr
 Requires:   openssl
 Requires:   expat
-Requires:	nss
+Requires:   nss
 
 %description
 The Apache Portable Runtime Utility Library.
@@ -42,7 +42,7 @@ build applications using the APR utility library.
 %package ldap
 Group: Development/Libraries
 Summary: APR utility library LDAP support
-Requires: apr-util
+Requires: %{name} = %{version}-%{release}
 Requires: openldap
 
 %description ldap
@@ -51,8 +51,8 @@ This package provides the LDAP support for the apr-util.
 %package pgsql
 Group: Development/Libraries
 Summary: APR utility library PostgreSQL DBD driver
-Requires: apr-util
-Requires: postgresql >= 10.5
+Requires: %{name} = %{version}-%{release}
+Requires: (postgresql14-libs or postgresql13-libs or postgresql10-libs)
 
 %description pgsql
 This package provides the PostgreSQL driver for the apr-util DBD (database abstraction) interface.
@@ -60,7 +60,7 @@ This package provides the PostgreSQL driver for the apr-util DBD (database abstr
 %package sqlite
 Group: Development/Libraries
 Summary: APR utility library SQLite DBD driver.
-Requires: apr-util
+Requires: %{name} = %{version}-%{release}
 
 %description sqlite
 This package provides the SQLite driver for the apr-util DBD
@@ -70,13 +70,16 @@ This package provides the SQLite driver for the apr-util DBD
 %autosetup -p1
 
 %build
-%configure --with-apr=%{_prefix} \
-        --with-ldap --without-gdbm \
-        --with-sqlite3 --with-pgsql \
-        --without-sqlite2 \
-        --with-openssl=/usr \
-        --with-nss \
-        --with-crypto
+%configure \
+    --with-apr=%{_prefix} \
+    --with-ldap \
+    --without-gdbm \
+    --with-sqlite3 \
+    --with-pgsql \
+    --without-sqlite2 \
+    --with-openssl=%{_usr} \
+    --with-nss \
+    --with-crypto
 
 %make_build
 
@@ -85,8 +88,7 @@ This package provides the SQLite driver for the apr-util DBD
 
 %if 0%{?with_check}
 %check
-# make doesn't support _smp_mflags
-make check
+make check %{?_smp_mflags}
 %endif
 
 %clean
@@ -99,8 +101,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_libdir}/aprutil.exp
 %{_libdir}/libaprutil-%{apuver}.so.*
-%{_libdir}/apr-util-%{apuver}/apr_crypto_nss*
-%{_libdir}/apr-util-%{apuver}/apr_crypto_openssl*
+%{_libdir}/%{name}-%{apuver}/apr_crypto_nss*
+%{_libdir}/%{name}-%{apuver}/apr_crypto_openssl*
 %exclude %dir %{_libdir}/debug
 
 %files devel
@@ -109,21 +111,23 @@ rm -rf %{buildroot}
 %{_libdir}/libaprutil-%{apuver}.so
 %{_bindir}/*
 %{_includedir}/*
-%{_libdir}/pkgconfig/apr-util-%{apuver}.pc
+%{_libdir}/pkgconfig/%{name}-%{apuver}.pc
 
 %files ldap
 %defattr(-,root,root,-)
-%{_libdir}/apr-util-%{apuver}/apr_ldap*
+%{_libdir}/%{name}-%{apuver}/apr_ldap*
 
 %files pgsql
 %defattr(-,root,root,-)
-%{_libdir}/apr-util-%{apuver}/apr_dbd_pgsql*
+%{_libdir}/%{name}-%{apuver}/apr_dbd_pgsql*
 
 %files sqlite
 %defattr(-,root,root,-)
-%{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
+%{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Fri Dec 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-8
+- Fix pgsql requires
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-7
 - Bump version as a part of sqlite upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-6
