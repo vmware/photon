@@ -1,16 +1,21 @@
-commit cba5df09b6f1f9ec29f6f0e5422a441cb94fb31d
-Author: Keerthana K <keerthanak@vmware.com>
-Date:   Wed Jan 20 08:06:22 2021 +0000
+From f39f08830588a6fc9beb9f14217aed41dbbc888d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 25 Jan 2021 19:34:10 -0800
+Subject: [PATCH 3/3] FIPS canister creation secure
 
-    Disable RAP HASH for AES-NI asm
-    
-    Signed-off-by: Keerthana K <keerthanak@vmware.com>
+ - Disable RAP HASH for AES-NI asm
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ arch/x86/crypto/aesni-intel_asm.S        | 14 +++++++-------
+ arch/x86/crypto/aesni-intel_avx-x86_64.S | 16 ++++++++--------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index f1a396f1d..1852b19a7 100644
+index ca39f2e88..837c1e0aa 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
-@@ -1701,7 +1701,7 @@ SYM_FUNC_END(aesni_gcm_enc)
+@@ -1697,7 +1697,7 @@ SYM_FUNC_END(aesni_gcm_enc)
  *                     const u8 *aad,      // Additional Authentication Data (AAD)
  *                     u64 aad_len)        // Length of AAD in bytes.
  */
@@ -19,7 +24,7 @@ index f1a396f1d..1852b19a7 100644
  	FUNC_SAVE
  	GCM_INIT %arg3, %arg4,%arg5, %arg6
  	FUNC_RESTORE
-@@ -1716,7 +1716,7 @@ SYM_FUNC_END(aesni_gcm_init)
+@@ -1712,7 +1712,7 @@ SYM_FUNC_END(aesni_gcm_init)
  *                    const u8 *in,       // Plaintext input
  *                    u64 plaintext_len,  // Length of data in bytes for encryption.
  */
@@ -28,7 +33,7 @@ index f1a396f1d..1852b19a7 100644
  	FUNC_SAVE
  	GCM_ENC_DEC enc
  	FUNC_RESTORE
-@@ -1731,7 +1731,7 @@ SYM_FUNC_END(aesni_gcm_enc_update)
+@@ -1727,7 +1727,7 @@ SYM_FUNC_END(aesni_gcm_enc_update)
  *                    const u8 *in,       // Plaintext input
  *                    u64 plaintext_len,  // Length of data in bytes for encryption.
  */
@@ -37,7 +42,7 @@ index f1a396f1d..1852b19a7 100644
  	FUNC_SAVE
  	GCM_ENC_DEC dec
  	FUNC_RESTORE
-@@ -1746,7 +1746,7 @@ SYM_FUNC_END(aesni_gcm_dec_update)
+@@ -1742,7 +1742,7 @@ SYM_FUNC_END(aesni_gcm_dec_update)
  *                    u64 auth_tag_len);  // Authenticated Tag Length in bytes. Valid values are 16 (most likely),
  *                                        // 12 or 8.
  */
@@ -46,7 +51,7 @@ index f1a396f1d..1852b19a7 100644
  	FUNC_SAVE
  	GCM_COMPLETE %arg3 %arg4
  	FUNC_RESTORE
-@@ -1943,7 +1943,7 @@ SYM_FUNC_END(aesni_set_key)
+@@ -1937,7 +1937,7 @@ SYM_FUNC_END(aesni_set_key)
  /*
   * void aesni_enc(const void *ctx, u8 *dst, const u8 *src)
   */
@@ -55,7 +60,7 @@ index f1a396f1d..1852b19a7 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2132,7 +2132,7 @@ SYM_FUNC_END(_aesni_enc4)
+@@ -2126,7 +2126,7 @@ SYM_FUNC_END(_aesni_enc4)
  /*
   * void aesni_dec (const void *ctx, u8 *dst, const u8 *src)
   */
@@ -64,7 +69,7 @@ index f1a396f1d..1852b19a7 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2637,7 +2637,7 @@ SYM_FUNC_END(_aesni_inc)
+@@ -2758,7 +2758,7 @@ SYM_FUNC_END(_aesni_inc)
   * void aesni_ctr_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
   *		      size_t len, u8 *iv)
   */
@@ -74,10 +79,10 @@ index f1a396f1d..1852b19a7 100644
  	cmp $16, LEN
  	jb .Lctr_enc_just_ret
 diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
-index 25954355a..5fee47956 100644
+index 75cecd02a..0852ab573 100644
 --- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
 +++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
-@@ -1773,7 +1773,7 @@ _initial_blocks_done\@:
+@@ -1763,7 +1763,7 @@ _initial_blocks_done\@:
  #        const   u8 *aad, /* Additional Authentication Data (AAD)*/
  #        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
  #############################################################
@@ -86,7 +91,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          INIT GHASH_MUL_AVX, PRECOMPUTE_AVX
          FUNC_RESTORE
-@@ -1788,7 +1788,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen2)
+@@ -1778,7 +1778,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen2)
  #        const   u8 *in, /* Plaintext input */
  #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
  ###############################################################################
@@ -95,7 +100,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov     keysize, %eax
          cmp     $32, %eax
-@@ -1817,7 +1817,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen2)
+@@ -1807,7 +1807,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen2)
  #        const   u8 *in, /* Ciphertext input */
  #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
  ###############################################################################
@@ -104,7 +109,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov     keysize,%eax
          cmp     $32, %eax
-@@ -1846,7 +1846,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen2)
+@@ -1836,7 +1836,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen2)
  #        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
  #				Valid values are 16 (most likely), 12 or 8. */
  ###############################################################################
@@ -113,7 +118,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov	keysize,%eax
          cmp     $32, %eax
-@@ -2741,7 +2741,7 @@ _initial_blocks_done\@:
+@@ -2731,7 +2731,7 @@ _initial_blocks_done\@:
  #        const   u8 *aad, /* Additional Authentication Data (AAD)*/
  #        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
  #############################################################
@@ -122,7 +127,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          INIT GHASH_MUL_AVX2, PRECOMPUTE_AVX2
          FUNC_RESTORE
-@@ -2756,7 +2756,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen4)
+@@ -2746,7 +2746,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen4)
  #        const   u8 *in, /* Plaintext input */
  #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
  ###############################################################################
@@ -131,7 +136,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov     keysize,%eax
          cmp     $32, %eax
-@@ -2785,7 +2785,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen4)
+@@ -2775,7 +2775,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen4)
  #        const   u8 *in, /* Ciphertext input */
  #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
  ###############################################################################
@@ -140,7 +145,7 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov     keysize,%eax
          cmp     $32, %eax
-@@ -2814,7 +2814,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen4)
+@@ -2804,7 +2804,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen4)
  #        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
  #                              Valid values are 16 (most likely), 12 or 8. */
  ###############################################################################
@@ -149,3 +154,6 @@ index 25954355a..5fee47956 100644
          FUNC_SAVE
          mov	keysize,%eax
          cmp     $32, %eax
+-- 
+2.30.5
+

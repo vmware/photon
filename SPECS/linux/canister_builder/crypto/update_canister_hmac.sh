@@ -2,7 +2,7 @@
 #
 # HMAC injection and canister sanity check script
 #
-# Copyright (C) 2020, 2021, VMware, Inc.
+# Copyright (C) 2020 - 2022 VMware, Inc.
 # Author: Alexey Makhalov <amakhalov@vmware.com>
 #
 

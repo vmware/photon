@@ -1,7 +1,7 @@
 /*
  * FIPS Integrity canister relocations generator.
  *
- * Copyright (C) 2020, 2021, VMware, Inc.
+ * Copyright (C) 2020 - 2022 VMware, Inc.
  * Authors: Alexey Makhalov <amakhalov@vmware.com>
  *          Keerthana Kalyanasundaram <keerthanak@vmware.com>
  *
@@ -24,6 +24,7 @@
 
 #define INT_MAX		((int)(~0U>>1))
 #define INT_MIN		(-INT_MAX - 1)
+#define UINT_MAX        (~0U)
 
 struct symbol_entry {
 	char *name;
@@ -206,7 +207,7 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 		}
 		if (rels[n].r_addend > INT_MAX || rels[n].r_addend < INT_MIN)
 			error("r_addend overflow");
-		if (rels[n].r_offset - offset >= (1 << 16))
+		if (rels[n].r_offset - offset > UINT_MAX)
 			error("r_offset overflow");
 		r->section = section_symbols[sndx]->ondx;
 		r->type = r_type;
@@ -282,8 +283,9 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		 * fips_integrity_init() before sort_main_extable()
 		 * The same situation is with __jump_table which got sorted
 		 * by jump_label_init().
-		 * skip ".note.gnu.property" section from canister measurement
-		 * as this section is stripped off from vmlinux
+		 *
+		 * Skip ".note.gnu.property" section from canister measurement
+		 * as this section is stripped off from vmlinux.
 		 */
 		if (!strncmp(name, ".discard.", 9) ||
 		    !strcmp(name, ".exitcall.exit") ||

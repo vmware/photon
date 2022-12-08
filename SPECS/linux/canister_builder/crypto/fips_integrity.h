@@ -1,7 +1,7 @@
 /*
  * FIPS Integrity check for Crypto API
  *
- * Copyright (C) 2020, 2021, VMware, Inc.
+ * Copyright (C) 2020 - 2022 VMware, Inc.
  * Author: Alexey Makhalov <amakhalov@vmware.com>
  *
  */
@@ -23,7 +23,7 @@ struct __attribute__((packed)) relocation {
 	unsigned char section : SECTION_BITS;
 	unsigned char type : TYPE_BITS;
 	unsigned short symbol : SYMBOL_BITS;
-	unsigned short offset;
+	unsigned int offset;
 	int addend;
 };
 

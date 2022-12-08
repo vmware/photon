@@ -59,7 +59,7 @@ new file mode 100644
 index 000000000..c2ffd20c9
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,91 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -88,24 +88,12 @@ index 000000000..c2ffd20c9
 +		.alg_name = "cbc(aes)",
 +	},
 +	{
-+		.driver_name = "cbc(des3_ede)",
-+		.alg_name = "cbc(des3_ede)",
-+	},
-+	{
 +		.driver_name = "ctr(aes)",
 +		.alg_name = "ctr(aes)",
 +	},
 +	{
-+		.driver_name = "ctr(des3_ede)",
-+		.alg_name = "ctr(des3_ede)",
-+	},
-+	{
 +		.driver_name = "ecb(aes)",
 +		.alg_name = "ecb(aes)",
-+	},
-+	{
-+		.driver_name = "ecb(des3_ede)",
-+		.alg_name = "ecb(des3_ede)",
 +	},
 +	{
 +		.driver_name = "hmac(sha224)",

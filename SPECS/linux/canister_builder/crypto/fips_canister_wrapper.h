@@ -1,7 +1,7 @@
 /*
  * Kernel APIs wrapper for the canister.
  *
- * Copyright (C) 2020, 2021, VMware, Inc.
+ * Copyright (C) 2020 - 2022 VMware, Inc.
  * Author: Alexey Makhalov <amakhalov@vmware.com>
  *
  */

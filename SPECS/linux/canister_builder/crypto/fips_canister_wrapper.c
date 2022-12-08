@@ -1,13 +1,12 @@
 /*
  * Kernel APIs wrapper for the canister.
  *
- * Copyright (C) 2020, 2021, VMware, Inc.
+ * Copyright (C) 2020 - 2022 VMware, Inc.
  * Author: Alexey Makhalov <amakhalov@vmware.com>
  *
  */
 
-// Uncomment it in 2023. des3 will not by allowed in FIPS mode.
-//#define DES3_IS_NOT_ALLOWED
+#define DES3_IS_NOT_ALLOWED
 
 #include <linux/kernel.h>
 #include <linux/types.h>

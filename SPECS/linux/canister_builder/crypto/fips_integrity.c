@@ -1,7 +1,7 @@
 /*
  * FIPS Integrity check for Crypto API
  *
- * Copyright (C) 2020, 2021, VMware, Inc.
+ * Copyright (C) 2020 - 2022 VMware, Inc.
  * Authors: Alexey Makhalov <amakhalov@vmware.com>
  *          Keerthana Kalyanasundaram <keerthanak@vmware.com>
  */
