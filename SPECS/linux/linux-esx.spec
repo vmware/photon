@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.264
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -281,6 +281,9 @@ Patch372: 0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch379: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+
+# Patch to distribute the tasks within affined cpus
+Patch380: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
 # vmw_pvscsi
 Patch381: 0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
@@ -796,6 +799,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-7
+- Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-6
 - Fix for CVE-2022-43945
 * Fri Nov 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-5

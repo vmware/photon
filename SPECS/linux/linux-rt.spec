@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.264
-Release:        7%{?kat_build:.%kat}%{?dist}
+Release:        8%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -613,6 +613,9 @@ Patch634: 0001-sched-Mark-hrtimers-to-expire-in-hard-interrupt-cont.patch
 Patch635: 0002-sched-features-Fix-hrtick-reprogramming.patch
 Patch636: 0003-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 
+# Patch to distribute the tasks within affined cpus
+Patch637: linux-rt-sched-core-Distribute-tasks-within-affinity-masks.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -803,7 +806,7 @@ The Linux package contains the Linux kernel doc files
 # ApplyPatch.inc
 %include %{SOURCE14}
 
-ApplyPatch "0" "636"
+ApplyPatch "0" "637"
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1205,6 +1208,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-8
+- Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-7
 - Fix for CVE-2022-43945
 * Mon Nov 21 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-6

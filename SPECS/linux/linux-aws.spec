@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.264
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -206,6 +206,9 @@ Patch179: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch184: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
+# Patch to distribute the tasks within affined cpus
+Patch185: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -303,7 +306,7 @@ ApplyPatch "0" "160"
 ApplyPatch "161" "169"
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "170" "184"
+ApplyPatch "170" "185"
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -504,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4
+- Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-3
 - Fix for CVE-2022-43945
 * Mon Nov 07 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-2

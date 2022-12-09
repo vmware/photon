@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.264
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -197,6 +197,9 @@ Patch139: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+
+# Patch to distribute the tasks within affined cpus
+Patch145: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -1082,6 +1085,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-7
+- Distribute the tasks across affined cpus
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.264-6
 - Fix for CVE-2022-43945
 * Fri Nov 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.264-5
