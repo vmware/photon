@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.3
-Release:        2%{?dist}
+Version:        3.4.4
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=457239e94c22fb2bf50a807a0b8d6f0cd27919b0a8af7a91e641add91b6ca4ed94f99316c5dbced829e00b7699f0254a1ef8a564ea243d810eadb450ba66b391
+%define sha512  %{name}=ef0d66c9de4bf48801b6c79fd5070eaf772cd362bce6d70c9c7dddfb6cfeb46aad6bb03efae97bba556b089f1e3399a672708566f33470aa2d656ca953e3c732
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -135,11 +135,6 @@ mkdir -p %{buildroot}/var/cache/%{name} %{buildroot}%{_unitdir}
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
-mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
-mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfmetalink
-mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
-mv %{buildroot}%{_tdnfpluginsdir}/libtdnfmetalink.so %{buildroot}%{_tdnfpluginsdir}/tdnfmetalink/
-mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
 
 pushd %{__cmake_builddir}/python
 %py3_install
@@ -239,13 +234,13 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %defattr(-,root,root)
 %dir %{_sysconfdir}/tdnf/pluginconf.d
 %config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfmetalink.conf
-%{_tdnfpluginsdir}/tdnfmetalink/libtdnfmetalink.so
+%{_tdnfpluginsdir}/libtdnfmetalink.so
 
 %files plugin-repogpgcheck
 %defattr(-,root,root)
 %dir %{_sysconfdir}/%{name}/pluginconf.d
 %config(noreplace) %{_sysconfdir}/%{name}/pluginconf.d/tdnfrepogpgcheck.conf
-%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so
 
 %files python
 %defattr(-,root,root)
@@ -263,6 +258,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Dec 09 2022 Oliver Kurth <okurth@vmware.com> 3.4.4-1
+- update to 3.4.4
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.3-2
 - Update release to compile with python 3.11
 * Thu Nov 17 2022 Oliver Kurth <okurth@vmware.com> 3.4.3-1
