@@ -33,7 +33,7 @@ Messages are persisted on disk and replicated within the cluster to prevent data
 %autosetup -n %{name}-%{version}-src
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
 ./gradlew jar
 ./gradlew srcJar
 ./gradlew javadoc

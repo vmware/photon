@@ -6,4 +6,4 @@ DHCP=yes
 IPv6AcceptRA=no
 
 [DHCPv4]
-SendRelease=false
+SendRelease=no

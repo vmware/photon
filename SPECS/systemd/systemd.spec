@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        252.2
-Release:        3%{?dist}
+Version:        252.4
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=4a4f7382a6a2d7aea3a2866034a4562d1b45a4e18f733a371bb83d67bf4ef5d31d480e703fd353ee847fadc76005f9191a9a44d95c57f6849fdd451cc1b9e21d
+%define sha512 %{name}=d4e99a67c59091dae78f654433a6c5e114ae66256b72d9d43292c43a986ee6a58e2d06f12866cbd7ec821b61580ec003af1725f60fd4b038b4a981b3ca839ee2
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -676,6 +676,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 252.4-1
+- Version bump. Use `SendRelease=no` drop false same as IPv6AcceptRA=
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 252.2-3
 - Update release to compile with python 3.11
 * Wed Nov 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 252.2-2
