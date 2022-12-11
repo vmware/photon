@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.3.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -78,16 +78,18 @@ make check %{?_smp_mflags}
 
 %files -n python3-talloc
 %defattr(-,root,root)
-%{_libdir}/libpytalloc-util.cpython-311-x86-64-linux-gnu.so.*
+%{_libdir}/libpytalloc-util.cpython-311*linux-gnu.so.*
 %{_libdir}/python%{python3_version}/site-packages/*
 
 %files -n python3-talloc-devel
 %defattr(-,root,root)
 %{_includedir}/pytalloc.h
-%{_libdir}/libpytalloc-util.cpython-311-x86-64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-311-x86_64-linux-gnu.pc
+%{_libdir}/libpytalloc-util.cpython-311*linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-311*linux-gnu.pc
 
 %changelog
+* Sun Dec 11 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.4-2
+- Fix build error on arm machine
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.4-1
 - Update to version 2.3.4
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.3-4
