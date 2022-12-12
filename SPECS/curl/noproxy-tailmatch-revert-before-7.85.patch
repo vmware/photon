@@ -1,0 +1,95 @@
+From b1953c1933b369b1217ef0f16053e26da63488c3 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Sun, 6 Nov 2022 23:19:51 +0100
+Subject: [PATCH] noproxy: tailmatch like in 7.85.0 and earlier
+
+A regfression in 7.86.0 (via 1e9a538e05c010) made the tailmatch work
+differently than before. This restores the logic to how it used to work:
+
+All names listed in NO_PROXY are tailmatched against the used domain
+name, if the lengths are identical it needs a full match.
+
+Update the docs, update test 1614.
+
+Reported-by: Stuart Henderson
+Fixes #9842
+Closes #9858
+---
+ docs/libcurl/opts/CURLOPT_NOPROXY.3 |  4 ----
+ lib/noproxy.c                       | 32 +++++++++++++++--------------
+ tests/unit/unit1614.c               |  3 ++-
+ 3 files changed, 19 insertions(+), 20 deletions(-)
+
+diff --git a/docs/libcurl/opts/CURLOPT_NOPROXY.3 b/docs/libcurl/opts/CURLOPT_NOPROXY.3
+index 5e4c321304319..dc3cf7c108339 100644
+--- a/docs/libcurl/opts/CURLOPT_NOPROXY.3
++++ b/docs/libcurl/opts/CURLOPT_NOPROXY.3
+@@ -40,10 +40,6 @@ list is matched as either a domain which contains the hostname, or the
+ hostname itself. For example, "ample.com" would match ample.com, ample.com:80,
+ and www.ample.com, but not www.example.com or ample.com.org.
+ 
+-If the name in the \fInoproxy\fP list has a leading period, it is a domain
+-match against the provided host name. This way ".example.com" will switch off
+-proxy use for both "www.example.com" as well as for "foo.example.com".
+-
+ Setting the \fInoproxy\fP string to "" (an empty string) will explicitly
+ enable the proxy for all host names, even if there is an environment variable
+ set for it.
+diff --git a/lib/noproxy.c b/lib/noproxy.c
+index 2832ae166a5bc..fb856e4faa725 100644
+--- a/lib/noproxy.c
++++ b/lib/noproxy.c
+@@ -187,22 +187,24 @@ bool Curl_check_noproxy(const char *name, const char *no_proxy)
+             tokenlen--;
+ 
+           if(tokenlen && (*token == '.')) {
+-            /* A: example.com matches '.example.com'
+-               B: www.example.com matches '.example.com'
+-               C: nonexample.com DOES NOT match '.example.com'
+-            */
+-            if((tokenlen - 1) == namelen)
+-              /* case A, exact match without leading dot */
+-              match = strncasecompare(token + 1, name, namelen);
+-            else if(tokenlen < namelen)
+-              /* case B, tailmatch with leading dot */
+-              match = strncasecompare(token, name + (namelen - tokenlen),
+-                                      tokenlen);
+-            /* case C passes through, not a match */
++            /* ignore leading token dot as well */
++            token++;
++            tokenlen--;
+           }
+-          else
+-            match = (tokenlen == namelen) &&
+-              strncasecompare(token, name, namelen);
++          /* A: example.com matches 'example.com'
++             B: www.example.com matches 'example.com'
++             C: nonexample.com DOES NOT match 'example.com'
++          */
++          if(tokenlen == namelen)
++            /* case A, exact match */
++            match = strncasecompare(token, name, namelen);
++          else if(tokenlen < namelen) {
++            /* case B, tailmatch domain */
++            match = (name[namelen - tokenlen - 1] == '.') &&
++              strncasecompare(token, name + (namelen - tokenlen),
++                              tokenlen);
++          }
++          /* case C passes through, not a match */
+           break;
+         case TYPE_IPV4:
+           /* FALLTHROUGH */
+diff --git a/tests/unit/unit1614.c b/tests/unit/unit1614.c
+index 8f62b70d4d829..523d102bf29d9 100644
+--- a/tests/unit/unit1614.c
++++ b/tests/unit/unit1614.c
+@@ -85,7 +85,8 @@ UNITTEST_START
+     { "www.example.com", "localhost,www.example.com.,.example.de", TRUE},
+     { "example.com", "localhost,example.com,.example.de", TRUE},
+     { "example.com.", "localhost,example.com,.example.de", TRUE},
+-    { "www.example.com", "localhost,example.com,.example.de", FALSE},
++    { "nexample.com", "localhost,example.com,.example.de", FALSE},
++    { "www.example.com", "localhost,example.com,.example.de", TRUE},
+     { "127.0.0.1", "127.0.0.1,localhost", TRUE},
+     { "127.0.0.1", "127.0.0.1,localhost,", TRUE},
+     { "127.0.0.1", "127.0.0.1/8,localhost,", TRUE},
