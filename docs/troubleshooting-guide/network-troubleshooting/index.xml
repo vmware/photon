@@ -103,8 +103,9 @@ fe80::42:f0ff:fef7:bd81
 &lt;li>
 &lt;p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
-vice]
-ronment=SYSTEMD_LOG_LEVEL=debug
+\[Service\]
+Environment=SYSTEMD_LOG_LEVEL=debug
+EOF
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
@@ -113,12 +114,12 @@ systemctl restart systemd-networkd
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Verify that your changes took effect:&lt;/p>
-&lt;pre>&lt;code class="language-console" data-lang="console">systemd-delta --type=extended`
+&lt;pre>&lt;code class="language-console" data-lang="console">systemd-delta --type=extended
 &lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>View the log files by running this command:&lt;/p>
-&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u systemd-networkd`
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u systemd-networkd
 &lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>
