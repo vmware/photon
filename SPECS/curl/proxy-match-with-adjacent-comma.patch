@@ -1,0 +1,93 @@
+From efc286b7a62af0568fdcbf3c68791c9955182128 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Thu, 27 Oct 2022 13:54:27 +0200
+Subject: [PATCH] noproxy: also match with adjacent comma
+
+If the host name is an IP address and the noproxy string contained that
+IP address with a following comma, it would erroneously not match.
+
+Extended test 1614 to verify this combo as well.
+
+Reported-by: Henning Schild
+
+Fixes #9813
+Closes #9814
+---
+ lib/noproxy.c         | 20 ++++++++++++--------
+ tests/data/test1614   |  2 +-
+ tests/unit/unit1614.c | 14 ++++++++++++++
+ 3 files changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/lib/noproxy.c b/lib/noproxy.c
+index 3409dab6f6eda..58bc69a2dc154 100644
+--- a/lib/noproxy.c
++++ b/lib/noproxy.c
+@@ -192,18 +192,22 @@ bool Curl_check_noproxy(const char *name, const char *no_proxy)
+           /* FALLTHROUGH */
+         case TYPE_IPV6: {
+           const char *check = token;
+-          char *slash = strchr(check, '/');
++          char *slash;
+           unsigned int bits = 0;
+           char checkip[128];
++          if(tokenlen >= sizeof(checkip))
++            /* this cannot match */
++            break;
++          /* copy the check name to a temp buffer */
++          memcpy(checkip, check, tokenlen);
++          checkip[tokenlen] = 0;
++          check = checkip;
++
++          slash = strchr(check, '/');
+           /* if the slash is part of this token, use it */
+-          if(slash && (slash < &check[tokenlen])) {
++          if(slash) {
+             bits = atoi(slash + 1);
+-            /* copy the check name to a temp buffer */
+-            if(tokenlen >= sizeof(checkip))
+-              break;
+-            memcpy(checkip, check, tokenlen);
+-            checkip[ slash - check ] = 0;
+-            check = checkip;
++            *slash = 0; /* null terminate there */
+           }
+           if(type == TYPE_IPV6)
+             match = Curl_cidr6_match(name, check, bits);
+diff --git a/tests/data/test1614 b/tests/data/test1614
+index 4a9d54eb620e1..73bdbb4e007b3 100644
+--- a/tests/data/test1614
++++ b/tests/data/test1614
+@@ -16,7 +16,7 @@ unittest
+ proxy
+ </features>
+  <name>
+-cidr comparisons
++noproxy and cidr comparisons
+  </name>
+ </client>
+ <errorcode>
+diff --git a/tests/unit/unit1614.c b/tests/unit/unit1614.c
+index 60285450c3cc3..c2f563a0dc1d3 100644
+--- a/tests/unit/unit1614.c
++++ b/tests/unit/unit1614.c
+@@ -77,6 +77,20 @@ UNITTEST_START
+     { NULL, NULL, 0, FALSE} /* end marker */
+   };
+   struct noproxy list[]= {
++    { "127.0.0.1", "127.0.0.1,localhost", TRUE},
++    { "127.0.0.1", "127.0.0.1,localhost,", TRUE},
++    { "127.0.0.1", "127.0.0.1/8,localhost,", TRUE},
++    { "127.0.0.1", "127.0.0.1/28,localhost,", TRUE},
++    { "127.0.0.1", "127.0.0.1/31,localhost,", TRUE},
++    { "127.0.0.1", "localhost,127.0.0.1", TRUE},
++    { "127.0.0.1", "localhost,127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1."
++      "127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127."
++      "0.0.1.127.0.0.1.127.0.0." /* 128 bytes "address" */, FALSE},
++    { "127.0.0.1", "localhost,127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1."
++      "127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127.0.0.1.127."
++      "0.0.1.127.0.0.1.127.0.0" /* 127 bytes "address" */, FALSE},
++    { "localhost", "localhost,127.0.0.1", TRUE},
++    { "localhost", "127.0.0.1,localhost", TRUE},
+     { "foobar", "barfoo", FALSE},
+     { "foobar", "foobar", TRUE},
+     { "192.168.0.1", "foobar", FALSE},

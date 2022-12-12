@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.86.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -10,6 +10,9 @@ Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
+Patch0:         proxy-match-with-adjacent-comma.patch
+Patch1:         fix-tail-matching-regression.patch
+Patch2:         noproxy-tailmatch-revert-before-7.85.patch
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -92,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Dec 09 2022 Harinadh D <hdommaraju@vmware.com> 7.86.0-2
+- fix no proxy tail matching regression
 * Thu Oct 27 2022 Harinadh D <hdommaraju@vmware.com> 7.86.0-1
 - Version update, also fix the missed changes for CVE-2022-42915
 * Mon Oct 24 2022 Harinadh D <hdommaraju@vmware.com> 7.85.0-1
