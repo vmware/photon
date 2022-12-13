@@ -1,6 +1,6 @@
 Summary:    DWARF optimization and duplicate removal tool
 Name:       dwz
-Version:    0.14
+Version:    0.15
 Release:    1%{?dist}
 License:    GPLv2+ and GPLv3+
 URL:        https://sourceware.org/dwz
@@ -9,13 +9,16 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:     https://sourceware.org/ftp/dwz/releases/%{name}-%{version}.tar.xz
-%define sha512 %{name}=62c39f79723ca99305dbb08d1d24a17699b9a84dd98c30904103da116831b1253bf1edbfb905c76fdc4d48305bd1ea0046314c5619209c40a1e624b8ae4908b1
+%define sha512 %{name}=43eb4b08c1f529859dc3466697d5ad7e172d6efbf21409530a67a2492ae4acc3734d5134bbd6e07c089ecc358d915871b13e22f6e4f1dd4c3af19ef804f8fcc5
 
 BuildRequires: gcc
 BuildRequires: gdb
 BuildRequires: dejagnu
 BuildRequires: make
 BuildRequires: elfutils-libelf-devel
+BuildRequires: xxhash-devel
+
+Requires: elfutils-libelf
 
 %description
 The dwz package contains a program that attempts to optimize DWARF
@@ -44,10 +47,11 @@ make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-%license COPYING COPYING3 COPYING.RUNTIME
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
+- Automatic Version Bump. Add xxhash-devel as build requirement.
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.14-1
 - Intial version. Needed for rpm-4.17.0

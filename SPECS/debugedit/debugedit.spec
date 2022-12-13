@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -77,5 +77,7 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Fri Jan 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.0-2
+- Version bump for dwz upgrade.
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0-1
 - Intial version. Needed for rpm-4.17.0
