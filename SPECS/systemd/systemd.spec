@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -22,6 +22,8 @@ Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
 Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
+Patch4:         CVE-2022-4415-1.patch
+Patch5:         CVE-2022-4415-2.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -658,14 +660,19 @@ rm -rf %{_systemd_util_dir}/tests
 %{_unitdir}/systemd-journal-upload.service
 
 %files rpm-macros
+%defattr(-,root,root)
 %{_libdir}/rpm/macros.d
 
 %files tests
+%defattr(-,root,root)
 %{_systemd_util_dir}/tests
 
 %files lang -f ../%{name}.lang
+%defattr(-,root,root)
 
 %changelog
+* Mon Dec 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-6
+- Fix CVE-2022-4415
 * Wed Nov 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-5
 - Add `SendRelease=false` to default network file.
 * Wed Aug 10 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 247.11-4
