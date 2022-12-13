@@ -1,3 +1,11 @@
+# Be careful while doing major version upgrades of this package
+# Refer https://www.rabbitmq.com/upgrade.html
+# The above page captures upgrade compatibiltiy of rabbitmq versions
+# Also better to take a look at https://www.rabbitmq.com/feature-flags.html#version-compatibility
+# A word of advice here is, don't jump multiple versions in one shot; for example
+# 3.8.x --> 3.11.x (not recommended)
+# 3.8.x --> 3.9.x (recommended & probably okay)
+
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.10.7
