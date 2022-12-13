@@ -26,6 +26,108 @@
 #define INT_MIN		(-INT_MAX - 1)
 #define UINT_MAX        (~0U)
 
+/*
+* Canister bytecode instruction set
+*
+* LJMP - Long Jump
+* SRPR - Short RPR (Repeat Previous Relocation. Use same reloc type, section and symbol as previous instruction)
+* LRPR - Long RPR (Repeat Previous Relocation. Use same reloc type, section and symbol as previous instruction)
+* SREL - Short Relocation
+* LREL - Long Relocation
+*
+*-------------------------------------------------------------------------------------------------------------------------------*
+| Name	|Bytes	|	Opcode		|	Param bits	|	Param			|	Notes	   		|
+|_______|_______|_______________________|_______________________|_______________________________|_______________________________|
+|SECTION|   1	|     1101 {N:4}	|	4		| 4 bits of section increment	|   Section increment from prev	|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+| JMP	|   1	|     00   {P:6}   	|	6		| 6 bits of unsigned offset	|   Offset range [0;63]		|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+| LJMP	|   2	|     01   {P:14}	|	14		| 14 bits of unsigned offset	|   Offset range [0;16383]	|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+| SRPR	|   1	|     101  {A:5}	|	5		| 5 bits of signed addend delta	|   Addend range [-16 ; 15] 	|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+| LRPR	|   2	|     100  {A:13}	|	13		| 13 bits of signed addend delta|   Addend range [-4096;4095]	|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+|	|   	|   			|			| S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
+| SREL	|   2	|   1100 {S:8}{C:4}	|	12		| C - 4 bits of rel type and	|				|
+|	|	|			|			|     addend combination	|				|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+|	|	|			|			|R - 2 bits of rel type		|   Rel type range [0;3]	|
+| LREL	|   4	|  111 {R:2}{S:8}{A:19}	|			|S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
+|	|	|			|	29		|A - 19 bits of unsigned addend	|   Addend range[0;524287]	|
+|	|   	|  			|			|				|				|
+*-------------------------------------------------------------------------------------------------------------------------------*
+
+*
+* SREL - Rel type Addend combination
+*
+*---------------------------------------*
+| {Type, Addend} |	Substitute	|
+|________________|______________________|
+|  {0, 0}	 |	0000		|
+|----------------|----------------------|
+|  {1, -4}	 |	0110		|
+|----------------|----------------------|
+|  {1, -5}	 |	0101		|
+|----------------|----------------------|
+|  {1, 0}	 |	0100		|
+|----------------|----------------------|
+|  {1, 5}	 |	0111		|
+|----------------|----------------------|
+|  {2, 0}	 |	1100		|
+|----------------|----------------------|
+|  {2, 4}	 |	1110		|
+*---------------------------------------*
+*
+*
+*/
+
+#define ONE_BYTE_UNSIGNED_MAX_VALUE				(1 << 8) - 1
+#define TWO_BYTE_UNSIGNED_MAX_VALUE				(1 << 16) -1
+#define THREE_BYTE_UNSIGNED_MAX_VALUE				(1 << 24) - 1
+#define FOUR_BYTE_UNSIGNED_MAX_VALUE				(~0U)
+
+/* SEC Instruction */
+#define SEC_INSN_OPCODE					0xD0		/*1101 0000 */
+
+/* JMP Insturctions */
+#define JMP_INSN_OPCODE					0x0		/* 0000 0000 */
+#define LJMP_INSN_OPCODE				0x4000		/* 0100 0000 0000 0000 */
+#define LJMP_INSN_MAX_OFFSET				0x3FFF		/* 11 1111 1111 1111 */
+
+/* Short Rel Instructions */
+#define SREL_INSN_OPCODE				0xC000		/* 1100 0000 0000 0000 */
+#define SREL_INSN_TYPE_ADD_1				0x0		/* "0000" = Rel type 0, Addend 0 */
+#define SREL_INSN_TYPE_ADD_2				0x6		/* "0110" = Rel type 1, Addend -4 */
+#define SREL_INSN_TYPE_ADD_3				0x5		/* "0101" = Rel type 1, Addend -5 */
+#define SREL_INSN_TYPE_ADD_4				0x4		/* "0100" = Rel type 1, Addend 0 */
+#define SREL_INSN_TYPE_ADD_5				0x7		/* "0111" = Rel type 1, Addend 5 */
+#define SREL_INSN_TYPE_ADD_6				0xC		/* "1100" = Rel type 2, Addend 0 */
+#define SREL_INSN_TYPE_ADD_7				0xE		/* "1110" = Rel type 2, Addend 4 */
+
+
+/* Long Rel Instructions */
+#define LREL_INSN_OPCODE				0xE0000000	/* 1110 0000 0000 0000 0000 0000 0000 0000 */
+
+/* Short RPR Instructions */
+#define SRPR_INSN_OPCODE_SIGN_BIT_SET			0xB0		/* 1011 0000 */
+#define SRPR_INSN_OPCODE_SIGN_BIT_UNSET			0xA0		/* 1010 0000 */
+
+/* Long RPR Instructions */
+#define LRPR_INSN_OPCODE_SIGN_BIT_SET			0x9000		/* 1001 0000 0000 0000 */
+#define LRPR_INSN_OPCODE_SIGN_BIT_UNSET			0x8000		/* 1000 0000 0000 0000 */
+
+#define MIN_VALUE_3_BITS_SIGN				(-8)		/* 1 000 */
+#define MIN_VALUE_4_BITS_SIGN				0xFFFFFFF0	/* 1 0000 */
+#define MIN_VALUE_12_BITS_SIGN				0xFFFFF000	/* 1 0000 0000 0000 */
+
+#define MAX_VALUE_3_BITS				0x7		/* 111 */
+#define MAX_VALUE_4_BITS				0xF		/* 1111 */
+#define MAX_VALUE_6_BITS				0x3F		/* 11 1111 */
+#define MAX_VALUE_12_BITS				0xFFF		/* 1111 1111 1111 */
+#define MAX_VALUE_14_BITS				0x3FFF		/* 11 1111 1111 1111 */
+#define MAX_VALUE_19_BITS				0x7FFFF		/* 111 1111 1111 1111 1111 */
+
 struct symbol_entry {
 	char *name;
 	char *based_on;
@@ -67,6 +169,10 @@ static int n_relocs = 0;
 static size_t n_sections = 0;
 static bool initrodata_present = false;
 static Elf64_Sym *symtab = 0;
+
+
+static struct relocation *canister_relocations;
+static unsigned int bytecode_size = 0;
 
 static struct section_marker *marker(char *in);
 static int error(const char *format, ...);
@@ -178,8 +284,6 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 			default:
 				error("Unsupported relocation type");
 		}
-		if (r_type >= (1 << TYPE_BITS))
-			error("Number of relocation types more than maximum allowed");
 
 		/* First time we've seen this r_sym? look up needed. */
 		if (!symbols[r_sym].name) {
@@ -350,8 +454,6 @@ static void dump_sections(int ofd, int sfd)
 	}
 	dprintf(ofd, "};\n");
 	dprintf(ofd, "const __section(\".init.rodata\") int canister_sections_size = %d;\n\n", n);
-	if (n >= (1 << SECTION_BITS))
-		error("Number of sections more than maximum allowed");
 };
 
 /*
@@ -402,8 +504,6 @@ static void dump_symbols(int ofd, int sfd, struct symbol_entry *symbols, int n_s
 	}
 	dprintf(ofd, "};\n");
 	dprintf(ofd, "const __section(\".init.rodata\") int canister_strtab_size = %d;\n\n", index);
-	if (index >= (1 << SYMBOL_BITS))
-		error("Number of symbols more than maximum allowed");
 }
 
 static void dump_relocations(int ofd, struct symbol_entry *symbols)
@@ -414,32 +514,25 @@ static void dump_relocations(int ofd, struct symbol_entry *symbols)
 	 *
 	 * Packed (runtime) version of 'struct relocation' is defined in fips_integrity.h
 	 */
-	dprintf(ofd, "const __section(\".init.rodata\") struct relocation canister_relocations[] = {\n");
-	dprintf(ofd, "\t/* section, type, symbol, offset, addend */\n");
+	canister_relocations = (struct relocation *)malloc(sizeof(struct relocation) * n_relocs);
 	for (i = 0; i < n_relocs; i++) {
 		struct symbol_entry *s = &symbols[canister_relocs[i].symbol];
-		if (s->based_on)
+		if (s->based_on) {
 			/* Relocation to collapsed local symbol, print nice comment. */
-			dprintf(ofd, "\t{%2d, %d, %3d, 0x%x, %d},\t// %d: %s = %s + %d\n",
-				canister_relocs[i].section,
-				canister_relocs[i].type,
-				s->index,
-				canister_relocs[i].offset,
-				/* Add symbol offset to relocation addend. */
-				canister_relocs[i].addend + s->addend,
-				i, s->name, s->based_on, s->addend);
-		else
+				canister_relocations[i].section = canister_relocs[i].section;
+				canister_relocations[i].type = canister_relocs[i].type;
+				canister_relocations[i].symbol = s->index;
+				canister_relocations[i].offset = canister_relocs[i].offset;
+				canister_relocations[i].addend = canister_relocs[i].addend + s->addend;
+		} else {
 			/* Relocation to local section or to external (from vmlinux) symbol. */
-			dprintf(ofd, "\t{%2d, %d, %3d, 0x%x, %d},\t// %d: %s\n",
-				canister_relocs[i].section,
-				canister_relocs[i].type,
-				s->index,
-				canister_relocs[i].offset,
-				canister_relocs[i].addend,
-				i, s->name);
+				canister_relocations[i].section = canister_relocs[i].section;
+				canister_relocations[i].type = canister_relocs[i].type;
+				canister_relocations[i].symbol = s->index;
+				canister_relocations[i].offset = canister_relocs[i].offset;
+				canister_relocations[i].addend = canister_relocs[i].addend;
+		}
 	}
-	dprintf(ofd, "};\n");
-	dprintf(ofd, "const __section(\".init.rodata\") int canister_relocations_size = %d;\n\n", n_relocs);
 }
 
 static void generate_ldscript(char *filename)
@@ -510,6 +603,187 @@ static void generate_ldscript(char *filename)
 	dprintf(fd, "}\n");
 
 	close(fd);
+}
+
+static void print_insn_byte_wise(unsigned int insn, int nfd)
+{
+	if (insn <= ONE_BYTE_UNSIGNED_MAX_VALUE) {
+		dprintf(nfd, "0x%02x, ", insn & 0xff);
+		bytecode_size++;
+	} else if (insn <= TWO_BYTE_UNSIGNED_MAX_VALUE) {
+		dprintf(nfd, "0x%02x, 0x%02x, ",
+			(insn >> 8) & 0xff, insn & 0xff);
+		bytecode_size += 2;
+	} else if (insn <= THREE_BYTE_UNSIGNED_MAX_VALUE) {
+		dprintf(nfd, "0x%02x, 0x%02x, 0x%02x, ",
+			(insn >> 16) & 0xff,
+			(insn >> 8) & 0xff,
+			insn & 0xff);
+		bytecode_size += 3;
+	} else if (insn <= FOUR_BYTE_UNSIGNED_MAX_VALUE) {
+		dprintf(nfd, "0x%02x, 0x%02x, 0x%02x, 0x%02x, ",
+			(insn >> 24) & 0xff,
+			(insn >> 16) & 0xff,
+			(insn >> 8) & 0xff,
+			insn & 0xff);
+		bytecode_size += 4;
+	}
+	else {
+		error("Unsupported canister bytecode instruction size!!");
+	}
+}
+
+static void print_jmp_insn(int nfd, unsigned int off)
+{
+	unsigned short rem_off = 0;
+	unsigned int jmp;
+
+	if (off <= MAX_VALUE_6_BITS) {
+		jmp = JMP_INSN_OPCODE | off;
+		print_insn_byte_wise(jmp, nfd);
+	} else if (off <= MAX_VALUE_14_BITS) {
+		jmp = LJMP_INSN_OPCODE | off;
+		print_insn_byte_wise(jmp, nfd);
+	} else {
+		jmp = LJMP_INSN_OPCODE | LJMP_INSN_MAX_OFFSET;
+		print_insn_byte_wise(jmp, nfd);
+		rem_off = off - MAX_VALUE_14_BITS;
+
+		while (rem_off >= MAX_VALUE_14_BITS) {
+			rem_off -= MAX_VALUE_14_BITS;
+			jmp = LJMP_INSN_OPCODE | LJMP_INSN_MAX_OFFSET;
+			print_insn_byte_wise(jmp, nfd);
+		}
+		if (rem_off) {
+			if (rem_off <= MAX_VALUE_6_BITS) {
+				jmp = JMP_INSN_OPCODE | rem_off;
+				print_insn_byte_wise(jmp, nfd);
+			}
+			else {
+				jmp = LJMP_INSN_OPCODE | rem_off;
+				print_insn_byte_wise(jmp, nfd);
+			}
+		}
+	}
+}
+
+static void print_sec_insn(int nfd, unsigned short sec_incr)
+{
+	unsigned int sec;
+
+	sec = SEC_INSN_OPCODE | sec_incr;
+	print_insn_byte_wise(sec, nfd);
+
+}
+
+static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol, int addend)
+{
+	unsigned int srel;
+
+	srel = SREL_INSN_OPCODE | (symbol << 4);
+	if (type == 0 && addend == 0) {
+		srel = srel | SREL_INSN_TYPE_ADD_1;
+	} else if (type == 1 && addend == -4) {
+		srel = srel | SREL_INSN_TYPE_ADD_2;
+	} else if (type == 1 && addend == -5) {
+		srel = srel | SREL_INSN_TYPE_ADD_3;
+	} else if (type == 1 && addend == 0) {
+		srel = srel | SREL_INSN_TYPE_ADD_4;
+	} else if (type == 1 && addend == 5) {
+		srel = srel | SREL_INSN_TYPE_ADD_5;
+	} else if (type == 2 && addend == 0) {
+		srel = srel | SREL_INSN_TYPE_ADD_6;
+	} else if (type == 2 && addend == 4) {
+		srel = srel | SREL_INSN_TYPE_ADD_7;
+	}
+	print_insn_byte_wise(srel, nfd);
+}
+
+static void print_lrel_insn(int nfd, unsigned short type, unsigned short symbol, int addend)
+{
+	unsigned int lrel;
+
+	// LREL instruction: 111{R:2}{S:8}{A:19}
+	lrel = LREL_INSN_OPCODE | (type << 27) | (symbol << 19) | addend;
+	print_insn_byte_wise(lrel, nfd);
+}
+
+static void print_srpr_insn(int nfd, int add_del)
+{
+	unsigned int srpr;
+
+	if (add_del < 0) {
+		srpr = SRPR_INSN_OPCODE_SIGN_BIT_SET;
+		if (add_del != -16) {
+			srpr |= abs(add_del);
+		}
+	} else {
+		srpr = SRPR_INSN_OPCODE_SIGN_BIT_UNSET | add_del;
+	}
+	print_insn_byte_wise(srpr, nfd);
+}
+
+static void print_lrpr_insn(int nfd, int add_del)
+{
+	unsigned int lrpr;
+
+	if (add_del < 0) {
+		lrpr = LRPR_INSN_OPCODE_SIGN_BIT_SET;
+		if (add_del != -4096)
+			lrpr |= abs(add_del);
+	} else {
+		lrpr = LRPR_INSN_OPCODE_SIGN_BIT_UNSET | add_del;
+	}
+	print_insn_byte_wise(lrpr, nfd);
+}
+static void dump_canister_relocations_bytecode(int ofd)
+{
+	int i;
+	struct relocation *r, *p = &canister_relocations[0];
+	unsigned short sec_incr = 0;
+
+	dprintf(ofd, "const __section(\".init.rodata\") unsigned char canister_relocations_bytecode[] = { ");
+
+	print_sec_insn(ofd, p->section);
+	print_jmp_insn(ofd, p->offset);
+	if (p->addend >= MIN_VALUE_3_BITS_SIGN && p->addend <= MAX_VALUE_3_BITS) { /* SREL INSN */
+		print_srel_insn(ofd, p->type, p->symbol, p->addend);
+	} else if (p->addend > MAX_VALUE_3_BITS && p->addend <= MAX_VALUE_19_BITS) { /* LREL INSN */
+		print_lrel_insn(ofd, p->type, p->symbol, p->addend);
+	}
+
+	for (i = 1; i < n_relocs; i++) {
+		r = &canister_relocations[i];
+		if (p->section != r->section) {
+			sec_incr = r->section - p->section;
+			print_sec_insn(ofd, sec_incr);
+		}
+
+		print_jmp_insn(ofd, r->offset);
+
+		if (p->section == r->section && p->type == r->type && p->symbol == r->symbol &&
+		   ((r->addend - p->addend) >= MIN_VALUE_12_BITS_SIGN && (r->addend - p->addend) <= MAX_VALUE_12_BITS)) {
+
+			int add_del = r->addend - p->addend;
+
+			/* SRPR instructions */
+			if (add_del >= MIN_VALUE_4_BITS_SIGN && add_del <= MAX_VALUE_4_BITS) {
+				print_srpr_insn(ofd, add_del);
+			} else { /* LRPR instructions */
+				print_lrpr_insn(ofd, add_del);
+			}
+
+		} else { /* REL instructions */
+			if (r->addend >= MIN_VALUE_3_BITS_SIGN && r->addend <= MAX_VALUE_3_BITS) { /* SREL INSN */
+				print_srel_insn(ofd, r->type, r->symbol, r->addend);
+			} else if (r->addend > MAX_VALUE_3_BITS && r->addend <= MAX_VALUE_19_BITS) { /* LREL INSN */
+				print_lrel_insn(ofd, r->type, r->symbol, r->addend);
+			}
+		}
+		p = r;
+	}
+	dprintf(ofd, "};");
+	dprintf(ofd, "\n\nconst unsigned int canister_relocations_bytecode_size = %d;\n", bytecode_size);
 }
 
 int main (int argc, char *argv[])
@@ -593,7 +867,7 @@ int main (int argc, char *argv[])
 
 	sfd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (sfd == -1)
-		error("Cannot open output symbols file");
+		error("Cannot open output symbols file %s", argv[4]);
 	/*
 	 * Main rule for generated .c file: do not introduce new relocations
 	 * as it won't be accounted (chicken-egg problem).
@@ -602,6 +876,8 @@ int main (int argc, char *argv[])
 	dump_sections(ofd, sfd);
 	dump_symbols(ofd, sfd, symbols, n_syms);
 	dump_relocations(ofd, symbols);
+
+	dump_canister_relocations_bytecode(ofd);
 
 	close(ofd);
 	close(sfd);

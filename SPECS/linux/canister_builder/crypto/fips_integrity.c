@@ -57,6 +57,169 @@ static void __init mem_free(void *p)
 		kfree(p);
 }
 
+static int canister_perform_reverse_relocation(int i, struct relocation *r, char *mem, unsigned long target, unsigned long pc)
+{
+	int err = 0;
+
+	/* Absolute unsigned 64bit relocation: value = target */
+	if (r->type == 0 /* R_X86_64_64 */) {
+		uint64_t value = *(uint64_t *)mem;
+		value -= target;
+		*(uint64_t *)mem = value;
+#if FIPS_DEBUG
+		if (value) {
+			printk("%d failed for %d with value %llx\n", i, r->type, value);
+			err = -ENOENT;
+			return err;
+		}
+#endif
+	/* Relative signed 32bit relocation: value = target - pc */
+	} else if (r->type == 1 /* R_X86_64_PC32 */) {
+		int32_t value = *(int32_t *)mem;
+		value -= (long)target - pc;
+		*(int32_t *)mem = value;
+#if FIPS_DEBUG
+		if (value) {
+			printk("%d failed for %d with value %x\n", i, r->type, value);
+			err = -ENOENT;
+			return err;
+		}
+#endif
+	/* Absolute signed 32bit relocation: value = target */
+	} else if (r->type == 2 /* R_X86_64_32S */) {
+		int32_t value = *(int32_t *)mem;
+		value -= target;
+		*(int32_t *)mem = value;
+#if FIPS_DEBUG
+		if (value) {
+			printk("%d failed for %d with value %x\n", i, r->type, value);
+			err = -ENOENT;
+			return err;
+		}
+#endif
+	} else {
+		printk(KERN_ERR "FIPS(%s): unknown relocation type: %d\n", __FUNCTION__, r->type);
+		err = -ENOENT;
+		return err;
+	}
+
+	return err;
+}
+
+static int canister_bytecode_interpreter(struct relocation *r, int *pos)
+{
+	int err = 0;
+	unsigned char c = 0, n_1 = 0, n_2 = 0, n_3 = 0;
+	unsigned char rel_add = 0;
+
+	if (!r) {
+		printk(KERN_ERR "FIPS(%s): Relocation is NULL\n", __FUNCTION__);
+		return -ENOENT;
+	}
+	c = canister_relocations_bytecode[*pos];
+
+	if ((c & 0xC0) == 0x0) { /* JMP */
+		/* Jmp Offset (6 bits) = 3, 4, 5, 6, 7, 8 bits of first byte */
+		r->offset += (c & 0x3F);
+		r->insn_read_complete = false;
+
+	} else if ((c & 0xC0) == 0x40) { /* LJMP */
+		(*pos)++;
+		n_1 = canister_relocations_bytecode[*pos];
+		/* Long Jmp Offset (14 bits) = 3, 4, 5, 6, 7, 8 bits of first byte + next byte */
+		r->offset += (((c & 0x3F) << 8) + n_1);
+		r->insn_read_complete = false;
+
+	} else if ((c & 0xE0) == 0x80) { /* LRPR */
+		(*pos)++;
+		n_1 = canister_relocations_bytecode[*pos];
+		/* LRPR signed addend (1 sign bit + 12 bits) = 4th bit + 5, 6, 7, 8 bits of first byte + next byte */
+		if ((c & 0x10) >> 4 == 0) { /* Sign bit is 0 */
+			r->addend += (((c & 0xF) << 8) + n_1);
+		} else { /* Sign bit is 1 */
+			/* Addend value of 1000000000000 = -4096 */
+			if ((((c & 0xF) << 8) + n_1) == 0x0)
+				r->addend += (-4096);
+			else
+				r->addend += (-(((c & 0xF) << 8) + n_1));
+		}
+		r->insn_read_complete = true;
+
+	} else if ((c & 0xE0) == 0xA0) { /* SRPR */
+		/* SRPR signed addend (1 sign bit + 4 bits) = 4th bit + 5, 6, 7, 8 bits of first byte */
+		if ((c & 0x10) >> 4 == 0) /* Sign bit is 0 */
+			r->addend += (c & 0xF);
+		else { /*Sign bit is 1 */
+			/* Addend value of 10000 = -16 */
+			if ((c & 0xF) == 0x0)
+				r->addend += (-16);
+			else
+				r->addend += (-(c & 0xF));
+		}
+		r->insn_read_complete = true;
+
+	} else if ((c & 0xE0) == 0xE0) { /* LREL */
+		(*pos)++;
+		n_1 = canister_relocations_bytecode[*pos];
+		(*pos)++;
+		n_2 = canister_relocations_bytecode[*pos];
+		(*pos)++;
+		n_3 = canister_relocations_bytecode[*pos];
+		/* Rel Type (2 bits) = 4th and 5th bit from first byte */
+		r->type = (c & 0x18) >> 3;
+		/* Symbol (8 bits) = 6, 7, 8th bit from first byte + first 5 bits from next byte*/
+		r->symbol = ((c & 0x7) << 5) + ((n_1 & 0xF8) >> 3);
+		/* Addend (19 bits) = 6, 7, 8th bit from n_1 + n2 + n3 */
+		r->addend = ((n_1 & 0x7) << 16) + (n_2 << 8) + n_3;
+		r->insn_read_complete = true;
+
+	} else if ((c & 0xF0) == 0xC0) { /* SREL */
+		(*pos)++;
+		n_1 = canister_relocations_bytecode[*pos];
+		/* Symbol (8 bits) = 4 bits from first byte + 4 bits from next byte */
+		r->symbol = ((c & 0x0F) << 4) + (n_1 >> 4);
+		/* Rel Type, Addend combination (4 bits) = 5, 6, 7, 8 bits from next byte */
+		rel_add = n_1 & 0x0F;
+		if (rel_add == 0x0) {
+			r->type = 0;
+			r->addend = 0;
+		} else if (rel_add == 0x6) {
+			r->type = 1;
+			r->addend = -4;
+		} else if (rel_add == 0x5) {
+			r->type = 1;
+			r->addend = -5;
+		} else if (rel_add == 0x4) {
+			r->type = 1;
+			r->addend = 0;
+		} else if (rel_add == 0x7) {
+			r->type = 1;
+			r->addend = 5;
+		} else if (rel_add == 0xC) {
+			r->type = 2;
+			r->addend = 0;
+		} else if (rel_add == 0xE) {
+			r->type = 2;
+			r->addend = 4;
+		} else {
+			err = -ENOENT;
+			return err;
+		}
+		r->insn_read_complete = true;
+
+	} else if ((c & 0xF0) == 0xD0) { /* SEC */
+		/* Section increment (4 bits) = 5, 6, 7, 8 bits of first byte */
+		r->section += (c & 0x0F);
+		r->insn_read_complete = false;
+
+	} else {
+		printk(KERN_ERR "FIPS(%s): Unknown Instruction\n", __FUNCTION__);
+		err = -ENOENT;
+		return err;
+	}
+	return err;
+}
+
 /*
  * First stage of FIPS integrity:
  *     To restore original canister image for measurement.
@@ -74,6 +237,8 @@ int __init fips_integrity_init(void)
 	struct section_info *si = 0;
 	char *d;
 	int bytes_remaining;
+	struct relocation *r = NULL;
+	int canister_relocations_size;
 
 	if (!fips_enabled &&
 	    /* This function can be called before jump_label_init,
@@ -165,10 +330,18 @@ int __init fips_integrity_init(void)
 	 * Main interpreter work: perform reverse relocation to resotre
 	 * canister image to its original state.
 	 */
-	for (i = 0; i < canister_relocations_size; i++) {
-		const struct relocation *r = &canister_relocations[i];
-		unsigned long target, pc;
+	r = (struct relocation *)mem_alloc(sizeof(struct relocation));
+	memset(r, 0, sizeof(struct relocation));
+	for (i = 0; i < canister_relocations_bytecode_size; i++) {
 		char *mem;
+		unsigned long target, pc;
+
+		err = canister_bytecode_interpreter(r, &i);
+		if (err)
+			goto quit;
+
+		if (!(r->insn_read_complete))
+			continue;
 		/* Relocation target */
 		target = symbols_addr[r->symbol];
 		target += (int64_t)r->addend;
@@ -187,50 +360,14 @@ int __init fips_integrity_init(void)
 		/* Where the reverse relocation will happen, inside canister image */
 		mem = si[r->section].daddr + offset;
 #if FIPS_DEBUG
-		printk("section %d, rel %d, offset %x(%x), target %lx, pc %lx\n",
-		       r->section, r->type, offset, r->offset, target, pc);
+		printk("section %d, rel %d, symbol %d, offset %x(%x), addend %d, target %lx, pc %lx\n",
+		       r->section, r->type, r->symbol, offset, r->offset, r->addend, target, pc);
 #endif
-		/* Absolute unsigned 64bit relocation: value = target */
-		if (r->type == 0 /* R_X86_64_64 */) {
-			uint64_t value = *(uint64_t *)mem;
-			value -= target;
-			*(uint64_t *)mem = value;
-#if FIPS_DEBUG
-			if (value) {
-				printk("%d failed for %d with value %llx\n", i, r->type, value);
-				err = -ENOENT;
-				goto quit;
-			}
-#endif
-		/* Relative signed 32bit relocation: value = target - pc */
-		} else if (r->type == 1 /* R_X86_64_PC32 */) {
-			int32_t value = *(int32_t *)mem;
-			value -= (long)target - pc;
-			*(int32_t *)mem = value;
-#if FIPS_DEBUG
-			if (value) {
-				printk("%d failed for %d with value %x\n", i, r->type, value);
-				err = -ENOENT;
-				goto quit;
-			}
-#endif
-		/* Absolute signed 32bit relocation: value = target */
-		} else if (r->type == 2 /* R_X86_64_32S */) {
-			int32_t value = *(int32_t *)mem;
-			value -= target;
-			*(int32_t *)mem = value;
-#if FIPS_DEBUG
-			if (value) {
-				printk("%d failed for %d with value %x\n", i, r->type, value);
-				err = -ENOENT;
-				goto quit;
-			}
-#endif
-		} else {
-			printk(KERN_ERR "FIPS(%s): unknown relocation type: %d\n", __FUNCTION__, r->type);
-			err = -ENOENT;
+		err = canister_perform_reverse_relocation(i, r, mem, target, pc);
+		if (err)
 			goto quit;
-		}
+		r->offset = 0;
+		canister_relocations_size++;
 	}
 #if FIPS_DEBUG
 	printk("Processed %d relocations\n", canister_relocations_size);
@@ -238,6 +375,7 @@ int __init fips_integrity_init(void)
 quit:
 	mem_free(symbols_addr);
 	mem_free(si);
+	mem_free(r);
 	if (err) {
 		mem_free(c);
 		panic("FIPS(%s) canister initialization failed.", __FUNCTION__);

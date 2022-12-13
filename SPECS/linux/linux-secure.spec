@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -379,6 +379,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Dec 13 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-4
+- FIPS canister relocations in bytecode
 * Tue Dec 13 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-3
 - FIPS canister build for 6.0.7 secure kernel
 * Fri Dec 09 2022 Mukul Sikka <msikka@vmware.com> 6.0.7-2
