@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           docker-compose
-Version:        2.12.2
-Release:        2%{?dist}
+Version:        2.14.0
+Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -11,7 +11,7 @@ License:        ASL 2.0
 URL:            https://github.com/docker/compose
 
 Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dfb82ecc5a984d7193da164924c1e430d07b6378028dac7264b8084da2e315e5c5091803a5db79fe27ed06b002c62b295d873b9371bd19d4550a37a28f8ec952
+%define sha512  %{name}=739efe474ff5d724b04ea71eada5c6d290aa142b488bfde534f2c7ab7ae2c46b48da32553e42aa86293adb665c34bc177b5737a427656efff013118a6d656a79
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -51,6 +51,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.2-2
 - Bump up version to compile with new go
 * Wed Nov 2 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.2-1
