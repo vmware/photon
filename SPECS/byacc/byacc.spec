@@ -2,7 +2,7 @@
 
 Summary:       Berkeley Yacc, a parser generator
 Name:          byacc
-Version:       2.0.20221106
+Version:       20221106
 Release:       1%{?dist}
 License:       Public Domain
 Group:         Development/Tools
@@ -53,6 +53,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221106-1
+- Automatic Version Bump
 * Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.20221106-1
 - Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.20220128-2
