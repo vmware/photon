@@ -1,6 +1,6 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.19.4
+Version:        9.19.7
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512    bind=ae74523e6e96d1fb11b7530d12874a1638abb3a5f50d70b96d4c5a6ea25cc0c2ebff5ae94d125e262146c857852ced33746c9ca117c0c26d62aee467cacdfcae
+%define sha512    bind=c4872daf71f4c0c108a2f0a68bf0b7ee12b6490d1ae7955419847c255bc5fcd092f935fa6ea68ae53db0510e7e9af13b6ab05cb0ca0058cb13339ccbda4ede43
 
 Requires:       openssl
 Requires:       %{name}-libs = %{version}-%{release}
@@ -132,6 +132,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 9.19.7-1
+- Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 9.19.4-1
 - Automatic Version Bump
 * Wed Mar 30 2022 Dweep Advani <dadvani@vmware.com> 9.18.1-1
