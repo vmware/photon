@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -55,6 +55,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jan 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.12.0-2
+- Version bump for python3-ecdsa upgrade.
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1
 - Automatic Version Bump
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.11.0-2
