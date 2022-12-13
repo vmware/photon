@@ -1,6 +1,6 @@
 Name:           apparmor
-Version:        3.1.1
-Release:        2%{?dist}
+Version:        3.1.2
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -8,33 +8,21 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
 
-Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ece3a0c45fec0477d49c223559ee46b28affeb7da488ba972ae032dc61a27d5e293686a0745da96e2cd3761cf4e0695130c326d42ba6f667d6b5110a824965f5
+Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
 
-BuildRequires:  python3
 BuildRequires:  perl
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  swig
-BuildRequires:  make
+BuildRequires:  build-essential
 BuildRequires:  gawk
 BuildRequires:  which
-BuildRequires:  libstdc++
 BuildRequires:  libstdc++-devel
-BuildRequires:  gcc
-BuildRequires:  libgcc
-BuildRequires:  libgcc-devel
-BuildRequires:  glibc
-BuildRequires:  glibc-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
 BuildRequires:  httpd
 BuildRequires:  httpd-devel
 BuildRequires:  httpd-tools
 BuildRequires:  apr
 BuildRequires:  apr-util-devel
-BuildRequires:  Linux-PAM
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  dejagnu
 BuildRequires:  openssl-devel
@@ -44,7 +32,13 @@ BuildRequires:  python3-xml
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
+BuildRequires: python3-pyflakes
+BuildRequires: cmake
+BuildRequires: dbus-devel
+BuildRequires: glib-devel
 %endif
+
+Requires: openssl
 
 %description
 AppArmor is a file and network mandatory access control
@@ -117,7 +111,6 @@ Summary:        PAM module for AppArmor change_hat
 License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       Linux-PAM
-Requires:       Linux-PAM-devel
 
 %description -n pam_apparmor
 The pam_apparmor module provides the means for any PAM applications
@@ -161,10 +154,7 @@ This package contains the AppArmor module for perl.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-#Building libapparmor
-cd ./libraries/libapparmor
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
-/sbin/ldconfig
+pushd ./libraries/libapparmor
 sh ./autogen.sh
 
 %configure \
@@ -172,89 +162,66 @@ sh ./autogen.sh
     --with-python
 
 %make_build
+popd
 
-#Building Binutils
-cd ../../binutils/
-%make_build
-
-#Building parser
-cd ../parser
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
-export LIBRARY_PATH="$LIBRARY_PATH:%{_libdir}"
-echo $LD_LIBRARY_PATH
-echo $LIBRARY_PATH
-%make_build
-
-#Building Utilities
-cd ../utils
-%make_build
-
-#Building Apache mod_apparmor
-cd ../changehat/mod_apparmor
-%make_build
-
-#Building PAM AppArmor
-cd ../pam_apparmor
-%make_build
-
-#Building Profiles
-cd ../../profiles
-%make_build
-
-%check
-pip3 install pyflakes
-export PYTHONPATH=%{python3_sitelib}
-export PYTHON=%{python3}
-export PYTHON_VERSION=%{python3_version}
-export PYTHON_VERSIONS=python3
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
-
-cd ./libraries/libapparmor
-make check %{?_smp_mflags}
-
-cd ../../binutils/
-make check %{?_smp_mflags}
-
-cd ../utils
-make check %{?_smp_mflags}
+for target in binutils \
+              parser \
+              utils \
+              changehat/mod_apparmor \
+              changehat/pam_apparmor \
+              profiles; do
+%make_build -C ${target}
+done
 
 %install
-export PYTHONPATH=%{python3_sitelib}
-export PYTHON=%{python3}
-export PYTHON_VERSION=%{python3_version}
-export PYTHON_VERSIONS=python3
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:%{_libdir}"
+for target in libraries/libapparmor \
+              binutils \
+              parser \
+              utils \
+              changehat/mod_apparmor \
+              changehat/pam_apparmor \
+              profiles; do
+%make_install %{?_smp_mflags} -C ${target}
+done
 
-cd libraries/libapparmor
-%make_install %{?_smp_mflags}
+%make_install %{?_smp_mflags} -C parser install-systemd
 
-cd ../../binutils/
-%make_install %{?_smp_mflags}
+mv %{buildroot}/lib/* %{buildroot}%{_libdir}
+mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
 
-cd ../parser
-%make_install %{?_smp_mflags}
-cd ../utils
+%if 0%{?with_check}
+%check
+pip3 install notify2 dbus-python psutil
+ln -sfv %{_bindir}/pyflakes %{_bindir}/pyflakes3
 
-%make_install %{?_smp_mflags}
-
-cd ../changehat/mod_apparmor
-%make_install %{?_smp_mflags}
-
-cd ../pam_apparmor
-%make_install %{?_smp_mflags}
-
-cd ../../profiles
-%make_install %{?_smp_mflags}
-
-%files -n libapparmor
-%defattr(-,root,root)
-%{_libdir}/libapparmor.so.*
+for target in libraries/libapparmor \
+              binutils \
+              utils; do
+make check %{?_smp_mflags} -C ${target}
+done
+%endif
 
 %post -n libapparmor
 /sbin/ldconfig
 
 %postun -n libapparmor
 /sbin/ldconfig
+
+%preun parser
+%systemd_preun %{name}.service
+
+%post parser
+%systemd_post %{name}.service
+
+%postun parser
+%systemd_postun_with_restart %{name}.service
+
+%clean
+rm -rf %{buildroot}
+
+%files -n libapparmor
+%defattr(-,root,root)
+%{_libdir}/libapparmor.so.*
 
 %files -n libapparmor-devel
 %defattr(-,root,root)
@@ -289,19 +256,18 @@ cd ../../profiles
 %config(noreplace) %{_sysconfdir}/%{name}.d/local/*
 %config(noreplace) %{_sysconfdir}/%{name}.d/samba-*
 %config(noreplace) %{_sysconfdir}/%{name}.d/zgrep
-/lib/%{name}/profile-load
+%{_libdir}/%{name}/profile-load
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/extra-profiles/*
 
 %files parser
 %defattr(755,root,root,755)
-/sbin/apparmor_parser
-/sbin/rcapparmor
-/lib/%{name}/rc.%{name}.functions
-/lib/%{name}/%{name}.systemd
+%{_sbindir}/%{name}_parser
+%{_libdir}/%{name}/%{name}.systemd
+%{_unitdir}/%{name}.service
+%{_libdir}/%{name}/rc.%{name}.functions
 %{_bindir}/aa-exec
 %{_bindir}/aa-enabled
-%attr(644,root,root) %{_unitdir}/%{name}.service
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}.d
 %config(noreplace) %{_sysconfdir}/%{name}/parser.conf
@@ -313,15 +279,6 @@ cd ../../profiles
 %doc %{_mandir}/man1/aa-enabled.1.gz
 %doc %{_mandir}/man1/aa-exec.1.gz
 %doc %{_mandir}/man2/aa_stack_profile.2.gz
-
-%preun parser
-%systemd_preun %{name}.service
-
-%post parser
-%systemd_post %{name}.service
-
-%postun parser
-%systemd_postun_with_restart %{name}.service
 
 %files abstractions
 %defattr(644,root,root,755)
@@ -360,7 +317,7 @@ cd ../../profiles
 
 %files -n pam_apparmor
 %defattr(-,root,root,755)
-/lib/security/pam_apparmor.so
+%{_libdir}/security/pam_apparmor.so
 
 %files -n python3-%{name}
 %defattr(-,root,root)
@@ -373,6 +330,8 @@ cd ../../profiles
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-1
+- Upgrade to v3.1.2
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.1.1-2
 - Perl version upgrade to 5.36.0
 * Thu Nov 03 2022 Nitesh Kumar <kunitesh@vmware.com> 3.1.1-1
