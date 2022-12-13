@@ -1,8 +1,8 @@
-%define GCORE_VERSION   1.6.0
-%define GDB_VERSION     7.6
+%define GCORE_VERSION   1.6.3
+%define GDB_VERSION     10.2
 
 Name:          crash
-Version:       7.3.0
+Version:       8.0.2
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
@@ -12,13 +12,13 @@ URL:           http://people.redhat.com/anderson
 License:       GPL
 
 Source0: http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha512 %{name}=bc288821892c3d7ecbf192d9fe6ea9e73216f8074a24d12a00fbcaf967a1faa38ee69c4a5a97aa93bf75426293f5b275f5ab496c154b4e7be265ba0e263b2bc8
+%define sha512 %{name}=9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
 
 Source1: http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha512 crash-gcore=877cb46c54f9059ca0b89f793a0e907102db3921994fa676124bdd688f219a07761fffea6c3369fed836e7049b3611da164d780e7ba8741a4d0a30f7601290c2
+%define sha512 crash-gcore=697952b7c55af5e4a7528cdd6fe616411d5147979fc90da55c0a3cee44510f39846e99bff3ac701c1ed98ee2c5d125e77c332b1f5b0be6e0ea1d98cf5d547a15
 
 Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
-%define sha512 gdb=02d9c62fa73bcb79138d14c7fc182443f0ca82d4545b4d260b67d3f0074ed75f899a657814a56727e601032a668b0ddd7b48aabd49215fc012eeea6077bca368
+%define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
 
 %ifarch aarch64
 Patch0: gcore_defs.patch
@@ -103,6 +103,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 8.0.2-1
+- Automatic Version Bump
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1
 - Automatic Version Bump
 * Mon Nov 30 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.9-1
