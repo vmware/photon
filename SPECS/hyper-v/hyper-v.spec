@@ -1,14 +1,14 @@
 Summary:        Hyper-V tools
 Name:           hyper-v
-Version:        5.9
+Version:        6.1
 Release:        1%{?dist}
 License:        GPLv2+
-URL:            https://elixir.bootlin.com/linux/v4.9/source/tools/hv
+URL:            https://elixir.bootlin.com/linux/v6.1/source/tools/hv
 Group:          System/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    hyper-v=0771a48f2af4390c34a1dd964459f383d2561835
+%define sha512  %{name}=3df7f1aab4be5c899257a8597acce48b0bd8c06a673ea5006b41dc9705476b944ec52a552bcf15fab93786e338e6288810feb644766ad1ab8e06dfa9ce712e35
 Source1:        bondvf.sh
 Source2:        hv_get_dns_info.sh
 Source3:        hv_get_dhcp_info.sh
@@ -20,10 +20,10 @@ Requires:       systemd
 Hyper-V tools.
 
 %prep
-%setup
+%autosetup
 
 %build
-make
+make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}/%{_sbindir}
@@ -110,8 +110,9 @@ EOF
 %{_libdir}/systemd/system/hv_kvp_daemon.service
 %{_libdir}/systemd/system/hv_vss_daemon.service
 
-
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 6.1-1
+-   Upgrade to v6.1
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 5.9-1
 -   Upgrade to v5.9
 *   Tue Mar 13 2018 Xiaolin Li <xiaolinl@vmware.com> 4.9-1
