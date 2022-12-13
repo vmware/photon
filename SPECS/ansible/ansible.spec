@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.14.0
-Release:        2%{?dist}
+Version:        2.14.1
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,12 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5941edbc6537d20431d8825b71c549fab03f619c715f65d798da539c636f9ea20d613f093e1e12ab66d70f17a6bfda3694ddaf54fc264bba89d68f35329ea0d9
+%define sha512 %{name}=609bc51988708245ed7ba18105da86712c34c3f7a58a3e6b47463b9faebf30c5b02c17fbb8ee073c11cf2ed92ddad129ddd6d0abcf4a6d9503e26a9d33470612
 
 Source1: tdnf.py
 Source2: macros.ansible
 
-BuildArch:      noarch
+BuildArch: noarch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -67,6 +67,8 @@ touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Dec 16 2022 Nitesh Kumar <kunitesh@vmware.com> 2.14.1-1
+- Version upgrade to v2.14.1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-2
 - Update release to compile with python 3.11
 * Fri Nov 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-1
