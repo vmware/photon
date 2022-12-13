@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.17.1
+Version:        16.18.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=52dd13d3b283762602d7e8a03563b10c0973daf6c3126b7ab2c404501262279c645a85c0e0981b7a4b8b3bd016fbaa5c985251d9b261074bfe9e14cbb864f7ea
+%define         sha512 node=f6f93bd9eb69a556880a72f49cf9209b8c23d1164bf6b35f5161f27a0750300b2d6758677b32ccfd1d3cb7d5f6f8368b97552099e419b39f08e72bdb8a2d037a
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -66,11 +66,12 @@ make cctest %{?_smp_mflags}
 %{_includedir}/*
 %{_docdir}/node/lldb_commands.py
 %{_docdir}/node/gdbinit
-%{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Dec 13 2022 Shivani Agarwal <shivania2@vmware.com> 16.18.1-1
+-   Upgrade to 16.18.1 for CVE-2022-43548
 *   Mon Oct 10 2022 Shivani Agarwal <shivania2@vmware.com> 16.17.1-1
--   Upgrade to 16.17.1 for  CVE-2022-32213
+-   Upgrade to 16.17.1 for CVE-2022-32213
 *   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 16.16.0-1
 -   Upgraded to 16.16.0.
 *   Tue Mar 22 2022 Piyush Gupta <gpiyush@vmware.com> 16.14.2-1
