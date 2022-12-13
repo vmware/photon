@@ -4,7 +4,7 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.9
+Version:        1.6.17
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512 %{name}=fabe29103c431fb02ba55342e7cd3d41865803389b941fca9fea4449180d4dbc8eafafd6a8a1174997a7cd3bc2b6111960ccf51042792809b145ea500a534f53
+%define sha512 %{name}=673153b6007b2bd6b0148aef79a9e495c8fde47132c8f2880c22873ac8b8b428f94e8ecca5cf0b670658ab941d2e412f8c63cf1249f9e4765342547b4d30f196
 
 # Must be in sync with package version
 %define CONTAINERD_GITCOMMIT 9cd3357b7fd7218e4aec3eae239db1f68a5a6ec6
@@ -134,6 +134,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.6.17-1
+- Automatic Version Bump
 * Wed Nov 30 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.9-1
 - Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-6
