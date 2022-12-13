@@ -1,6 +1,6 @@
 Summary:        FUSE overlay+shiftfs implementation for rootless containers
 Name:           fuse-overlayfs
-Version:        1.9
+Version:        1.10
 Release:        1%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Distribution:   Photon
 
 URL:            https://github.com/containers/fuse-overlayfs
 Source0:        https://github.com/containers/fuse-overlayfs/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=16f4feb8426c0d6f78082065a2c1c6afb96e4fc665e40e79e2b2692b0b21e77998a2195cf2cd81f505d0167318ed843f55be4eb16956aadaeab56f47ccbddc0b
+%define sha512 %{name}=cb399a56f2cb0ccf3d294d82cfaa9682db6812e709b1b6d3edf6ce4f7653ddddeffb2810d1c5f8a4178dcdb42e0f65af878fd5c007b31ed18538464482ad1dcf
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -56,5 +56,7 @@ echo fuse > %{buildroot}%{_modulesloaddir}/fuse-overlayfs.conf
 %config(noreplace) %{_modulesloaddir}/fuse-overlayfs.conf
 
 %changelog
+* Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10-1
+- Version upgrade to 1.10
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1.9-1
 - Initial version

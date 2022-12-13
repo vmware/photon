@@ -3,7 +3,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        0.23.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
@@ -57,5 +57,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
+* Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 0.23.0-2
+- Version bump up to use fuse-overlayfs v1.10
 * Fri Sep 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.23.0-1
 - First build.

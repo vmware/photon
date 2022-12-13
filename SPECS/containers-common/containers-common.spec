@@ -7,8 +7,8 @@
 
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
-Version:        1
-Release:        2%{?dist}
+Version:        2
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers
 # Clone containers sub repo common, image, shortnames, skopeo and storage
@@ -16,29 +16,29 @@ URL:            https://github.com/containers
 # Move those files into directory & create tarball
 #
 # For example:
-# git clone git clone git@github.com:containers/common.git
+# git clone git@github.com:containers/common.git
 # cd common && git checkout -b v1.0.1 tags/v1.0.1
-# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-1/
+# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-2/
 #
 # git clone git@github.com:containers/image.git
-# cd image && git checkout -b v5.22.0 tags/v5.22.0
-# cp registries.conf ../containers-common-1/
+# cd image && git checkout -b v5.23.1 tags/v5.23.1
+# cp registries.conf ../containers-common-2/
 #
 # git clone git@github.com:containers/shortnames.git
 # cd shortnames && git checkout -b v2022.02.08 tags/v2022.02.08
-# cp shortnames.conf ../containers-common-1/
+# cp shortnames.conf ../containers-common-2/
 #
 # git clone git@github.com:containers/skopeo.git
-# cd skopeo && git checkout -b v1.9.2 tags/v1.9.2
-# cp default.yaml default-policy.json ../containers-common-1/
+# cd skopeo && git checkout -b v1.10.0 tags/v1.10.0
+# cp default.yaml default-policy.json ../containers-common-2/
 #
 # git clone git@github.com:containers/storage.git
-# cd storage && git checkout -b v1.42.0 tags/v1.42.0
-# cp storage.conf ../containers-common-1/
+# cd storage && git checkout -b v1.44.0 tags/v1.44.0
+# cp storage.conf ../containers-common-2/
 #
-# cd .. && tar czf containers-common-1.tar.gz containers-common-1
+# cd .. && tar czf containers-common-2.tar.gz containers-common-2
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=c013937a79a8a514756580d43ed10fc307812bdc43a96194e2120788a5bc8d6ffdd460dc613ac85448bc842f79c457737dfff59eb6efa106e012404d6ef72a75
+%define sha512 %{name}=2349040d7ce3430e3f97905f2151e1dfcd01674532e4f17cf486c40ccd034206328cd5c493eb3f7db939db9c4fcd4b6f5d9048532d8f70e881bdcce47be76238
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -104,6 +104,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 2-1
+- Version upgrade to v2
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1-2
 - Bump version as a part of cni upgrade
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1-1

@@ -2,8 +2,8 @@
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.3.0
-Release:        3%{?dist}
+Version:        4.3.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b5b70e83a67ccfea149cb7df87a452d51fbb5e87ab3d1c6b4f623ba0f8f8a25442cee6ae8b8d31ea844f08c3ea4962e865ddb90e61c185dfad29d3b23aa8338f
+%define sha512 %{name}=907dafc6481cbcb7a9b6771c3682a88d6c3b055050c0a180f9ceb985c1a3826318056b62dd6d2859a2a23eba7aad4bf26404327d5479bde98658745fa7d88efa
 
 Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
 %define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
@@ -174,6 +174,8 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 4.3.1-1
+- Version upgrade to v4.3.1
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.3.0-3
 - Bump version as a part of cni upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 4.3.0-2
