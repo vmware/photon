@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
-Version:    0.9.2
-Release:    2%{?dist}
+Version:    0.9.4
+Release:    1%{?dist}
 License:    GPL+
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -9,7 +9,7 @@ URL:        http://christophe.varoqui.free.fr
 Distribution: Photon
 
 Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-tools-%{version}.tar.gz
-%define sha512 multipath-tools=f38fc52f3773a5e1dfe22ea2b48d48995d173d2fc1c3d7d32fd1b4237db36b102665aba020577cce678d99d14b017587c590a1cd802d7cd5bd98319de1468abb
+%define sha512 multipath-tools=5e0dcea610fc215e345444c04453a38f39c73e493c2bc53f6b3a90cd701266aabdf7c4693dfc321099af836d0019bf27355e265ad5db5deff48f8bb94ed4719d
 
 BuildRequires:  userspace-rcu-devel
 BuildRequires:  libaio-devel
@@ -55,10 +55,10 @@ It contains the libraries and header files to create applications
 %make_install %{?_smp_mflags} \
     SYSTEMDPATH=%{_libdir} \
     bindir=%{_sbindir} \
-    syslibdir=%{_libdir} \
-    usrlibdir=%{_libdir} \
-    libdir=%{_libdir}/multipath \
-    pkgconfdir=%{_libdir}/pkgconfig
+    LIB=/lib \
+    pkgconfdir=%{_libdir}/pkgconfig \
+    includedir=%{_includedir} \
+    prefix=%{_prefix}
 
 install -vd %{buildroot}%{_sysconfdir}/multipath
 
@@ -77,15 +77,13 @@ rm -rf %{buildroot}
 %{_udevrulesdir}/*
 %{_unitdir}/*
 %{_libdir}/*.so.*
-%{_libdir}/multipath/*.so
+%{_libdir}/multipath/*
 %{_mandir}/man5/*
-%{_mandir}/man8/mpathpersist.8.gz
-%{_mandir}/man8/multipath.8.gz
-%{_mandir}/man8/multipathd.8.gz
+%{_mandir}/man8/*
 %dir %{_sysconfdir}/multipath
 %config(noreplace) %{_libdir}/modules-load.d/multipath.conf
 %config(noreplace) %{_tmpfilesdir}/multipath.conf
-%{_mandir}/man8/multipathc.8.gz
+%exclude %{_mandir}/man8/kpartx.8.gz
 
 %files devel
 %defattr(-,root,root,-)
@@ -101,6 +99,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Mon Jan 02 2023 Gerrit Photon <photon-checkins@vmware.com> 0.9.4-1
+- Automatic Version Bump to version 0.9.4
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.9.2-2
 - Bump release as a part of readline upgrade
 * Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.2-1
