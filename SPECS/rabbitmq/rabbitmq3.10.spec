@@ -11,8 +11,8 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.11.0
-Release:       2%{?dist}
+Version:       3.10.12
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -21,7 +21,7 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=2cbdeb9288dd5b18ab97ba941075e96c51c258bc6ffb49a97b7bf5dee9e8ebd033d449c94b7ce305976478d1a142c82d1aaf0a2b64a14f802ac4c21b72858e4d
+%define sha512 rabbitmq=792026780c9cc9a53c7815b43e5a53d204dea2bbac27fe0414a609f330c3f6ea6596096bb7ca185022f16918de526009543581d0756e948d5f2caaadfe8d8f3c
 
 Source1: %{name}.tmpfiles
 
@@ -141,48 +141,5 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
-* Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-2
-- Set project version while packaging
-* Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
-- Upgrade to v3.11.0
-* Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 3.8.9-3
-- Bump up version to use fips enable erlang.
-* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.8.9-2
-- Bump up to compile with python 3.10
-* Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1
-- Automatic Version Bump
-* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.8-1
-- Automatic Version Bump
-* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.7-1
-- Automatic Version Bump
-* Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.6-1
-- Automatic Version Bump
-* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-3
-- Build with python3
-- Mass removal python2
-* Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-2
-- Fix rabbitmq server issue when we enable rabbitmq plugin.
-* Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 3.7.20-1
-- Update to version 3.7.20
-* Mon Aug 19 2019 Keerthana K <keerthanak@vmware.com> 3.7.3-1
-- Update to version 3.7.3
-* Tue Feb 05 2019 Alexey Makhalov <amakhalov@vmware.com> 3.6.15-4
-- Added BuildRequires python2.
-* Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.6.15-3
-- Consuming erlang 19.3
-* Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 3.6.15-2
-- Consuming updated erlang version of 21.0
-* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 3.6.15-1
-- Update to version 3.6.15
-* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.6.10-3
-- Fixed the log file directory structure
-* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.10-2
-- Remove shadow from requires and use explicit tools for post actions
-* Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.10-1
-- Updated to latest and fixed service start issue
-* Wed Apr 26 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.9-2
-- Fix arch
-* Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.9-1
-- Updating package to the latest
-* Mon Dec 12 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.6-1
-- Initial.
+* Tue Dec 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.12-1
+- Introduce v3.10.x to make migration from v3.8.x to v3.11.x possible
