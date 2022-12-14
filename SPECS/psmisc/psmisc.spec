@@ -1,6 +1,6 @@
 Summary:        Displays information about running processes
 Name:           psmisc
-Version:        23.5
+Version:        23.6
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://psmisc.sourceforge.net/
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.xz
-%define sha512  psmisc=e908220350491a595ceaf96025a9aa14d832cacc8901545d0864152053fedaf9dc10f45fb2870aa2a00e4d9d8947243038357e14a82b04ab5d20c53e7f841a8d
+%define sha512  psmisc=4daffbd1726e50d9344f8578dd4c10f0b8f7971929ec667490de31122e5f3828747e1bafb3ed3c37ed7e1758ab9ec43b8f4556b676a416a8efbc7c6c88b6985d
 BuildRequires:  ncurses-devel
 Requires:       ncurses
 
@@ -40,6 +40,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 23.6-1
+- Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 23.5-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 23.4-1
