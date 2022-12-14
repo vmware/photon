@@ -1,6 +1,6 @@
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 Name:           wayland-protocols
-Version:        1.27
+Version:        1.31
 Release:        1%{?dist}
 License:        MIT
 Group:          Development/Libraries
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            http://wayland.freedesktop.org/
 
 Source0:        https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/%{version}/downloads/%{name}-%{version}.tar.xz
-%define sha512  %{name}=c0a49bc46c663c9f602998dfe2e184c09756790fbcc7acbc2bf9d9cf8f7d6dcdd00259b768222a30e5d134e6f97f7f4faf252947b544e8b32f53278b70da0390
+%define sha512  %{name}=402ce1915300e29afe554d77965ee0a28a5f22fdb5b901c4c640e59b9f3a9c11094e1edae87eea1e76eea557f6faf0c34a0c28ee7f6babb4dc3719329c4e25bf
 
 BuildArch:      noarch
 
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
+*       Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
+-       Automatic Version Bump
 *       Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
 -       Automatic Version Bump
 *       Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.26-1
