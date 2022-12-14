@@ -1,6 +1,6 @@
 Summary:	Library for the arithmetic of complex numbers
 Name:		mpc
-Version:	1.2.1
+Version:	1.3.1
 Release:	1%{?dist}
 License:	LGPLv3+
 URL:		http://www.multiprecision.org
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
 Requires:	gmp
-%define sha1 mpc=2a4919abf445c6eda4e120cd669b8733ce337227
+%define sha512 mpc=4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97
 
 %description
 The MPC package contains a library for the arithmetic of complex
@@ -17,7 +17,7 @@ numbers with arbitrarily high precision and correct rounding of
 the result.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -25,7 +25,7 @@ the result.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}%{_infodir}
 
@@ -43,6 +43,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 
 %changelog
+*   Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.1-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.1-1
 -   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
