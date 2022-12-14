@@ -1,7 +1,7 @@
 Summary:    Linux-native fakeroot using user namespaces
 Name:       rootlesskit
-Version:    1.0.1
-Release:    3%{?dist}
+Version:    1.1.0
+Release:    1%{?dist}
 Group:      Tools/Docker
 License:    Apache
 URL:        https://github.com/rootless-containers/rootlesskit
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    https://github.com/rootless-containers/rootlesskit/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a83a07b80f3b99329bab851eec2f2e388357b254817868d35904550fde84022a41245db290ab8a117cd631a8dda32606738528e9354c1dd5d46fbd824fa49112
+%define sha512 %{name}=e9ac0211a93806a85943c8a30b3fae07cc3cca69608da50db8ac3da4b5d209f4c1eea00eb12cb21fe59e74e41c70ca6cdd89042711235b3e30c3db282aea8f9e
 
 BuildRequires: go
 BuildRequires: git
@@ -42,6 +42,8 @@ export BINDIR=%{_bindir}
 %{_bindir}/rootlessctl
 
 %changelog
+* Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-3
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-2

@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-8
+- Bump version as a part of rootlesskit upgrade
 * Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-7
 - Add dbus-user-session to requires
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-6
