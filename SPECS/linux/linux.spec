@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.158
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -122,6 +122,8 @@ Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
+Patch39: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
+Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -403,7 +405,7 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M38
+%autopatch -p1 -m0 -M40
 
 %ifarch x86_64
 # VMW x86
@@ -827,6 +829,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Dec 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.158-2
+- update to latest ToT vmxnet3 driver
 * Mon Dec 12 2022 Ankit Jain <ankitja@vmware.com> 5.10.158-1
 - Update to version 5.10.158
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-9

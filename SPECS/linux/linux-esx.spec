@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.158
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -97,13 +97,15 @@ Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
+Patch39: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
+Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 
 # VMW:
-Patch40: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch41: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch42: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch43: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch44: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch41: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch42: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch43: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch44: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch45: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
 Patch50: init-do_mounts-recreate-dev-root.patch
@@ -330,10 +332,10 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M38
+%autopatch -p1 -m0 -M40
 
 # VMW
-%autopatch -p1 -m40 -M44
+%autopatch -p1 -m41 -M45
 
 # -esx
 %autopatch -p1 -m50 -M92
@@ -588,6 +590,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.158-2
+- update to latest ToT vmxnet3 driver
 * Mon Dec 12 2022 Ankit Jain <ankitja@vmware.com> 5.10.158-1
 - Update to version 5.10.158
 * Tue Dec 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.152-10
