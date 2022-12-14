@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 %global realname sd_notify
 %global output_dir _build/default/lib/sd_notify/ebin
-%global elixir_version 1.14.1
+%global elixir_version 1.14.2
 
 Name:            erlang-%{realname}
 Summary:         Erlang Bindings for sd_notify()
 Version:         1.1
-Release:         3%{?dist}
+Release:         4%{?dist}
 License:         MIT
 URL:             https://github.com/systemd/erlang-%{realname}
 Vendor:          VMware, Inc.
@@ -46,6 +46,8 @@ install -m 644 -p %{output_dir}/%{realname}.beam %{buildroot}%{_libdir}/erlang/l
 %{_libdir}/erlang/lib/%{realname}-%{version}/ebin/%{realname}.beam
 
 %changelog
+* Mon Dec 19 2022 Shivani Agarwal <shivania2@vmware.com> 1.1-4
+- Bump version to build with new elixir
 * Tue Nov 08 2022 Harinadh D <hdommaraju@vmware.com> 1.1-3
 - use reabr built with erlang >= 24
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1-2
