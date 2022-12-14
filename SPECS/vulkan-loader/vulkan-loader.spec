@@ -1,5 +1,5 @@
 Name:           vulkan-loader
-Version:        1.3.234
+Version:        1.3.237
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
@@ -7,9 +7,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
-
-Source0: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512 Vulkan-Loader=185c0d9bc529884fcfdc9f49bd1d2a01b998cd0e7511b6918baf1f8cbef22dd78e2837c43ce9a9df2a554a9ce5a801f6ac9c8a3bc1d20fc8704c29fa8e472624
+Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
+%define sha512  Vulkan-Loader=54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
 
 BuildRequires:  cmake
 BuildRequires:  python3-devel
@@ -65,7 +64,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
          %{buildroot}%{_datadir}/vulkan/{explicit,implicit}_layer.d/ \
          %{buildroot}{%{_sysconfdir},%{_datadir}}/vulkan/icd.d/ \
          %{buildroot}%{_libdir}
-
 %{ldconfig_scriptlets}
 
 %check
@@ -94,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.237-1
+- Automatic Version Bump
 * Fri Nov 11 2022 Michelle Wang <michellew@vmware.com> 1.3.234-1
 - Automatic Version Bump since mesa is bump up
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.232-1
