@@ -1,6 +1,6 @@
 Summary:        A C++11 library for performing operations on two-dimensional vector geometries
 Name:           geos
-Version:        3.11.0
+Version:        3.11.1
 Release:        1%{?dist}
 License:        LGPLv2
 URL:            https://trac.osgeo.org/geos
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.osgeo.org/geos/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=40c7553bbb93673c231ddd0131b73bf43b3f50524bc5bd9e6934c068d2c09632f388b7429254ae15d9641da2d15e3a626b430438854e98d9e7419ad04e535189
+%define sha512 %{name}=708500aba9b04208ee46a531d55ddf63a213dfaa2922dae937b524300b2b46c95143ed6cd3ff1414e9099f2be95e5df5a2e0b49df43acf93a9478215259f20d3
 
 BuildRequires:  cmake
 
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/geos.pc
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.1-1
+- Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
 - Upgrade to v3.11.0
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.2-2
