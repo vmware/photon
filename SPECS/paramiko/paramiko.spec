@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        2.11.0
-Release:        2%{?dist}
+Version:        2.12.0
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            http://www.paramiko.org
 
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define sha512  paramiko=59e439bd54d83938f91d6c9888f2278bafa4ca48582939580bdabc6207dbe6dc856f6006ad26b7ec91b9d39e92ca70dc6270c6b5d4f77a5e1fa0ec8bd084d4b5
+%define sha512  paramiko=1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
 
 BuildArch:      noarch
 
@@ -55,6 +55,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1
+- Automatic Version Bump
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.11.0-2
 - Replace deprecated pycrypto with pycryptodome
 * Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.0-1
