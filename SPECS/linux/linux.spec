@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.268
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -455,6 +455,7 @@ Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch485: 0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
 Patch486: 0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
 Patch487: 0001-x86-sev-es_Use_GHCB_accessor_for_setting_the_MMIO_scratch_buffer.patch
+Patch488: 0001-drm_vmwgfx_Dont_use_screen_objects_when_SEV_is_active.patch
 
 # SEV-ES: Security Mitigate
 Patch491: 0001-x86-boot-compressed-64-Introduce-sev_status.patch
@@ -1084,6 +1085,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Dec 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.268-2
+- Fix: Don't use screen objects when SEV is active
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.268-1
 - Update to version 4.19.268
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-7

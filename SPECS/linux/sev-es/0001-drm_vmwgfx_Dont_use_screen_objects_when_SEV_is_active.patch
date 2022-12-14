@@ -1,0 +1,43 @@
+From 6e90293618ed476d6b11f82ce724efbb9e9a071b Mon Sep 17 00:00:00 2001
+From: Zack Rusin <zackr@vmware.com>
+Date: Thu, 1 Dec 2022 12:53:41 -0500
+Subject: drm/vmwgfx: Don't use screen objects when SEV is active
+
+From: Zack Rusin <zackr@vmware.com>
+
+commit 6e90293618ed476d6b11f82ce724efbb9e9a071b upstream.
+
+When SEV is enabled gmr's and mob's are explicitly disabled because
+the encrypted system memory can not be used by the hypervisor.
+
+The driver was disabling GMR's but the presentation code, which depends
+on GMR's, wasn't honoring it which lead to black screen on hosts
+with SEV enabled.
+
+Make sure screen objects presentation is not used when guest memory
+regions have been disabled to fix presentation on SEV enabled hosts.
+
+Fixes: 3b0d6458c705 ("drm/vmwgfx: Refuse DMA operation when SEV encryption is active")
+Cc: <stable@vger.kernel.org> # v5.7+
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Reported-by: Nicholas Hunt <nhunt@vmware.com>
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20221201175341.491884-1-zack@kde.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_scrn.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_scrn.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_scrn.c
+@@ -949,6 +949,10 @@ int vmw_kms_sou_init_display(struct vmw_
+ 	struct drm_device *dev = dev_priv->dev;
+ 	int i, ret;
+ 
++	/* Screen objects won't work if GMR's aren't available */
++	if (!dev_priv->has_gmr)
++		return -ENOSYS;
++
+ 	if (!(dev_priv->capabilities & SVGA_CAP_SCREEN_OBJECT_2)) {
+ 		DRM_INFO("Not using screen objects,"
+ 			 " missing cap SCREEN_OBJECT_2\n");
