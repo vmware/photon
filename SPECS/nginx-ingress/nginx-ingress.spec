@@ -2,12 +2,12 @@
 
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
-Version:        2.3.0
-Release:        3%{?dist}
+Version:        2.4.2
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  nginx-ingress=fd2877490c5fe3eba1946af9c4d675c60f7944bd0535f3e35814af3f3f4ccf2c935da22e32392a0f16c2d7cfb9902e1cfce3753a90ee603b3936e614bec706ee
+%define sha512  nginx-ingress=1d2415b73afab9c3338e2cfa717bae6e12f7bbd98f8a20606e274b09c3e4724e56fff0acdc261215ca95107e175489fef4aba9df6e3f9cb5b72d9f98859ae7d9
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,6 +55,8 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
 %{_datadir}/%{name}/docker/nginx.*
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.2-1
+- Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 2.3.0-3
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 2.3.0-2
