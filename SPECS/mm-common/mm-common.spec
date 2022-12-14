@@ -1,13 +1,13 @@
 %global debug_package %{nil}
 Summary:        Build Tools
 Name:           mm-common
-Version:        1.0.4
+Version:        1.0.5
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.gnome.org/GNOME/mm-common
 Group:          Applications/System
 Source0:        https://gitlab.gnome.org/GNOME/mm-common/-/archive/%{version}/mm-common-%{version}.tar.gz
-%define sha512    mm-common=58a6202115a7c888306d169a0850c5cdbe44c9bbf1e29a4569051a9feeea47bce830615640d2b83ba4396a9d930d65834964e91c534ffe9922eecfcfbf1259c9
+%define sha512    mm-common=dc538fb134c5f385a7508bbe702c562a796f0fafd3e25b46c5eb652bf3df36c6a309d36e8b6c074234c4ad4be3a75dd68c47d9d2a807e9a87bd10a10d1a0743b
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  wget
@@ -45,6 +45,8 @@ make %{?_smp_mflags} check
 %{_datadir}/mm-common/doctool/*.*
 
 %changelog
+*   Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.4-1
 -   Automatic Version Bump
 *   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.0.2-1
