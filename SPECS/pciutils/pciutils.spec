@@ -1,6 +1,6 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
-Version:	3.8.0
+Version:	3.9.0
 Release:	1%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
@@ -8,7 +8,7 @@ Group:		System Environment/System Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/utils/pciutils/%{name}-%{version}.tar.gz
-%define sha512  pciutils=49b8ccc87cc82326744de7f0306c0245a5bb87740d3e96b18378cc07477ca176bd3ffaf699bfe9954d61381c57f65aa703c07fa6406fe2be289917dc1715600d
+%define sha512  pciutils=27751eb2c9ea35047f62d6025c8dab6036cb3d18850bfd6e4ab906f7c9eb6cff059ed655155f6400bb16f953d7b520e72bdd8c1fce7a587a756902cc562af87d
 
 %description
 The pciutils package contains a set of programs for listing PCI devices,
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.9.0-1
+-   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
 -   Automatic Version Bump
 *   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.7.0-2
