@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.268
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -182,6 +182,8 @@ Patch136: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch137: 0008-vmxnet3-update-to-version-7.patch
 Patch138: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch139: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
+Patch140: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
+Patch141: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
@@ -488,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.268-2
+- update to latest ToT vmxnet3 driver
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.268-1
 - Update to version 4.19.268
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.264-4

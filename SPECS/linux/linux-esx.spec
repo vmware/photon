@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.268
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -458,6 +458,8 @@ Patch546: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch547: 0008-vmxnet3-update-to-version-7.patch
 Patch548: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
+Patch550: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
+Patch551: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 
 # Patches for i40e driver
 Patch801: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
@@ -571,7 +573,7 @@ ApplyPatch "521" "530"
 ApplyPatch "531" "539"
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "540" "549"
+ApplyPatch "540" "551"
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -799,6 +801,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Dec 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.268-3
+- update to latest ToT vmxnet3 driver
 * Wed Dec 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.268-2
 - Fix: Don't use screen objects when SEV is active
 * Fri Dec 09 2022 Ankit Jain <ankitja@vmware.com> 4.19.268-1
