@@ -2,8 +2,8 @@
 
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
-Version:       102.3.0
-Release:       2%{?dist}
+Version:       102.6.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -11,7 +11,7 @@ URL:           https://spidermonkey.dev
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha512 firefox-%{version}=35357791f4de8b474780083a22fb52b7846b8012cbf01403f2b9526151d11c196ce0f9fba8e0f16d8235d7259af6fba1bc3acbb5b7e79129a28f390467aa7556
+%define sha512 firefox-%{version}=c0f0160bea612d0ae74c29dd44beb7fd9a1c292694b8cd5c4faf2e54feb5c27684eee821b67dd40df714d69866a4e3a8b19e22182d9bc3023050d2d96b02d308
 
 Patch0:        emitter.patch
 
@@ -133,6 +133,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 102.6.0-1
+- Automatic Version Bump
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 102.3.0-2
 - Update release to compile with python 3.11
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 102.3.0-1
