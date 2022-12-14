@@ -1,6 +1,6 @@
 Summary:       USB Utils
 Name:          usbutils
-Version:       014
+Version:       015
 Release:       1%{?dist}
 License:       GPLv2+
 URL:           http://linux-usb.sourceforge.net
@@ -8,7 +8,7 @@ Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://www.kernel.org/pub/linux/utils/usb/usbutils/%{name}-%{version}.tar.xz
-%define sha512   usbutils=43c9f6ed14f8d01e014ef39a5d50b3b09031c6bda8261e0945b4cb4287c9107104175b386c2adc61dc7f9f476afb30f9a647a6ece6dee26b4133a4f10af72792
+%define sha512   usbutils=cda0070138400703d7429d39dee49130aedaa704292531e6af57b347cc62422ca609540650926e74335f71d67d7d4655418be4824e1eb8a2b065c7b395feaa87
 Source1:       usb.ids
 BuildRequires: libusb-devel
 BuildRequires: pkg-config
@@ -43,6 +43,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/misc/
 %{_datadir}/misc/usb.ids
 
 %changelog
+*   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 015-1
+-   Automatic Version Bump
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 014-1
 -   Automatic Version Bump
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 013-1
