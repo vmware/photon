@@ -1,6 +1,6 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20211215
+Version:          20221126
 Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
@@ -8,7 +8,7 @@ Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-s%{version}.tar.gz
-%define sha512    iputils=191062e51f7c8e8b38e3e4a96845adb77cd69f487d548c7cc578fad544443b4bc0dbe965d8f8e6fbda0a2f5b2fe2829789c05f873190c53d773245959298f6e9
+%define sha512    iputils=7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
 BuildRequires:    ninja-build
@@ -22,15 +22,6 @@ Requires:         systemd
 %description
 The Iputils package contains programs for basic networking.
 
-%package          ninfod
-Summary:          Node Information Query Daemon
-Requires:         %{name} = %{version}-%{release}
-Provides:         %{_sbindir}/ninfod
-
-%description      ninfod
-Node Information Query (RFC4620) daemon. Responds to IPv6 Node Information
-Queries
-
 %prep
 %autosetup
 
@@ -42,35 +33,22 @@ Queries
 %meson_install
 
 %find_lang %{name}
+ln -sf %{_bindir}/ping %{buildroot}%{_bindir}/ping6
+ln -sf %{_bindir}/tracepath %{buildroot}%{_bindir}/tracepath6
 
-ln -sf ../bin/ping %{buildroot}%{_sbindir}/ping
-ln -sf ../bin/ping %{buildroot}%{_sbindir}/ping6
-ln -sf ../bin/traceroute6 %{buildroot}%{_sbindir}/traceroute6
-ln -sf ../bin/tracepath %{buildroot}%{_sbindir}/tracepath
-ln -sf ../bin/tracepath %{buildroot}%{_sbindir}/tracepath6
-ln -sf ../bin/arping %{buildroot}%{_sbindir}/arping
-
-%files -f %{name}.lang
-%{_sbindir}/rdisc
-%{_sbindir}/ninfod
-%{_sbindir}/tracepath
-%{_sbindir}/traceroute6
-%{_sbindir}/arping
-%{_sbindir}/ping
-%{_sbindir}/ping6
-%{_sbindir}/tracepath6
-
+%files
+%defattr(-,root,root,-)
+%{_datadir}/locale/*
+%{_bindir}/ping6
+%{_bindir}/tracepath6
 %{_bindir}/tracepath
-
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/clockdiff
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
-%files ninfod
-%attr(0755,root,root) %caps(cap_net_raw=ep) %{_sbindir}/ninfod
-%{_sysconfdir}/init.d/ninfod.sh
-
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221126-1
+- Automatic Version Bump
 * Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 20211215-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
