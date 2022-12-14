@@ -1,6 +1,6 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
-Version:          6.24.01
+Version:          6.24.06
 Release:          1%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:            http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
-%define sha512  %{name}=47425f9bc5ae3df163fe1c9f8a1b1a6c3893b186843d561fb7020c75561587286036cc679212f17fd0f760735d9e01da414e60a69db0ffcb74276f053ea80479
+%define sha512  %{name}=a69e51d08b56e1326368029c1dfc8ada9221ba0f17369cf3471c764b77e53fa259a3fe713e9443835a20f528b0940ec2af9d7fab4cb943789aab08856fd5c2e8
 
 Provides:         csh = %{version}
 Provides:         /bin/tcsh
@@ -118,6 +118,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.06-1
+- Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.01-1
 - Automatic Version Bump
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.00-1
