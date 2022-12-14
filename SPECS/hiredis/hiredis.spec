@@ -1,7 +1,7 @@
 Summary:        Minimalistic C client library for Redis
 Name:           hiredis
-Version:        1.0.2
-Release:        2%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Productivity/Databases/Clients
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/redis/hiredis
 
 Source0:        https://github.com/redis/hiredis/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=86497a1c21869bbe535378885eee6dbd594ef96325966511a3513f81e501af0f5ac7fed864f3230372f3ac7a23c05bad477fa5aa90b9747c9fb1408028174f9b
+%define sha512 %{name}=9dad012c144ed24de6aa413a3a10d19a9d0d9ece18dbc388406cd86c5b98cb66c76c586cb559c601ed13a75051d8921dc2882534cc3605513fde47d57276c3bb
 
 BuildRequires:  make
 BuildRequires:  redis
@@ -55,6 +55,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
+- Automatic Version Bump
 * Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-2
 - Bump version as a part of redis upgrade
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-1
