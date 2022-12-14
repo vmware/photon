@@ -1,14 +1,14 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        6.2.1
-Release:        2%{?dist}
+Version:        6.3.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4fd383870e5e5e684d4a74eef461c5b5fbf3c2fb1b62696edeadd3870ca5de1f7dfc9d2fc86a5022c36486640520ab0c8c23e099e08a38497b8345149b2aff37
+%define sha512  %{name}=99cd77c25e6c7f064ea9b631a8632b6020cb012c2f5a8c1da371ed413a4f984d04f8c293f551f890bbf084f840d7406aa25956f016ff2596173cd2f1f834873b
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 Requires:       python3
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_hg
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 6.3.1-1
+- Automatic Version Bump
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 6.2.1-2
 - Update release to compile with python 3.11
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 6.2.1-1
