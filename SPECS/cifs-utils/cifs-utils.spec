@@ -1,12 +1,12 @@
 Summary:	cifs client utils
 Name:		cifs-utils
-Version:	6.14
-Release:	2%{?dist}
+Version:	7.0
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
-%define sha512  cifs-utils=dd875e110988f84ac766900426e1a75c043607de1f24b87e95cd942f2f58561e1133d16466f02863643c8395fc0160df4050636d1ce0db005f2e52a592c7f0ab
+%define sha512  cifs-utils=4c57741af0c4567a78f352c73caca998881666a5ed36536275cfa775efd66ff1a44ebe539a8ed96c409c5b08a1378266964ce667a27e9fc7f2d43999c63dd0eb
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libcap-ng-devel
@@ -32,10 +32,10 @@ Provides header files needed for Cifs-Utils development.
     ROOTSBINDIR=/usr/sbin \
     --disable-pam \
     --disable-systemd &&
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install
 
 %check
 make %{?_smp_mflags} check
@@ -51,6 +51,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+*       Thu Dec 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0-1
+-       Upgrade to version 7.0
 *       Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.14-2
 -       Bump version as a part of libtalloc upgrade
 *       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.14-1
