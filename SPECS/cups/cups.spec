@@ -1,6 +1,6 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.2.7
+Version:        2.4.2
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
@@ -8,8 +8,8 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}.tar.gz
-%define sha512 %{name}=143f085ce0a8953d9ab277a46369dcf337bcdd84f5a4dc0ed5dba7a5d0188dc62825728d56e8baf4a2b4f96f2086b3798660016924969d69d28483809a031a4d
+Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}.tar.gz
+%define sha512  %{name}=1942a677a78df0dcfaaae4b93cf7bf4ba59865d270d89d893831cb47a02f6b7e581c56bbb9264d39504b46d81c3b17ba89f7c5e21f20628f12ddf7161ac6a574
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -29,13 +29,13 @@ Requires:       zlib
 The Common Unix Printing System (CUPS) is a print spooler and associated utilities.
 It is based on the "Internet Printing Protocol" and provides printing services to most PostScript and raster printers.
 
-%package devel
-Summary: Header and development files
-License: LGPLv2
-Group:   Development/Libraries/C and C++
-Requires: %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files
+License:        LGPLv2
+Group:          Development/Libraries/C and C++
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 It contains the header files to create applications
 
 %prep
@@ -50,6 +50,8 @@ make %{?_smp_mflags}
 
 %install
 make %{?_smp_mflags} install BUILDROOT=%{buildroot}
+find %{buildroot} -name '*.desktop' -delete
+find %{buildroot} -name '*.png' -delete
 
 %ldconfig_scriptlets
 
@@ -87,7 +89,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/cups/
 %{_libdir}/libcups*.so
+%{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.2-1
+- Automatic Version Bump
 * Mon Jun 20 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.2.7-1
 - Build cups
