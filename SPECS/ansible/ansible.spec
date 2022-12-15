@@ -1,33 +1,33 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.10.16
-Release:        2%{?dist}
+Version:        2.11.12
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/ansible/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f923e856795f720fce4a9e862e8089ab20037c2739ca30311195753765c44cae41a60a125b94a8b07b6c2247b3c88a9fe5e6bdf8c5786a744bd46190cb624f89
+Source0: https://github.com/ansible/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=ef7e3f475b9cf7946f00e173f4c9b1fac34fa7daa6f2a412ecf12640789d7966f2308533289815c6dbe3530c6a82adc1044917a6d2ba8dd2ae61cbe8ff7708d8
 
-Source1:        macros.ansible
+Source1: macros.ansible
 
-Patch0:         Add-Photon-OS-tdnf-support.patch
+Patch0: Add-Photon-OS-tdnf-support.patch
 
-BuildArch:      noarch
+BuildArch: noarch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-pip
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-resolvelib
+BuildRequires: python3-pip
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-jinja2
-Requires:       python3-PyYAML
-Requires:       python3-xml
-Requires:       python3-paramiko
+Requires: python3
+Requires: python3-jinja2
+Requires: python3-PyYAML
+Requires: python3-xml
+Requires: python3-paramiko
+Requires: python3-resolvelib
 %if %{with_check}
 Requires:       python3-devel
 %endif
@@ -67,6 +67,8 @@ python3 setup.py test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Thu Dec 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.11.12-1
+- Version upgrade to v2.11.12
 * Tue Sep 27 2022 Nitesh Kumar <kunitesh@vmware.com> 2.10.16-2
 - Adding devel sub package
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.10.16-1
