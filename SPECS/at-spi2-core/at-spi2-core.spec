@@ -1,6 +1,6 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
-Version:        2.45.91
+Version:        2.46.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
@@ -8,8 +8,8 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.45/%{name}-%{version}.tar.xz
-%define sha512  at-spi2-core=749039d7c0f729f6d30b5cb8b72ffd7c0072c6f41421bb57b16b975c9ec8798c860c9d73b348980df0264b2d14a45302a5de3e58ed24e0d1396be5dfdb8079e0
+Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.46/%{name}-%{version}.tar.xz
+%define sha512  at-spi2-core=633af2c02fab3b8cb02e37f929ce80dd5ce28ca5641046ef5e25cb29299530b90028e6c6f318a0c098a4270bed3eab48fb55d6967a76bfadd2520f49de47c770
 
 BuildRequires:  meson >= 0.50
 BuildRequires:  libxml2-devel
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 2.46.0-1
+- Automatic Version Bump
 * Mon Sep 05 2022 Shivani Agarwal <shivania2@vmware.com> 2.45.91-1
 - Version update
 * Fri Aug 06 2021 Alexey Makhalov <amakhalov@vmware.com> 2.40.3-1
