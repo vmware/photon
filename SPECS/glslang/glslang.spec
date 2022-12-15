@@ -1,5 +1,5 @@
 Name:           glslang
-Version:        11.12.0
+Version:        11.13.0
 Release:        1%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 License:        BSD and GPLv3+ and ASL 2.0
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/KhronosGroup/glslang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=fd955f9912551668056dfe52835eef11e5dc0bf0d25b2d961a31f684adbd63bc6380759944c1921cfd63d359a58c7cc3a4a4d5eea69fa1b050f58960e5101271
+%define sha512  %{name}=20c2a6543b002648f459f26bd36b5c445afd6d8eae175e400dbe45632f11ca8de1f9e6f6e98fd6f910aa75d90063e174c095e7df26d9d4982192b84d08b0dc8b
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -57,7 +57,9 @@ interpretation of the specifications for these languages.
 %{_libdir}/cmake/*
 
 %changelog
-* Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 11.12.0-1
-- Automatic Version Bump
-* Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.11.0-1
-- First build, needed for mesa-22.2.0
+*   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 11.13.0-1
+-   Automatic Version Bump
+*   Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 11.12.0-1
+-   Automatic Version Bump
+*   Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.11.0-1
+-   First build, needed for mesa-22.2.0
