@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -13,6 +13,8 @@ Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.
 
 Patch0:         0001-openssl-3.0.0-compatibility.patch
 Patch1:         ruby-CVE-2022-28739.patch
+Patch2:         ruby-CVE-2021-28965.patch
+Patch3:         ruby-CVE-2021-41819.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -78,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+* Thu Dec 15 2022 Shivani Agarwal <shivania2@vmware.com> 2.7.4-5
+- Fix CVE-2021-28965, CVE-2021-41819
 * Sat Jun 11 2022 Harinadh D <hdommaraju@vmware.com> 2.7.4-4
 - fix CVE-2022-28739
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.4-3
