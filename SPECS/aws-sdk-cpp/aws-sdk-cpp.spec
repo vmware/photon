@@ -3,7 +3,7 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.10.20
+Version:        1.10.30
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,7 +19,7 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
 # tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=117fa0a198d8e8a38582be1bfdb2b5d44d8980949429c9845015244e8f533f6eadf13cde34469c235376849d4b0eb4f7af708c85203048cc6a9a32d7bf545320
+%define sha512 %{name}=9c3ae4ba18e76cf2aacea8412f1f808774af9bd1c3ccfc55c541833ca399775f008eec387870fa71fa067a0e3345d6e9f4486511426bfb7c40f2429a72878b4f
 
 Requires:       openssl-devel
 Requires:       curl-devel
@@ -164,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-1
+- Upgrade to v1.10.30
 * Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.20-1
 - Upgrade to v1.10.20
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.33-6
