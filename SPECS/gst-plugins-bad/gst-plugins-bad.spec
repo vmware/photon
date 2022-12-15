@@ -1,6 +1,6 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.17.1
+Version:        1.21.3
 Release:        1%{?dist}
 License:        LGPLv2
 URL:            http://gstreamer.freedesktop.org/
@@ -8,13 +8,12 @@ Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8825c0e35cb8fc1c1c006bdbee0ed538e493d29ddb97011ea649a385cba669e49dc3fc6b902dbbcc343dcaa4afcf950295423a90852ca21df106e94659ee0cf0
+Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
+%define sha512  %{name}=706b77adcb9d73cbfa5148eacc5c9efc4ad904d25a23b70b5bd80b0891c94ac5c5400416de1cf9aa86558e606d1928af9bae7acc68491ca7414f63604fa6cf71
 
 BuildRequires:  meson
 BuildRequires:  cmake
 BuildRequires:  gstreamer-plugins-base-devel
-
 Requires:       gstreamer-plugins-base
 
 %description
@@ -69,6 +68,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.3-1
+- Automatic Version Bump
 * Tue Sep 06 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.1-1
 - Upgrade version
 * Mon Jul 13 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
