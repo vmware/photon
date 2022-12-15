@@ -1,14 +1,14 @@
 Summary:        setuid implementation of a subset of user namespaces.
 Name:           bubblewrap
-Version:        0.6.2
+Version:        0.7.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/bubblewrap
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/projectatomic/bubblewrap/releases/download/v%{version}/bubblewrap-%{version}.tar.xz
-%define sha512    bubblewrap=235da019cb370ea6d9328352acb38e6ff368f02f71db1ae85f2dd37655757975bd5b57bbe15f7b419b53a26b8ec3edd81b55893b420d5f42d6a9dab3471d0096
+Source0:        https://github.com/projectatomic/bubblewrap/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512  bubblewrap=01ec30b01f70ff896b407d4979df0bc1a75d0b441a388f7be7aa9a4c9f56e6a1e2ae2ae4dbe4d6262a0218f577a8ad317db4217d5663ea9bd8c1d5c4293c39a7
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -19,13 +19,13 @@ Requires:       libcap
 
 %description
 Bubblewrap could be viewed as setuid implementation of a subset of user namespaces. Emphasis on subset - specifically relevant to the above CVE, bubblewrap does not allow control over iptables.
-
 The original bubblewrap code existed before user namespaces - it inherits code from xdg-app helper which in turn distantly derives from linux-user-chroot.
 
 %prep
 %autosetup -p1
 
 %build
+sh autogen.sh
 %configure \
     --disable-silent-rules \
     --with-priv-mode=none
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_bwrap
 
 %changelog
+*   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1
+-   Automatic Version Bump
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 0.6.2-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.1-1
