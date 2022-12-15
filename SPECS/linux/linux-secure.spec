@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -243,6 +243,9 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 sed -i "s/CONFIG_DEBUG_LIST=y/# CONFIG_DEBUG_LIST is not set/" .config
 sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not set/" .config
 #sed -i "/# CONFIG_DEBUG_INFO_DWARF4 is not set/a  # CONFIG_DEBUG_INFO_BTF is not set" .config
+sed -i "s/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/" .config
+sed -i "s/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/" .config
+sed -i "s/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/" .config
 
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
@@ -379,6 +382,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Dec 15 2022 Srinidhi Rao <srinidhir@vmware.com> 6.0.7-5
+- Fix issues for non-canister builds
 * Tue Dec 13 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-4
 - FIPS canister relocations in bytecode
 * Tue Dec 13 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-3
