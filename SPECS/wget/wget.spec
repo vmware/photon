@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
-Version:        1.20.3
-Release:        2%{?dist}
+Version:        1.21.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -9,8 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=2b886eab5b97267cc358ab35e42d14d33d6dfc95
-Patch0:         0001-src-ftp.c-ftp_loop_internal-Check-for-VERIFCERTERR-t.patch
+%define sha512  %{name}=29889ecbf590dff0f39183d9e0621741d731a554d990e5c995a4644725dca62e8e19601d40db0ef7d62ebf54e5457c7409965e4832b6e60e4ccbc9c8caa30718
 
 Requires:       openssl
 
@@ -44,6 +43,7 @@ cat >> %{buildroot}/etc/wgetrc <<-EOF
 EOF
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
+%find_lang %{name}-gnulib
 %{_fixperms} %{buildroot}/*
 
 %if 0%{?with_check}
@@ -56,13 +56,16 @@ make  %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 
-%files -f %{name}.lang
+%files -f %{name}.lang -f %{name}-gnulib.lang
 %defattr(-,root,root)
 %config(noreplace) /etc/wgetrc
 %{_bindir}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Dec 16 2022 Srish Srinivasan <ssrish@vmware.com> 1.21.3-1
+- Upgraded to v1.21.3
+- Fix CVE-2021-31879
 * Tue Apr 12 2022 Oliver Kurth <okurth@vmware.com> 1.20.3-2
 - fix core dump on SIGABRT on certificate validation error
 * Thu May 23 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
