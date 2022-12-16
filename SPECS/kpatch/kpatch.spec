@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
-Version:        0.9.6
-Release:        5%{?dist}
+Version:        0.9.7
+Release:        1%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
-%define sha512 kpatch=898c5704098c473187f2eab9bccd5fb3cfc31f4211492d658abcd0b7cac6d03f11a27df19a56ad17c20163803084ddf54a27defcf12b4975a8a8eb5dbad73f21
+%define sha512 %{name}=c876d9b1e5f6e6ab858fa6f302e78152beb3e50cedd93f3c61ab6f747e32199b0601ad4a36d426d43d0e9a37d9bf1d6bbfddccc86df4b31d5e3e6edead6cded3
 
 Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh
@@ -118,6 +118,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Thu Dec 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1
+- Update to latest version
 * Thu Aug 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-5
 - Add a patch to make installed livepatches visible to modinfo.
 - Add capability of packaging livepatch modules as RPMs.
