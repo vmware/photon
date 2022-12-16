@@ -1,6 +1,6 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        11.4
+Version:        12.1
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512  wavefront=bf815c3ffa8f08afd31453a404cd41a14aa5c7fc14f8b44ae1f4da4c3836edf9ac6d35724e7c0e2b4450610c9e1a7949de1947ef2e32dcbb35a82fd2caf2b5c2
-Patch0:         0001-Added-Main-class-for-proxy-11.3-jar-with-dependencies.patch
-Patch1:         0002-proxy-pom.xml-skip-format-code-plugin.patch
+%define sha512  wavefront=64b88266da47e468c26b7009f5027f71d2ce15bf6a0630102db951632fb8d285af2ebbc78fa18cce2fed273a286bdce9d2925e6a09752d49c3d63582725b4b66
 BuildRequires:  apache-maven
 BuildRequires:  openjdk11
 BuildRequires:  systemd-devel
@@ -60,7 +58,7 @@ install -m 755 -D pkg/etc/wavefront/%{name}/log4j2.xml.default %{buildroot}/%{_s
 install -m 755 -D pkg/etc/wavefront/%{name}/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
 install -m 755 -D pkg/etc/wavefront/%{name}/wavefront.conf.default %{buildroot}%{_sysconfdir}/wavefront/%{name}/wavefront.conf
 install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/copyright
-install -m 755 -D proxy/target/proxy-%{version}-jar-with-dependencies.jar %{buildroot}/opt/wavefront-push-agent.jar
+install -m 755 -D proxy/target/proxy-%{version}-spring-boot.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
@@ -75,12 +73,9 @@ log_dir="/var/log/wavefront"
 [[ -d $spool_dir ]] || mkdir -p $spool_dir && chown $user:$group $spool_dir
 [[ -d $log_dir ]] || mkdir -p $log_dir && chown $user:$group $log_dir
 
-touch $log_dir/wavefront-daemon.log
-touch $log_dir/wavefront-error.log
-chown $user:$group $log_dir/wavefront-daemon.log
-chown $user:$group $log_dir/wavefront-error.log
-chmod 644 $log_dir/wavefront-daemon.log
-chmod 644 $log_dir/wavefront-error.log
+touch $log_dir/wavefront.log
+chown $user:$group $log_dir/wavefront.log
+chmod 644 $log_dir/wavefront.log
 
 %post
 chown -R wavefront:wavefront /opt/wavefront
@@ -111,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Fri Dec 16 2022 Prashant S Chauhan <psinghchauha@vmware.com> 12.1-1
+- Update to version 12.1
 * Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.4-1
 - Update to version 11.4
 * Tue May 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.3-1
