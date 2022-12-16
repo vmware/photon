@@ -1,6 +1,6 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
-Version:        1.20.3
+Version:        1.21.3
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=2b886eab5b97267cc358ab35e42d14d33d6dfc95
+%define sha1    %{name}=e0c2c21aff77693c3e67cf3889945a2ef5a03a39
 
 Requires:       openssl
 
@@ -42,6 +42,7 @@ cat >> %{buildroot}/etc/wgetrc <<-EOF
 EOF
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
+%find_lang %{name}-gnulib
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -52,13 +53,16 @@ make %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 
-%files -f %{name}.lang
+%files -f %{name}.lang -f %{name}-gnulib.lang
 %defattr(-,root,root)
 %config(noreplace) /etc/wgetrc
 %{_bindir}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Dec 16 2022 Srish Srinivasan <ssrish@vmware.com> 1.21.3-1
+- Upgraded to v1.21.3
+- Fix CVE-2021-31879
 * Thu May 23 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
 - Updated to latest version. Fix CVE-2019-5953, CVE-2018-20483
 * Tue Dec 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-4
