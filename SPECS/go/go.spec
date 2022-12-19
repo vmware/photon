@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.18.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha512  go=8fb257e2e53bf887948735c03a68748c55e2ceda3c6593cabb0c70e82b0e4e8f6ecd8aece5e6b1b96e4589a53ae557f8d9d6dea093efff0ae657afad25b05b22
+Patch0:         CVE-2022-41717.patch
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -110,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.8-2
+- Fix for CVE-2022-41717.
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.8-1
 - Upgrade to 1.18.8.
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.7-1
