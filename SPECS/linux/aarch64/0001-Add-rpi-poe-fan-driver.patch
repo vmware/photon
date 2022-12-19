@@ -149,8 +149,8 @@ index 9db2903..dc68c97 100644
  obj-$(CONFIG_SENSORS_RASPBERRYPI_HWMON)	+= raspberrypi-hwmon.o
 +obj-$(CONFIG_SENSORS_RPI_POE_FAN)	+= rpi-poe-fan.o
  obj-$(CONFIG_SENSORS_S3C)	+= s3c-hwmon.o
- obj-$(CONFIG_SENSORS_SCH56XX_COMMON)+= sch56xx-common.o
- obj-$(CONFIG_SENSORS_SCH5627)	+= sch5627.o
+ obj-$(CONFIG_SENSORS_SBTSI)	+= sbtsi_temp.o
+ obj-$(CONFIG_SENSORS_SBRMI)	+= sbrmi.o
 diff --git a/drivers/hwmon/rpi-poe-fan.c b/drivers/hwmon/rpi-poe-fan.c
 new file mode 100644
 index 0000000..c9654e9

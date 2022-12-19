@@ -1,0 +1,106 @@
+From cf72d49d79ca364410d40f4327ef886136a28a67 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 25 May 2022 12:33:13 +0000
+Subject: [PATCH 3/6] arm64: VMware hypervisor detection
+
+Add VMware hypervisor detection code, using device tree via the
+/hypervisor/compatible node or via DMI serial string signature.
+
+Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ arch/arm64/include/asm/hypervisor.h |  1 +
+ arch/arm64/kernel/Makefile          |  2 +-
+ arch/arm64/kernel/hypervisor.c      |  1 +
+ arch/arm64/kernel/vmware.c          | 43 +++++++++++++++++++++++++++++
+ 4 files changed, 46 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/kernel/vmware.c
+
+diff --git a/arch/arm64/include/asm/hypervisor.h b/arch/arm64/include/asm/hypervisor.h
+index 7981f22a5a56..54f9ffc3d028 100644
+--- a/arch/arm64/include/asm/hypervisor.h
++++ b/arch/arm64/include/asm/hypervisor.h
+@@ -29,5 +29,6 @@ struct hypervisor_arm64 {
+ 	struct arm64_hyper_init init;
+ };
+ 
++extern const struct hypervisor_arm64 arm64_hyper_vmware;
+ #endif /* CONFIG_HYPERVISOR_GUEST */
+ #endif
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index 9191e1debc56..ddea06482084 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -74,7 +74,7 @@ obj-$(CONFIG_ARM64_PTR_AUTH)		+= pointer_auth.o
+ obj-$(CONFIG_ARM64_MTE)			+= mte.o
+ obj-y					+= vdso-wrap.o
+ obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
+-obj-$(CONFIG_HYPERVISOR_GUEST)		+= hypervisor.o
++obj-$(CONFIG_HYPERVISOR_GUEST)		+= hypervisor.o vmware.o
+ 
+ # Force dependency (vdso*-wrap.S includes vdso.so through incbin)
+ $(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
+diff --git a/arch/arm64/kernel/hypervisor.c b/arch/arm64/kernel/hypervisor.c
+index dbf0170edfdd..b817352bce71 100644
+--- a/arch/arm64/kernel/hypervisor.c
++++ b/arch/arm64/kernel/hypervisor.c
+@@ -10,6 +10,7 @@
+ #include <asm/hypervisor.h>
+ 
+ static const __initconst struct hypervisor_arm64 * const hypervisors[] = {
++	&arm64_hyper_vmware,
+ };
+ 
+ enum arch_hypervisor_type hyper_type;
+diff --git a/arch/arm64/kernel/vmware.c b/arch/arm64/kernel/vmware.c
+new file mode 100644
+index 000000000000..a8d17233b17b
+--- /dev/null
++++ b/arch/arm64/kernel/vmware.c
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0 or MIT
++/*
++ * VMware Detection code.
++ *
++ * Copyright (C) 2021, VMware, Inc.
++ * Author : Cyprien Laplace <claplace@vmware.com>
++ * Author : Keerthana K <keerthanak@vmware.com>
++ */
++
++#include <linux/init.h>
++#include <linux/export.h>
++#include <linux/dmi.h>
++#include <linux/of.h>
++#include <linux/of_fdt.h>
++#include <asm/hypervisor.h>
++
++static int __init fdt_find_hyper_node(unsigned long node,
++				      const char *uname,
++				      int depth, void *data)
++{
++	return depth == 1 && strcmp(uname, "hypervisor") == 0 &&
++	       of_flat_dt_is_compatible(node, "vmware");
++}
++
++/*
++ * Check for VMware hypervisor signature in the device tree node
++ * hypervisor/compatible or in dmi serial string.
++ */
++static uint32_t __init vmware_platform(void)
++{
++	if (of_scan_flat_dt(fdt_find_hyper_node, NULL) ||
++	     (dmi_available && dmi_name_in_serial("VMware")))
++		return 1;
++
++	return 0;
++}
++
++const __initconst struct hypervisor_arm64 arm64_hyper_vmware = {
++	.name			= "VMware",
++	.detect			= vmware_platform,
++	.type			= HYPER_VMWARE,
++	.init.init_platform     = NULL,
++};
+-- 
+2.28.0
+

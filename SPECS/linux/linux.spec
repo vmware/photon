@@ -1,11 +1,12 @@
 %global security_hardening none
+%global __cmake_in_source_build 0
 
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -22,8 +23,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.142
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        6.0.7
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,18 +34,18 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 %define _modulesdir /lib/modules/%{uname_r}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
+%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.4.0
-Source3:        https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha512 ena_linux=e14b706d06444dcc832d73150a08bbdc0fc53b291d2fd233aef62d8f989f529b4aabc7865526fe27a895d43d5f8ba5993752a920601be8a1d3ed9ea973e9c6ef
+%define ena_version 2.8.0
+Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
+%define sha512 ena_linux=549b33f913bc4fa48f27d24e66d77032e32992f7f9c6afb1ce82e89d343516201442c70f3146d919b81632b97baee699f1c60001cb2a1730720681fa28452e3e
 
-%define sgx_version 1.8
-Source5:        https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
-%define sha512 DCAP=79d0b4aba102559bed9baf9fe20917e9781a22d742fa52b49b2c1a00c452a452796e6ce1a92bad80d6e6fc92ad71fa72ee02c1b65a59bddbb562aaaad4b2d8b2
+%define efa_version 2.1.1
+Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
+%define sha512 efa_linux=2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
 
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
@@ -57,8 +58,6 @@ Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40
 %define iavf_version 4.4.2
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
-
-Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 
 %define ice_version 1.8.3
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
@@ -73,23 +72,18 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 Source17:       fips_canister-kallsyms
 %endif
 
-# common
-Patch0: net-Double-tcp_mem-limits.patch
-Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+# common [0..49]
+Patch0: confdata-format-change-for-split-script.patch
+Patch1: net-Double-tcp_mem-limits.patch
 Patch2: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch3: 9p-transport-for-9p.patch
+Patch3: 6.0-9p-transport-for-9p.patch
 Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch6: 6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
-
-# To support compilation with Python 3.11 and Perl 5.36.0
-Patch8:  do-not-throw-errors-for-building-tools.patch
-
-# To support GCC v12
-Patch9:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
-Patch10: 0004-perf_sched_Cast_PTHREAD_STACK_MIN_to_int_as_it_may_turn_into_sysconf.patch
+Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
+Patch9: Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
 
 # ttyXRUSB support
 Patch11: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -98,80 +92,89 @@ Patch12: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patchx: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch13: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+Patch13: 6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
-Patch14: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch15: apparmor-af_unix-mediation.patch
-# floppy:
-Patch17: 0001-floppy-lower-printk-message-priority.patch
+Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
-
-#vmxnet3
-Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
-Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# TODO: Review: Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-# VMW:
-Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
-Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
-# arm64 hypervisor detection and kmsg dumper
-Patch59: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch60: 0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+# VMW: [50..59]
+Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
-# CVE:
-Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
+# CVE: [100..129]
+Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix for CVE-2019-12379
-Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-4204
-Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-0500
-Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
-Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
-Patch116: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
-Patch117: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
-Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
-Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
-Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
-Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Next 2 patches are about to be merged into stable
-Patch130: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 %ifarch aarch64
+# aarch specific patches [200..219]
 # Rpi of_configfs patches
 Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
 Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
-
 # Rpi fan driver
-Patch204: 0001-Add-rpi-poe-fan-driver.patch
+# arm64 hypervisor detection and kmsg dumper
+Patch205: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch206: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
+Patch207: 6.0-0003-arm64-VMware-hypervisor-detection.patch
+Patch208: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
+Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
+# TODO: rebase to 6.0:
+Patch220: 0001-Add-rpi-poe-fan-driver.patch
 %endif
 
-# Crypto:
+%ifarch x86_64
+# AWS: [300..339]
+Patch301: 6.0-0001-scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+Patch302: 6.0-0007-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch303: 6.0-0008-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch304: 6.0-0009-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch305: 6.0-0010-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
+Patch306: 6.0-0011-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch307: 6.0-0012-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch308: 6.0-0013-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch309: 6.0-0014-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch310: 6.0-0015-x86-xen-save-and-restore-steal-clock.patch
+Patch311: 6.0-0016-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch312: 6.0-0017-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch313: 6.0-0018-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch314: 6.0-0020-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
+Patch315: 6.0-0021-x86-tsc-avoid-system-instability-in-hibernation.patch
+Patch316: 6.0-0022-block-xen-blkfront-consider-new-dom0-features-on-res.patch
+Patch317: 6.0-0023-xen-restore-pirqs-on-resume-from-hibernation.patch
+Patch318: 6.0-0024-xen-Only-restore-the-ACPI-SCI-interrupt-in-xen_resto.patch
+Patch319: 6.0-0026-xen-netfront-call-netif_device_attach-on-resume.patch
+Patch320: 6.0-0054-xen-Restore-xen-pirqs-on-resume-from-hibernation.patch
+Patch321: 6.0-0055-block-xen-blkfront-bump-the-maximum-number-of-indire.patch
+Patch322: 6.0-0185-Introduce-page-touching-DMA-ops-binding.patch
+Patch323: 6.0-0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
+Patch324: 6.0-0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
+%endif
+
+# Crypto: [500..529]
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503: 0002-FIPS-crypto-self-tests.patch
+Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
 Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
-#Patch to introduce wrappers for random callback functions
-Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -183,57 +186,25 @@ Patch510: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
-%if 0%{?fips}
-#retpoline
-Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
-%endif
-
-# SEV on VMware:
+# SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
-Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
-Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 
-#Patches for i40e driver
+#Patches for efa [1400..1409]
+Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
+
+#Patches for i40e driver [1500..1509]
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
 
-#Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1512: no-aux-symvers.patch
+#Patches for iavf driver [1510..1519]
+Patch1510: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1511: no-aux-symvers.patch
 
-#Patches for ice driver
-Patch1513: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1514: no-aux-bus.patch
-
-#Patches for vmci driver
-Patch1521: 001-return-correct-error-code.patch
-Patch1522: 002-switch-to-kvfree_rcu-API.patch
-Patch1523: 003-print-unexpanded-names-of-ioctl.patch
-Patch1524: 004-enforce-queuepair-max-size-for-IOCTL_VMCI_QUEUEPAIR_ALLOC.patch
-Patch1531: 0001-whitespace-formatting-change-for-vmci-register-defines.patch
-Patch1532: 0002-add-MMIO-access-to-registers.patch
-Patch1533: 0003-detect-DMA-datagram-capability.patch
-Patch1534: 0004-set-OS-page-size.patch
-Patch1535: 0005-register-dummy-IRQ-handlers-for-DMA-datagrams.patch
-Patch1536: 0006-allocate-send-receive-buffers-for-DMAdatagrams.patch
-Patch1537: 0007-add-support-for-DMA-datagrams-send.patch
-Patch1538: 0008-add-support-for-DMA-datagrams-receive.patch
-Patch1539: 0009-fix-the-description-of-vmci_check_host_caps.patch
-Patch1540: 0010-no-need-to-clear-memory-after-dma_alloc_coherent.patch
-Patch1541: 0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
-Patch1542: 0012-check-exclusive-vectors-when-freeing-interrupt1.patch
-Patch1543: 0013-release-notification-bitmap-inn-error-path.patch
-Patch1544: 0014-add-support-for-arm64.patch
-
-#Patches for tools
-Patch2001: 0001-tools-build-Add-feature-test-for-init_disassemble_in.patch
-Patch2002: 0002-tools-include-add-dis-asm-compat.h-to-handle-version.patch
-Patch2003: 0003-tools-perf-Fix-compilation-error-with-new-binutils.patch
-Patch2004: 0004-tools-bpf_jit_disasm-Fix-compilation-error-with-new-.patch
-Patch2005: 0005-tools-bpftool-Fix-compilation-error-with-new-binutil.patch
+#Patches for ice driver [1520..1529]
+Patch1520: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1521: no-aux-bus.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -248,6 +219,8 @@ BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  cmake
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -300,23 +273,6 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
-%ifarch x86_64
-%package drivers-intel-sgx
-Summary:    Intel SGX driver
-Group:      System Environment/Kernel
-Requires:   %{name} = %{version}-%{release}
-Requires(post): /usr/sbin/groupadd
-%description drivers-intel-sgx
-This Linux package contains Intel SGX kernel module.
-
-%package oprofile
-Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
-Group:          System Environment/Kernel
-Requires:       %{name} = %{version}-%{release}
-%description oprofile
-Kernel driver for oprofile, a statistical profiler for Linux systems
-%endif
-
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
@@ -355,14 +311,13 @@ This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
 %prep
-#TODO: remove rcN after 5.9 goes out of rc
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %ifarch x86_64
 # Using autosetup is not feasible
 %setup -q -T -D -b 3 -n linux-%{version}
 # Using autosetup is not feasible
-%setup -q -T -D -b 5 -n linux-%{version}
+%setup -q -T -D -b 4 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -q -T -D -b 10 -n linux-%{version}
 # Using autosetup is not feasible
@@ -376,72 +331,54 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M22
+# common
+%autopatch -p1 -m0 -M49
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M58
-%endif
-
-%ifarch aarch64
-# arm64 hypervisor detection and kmsg dumper
-%autopatch -p1 -m59 -M60
+%autopatch -p1 -m50 -M59
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M121
-
-# mm and scsi fixes
-%autopatch -p1 -m130 -M130
+%autopatch -p1 -m100 -M129
 
 %ifarch aarch64
-# Rpi of_configfs patches
-# Rpi fan driver
-%autopatch -p1 -m201 -M204
-%endif
-
-# crypto
-%autopatch -p1 -m500 -M507
-
-%if 0%{?fips}
-%autopatch -p1 -m508 -M509
-%else
-%if 0%{?kat_build}
-%patch510 -p1
-%endif
-%endif
-
-%if 0%{?fips}
-%patch511 -p1
+# aarch64 patches
+%autopatch -p1 -m200 -M219
 %endif
 
 %ifarch x86_64
+# AWS x86
+%autopatch -p1 -m300 -M339
+%endif
+
+# crypto
+%autopatch -p1 -m500 -M529
+
+%ifarch x86_64
 # SEV on VMware
-%autopatch -p1 -m600 -M605
+%autopatch -p1 -m600 -M609
+
+#Patches for efa driver
+pushd ../amzn-drivers-efa_linux_%{efa_version}
+%autopatch -p1 -m1400 -M1409
+popd
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1500 -M1509
 popd
 
 #Patches for iavf river
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
-%patch1512 -p1
+%autopatch -p1 -m1510 -M1519
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
-%patch1513 -p1
-%patch1514 -p1
+%autopatch -p1 -m1520 -M1529
 popd
-
 %endif
-
-# vmci
-%autopatch -p1 -m1521 -M1544
-
-%autopatch -p1 -m2001 -M2005
 
 %build
 make %{?_smp_mflags} mrproper
@@ -487,15 +424,21 @@ make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 # build ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-patch -p4 < %{SOURCE12}
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
 popd
 
-# build Intel SGX module
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
-make %{?_smp_mflags} KDIR=${bldroot} ARCH=%{arch} %{?_smp_mflags}
+# build EFA module
+bldroot="${PWD}"
+pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa
+mkdir build
+cd build
+%cmake -DKERNEL_DIR=${bldroot} ..
+%cmake_build
 popd
 
+%if 0
+# TODO: Re-enable i40e, iavf and ice drivers after porting them to
+# kernel 6.0
 # build i40e module
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
@@ -513,6 +456,7 @@ pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
 make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
+%endif
 %endif
 
 %define __modules_install_post \
@@ -547,14 +491,13 @@ pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
-# install Intel SGX module
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
-mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d
-install -vm 644 10-sgx.rules %{buildroot}%{_sysconfdir}/udev/rules.d
-mkdir -p %{buildroot}%{_modulesdir}/extra
-install -vm 644 intel_sgx.ko %{buildroot}%{_modulesdir}/extra/
+# install EFA module
+bldroot="${PWD}"
+pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
+make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
+%if 0
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
@@ -563,23 +506,16 @@ popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
-    INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
-install -Dvm 644 src/linux/auxiliary_bus.h \
-       %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
+%endif
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -681,15 +617,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %post drivers-sound
 /sbin/depmod -a %{uname_r}
 
-%ifarch x86_64
-%post drivers-intel-sgx
-/sbin/depmod -a %{uname_r}
-getent group sgx_prv >/dev/null || groupadd -r sgx_prv
-
-%post oprofile
-/sbin/depmod -a %{uname_r}
-%endif
-
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
@@ -706,9 +633,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 %ifarch x86_64
-%exclude %{_modulesdir}/kernel/arch/x86/oprofile/
-%exclude %{_modulesdir}/extra/intel_sgx.ko.xz
-/etc/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -737,17 +661,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 
-%ifarch x86_64
-%files drivers-intel-sgx
-%defattr(-,root,root)
-%{_modulesdir}/extra/intel_sgx.ko.xz
-%config(noreplace) %{_sysconfdir}/udev/rules.d/10-sgx.rules
-
-%files oprofile
-%defattr(-,root,root)
-%{_modulesdir}/kernel/arch/x86/oprofile/
-%endif
-
 %files tools
 %defattr(-,root,root)
 %ifarch x86_64
@@ -763,6 +676,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_docdir}/perf-tip
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
+%{_includedir}/perf/*
 %ifarch x86_64
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
@@ -786,6 +700,14 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 20 2022 Bo Gan <ganb@vmware.com> 6.0.7-1
+- Update to 6.0.7
+- Enable PREEMPT_DYNAMIC
+- Enable extra Dell platform drivers.
+- Enable security configs, RANDOMIZE_KSTACK_OFFSET and others.
+- Change from SLAB to SLUB
+- aarch64/config: match x86 on non-arch specific setting.
+- aarch64/config: don't set CAVIUM_ERRATUM_23154 and wait for ESX support
 * Mon Dec 19 2022 Dweep Advani <dadvani@vmware.com> 5.10.142-5
 - Ignore warnings to keep building tools
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.10.142-4

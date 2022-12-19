@@ -6,7 +6,7 @@
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.29.3
+Version:        0.30.2
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
@@ -15,7 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1dbe1195f245921c671ed2343325aee79fd0cde34681b9cab445135662d3ed7c84884e46b2270c0e868b5de1a3f2800b84e8bf9fcf0dfe581dd17e2e633f46d8
+%define sha512 %{name}=08e5c4f6e393838fca0b8b72f152fde9873af2095fe28084463f22238c65ad45f699c724b21f2d25051eae803f253f41a319fb38b405977de382809a74a4f625
 
 Patch0:         get-googletest-sources-from-photonstage.patch
 
@@ -67,8 +67,16 @@ export CFLAGS="-Wno-error=misleading-indentation"
     -DUSE_BUNDLED_GRPC=OFF \
     -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+    -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
+    -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
+    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
+    -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
+    -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
+    -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
+    -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
+    -DCMAKE_BUILD_TYPE=Release
 
 export KERNELDIR="%{_modulesdir}/build"
 %cmake_build
@@ -96,12 +104,17 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/bash_completion.d/*
-%{_bindir}
+%{_bindir}/*
+%{_includedir}/sysdig
+%{_libdir}/sysdig
 %exclude %{_usrsrc}
-%{_datadir}
+%{_datadir}/*
 %{_modulesdir}/extra/scap.ko
 
 %changelog
+* Mon Dec 19 2022 Bo Gan <ganb@vmware.com> 0.30.2-1
+- Update to 0.30.2
+- Correct cmake configurations
 * Tue Aug 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.29.3-1
 - Update to latest version
 * Sat Jul 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.27.0-7
