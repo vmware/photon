@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.158
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.159
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=45bcb3c145500607d6328662776a5bd4e2fabe882677fefb5fcbf0377504ed1ca4ccddf1aff0a0f6b85ab79f6e9f91fb1377c33a7e14c7f352fa02ec40e67f4e
+%define sha512 linux=8427677bd7248abf560dba5402a395a51afb1e47cbeb4f34afddbdacc29b4c92648d651bfc04ec85f16b96b9b8d8d46dbbdec7d112c84f967ffc271633274542
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -80,7 +80,6 @@ Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
-Patch39: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
@@ -110,9 +109,6 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-3623
-Patch105: 0001-mm_hugetlb_fix_races_when_looking_up_a_CONT-PTE_PMD_size_hugetlb_page.patch
 
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -420,6 +416,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 5.10.159-1
+- Update to version 5.10.159
 * Wed Dec 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.158-2
 - update to latest ToT vmxnet3 driver
 * Mon Dec 12 2022 Ankit Jain <ankitja@vmware.com> 5.10.158-1
