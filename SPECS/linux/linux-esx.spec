@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.268
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.269
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=ffaea6200b7b9f82742a0473fc17b8bbd12c13384ffb8470d288579480f89e0ab264b333dbbcaf2fe97d6c2b7d1e87692820e5ba554d14e314c9749b544aebd2
+%define sha512 linux=228e5b67092796ecc04bb04a6630121c3573f8aeb9d854eafc5a62388a0aa8395493b5c808132ab60ad01e87f9e82e3b21e1123103e1404e5848562f6a0be1eb
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -801,6 +801,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 4.19.269-1
+- Update to version 4.19.269
 * Thu Dec 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.268-3
 - update to latest ToT vmxnet3 driver
 * Wed Dec 14 2022 Ajay Kaher <akaher@vmware.com> 4.19.268-2
