@@ -1,15 +1,15 @@
 Summary:    List Open Files
 Name:       lsof
-Version:    4.95.0
-Release:    2%{?dist}
+Version:    4.96.4
+Release:    1%{?dist}
 License:    BSD
 URL:        https://people.freebsd.org/~abe
 Group:      System Environment/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: http://fossies.org/linux/misc/%{name}_%{version}.tar.gz
-%define sha512 %{name}=09c5c4b0ea0530e23b98b96df8485f37c2594028b604097a816aee216a8b1a7bc887071e8727cbaf3c765d0992314a5aa49723572cfe926f88806be18a6b8aef
+Source0: https://github.com/lsof-org/lsof/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=06f8005e1eb72324c1fd603d8b8287a61ad6fdec182e9da833991a8915aaa69c416af1564d3b1087cb08b3504ef9b15cdffec7051605e89d945d6750ec8da985
 
 BuildRequires:  libtirpc-devel
 
@@ -41,6 +41,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Mon Dec 19 2022 Susant Sahani <ssahani@vmware.com> 4.96.4-1
+- Bump version
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.95.0-2
 - Bump version as a part of libtirpc upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.95.0-1
