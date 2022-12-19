@@ -11,7 +11,7 @@
 Summary:        Go
 Name:           go
 Version:        1.19.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -20,6 +20,7 @@ Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha512  go=9aa8548597d52455afad8bf3b882eeeb9992814721ff2b9d8ed1f0e1ee0fec74aecd9d4e8c9c00eafbfe690bcdc50f3ad0b00bc4818b87e9d584cce7df97ee76
+Patch0:         CVE-2022-41717.patch
 Requires:       glibc
 
 %define ExtraBuildRequires go
@@ -111,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.3-2
+- Fix for CVE-2022-41717.
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.3-1
 - Upgrade to 1.19.3.
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.2-1
