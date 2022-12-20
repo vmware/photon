@@ -1,9 +1,12 @@
 %define debug_package %{nil}
+# git tag commit hash
+# update commit id upon every new version release
+%define commit_hash 18944bc70784dfa83010d37054d75487a58ab581
 
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
-Version:        0.23.0
-Release:        2%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
@@ -11,13 +14,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2d3a268cde5e4ef02172f450690d7a8810111e725d1f35a707267cb8e04b64cec4329df0878997dfcd980a73b9dd297ac97f554f37cc7df5159d581e372bdc17
+%define sha512 %{name}=68c0e13c1fe7c19c91753c5e290247f8dad043538fed1014a34e9881e3da438044441473b2c01657ae923ce23e10d0d3b97ae18168a785d8fbfffdcf43c7b3d2
 
-Patch0: fix-makefile.patch
-
-BuildRequires: go
-BuildRequires: build-essential
-BuildRequires: ca-certificates
+BuildRequires:  go
+BuildRequires:  build-essential
+BuildRequires:  ca-certificates
 
 Requires: cni >= 1.1.1
 Requires: containerd
@@ -38,8 +39,7 @@ This package also provides containerd-rootless scripts.
 
 %build
 export VERSION="%{version}-%{release}"
-# git tag commit hash
-export REVISION="660680b7ddfde1d38a66ec1c7f08f8d89ab92c68"
+export REVISION=%{commit_hash}
 
 %make_build
 
@@ -57,7 +57,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
-* Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 0.23.0-2
-- Version bump up to use fuse-overlayfs v1.10
+* Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-1
+- Upgrade to v1.1.0
 * Fri Sep 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.23.0-1
 - First build.
