@@ -1,28 +1,28 @@
 %define debug_package %{nil}
+# git commit hash
+# update commit id upon every new version release
+%define commit_hash 11c45f4d24689d8cb279813fbcb9bbd01773e0e8
 
 Summary:        fuse-overlayfs plugin for rootless containerd
 Name:           fuse-overlayfs-snapshotter
-Version:        1.0.4
-Release:        2%{?dist}
+Version:        1.0.5
+Release:        1%{?dist}
 License:        GPL3
-URL:            https://github.com/containers/fuse-overlayfs
+URL:            https://github.com/containerd/fuse-overlayfs-snapshotter
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b4a7a3edc7c2baebdc1d6f3717a71aecdf4b8d31c0a26d1efa5dae5325ac19cb915588bb3da1fdd14a6d16377dcf17ed5be3f5b2ec5ae19627adf66332995a71
+Source0: https://github.com/containerd/fuse-overlayfs-snapshotter/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f275e3f9f35c70f7048a3027f69b5cef79e4293aff5eeca7da8b483c49a58a44cfb63d3560bcab0ad24e951b1c4d20a304eccf7e81856a818ad08b0665952ca6
 
-Patch0: fix-makefile.patch
-Patch1: makefile-destdir-fix.patch
+BuildRequires:  go
+BuildRequires:  ca-certificates
+BuildRequires:  build-essential
 
-BuildRequires: go
-BuildRequires: ca-certificates
-BuildRequires: build-essential
-
-Requires: rootlesskit
-Requires: fuse3
-Requires: fuse-overlayfs
+Requires:       rootlesskit
+Requires:       fuse3
+Requires:       fuse-overlayfs
 
 %description
 fuse-overlayfs snapshotter plugin for containerd.
@@ -33,8 +33,7 @@ fuse-overlayfs-snapshotter is a non-core sub-project of containerd.
 
 %build
 export VERSION="%{version}-%{release}"
-# git tag commit hash
-export REVISION="db90194f0cf2f42ee8cdc3c542f6ed2c92ef8ffc"
+export REVISION=%{commit_hash}
 %make_build
 
 %install
@@ -49,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-fuse-overlayfs-grpc
 
 %changelog
+* Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-1
+- Upgrade to v1.0.5
 * Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 1.0.4-2
 - Version bump up to use fuse-overlayfs v1.10
 * Thu Nov 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.4-1
