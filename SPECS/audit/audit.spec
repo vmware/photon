@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -167,6 +167,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.0.9-4
+- Bump up version no. as part of swig upgrade
 * Wed Dec 14 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.9-3
 - Update release to compile with python 3.11
 * Tue Dec 06 2022 Keerthana K <keerthanak@vmware.com> 3.0.9-2

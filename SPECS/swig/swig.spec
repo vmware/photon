@@ -1,16 +1,16 @@
 Summary:        Connects C/C++/Objective C to some high-level programming languages
 Name:           swig
-Version:        4.0.2
+Version:        4.1.1
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://swig.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
-%define sha1    swig=ced6676c625c49d78d73cbd3b9aaab8c30b9b4ee
+%define sha512  swig=1cea1918455a75ebc9b2653dd1715bd5dcd974554955f324295c6a6f14c0a715651b221b85fad4a8af5197e0c75bfe7b590bc6ba7178c26245fbbd9a7e110100
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Languages
-BuildRequires:  pcre-devel
-Requires:       pcre
+BuildRequires:  pcre2-devel
+Requires:       pcre2
 
 %description
 Simplified Wrapper and Interface Generator (SWIG) is a software
@@ -22,7 +22,7 @@ interpreted programming environments, systems integration, and as a
 tool for building user interfaces
 
 %prep
-%setup -q -n swig-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 ./autogen.sh
@@ -34,7 +34,7 @@ tool for building user interfaces
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 # Enable ccache-swig by default, if ccache is installed.
 mkdir -p %{buildroot}%{_libdir}/ccache
@@ -49,6 +49,8 @@ make %{?_smp_mflags} check
 %{_libdir}/ccache
 
 %changelog
+*       Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 4.1.1-1
+-       Automatic Version Bump
 *       Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
 -       Automatic Version Bump
 *       Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.12-2
@@ -63,5 +65,3 @@ make %{?_smp_mflags} check
 - 	Upgrade to 3.0.8
 * 	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.5-1
 - 	Initial version
-
-

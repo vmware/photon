@@ -1,7 +1,7 @@
 Summary:       Device Tree Compiler
 Name:          dtc
 Version:       1.6.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2+
 URL:           https://devicetree.org
 Group:         Development/Tools
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.6.1-2
+- Bump up version no. as part of swig upgrade
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.6.1-1
 - Version update
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1

@@ -1,6 +1,6 @@
 Name:           python3-M2Crypto
 Version:        0.38.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.38.0-2
+- Bump up version no. as part of swig upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.38.0-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-4

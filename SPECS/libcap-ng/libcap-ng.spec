@@ -1,7 +1,7 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.3-3
+- Bump up version no. as part of swig upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-2
 - Update release to compile with python 3.11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.3-1

@@ -1,7 +1,7 @@
 Summary:        SELinux policy management libraries
 Name:           libsemanage
 Version:        3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -95,6 +95,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3
+- Bump up version no. as part of swig upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
