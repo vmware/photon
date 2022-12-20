@@ -1,32 +1,47 @@
 %define debug_package %{nil}
-%define __os_install_post %{nil}
 
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
+Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 %define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
 %ifarch x86_64
-Source1:    grub2-2.06~rc1-grubx64.efi.gz
+Source1: grub2-2.06~rc1-grubx64.efi.gz
 %define sha512 grub2-2.06~rc1-grubx64=d7530649ee0fe5a29809850ee27dde15d977e36a784407e74bcf2a42a6f56f9b30127392771b8c188dd271408b731318abefeb2a9704b6515dbf850efb0c2763
 %endif
 
-Patch0:     Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+Patch1: CVE-2022-2601-1.patch
+Patch2: CVE-2022-2601-2.patch
+Patch3: CVE-2022-2601-3.patch
+Patch4: CVE-2022-2601-4.patch
+Patch5: CVE-2022-2601-5.patch
+Patch6: CVE-2022-2601-6.patch
+Patch7: CVE-2022-2601-7.patch
+Patch8: CVE-2022-2601-8-prep.patch
+Patch9: CVE-2022-2601-8.patch
+Patch10: CVE-2022-2601-9.patch
+Patch11: CVE-2022-2601-10.patch
+Patch12: CVE-2022-2601-11.patch
+Patch13: CVE-2022-2601-12.patch
+Patch14: CVE-2022-2601-13.patch
+Patch15: CVE-2022-2601-14.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
+BuildRequires:  bison
 
-Requires:   xz
-Requires:   device-mapper
+Requires:   xz-libs
+Requires:   device-mapper-libs
 Requires:   systemd-udev
 
 %description
@@ -70,7 +85,7 @@ GRUB UEFI image signed by vendor key
 %build
 sh ./autogen.sh
 %ifarch x86_64
-mkdir build-for-pc
+mkdir -p build-for-pc
 pushd build-for-pc
 sh ../configure \
     --prefix=%{_prefix} \
@@ -86,11 +101,11 @@ sh ../configure \
 
 make %{?_smp_mflags}
 
-make DESTDIR=$PWD/../install-for-pc install %{?_smp_mflags}
+make DESTDIR=${PWD}/../install-for-pc install %{?_smp_mflags}
 popd
 %endif
 
-mkdir build-for-efi
+mkdir -p build-for-efi
 pushd build-for-efi
 sh ../configure \
     --prefix=%{_prefix} \
@@ -106,29 +121,17 @@ sh ../configure \
 
 make %{?_smp_mflags}
 
-make DESTDIR=$PWD/../install-for-efi install %{?_smp_mflags}
+make DESTDIR=${PWD}/../install-for-efi install %{?_smp_mflags}
 popd
 
-%if 0%{?with_check}
-# make sure all files are same between two configure except the /usr/lib/grub
-%check
-%ifarch x86_64
-diff -sr install-for-efi/sbin install-for-pc/sbin && \
-diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir} && \
-diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir} && \
-diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
-%endif
-%endif
-
 %install
-mkdir -p %{buildroot} \
-         %{buildroot}%{_sysconfdir}/default \
+mkdir -p %{buildroot}%{_sysconfdir}/default \
          %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}/boot/%{name}
 
-cp -a install-for-efi/. %{buildroot}/.
+cp -apr install-for-efi/. %{buildroot}/.
 %ifarch x86_64
-cp -a install-for-pc/. %{buildroot}/.
+cp -apr install-for-pc/. %{buildroot}/.
 %endif
 touch %{buildroot}%{_sysconfdir}/default/grub
 ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
@@ -162,7 +165,18 @@ EOF
 ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
 %endif
 
-%post   -p /sbin/ldconfig
+%if 0%{?with_check}
+# make sure all files are same between two configure except the /usr/lib/grub
+%check
+%ifarch x86_64
+diff -sr install-for-efi/sbin install-for-pc/sbin
+diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir}
+diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir}
+diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
+%endif
+%endif
+
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -186,17 +200,22 @@ EOF
 
 %ifarch x86_64
 %files pc
+%defattr(-,root,root)
 %{_libdir}/grub/i386-pc
+
 %files efi
+%defattr(-,root,root)
 %{_libdir}/grub/x86_64-efi
 %endif
 
 %ifarch aarch64
 %files efi
+%defattr(-,root,root)
 %{_libdir}/grub/*
 %endif
 
 %files efi-image
+%defattr(-,root,root)
 /boot/efi/EFI/BOOT/*
 
 %files lang
@@ -204,6 +223,8 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+* Tue Dec 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-4
+- Fix CVE-2022-2601
 * Thu Jun 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-3
 - Add systemd-udev to Requires
 * Wed Aug 18 2021 Ankit Jain <ankitja@vmware.com> 2.06-2
