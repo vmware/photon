@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.269
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -70,6 +70,14 @@ Patch13: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
 %endif
+
+# VMware-specific patch to enable turbostat to work on ESXi
+Patch18: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
+# Backports of upstream patches to add Ice Lake support to turbostat
+Patch19: 0002-tools-power-turbostat-Support-Ice-Lake-server.patch
+Patch20: 0003-tools-power-turbostat-Remove-Package-C6-Retention-on.patch
+Patch21: 0004-tools-power-turbostat-Fix-DRAM-Energy-Unit-on-SKX.patch
+Patch22: 0005-tools-power-turbostat-fix-ICX-DRAM-power-numbers.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
@@ -671,7 +679,7 @@ ApplyPatch "1" "13"
 %patch17 -p1
 %endif
 
-ApplyPatch "25" "191"
+ApplyPatch "18" "191"
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1087,6 +1095,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Dec 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.269-2
+- Enable turbostat to work in the guest on VMware hypervisor.
+- Add support for Intel Ice Lake server CPUs to turbostat.
 * Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 4.19.269-1
 - Update to version 4.19.269
 * Thu Dec 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.268-3

@@ -1,0 +1,33 @@
+From d9108a492d160398a1392f1febe5bbe32f69a0d5 Mon Sep 17 00:00:00 2001
+From: Len Brown <len.brown@intel.com>
+Date: Thu, 10 Feb 2022 21:06:56 -0500
+Subject: [PATCH 5/5] tools/power turbostat: fix ICX DRAM power numbers
+
+commit 6397b6418935773a34b533b3348b03f4ce3d7050 upstream.
+
+ICX (and its duplicates) require special hard-coded DRAM RAPL units,
+rather than using the generic RAPL energy units.
+
+Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+[ Srivatsa: Backported to 4.19.y ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 106244f22179..1d1fd616e597 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3789,6 +3789,7 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_BROADWELL_XEON_D:	/* BDX-DE */
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
+ 	case INTEL_FAM6_XEON_PHI_KNM:
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
+-- 
+2.25.1
+

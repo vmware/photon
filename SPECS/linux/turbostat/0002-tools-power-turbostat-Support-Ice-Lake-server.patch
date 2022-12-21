@@ -1,0 +1,33 @@
+From 3a0f7c6114b857540a84abaaa8a64b76a8878662 Mon Sep 17 00:00:00 2001
+From: Chen Yu <yu.c.chen@intel.com>
+Date: Tue, 14 Jan 2020 12:06:49 +0800
+Subject: [PATCH 2/5] tools/power turbostat: Support Ice Lake server
+
+commit 23274faf96500700da83c4f0ff12d78ae03d5604 upstream.
+
+From a turbostat point of view, Ice Lake server looks like Sky Lake server.
+
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+[ Srivatsa: Backported to 4.19.y which doesn't have
+intel_model_duplicates() ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index be7ccb0c3450..43eb94e55674 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3845,6 +3845,7 @@ void rapl_probe(unsigned int family, unsigned int model)
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_BROADWELL_XEON_D:	/* BDX-DE */
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
+ 	case INTEL_FAM6_XEON_PHI_KNM:
+ 		do_rapl = RAPL_PKG | RAPL_DRAM | RAPL_DRAM_POWER_INFO | RAPL_DRAM_PERF_STATUS | RAPL_PKG_PERF_STATUS | RAPL_PKG_POWER_INFO;
+-- 
+2.25.1
+
