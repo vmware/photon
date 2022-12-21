@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        247.11
-Release:        6%{?dist}
+Version:        247.13
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=752d384a911ba20f8d2c01a02e13792f3b5e42ebee0f0167ffed1b53b2264de1228c93d01e31ee980a4830cb917ef9593099c63c00bdd3a888ea932c54e73b5a
+%define sha512 %{name}=9bbf5db0eaa74af658a32c0a9b541a460c4634d041e5d0c1d7d528e3c9d8480714029db0a4b081e33d1334f9656ea536793da2115fa7cd2fa216aee8c0c5ad8b
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -22,8 +22,6 @@ Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
 Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
-Patch4:         CVE-2022-4415-1.patch
-Patch5:         CVE-2022-4415-2.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -671,6 +669,8 @@ rm -rf %{_systemd_util_dir}/tests
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 247.13-1
+- Update to stable version 247.13
 * Mon Dec 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-6
 - Fix CVE-2022-4415
 * Wed Nov 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-5
