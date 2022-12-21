@@ -59,7 +59,8 @@ rm -f %{buildroot}%{_libdir}/*.la
 
 %if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make check
 %endif
 
 %post   libopts -p /sbin/ldconfig
