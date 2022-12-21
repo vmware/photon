@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -34,6 +34,7 @@ Patch12: CVE-2022-2601-11.patch
 Patch13: CVE-2022-2601-12.patch
 Patch14: CVE-2022-2601-13.patch
 Patch15: CVE-2022-2601-14.patch
+Patch16: CVE-2022-28733.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -223,6 +224,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Dec 21 2022 Ajay Kaher <akaher@vmware.com> 2.06-5
+- Fix for CVE-2022-28733
 * Tue Dec 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-4
 - Fix CVE-2022-2601
 * Thu Jun 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.06-3
