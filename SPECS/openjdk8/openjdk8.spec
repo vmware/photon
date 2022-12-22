@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk8
 Version:        1.8.0.322
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU GPL
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -159,7 +159,7 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
   --slave %{_bindir}/serialver serialver %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver \
   --slave %{_bindir}/wsgen wsgen %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsgen \
   --slave %{_bindir}/wsimport wsimport %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsimport \
-  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
+  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc \
   --slave %{_bindir}/jfr jfr %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
 /sbin/ldconfig
 
@@ -269,6 +269,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Thu Dec 22 2022 Mukul Sikka <msikka@vmware.com> 1.8.0.322-2
+-   fix post install script error “--slave: command not found”
 *   Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
 -   Upgrade to version 1.8.0.322 (jdk8u322-b04)
 *   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
