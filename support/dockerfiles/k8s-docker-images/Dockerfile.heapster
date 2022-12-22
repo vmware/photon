@@ -1,4 +1,4 @@
-FROM k8s-base-image:4.0
+FROM k8s-base-image:5.0
 
 ADD tmp/k8heapster/usr/bin/heapster /heapster
 ADD tmp/k8heapster/usr/bin/eventer /eventer

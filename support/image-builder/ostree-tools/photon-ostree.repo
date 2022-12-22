@@ -1,5 +1,5 @@
 [photon-ostree]
-name=VMware Photon OSTree Linux 4.0(x86_64)
+name=VMware Photon OSTree Linux 5.0(x86_64)
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
 gpgcheck=0
 enabled=1

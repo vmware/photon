@@ -52,7 +52,7 @@ index c72ceb1..81301cd 100755
      def __init__(self, working_directory="/mnt/photon-root",
 -                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):
 +                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS",
-+                 insecure_installation=False, photon_release_version='4.0'):
++                 insecure_installation=False, photon_release_version='5.0'):
          self.exiting = False
          self.interactive = False
          self.install_config = None

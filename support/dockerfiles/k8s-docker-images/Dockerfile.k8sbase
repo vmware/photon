@@ -2,6 +2,6 @@
 
 FROM scratch
 
-ADD photon-rootfs-4.0.tar.gz /
+ADD photon-rootfs-5.0.tar.gz /
 
 CMD ["/bin/sh"]

@@ -1,4 +1,4 @@
-FROM k8s-base-image:4.0
+FROM k8s-base-image:5.0
 
 # Minimum Docker API version required for libnetwork.
 ENV DOCKER_API_VERSION 1.21

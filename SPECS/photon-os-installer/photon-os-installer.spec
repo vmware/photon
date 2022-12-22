@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       10%{?dist}
+Release:       11%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Wed Jan 04 2023 Tapas Kundu <tkundu@vmware.com> 2.0-11
+- Update dist version in 0009-installer-Removed-insecure_installation-and-photon_r.patch
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.0-10
 - Rebuild with new cracklib
 * Tue Dec 06 2022 Piyush Gupta <gpiyush@vmware.com> 2.0-9

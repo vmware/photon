@@ -155,7 +155,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "VMWARE 4.0 LICENSE AGREEMENT" -v $PHOTON_RELEASE_VER && shutdown -r now
+  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "VMWARE 5.0 LICENSE AGREEMENT" -v $PHOTON_RELEASE_VER && shutdown -r now
 }
 
 try_run_installer() {

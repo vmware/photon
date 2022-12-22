@@ -1,7 +1,7 @@
 Summary:        Photon release files
 Name:           photon-release
-Version:        4.0
-Release:        2%{?dist}
+Version:        5.0
+Release:        1%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=ced639518d32f9ac8ff00a71853812057db3ab3c
+%define sha512  %{name}=a991501455f5291d3075e9b900327cf3537527cc1b2c890dc7b01555381afc6fb3d124d7f86a3c58246fdd33ea69b0dafb231b1669ce757770aba55555ff09bd
 
 Source1:        lsb_release
 
@@ -79,6 +79,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/issue.net
 
 %changelog
+* Wed Dec 21 2022 Tapas Kundu <tkundu@vmware.com> 5.0-1
+- Update to 5.0
 * Wed Oct 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-2
 - Add lsb_release
 * Wed Oct 07 2020 Anish Swaminathan <anishs@vmware.com> 4.0-1

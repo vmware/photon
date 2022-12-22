@@ -1,4 +1,4 @@
-FROM k8s-base-image:4.0
+FROM k8s-base-image:5.0
 
 COPY tmp/k8smetserv/usr/bin/metrics-server /
 
