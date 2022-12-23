@@ -34,15 +34,15 @@ index 69fbb2f4e74f..880ab1799ea7 100644
  {
  	panic_on_initramfs_error = true;
 @@ -298,8 +308,7 @@ static int __init do_header(void)
- 	}
- 	if (!memcmp(collected, "0707ca", 6)) {
+ 		page_aligned_fmt = false;
+ 	} else if (!memcmp(collected, "0707ca", 6)) {
  		if (!newca_found) {
 -			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
 -			do_retain_initrd = 1;
 +			printk(KERN_INFO "Page aligned format detected\n");
  			newca_found = 1;
  		}
- 		page_aligned_fmt = true;
+ 		csum_present = false;
 @@ -396,6 +405,7 @@ static int __init do_name(void)
  	state = SkipIt;
  	next_state = Reset;

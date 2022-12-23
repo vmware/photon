@@ -20,6 +20,8 @@ archive format.
 
 In addition, initrd memory will not be freed for "newca" as
 it is used by page caches.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
  init/initramfs.c | 53 +++++++++++++++++++++++++++++++++++++++++++++---
  1 file changed, 50 insertions(+), 3 deletions(-)
@@ -28,10 +30,10 @@ diff --git a/init/initramfs.c b/init/initramfs.c
 index 55b74d7e5260..c3a26243c50f 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -13,11 +13,47 @@
- #include <linux/memblock.h>
- #include <linux/namei.h>
+@@ -17,6 +17,35 @@
  #include <linux/init_syscalls.h>
+ #include <linux/task_work.h>
+ #include <linux/umh.h>
 +#include <linux/pagemap.h>
 +
 +static bool page_aligned_fmt __initdata;
@@ -62,8 +64,10 @@ index 55b74d7e5260..c3a26243c50f 100644
 +	return err;
 +}
  
- static ssize_t __init xwrite(struct file *file, const char *p, size_t count,
- 		loff_t *pos)
+ static __initdata bool csum_present;
+ static __initdata u32 io_csum;
+@@ -25,6 +54,13 @@ static ssize_t __init xwrite(struct file *file, const unsigned char *p,
+ 		size_t count, loff_t *pos)
  {
  	ssize_t out = 0;
 +	/* Add ramdisk pages directly to fd's page cache */
@@ -76,17 +80,18 @@ index 55b74d7e5260..c3a26243c50f 100644
  
  	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
  	while (count) {
-@@ -248,12 +284,19 @@ static int __init do_header(void)
- 		error("incorrect cpio method used: use -H newc option");
- 		return 1;
- 	}
--	if (memcmp(collected, "070701", 6)) {
-+	if (!memcmp(collected, "0707ca", 6)) {
+@@ -284,6 +320,10 @@ static int __init do_header(void)
+ 		csum_present = false;
+ 	} else if (!memcmp(collected, "070702", 6)) {
+ 		csum_present = true;
++	} else if (!memcmp(collected, "0707ca", 6)) {
 +		if (!page_aligned_fmt)
 +			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
 +		page_aligned_fmt = true;
-+	} else if (memcmp(collected, "070701", 6)) {
- 		error("no cpio magic");
+ 	} else {
+ 		if (memcmp(collected, "070707", 6) == 0)
+ 			error("incorrect cpio method used: use -H newc option");
+@@ -292,7 +332,10 @@ static int __init do_header(void)
  		return 1;
  	}
  	parse_header(collected);
@@ -98,7 +103,7 @@ index 55b74d7e5260..c3a26243c50f 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
  	if (name_len <= 0 || name_len > PATH_MAX)
-@@ -366,6 +409,10 @@ static int __init do_name(void)
+@@ -406,6 +449,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -107,9 +112,9 @@ index 55b74d7e5260..c3a26243c50f 100644
 +		eat(PAGE_ALIGN((loff_t)victim) - (loff_t)victim);
 +
  	if (byte_count >= body_len) {
- 		struct timespec64 t[2] = { };
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
-@@ -631,7 +678,7 @@ static int __init populate_rootfs(void)
+ 			error("write error");
+@@ -722,7 +769,7 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */

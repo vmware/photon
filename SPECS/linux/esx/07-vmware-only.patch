@@ -3,55 +3,59 @@ From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 9 May 2017 12:41:17 -0700
 Subject: [PATCH] vmware only
 
+Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- arch/x86/kernel/cpu/common.c | 2 ++
- arch/x86/kernel/cpu/rdrand.c | 2 ++
+ arch/x86/kernel/cpu/Makefile | 5 +++++
+ arch/x86/kernel/cpu/common.c | 3 +++
  arch/x86/kernel/cpu/vmware.c | 5 +++++
- arch/x86/kernel/smpboot.c    | 2 +-
- 4 files changed, 10 insertions(+), 1 deletion(-)
+ arch/x86/kernel/smpboot.c    | 1 -
+ 4 files changed, 13 insertions(+), 1 deletion(-)
 
+diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+index 89c96c936083..6656e7e10214 100644
+--- a/arch/x86/kernel/cpu/Makefile
++++ b/arch/x86/kernel/cpu/Makefile
+@@ -21,7 +21,12 @@ CFLAGS_common.o		:= -fno-stack-protector
+ 
+ obj-y			:= cacheinfo.o scattered.o topology.o
+ obj-y			+= common.o
++
++# Trust rdrand on VMware platform
++ifndef CONFIG_HYPERVISOR_GUEST
+ obj-y			+= rdrand.o
++endif
++
+ obj-y			+= match.o
+ obj-y			+= bugs.o
+ obj-y			+= aperfmperf.o
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c5d6f17..7114f7b 100644
+index 3e508f239098..24e73f7700d5 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1542,7 +1542,6 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1858,7 +1858,10 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  	detect_ht(c);
  #endif
  
--	x86_init_rdrand(c);
- 	setup_pku(c);
- 
- 	/*
-diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
-index c4be620..d48ef86 100644
---- a/arch/x86/kernel/cpu/rdrand.c
-+++ b/arch/x86/kernel/cpu/rdrand.c
-@@ -19,6 +19,7 @@ static int __init x86_rdrand_setup(char *s)
- }
- __setup("nordrand", x86_rdrand_setup);
- 
-+#if 0
- /*
-  * RDRAND has Built-In-Self-Test (BIST) that runs on every invocation.
-  * Run the instruction a few times as a sanity check.
-@@ -64,3 +65,4 @@ void x86_init_rdrand(struct cpuinfo_x86 *c)
- 
- }
- #endif
++	/* Trust rdrand on VMware platform */
++#ifndef CONFIG_HYPERVISOR_GUEST
+ 	x86_init_rdrand(c);
 +#endif
+ 	setup_pku(c);
+ 	setup_cet(c);
+ 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index b45ea4b..8a64d5f 100644
+index 9d6183624f4f..a5b1bb90af21 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -27,6 +27,7 @@
- #include <linux/clocksource.h>
- #include <linux/cpu.h>
- #include <linux/reboot.h>
-+#include <asm/pci_x86.h>
+@@ -30,6 +30,7 @@
+ #include <linux/static_call.h>
  #include <linux/kmsg_dump.h>
  #include <linux/objtool.h>
++#include <asm/pci_x86.h>
  #include <asm/div64.h>
-@@ -471,6 +472,10 @@ static void __init vmware_platform_setup(void)
+ #include <asm/x86_init.h>
+ #include <asm/hypervisor.h>
+@@ -475,6 +476,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();
  
  	kmsg_dump_register(&kmsg_dumper);
@@ -63,15 +67,17 @@ index b45ea4b..8a64d5f 100644
  
  static u8 __init vmware_select_hypercall(void)
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 27aa04a..6c53e6e 100644
+index f24227bc3220..1fa1edec6545 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
-@@ -761,7 +761,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+@@ -810,7 +810,6 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
  	/*
  	 * Give the other CPU some time to accept the IPI.
  	 */
 -	udelay(200);
-+//	udelay(200);
  	if (APIC_INTEGRATED(boot_cpu_apic_version)) {
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
+-- 
+2.25.1
+

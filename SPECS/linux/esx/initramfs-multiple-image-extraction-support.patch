@@ -3,9 +3,10 @@ From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Sat, 31 Jul 2021 04:59:39 +0000
 Subject: [PATCH] initramfs: multiple image extraction support
 
+Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- init/initramfs.c | 40 +++++++++++++++++++++++++++++++++++-----
- 1 file changed, 35 insertions(+), 5 deletions(-)
+ init/initramfs.c | 41 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 36 insertions(+), 5 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
 index c3a26243c50f..69fbb2f4e74f 100644
@@ -29,29 +30,29 @@ index c3a26243c50f..69fbb2f4e74f 100644
  static int __init xadd_pages(struct file *file, const char *p, size_t count, pgoff_t pgoff)
  {
  	struct page *page;
-@@ -280,14 +291,20 @@ static int __init do_collect(void)
+@@ -316,13 +327,20 @@ static int __init do_collect(void)
  
  static int __init do_header(void)
  {
 +	static bool newca_found = 0;
- 	if (memcmp(collected, "070707", 6)==0) {
- 		error("incorrect cpio method used: use -H newc option");
- 		return 1;
- 	}
- 	if (!memcmp(collected, "0707ca", 6)) {
+ 	if (!memcmp(collected, "070701", 6)) {
+ 		csum_present = false;
++		page_aligned_fmt = false;
+ 	} else if (!memcmp(collected, "070702", 6)) {
+ 		csum_present = true;
++		page_aligned_fmt = false;
+ 	} else if (!memcmp(collected, "0707ca", 6)) {
 -		if (!page_aligned_fmt)
 +		if (!newca_found) {
  			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
 +			do_retain_initrd = 1;
 +			newca_found = 1;
 +		}
++		csum_present = false;
  		page_aligned_fmt = true;
-+	} else if (memcmp(collected, "070701", 6)==0) {
-+		page_aligned_fmt = false;
- 	} else if (memcmp(collected, "070701", 6)) {
- 		error("no cpio magic");
- 		return 1;
-@@ -361,6 +378,16 @@ static int __init maybe_link(void)
+ 	} else {
+ 		if (memcmp(collected, "070707", 6) == 0)
+@@ -400,6 +418,16 @@ static int __init maybe_link(void)
  	return 0;
  }
  
@@ -90,7 +91,7 @@ index c3a26243c50f..69fbb2f4e74f 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -669,6 +697,8 @@ static int __init populate_rootfs(void)
+@@ -760,6 +789,8 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  #ifdef CONFIG_BLK_DEV_RAM
  		populate_initrd_image(err);
  #else
@@ -99,7 +100,7 @@ index c3a26243c50f..69fbb2f4e74f 100644
  		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
  #endif
  	}
-@@ -678,7 +708,7 @@ static int __init populate_rootfs(void)
+@@ -769,7 +800,7 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */

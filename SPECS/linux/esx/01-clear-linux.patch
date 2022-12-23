@@ -3,12 +3,13 @@ From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 9 May 2017 12:26:58 -0700
 Subject: [PATCH] Patch from Clear Linux
 
+Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- drivers/video/console/fbcon.c | 2 +-
- include/linux/blkdev.h        | 2 +-
- init/do_mounts.c              | 4 +++-
- mm/vmstat.c                   | 2 +-
- 4 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/core/fbcon.c | 2 +-
+ include/linux/blk-mq.h           | 2 +-
+ init/do_mounts.c                 | 2 +-
+ mm/vmstat.c                      | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
 index c910e74..59e1c7c 100644
@@ -23,46 +24,37 @@ index c910e74..59e1c7c 100644
  
  #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
  
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 79226ca..9ae142f 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -43,7 +43,7 @@ struct blk_stat_callback;
- struct blk_keyslot_manager;
+diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
+index 1532cd07a597..01ef715ad1a8 100644
+--- a/include/linux/blk-mq.h
++++ b/include/linux/blk-mq.h
+@@ -12,7 +12,7 @@ struct blk_mq_tags;
+ struct blk_flush_queue;
  
  #define BLKDEV_MIN_RQ	4
--#define BLKDEV_MAX_RQ	128	/* Default maximum */
-+#define BLKDEV_MAX_RQ	4096	/* Default maximum */
+-#define BLKDEV_DEFAULT_RQ	128
++#define BLKDEV_DEFAULT_RQ	4096
  
- /* Must be consistent with blk_mq_poll_stats_bkt() */
- #define BLK_MQ_POLL_STATS_BKTS 16
+ typedef void (rq_end_io_fn)(struct request *, blk_status_t);
+ 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 2c71dab..7f01625 100644
+index e083d54fa167..3ad54972f2c2 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -28,6 +28,7 @@
- #include <linux/slab.h>
- #include <linux/ramfs.h>
- #include <linux/shmem_fs.h>
-+#include <linux/async.h>
- 
- #include <linux/nfs_fs.h>
- #include <linux/nfs_fs_sb.h>
-@@ -562,7 +563,8 @@ void __init prepare_namespace(void)
+@@ -614,7 +614,7 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */
 -	wait_for_device_probe();
-+	//wait_for_device_probe();
 +	async_synchronize_full();
  
  	md_run_setup();
  
 diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 8ba0870..0c32523 100644
+index 90af9a8572f5..9ede6a77f2b2 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
-@@ -1730,7 +1730,7 @@ static const struct seq_operations vmstat_op = {
+@@ -1874,7 +1874,7 @@ static const struct seq_operations vmstat_op = {
  
  #ifdef CONFIG_SMP
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);

@@ -142,7 +142,7 @@ index ae0c38a..d76685f 100644
 -	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) {
 +	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
 +	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
- 		generic_fillattr(d_inode(dentry), stat);
+ 		generic_fillattr(&init_user_ns, d_inode(dentry), stat);
  		return 0;
  	}
 diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
@@ -156,7 +156,7 @@ index 0028ecc..09d9638 100644
 -	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) {
 +	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
 +	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
- 		generic_fillattr(d_inode(dentry), stat);
+ 		generic_fillattr(&init_user_ns, d_inode(dentry), stat);
  		return 0;
  	}
 -- 
