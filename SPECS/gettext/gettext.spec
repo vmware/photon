@@ -1,14 +1,15 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1    gettext=9d75b47baed1a612c0120991c4b6d9cf95e0d430
+Patch0:         libxml2-CVE-2022-40304.patch
+%define sha512  gettext=f7e2968651879f8444d43a176a149db9f9411f4a03132a7f3b37c2ed97e3978ae6888169c995c1953cb78943b6e3573811abcbb8661b6631edbbe067b2699ddf
 
 %description
 These allow programs to be compiled with NLS
@@ -16,16 +17,16 @@ These allow programs to be compiled with NLS
 messages in the user's native language.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-silent-rules
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
 rm -rf %{buildroot}%{_infodir}
@@ -53,6 +54,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Wed Dec 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21-3
+- Fix CVE-2022-40304
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2
 - Fix make check
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21-1
