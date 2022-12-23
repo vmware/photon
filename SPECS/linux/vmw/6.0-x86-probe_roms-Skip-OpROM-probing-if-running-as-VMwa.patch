@@ -17,17 +17,17 @@ diff --git a/arch/x86/kernel/probe_roms.c b/arch/x86/kernel/probe_roms.c
 index 9e1def3..6da29b8 100644
 --- a/arch/x86/kernel/probe_roms.c
 +++ b/arch/x86/kernel/probe_roms.c
-@@ -21,6 +21,7 @@
- #include <asm/sections.h>
+@@ -22,6 +22,7 @@
  #include <asm/io.h>
  #include <asm/setup_arch.h>
+ #include <asm/sev.h>
 +#include <asm/hypervisor.h>
  
  static struct resource system_rom_resource = {
  	.name	= "System ROM",
-@@ -202,6 +203,13 @@ void __init probe_roms(void)
- 	unsigned char c;
- 	int i;
+@@ -213,6 +214,13 @@ void __init probe_roms(void)
+ 			((system_rom_resource.end + 1) - video_rom_resource.start),
+ 			SNP_PAGE_STATE_PRIVATE);
  
 +	/* Stop probing if running under VMware -- avoid MMIO/VMEXITs */
 +	if (hypervisor_is_type(X86_HYPER_VMWARE)) {

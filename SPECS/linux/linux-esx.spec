@@ -1,10 +1,12 @@
 %global security_hardening none
+%global __cmake_in_source_build 0
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,12 +18,13 @@
 %ifarch aarch64
 %define arch arm64
 %define archdir arm64
+%global fips 0
 %endif
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.142
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        6.0.7
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -31,8 +34,8 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 %define _modulesdir /lib/modules/%{uname_r}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=06b8977654a2e2e1109398e617d4f253d204134182f3982e271abfda054805d56cb70ad8b26a3b3b5c821a127990da76529799810a95dbed442b894acedf867a
+Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
+%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -63,132 +66,106 @@ Source17:       fips_canister-kallsyms
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
-# common
-Patch0: net-Double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+# common [0..49]
+Patch0: confdata-format-change-for-split-script.patch
+Patch1: net-Double-tcp_mem-limits.patch
 Patch2: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch3: 9p-transport-for-9p.patch
+Patch3: 6.0-9p-transport-for-9p.patch
 Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
-Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-Patch7: 9p-file-attributes-caching-support.patch
-Patch8: 9p-support-for-local-file-lock.patch
-Patch9: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
-Patch10: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch11: apparmor-af_unix-mediation.patch
-
-# To support GCC v12
-Patch12:  0003-perf_machine_Use_path__join_to_compose_a_path_instead_of_snprintf.patch
-Patch13:  0004-perf_sched_Cast_PTHREAD_STACK_MIN_to_int_as_it_may_turn_into_sysconf.patch
-
-# floppy:
-Patch17: 0001-floppy-lower-printk-message-priority.patch
-Patch18: 0001-Control-MEMCG_KMEM-config.patch
-Patch19: 0001-cgroup-v1-cgroup_stat-support.patch
-
-#vmxnet3
-Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
-
-# aarch64
-Patch21: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch22: 0002-arm64-hyper-implement-VMware-hypervisor-features.patch
-Patch23: 0003-scsi-vmw_pvscsi-add-arm64-support.patch
-# Current VMCI driver crashes during module load in fusion arm64
-# Commented out these patches till we get a new version of VMCI driver
-#Patch: 0004-vmw_vmci-add-arm64-support.patch
-#Patch: 0005-vmw_balloon-add-arm64-support.patch
-Patch24: 0004-vmxnet3-build-only-for-x86-and-arm64.patch
-
-# VMW:
-Patch30: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch31: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch32: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch33: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch34: 0001-x86-vmware-avoid-TSC-recalibration.patch
-
-# -esx
-Patch50: init-do_mounts-recreate-dev-root.patch
-Patch51: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch52: 01-clear-linux.patch
-Patch53: 02-pci-probe.patch
-Patch54: poweroff-without-firmware.patch
-Patch55: 04-quiet-boot.patch
-Patch56: 05-pv-ops-clocksource.patch
-# TODO: make it working for v5.9+
-#Patch57: 06-pv-ops-boot_clock.patch
-Patch58: 07-vmware-only.patch
-Patch59: initramfs-support-for-page-aligned-format-newca.patch
-Patch60: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-Patch61: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
-Patch62: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
-Patch63: halt-on-panic.patch
-Patch64: initramfs-multiple-image-extraction-support.patch
-Patch65: initramfs-support-selective-freeing-of-initramfs-images.patch
-Patch66: initramfs-large-files-support-for-newca-format.patch
-Patch67: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
-
-%if 0%{?vmxnet3_sw_timestamp}
-Patch68: 0009-esx-vmxnet3-software-timestamping.patch
-%endif
-
-# Hotplug support without firmware
-Patch69: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch70: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch71: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
-
-#TARFS
-Patch80: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
-
-# initialize MMCONFIG
-Patch85: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
-Patch86: 0001-MMIO_should_have_more_priority_then_IO.patch
-Patch87: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
-
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
+Patch6: 6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
+Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
+Patch9: Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
+Patch10: 9p-file-attributes-caching-support.patch
+Patch11: 9p-support-for-local-file-lock.patch
+Patch13: 6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
+# Out-of-tree patches from AppArmor:
+Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
+Patch16: 0001-Control-MEMCG_KMEM-config.patch
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch90: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+# Enable AUXILIARY BUS, to make building other out-of-tree intel NIC drivers easier
+Patch19: 0001-Enable-AUXILIARY_BUS-by-default.patch
 
-# CVE:
-Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix for CVE-2019-12379
-Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-4204
-Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2022-0500
-Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
-Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
-Patch116: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
-Patch117: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
-Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
-Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
-Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
-Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Next 2 patches are about to be merged into stable
-Patch130: 0001-mm-fix-panic-in-__alloc_pages.patch
+#VTAR/VTARFS
+Patch20: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
+Patch21: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
+#TARFS
+Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+#initrd newca
+Patch23: initramfs-support-for-page-aligned-format-newca.patch
+Patch24: initramfs-multiple-image-extraction-support.patch
+Patch25: initramfs-support-selective-freeing-of-initramfs-images.patch
+Patch26: initramfs-large-files-support-for-newca-format.patch
 
 # Patches for ptp_vmw
-Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
-Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
-# Crypto:
+# VMW: [50..59]
+Patch50: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch51: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch52: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch53: 6.0-x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch54: 07-vmware-only.patch
+Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+
+# linux-esx [60..79]
+Patch60: init-do_mounts-recreate-dev-root.patch
+Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch62: 01-clear-linux.patch
+Patch63: 02-pci-probe.patch
+Patch64: poweroff-without-firmware.patch
+Patch65: 04-quiet-boot.patch
+Patch66: 05-pv-ops-clocksource.patch
+Patch67: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch68: halt-on-panic.patch
+
+%if 0%{?vmxnet3_sw_timestamp}
+Patch71: 0009-esx-vmxnet3-software-timestamping.patch
+%endif
+
+# initialize MMCONFIG
+Patch75: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
+Patch76: 0001-MMIO_should_have_more_priority_then_IO.patch
+Patch77: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
+
+# Hotplug support without firmware (not applied, pending review)
+Patch80: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch81: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
+
+# CVE: [100..129]
+Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+# Fix CVE-2017-1000252
+Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+
+# aarch64 [200..219]
+Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch201: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
+Patch202: 6.0-0003-arm64-VMware-hypervisor-detection.patch
+Patch203: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
+Patch204: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch205: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
+Patch206: 6.0-0005-vmw_balloon-add-arm64-support.patch
+Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+
+# Crypto: [500..529]
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503: 0002-FIPS-crypto-self-tests.patch
+Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 #Patch to not make shash_no_setkey static
 Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
-#Patch to introduce wrappers for random callback functions
-Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -200,50 +177,22 @@ Patch510: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
-%if 0%{?fips}
-#retpoline
-Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
-%endif
-
-# SEV:
+# SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
-Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
-Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 
-#Patches for i40e driver
+#Patches for i40e driver [1500..1509]
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
 
-#Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1512: no-aux-symvers.patch
+#Patches for iavf driver [1510..1519]
+Patch1510: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1511: no-aux-symvers.patch
 
-# Patches for ice driver
-Patch1513: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1514: no-aux-bus.patch
-
-#Patches for vmci driver
-Patch1521: 001-return-correct-error-code.patch
-Patch1522: 002-switch-to-kvfree_rcu-API.patch
-Patch1523: 003-print-unexpanded-names-of-ioctl.patch
-Patch1524: 004-enforce-queuepair-max-size-for-IOCTL_VMCI_QUEUEPAIR_ALLOC.patch
-Patch1531: 0001-whitespace-formatting-change-for-vmci-register-defines.patch
-Patch1532: 0002-add-MMIO-access-to-registers.patch
-Patch1533: 0003-detect-DMA-datagram-capability.patch
-Patch1534: 0004-set-OS-page-size.patch
-Patch1535: 0005-register-dummy-IRQ-handlers-for-DMA-datagrams.patch
-Patch1536: 0006-allocate-send-receive-buffers-for-DMAdatagrams.patch
-Patch1537: 0007-add-support-for-DMA-datagrams-send.patch
-Patch1538: 0008-add-support-for-DMA-datagrams-receive.patch
-Patch1539: 0009-fix-the-description-of-vmci_check_host_caps.patch
-Patch1540: 0010-no-need-to-clear-memory-after-dma_alloc_coherent.patch
-Patch1541: 0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
-Patch1542: 0012-check-exclusive-vectors-when-freeing-interrupt1.patch
-Patch1543: 0013-release-notification-bitmap-inn-error-path.patch
-Patch1544: 0014-add-support-for-arm64.patch
+# Patches for ice driver [1520..1529]
+Patch1520: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1521: no-aux-bus.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -311,83 +260,47 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M20
-
-%ifarch aarch64
-%autopatch -p1 -m21 -M24
-%endif
-
-# VMW
-%ifarch x86_64
-%autopatch -p1 -m30 -M34
-%endif
-
-# -esx
-%autopatch -p1 -m50 -M56
+# common
+%autopatch -p1 -m0 -M49
 
 %ifarch x86_64
-%patch58 -p1
+# VMW x86
+%autopatch -p1 -m50 -M59
 %endif
 
-%autopatch -p1 -m59 -M80
-
-%ifarch x86_64
-%autopatch -p1 -m85 -M87
-%endif
-
-%patch90 -p1
+# linux-esx
+%autopatch -p1 -m60 -M79
 
 # CVE
-%autopatch -p1 -m100 -M121
+%autopatch -p1 -m100 -M129
 
-# mm and scsi fixes
-%autopatch -p1 -m130 -M130
-
-# Patches for ptp_vmw
-%autopatch -p1 -m201 -M202
+%ifarch aarch64
+# aarch64 patches
+%autopatch -p1 -m200 -M219
+%endif
 
 # crypto
-%autopatch -p1 -m500 -M507
-
-%if 0%{?fips}
-%autopatch -p1 -m508 -M509
-%else
-%if 0%{?kat_build}
-%patch510 -p1
-%endif
-%endif
-
-%if 0%{?fips}
-%patch511 -p1
-%endif
+%autopatch -p1 -m500 -M529
 
 %ifarch x86_64
-# SEV
-%autopatch -p1 -m600 -M605
-%endif
+# SEV on VMware
+%autopatch -p1 -m600 -M609
 
-%ifarch x86_64
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1500 -M1509
 popd
 
-#Patches for iavf driver
+#Patches for iavf river
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
-%patch1512 -p1
+%autopatch -p1 -m1510 -M1519
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
-%patch1513 -p1
-%patch1514 -p1
+%autopatch -p1 -m1520 -M1529
 popd
-
 %endif
-
-# vmci
-%autopatch -p1 -m1521 -M1544
 
 %build
 make %{?_smp_mflags} mrproper
@@ -415,7 +328,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE4}
 
-make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %if 0%{?fips}
@@ -423,9 +336,10 @@ make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
 %endif
 
 %ifarch x86_64
-
+%if 0
+# TODO: Re-enable i40e, iavf and ice drivers after porting them to
+# kernel 6.0
 # build i40e module
-bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
 make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
@@ -442,7 +356,7 @@ pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
 make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
-
+%endif
 %endif
 
 # Do not compress modules which will be loaded at boot time
@@ -472,9 +386,9 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-
-# install i40e module
 bldroot="${PWD}"
+%if 0
+# install i40e module
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
@@ -482,23 +396,16 @@ popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
-    INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
-install -Dvm 644 src/linux/auxiliary_bus.h \
-       %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
+%endif
 
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 
@@ -569,7 +476,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %ifarch x86_64
-%{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -577,9 +483,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
-%ifarch x86_64
-%{_mandir}/*
-%endif
 
 %files devel
 %defattr(-,root,root)
@@ -587,6 +490,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 09 2023 Bo Gan <ganb@vmware.com> 6.0.7-1
+- Update to 6.0.7
+- common: Change from SLAB to SLUB
+- common: Enable BPF/JIT
+- aarch64: match configs with x86 for arch independent features.
+- aarch64: disable unused platform/drivers for VM.
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-4
 - Bump up due to change in elfutils
 * Mon Nov 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.142-3

@@ -6,10 +6,10 @@ Subject: [PATCH] initialize MMCONFIG, if already not initialized
 For CRX, guest needs to initialize MMCONFIG.
 
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
-
+Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- arch/x86/pci/mmconfig-shared.c | 44 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ arch/x86/pci/mmconfig-shared.c | 45 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/pci/mmconfig-shared.c b/arch/x86/pci/mmconfig-shared.c
 index 6fa42e9..c2d0e3f 100644
@@ -23,18 +23,19 @@ index 6fa42e9..c2d0e3f 100644
  
  #define PREFIX "PCI: "
  
-@@ -527,7 +528,11 @@ pci_mmcfg_check_reserved(struct device *dev, struct pci_mmcfg_region *cfg, int e
+@@ -526,8 +527,11 @@ pci_mmcfg_check_reserved(struct device *dev, struct pci_mmcfg_region *cfg, int e
+ 
  	/* Don't try to do this check unless configuration
  	   type 1 is available. how about type 2 ?*/
- 	if (raw_pci_ops)
+-	if (raw_pci_ops)
 -		return is_mmconf_reserved(e820__mapped_all, cfg, dev, 1);
-+		if (is_mmconf_reserved(e820__mapped_all, cfg, dev, 1))
-+			return 1;
++	if (raw_pci_ops && is_mmconf_reserved(e820__mapped_all, cfg, dev, 1))
++		return true;
 +
 +	if(cfg->res.flags & IORESOURCE_BUSY)
-+		return 1;
++		return true;
  
- 	return 0;
+ 	return false;
  }
 @@ -659,6 +664,43 @@ static void __init __pci_mmcfg_init(int early)
  
