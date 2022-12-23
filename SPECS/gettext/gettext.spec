@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.8.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -11,6 +11,7 @@ Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha512  gettext=3553227b62f2a7d9b67c881ef889c030a6a21d5ecd210c4bf3d649df0b37193a99a68cf8fd5f2c69b6a87e847035dd9576f9bcb9363422866e26b04f4f6dd431
 Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
 Patch1:		libcroco-CVE-2020-12825.patch
+Patch2:         libxml2-CVE-2022-40304.patch
 
 BuildRequires:  bison
 
@@ -58,6 +59,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*       Wed Dec 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.19.8.1-5
+-       Fix CVE-2022-40304
 *	Tue Oct 13 2020 Siju Maliakkal <smaliakkal@vmware.com> 0.19.8.1-4
 -	Fix CVE-2020-12825 in blundled libcroco source
 *       Thu Jun 18 2020 Ashwin H <ashwinh@vmware.com> 0.19.8.1-3
