@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
-Version:        1.18.10
-Release:        3%{?dist}
+Version:        1.18.12
+Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.freedesktop.org/software/ModemManager/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4615ddb852b750ba0ca62224b669145a408a22b841937d42271638a73bf59dff5fb8b73553388afee8e7d2b2126c61f51af3f8fcb4475a2e2ea313d438443f9b
+%define sha512 %{name}=7ee3b091ca2350a1d52f1ff0c0657c9f279594ffbff5ea57be59ca024331cafbac34901ca9ed4ef2b71e8c51b594526f921d3aeee6e8748cd0532a16218c5d6c
 
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/connection.available.d/*
 
 %changelog
+* Fri Dec 23 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.18.12-1
+- Update to v1.18.12
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.10-3
 - Bump version as a part of libxslt upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.18.10-2
