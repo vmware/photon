@@ -1,7 +1,7 @@
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
-Version:       31
-Release:       3%{?dist}
+Version:       34
+Release:       1%{?dist}
 License:       GPLv2
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
@@ -9,7 +9,7 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9b30fb02b6470b6e6b54fb611b4b62f89fdaf71cefd8ee74d22253f3d240b9c17b570be766c3ab627fc67bf8aa0e2ccec747d19fa29d6e4f9dadaced61259c8b
+%define sha512 %{name}=38a80bb9e769b9fbf143c91fc52af1b29dfed81f05a3a9c4bb52d15a5e8a37fe55185ecc2218bcf6d13ac77e510803ee27314430e7b161a565b0e698e275f690
 
 Patch0:        mkinitcpio-shutdown-ramfs.service.patch
 
@@ -53,6 +53,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Fri Dec 23 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 34-1
+- Update to version 34
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 31-3
 - Update release to compile with python 3.11
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 31-2
