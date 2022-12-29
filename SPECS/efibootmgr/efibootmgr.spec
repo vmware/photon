@@ -1,17 +1,15 @@
-Summary:	Tools and libraries to manipulate EFI variables
-Name:		efibootmgr
-Version:	17
-Release:	1%{?dist}
-License:	GPLv2
-URL:		https://github.com/rhinstaller/efibootmgr/
-Group:		System Environment/System Utilities
-Vendor:		VMware, Inc.
-Distribution: Photon
+Summary:       Tools and libraries to manipulate EFI variables
+Name:          efibootmgr
+Version:       18
+Release:       1%{?dist}
+License:       GPLv2
+URL:           https://github.com/rhinstaller/efibootmgr/
+Group:         System Environment/System Utilities
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
-Source0:	https://github.com/rhinstaller/efibootmgr/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 %{name}=9251d346285f96844049d305d5c021f434f7c6de
-
-Patch0:        remove-extra-decl.patch
+Source0:      https://github.com/rhinstaller/efibootmgr/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=04e40a705cb82440fd823043b598ef9fd1acc2ceda3e8d043a93e49d43ea9481b7386cad0f46de9862beff19b8a5480d79e7d6522ae584aff6655472f967764d
 
 BuildRequires: efivar-devel
 BuildRequires: pciutils
@@ -24,15 +22,10 @@ efibootmgr is a userspace application used to modify the Intel Extensible Firmwa
 %autosetup -p1
 
 %build
-make %{?_smp_mflags} PREFIX=%{_prefix} EFIDIR=BOOT EFI_LOADER=grubx64.efi \
-    libdir=%{_libdir} \
-    bindir=%{_bindir}
+%make_build EFIDIR=BOOT EFI_LOADER=grubx64.efi
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} \
-    PREFIX=%{_prefix} EFIDIR=BOOT EFI_LOADER=grubx64.efi \
-    install %{?_smp_mflags}
+%make_install %{?_smp_mflags} EFIDIR=BOOT EFI_LOADER=grubx64.efi
 
 gzip -9 %{buildroot}%{_mandir}/man8/%{name}.8
 gzip -9 %{buildroot}%{_mandir}/man8/efibootdump.8
@@ -45,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Mon Feb 20 2023 Gerrit Photon <photon-checkins@vmware.com> 18-1
+- Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 17-1
 - Automatic Version Bump
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 15-1
