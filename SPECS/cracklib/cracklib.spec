@@ -1,7 +1,7 @@
 Summary:          A password strength-checking library.
 Name:             cracklib
-Version:          2.9.7
-Release:          2%{?dist}
+Version:          2.9.8
+Release:          1%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
 License:          GPL
@@ -9,10 +9,10 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=76d701ee521ae35b4cbab406f23a15c84937bb06d3c3747ca8ef2584a41074fc00309a676ec37ebd5b32930163213365cf508d47f614cfccea38e1ba6babb2ff
+%define sha512  %{name}-%{version}=03b97e3ab3bd73e4a5673254622d542e5ad5cae642183afe1c84f17b174284a0d618de71aa09e858b924018665bc5107cedaaa73ae2e289c0b0d1d89eed618e7
 
 Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
-%define sha512  %{name}-words-%{version}=1fa34b0a2e16d6906982b248f1757bf5bf8154d8d7e8bab94a4ac25080c41434d3828a2c8dd5065e9be586f36480ab70375f09e0bb64eb495d96a460619e2bae
+%define sha512  %{name}-words-%{version}=1700c56b9776b7ae4684b9ab1e784dd7707550bce2149301f662618a4f00a2eb0ba2d1a206c09aac22f7d95bc561544d412d2fdac5008fc3aabc4872e8a74afc
 
 BuildRequires:    python3-devel
 BuildRequires:    python3-setuptools
@@ -89,8 +89,8 @@ The CrackLib language pack.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 chmod -R og+rX .
-mkdir -p dicts
-install %{SOURCE1} dicts/
+mkdir -p src/dicts
+install %{SOURCE1} src/dicts/
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -102,6 +102,10 @@ fi
 
 export CFLAGS="%{optflags}"
 
+pushd src
+
+./autogen.sh
+
 %configure \
   --disable-static \
   --without-python
@@ -111,8 +115,10 @@ export CFLAGS="%{optflags}"
 pushd python
 %py3_build
 popd
+popd
 
 %install
+pushd src
 %make_install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/*.la
 
@@ -131,6 +137,7 @@ ln -sv %{name}-packer %{buildroot}%{_sbindir}/packer
 
 pushd python
 %py3_install
+popd
 popd
 
 %if 0%{?with_check}
@@ -180,7 +187,6 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 
 %files devel
 %defattr(-,root,root)
-%doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
 
@@ -198,6 +204,8 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.8-1
+- Automatic Version Bump
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-2
 - Remove .la files
 * Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1

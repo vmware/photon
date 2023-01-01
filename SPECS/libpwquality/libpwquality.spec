@@ -1,7 +1,7 @@
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD or GPLv2+
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
@@ -86,9 +86,11 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
-*   Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.4-2
--   Bump up to compile with py311
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
--   Automatic Version Bump
-*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
--   Initial version
+* Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.4-3
+- Rebuild with new cracklib
+* Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.4-2
+- Bump up to compile with py311
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
+- Automatic Version Bump
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
+- Initial version
