@@ -1,5 +1,5 @@
 diff --git a/dracut-init.sh b/dracut-init.sh
-index 900e8b8..e46237e 100644
+index 40b66f5..f72de3d 100755
 --- a/dracut-init.sh
 +++ b/dracut-init.sh
 @@ -19,11 +19,7 @@
@@ -16,33 +16,16 @@ index 900e8b8..e46237e 100644
  # is_func <command>
  # Check whether $1 is a function.
 diff --git a/src/install/dracut-install.c b/src/install/dracut-install.c
-index 6025bd6..ba1ca45 100644
+index 96b20e9..433ebf7 100644
 --- a/src/install/dracut-install.c
 +++ b/src/install/dracut-install.c
-@@ -326,24 +326,14 @@ static int cp(const char *src, const char *dst)
+@@ -329,8 +329,7 @@ static int cp(const char *src, const char *dst)
+ 
  normal_copy:
          pid = fork();
+-        const char *preservation = (geteuid() == 0
+-                                    && no_xattr == false) ? "--preserve=mode,xattr,timestamps,ownership" : "--preserve=mode,timestamps,ownership";
++        const char *preservation = "--preserve=mode,timestamps";
          if (pid == 0) {
--                if (geteuid() == 0 && no_xattr == false)
--                        execlp("cp", "cp", "--reflink=auto", "--sparse=auto", "--preserve=mode,xattr,timestamps,ownership", "-fL",
--                               src, dst, NULL);
--                else
--                        execlp("cp", "cp", "--reflink=auto", "--sparse=auto", "--preserve=mode,timestamps,ownership", "-fL", src,
--                               dst, NULL);
-+                execlp("cp", "cp", "--reflink=auto", "--sparse=auto", "--preserve=mode,timestamps", "-fL", src, dst, NULL);
-                 _exit(EXIT_FAILURE);
-         }
- 
-         while (waitpid(pid, &ret, 0) < 0) {
-                 if (errno != EINTR) {
-                         ret = -1;
--                        if (geteuid() == 0 && no_xattr == false)
--                                log_error("Failed: cp --reflink=auto --sparse=auto --preserve=mode,xattr,timestamps,ownership -fL %s %s",
--                                          src, dst);
--                        else
--                                log_error("Failed: cp --reflink=auto --sparse=auto --preserve=mode,timestamps,ownership -fL %s %s",
--                                          src, dst);
-+                        log_error("Failed: cp --reflink=auto --sparse=auto --preserve=mode,timestamps -fL %s %s", src, dst);
-                         break;
-                 }
-         }
+                 execlp("cp", "cp", "--reflink=auto", "--sparse=auto", preservation, "-fL", src, dst, NULL);
+                 _exit(errno == ENOENT ? 127 : 126);

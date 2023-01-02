@@ -1,8 +1,10 @@
 diff --git a/lsinitrd.sh b/lsinitrd.sh
-index 39be169..386265a 100755
+old mode 100755
+new mode 100644
+index eaadc76..46f7af5
 --- a/lsinitrd.sh
 +++ b/lsinitrd.sh
-@@ -109,39 +109,7 @@ if [[ $1 ]]; then
+@@ -109,41 +109,7 @@ if [[ $1 ]]; then
          exit 1
      fi
  else
@@ -28,6 +30,8 @@ index 39be169..386265a 100755
 -        image="/boot/efi/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
 -    elif [[ -f /lib/modules/${KERNEL_VERSION}/initrd ]]; then
 -        image="/lib/modules/${KERNEL_VERSION}/initrd"
+-    elif [[ -f /lib/modules/${KERNEL_VERSION}/initramfs.img ]]; then
+-        image="/lib/modules/${KERNEL_VERSION}/initramfs.img"
 -    elif [[ -f /boot/initramfs-${KERNEL_VERSION}.img ]]; then
 -        image="/boot/initramfs-${KERNEL_VERSION}.img"
 -    elif [[ $MACHINE_ID ]] \

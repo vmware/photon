@@ -2,7 +2,7 @@
 
 Summary:        dracut to create initramfs
 Name:           dracut
-Version:        057
+Version:        059
 Release:        1%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8acdc8db2233a9abbaeea218cc5b1be68c4985088995f42624750783f8d40ecbb7fa97ab4f6468f67c079c8418590ace317c143a92d9305640b48c7c0edd4089
+%define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
 
 # Taken from https://www.gnu.org/licenses/lgpl-2.1.txt
 Source1:        lgpl-2.1.txt
@@ -158,6 +158,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-1
+- Upgrade to v059
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 057-1
 - Upgrade to v057
 * Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 055-1
