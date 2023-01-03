@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-2
+- Bump version as a part of rpm upgrade
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-1
 - Upgrade to v0.20.1
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-7

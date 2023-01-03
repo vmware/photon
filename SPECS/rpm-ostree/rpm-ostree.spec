@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -162,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-4
+- Bump version as a part of rpm upgrade
 * Thu Nov 03 2022 Ankit Jain <ankitja@vmware.com> 2022.13-3
 - Fix build issue after glib update
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-2

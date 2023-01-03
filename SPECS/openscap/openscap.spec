@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
 %define sha512 %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
+
+Patch0: use-correct-includes.patch
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig
@@ -120,6 +122,8 @@ Python bindings.
 %{_libdir}/python%{python3_version}/*
 
 %changelog
+* Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-10
+- Bump version as a part of rpm upgrade
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-9
 - Bump version as a part of xmlsec1 upgrade
 * Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.6-8

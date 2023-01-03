@@ -2,16 +2,16 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    4.17.1
-Release:    5%{?dist}
+Version:    4.18.0
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 
-Source0:    https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=d0429510140f25a25b6c9441abe2027d27c485bbd4969752f69e1c843435c9508b9f85e5bb68085dd64b7da533801aa5c04d8c9d962e08d2ddd3199d0265cc85
+Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=c218b811c0c2db368a2919f60742904a4a5abf09dc20804d649eb42f1853d1c21d121086d6014cd210b2040643c37b5d86b53052958cf702ae2e54fe65f1c0ec
 
 Source1:    macros
 Source2:    macros.php
@@ -89,6 +89,7 @@ Conflicts:  libsolv < 0.7.19
 Shared libraries librpm and librpmio
 
 %package build
+Summary:  Binaries, scripts and libraries needed to build rpms.
 Requires: perl
 Requires: lua
 Requires: %{name}-devel = %{version}-%{release}
@@ -98,7 +99,6 @@ Requires: systemd-rpm-macros
 Requires: python3-macros
 Requires: dwz
 Requires: debugedit
-Summary:  Binaries, scripts and libraries needed to build rpms.
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -157,7 +157,7 @@ sh autogen.sh --noconfigure
     --with-lua \
     --enable-nls
 
-%make_build %{?_smp_mflags}
+%make_build
 
 gcc -Wall -o lock %{SOURCE11}
 chmod 700 lock
@@ -165,12 +165,6 @@ chmod 700 lock
 pushd python
 %py3_build
 popd
-
-%check
-%if 0%{?with_check}
-make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
-make clean %{?_smp_mflags}
-%endif
 
 %install
 %make_install %{?_smp_mflags}
@@ -191,8 +185,8 @@ install -vm755 %{SOURCE6} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE7} %{buildroot}%{_libdir}/rpm
 
 mkdir -p %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE8} %{buildroot}/%{_unitdir}
-install -vm644 %{SOURCE9} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE8} %{buildroot}%{_unitdir}
+install -vm644 %{SOURCE9} %{buildroot}%{_unitdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
 install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
@@ -201,6 +195,12 @@ mv lock %{buildroot}%{_libdir}/rpm
 pushd python
 %py3_install
 popd
+
+%check
+%if 0%{?with_check}
+make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
+make clean %{?_smp_mflags}
+%endif
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -291,9 +291,11 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
 
 %files build
+%defattr(-,root,root)
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
+%{_bindir}/rpmlua
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
 %{rpmhome}/macros.d/*
@@ -316,12 +318,14 @@ rm -rf %{buildroot}
 %{rpmhome}/*.prov
 %{rpmhome}/rpmdeps
 %{rpmhome}/find-debuginfo.sh
-
+%{rpmhome}/rpm_macros_provides.sh
+%{rpmhome}/rpmuncompress
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmdeps.8*
 %{_mandir}/man8/rpmspec.8*
 %{_mandir}/man8/rpmsign.8.gz
+%{_mandir}/man8/rpmlua.8.gz
 
 %files devel
 %defattr(-,root,root)
@@ -340,10 +344,13 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %files plugin-systemd-inhibit
+%defattr(-,root,root)
 %{_libdir}/rpm-plugins/systemd_inhibit.so
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-1
+- Upgrade to v4.18.0
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.17.1-5
 - Bump up to compile with python 3.11
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-4
