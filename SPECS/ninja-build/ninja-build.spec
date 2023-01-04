@@ -1,14 +1,14 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
-Version:        1.11.0
-Release:        2%{?dist}
+Version:        1.11.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://ninja-build.org
 Vendor:         VMware, Inc.
 Group:          Development/Tools
 Distribution:   Photon
 Source0:        https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
-%define sha512    ninja-build=9b9c8dae2251f9ddba50680911271b8504c292994fd90a0da94902f64c69a9edc72212217df5c651ddfc2f79c2ae03e84c99b805497dcd7497c53a1617de83e7
+%define sha512  ninja-build=1bca38877c70ee6613f347ffccef5adc02ba0a3947c62ae004ea97f918442b5a3de92378e4f820ae2a7676bc7609d25fbc7d41f6cfb3a61e5e4b26ec3639e403
 Source1:        macros.ninja
 
 BuildRequires:  gcc
@@ -48,6 +48,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+* Wed Jan 04 2023 Susant Sahani <ssahani@vmware.com> 1.11.1-1
+- Version Bump
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.0-2
 - Update release to compile with python 3.11
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.11.0-1
