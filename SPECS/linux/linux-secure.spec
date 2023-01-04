@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -382,6 +382,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 03 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-6
+- .config: Enable CONFIG_CGROUP_BPF to run containers with cgroup v2
 * Thu Dec 15 2022 Srinidhi Rao <srinidhir@vmware.com> 6.0.7-5
 - Fix issues for non-canister builds
 * Tue Dec 13 2022 Keerthana K <keerthanak@vmware.com> 6.0.7-4
