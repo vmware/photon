@@ -13,6 +13,7 @@ import traceback
 from argparse import ArgumentParser
 from pathlib import PurePath
 from subprocess import PIPE, Popen
+from urllib.parse import urlparse
 
 # photon imports
 sys.path.insert(
@@ -125,6 +126,14 @@ def build_vixdiskutil():
         runShellCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
 
 
+def url_validator(url):
+    try:
+        res = urlparse(url)
+        return all([res.scheme, res.netloc])
+    except:
+        return False
+
+
 class Build_Config:
     buildThreads = 1
     stagePath = ""
@@ -134,7 +143,7 @@ class Build_Config:
     generatedDataPath = ""
     pullPublishRPMSDir = ""
     pullPublishRPMS = ""
-    pullPublishXRPMS = ""
+    pullPublishRPMSCached = ""
     updatedRpmPath = ""
     updatedRpmNoArchPath = ""
     dockerEnv = "/.dockerenv"
@@ -222,12 +231,12 @@ class Build_Config:
         Build_Config.pullPublishRPMSDir = pullPublishRPMSDir
 
     @staticmethod
-    def setPullPublishXRPMS(pullPublishXRPMS):
-        Build_Config.pullPublishXRPMS = pullPublishXRPMS
-
-    @staticmethod
     def setPullPublishRPMS(pullPublishRPMS):
         Build_Config.pullPublishRPMS = pullPublishRPMS
+
+    @staticmethod
+    def setPullPublishRPMSCached(pullPublishRPMSCached):
+        Build_Config.pullPublishRPMSCached = pullPublishRPMSCached
 
 
 """
@@ -428,34 +437,45 @@ class BuildEnvironmentSetup:
         )
         check_prerequesite["sources-cached"] = True
 
-    def publish_rpms():
+    def pull_publish_rpms():
         if check_prerequesite["publish-rpms"]:
             return
 
         if not configdict["additional-path"]["photon-publish-rpms-path"]:
-            check_prerequesite["publish-rpms"] = True
             print("Pulling toolchain RPMS...")
-            cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-            cmd = f"{cmd} {Build_Config.pullPublishRPMS} {constants.prevPublishRPMRepo}"
+            cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
+            cmd = f"{cmd} {constants.prevPublishRPMRepo} {constants.publishrpmurl} rpmfilelist"
+
             runShellCmd(cmd)
         else:
             BuildEnvironmentSetup.publish_rpms_cached()
+
+        check_prerequesite["publish-rpms"] = True
+
+    def pull_publish_x_rpms():
+        if check_prerequesite["publish-x-rpms"]:
+            return
+
+        if not configdict["additional-path"]["photon-publish-x-rpms-path"]:
+            print("Pulling toolchain XRPMS...")
+            cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
+            cmd = f"{cmd} {constants.prevPublishXRPMRepo} {constants.publishXrpmurl} xrpmfilelist"
+
+            runShellCmd(cmd)
+        else:
+            BuildEnvironmentSetup.publish_x_rpms_cached()
+
+        check_prerequesite["publish-x-rpms"] = True
 
     def publish_rpms_cached():
         if check_prerequesite["publish-rpms-cached"]:
             return
 
-        if not os.path.isdir(
-            f"{constants.prevPublishRPMRepo}/{constants.currentArch}"
-        ):
-            os.makedirs(f"{constants.prevPublishRPMRepo}/{constants.currentArch}")
-
-        if not os.path.isdir(f"{constants.prevPublishRPMRepo}/noarch"):
-            os.makedirs(f"{constants.prevPublishRPMRepo}/noarch")
-
         cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-        cmd = f"{cmd} {Build_Config.pullPublishRPMS} {constants.prevPublishRPMRepo} "
-        cmd += configdict["additional-path"]["photon-publish-rpms-path"]
+        cmd = f"{cmd} {Build_Config.pullPublishRPMSCached} {constants.prevPublishRPMRepo} "
+        cmd += (
+            configdict["additional-path"]["photon-publish-rpms-path"] + " rpmfilelist"
+        )
         runShellCmd(cmd)
         check_prerequesite["publish-rpms-cached"] = True
 
@@ -463,34 +483,14 @@ class BuildEnvironmentSetup:
         if check_prerequesite["publish-x-rpms-cached"]:
             return
 
-        if not os.path.isdir(
-            f"{constants.prevPublishXRPMRepo}/{constants.currentArch}"
-        ):
-            os.makedirs(f"{constants.prevPublishXRPMRepo}/{constants.currentArch}")
-
-        if not os.path.isdir(f"{constants.prevPublishXRPMRepo}/noarch"):
-            os.makedirs(f"{constants.prevPublishXRPMRepo}/noarch")
-
         cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-        cmd = f"{cmd} {Build_Config.pullPublishXRPMS} {constants.prevPublishXRPMRepo} "
-        cmd += configdict["additional-path"]["photon-publish-x-rpms-path"]
+        cmd = f"{cmd} {Build_Config.pullPublishRPMSCached} {constants.prevPublishXRPMRepo} "
+        cmd += (
+            configdict["additional-path"]["photon-publish-x-rpms-path"]
+            + " xrpmfilelist"
+        )
         runShellCmd(cmd)
         check_prerequesite["publish-x-rpms-cached"] = True
-
-    def publish_x_rpms():
-        if check_prerequesite["publish-x-rpms"]:
-            return
-
-        if not configdict["additional-path"]["photon-publish-x-rpms-path"]:
-            check_prerequesite["publish-x-rpms"] = True
-            print("\nPulling X toolchain RPMS from packages.vmware.com ...")
-            cmd = f"cd {Build_Config.pullPublishRPMSDir} &&"
-            cmd = (
-                f"{cmd} {Build_Config.pullPublishXRPMS} {constants.prevPublishXRPMRepo}"
-            )
-            runShellCmd(cmd)
-        else:
-            BuildEnvironmentSetup.publish_x_rpms_cached()
 
     def photon_stage():
         if check_prerequesite["photon-stage"]:
@@ -637,12 +637,12 @@ class RpmBuildTarget:
         if configdict["additional-path"]["photon-publish-x-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_x_rpms_cached()
         else:
-            BuildEnvironmentSetup.publish_x_rpms()
+            BuildEnvironmentSetup.pull_publish_x_rpms()
 
         if configdict["additional-path"]["photon-publish-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_rpms_cached()
         else:
-            BuildEnvironmentSetup.publish_rpms()
+            BuildEnvironmentSetup.pull_publish_rpms()
 
         if configdict["additional-path"]["photon-sources-path"] is not None:
             BuildEnvironmentSetup.sources_cached()
@@ -654,9 +654,7 @@ class RpmBuildTarget:
         Utilities(None).generate_dep_lists()
 
         if constants.buildArch != constants.targetArch:
-            runCommandInShell(
-                f"mkdir -p {constants.rpmPath}/{constants.targetArch}"
-            )
+            runCommandInShell(f"mkdir -p {constants.rpmPath}/{constants.targetArch}")
 
         self.logger.debug(f"Source Path : {constants.sourcePath}")
         self.logger.debug(f"Spec Path : {constants.specPath}")
@@ -1255,8 +1253,25 @@ def initialize_constants():
 
     src_url = configdict["photon-build-param"].get("pull-sources-config", "")
     if not src_url:
-        src_url = configdict["pull-sources-config"]
-    constants.setPullSourcesURL(Builder.get_baseurl(src_url))
+        raise Exception("pull-sources-config is empty")
+
+    if not url_validator(src_url) and os.path.exists(src_url):
+        # TODO: can be removed in future
+        constants.setPullSourcesURL(Builder.get_baseurl(src_url))
+    else:
+        if not url_validator(src_url):
+            raise Exception(f"Invalid pull-sources-config url {src_url}")
+        constants.setPullSourcesURL(src_url)
+
+    src_url = configdict["photon-build-param"].get("publishrpm-url", "")
+    if not url_validator(src_url):
+        raise Exception(f"publishrpm-url is invalid {src_url}")
+    constants.setPublishRpmURL(src_url)
+
+    src_url = configdict["photon-build-param"].get("publishXrpm-url", "")
+    if not url_validator(src_url):
+        raise Exception(f"publishXrpm-url is invalid {src_url}")
+    constants.setPublishXRpmURL(src_url)
 
     constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
@@ -1294,14 +1309,16 @@ def initialize_constants():
     Build_Config.setPullPublishRPMS(
         os.path.join(Build_Config.pullPublishRPMSDir, "pullpublishrpms.sh")
     )
-    Build_Config.setPullPublishXRPMS(
-        os.path.join(Build_Config.pullPublishRPMSDir, "pullpublishXrpms.sh")
+    Build_Config.setPullPublishRPMSCached(
+        os.path.join(Build_Config.pullPublishRPMSDir, "pullpublishrpms-cached.sh")
     )
     constants.setPackageWeightsPath(
         os.path.join(Build_Config.dataDir, "packageWeights.json")
     )
     constants.setKatBuild(configdict["photon-build-param"].get("kat-build", False))
-    constants.setCanisterBuild(configdict["photon-build-param"].get("canister-build", False))
+    constants.setCanisterBuild(
+        configdict["photon-build-param"].get("canister-build", False)
+    )
     Build_Config.setConfFile(configdict["additional-path"]["conf-file"])
     Build_Config.setPkgToBeCopiedConfFile(
         configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file")
@@ -1333,10 +1350,6 @@ def initialize_constants():
 
 def set_default_value_of_config():
     global configdict
-
-    key = "pull-sources-config"
-    ret = f"{photonDir}/support/package-builder/sources.conf"
-    configdict[key] = ret
 
     key = "additional-path"
     cfgs = [

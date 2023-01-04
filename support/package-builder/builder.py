@@ -56,7 +56,7 @@ class Builder:
     def get_baseurl(conf_file):
         with open(conf_file) as jsonFile:
             config = json.load(jsonFile)
-        return config['baseurl']
+        return config["baseurl"]
 
     def get_all_package_names(build_install_option):
         base_path = os.path.dirname(build_install_option)

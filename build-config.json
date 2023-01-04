@@ -17,7 +17,11 @@
             "build-dbginfo-rpm-list" : ["glibc", "linux"],
 
             "target" : "iso",
-            "compression-macro" : "w19.zstdio"
+            "compression-macro" : "w19.zstdio",
+
+            "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
+            "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
+            "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms"
     },
     "photon-path" : "",
     "stage-path" : "" ,
