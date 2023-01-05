@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.159
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -98,13 +98,14 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch41: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # VMW:
-Patch41: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch42: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch43: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch44: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch45: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch45: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch46: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch47: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch48: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch49: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
 Patch50: init-do_mounts-recreate-dev-root.patch
@@ -328,10 +329,10 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M40
+%autopatch -p1 -m0 -M41
 
 # VMW
-%autopatch -p1 -m41 -M45
+%autopatch -p1 -m45 -M49
 
 # -esx
 %autopatch -p1 -m50 -M92
@@ -586,6 +587,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.159-2
+- update to latest ToT vmxnet3 driver
+- Include patch "vmxnet3: correctly report csum_level for encapsulated packet"
 * Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 5.10.159-1
 - Update to version 5.10.159
 * Wed Dec 14 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.158-2
