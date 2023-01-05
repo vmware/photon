@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.3
+Version:        3.3.4
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ea0ff7d88e3741984de26ef97c516b35aae9ef465302c81e09e000437293c4728848e7286f50c7829612e699e3ef8cc7f2466584f6d1470c05aa0867d7d5844c
+%define sha512  %{name}=37475ba662bbc9b165ae693f739c6219a8b87d82c821e554e3111489f2eb0d4913b7b544f7c396219206d5b18c3e71a819b9bc586932b4a7d7fd236c5bf8374a
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -228,6 +228,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Jan 4 2023 Oliver Kurth <okurth@vmware.com> 3.3.4-1
+- fix crash when problems are reported
 * Wed Nov 23 2022 Oliver Kurth <okurth@vmware.com> 3.3.3-1
 - update to 3.3.3 to fix --excludes option
 * Tue Sep 13 2022 Oliver Kurth <okurth@vmware.com> 3.3.2-1
