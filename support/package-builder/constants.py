@@ -297,7 +297,7 @@ class constants(object):
         "libmspack",
         "socat",
         "bash",
-        "python3-dnspython"]
+        "libical"]
 
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
