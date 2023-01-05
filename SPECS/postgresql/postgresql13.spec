@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -59,6 +59,8 @@ PostgreSQL is an object-relational database management system.
 Summary:        Libraries for use with PostgreSQL
 Group:          Applications/Databases
 Obsoletes:      postgresql-libs < %{obsoletes_version}
+Requires:   chkconfig
+Requires(postun): chkconfig
 
 %description libs
 The %{name}-libs package provides the essential shared libraries for any
@@ -70,8 +72,6 @@ PostgreSQL server.
 Summary:        Development files for postgresql.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       chkconfig
-Requires(postun): chkconfig
 Obsoletes:      postgresql-devel < %{obsoletes_version}
 
 %description    devel
@@ -271,5 +271,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.9-2
+- Fix chkconfig mishap
 * Fri Nov 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 13.9-1
 - Intial version.
