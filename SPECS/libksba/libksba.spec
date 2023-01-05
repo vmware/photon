@@ -1,7 +1,7 @@
 Summary:	Library for accessing X.509 and CMS data structure.
 Name:		libksba
 Version:	1.3.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:		Security/Libraries.
@@ -11,21 +11,22 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libgpg-error-devel >= 1.2
 
+Patch0: 0001-Fix-for-CVE-2022-47629.patch
+
 %description
 Libksba is a library to make the tasks of working with X.509 certificates,
-CMS data and related objects more easy. It provides a highlevel interface 
-to the implemented protocols and presents the data in a consistent way. 
+CMS data and related objects more easy. It provides a highlevel interface
+to the implemented protocols and presents the data in a consistent way.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure --disable-static \
-           --prefix=%{_prefix}
-make
+%configure --disable-static
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -45,8 +46,10 @@ make %{?_smp_mflags} -k check
 %exclude %{_datadir}/info/dir
 
 %changelog
-*	Tue	Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.3.5-1
--	Udpated to version 1.3.5
+*   Thu Jan 05 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.5-2
+-   Fix for CVE-2022-47629
+*   Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.3.5-1
+-   Udpated to version 1.3.5
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
 -   BuildRequired libgpg-error-devel.
 *   Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 1.3.4-1
