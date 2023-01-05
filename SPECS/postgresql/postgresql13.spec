@@ -1,30 +1,29 @@
+%define srcname         postgresql
+%global pgmajorversion  13
+%global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
+%global _pgbindir       %{_pgbaseinstdir}/bin
+%global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
+%global _pgincludedir   %{_pgbaseinstdir}/include/%{srcname}
+%global _pgdatadir      %{_pgbaseinstdir}/share/%{srcname}
+%global _pgmandir       %{_pgdatadir}/man/%{srcname}
+%global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
+%define alter_weight    300
+
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.8
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha512 postgresql=3b39448b291342a5e9b610d410c222aeb85f8acf95632e73e138ae316133af3dadc795a6e706f6447f543cf10df3c786da4f1afa1d91489b50eb77e2d9ed5d84
+Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
+%define sha512 %{srcname}=3b39448b291342a5e9b610d410c222aeb85f8acf95632e73e138ae316133af3dadc795a6e706f6447f543cf10df3c786da4f1afa1d91489b50eb77e2d9ed5d84
 
 Patch0: llvm-15.x-psql-build-err-fixes.patch
 
-# Macros to be used by find_lang and such.
-%global pgmajorversion 13
-%global _pgbaseinstdir   %{_usr}/pgsql/%{pgmajorversion}
-%global _pgbindir       %{_pgbaseinstdir}/bin
-%global _pgincludedir   %{_pgbaseinstdir}/include
-%global _pgdatadir      %{_pgbaseinstdir}/share
-%global _pgmandir       %{_pgdatadir}/man
-%global _pglibdir       %{_pgbaseinstdir}/lib
-%global _pgdocdir       %{_pgbaseinstdir}/doc
-
-# Common libraries needed
-# clang-devel is needed for LLVM.
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
 BuildRequires:  gcc
@@ -50,6 +49,7 @@ BuildRequires:  tcl-devel
 BuildRequires:  tzdata
 BuildRequires:  util-linux-libs
 BuildRequires:  zlib-devel
+
 Requires:       krb5
 Requires:       icu
 Requires:       libedit
@@ -60,8 +60,7 @@ Requires:       readline
 Requires:       systemd
 Requires:       tzdata
 Requires:       zlib
-
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 PostgreSQL is an advanced Object-Relational database management system (DBMS).
@@ -78,6 +77,8 @@ if you're installing the postgresql13-server package.
 %package libs
 Summary:    The shared libraries required for any PostgreSQL clients
 Group:      Applications/Databases
+Requires:   chkconfig
+Requires(postun): chkconfig
 
 %description libs
 The postgresql13-libs package provides the essential shared libraries for any
@@ -177,7 +178,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup -n postgresql-%{version} -p1
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -208,10 +209,10 @@ sh ./configure \
     --with-uuid=e2fs \
     --includedir=%{_pgincludedir} \
     --bindir=%{_pgbindir} \
-    --mandir=%{_pgmandir} \
     --datadir=%{_pgdatadir} \
     --libdir=%{_pglibdir} \
-    --docdir=%{_pgbaseinstdir}/doc
+    --docdir=%{_pgdocdir} \
+    --mandir=%{_pgmandir}
 
 make world %{?_smp_mflags}
 
@@ -223,6 +224,8 @@ make install-world DESTDIR=%{buildroot} %{?_smp_mflags}
 rm -f %{buildroot}%{_pgdatadir}/extension/*plpython2u* \
       %{buildroot}%{_pgdatadir}/extension/*plpythonu-* \
       %{buildroot}%{_pgdatadir}/extension/*_plpythonu.control
+
+echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 # Create file lists, for --enable-nls and i18n
 %find_lang ecpg-%{pgmajorversion}
@@ -276,9 +279,9 @@ cat postgres-%{pgmajorversion}.lang pg_resetwal-%{pgmajorversion}.lang \
 # Run the main regression test suites in the source tree.
 run_test_path()
 {
-    make_path="$1"
-    chown -Rv nobody .
-    sudo -u nobody -s /bin/bash -c "PATH=$PATH make -C $make_path -k check"
+  make_path="$1"
+  chown -Rv nobody .
+  sudo -u nobody -s /bin/bash -c "PATH=$PATH make -C $make_path -k check"
 }
 # SQL test suites, mostly.
 run_test_path "src/test/regress"
@@ -293,8 +296,87 @@ run_test_path "src/test/ssl"
 run_test_path "src/test/subscription"
 %endif
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+
+%posttrans
+alternatives --install %{_bindir}/clusterdb clusterdb %{_pgbindir}/clusterdb %{alter_weight} \
+    --slave %{_bindir}/createdb createdb %{_pgbindir}/createdb \
+    --slave %{_bindir}/createuser createuser %{_pgbindir}/createuser \
+    --slave %{_bindir}/dropdb dropdb %{_pgbindir}/dropdb \
+    --slave %{_bindir}/dropuser dropuser %{_pgbindir}/dropuser \
+    --slave %{_bindir}/pgbench pgbench %{_pgbindir}/pgbench \
+    --slave %{_bindir}/pg_basebackup pg_basebackup %{_pgbindir}/pg_basebackup \
+    --slave %{_bindir}/pg_config pg_config %{_pgbindir}/pg_config \
+    --slave %{_bindir}/pg_dump pg_dump %{_pgbindir}/pg_dump \
+    --slave %{_bindir}/pg_dumpall pg_dumpall %{_pgbindir}/pg_dumpall \
+    --slave %{_bindir}/pg_isready pg_isready %{_pgbindir}/pg_isready \
+    --slave %{_bindir}/pg_receivewal pg_receivewal %{_pgbindir}/pg_receivewal \
+    --slave %{_bindir}/pg_restore pg_restore %{_pgbindir}/pg_restore \
+    --slave %{_bindir}/pg_waldump pg_waldump %{_pgbindir}/pg_waldump \
+    --slave %{_bindir}/psql psql %{_pgbindir}/psql \
+    --slave %{_bindir}/reindexdb reindexdb %{_pgbindir}/reindexdb \
+    --slave %{_bindir}/vacuumdb vacuumdb %{_pgbindir}/vacuumdb
+
+/sbin/ldconfig
+
+%postun
+alternatives --remove clusterdb %{_pgbindir}/clusterdb
+/sbin/ldconfig
+
+%post libs
+/sbin/ldconfig
+
+%posttrans libs
+alternatives --install %{_sysconfdir}/ld.so.conf.d/%{srcname}.conf %{srcname}.conf %{_pgbaseinstdir}/%{srcname}.conf %{alter_weight}
+/sbin/ldconfig
+
+%postun libs
+alternatives --remove %{srcname}.conf %{_pgbaseinstdir}/%{srcname}.conf
+/sbin/ldconfig
+
+%posttrans devel
+alternatives --install %{_includedir}/%{srcname} %{srcname} %{_pgincludedir} %{alter_weight} \
+    --slave %{_bindir}/ecpg ecpg %{_pgbindir}/ecpg
+
+/sbin/ldconfig
+
+%postun devel
+alternatives --remove %{srcname} %{_pgincludedir}
+/sbin/ldconfig
+
+%posttrans server
+alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weight} \
+    --slave %{_bindir}/pg_archivecleanup pg_archivecleanup %{_pgbindir}/pg_archivecleanup \
+    --slave %{_bindir}/pg_checksums pg_checksums %{_pgbindir}/pg_checksums \
+    --slave %{_bindir}/pg_controldata pg_controldata %{_pgbindir}/pg_controldata \
+    --slave %{_bindir}/pg_ctl pg_ctl %{_pgbindir}/pg_ctl \
+    --slave %{_bindir}/pg_resetwal pg_resetwal %{_pgbindir}/pg_resetwal \
+    --slave %{_bindir}/pg_rewind pg_rewind %{_pgbindir}/pg_rewind \
+    --slave %{_bindir}/pg_test_fsync pg_test_fsync %{_pgbindir}/pg_test_fsync \
+    --slave %{_bindir}/pg_test_timing pg_test_timing %{_pgbindir}/pg_test_timing \
+    --slave %{_bindir}/pg_upgrade pg_upgrade %{_pgbindir}/pg_upgrade \
+    --slave %{_bindir}/pg_verifybackup pg_verifybackup %{_pgbindir}/pg_verifybackup \
+    --slave %{_bindir}/postgres postgres %{_pgbindir}/postgres \
+    --slave %{_bindir}/postmaster postmaster %{_pgbindir}/postmaster
+
+/sbin/ldconfig
+
+%postun server
+alternatives --remove initdb %{_pgbindir}/initdb
+/sbin/ldconfig
+
+%posttrans contrib
+alternatives --install %{_bindir}/oid2name oid2name %{_pgbindir}/oid2name %{alter_weight} \
+    --slave %{_bindir}/vacuumlo vacuumlo %{_pgbindir}/vacuumlo \
+    --slave %{_bindir}/pg_recvlogical pg_recvlogical %{_pgbindir}/pg_recvlogical \
+    --slave %{_bindir}/pg_standby pg_standby %{_pgbindir}/pg_standby
+
+/sbin/ldconfig
+
+%postun contrib
+alternatives --remove oid2name %{_pgbindir}/oid2name
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -339,6 +421,7 @@ rm -rf %{buildroot}/*
 
 %files libs
 %defattr(-,root,root)
+%{_pgbaseinstdir}/%{srcname}.conf
 %{_pglibdir}/libpq.so.*
 %{_pglibdir}/libecpg.so*
 %{_pglibdir}/libpgtypes.so.*
@@ -402,7 +485,7 @@ rm -rf %{buildroot}/*
 
 %files docs
 %defattr(-,root,root)
-%{_pgbaseinstdir}/doc/*
+%{_pgdocdir}/*
 
 %files contrib
 %defattr(-,root,root)
@@ -455,7 +538,7 @@ rm -rf %{buildroot}/*
 %{_pgdatadir}/extension/unaccent*
 %{_pgdatadir}/extension/uuid-ossp*
 %{_pgdatadir}/extension/xml2*
-%{_pgbaseinstdir}/doc/extension/*.example
+%{_pgdocdir}/extension/*.example
 %{_pglibdir}/_int.so
 %{_pglibdir}/adminpack.so
 %{_pglibdir}/amcheck.so
@@ -560,6 +643,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-8
+- Use alternatives and allow parallel installation of pgsql
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 13.8-7
 - Bump release as a part of readline upgrade
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 13.8-6

@@ -3,15 +3,15 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 
-Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha512  %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
+Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
+%define sha512 %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
 
 BuildRequires:   apr-devel
 BuildRequires:   sqlite-devel
@@ -19,7 +19,7 @@ BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
 BuildRequires:   expat-devel
 BuildRequires:   openldap
-BuildRequires:   postgresql-devel >= 10.5
+BuildRequires:   postgresql14-devel
 
 Requires:   apr
 Requires:   openssl
@@ -30,37 +30,37 @@ Requires:   nss
 The Apache Portable Runtime Utility Library.
 
 %package devel
-Group: Development/Libraries
-Summary: APR utility library development kit
-Requires: apr-devel
-Requires: expat-devel
-Requires: %{name} = %{version}-%{release}
+Group:      Development/Libraries
+Summary:    APR utility library development kit
+Requires:   apr-devel
+Requires:   expat-devel
+Requires:   %{name} = %{version}-%{release}
 %description devel
 This package provides the support files which can be used to
 build applications using the APR utility library.
 
 %package ldap
-Group: Development/Libraries
-Summary: APR utility library LDAP support
-Requires: %{name} = %{version}-%{release}
-Requires: openldap
+Group:      Development/Libraries
+Summary:    APR utility library LDAP support
+Requires:   %{name} = %{version}-%{release}
+Requires:   openldap
 
 %description ldap
 This package provides the LDAP support for the %{name}.
 
 %package pgsql
-Group: Development/Libraries
-Summary: APR utility library PostgreSQL DBD driver
-Requires: %{name} = %{version}-%{release}
-Requires: postgresql >= 10.5
+Group:      Development/Libraries
+Summary:    APR utility library PostgreSQL DBD driver
+Requires:   %{name} = %{version}-%{release}
+Requires:   (postgresql14 or postgresql13 or postgresql12)
 
 %description pgsql
 This package provides the PostgreSQL driver for the %{name} DBD (database abstraction) interface.
 
 %package sqlite
-Group: Development/Libraries
-Summary: APR utility library SQLite DBD driver.
-Requires: %{name} = %{version}-%{release}
+Group:      Development/Libraries
+Summary:    APR utility library SQLite DBD driver.
+Requires:   %{name} = %{version}-%{release}
 
 %description sqlite
 This package provides the SQLite driver for the %{name} DBD
@@ -70,15 +70,16 @@ This package provides the SQLite driver for the %{name} DBD
 %autosetup -p1
 
 %build
-%configure --with-apr=%{_prefix} \
-        --with-ldap \
-        --without-gdbm \
-        --with-sqlite3 \
-        --with-pgsql \
-        --without-sqlite2 \
-        --with-openssl=%{_prefix} \
-        --with-nss \
-        --with-crypto
+%configure \
+    --with-apr=%{_prefix} \
+    --with-ldap \
+    --without-gdbm \
+    --with-sqlite3 \
+    --with-pgsql \
+    --without-sqlite2 \
+    --with-openssl=%{_prefix} \
+    --with-nss \
+    --with-crypto
 
 %make_build
 
@@ -87,8 +88,7 @@ This package provides the SQLite driver for the %{name} DBD
 
 %if 0%{?with_check}
 %check
-# make doesn't support _smp_mflags
-make check
+make check %{?_smp_mflags}
 %endif
 
 %clean
@@ -126,6 +126,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-7
+- Bump version as a part of postgresql fixes
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-6
 - Bump version as a part of sqlite upgrade
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-5

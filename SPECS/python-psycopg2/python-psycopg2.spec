@@ -1,21 +1,24 @@
+%define srcname     psycopg2
+
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.9.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/psycopg2/psycopg2-%{version}.tar.gz
-%define sha512  psycopg2=048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
+
+Source0: https://files.pythonhosted.org/packages/source/p/psycopg2/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  postgresql-devel >= 10.5
-Requires:       python3
-Requires:       python3-libs
-Requires:       postgresql >= 10.5
+BuildRequires:  postgresql14-devel
+
+Requires:   python3
+Requires:   (postgresql14 or postgresql13 or postgresql12)
 
 %description
 Psycopg is the most popular PostgreSQL database adapter for the Python programming language. Its main features are the complete implementation of the Python DB API 2.0 specification and the thread safety (several threads can share the same connection). It was designed for heavily multi-threaded applications that create and destroy lots of cursors and make a large number of concurrent “INSERT”s or “UPDATE”s.
@@ -25,7 +28,7 @@ Psycopg 2 is mostly implemented in C as a libpq wrapper, resulting in being both
 Psycopg 2 is both Unicode and Python 3 friendly.
 
 %prep
-%autosetup -n psycopg2-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 %py3_build
@@ -33,33 +36,44 @@ Psycopg 2 is both Unicode and Python 3 friendly.
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
+%define user postgres
+%define data_dir "/home/%{user}/data"
 chmod 700 /etc/sudoers
 echo 'Defaults env_keep += "PYTHONPATH"' >> /etc/sudoers
 #start postgresql server and create a database named psycopg2_test
-useradd -m postgres &>/dev/null
-groupadd postgres &>/dev/null
-rm -r /home/postgres/data &>/dev/null ||:
-mkdir -p /home/postgres/data
-chown postgres:postgres /home/postgres/data
-chmod 700 /home/postgres/data
-su - postgres -c 'initdb -D /home/postgres/data'
-echo "client_encoding = 'UTF8'" >> /home/postgres/data/postgresql.conf
-echo "unix_socket_directories = '/run/postgresql'" >> /home/postgres/data/postgresql.conf
+useradd -m %{user}
+groupadd -f %{user}
+rm -rf %{data_dir}
+mkdir -p %{data_dir}
+chown %{user}:%{user} %{data_dir}
+chmod 700 %{data_dir}
+su - %{user} -c 'initdb -D %{data_dir}'
+cat <<EOT >> %{data_dir}/postgresql.conf
+client_encoding = 'UTF8'
+unix_socket_directories = '/run/postgresql'
+EOT
 mkdir -p /run/postgresql
-chown -R postgres:postgres /run/postgresql
-su - postgres -c 'pg_ctl -D /home/postgres/data -l logfile start'
+chown -R %{user}:%{user} /run/postgresql
+su - %{user} -c 'pg_ctl -D %{data_dir} -l logfile start'
 sleep 3
-su - postgres -c 'createdb psycopg2_test'
-PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} sudo -u postgres python3 -c "from psycopg2 import tests; tests.unittest.main(defaultTest='tests.test_suite')" --verbose
-su - postgres -c 'pg_ctl -D /home/postgres/data stop'
-rm -r /home/postgres/data &>/dev/null ||:
+su - %{user} -c 'createdb psycopg2_test'
+export PYTHONPATH=${PYTHONPATH}:%{buildroot}%{python3_sitelib}
+sudo -u %{user} python3 -c "from psycopg2 import tests; tests.unittest.main(defaultTest='tests.test_suite')" --verbose
+su - %{user} -c 'pg_ctl -D %{data_dir} stop'
+rm -rf %{data_dir}
+userdel -rf %{user}
+groupdel -f %{user}
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-3
+- Bump version as a part of postgresql fixes
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.3-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.3-1
