@@ -14,6 +14,8 @@ class constants(object):
     buildRootPath = "/mnt"
     prevPublishRPMRepo = ""
     prevPublishXRPMRepo = ""
+    publishrpmurl = ""
+    publishXrpmurl = ""
     pullsourcesURL = ""
     extrasourcesURLs = {}
     buildPatch = False
@@ -357,6 +359,14 @@ class constants(object):
     @staticmethod
     def setLogPath(logPath):
         constants.logPath = logPath
+
+    @staticmethod
+    def setPublishRpmURL(url):
+        constants.publishrpmurl = url
+
+    @staticmethod
+    def setPublishXRpmURL(url):
+        constants.publishXrpmurl = url
 
     @staticmethod
     def setPrevPublishRPMRepo(prevPublishRPMRepo):
