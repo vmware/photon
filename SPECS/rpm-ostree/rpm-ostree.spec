@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -42,7 +42,7 @@ BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
 BuildRequires:  python3-devel
 BuildRequires:  autogen
-BuildRequires:  libsolv-devel >= 0.7.19
+BuildRequires:  libsolv-devel >= 0.7.22
 BuildRequires:  systemd-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  gperf
@@ -57,6 +57,7 @@ BuildRequires:  rust
 BuildRequires:  libmodulemd-devel
 BuildRequires:  gpgme-devel
 
+Requires:       libsolv >= 0.7.22
 Requires:       libcap
 Requires:       rpm-libs
 Requires:       sqlite-libs
@@ -74,7 +75,6 @@ Requires:       ostree
 Requires:       ostree-libs
 Requires:       ostree-grub2
 Requires:       json-glib
-Requires:       libsolv
 Requires:       bubblewrap
 
 %description
@@ -162,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Fri Jan 06 2023 Piyush Gupta <gpiyush@vmware.com> 2022.13-5
+- Added requires libsolv-0.7.22.
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.13-4
 - Bump version as a part of rpm upgrade
 * Thu Nov 03 2022 Ankit Jain <ankitja@vmware.com> 2022.13-3
