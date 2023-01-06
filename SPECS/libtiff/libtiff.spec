@@ -1,19 +1,14 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.4.0
-Release:        7%{?dist}
+Version:        4.5.0
+Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
-Patch0:         CVE-2022-2056.patch
-Patch1:         CVE-2022-34526.patch
-Patch2:         CVE-2022-2953.patch
-Patch3:         CVE-2022-3570.patch
-Patch4:         CVE-2022-3970.patch
+%define sha512  libtiff-v=5227cb7b496ac6829601d8d689233bd8f318c1d04e5ce3457cdd6eac9e4f8c80cd7211d90cd092c61ad38bc8a4949169a13eabd788c46c15bcee1f72519fa022
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  ca-certificates
 BuildRequires:  wget
@@ -54,7 +49,6 @@ make %{?_smp_mflags} -k check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_datadir}/man/man1/*
 
 %files devel
 %defattr(-,root,root)
@@ -62,9 +56,10 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/doc/*
-%{_datadir}/man/man3/*
 
 %changelog
+*   Fri Jan 06 2023 Anmol Jain <anmolja@vmware.com> 4.5.0-1
+-   Version Update
 *   Sun Nov 20 2022 Anmol Jain <anmolja@vmware.com> 4.4.0-7
 -   Fix CVE-2022-3970
 *   Tue Oct 25 2022 Anmol Jain <anmolja@vmware.com> 4.4.0-6
