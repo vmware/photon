@@ -1,0 +1,45 @@
+From 054d20035dfe3bcdffeef9d93e6281fdd8afef67 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 6 Jan 2023 23:43:49 +0530
+Subject: [PATCH] support non fips algorithms
+
+If `usedforsecurity=0` is passed with hashlib invocations, non
+fips algorithm like md5 should work smooth.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Modules/_hashopenssl.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/Modules/_hashopenssl.c b/Modules/_hashopenssl.c
+index b9e68c0..155ae5a 100644
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -767,17 +767,20 @@ EVPnew(PyObject *module, const EVP_MD *digest,
+         return NULL;
+ 
+     if (!usedforsecurity) {
+-#ifdef EVP_MD_CTX_FLAG_NON_FIPS_ALLOW
+-        EVP_MD_CTX_set_flags(self->ctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
+-#endif
++        digest = EVP_MD_fetch(NULL, EVP_MD_get0_name(digest), "-fips");
+     }
+ 
+-
+     if (!EVP_DigestInit_ex(self->ctx, digest, NULL)) {
+         _setException(PyExc_ValueError);
+         Py_DECREF(self);
++        if (!usedforsecurity) {
++            EVP_MD_free((EVP_MD *)digest);
++        }
+         return NULL;
+     }
++    if (!usedforsecurity) {
++        EVP_MD_free((EVP_MD *)digest);
++    }
+ 
+     if (cp && len) {
+         if (len >= HASHLIB_GIL_MINSIZE) {
+-- 
+2.39.0
+

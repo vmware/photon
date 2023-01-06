@@ -4,15 +4,16 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512  Python=82b2729afc7d72a80882f199970667dce7d971a2e5ecfe6cf84f7b68612ab2caf6ed6d7a8cb81f24ea85cb0816464bb2e8b2e6884eda62fa40742edc674193bd
+Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+%define sha512 Python=82b2729afc7d72a80882f199970667dce7d971a2e5ecfe6cf84f7b68612ab2caf6ed6d7a8cb81f24ea85cb0816464bb2e8b2e6884eda62fa40742edc674193bd
+
 Source1:        macros.python
 
 Patch0:         cgi3.patch
@@ -22,6 +23,7 @@ Patch3:         Handle-the-EPERM-error-gracefully-in-crypt.patch
 Patch4:         CVE-2021-28861.patch
 Patch5:         CVE-2022-42919.patch
 Patch6:         CVE-2022-45061.patch
+Patch7:         support-non-fips-algorithms.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -34,11 +36,11 @@ BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  util-linux-devel
 # cross compilation requires native python3 installed for ensurepip
-%define BuildRequiresNative python3-xml
+%define BuildRequiresNative %{name}-xml
 
 Requires:       ncurses
 Requires:       openssl
-Requires:       python3-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       readline
 Requires:       xz
 
@@ -46,7 +48,7 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
-Provides:       /bin/python3
+Provides:       /bin/%{name}
 
 %if 0%{?with_check}
 BuildRequires:  iana-etc
@@ -79,8 +81,8 @@ provides the libraries needed for python 3 applications.
 %package        xml
 Summary:        XML libraries for python3 runtime
 Group:          Applications/System
-Requires:       python3-libs = %{version}-%{release}
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    xml
 The python3-xml package provides the libraries needed for XML manipulation.
@@ -88,7 +90,7 @@ The python3-xml package provides the libraries needed for XML manipulation.
 %package        curses
 Summary:        Python module interface for NCurses Library
 Group:          Applications/System
-Requires:       python3-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       ncurses
 
 %description    curses
@@ -97,12 +99,12 @@ The python3-curses package provides interface for ncurses library.
 %package        devel
 Summary: The libraries and header files needed for Python development.
 Group:          Development/Libraries
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel >= 2.1.0
-Requires:       python3-macros = %{version}-%{release}
+Requires:       %{name}-macros = %{version}-%{release}
 # Needed here because of the migration of Makefile from -devel to the main
 # package
-Conflicts: python3 < %{version}-%{release}
+Conflicts: %{name} < %{version}-%{release}
 
 %description    devel
 The Python programming language's interpreter can be extended with
@@ -118,7 +120,7 @@ documentation.
 %package        tools
 Summary:        A collection of development tools included with Python.
 Group:          Development/Tools
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    tools
 The Python package includes several development tools that are used
@@ -128,8 +130,8 @@ to build python programs.
 Summary:        The PyPA recommended tool for installing Python packages.
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-xml = %{version}-%{release}
 
 %description    pip
 The PyPA recommended tool for installing Python packages.
@@ -138,8 +140,8 @@ The PyPA recommended tool for installing Python packages.
 Summary:        Download, build, install, upgrade, and uninstall Python packages.
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-xml = %{version}-%{release}
 
 Provides:       python%{VER}dist(setuptools)
 
@@ -149,7 +151,7 @@ setuptools is a collection of enhancements to the Python distutils that allow yo
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
-Requires: python3 = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description test
 The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
@@ -171,7 +173,7 @@ python-devel packages require it. So install a python-devel package instead.
 %build
 export OPT="${CFLAGS}"
 if [ %{_host} != %{_build} ]; then
-  ln -sfv python3 /bin/python
+  ln -sfv %{name} /bin/python
   export ac_cv_buggy_getaddrinfo=no
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
@@ -182,7 +184,9 @@ fi
     --with-system-expat \
     --with-system-ffi \
     --enable-optimizations \
-    --with-dbmliborder=gdbm:ndbm
+    --with-dbmliborder=gdbm:ndbm \
+    --with-ssl-default-suites=openssl \
+    --with-builtin-hashlib-hashes=blake2
 
 %make_build
 
@@ -196,8 +200,8 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 find %{buildroot}%{_libdir} -name '*.o' -delete
 find %{buildroot}%{_libdir} -name '*__pycache__' -delete
 rm %{buildroot}%{_bindir}/2to3
-mkdir -p %{buildroot}%{_libdir}/rpm/macros.d
-install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
+mkdir -p %{buildroot}%{_rpmmacrodir}
+install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
 
 %if 0%{?__debug_package}
 %if 0%{?with_gdb_hooks}
@@ -214,7 +218,7 @@ make %{?_smp_mflags} test
 %endif
 
 %post
-ln -sfv %{_bindir}/python3 %{_bindir}/python
+ln -sfv %{_bindir}/%{name} %{_bindir}/python
 /sbin/ldconfig
 
 %postun
@@ -237,7 +241,7 @@ rm -rf %{buildroot}/*
 %defattr(-, root, root)
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
-%{_bindir}/python3
+%{_bindir}/%{name}
 %{_bindir}/python%{VER}
 %{_mandir}/*/*
 
@@ -286,19 +290,17 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/libpython%{VER}.so
 %{_libdir}/pkgconfig/python-%{VER}.pc
-%{_libdir}/pkgconfig/python3.pc
-%{_bindir}/python3-config
+%{_libdir}/pkgconfig/%{name}.pc
+%{_bindir}/%{name}-config
 %{_bindir}/python%{VER}-config
 %{_libdir}/pkgconfig/python-%{VER}-embed.pc
-%{_libdir}/pkgconfig/python3-embed.pc
+%{_libdir}/pkgconfig/%{name}-embed.pc
 
-%doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
 
 %files tools
 %defattr(-, root, root, 755)
-%doc Tools/README
 %{_libdir}/python%{VER}/lib2to3
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
@@ -323,9 +325,12 @@ rm -rf %{buildroot}/*
 
 %files macros
 %defattr(-, root, root, 755)
-%{_libdir}/rpm/macros.d/macros.python
+%{_rpmmacrodir}/macros.python
 
 %changelog
+* Sat Jan 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-9
+- Disable builtin hashes and use openssl backend for the same
+- Add a patch Support non fips algos in fips mode
 * Tue Nov 15 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-8
 - Fix CVE-2022-45061, CVE-2022-42919
 * Sun Aug 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-7
