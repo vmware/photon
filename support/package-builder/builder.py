@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from argparse import ArgumentParser
 import os.path
@@ -14,6 +14,16 @@ from constants import constants
 from PackageManager import PackageManager
 from SpecData import SPECS
 from PackageInfo import PackageInfo
+from urllib.parse import urlparse
+
+
+def url_validator(url):
+    try:
+        res = urlparse(url)
+        return all([res.scheme, res.netloc])
+    except:
+        return False
+
 
 def main():
     parser = ArgumentParser()
@@ -145,7 +155,6 @@ def main():
     get_packages_with_build_options(options.pkgBuildOptionFile)
 
     try:
-
         constants.setSpecPath(options.specPath)
         constants.setSourcePath(options.sourcePath)
         constants.setRpmPath(options.rpmPath)
@@ -159,7 +168,16 @@ def main():
         constants.setPrevPublishRPMRepo(options.publishRPMSPath)
         constants.setPrevPublishXRPMRepo(options.publishXRPMSPath)
         constants.setBuildRootPath(options.buildRootPath)
-        constants.setPullSourcesURL(get_baseurl(options.pullsourcesConfig))
+
+        src_url = options.pullsourcesConfig
+        if not url_validator(src_url) and os.path.exists(src_url):
+            # TODO: can be removed in future
+            constants.setPullSourcesURL(get_baseurl(src_url))
+        else:
+            if not url_validator(src_url):
+                raise Exception(f"Invalid pull-sources-config url {src_url}")
+            constants.setPullSourcesURL(src_url)
+
         constants.setInputRPMSPath(options.inputRPMSPath)
         constants.setRPMCheck(options.rpmCheck)
         constants.setRpmCheckStopOnError(options.rpmCheckStopOnError)
@@ -234,7 +252,7 @@ def get_packages_with_build_options(pkg_build_options_file):
 def get_baseurl(conf_file):
     with open(conf_file) as jsonFile:
         config = json.load(jsonFile)
-    return config['baseurl']
+    return config["baseurl"]
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

@@ -39,10 +39,12 @@ PHOTON_GENERATE_OSS_FILES=$(PHOTON_PKG_BUILDER_DIR)/GenerateOSSFiles.py
 ifdef PHOTON_PULLSOURCES_CONFIG
 PHOTON_PULLSOURCES_CONFIG:=$(abspath $(PHOTON_PULLSOURCES_CONFIG))
 else
-PHOTON_PULLSOURCES_CONFIG?=$(PHOTON_PKG_BUILDER_DIR)/sources.conf
+PHOTON_PULLSOURCES_CONFIG?=https://packages.vmware.com/photon/photon_sources/1.0
 endif
 PHOTON_PULL_PUBLISH_RPMS=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pullpublishrpms.sh
-PHOTON_PULL_PUBLISH_X_RPMS=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pullpublishXrpms.sh
+PHOTON_PULL_PUBLISH_RPMS_CACHED=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pullpublishrpms-cached.sh
+PHOTON_PUBLISH_RPMS_URL?=https://packages.vmware.com/photon/photon_publish_rpms
+PHOTON_PUBLISH_X_RPMS_URL?=https://packages.vmware.com/photon/photon_publish_x_rpms
 PHOTON_IMAGE_BUILDER=$(PHOTON_IMAGE_BUILDER_DIR)/imagebuilder.py
 PHOTON_PKGINFO_FILE=$(PHOTON_STAGE)/pkg_info.json
 

@@ -4,24 +4,19 @@ PRGNAME=${0##*/}
 
 if [ $# -ne 3 ]; then
   echo "${PRGNAME}: Invalid input args."
-  echo "Usage: ${PRGNAME} <rpms-path> <rpms-url> <input-file>"
+  echo "Usage: ${PRGNAME} <rpms-path> <publish-cache> <input-file>"
   exit 1
 fi
 
 ARCH="$(uname -m)"
 
 RPMSPATHDIR="$1"
-RPMS_URL="$2"
+PUBLISHCACHE="$2"
 INPUTFILE="$3-${ARCH}"
-
-if ! curl --head --silent --fail "${RPMS_URL}" &>/dev/null; then
-  echo "ERROR: invalid URL: ${RPMS_URL}" 1>&2
-  exit 22 #EINVAL
-fi
 
 mkdir -p ${RPMSPATHDIR}/{${ARCH},noarch}
 
-sed "s|^|${RPMS_URL}/|g" ${INPUTFILE} | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --quiet --cut-dirs=2 -P ${RPMSPATHDIR}
+sed -e "s|^|${PUBLISHCACHE}/|g" ${INPUTFILE} | xargs -n 1 -P 10 cp -t ${RPMSPATHDIR}
 
 if ls ${RPMSPATHDIR}/*.${ARCH}.rpm &> /dev/null; then
   mv ${RPMSPATHDIR}/*.${ARCH}.rpm ${RPMSPATHDIR}/${ARCH}

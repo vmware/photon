@@ -544,24 +544,22 @@ sources-cached:
 publish-rpms:
 	@echo "Pulling toolchain rpms..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
+	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_URL) rpmfilelist
 
 publish-x-rpms:
 	@echo "Pulling X toolchain rpms..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
+	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_X_RPMS_URL) xrpmfilelist
 
 publish-rpms-cached:
 	@echo "Using cached toolchain rpms..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{$(ARCH),noarch} && \
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH)
+	$(PHOTON_PULL_PUBLISH_RPMS_CACHED) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH) rpmfilelist
 
 publish-x-rpms-cached:
 	@echo "Using cached X toolchain rpms..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{$(ARCH),noarch} && \
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
+	$(PHOTON_PULL_PUBLISH_RPMS_CACHED) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH) xrpmfilelist
 
 photon-stage:
 	@echo "Creating staging folder and subitems..."
