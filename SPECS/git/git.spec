@@ -1,14 +1,14 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.38.1
-Release:        2%{?dist}
+Version:        2.39.0
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=e62ca6f54f01d2e4ccffb5f94e8e5cd2f3e098b766d909c694a8daf4d00d5cdeb9cc5ff8e9bc55d888406f292ba99433d334d4da9689c0ce5d7299a3c67c90e0
+%define sha512  %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
 
 BuildRequires:  curl-devel
 BuildRequires:  python3
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 06 2023 Susant Sahani <ssahani@vmware.com> 2.39.0-1
+- Update version
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.38.1-2
 - Update release to compile with python 3.11
 * Tue Oct 25 2022 Nitesh Kumar <kunitesh@vmware.com> 2.38.1-1
