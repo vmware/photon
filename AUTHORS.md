@@ -1,9 +1,12 @@
 ### Project Manager
-* [Alexey Makhalov, @YustasSwamp](https://github.com/YustasSwamp)
 * [Vasavi Sirnapalli, @Vasavisirnapalli](https://github.com/Vasavisirnapalli)
+
+### Project Architect
+* [Alexey Makhalov, @YustasSwamp](https://github.com/YustasSwamp)
 
 ### Developers
 * [Ajay Kaher, @akaher](https://github.com/akaher)
+* [Alexey Makhalov, @YustasSwamp](https://github.com/YustasSwamp)
 * [Anish Swaminathan, @suezzelur](https://github.com/suezzelur)
 * [Ankit Jain, @jaankit](https://github.com/jaankit)
 * [Anmol Jain, @anmolja](https://github.com/anmolja)
