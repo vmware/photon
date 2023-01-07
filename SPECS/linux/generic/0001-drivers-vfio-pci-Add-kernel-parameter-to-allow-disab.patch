@@ -1,127 +1,30 @@
-From 56d3e4f5a3f852b89eca4ac66cee721cfe388ea8 Mon Sep 17 00:00:00 2001
+From c6dc406c5abdb46f9cbe7a57b912681c70379e82 Mon Sep 17 00:00:00 2001
 From: Todd Sabin <tsabin@vmware.com>
 Date: Wed, 23 Jun 2021 04:20:44 +0000
 Subject: [PATCH] drivers/vfio/pci: Add kernel parameter to allow disabling of
  pci resets
 
-Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
----
- drivers/vfio/pci/vfio_pci.c         | 59 +++++++++++++++++++++++------
- drivers/vfio/pci/vfio_pci_config.c  | 22 ++++++++---
- drivers/vfio/pci/vfio_pci_private.h |  2 +
- 3 files changed, 65 insertions(+), 18 deletions(-)
+Move the module parameter ("disable_resets") to the vfio_pci_core.ko
+module, since adding it to the vfio_pci.ko module results in the
+following circular dependency between the modules:
 
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 57ae8b46b836..6d8923939f98 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -64,6 +64,16 @@ static bool disable_denylist;
- module_param(disable_denylist, bool, 0444);
- MODULE_PARM_DESC(disable_denylist, "Disable use of device denylist. Disabling the denylist allows binding to devices with known errata that may lead to exploitable stability or security issues when accessed by untrusted users.");
- 
-+static bool disable_resets;
-+module_param(disable_resets, bool, S_IRUGO | S_IWUSR);
-+MODULE_PARM_DESC(disable_resets, "Disable the issuing of PCI resets");
-+
-+bool vfio_pci_resets_disabled(void)
-+{
-+	return disable_resets;
-+}
-+
-+
- static inline bool vfio_vga_disabled(void)
- {
- #ifdef CONFIG_VFIO_PCI_VGA
-@@ -325,11 +335,16 @@ static int vfio_pci_enable(struct vfio_pci_device *vdev)
- 	if (ret)
- 		return ret;
- 
--	/* If reset fails because of the device lock, fail this path entirely */
--	ret = pci_try_reset_function(pdev);
--	if (ret == -EAGAIN) {
--		pci_disable_device(pdev);
--		return ret;
-+	if (vfio_pci_resets_disabled()) {
-+		dev_info(&pdev->dev, "refusing to reset\n");
-+		ret = -EINVAL;
-+	} else {
-+		/* If reset fails because of the device lock, fail this path entirely */
-+		ret = pci_try_reset_function(pdev);
-+		if (ret == -EAGAIN) {
-+			pci_disable_device(pdev);
-+			return ret;
-+		}
- 	}
- 
- 	vdev->reset_works = !ret;
-@@ -496,13 +511,17 @@ static void vfio_pci_disable(struct vfio_pci_device *vdev)
- 	 * We can not use the "try" reset interface here, which will
- 	 * overwrite the previously restored configuration information.
- 	 */
--	if (vdev->reset_works && pci_cfg_access_trylock(pdev)) {
--		if (device_trylock(&pdev->dev)) {
--			if (!__pci_reset_function_locked(pdev))
--				vdev->needs_reset = false;
--			device_unlock(&pdev->dev);
-+	if (vfio_pci_resets_disabled()) {
-+		dev_info(&pdev->dev, "refusing reset on disable\n");
-+	} else {
-+		if (vdev->reset_works && pci_cfg_access_trylock(pdev)) {
-+			if (device_trylock(&pdev->dev)) {
-+				if (!__pci_reset_function_locked(pdev))
-+					vdev->needs_reset = false;
-+				device_unlock(&pdev->dev);
-+			}
-+			pci_cfg_access_unlock(pdev);
- 		}
--		pci_cfg_access_unlock(pdev);
- 	}
- 
- 	pci_restore_state(pdev);
-@@ -1084,6 +1103,12 @@ static long vfio_pci_ioctl(void *device_data,
- 		if (!vdev->reset_works)
- 			return -EINVAL;
- 
-+		if (vfio_pci_resets_disabled()) {
-+			pr_info("%s: refusing VFIO_DEVICE_RESET request\n",
-+				__func__);
-+			return -EINVAL;
-+		}
-+
- 		vfio_pci_zap_and_down_write_memory_lock(vdev);
- 		ret = pci_try_reset_function(vdev->pdev);
- 		up_write(&vdev->memory_lock);
-@@ -1180,6 +1205,12 @@ static long vfio_pci_ioctl(void *device_data,
- 		if (hdr.argsz < minsz || hdr.flags)
- 			return -EINVAL;
- 
-+		if (vfio_pci_resets_disabled()) {
-+			pr_info("%s: refusing VFIO_DEVICE_PCI_HOT_RESET request\n",
-+				__func__);
-+			return -EINVAL;
-+		}
-+
- 		/* Can we do a slot or bus reset or neither? */
- 		if (!pci_probe_reset_slot(vdev->pdev->slot))
- 			slot = true;
-@@ -2379,7 +2410,11 @@ static void vfio_pci_try_bus_reset(struct vfio_pci_device *vdev)
- 	for (i = 0; i < devs.cur_index; i++) {
- 		tmp = vfio_device_data(devs.devices[i]);
- 		if (tmp->needs_reset) {
--			ret = pci_reset_bus(vdev->pdev);
-+			if (vfio_pci_resets_disabled()) {
-+				pr_info("%s: refusing bus reset\n", __func__);
-+			} else {
-+				ret = pci_reset_bus(vdev->pdev);
-+			}
- 			break;
- 		}
- 	}
+depmod: ERROR: Cycle detected: vfio_pci_core -> vfio_pci ->
+vfio_pci_core
+depmod: ERROR: Found 2 modules in dependency cycles!
+
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/vfio/pci/vfio_pci_config.c | 22 ++++++++---
+ drivers/vfio/pci/vfio_pci_core.c   | 60 ++++++++++++++++++++++++------
+ include/linux/vfio_pci_core.h      |  2 +
+ 3 files changed, 67 insertions(+), 17 deletions(-)
+
 diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
-index 47f21a6ca7fe..5c5053478834 100644
+index 442d3ba4122b..59035a592602 100644
 --- a/drivers/vfio/pci/vfio_pci_config.c
 +++ b/drivers/vfio/pci/vfio_pci_config.c
-@@ -858,9 +858,14 @@ static int vfio_exp_config_write(struct vfio_pci_device *vdev, int pos,
+@@ -894,9 +894,14 @@ static int vfio_exp_config_write(struct vfio_pci_core_device *vdev, int pos,
  						 &cap);
  
  		if (!ret && (cap & PCI_EXP_DEVCAP_FLR)) {
@@ -139,7 +42,7 @@ index 47f21a6ca7fe..5c5053478834 100644
  		}
  	}
  
-@@ -940,9 +945,14 @@ static int vfio_af_config_write(struct vfio_pci_device *vdev, int pos,
+@@ -976,9 +981,14 @@ static int vfio_af_config_write(struct vfio_pci_core_device *vdev, int pos,
  						&cap);
  
  		if (!ret && (cap & PCI_AF_CAP_FLR) && (cap & PCI_AF_CAP_TP)) {
@@ -157,17 +60,130 @@ index 47f21a6ca7fe..5c5053478834 100644
  		}
  	}
  
-diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-index 5c90e560c5c7..dcaf0763e845 100644
---- a/drivers/vfio/pci/vfio_pci_private.h
-+++ b/drivers/vfio/pci/vfio_pci_private.h
-@@ -225,4 +225,6 @@ static inline int vfio_pci_info_zdev_add_caps(struct vfio_pci_device *vdev,
+diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+index c8d3b0450fb3..824a8cf4b37e 100644
+--- a/drivers/vfio/pci/vfio_pci_core.c
++++ b/drivers/vfio/pci/vfio_pci_core.c
+@@ -37,6 +37,15 @@ static bool nointxmask;
+ static bool disable_vga;
+ static bool disable_idle_d3;
+ 
++static bool disable_resets;
++module_param(disable_resets, bool, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(disable_resets, "Disable the issuing of PCI resets");
++
++bool vfio_pci_resets_disabled(void)
++{
++        return disable_resets;
++}
++
+ /* List of PF's that vfio_pci_core_sriov_configure() has been called on */
+ static DEFINE_MUTEX(vfio_pci_sriov_pfs_mutex);
+ static LIST_HEAD(vfio_pci_sriov_pfs);
+@@ -291,10 +300,15 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
+ 	if (ret)
+ 		goto out_power;
+ 
+-	/* If reset fails because of the device lock, fail this path entirely */
+-	ret = pci_try_reset_function(pdev);
+-	if (ret == -EAGAIN)
+-		goto out_disable_device;
++	if (vfio_pci_resets_disabled()) {
++		pci_info(pdev, "refusing to reset\n");
++		ret = -EINVAL;
++	} else {
++		/* If reset fails because of the device lock, fail this path entirely */
++		ret = pci_try_reset_function(pdev);
++		if (ret == -EAGAIN)
++			goto out_disable_device;
++	}
+ 
+ 	vdev->reset_works = !ret;
+ 	pci_save_state(pdev);
+@@ -455,10 +469,14 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+ 	 * We can not use the "try" reset interface here, which will
+ 	 * overwrite the previously restored configuration information.
+ 	 */
+-	if (vdev->reset_works && pci_dev_trylock(pdev)) {
+-		if (!__pci_reset_function_locked(pdev))
+-			vdev->needs_reset = false;
+-		pci_dev_unlock(pdev);
++	if (vfio_pci_resets_disabled()) {
++		pci_info(pdev, "refusing reset on disable\n");
++	} else {
++		if (vdev->reset_works && pci_dev_trylock(pdev)) {
++			if (!__pci_reset_function_locked(pdev))
++				vdev->needs_reset = false;
++			pci_dev_unlock(pdev);
++		}
+ 	}
+ 
+ 	pci_restore_state(pdev);
+@@ -958,6 +976,12 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
+ 		if (!vdev->reset_works)
+ 			return -EINVAL;
+ 
++		if (vfio_pci_resets_disabled()) {
++			pr_info("%s: refusing VFIO_DEVICE_RESET request\n",
++				__func__);
++			return -EINVAL;
++		}
++
+ 		vfio_pci_zap_and_down_write_memory_lock(vdev);
+ 
+ 		/*
+@@ -1066,6 +1090,12 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
+ 		if (hdr.argsz < minsz || hdr.flags)
+ 			return -EINVAL;
+ 
++		if (vfio_pci_resets_disabled()) {
++			pr_info("%s: refusing VFIO_DEVICE_PCI_HOT_RESET request\n",
++				__func__);
++			return -EINVAL;
++		}
++
+ 		/* Can we do a slot or bus reset or neither? */
+ 		if (!pci_probe_reset_slot(vdev->pdev->slot))
+ 			slot = true;
+@@ -2190,7 +2220,11 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+ 	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list)
+ 		vfio_pci_set_power_state(cur, PCI_D0);
+ 
+-	ret = pci_reset_bus(pdev);
++	if (vfio_pci_resets_disabled()) {
++		pr_info("%s: refusing bus reset\n", __func__);
++	} else {
++		ret = pci_reset_bus(pdev);
++	}
+ 
+ err_undo:
+ 	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list) {
+@@ -2250,8 +2284,12 @@ static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
+ 	if (!disable_idle_d3 && vfio_pci_dev_set_pm_runtime_get(dev_set))
+ 		return;
+ 
+-	if (!pci_reset_bus(pdev))
+-		reset_done = true;
++	if (vfio_pci_resets_disabled()) {
++		pr_info("%s: refusing bus reset\n", __func__);
++	} else {
++		if (!pci_reset_bus(pdev))
++			reset_done = true;
++	}
+ 
+ 	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list) {
+ 		if (reset_done)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index 5579ece4347b..103e03113d29 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -261,4 +261,6 @@ static inline bool vfio_pci_is_vga(struct pci_dev *pdev)
+ 	return (pdev->class >> 8) == PCI_CLASS_DISPLAY_VGA;
  }
- #endif
  
 +extern bool vfio_pci_resets_disabled(void);
 +
- #endif /* VFIO_PCI_PRIVATE_H */
+ #endif /* VFIO_PCI_CORE_H */
 -- 
-2.19.0
+2.25.1
 

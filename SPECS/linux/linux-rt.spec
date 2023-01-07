@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -80,12 +80,11 @@ Patch12: 6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 Patch13: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14: 6.0-0002-apparmor-af_unix-mediation.patch
 
-# TODO: Rework the following 2 patches for kernel 6.0
-# Allow PCI resets to be disabled from vfio_pci module
-#Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Allow PCI resets to be disabled from vfio_pci_core module
+Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
-#Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # VMW:
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -528,6 +527,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
+- Port patch to allow disabling PCI resets from vfio_pci driver to 6.0
+- Move the module parameter disable_resets from vfio_pci to
+- vfio_pci_core module, to make it work with kernel 6.0.
+- Re-enable 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.0.7-2
 - Bump up due to change in elfutils
 * Thu Dec 01 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-1

@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -100,8 +100,8 @@ Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Allow PCI resets to be disabled from vfio_pci module
-# TODO: Review: Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Allow PCI resets to be disabled from vfio_pci_core module
+Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
@@ -700,6 +700,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jan 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
+- Port patch to allow disabling PCI resets from vfio_pci driver to 6.0
+- Move the module parameter disable_resets from vfio_pci to
+- vfio_pci_core module, to make it work with kernel 6.0.
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.0.7-2
 - Bump up due to change in elfutils
 * Tue Dec 20 2022 Bo Gan <ganb@vmware.com> 6.0.7-1
