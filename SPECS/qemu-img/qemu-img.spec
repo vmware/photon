@@ -2,8 +2,8 @@
 
 Summary:        QEMU disk image utility
 Name:           qemu-img
-Version:        7.1.0
-Release:        2%{?dist}
+Version:        7.2.0
+Release:        1%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
 Group:          Development/Tools
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha512  qemu=c60c5ff8ec99b7552e485768908920658fdd8035ff7a6fa370fb6881957dc8b7e5f18ff1a8f49bd6aa22909ede2a7c084986d8244f12074ccd33ebe40a0c411f
+%define sha512  qemu=f3cfa00da739ba819a218d7e6e95c77fb79a8e0f487b024ddd281602e785249b81144595e3f8c746c32a4f5c4d1a88c6aebae3c162603edfbb50ae3722d7ed13
 
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
@@ -126,11 +126,11 @@ sh ../configure \
         --without-default-devices \
         --enable-tools
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd build
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install
 
 # Remove unnessary files
 find %{buildroot} \( -name '*.png' \
@@ -156,6 +156,8 @@ make %{?_smp_mflags} check
 %{_libexecdir}/qemu-bridge-helper
 
 %changelog
+* Sat Jan 07 2023 Susant Sahani <ssahani@vmware.com> 7.2.0-1
+- Version Bump
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 7.1.0-2
 - Update release to compile with python 3.11
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0-1
@@ -169,4 +171,4 @@ make %{?_smp_mflags} check
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
 - Automatic Version Bump
 * Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
-- Initial build.  First version
+- Initial build. First version
