@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        8.8.0
-Release:        4%{?dist}
+Version:        8.10.0
+Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha512 %{name}=868e49b369afe200c5af6e2cd0606de2eeebfa92523b5ad3c653203c8838d304bd0cdc5acfb3c4d4c33c0a87ab8e769b84cc62e3f06e055936c43573a23d7190
+%define sha512 %{name}=1d4006e909e185a89f9163e6d2309841f4086da65b9165c42eb512e2f6ae964749eeb72f74e86476768a09061e2e311cfcc31f4024b4ecbaba04cd3f5f5d849d
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl
@@ -203,6 +203,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/libvirt/schemas/*.rng
 
 %changelog
+* Sat Jan 07 2023 Susant Sahani <ssahani@vmware.com> 8.10.0-1
+- Version Bump
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.8.0-4
 - Bump release as a part of readline upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 8.8.0-3
