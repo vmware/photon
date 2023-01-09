@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.25.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -126,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.25.0-3
+- Bump up due to change in elfutils
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.25.0-2
 - Update release to compile with python 3.11
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.25.0-1

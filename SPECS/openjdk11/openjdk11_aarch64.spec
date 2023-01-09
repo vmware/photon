@@ -6,7 +6,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -200,6 +200,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
+- Bump up due to change in elfutils
 * Tue Sep 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-3
 - Fix build with latest toolchain
 * Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-2

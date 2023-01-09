@@ -1,7 +1,7 @@
 Summary:        Libbpf library
 Name:           libbpf
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.0.1-2
+- Bump up due to change in elfutils
 * Fri Dec 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-1
 - Upgrade to v1.0.1
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.0-1

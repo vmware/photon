@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.5
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://openjdk.java.net
 Group:      Development/Tools
@@ -199,6 +199,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-2
+- Bump up due to change in elfutils
 * Fri Oct 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-1
 - Update to tag jdk-17.0.5-ga
 * Thu Oct 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4

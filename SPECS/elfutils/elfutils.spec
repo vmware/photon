@@ -3,7 +3,7 @@
 
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
-Version:        0.187
+Version:        0.188
 Release:        2%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
@@ -12,10 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=a9b9e32b503b8b50a62d4e4001097ed2721d3475232a6380e6b9853bd1647aec016440c0ca7ceb950daf1144f8db9814ab43cf33cc0ebef7fc91e9e775c9e874
-
-Obsoletes:      libelf
-Obsoletes:      libelf-devel
+%define sha512 %{name}=585551b2d937d19d1becfc2f28935db1dd1a3d25571a62f322b70ac8da98c1a741a55d070327705df6c3e2ee026652e0b9a3c733b050a0b0ec5f2fc75d5b74b5
 
 Requires:       %{name}-libelf = %{version}-%{release}
 Requires:       glibc >= 2.7
@@ -180,7 +177,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/elf_*.3*
 %{_mandir}/man3/debuginfod*.3*
-%{_mandir}/man8/debuginfod.8*
+%{_mandir}/man8/debuginfod*.8*
 %{_mandir}/man7/debuginfod-client-config.7.gz
 
 %files devel-static
@@ -207,6 +204,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.188-2
+- Bump up due to change in elfutils
+* Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.188-1
+- Automatic Version Bump
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.187-2
 - Add zstd to Requires & BuildRequires
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.187-1

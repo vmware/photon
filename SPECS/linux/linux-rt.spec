@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -528,6 +528,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.0.7-2
+- Bump up due to change in elfutils
 * Thu Dec 01 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-1
 - Update to version 6.0.7
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.142-2

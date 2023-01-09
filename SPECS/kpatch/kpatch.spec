@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -118,6 +118,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.9.7-2
+- Bump up due to change in elfutils
 * Thu Dec 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1
 - Update to latest version
 * Thu Aug 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-5

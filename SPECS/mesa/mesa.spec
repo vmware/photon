@@ -1,7 +1,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        22.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 22.2.2-3
+- Bump up due to change in elfutils
 * Wed Nov 30 2022 Shivani Agarwal <shivania2@vmware.com> 22.2.2-2
 - Enable libgbm
 * Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 22.2.2-1

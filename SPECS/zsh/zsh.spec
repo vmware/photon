@@ -1,7 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          MIT
 URL:              http://zsh.org
 Group:            System Environment/Shells
@@ -144,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.9-2
+- Bump up due to change in elfutils
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9-1
 - Upgrade to v5.9
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 5.8.1-1
