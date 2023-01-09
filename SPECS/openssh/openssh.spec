@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        8.8p1
-Release:        2%{?dist}
+Version:        9.1p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d44cd04445f9c8963513b0d5a7e8348985114ff2471e119a6e344498719ef40f09c61c354888a3be9dabcb5870e5cbe5d3aafbb861dfa1d82a4952f3d233a8df
+%define sha512  %{name}=a1f02c407f6b621b1d0817d1a0c9a6839b67e416c84f3b76c63003b119035b24c19a1564b22691d1152e1d2d55f4dc7eb1af2d2318751e431a99c4efa77edc70
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha512  blfs-systemd-units=e8214d2f05c74ee2dc40b357097de4bd6ea068538d215419d7fab37fad22a0ca5900cb50127808480274ef4e4c7c0c7492bcc1bd907e5c1049ee2c004c6beaf9
 Source2:        sshd.service
@@ -83,7 +83,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-maintype=man \
     --enable-strip=no \
     --with-kerberos5=%{_prefix} \
-    --with-sandbox=rlimit
+    --with-sandbox=seccomp_filter
 
 %make_build
 
@@ -198,6 +198,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Nov 29 2022 Srinidhi Rao <sshedi@vmware.com> 9.1p1-1
+- Update to 9.1p1
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-2
 - Fix binary path
 * Mon Nov 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.comm> 8.8p1-1
