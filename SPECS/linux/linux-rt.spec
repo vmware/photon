@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.269
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -203,6 +203,7 @@ Patch128: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch129: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch130: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch131: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch132: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch134: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
@@ -1220,6 +1221,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-2
+- update to latest ToT vmxnet3 driver
+- Include patch "vmxnet3: correctly report csum_level for encapsulated packet"
 * Mon Dec 19 2022 srinidhira0 <srinidhir@vmware.com> 4.19.269-1
 - Update to version 4.19.269
 * Thu Dec 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.268-2

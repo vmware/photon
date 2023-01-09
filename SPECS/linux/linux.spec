@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.269
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -203,6 +203,7 @@ Patch138: 0009-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch139: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch140: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch141: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch142: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
 Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
@@ -1095,6 +1096,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-3
+- update to latest ToT vmxnet3 driver
+- Include patch "vmxnet3: correctly report csum_level for encapsulated packet"
 * Wed Dec 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.269-2
 - Enable turbostat to work in the guest on VMware hypervisor.
 - Add support for Intel Ice Lake server CPUs to turbostat.
