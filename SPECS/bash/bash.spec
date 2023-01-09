@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
-Version:        5.1.16
-Release:        2%{?dist}
+Version:        5.2
+Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a32a343b6dde9a18eb6217602655f72c4098b0d90f04cf4e686fb21b81fc4ef26ade30f7226929fbb7c207cde34617dbad2c44f6103161d1141122bb31dc6c80
+%define sha512 %{name}=5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
 
 Source1: bash_completion
 
@@ -342,6 +342,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Mon Jan 09 2023 Susant Sahani <ssahani@vmware.com> 5.2-1
+- Update version
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.1.16-2
 - Bump release as a part of readline upgrade
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.16-1
@@ -384,7 +386,7 @@ fi
 - Fixing spec file to handle rpm upgrade scenario correctly
 * Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
 - Adding compile options to load bash.bashrc file and
-    loading source file during non-inetractive non-login shell
+  loading source file during non-inetractive non-login shell
 * Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
 - Updated to version 4.3.30
 * Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
