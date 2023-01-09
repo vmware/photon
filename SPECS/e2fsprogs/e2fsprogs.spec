@@ -1,14 +1,14 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.45.5
-Release:        3%{?dist}
+Version:        1.46.5
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=7c63cfe34319aa90de6f6cf76e17f40248f68802
+%define sha512  e2fsprogs=1a3496cb6ac575c7a5c523cc4eede39bc77c313a6d1fea2d303fc967792d75d94e42d7821e1a61b7513509320aae4a7170506decf5753ddbd1dda9d304cc392e
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 
@@ -34,7 +34,7 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of e2fsprogs
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 
 %build
@@ -53,8 +53,8 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} install-libs
+%make_install %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR=%{buildroot} install-libs
 chmod -v u+w %{buildroot}/%{_libdir}/{libcom_err,libe2p,libext2fs,libss}.a
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
@@ -129,41 +129,43 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-*   Tue Sep 01 2020 Tapas Kundu <tkundu@vmware.com> 1.45.5-3
--   Exclude .a file from libs
-*   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.45.5-2
--   Do not conflict with toybox >= 0.8.2-2
-*   Mon Jan 27 2020 Shreyas B. <shreyasb@vmware.com> 1.45.5-1
--   Upgrade to version 1.45.5.
-*   Fri Jan 24 2020 Shreyas B. <shreyasb@vmware.com> 1.44.6-1
--   Upgrade to version 1.44.6.
-*   Mon Nov 04 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.44.3-4
--   make devel depend on the version-release instead of version alone
-*   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
--   Fixes for CVE-2019-5094.
-*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
--   Add conflicts toybox.
-*   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1
--   Version update to fix compilation issue againts glibc-2.28.
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
--   Add lang package.
-*   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
--   Updated to version 1.43.4.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
--   Moved man3 to devel subpackage.
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
--   Create libs subpackage for krb5.
-*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
--   Use symlinks - save a diskspace.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
--   GA - Bump release of all rpms.
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
--   Updated to version 1.42.13.
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
--   Edit post script.
-*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
--   Handled locale files with macro find_lang.
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
--   Update according to UsrMove.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
--   Initial build First version.
+* Mon Jan 09 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.46.5-1
+- Upgrade to latest version
+* Tue Sep 01 2020 Tapas Kundu <tkundu@vmware.com> 1.45.5-3
+- Exclude .a file from libs
+* Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.45.5-2
+- Do not conflict with toybox >= 0.8.2-2
+* Mon Jan 27 2020 Shreyas B. <shreyasb@vmware.com> 1.45.5-1
+- Upgrade to version 1.45.5.
+* Fri Jan 24 2020 Shreyas B. <shreyasb@vmware.com> 1.44.6-1
+- Upgrade to version 1.44.6.
+* Mon Nov 04 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.44.3-4
+- make devel depend on the version-release instead of version alone
+* Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
+- Fixes for CVE-2019-5094.
+* Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
+- Add conflicts toybox.
+* Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1
+- Version update to fix compilation issue againts glibc-2.28.
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
+- Add lang package.
+* Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
+- Updated to version 1.43.4.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
+- Moved man3 to devel subpackage.
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
+- Create libs subpackage for krb5.
+* Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
+- Use symlinks - save a diskspace.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
+- GA - Bump release of all rpms.
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
+- Updated to version 1.42.13.
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
+- Edit post script.
+* Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
+- Handled locale files with macro find_lang.
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
+- Update according to UsrMove.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
+- Initial build First version.
