@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.2.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -27,11 +27,15 @@ BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
 BuildRequires:  libtiff-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  fontconfig-devel
 
 Requires:       libpng
 Requires:       libwebp
 Requires:       libtiff
 Requires:       libjpeg-turbo
+Requires:       freetype2
+Requires:       fontconfig
 Provides:       pkgconfig(libgd)
 
 %description
@@ -63,13 +67,15 @@ cp libgd-tests/bug00383.gd2 tests/gd2/
 %build
 # To use the system installed automake latest version instead of given version in source
 autoreconf -fi
-%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+%configure --with-webp --with-tiff --with-jpeg --with-png --with-freetype --with-fontconfig --disable-werror --disable-static
 make %{?_smp_mflags}
 %install
 %make_install
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} -k check
+%endif
 
 %files
 %defattr(-,root,root)
@@ -82,6 +88,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri Jan 27 2023 Harinadh D <hdommaraju@vmware.com> 2.2.5-14
+- Build with freetype and fontconfig
 * Thu Jan 12 2023 Anmol Jain <anmolja@vmware.com> 2.2.5-13
 - Version bump up to use libtiff 4.5.0
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.5-12

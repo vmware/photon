@@ -1,0 +1,16 @@
+From: Harinadh D <hdommaraju@vmware.com>
+Date: Fri, 03 Feb 2023 19:32:40 +0530
+Subject: [PATCH] remove dot(graphviz) from build dependency 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 313092a..5f5b722 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -338,7 +338,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${URIPARSER_EXTRA_COMPILE_FLAGS}")
+ # Doxygen API documentation
+ #
+ if(URIPARSER_BUILD_DOCS)
+-    find_package(Doxygen REQUIRED dot doxygen)
++    find_package(Doxygen REQUIRED doxygen)
+ 
+     set(QHG_LOCATION "" CACHE FILEPATH "Path to qhelpgenerator program (default: auto-detect)")
+     if(NOT QHG_LOCATION)

@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index 2503d4b..df6742f 100755
+--- a/configure
++++ b/configure
+@@ -20663,7 +20663,7 @@ fi
+ NEEDED="xau >= 0.99.2"
+ case $host_os in
+ linux*) ;;
+-     *) NEEDED="$NEEDED pthread-stubs" ;;
++     *) NEEDED="$NEEDED " ;;
+ esac
+ 
+ pkg_failed=no
