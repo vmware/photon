@@ -22,7 +22,7 @@
         "linux_flavor": "linux"
     },
     "image_type": "ls1012afrwy",
-    "size": 512,
+    "size": 768,
     "artifacttype": "xz",
     "keeprawdisk": true
 }
