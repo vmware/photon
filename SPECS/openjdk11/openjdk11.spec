@@ -1,19 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 11.0
-%define subversion 12
-Summary:	OpenJDK
-Name:		openjdk11
-Version:	11.0.12
-Release:	4%{?dist}
-License:	GNU General Public License V2
-URL:		https://openjdk.java.net
-Group:		Development/Tools
-Vendor:		VMware, Inc.
+%define subversion 18
+Summary:        OpenJDK
+Name:           openjdk11
+Version:        11.0.18
+Release:        1%{?dist}
+License:        GNU General Public License V2
+URL:            https://openjdk.java.net
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha512 openjdk-11.0=1bc7878ccb73e495907c02718573b63c88f61581340e8038ab4f0abf6161ac355d7a1a420de4949192b7df951cd39a1d890f251cba4647d8fd425c72d92d0164
-Patch0:         CVE-2022-34169.patch
+Source0:        https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-11.0=10a48066ad1d2b627cc9be5c6e06a0deef7241f3b95b917b3bf86ffeb53ea043915e0eb7784ea244332d9c3941c8c5056c154e5aff4522b95aca8c8372c19474
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -52,7 +51,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%autosetup -p1 -n openjdk-%{version}
+%autosetup -p1 -n jdk11u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -87,8 +86,8 @@ make install
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
-cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+cp README.md LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 20000 \
@@ -149,7 +148,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %defattr(-,root,root)
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/ASSEMBLY_EXCEPTION
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/LICENSE
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/README
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/README.md
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
@@ -201,6 +200,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Tue Feb 14 2023 Mukul Sikka <msikka@vmware.com> 11.0.18-1
+- Updating to jdk-11.0.18-ga
 * Mon Nov 07 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
 - Add missing requires on libstdc++
 * Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
