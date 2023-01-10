@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -38,17 +38,17 @@ Source2:    initramfs.trigger
 Source4:    scriptlets.inc
 Source5:    check_for_config_applicability.inc
 
-%define i40e_version 2.15.9
+%define i40e_version 2.16.11
 Source6:    https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
+%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
 
-%define iavf_version 4.4.2
+%define iavf_version 4.5.3
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+%define sha512 iavf=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
 
-%define ice_version 1.8.3
+%define ice_version 1.9.11
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
+%define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -211,17 +211,18 @@ Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch1010: 0003-FIPS-broken-kattest.patch
 %endif
 
-#Patches for i40e driver
-Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
-Patch1501: 0001-Add-support-for-gettimex64-interface.patch
+# Patches for i40e v2.16.11 driver [1500..1509]
+Patch1500: i40e-v2.16.11-linux-rt-i40e-Fix-build-errors-on-kernel-6.0.y.patch
+Patch1501: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 
-#Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1512: no-aux-symvers.patch
+# Patches for iavf v4.5.3 driver [1510..1519]
+Patch1510: iavf-v4.5.3-linux-rt-iavf-Fix-build-errors-on-kernel-6.0.y.patch
+Patch1511: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1512: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 
-#Patches for ice driver
-Patch1513: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1514: no-aux-bus.patch
+# Patches for ice v1.9.11 driver [1520..1529]
+Patch1520: ice-v1.9.11-linux-rt-ice-Fix-build-errors-on-kernel-6.0.y.patch
+Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildArch:      x86_64
 
@@ -310,21 +311,19 @@ The Linux package contains the Linux kernel doc files
 %patch1010 -p1
 %endif
 
-#Patches for i40e driver
+# Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1500 -M1509
 popd
 
-#Patches for iavf driver
+# Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
-%patch1512 -p1
+%autopatch -p1 -m1510 -M1519
 popd
 
-#Patches for ice driver
+# Patches for ice driver
 pushd ../ice-%{ice_version}
-%patch1513 -p1
-%patch1514 -p1
+%autopatch -p1 -m1520 -M1529
 popd
 
 %build
@@ -363,29 +362,24 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="phot
 %endif
 
 %ifarch x86_64
-# TODO: Re-enable i40e, iavf and ice drivers after porting them to
-# kernel 6.0
-# # build i40e module
-# bldroot="${PWD}"
-# pushd ../i40e-%{i40e_version}
-# make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-# make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-# popd
-#
-# # build iavf module
-# bldroot="${PWD}"
-# pushd ../iavf-%{iavf_version}
-# make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-# make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-# popd
-#
-# # build ice module
-# bldroot="${PWD}"
-# pushd ../ice-%{ice_version}
-# make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-# make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-# popd
+# build i40e module
+bldroot="${PWD}"
+pushd ../i40e-%{i40e_version}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+popd
 
+# build iavf module
+pushd ../iavf-%{iavf_version}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+popd
+
+# build ice module
+pushd ../ice-%{ice_version}
+make %{?_smp_mflags} -C src KSRC=${bldroot} clean
+make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+popd
 %endif
 
 %define __modules_install_post \
@@ -416,32 +410,24 @@ make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 
-# # install i40e module
-# bldroot="${PWD}"
-# pushd ../i40e-%{i40e_version}
-# make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-#     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-# popd
-#
-# # install iavf module
-# pushd ../iavf-%{iavf_version}
-# # The auxiliary.ko kernel module is a common dependency for both iavf
-# # and ice drivers.  Install it only once, along with the iavf driver
-# # and re-use it in the ice driver.
-# make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
-#     INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
-# install -Dvm 644 src/linux/auxiliary_bus.h \
-#     %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
-# popd
-#
-# # install ice module
-# pushd ../ice-%{ice_version}
-# # The auxiliary.ko kernel module is a common dependency for both iavf
-# # and ice drivers.  Install it only once, along with the iavf driver
-# # and re-use it in the ice driver.
-# make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-#     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-# popd
+# install i40e module
+bldroot="${PWD}"
+pushd ../i40e-%{i40e_version}
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install iavf module
+pushd ../iavf-%{iavf_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+pushd ../ice-%{ice_version}
+make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -517,14 +503,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
-# %{_sysconfdir}/modprobe.d/iavf.conf
+%{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
-# %exclude /lib/firmware/updates/intel/ice
+%exclude /lib/firmware/updates/intel/ice
 
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
-#%{_mandir}/*
+%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -532,6 +518,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-5
+- Update Intel drivers i40e to v2.16.11, iavf to v4.5.3 and ice to v1.9.11
 * Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-4
 - Reduce latency spikes when process using vfio-pci terminates,
 - by avoiding vfio-pci-core toggling io/memory decoding.

@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -51,17 +51,17 @@ Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
-%define i40e_version 2.15.9
+%define i40e_version 2.16.11
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
+%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
 
-%define iavf_version 4.4.2
+%define iavf_version 4.5.3
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+%define sha512 iavf=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
 
-%define ice_version 1.8.3
+%define ice_version 1.9.11
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
+%define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -191,20 +191,20 @@ Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 
-#Patches for efa [1400..1409]
+# Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
-#Patches for i40e driver [1500..1509]
-Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
-Patch1501: 0001-Add-support-for-gettimex64-interface.patch
+# Patches for i40e v2.16.11 driver [1500..1509]
+Patch1500: i40e-v2.16.11-linux-linux-esx-i40e-Fix-build-errors-on-kernel-6.0.patch
+Patch1501: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 
-#Patches for iavf driver [1510..1519]
-Patch1510: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1511: no-aux-symvers.patch
+# Patches for iavf v4.5.3 driver [1510..1519]
+Patch1510: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1511: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 
-#Patches for ice driver [1520..1529]
-Patch1520: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1521: no-aux-bus.patch
+# Patches for ice v1.9.11 driver [1520..1529]
+Patch1520: ice-v1.9.11-linux-linux-esx-ice-Fix-build-errors-on-kernel-6.0.y.patch
+Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -359,22 +359,22 @@ manipulation of eBPF programs and maps.
 # SEV on VMware
 %autopatch -p1 -m600 -M609
 
-#Patches for efa driver
+# Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
 %autopatch -p1 -m1400 -M1409
 popd
 
-#Patches for i40e driver
+# Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %autopatch -p1 -m1500 -M1509
 popd
 
-#Patches for iavf river
+# Patches for iavf driver
 pushd ../iavf-%{iavf_version}
 %autopatch -p1 -m1510 -M1519
 popd
 
-#Patches for ice driver
+# Patches for ice driver
 pushd ../ice-%{ice_version}
 %autopatch -p1 -m1520 -M1529
 popd
@@ -436,10 +436,8 @@ cd build
 %cmake_build
 popd
 
-%if 0
-# TODO: Re-enable i40e, iavf and ice drivers after porting them to
-# kernel 6.0
 # build i40e module
+bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
 make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
@@ -456,7 +454,6 @@ pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
 make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
-%endif
 %endif
 
 %define __modules_install_post \
@@ -497,7 +494,6 @@ pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
-%if 0
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
@@ -515,7 +511,6 @@ pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
-%endif
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -633,6 +628,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 %ifarch x86_64
+%{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -700,6 +696,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-4
+- Update Intel drivers i40e to v2.16.11, iavf to v4.5.3 and ice to v1.9.11
 * Fri Jan 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
 - Port patch to allow disabling PCI resets from vfio_pci driver to 6.0
 - Move the module parameter disable_resets from vfio_pci to

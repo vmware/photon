@@ -1,0 +1,117 @@
+From ffa6c683bbd217c3e790b3402a51f28802da0a16 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 12 Jan 2023 14:35:16 -0800
+Subject: [PATCH] linux, linux-esx, i40e: Fix build errors on kernel 6.0.y
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/i40e_ethtool.c     | 28 ++++++++++++++++++++++++++++
+ src/i40e_txrx.c        |  2 +-
+ src/kcompat_std_defs.h | 12 ++++++++++++
+ 3 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/src/i40e_ethtool.c b/src/i40e_ethtool.c
+index 38bc4cf..a1a560a 100644
+--- a/src/i40e_ethtool.c
++++ b/src/i40e_ethtool.c
+@@ -2253,8 +2253,16 @@ static void i40e_get_drvinfo(struct net_device *netdev,
+ #endif
+ }
+ 
++#ifdef HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++static void
++i40e_get_ringparam(struct net_device *netdev,
++		   struct ethtool_ringparam *ring,
++		   struct kernel_ethtool_ringparam __always_unused *ker,
++		   struct netlink_ext_ack __always_unused *extack)
++#else
+ static void i40e_get_ringparam(struct net_device *netdev,
+ 			       struct ethtool_ringparam *ring)
++#endif /* HAVE_ETHTOOL_EXTENDED_RINGPARAMS */
+ {
+ 	struct i40e_netdev_priv *np = netdev_priv(netdev);
+ 	struct i40e_pf *pf = np->vsi->back;
+@@ -2281,8 +2289,16 @@ static bool i40e_active_tx_ring_index(struct i40e_vsi *vsi, u16 index)
+ 	return index < vsi->num_queue_pairs;
+ }
+ 
++#ifdef HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++static int
++i40e_set_ringparam(struct net_device *netdev,
++		   struct ethtool_ringparam *ring,
++		   struct kernel_ethtool_ringparam __always_unused *ker,
++		   struct netlink_ext_ack __always_unused *extack)
++#else
+ static int i40e_set_ringparam(struct net_device *netdev,
+ 			      struct ethtool_ringparam *ring)
++#endif /* HAVE_ETHTOOL_EXTENDED_RINGPARAMS */
+ {
+ 	struct i40e_ring *tx_rings = NULL, *rx_rings = NULL;
+ 	struct i40e_netdev_priv *np = netdev_priv(netdev);
+@@ -3339,8 +3355,14 @@ static int __i40e_get_coalesce(struct net_device *netdev,
+  * modified per-queue settings, this only guarantees to represent queue 0. See
+  * __i40e_get_coalesce for more details.
+  **/
++#ifdef HAVE_ETHTOOL_COALESCE_EXTACK
++static int i40e_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
++			     struct kernel_ethtool_coalesce __maybe_unused *kec,
++			     struct netlink_ext_ack __maybe_unused *extack)
++#else
+ static int i40e_get_coalesce(struct net_device *netdev,
+ 			     struct ethtool_coalesce *ec)
++#endif /* HAVE_ETHTOOL_COALESCE_EXTACK */
+ {
+ 	return __i40e_get_coalesce(netdev, ec, -1);
+ }
+@@ -3562,8 +3584,14 @@ static int __i40e_set_coalesce(struct net_device *netdev,
+  *
+  * This will set each queue to the same coalesce settings.
+  **/
++#ifdef HAVE_ETHTOOL_COALESCE_EXTACK
++static int i40e_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
++			     struct kernel_ethtool_coalesce __maybe_unused *kec,
++			     struct netlink_ext_ack __maybe_unused *extack)
++#else
+ static int i40e_set_coalesce(struct net_device *netdev,
+ 			     struct ethtool_coalesce *ec)
++#endif /* HAVE_ETHTOOL_COALESCE_EXTACK */
+ {
+ 	return __i40e_set_coalesce(netdev, ec, -1);
+ }
+diff --git a/src/i40e_txrx.c b/src/i40e_txrx.c
+index 096f44f..8dbede0 100644
+--- a/src/i40e_txrx.c
++++ b/src/i40e_txrx.c
+@@ -2677,7 +2677,7 @@ static struct sk_buff *i40e_run_xdp(struct i40e_ring *rx_ring,
+ 			rx_ring->xdp_stats.xdp_redirect_fail++;
+ 		break;
+ 	default:
+-		bpf_warn_invalid_xdp_action(act);
++		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+ 		/* fallthrough -- abort and drop */
+ 	case XDP_ABORTED:
+ 		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 26ca803..0908e5f 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -92,4 +92,16 @@
+ #else /* >= 5.10.0 */
+ #endif /* 5.10.0 */
+ 
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0))
++#else /* >= 5.15.0 */
++#define HAVE_ETHTOOL_COALESCE_EXTACK
++#endif /* 5.15.0 */
++
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0))
++#else /* >=5.17.0*/
++#define HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++#endif /* 5.17.0 */
++
+ #endif /* _KCOMPAT_STD_DEFS_H_ */
+-- 
+2.25.1
+
