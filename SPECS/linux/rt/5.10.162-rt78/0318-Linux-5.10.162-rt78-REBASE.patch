@@ -1,0 +1,20 @@
+From 5f8d90ca13cadc644f9931b061c641ab87ddf570 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Mon, 16 Jan 2023 10:16:44 -0300
+Subject: [PATCH 318/318] Linux 5.10.162-rt78 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index d42c0971b041..30758e0b2242 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt66
++-rt78
+-- 
+2.39.0
+

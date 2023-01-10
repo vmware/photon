@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.159
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.162
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8427677bd7248abf560dba5402a395a51afb1e47cbeb4f34afddbdacc29b4c92648d651bfc04ec85f16b96b9b8d8d46dbbdec7d112c84f967ffc271633274542
+%define sha512 linux=941c7ddd7c27f49b4491e1c8fbf1efedcbac50b48ed8836ec91091ead69723f820a61bfda795378dcc728a782d2206189903333e83e255b723eec01157bbb0bb
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 %define ena_version 2.4.0
@@ -831,6 +831,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
+- Update to version 5.10.162
 * Thu Jan 12 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.159-4
 - Introduce fips=2 and alg_request_report cmdline parameters
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.159-3
