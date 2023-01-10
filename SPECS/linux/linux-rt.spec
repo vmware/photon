@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -85,6 +85,11 @@ Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+# Remove unnecessary io/memory decoding disabling/enabling.
+# Toggling decoding settings (command register/bar) could introduce
+# latency spikes across all vcpus due to nested pagetable
+# synchronization.
+Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
 # VMW:
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -285,7 +290,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M22
+%autopatch -p1 -m0 -M23
 
 #VMW
 %autopatch -p1 -m55 -M57
@@ -527,6 +532,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-4
+- Reduce latency spikes when process using vfio-pci terminates,
+- by avoiding vfio-pci-core toggling io/memory decoding.
 * Fri Jan 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
 - Port patch to allow disabling PCI resets from vfio_pci driver to 6.0
 - Move the module parameter disable_resets from vfio_pci to
