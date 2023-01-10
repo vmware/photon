@@ -4,16 +4,16 @@
 
 Summary:        OpenJDK
 Name:           openjdk17
-Version:        17.0.5
-Release:        3%{?dist}
+Version:        17.0.6
+Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.java.net/download/openjdk/jdk/jdk17/openjdk-%{version}.tar.gz
-%define sha512 openjdk-17.0=9521a700f2f850109fb7069ac892767764081a4215b1ed09e8c783a73835bab7f1f24969e228dba9313f373529a194281d9dd648345ff808b11b74fba5c9f4a7
+Source0:    https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-17=7fa47285fb1776802dc35352bfe64d6b376cbc73d7b72ef7d5c8ad41c181d8aa9dc6fb392fe3b1c799974765d40c03a6643ad6afeb3ddc9ab45e546b747ebb3c
 
 BuildArch:      aarch64
 BuildRequires:  pcre-devel
@@ -55,7 +55,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%autosetup -p1 -n openjdk-%{version}
+%autosetup -p1 -n jdk17u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -199,6 +199,8 @@ rm -rf %{buildroot}/* \
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Feb 20 2023 Mukul Sikka <msikka@vmware.com> 17.0.6-1
+- changing source name convention from openjdk-VERSION to jdk-VERSION
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.5-3
 - Bump version as a part of icu upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-2
