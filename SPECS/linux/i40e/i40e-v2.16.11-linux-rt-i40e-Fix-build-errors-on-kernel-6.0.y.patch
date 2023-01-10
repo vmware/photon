@@ -1,0 +1,250 @@
+From 0a5d0dd6c61d7ea24e1c98aebbed41514b3fcb04 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Tue, 10 Jan 2023 17:29:04 -0800
+Subject: [PATCH] linux-rt, i40e: Fix build errors on kernel 6.0.y
+
+Commit 4d213ee396a6 ("u64_stat: Remove the obsolete fetch_irq()
+variants") in upstream PREEMPT_RT kernel deprecated
+u64_stats_fetch_begin_irq() and u64_stats_fetch_retry_irq() and
+converted all call-sites to use u64_stats_fetch_begin() and
+u64_stats_fetch_retry() instead. Do the same in the i40e driver.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/i40e_ethtool.c       | 28 ++++++++++++++++++++++++++++
+ src/i40e_ethtool_stats.h | 16 ++++++++--------
+ src/i40e_main.c          | 16 ++++++++--------
+ src/i40e_txrx.c          |  2 +-
+ src/kcompat_std_defs.h   | 12 ++++++++++++
+ 5 files changed, 57 insertions(+), 17 deletions(-)
+
+diff --git a/src/i40e_ethtool.c b/src/i40e_ethtool.c
+index 38bc4cf..a1a560a 100644
+--- a/src/i40e_ethtool.c
++++ b/src/i40e_ethtool.c
+@@ -2253,8 +2253,16 @@ static void i40e_get_drvinfo(struct net_device *netdev,
+ #endif
+ }
+ 
++#ifdef HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++static void
++i40e_get_ringparam(struct net_device *netdev,
++		   struct ethtool_ringparam *ring,
++		   struct kernel_ethtool_ringparam __always_unused *ker,
++		   struct netlink_ext_ack __always_unused *extack)
++#else
+ static void i40e_get_ringparam(struct net_device *netdev,
+ 			       struct ethtool_ringparam *ring)
++#endif /* HAVE_ETHTOOL_EXTENDED_RINGPARAMS */
+ {
+ 	struct i40e_netdev_priv *np = netdev_priv(netdev);
+ 	struct i40e_pf *pf = np->vsi->back;
+@@ -2281,8 +2289,16 @@ static bool i40e_active_tx_ring_index(struct i40e_vsi *vsi, u16 index)
+ 	return index < vsi->num_queue_pairs;
+ }
+ 
++#ifdef HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++static int
++i40e_set_ringparam(struct net_device *netdev,
++		   struct ethtool_ringparam *ring,
++		   struct kernel_ethtool_ringparam __always_unused *ker,
++		   struct netlink_ext_ack __always_unused *extack)
++#else
+ static int i40e_set_ringparam(struct net_device *netdev,
+ 			      struct ethtool_ringparam *ring)
++#endif /* HAVE_ETHTOOL_EXTENDED_RINGPARAMS */
+ {
+ 	struct i40e_ring *tx_rings = NULL, *rx_rings = NULL;
+ 	struct i40e_netdev_priv *np = netdev_priv(netdev);
+@@ -3339,8 +3355,14 @@ static int __i40e_get_coalesce(struct net_device *netdev,
+  * modified per-queue settings, this only guarantees to represent queue 0. See
+  * __i40e_get_coalesce for more details.
+  **/
++#ifdef HAVE_ETHTOOL_COALESCE_EXTACK
++static int i40e_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
++			     struct kernel_ethtool_coalesce __maybe_unused *kec,
++			     struct netlink_ext_ack __maybe_unused *extack)
++#else
+ static int i40e_get_coalesce(struct net_device *netdev,
+ 			     struct ethtool_coalesce *ec)
++#endif /* HAVE_ETHTOOL_COALESCE_EXTACK */
+ {
+ 	return __i40e_get_coalesce(netdev, ec, -1);
+ }
+@@ -3562,8 +3584,14 @@ static int __i40e_set_coalesce(struct net_device *netdev,
+  *
+  * This will set each queue to the same coalesce settings.
+  **/
++#ifdef HAVE_ETHTOOL_COALESCE_EXTACK
++static int i40e_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
++			     struct kernel_ethtool_coalesce __maybe_unused *kec,
++			     struct netlink_ext_ack __maybe_unused *extack)
++#else
+ static int i40e_set_coalesce(struct net_device *netdev,
+ 			     struct ethtool_coalesce *ec)
++#endif /* HAVE_ETHTOOL_COALESCE_EXTACK */
+ {
+ 	return __i40e_set_coalesce(netdev, ec, -1);
+ }
+diff --git a/src/i40e_ethtool_stats.h b/src/i40e_ethtool_stats.h
+index 981b20e..8258b3d 100644
+--- a/src/i40e_ethtool_stats.h
++++ b/src/i40e_ethtool_stats.h
+@@ -165,7 +165,7 @@ __i40e_add_ethtool_stats(u64 **data, void *pointer,
+  * @ring: the ring to copy
+  *
+  * Queue statistics must be copied while protected by
+- * u64_stats_fetch_begin_irq, so we can't directly use i40e_add_ethtool_stats.
++ * u64_stats_fetch_begin, so we can't directly use i40e_add_ethtool_stats.
+  * Assumes that queue stats are defined in i40e_gstrings_queue_stats. If the
+  * ring pointer is null, zero out the queue stat values and update the data
+  * pointer. Otherwise safely copy the stats from the ring into the supplied
+@@ -185,15 +185,15 @@ i40e_add_queue_stats(u64 **data, struct i40e_ring *ring)
+ 
+ 	/* To avoid invalid statistics values, ensure that we keep retrying
+ 	 * the copy until we get a consistent value according to
+-	 * u64_stats_fetch_retry_irq. But first, make sure our ring is
++	 * u64_stats_fetch_retry. But first, make sure our ring is
+ 	 * non-null before attempting to access its syncp.
+ 	 */
+ #ifdef HAVE_NDO_GET_STATS64
+ 	do {
+-		start = !ring ? 0 : u64_stats_fetch_begin_irq(&ring->syncp);
++		start = !ring ? 0 : u64_stats_fetch_begin(&ring->syncp);
+ 		for (i = 0; i < size; i++)
+ 			i40e_add_one_ethtool_stat(&(*data)[i], ring, &stats[i]);
+-	} while (ring && u64_stats_fetch_retry_irq(&ring->syncp, start));
++	} while (ring && u64_stats_fetch_retry(&ring->syncp, start));
+ #else
+ 	for (i = 0; i < size; i++)
+ 		i40e_add_one_ethtool_stat(&(*data)[i], ring, &stats[i]);
+@@ -210,7 +210,7 @@ i40e_add_queue_stats(u64 **data, struct i40e_ring *ring)
+  * @rx_ring: the rx ring to copy
+  *
+  * RX queue XDP statistics must be copied while protected by
+- * u64_stats_fetch_begin_irq, so we can't directly use i40e_add_ethtool_stats.
++ * u64_stats_fetch_begin, so we can't directly use i40e_add_ethtool_stats.
+  * Assumes that queue stats are defined in i40e_gstrings_rx_queue_xdp_stats. If
+  * the ring pointer is null, zero out the queue stat values and update the data
+  * pointer. Otherwise safely copy the stats from the ring into the supplied
+@@ -231,20 +231,20 @@ i40e_add_rx_queue_xdp_stats(u64 **data, struct i40e_ring *rx_ring)
+ 
+ 	/* To avoid invalid statistics values, ensure that we keep retrying
+ 	 * the copy until we get a consistent value according to
+-	 * u64_stats_fetch_retry_irq. But first, make sure our ring is
++	 * u64_stats_fetch_retry. But first, make sure our ring is
+ 	 * non-null before attempting to access its syncp.
+ 	 */
+ #ifdef HAVE_NDO_GET_STATS64
+ 	do {
+ 		start = !rx_ring ? 0 :
+-			u64_stats_fetch_begin_irq(&rx_ring->syncp);
++			u64_stats_fetch_begin(&rx_ring->syncp);
+ #endif
+ 	for (i = 0; i < xdp_size; i++) {
+ 		i40e_add_one_ethtool_stat(&(*data)[i], rx_ring,
+ 					  &xdp_stats[i]);
+ 	}
+ #ifdef HAVE_NDO_GET_STATS64
+-	} while (rx_ring && u64_stats_fetch_retry_irq(&rx_ring->syncp, start));
++	} while (rx_ring && u64_stats_fetch_retry(&rx_ring->syncp, start));
+ #endif
+ 
+ 	/* Once we successfully copy the stats in, update the data pointer */
+diff --git a/src/i40e_main.c b/src/i40e_main.c
+index 366c67e..b3851fb 100644
+--- a/src/i40e_main.c
++++ b/src/i40e_main.c
+@@ -457,10 +457,10 @@ static void i40e_get_netdev_stats_struct_tx(struct i40e_ring *ring,
+ 	unsigned int start;
+ 
+ 	do {
+-		start = u64_stats_fetch_begin_irq(&ring->syncp);
++		start = u64_stats_fetch_begin(&ring->syncp);
+ 		packets = ring->stats.packets;
+ 		bytes   = ring->stats.bytes;
+-	} while (u64_stats_fetch_retry_irq(&ring->syncp, start));
++	} while (u64_stats_fetch_retry(&ring->syncp, start));
+ 
+ 	stats->tx_packets += packets;
+ 	stats->tx_bytes   += bytes;
+@@ -516,10 +516,10 @@ static struct rtnl_link_stats64 *i40e_get_netdev_stats_struct(
+ 		rx_ring = &tx_ring[1];
+ 
+ 		do {
+-			start = u64_stats_fetch_begin_irq(&rx_ring->syncp);
++			start = u64_stats_fetch_begin(&rx_ring->syncp);
+ 			packets = rx_ring->stats.packets;
+ 			bytes   = rx_ring->stats.bytes;
+-		} while (u64_stats_fetch_retry_irq(&rx_ring->syncp, start));
++		} while (u64_stats_fetch_retry(&rx_ring->syncp, start));
+ 
+ 		stats->rx_packets += packets;
+ 		stats->rx_bytes   += bytes;
+@@ -907,12 +907,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
+ 
+ #ifdef HAVE_NDO_GET_STATS64
+ 		do {
+-			start = u64_stats_fetch_begin_irq(&p->syncp);
++			start = u64_stats_fetch_begin(&p->syncp);
+ #endif
+ 			packets = p->stats.packets;
+ 			bytes = p->stats.bytes;
+ #ifdef HAVE_NDO_GET_STATS64
+-		} while (u64_stats_fetch_retry_irq(&p->syncp, start));
++		} while (u64_stats_fetch_retry(&p->syncp, start));
+ #endif
+ 		tx_b += bytes;
+ 		tx_p += packets;
+@@ -925,12 +925,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
+ 		p = &p[1];
+ #ifdef HAVE_NDO_GET_STATS64
+ 		do {
+-			start = u64_stats_fetch_begin_irq(&p->syncp);
++			start = u64_stats_fetch_begin(&p->syncp);
+ #endif
+ 			packets = p->stats.packets;
+ 			bytes = p->stats.bytes;
+ #ifdef HAVE_NDO_GET_STATS64
+-		} while (u64_stats_fetch_retry_irq(&p->syncp, start));
++		} while (u64_stats_fetch_retry(&p->syncp, start));
+ #endif
+ 		rx_b += bytes;
+ 		rx_p += packets;
+diff --git a/src/i40e_txrx.c b/src/i40e_txrx.c
+index 096f44f..8dbede0 100644
+--- a/src/i40e_txrx.c
++++ b/src/i40e_txrx.c
+@@ -2677,7 +2677,7 @@ static struct sk_buff *i40e_run_xdp(struct i40e_ring *rx_ring,
+ 			rx_ring->xdp_stats.xdp_redirect_fail++;
+ 		break;
+ 	default:
+-		bpf_warn_invalid_xdp_action(act);
++		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+ 		/* fallthrough -- abort and drop */
+ 	case XDP_ABORTED:
+ 		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 26ca803..0908e5f 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -92,4 +92,16 @@
+ #else /* >= 5.10.0 */
+ #endif /* 5.10.0 */
+ 
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0))
++#else /* >= 5.15.0 */
++#define HAVE_ETHTOOL_COALESCE_EXTACK
++#endif /* 5.15.0 */
++
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0))
++#else /* >=5.17.0*/
++#define HAVE_ETHTOOL_EXTENDED_RINGPARAMS
++#endif /* 5.17.0 */
++
+ #endif /* _KCOMPAT_STD_DEFS_H_ */
+-- 
+2.25.1
+
