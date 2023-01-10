@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       11%{?dist}
+Release:       12%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -25,6 +25,7 @@ Patch10:       0011-photon-installer-fixes-remove-photon_release_version.patch
 Patch11:       0012-custompartition.py-support-xfs-and-btrfs-filesystem.patch
 Patch12:       0013-isoInstaller-dynamic-retry-mount-media-count.patch
 Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
+Patch14:       0015-Add-support-for-customInitrd-and-customIso.patch
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
@@ -54,6 +55,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Tue Jan 10 2023 Piyush Gupta <gpiyush@vmware.com> 2.0-12
+- Add support for custom iso and initrd.
 * Wed Jan 04 2023 Tapas Kundu <tkundu@vmware.com> 2.0-11
 - Update dist version in 0009-installer-Removed-insecure_installation-and-photon_r.patch
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.0-10
