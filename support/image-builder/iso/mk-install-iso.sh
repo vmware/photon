@@ -7,7 +7,7 @@ SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
 
 # need to be changed when there is a python version change
-PY_VER="3.9"
+PY_VER="3.11"
 
 WORKINGDIR=$1
 shift 1
