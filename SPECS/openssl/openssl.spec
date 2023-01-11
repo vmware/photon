@@ -4,31 +4,35 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
-Source1:        rehash_ca_certificates.sh
-Source2:        provider_default.cnf
-%if %{?fips}
-Source3:        provider_fips.cnf
-Source4:        jitterentropy.c
-%endif
+Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
 
-Patch0:         openssl-providers.patch
+Source1: rehash_ca_certificates.sh
+Source2: provider_default.cnf
+%if %{?fips}
+Source3: provider_fips.cnf
+Source4: jitterentropy.c
+%endif
+Source5: distro.cnf
+Source6: user.cnf
+
+Patch0: openssl-cnf.patch
+Patch1: 0001-x509-fix-double-locking-problem.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 
-Requires:       bash
-Requires:       glibc
-Requires:       libgcc
+Requires: bash
+Requires: glibc
+Requires: libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -106,22 +110,24 @@ export MACHINE=%{_arch}
     enable-fips
 %endif
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} MANDIR=%{_mandir} MANSUFFIX=ssl install %{?_smp_mflags}
-install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
-install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl/
+%make_install %{?_smp_mflags}
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
+install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
 
 %if %{?fips}
-install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl/
+install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
 gcc -shared -Wall -O2 -g -fPIC -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
-%{SOURCE4} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
+    %{SOURCE4} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
 %endif
 
-%check
+install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
+install -p -m 644 -D %{SOURCE6} %{buildroot}%{_sysconfdir}/ssl
+
 %if 0%{?with_check}
+%check
 make tests %{?_smp_mflags}
 %endif
 
@@ -129,16 +135,18 @@ make tests %{?_smp_mflags}
 
 %if %{?fips}
 %post fips-provider
-# fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
-sed -i 's#.include /etc/ssl/provider_fips.cnf#.include /etc/ssl/provider_default.cnf#' /etc/ssl/openssl.cnf
-openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
-sed -i 's#.include /etc/ssl/provider_default.cnf#.include /etc/ssl/provider_fips.cnf#' /etc/ssl/openssl.cnf
+if [ "$1" = 2 ]; then
+  # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
+  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
+fi
+openssl fipsinstall -out %{_sysconfdir}/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
+sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
 
 %postun fips-provider
 # complete uninstall, not an upgrade
 if [ "$1" = 0 ]; then
-test -f /etc/ssl/fipsmodule.cnf && rm /etc/ssl/fipsmodule.cnf
-sed -i 's#.include /etc/ssl/provider_fips.cnf#.include /etc/ssl/provider_default.cnf#' /etc/ssl/openssl.cnf
+  rm -f %{_sysconfdir}/ssl/fipsmodule.cnf
+  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
 fi
 %endif
 
@@ -152,9 +160,11 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/ssl/ct_log_list.cnf.dist
 %{_sysconfdir}/ssl/openssl.cnf.dist
 %config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
+%config(noreplace) %{_sysconfdir}/ssl/user.cnf
 %{_sysconfdir}/ssl/provider_default.cnf
+%{_sysconfdir}/ssl/distro.cnf
 %{_sysconfdir}/ssl/private
-%{_bindir}/openssl
+%{_bindir}/%{name}
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
@@ -195,6 +205,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-2
+- Fix openssl.cnf
+- Keep default provider enabled & activated at all times
+- Fix CVE-2022-3996
 * Wed Nov 16 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-1
 - Upgrade toversion 3.0.7
 * Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-2

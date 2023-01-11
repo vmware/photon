@@ -22,15 +22,10 @@ seed = jitterentropy
 
 [provider_sect]
 jitterentropy = jitterentropy_sect
-base = base_sect
 fips = fips_sect
 
 [jitterentropy_sect]
 activate = 1
 
-[base_sect]
-activate = 1
-
 [alg_sect]
 default_properties = fips=yes
-

@@ -1,7 +1,8 @@
-diff -aur openssl-3.0.1.orig/apps/openssl.cnf openssl-3.0.1/apps/openssl.cnf
---- openssl-3.0.1.orig/apps/openssl.cnf	2021-12-14 08:16:25.000000000 -0800
-+++ openssl-3.0.1/apps/openssl.cnf	2022-02-22 18:55:55.503115243 -0800
-@@ -42,35 +42,12 @@
+diff --git a/apps/openssl.cnf b/apps/openssl.cnf
+index 03330e0..ad87aa7 100644
+--- a/apps/openssl.cnf
++++ b/apps/openssl.cnf
+@@ -42,35 +42,11 @@ tsa_policy1 = 1.2.3.4.1
  tsa_policy2 = 1.2.3.4.5.6
  tsa_policy3 = 1.2.3.4.5.7
  
@@ -33,13 +34,11 @@ diff -aur openssl-3.0.1.orig/apps/openssl.cnf openssl-3.0.1/apps/openssl.cnf
 -# problems including inability to remotely access the system.
 -[default_sect]
 -# activate = 1
--
-+# There are 2 configuration files that implement [openssl_init] configuration
-+# tree to automatically load corresponding providers.
-+# - /etc/ssl/provider_fips.cnf - for FIPS enabled mode, and
-+# - /etc/ssl/provider_default.cnf - for FIPS disabled mode
-+# Pick one of them for your needs or write your own [openssl_init] section.
-+.include /etc/ssl/provider_default.cnf
++# contains distro specific settings
++.include /etc/ssl/distro.cnf
+ 
++# contains user settings
++.include /etc/ssl/user.cnf
  
  ####################################################################
  [ ca ]

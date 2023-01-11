@@ -18,5 +18,4 @@ default = default_sect
 # OpenSSL may not work correctly which could lead to significant system
 # problems including inability to remotely access the system.
 [default_sect]
-# activate = 1
-
+activate = 1

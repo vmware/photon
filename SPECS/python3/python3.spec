@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -29,11 +29,11 @@ BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  util-linux-devel
 # cross compilation requires native python3 installed for ensurepip
-%define BuildRequiresNative python3-xml
+%define BuildRequiresNative %{name}-xml
 
 Requires:       ncurses
 Requires:       openssl
-Requires:       python3-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       readline
 Requires:       xz
 Provides:       python-sqlite
@@ -41,7 +41,7 @@ Provides:       python(abi)
 
 Provides:       /usr/bin/python
 Provides:       /bin/python
-Provides:       /bin/python3
+Provides:       /bin/%{name}
 
 %if 0%{?with_check}
 BuildRequires:  iana-etc
@@ -74,8 +74,8 @@ provides the libraries needed for python 3 applications.
 %package        xml
 Summary:        XML libraries for python3 runtime
 Group:          Applications/System
-Requires:       python3-libs = %{version}-%{release}
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    xml
 The python3-xml package provides the libraries needed for XML manipulation.
@@ -83,7 +83,7 @@ The python3-xml package provides the libraries needed for XML manipulation.
 %package        curses
 Summary:        Python module interface for NCurses Library
 Group:          Applications/System
-Requires:       python3-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       ncurses
 
 %description    curses
@@ -92,12 +92,12 @@ The python3-curses package provides interface for ncurses library.
 %package        devel
 Summary: The libraries and header files needed for Python development.
 Group:          Development/Libraries
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel >= 2.1.0
-Requires:       python3-macros = %{version}-%{release}
+Requires:       %{name}-macros = %{version}-%{release}
 # Needed here because of the migration of Makefile from -devel to the main
 # package
-Conflicts: python3 < %{version}-%{release}
+Conflicts: %{name} < %{version}-%{release}
 
 %description    devel
 The Python programming language's interpreter can be extended with
@@ -113,7 +113,7 @@ documentation.
 %package        tools
 Summary:        A collection of development tools included with Python.
 Group:          Development/Tools
-Requires:       python3 = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    tools
 The Python package includes several development tools that are used
@@ -123,8 +123,8 @@ to build python programs.
 Summary:        The PyPA recommended tool for installing Python packages.
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-xml = %{version}-%{release}
 
 %description    pip
 The PyPA recommended tool for installing Python packages.
@@ -133,8 +133,8 @@ The PyPA recommended tool for installing Python packages.
 Summary:        Download, build, install, upgrade, and uninstall Python packages.
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-xml = %{version}-%{release}
 
 Provides:       python%{VER}dist(setuptools)
 
@@ -144,7 +144,7 @@ setuptools is a collection of enhancements to the Python distutils that allow yo
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
-Requires: python3 = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description test
 The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
@@ -166,7 +166,7 @@ python-devel packages require it. So install a python-devel package instead.
 %build
 export OPT="${CFLAGS}"
 if [ %{_host} != %{_build} ]; then
-  ln -sfv python3 %{_bindir}/python
+  ln -sfv %{name} %{_bindir}/python
   export ac_cv_buggy_getaddrinfo=no
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
@@ -176,9 +176,11 @@ fi
     --enable-shared \
     --with-system-expat \
     --with-system-ffi \
-    --enable-optimizations \
     --with-lto \
-    --with-dbmliborder=gdbm:ndbm
+    --enable-optimizations \
+    --with-dbmliborder=gdbm:ndbm \
+    --with-ssl-default-suites=openssl \
+    --with-builtin-hashlib-hashes=blake2
 
 %make_build
 
@@ -211,7 +213,7 @@ make %{?_smp_mflags} test
 %endif
 
 %post
-ln -sfv %{_bindir}/python3 %{_bindir}/python
+ln -sfv %{_bindir}/%{name} %{_bindir}/python
 /sbin/ldconfig
 
 %postun
@@ -234,7 +236,7 @@ rm -rf %{buildroot}/*
 %defattr(-, root, root)
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
-%{_bindir}/python3
+%{_bindir}/%{name}
 %{_bindir}/python%{VER}
 %{_mandir}/*/*
 
@@ -281,12 +283,12 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/libpython%{VER}.so
 %{_libdir}/pkgconfig/python-%{VER}.pc
-%{_libdir}/pkgconfig/python3.pc
+%{_libdir}/pkgconfig/%{name}.pc
 %{_bindir}/pathfix.py
-%{_bindir}/python3-config
+%{_bindir}/%{name}-config
 %{_bindir}/python%{VER}-config
 %{_libdir}/pkgconfig/python-%{VER}-embed.pc
-%{_libdir}/pkgconfig/python3-embed.pc
+%{_libdir}/pkgconfig/%{name}-embed.pc
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %exclude %{_bindir}/2to3*
@@ -323,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Jan 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-5
+- Disable builtin hashes and use openssl backend for the same
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.11.0-4
 - bump release as part of sqlite update
 * Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 3.11.0-3
