@@ -6,12 +6,12 @@
 
 Summary:        Manages network configuration
 Name:           network-event-broker
-Version:        0.2.1
-Release:        4%{?dist}
+Version:        0.3
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d51fa2df334a94a3761479a3e0a175026d8e9f17c8dfaa7b61a44cbfc42e9c486b853699a80947fe122afe49d158277be2bc281c35d30b9f485e6a6625356989
+%define sha512  %{name}=3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -59,8 +59,8 @@ install -m 755 -d %{buildroot}%{_unitdir}
 
 install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/bin/network-broker
 
-install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker ${GOPATH}/src/github.com/%{name}/%{name}/conf/network-broker.toml
-install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{name}/units/network-broker.service
+install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker ${GOPATH}/src/github.com/%{name}/%{name}/distribution/network-broker.toml
+install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{name}/distribution/network-broker.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -100,6 +100,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+* Wed Jan 11 2023 Nitesh Kumar <kunitesh@vmware.com> 0.3-1
+- Version upgrade to v0.3
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-3
