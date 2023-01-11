@@ -3,15 +3,15 @@
 Summary:           The Xorg fonts.
 Name:              xorg-fonts
 Version:           7.7
-Release:           2%{?dist}
+Release:           3%{?dist}
 License:           MIT
 URL:               http://www.x.org
 Group:             Development/System
 Vendor:            VMware, Inc.
 Distribution:      Photon
 
-Source0: http://ftp.x.org/pub/individual/font/encodings-1.0.4.tar.bz2
-%define sha512 encodings-1.0.4.tar.bz2=838d1c9489e9880bf1982dc14d34a48b624b7bc2c0fffbf28e2c24e1546b0602357ca31afef100053481d6a18e357085ef74ac7a82261daa1ac1398bc1e05d17
+Source0: http://ftp.x.org/pub/individual/font/encodings-1.0.6.tar.gz
+%define sha512 encodings-1.0.6.tar.gz=3c05c0a8ffdbcf298441756f97b2fbdc81856b1624eb5631801b7706c4d3a45de53dc48c73348c458f3ec2dc8b7aa26e6481272b21f685d346690b2d9a55ce00
 
 Source1: http://ftp.x.org/pub/individual/font/font-adobe-100dpi-1.0.3.tar.bz2
 %define sha512 font-adobe-100dpi-1.0.3.tar.bz2=27ed98dcdbb9c174c7090cdd8fe230f7471d10b5dfc63e092640b5d0fc6ab351bc8ffa9a92bec1755f2780b3d9c1de3ad298c64b70a68b5e6879a8592ef32987
@@ -28,8 +28,8 @@ Source4: http://ftp.x.org/pub/individual/font/font-adobe-utopia-75dpi-1.0.4.tar.
 Source5: http://ftp.x.org/pub/individual/font/font-adobe-utopia-type1-1.0.4.tar.bz2
 %define sha512 font-adobe-utopia-type1-1.0.4.tar.bz2=53ff2ce7b17824a0eed1be6c3e3386e51983389f5623e732ac898c4e08769c8720f6d6b7c75b6455e050ec5dc390376747ca4cdb9f831a218f9dd5ee5edcd0d6
 
-Source6: http://ftp.x.org/pub/individual/font/font-alias-1.0.3.tar.bz2
-%define sha512 font-alias-1.0.3.tar.bz2=05abfef4615722d8cf3f21ab1118494522553a75427140d9753b3d312f404735c20766ceacc1b53f9e783ea25ec8f2f6bdb8696525a4962afe29f524ed8b6552
+Source6: http://ftp.x.org/pub/individual/font/font-alias-1.0.4.tar.bz2
+%define sha512 font-alias-1.0.4.tar.bz2=c67ac2ee344a601fcc09471580214b30c3fd6acc4800702840de44f0733e6d18b3faeec2fa3f4e2314025cc1724d7d6796ebaf620398fe350710182fd2c4b07d
 
 Source7: http://ftp.x.org/pub/individual/font/font-arabic-misc-1.0.3.tar.bz2
 %define sha512 font-arabic-misc-1.0.3.tar.bz2=46a416bf888afdb54f5dda6c9a7207dc069d14089ba14b262c60cb9ad427784c46e2a61b32a79f1d745e73ea657bbc36b48aa5d4bbd79f73a2d997b027ddfbc0
@@ -88,8 +88,8 @@ Source24: http://ftp.x.org/pub/individual/font/font-micro-misc-1.0.3.tar.bz2
 Source25: http://ftp.x.org/pub/individual/font/font-misc-cyrillic-1.0.3.tar.bz2
 %define sha512 font-misc-cyrillic-1.0.3.tar.bz2=75e49cdb633f7ce5b9612d5adb0a85471c8fde5d55e8ccd9302f79f01e99e78b02449642c2cf785289f58d833bfa62042fce4253093fb17c87471559d1f9bdbf
 
-Source26: http://ftp.x.org/pub/individual/font/font-misc-ethiopic-1.0.3.tar.bz2
-%define sha512 font-misc-ethiopic-1.0.3.tar.bz2=b3e3f7462f37216796730a894761c7d60d5ede0f51351997e6c3c92e3136c788a2710690f482d05ed1396a4b6be452e1f871febc7e5b7a1a67e43bcc1ec7c77d
+Source26: http://ftp.x.org/pub/individual/font/font-misc-ethiopic-1.0.4.tar.bz2
+%define sha512 font-misc-ethiopic-1.0.4.tar.bz2=4fed9ff3782746898c56dac199e9ca89356f4967779937049b9ff4ffad202317c023859f92d44b371dfa5485d5368ccad648e64b12cde0ed21f7d4aee5affcd5
 
 Source27: http://ftp.x.org/pub/individual/font/font-misc-meltho-1.0.3.tar.bz2
 %define sha512 font-misc-meltho-1.0.3.tar.bz2=3f42fe3e127f74259d50754f4bb6d2560cb32d810fecf663bd09fddb34829d29b48f3cbfaf43d02dab70b559afb2f806f321076f83450ff3871604345a0cdb56
@@ -160,6 +160,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-3
+- Upgrade encodings, font-alias, font-misc-ethiopic
 * Sat Dec 3 2022 Shivani Agarwal <shivania2@vmware.com> 7.7-2
 - Removed font-util source
 * Wed May 20 2015 Alexey Makhalov <amakhalov@vmware.com> 7.7-1
