@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -14,12 +14,15 @@ Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
 
 Source1: rehash_ca_certificates.sh
-
-%if 0%{?with_fips}
-Source2: sample-fips-enable-openssl.cnf
+Source2: provider_default.cnf
+%if %{?with_fips}
+Source3: provider_fips.cnf
 %endif
+Source4: distro.cnf
+Source5: user.cnf
 
-Patch0:         0001-x509-fix-double-locking-problem.patch
+Patch0: openssl-cnf.patch
+Patch1: 0001-x509-fix-double-locking-problem.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -109,7 +112,16 @@ export MACHINE=%{_arch}
 
 %install
 %make_install %{?_smp_mflags}
+
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
+install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
+
+%if %{?with_fips}
+install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
+%endif
+
+install -p -m 644 -D %{SOURCE4} %{buildroot}%{_sysconfdir}/ssl
+install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
 
 %if 0%{?with_check}
 %check
@@ -118,39 +130,21 @@ make tests %{?_smp_mflags}
 
 %ldconfig_scriptlets
 
-%if 0%{?with_fips}
+%if %{?with_fips}
 %post fips-provider
-OPENSSL_CFG='/etc/ssl/openssl.cnf'
-openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
-sed -i '/^\[provider_sect\]/ a fips = fips_sect' $OPENSSL_CFG
-sed -i '/^\[provider_sect\]/ a base = base_sect' $OPENSSL_CFG
-sed -i '\|default = default_sect|d' $OPENSSL_CFG
-
-if grep "/fipsmodule.cnf" $OPENSSL_CFG; then
-  sed -i '\|/fipsmodule.cnf|d' $OPENSSL_CFG
+if [ "$1" = 2 ]; then
+  # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
+  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
 fi
-
-sed -i '/.include fipsmodule.cnf/ a .include /etc/ssl/fipsmodule.cnf' $OPENSSL_CFG
-sed -i '/^fips = fips_sect/ a \[alg_sect\]' $OPENSSL_CFG
-sed -i '/^\[alg_sect\]/ a default_properties = fips=yes' $OPENSSL_CFG
-sed -i '/^fips = fips_sect/ a \[base_sect\]' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/ a activate = 1' $OPENSSL_CFG
-sed -i '/^providers = provider_sect/ a alg_section = alg_sect' $OPENSSL_CFG
+openssl fipsinstall -out %{_sysconfdir}/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
+sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
 
 %postun fips-provider
-OPENSSL_CFG='/etc/ssl/openssl.cnf'
-if [[ -f /etc/ssl/fipsmodule.cnf ]]; then
-    rm /etc/ssl/fipsmodule.cnf
+# complete uninstall, not an upgrade
+if [ "$1" = 0 ]; then
+  rm -f %{_sysconfdir}/ssl/fipsmodule.cnf
+  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
 fi
-sed -i '\|fips = fips_sect|d' $OPENSSL_CFG
-sed -i '\|base = base_sect|d' $OPENSSL_CFG
-sed -i '/^\[provider_sect\]/ a default = default_sect' $OPENSSL_CFG
-sed -i '\|alg_section = alg_sect|d' $OPENSSL_CFG
-sed -i '\|default_properties = fips=yes|d' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/{N;s/\n.*//;}' $OPENSSL_CFG
-sed -i '\|/etc/ssl/fipsmodule.cnf|d' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/d' $OPENSSL_CFG
-sed -i '/^\[alg_sect\]/d' $OPENSSL_CFG
 %endif
 
 %clean
@@ -161,10 +155,13 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/ssl/certs
 %{_sysconfdir}/ssl/ct_log_list.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf.dist
-%{_sysconfdir}/ssl/openssl.cnf.dist
-%{_sysconfdir}/ssl/openssl.cnf
+%{_sysconfdir}/ssl/%{name}.cnf.dist
+%config(noreplace) %{_sysconfdir}/ssl/%{name}.cnf
+%config(noreplace) %{_sysconfdir}/ssl/user.cnf
+%{_sysconfdir}/ssl/provider_default.cnf
+%{_sysconfdir}/ssl/distro.cnf
 %{_sysconfdir}/ssl/private
-%{_bindir}/openssl
+%{_bindir}/%{name}
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
@@ -173,6 +170,7 @@ rm -rf %{buildroot}/*
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
+%{_sysconfdir}/ssl/provider_fips.cnf
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 %endif
 
@@ -203,6 +201,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-3
+- Fix openssl.cnf
+- Keep default provider enabled & activated at all times
 * Wed Jan 04 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-2
 - Fix for CVE-2022-3996
 * Tue Nov 01 2022 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-1
