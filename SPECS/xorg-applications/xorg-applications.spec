@@ -1,7 +1,7 @@
 Summary:        The Xorg applications.
 Name:           xorg-applications
 Version:        7.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          Development/System
@@ -14,8 +14,8 @@ Source0: http://ftp.x.org/pub/individual/app/bdftopcf-1.1.tar.bz2
 Source1: http://ftp.x.org/pub/individual/app/mkfontdir-1.0.7.tar.bz2
 %define sha512 mkfontdir=96d1920565514f90621e18a87fb5a2db9e052d1bffc6552d9659e065a21e252ab98b4e62013755032b98ed6d8c3381eb75c3c8e02651766ee4791ca622dcef1f
 
-Source2: http://ftp.x.org/pub/individual/app/mkfontscale-1.1.2.tar.bz2
-%define sha512 mkfontscale=5c3331f66cd523afe95347aa36440655ba8fdbc716c5987a24ad624c1fbd718c4a8d67aa36330f6d5ab2eb5a6195a409a041954568c0a3375c0e2aeb6a955601
+Source2: http://ftp.x.org/pub/individual/app/mkfontscale-1.2.2.tar.gz
+%define sha512 mkfontscale=3cb40a6c04f817157507f05cf8641d5cc8cf7b858b87c13cc7fdd7cb15627f3cfb7bf5b344107baeea2348705cbf718e2bf9cd7d19a0978d9ffd5867edc5ee17
 
 BuildRequires:  libX11-devel
 BuildRequires:  libXfont2-devel
@@ -65,6 +65,8 @@ done
 %{_datadir}/*
 
 %changelog
+* Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-4
+- Updated mkfontscale
 * Fri Nov 18 2022 Shivani Agarwal <shivania2@vmware.com> 7.7-3
 - Added bdftopcf, mkfontdir, mkfontscale
 * Wed Nov 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.7-2
