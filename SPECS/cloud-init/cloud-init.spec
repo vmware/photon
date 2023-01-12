@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        22.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -155,6 +155,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-3
+- Add mount_default_fields in cloud.cfg
 * Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-2
 - Fix ifarch mishap
 * Fri Nov 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-1
