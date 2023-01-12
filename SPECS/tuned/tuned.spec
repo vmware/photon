@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -13,6 +13,9 @@ Source0: tuned-%{version}.tar.gz
 
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         tuned-fix-bug-in-sysctl-verify.patch
+Patch2:         bootloader-plugin-support-for-photon.patch
+Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
+Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
@@ -110,14 +113,16 @@ make test %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/tuned/tuned-main.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
+%config(noreplace) /boot/tuned.cfg
+%config(noreplace) %{_sysconfdir}/tuned/
 %{_libdir}/tmpfiles.d
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
 %dir /etc/tuned
+%dir /var/lib/tuned
 %{_mandir}/man5/tuned*
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
-%{_sysconfdir}/tuned
 %{_libdir}/tuned/
 %{_datadir}/doc
 %exclude %{_datadir}/icons/hicolor/scalable/apps/tuned.svg
@@ -141,6 +146,9 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Thu Jan 12 2023 Keerthana K <keerthanak@vmware.com> 2.19.0-5
+- Forward port patches from ph4
+- Add /var/lib/tuned to rpm
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.19.0-4
 - Update release to compile with python 3.11
 * Fri Dec 02 2022 Srinidhi Rao <srinidhir@vmware.com> 2.19.0-3
