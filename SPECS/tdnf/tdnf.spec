@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.4.5
-Release:        1%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -258,6 +258,10 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.4.5-3
+- bump release as part of sqlite update
+* Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.4.5-2
+- bump release as part of sqlite update
 * Thu Jan 05 2023 Oliver Kurth <okurth@vmware.com> 3.4.5-1
 - update to 3.4.5
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.4-2

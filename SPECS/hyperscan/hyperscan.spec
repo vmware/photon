@@ -1,6 +1,6 @@
 Name:           hyperscan
 Version:        5.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        High-performance regular expression matching library
 License:        BSD
 URL:            https://www.hyperscan.io
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/examples/*.c
 
 %changelog
+* Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 5.4.0-3
+- bump release as part of sqlite update
 * Thu Oct 20 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.4.0-2
 - Fix build with latest toolchain
 * Thu Jul 28 2022 Mukul Sikka <msikka@vmware.com> 5.4.0-1

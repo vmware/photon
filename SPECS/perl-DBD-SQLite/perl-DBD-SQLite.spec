@@ -3,7 +3,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.72
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -54,6 +54,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.72-2
+-   bump release as part of sqlite update
 *   Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.72-1
 -   Automatic Version Bump
 *   Wed Sep 23 2020 Piyush Gupta <gpiyush@vmware.com> 1.66-1
