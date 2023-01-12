@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
@@ -129,6 +129,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.78-3
+- bump release as part of sqlite update
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.78-2
 - Bump version as a part of sqlite upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.78-1

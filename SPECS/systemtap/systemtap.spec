@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -390,6 +390,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.8-6
+- bump release as part of sqlite update
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.8-5
 - Bump up due to change in elfutils
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-4
