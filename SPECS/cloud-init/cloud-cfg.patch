@@ -1,20 +1,47 @@
-From 37ebe5c83d6fbeec96bad96950f4528a95380aff Mon Sep 17 00:00:00 2001
+From 2b68423318e9939a127853de1fab3b7366b1485d Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 25 Aug 2021 19:14:01 +0530
 Subject: [PATCH] Add default DS list & few other changes to cloud.cfg
+
+Add mount_default_fields to avoid contention with systemd default
+services at random intervals.
 
 Comments in the file describe why they are needed
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- config/cloud.cfg.tmpl | 7 +++++++
- 1 file changed, 7 insertions(+)
+ config/cloud.cfg.tmpl | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 825deff4..8847bb7b 100644
+index 0f234a7d..e8d10a28 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -51,6 +51,8 @@ preserve_hostname: false
+@@ -35,7 +35,8 @@ disable_root: true
+ {% endif %}
+ 
+ {% if variant in ["almalinux", "alpine", "amazon", "cloudlinux", "eurolinux",
+-                  "fedora", "miraclelinux", "openEuler", "openmandriva", "rocky", "virtuozzo"] or is_rhel %}
++                  "fedora", "miraclelinux", "openEuler", "openmandriva",
++                  "photon", "rocky", "virtuozzo"] or is_rhel %}
+ {% if is_rhel %}
+ mount_default_fields: [~, ~, 'auto', 'defaults,nofail,x-systemd.requires=cloud-init.service,_netdev', '0', '2']
+ {% else %}
+@@ -44,10 +45,12 @@ mount_default_fields: [~, ~, 'auto', 'defaults,nofail', '0', '2']
+ {% if variant == "amazon" %}
+ resize_rootfs: noblock
+ {% endif %}
++{% if variant not in ["photon"] %}
+ resize_rootfs_tmp: /dev
+ ssh_pwauth:   false
+-
+ {% endif %}
++{% endif %}
++
+ # This will cause the set+update hostname module to not operate (if true)
+ preserve_hostname: false
+ 
+@@ -57,6 +60,8 @@ preserve_hostname: false
  # This should not be required, but leave it in place until the real cause of
  # not finding -any- datasources is resolved.
  datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
@@ -23,7 +50,7 @@ index 825deff4..8847bb7b 100644
  {% endif %}
  # Example datasource config
  # datasource:
-@@ -59,6 +61,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
+@@ -65,6 +70,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
  #      timeout: 5 # (defaults to 50 seconds)
  #      max_wait: 10 # (defaults to 120 seconds)
  
@@ -36,5 +63,5 @@ index 825deff4..8847bb7b 100644
  {% if variant == "amazon" %}
  # Amazon Linux relies on ec2-net-utils for network configuration
 -- 
-2.32.0
+2.25.1
 
