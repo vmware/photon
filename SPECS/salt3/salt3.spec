@@ -4,7 +4,7 @@
 
 Name:           salt3
 Version:        3005.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -34,7 +34,6 @@ BuildRequires:  systemd-devel
 BuildRequires:  python3-distro
 
 Requires:       pciutils
-Requires:       python3-backports_abc
 Requires:       python3-pycryptodomex
 Requires:       python3-jinja2
 Requires:       python3-msgpack
@@ -304,6 +303,8 @@ rm -rf %{buildroot}
 %{_bindir}/spm
 
 %changelog
+* Wed Jan 11 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3005.1-2
+- Remove python3-backports_abc from Requires
 * Tue Oct 04 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005.1-1
 - Update to version 3005.1
 * Tue Aug 23 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005-1
