@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -99,6 +99,13 @@ Requires: systemd-rpm-macros
 Requires: python3-macros
 Requires: dwz
 Requires: debugedit
+# toybox versions of find and xargs are not sufficient
+Requires: findutils
+Requires: patch
+Requires: bzip2
+Requires: tar
+Requires: gzip
+Requires: file
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -349,6 +356,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Jan 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.0-6
+- add tools needed to rpm-build requires
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.18.0-5
 - bump release as part of sqlite update
 * Tue Jan 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-4
