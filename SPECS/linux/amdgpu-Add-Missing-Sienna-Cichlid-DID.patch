@@ -1,0 +1,30 @@
+From d26bbbcc160f6d9feabed73dca62b9e8b86671b4 Mon Sep 17 00:00:00 2001
+From: Ori Messinger <Ori.Messinger@amd.com>
+Date: Fri, 29 Jan 2021 07:36:49 -0500
+Subject: amdgpu: Add Missing Sienna Cichlid DID
+
+The purpose of this patch is to add a missing device ID for Sienna Cichlid.
+The missing ID "0x73A1" is now added to the "amdgpu_drv.c" file.
+
+Signed-off-by: Ori Messinger <Ori.Messinger@amd.com>
+Reviewed-by: Kent Russell <kent.russell@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index effa9062f5411..8fde2318a03cc 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1094,6 +1094,7 @@ static const struct pci_device_id pciidlist[] = {
+ 
+ 	/* Sienna_Cichlid */
+ 	{0x1002, 0x73A0, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_SIENNA_CICHLID},
++	{0x1002, 0x73A1, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_SIENNA_CICHLID},
+ 	{0x1002, 0x73A2, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_SIENNA_CICHLID},
+ 	{0x1002, 0x73A3, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_SIENNA_CICHLID},
+ 	{0x1002, 0x73AB, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_SIENNA_CICHLID},
+-- 
+cgit 
+

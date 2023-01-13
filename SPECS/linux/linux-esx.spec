@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.162
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -190,6 +190,9 @@ Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
+# GPUs support for DriverVM
+Patch300: amdgpu-Add-Missing-Sienna-Cichlid-DID.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -344,6 +347,9 @@ The Linux package contains the Linux kernel doc files
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
+
+# GPUs support for DriverVM
+%patch300 -p1
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -591,6 +597,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 20 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
+- Support for missing Sienna Cichlid AMD GPU card.
 * Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
 - Update to version 5.10.162
 * Thu Jan 12 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.159-3
