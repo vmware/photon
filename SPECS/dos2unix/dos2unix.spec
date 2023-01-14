@@ -1,6 +1,6 @@
 Name:           dos2unix
 Version:        7.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Text file format converters
 URL:            https://waterlan.home.xs4all.nl/dos2unix.html
@@ -51,6 +51,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*.1*
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.4.3-2
+- Bump version as a part of gettext upgrade
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 7.4.3-1
 - Automatic Version Bump
 * Tue Dec 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 7.4.2-2

@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -675,6 +675,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 252.4-6
+- Bump version as a part of gettext upgrade
 * Tue Jan 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-5
 - bump version as part of xz upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 252.4-4

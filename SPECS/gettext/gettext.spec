@@ -1,14 +1,14 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
-Version:        0.21
-Release:        2%{?dist}
+Version:        0.21.1
+Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1    gettext=9d75b47baed1a612c0120991c4b6d9cf95e0d430
+%define sha512  gettext=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
 
 %description
 These allow programs to be compiled with NLS
@@ -16,16 +16,16 @@ These allow programs to be compiled with NLS
 messages in the user's native language.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-silent-rules
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
 rm -rf %{buildroot}%{_infodir}
@@ -53,6 +53,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Thu Jan 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21.1-1
+- Update to version 0.21.1
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2
 - Fix make check
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21-1

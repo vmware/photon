@@ -1,6 +1,6 @@
 Name:           tuna
 Version:        0.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
 Group:          Applications/System
@@ -62,6 +62,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.18-3
+- Bump version as a part of gettext upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.18-2
 - Update release to compile with python 3.11
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18-1

@@ -1,7 +1,7 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.21
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Vendor: VMware, Inc.
 Distribution: Photon
@@ -93,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21-2
+- Bump version as a part of gettext upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21-1
 - Automatic Version Bump
 * Thu Jun 24 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9-2

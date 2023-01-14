@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.8
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -643,6 +643,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.8-9
+- Bump version as a part of gettext upgrade
 * Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-8
 - Use alternatives and allow parallel installation of pgsql
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 13.8-7

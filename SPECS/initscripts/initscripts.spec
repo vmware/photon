@@ -3,7 +3,7 @@ Name:           initscripts
 Version:        10.17
 License:        GPLv2
 Group:          System Environment/Base
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/fedora-sysv/initscripts
 Source0:        https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
 %define sha512  initscripts=6c99a7b52b5bc0ced1877a7b2a280b885778bb12e89dc0d606a5b5eda1aa87feecdea6c19803afab01953c9d352c409e59665914832f7107b6b3816d4740594c
@@ -199,6 +199,8 @@ EOF
 %{_prefix}/lib/systemd/system/readonly-root.service
 
 %changelog
+*   Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.17-2
+-   Bump version as a part of gettext upgrade
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 10.17-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 10.16-1

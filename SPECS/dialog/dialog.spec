@@ -3,7 +3,7 @@
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-Release:       7.20220728%{?dist}
+Release:       8.20220728%{?dist}
 License:       LGPLv2
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
@@ -83,6 +83,8 @@ rm -rf %{buildroot}%{_libdir}/.libs
 %{_mandir}/man3/dialog.*
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3-8.20220728
+- Bump version as a part of gettext upgrade
 * Mon Oct 10 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3-7.20220728
 - Update to 20220728
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3-7.20220526

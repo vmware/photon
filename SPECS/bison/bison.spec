@@ -1,7 +1,7 @@
 Summary:    Contains a parser generator
 Name:       bison
 Version:    3.8.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/bison
 Group:      System Environment/Base
@@ -48,6 +48,8 @@ make %{?_smp_mflags} check
 %{_docdir}/bison/*
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.8.2-3
+- Bump version as a part of gettext upgrade
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.2-2
 - Bump version as a part of readline upgrade
 * Thu Sep 29 2022 Sharan Turlapati <sturlapati@vmware.com> 3.8.2-1

@@ -2,7 +2,7 @@ Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.0.0-2
+- Bump version as a part of gettext upgrade
 * Wed Jan 04 2023 Susant Sahani <ssahani@vmware.com> 1.0.0-1
 - Update version
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.64.1-2
