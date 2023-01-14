@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -60,6 +60,7 @@ Patch2:  6.0-9p-transport-for-9p.patch
 Patch3:  9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4:  vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
+Patch6:  Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
 
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -382,6 +383,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-7
+- Revert "PCI: Clear PCI_STATUS when setting up device"
 * Tue Jan 03 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-6
 - .config: Enable CONFIG_CGROUP_BPF to run containers with cgroup v2
 * Thu Dec 15 2022 Srinidhi Rao <srinidhir@vmware.com> 6.0.7-5
