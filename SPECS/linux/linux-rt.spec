@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -214,15 +214,18 @@ Patch1010: 0003-FIPS-broken-kattest.patch
 # Patches for i40e v2.16.11 driver [1500..1509]
 Patch1500: i40e-v2.16.11-linux-rt-i40e-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1501: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch1502: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 # Patches for iavf v4.5.3 driver [1510..1519]
 Patch1510: iavf-v4.5.3-linux-rt-iavf-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1511: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1513: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 # Patches for ice v1.9.11 driver [1520..1529]
 Patch1520: ice-v1.9.11-linux-rt-ice-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1522: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 BuildArch:      x86_64
 
@@ -518,6 +521,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-6
+- Fix IRQ affinities of i40e, iavf and ice drivers
 * Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-5
 - Update Intel drivers i40e to v2.16.11, iavf to v4.5.3 and ice to v1.9.11
 * Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-4
