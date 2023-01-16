@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.5169
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -34,18 +34,21 @@ The vim extra package contains a extra files for powerful text editor.
 %prep
 %autosetup -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
-%build
 
-%configure --enable-multibyte
-make VERBOSE=1 %{?_smp_mflags}
+%build
+%configure \
+    --enable-multibyte
+
+%make_build
 
 %install
 # make doesn't support _smp_mflags
-make DESTDIR=%{buildroot} install
+%make_install
 ln -sfv vim %{buildroot}%{_bindir}/vi
 install -vdm 755 %{buildroot}%{_sysconfdir}
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/vimrc
 
+%if 0%{?with_check}
 %check
 sed -i '/source test_recover.vim/d' src/testdir/test_alot.vim
 sed -i '916d' src/testdir/test_search.vim
@@ -53,6 +56,7 @@ sed -i '454,594d' src/testdir/test_autocmd.vim
 sed -i '1,9d' src/testdir/test_modeline.vim
 sed -i '133d' ./src/testdir/Make_all.mak
 make test %{?_smp_mflags}
+%endif
 
 %post
 if ! sed -n -e '0,/[[:space:]]*call[[:space:]]\+system\>/p' %{_sysconfdir}/vimrc | \
@@ -154,7 +158,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/vimrc
+%config(noreplace) %{_sysconfdir}/vimrc
 %{_datarootdir}/vim/%{maj_ver}/defaults.vim
 %{_datarootdir}/vim/%{maj_ver}/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
@@ -171,6 +175,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Jan 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.2.5169-2
+- Handle E145 exception in vimrc when vim opened in restricted mode
 * Tue Jul 26 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5169-1
 - Update to 8.2.5169 to fix CVE-2022-2231
 * Sat Jul 09 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5164-1
