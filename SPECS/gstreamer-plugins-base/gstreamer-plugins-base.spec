@@ -1,7 +1,7 @@
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
 Version:        1.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org
 Group:          Applications/Multimedia
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Mon Jan 16 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.1-2
+-   Upgrade version to build with new gstreamer
 *   Tue Sep 06 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.1-1
 -   Upgrade version
 *   Wed Nov 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-2

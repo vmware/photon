@@ -1,7 +1,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.66.0
-Release:        17%{?dist}
+Release:        18%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -9,6 +9,8 @@ Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.5
 %define sha512  gobject-introspection=ff69514cc6b1dfbeafb488c1a3c1328cb222d4ab8c644e7f84c62cde8529b6e2dcf21c3a903684a837c5841f6ccf47eb179881eb1cba08cdc0ec7a352fafeee0
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         avoid_doctemplates_hack.patch
+
 BuildRequires:  gettext
 BuildRequires:  intltool
 BuildRequires:  flex
@@ -99,6 +101,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Tue Jan 17 2023 Shivani Agarwal <shivania2@vmware.com> 1.66.0-18
+- Add patch to build with new meson
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.66.0-17
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.66.0-16
