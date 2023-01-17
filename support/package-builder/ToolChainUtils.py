@@ -78,8 +78,8 @@ class ToolChainUtils(object):
         if packageName:
             listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
 
+        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listRPMsToInstall:
-            pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
             version = None
 
@@ -132,7 +132,7 @@ class ToolChainUtils(object):
 
         self.logger.debug(rpmFiles)
         self.logger.debug(packages)
-        cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
+        cmd = (self.rpmCommand + " -i -v --nodeps --force --root " +
                chroot.getID() + " -D \'_dbpath /var/lib/rpm\' " + rpmFiles)
 
         # If rpm doesn't have zstd support, use rpm from photon_builder image
@@ -151,6 +151,12 @@ class ToolChainUtils(object):
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
+
+        self.logger.debug("Relocating RpmDB ...")
+        if pkgUtils.relocateRpmDB(chroot):
+            errmsg = "ERROR: failed to relocate RPM DB"
+            self.logger.error(errmsg)
+            raise Exception(errmsg)
 
         if packageName:
             self.installExtraToolchainRPMS(chroot, packageName, packageVersion)

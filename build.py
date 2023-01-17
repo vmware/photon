@@ -1335,6 +1335,8 @@ def initialize_constants():
     )
     constants.setCompressionMacro(configdict["photon-build-param"]["compression-macro"])
 
+    constants.setPhotonDir(photonDir)
+
     constants.phBuilderTag = configdict["photon-build-param"]["ph-builder-tag"]
 
     constants.buildSrcRpm = int(configdict["photon-build-param"]["build-src-rpm"])

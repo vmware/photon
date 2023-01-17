@@ -37,6 +37,7 @@ class PackageUtils(object):
         self.forceRpmPackageOptions = "--force"
         self.replaceRpmPackageOptions = "--replacepkgs"
         self.adjustGCCSpecScript = "adjust-gcc-specs.sh"
+        self.relocateRpmDbScript = "relocate-rpmdb.sh"
         self.rpmFilesToInstallInAOneShot = ""
         self.packagesToInstallInAOneShot = ""
         self.noDepsRPMFilesToInstallInAOneShot = ""
@@ -248,6 +249,11 @@ class PackageUtils(object):
             cmd += " --root /target-" + constants.targetArch
         sandbox.run(cmd, logfn=setOutValue)
         return rpms.split()
+
+    def relocateRpmDB(self, sandbox):
+        sandbox.put(f"{constants.photonDir}/support/{self.relocateRpmDbScript}", "/tmp")
+        cmd = f"/tmp/{self.relocateRpmDbScript}"
+        return sandbox.run(cmd, logfn=self.logger.debug)
 
     def adjustGCCSpecs(self, sandbox, package, version):
         # TODO: need to harden cross compiller also

@@ -43,6 +43,7 @@ class constants(object):
     currentArch = buildArch
     hostRpmIsNotUsable = -1
     phBuilderTag = ""
+    photonDir = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
     buildDbgInfoRpmList = []
@@ -479,6 +480,10 @@ class constants(object):
     @staticmethod
     def setTestForceRPMS(listsPackages):
         constants.testForceRPMS = listsPackages
+
+    @staticmethod
+    def setPhotonDir(phDir):
+        constants.photonDir = phDir
 
     @staticmethod
     def addMacro(macroName, macroValue):

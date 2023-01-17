@@ -1,7 +1,12 @@
 #!/bin/bash
 
-set -e
-set -x
+set -ex
+
+abort()
+{
+  echo -e "$*" 1>&2
+  exit 1
+}
 
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
@@ -52,16 +57,6 @@ clean_requirements_on_remove=true
 repodir=${WORKINGDIR}
 EOF
 
-rpmdb_init_cmd="rpm --root ${INITRD} --initdb --dbpath /var/lib/rpm"
-if [ "$(rpm -E %{_db_backend})" != "sqlite" ]; then
-  rpmdb_init_cmd="docker run --rm -v ${INITRD}:${INITRD} $PH_BUILDER_TAG /bin/bash -c \"${rpmdb_init_cmd}\""
-fi
-
-if ! eval "${rpmdb_init_cmd}"; then
-  echo "ERROR: failed to initialize rpmdb" 1>&2
-  exit 1
-fi
-
 TDNF_CMD="tdnf install -qy \
           --releasever $PHOTON_RELEASE_VER \
           --installroot $INITRD \
@@ -71,6 +66,16 @@ TDNF_CMD="tdnf install -qy \
 
 # run host's tdnf, if fails - try one from photon:latest docker image
 $TDNF_CMD || docker run --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
+
+if ! cp -p ${SCRIPT_PATH}/../../relocate-rpmdb.sh ${INITRD}; then
+  abort "ERROR: failed to copy ${SCRIPT_PATH}/relocate-rpmdb.sh to ${INITRD}"
+fi
+
+if ! chroot ${INITRD} ./relocate-rpmdb.sh; then
+  abort "ERROR: failed to fix rpmdb"
+fi
+
+rm -f ${INITRD}/relocate-rpmdb.sh
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 
@@ -139,7 +144,7 @@ cp $SCRIPT_PATH/BUILD_DVD/fstab ${INITRD}/etc/fstab
 mkdir -p ${INITRD}/etc/yum.repos.d
 cat > ${INITRD}/etc/yum.repos.d/photon-iso.repo << EOF
 [photon-iso]
-name=VMWare Photon Linux 1.0(x86_64)
+name=VMWare Photon Linux 5.0(x86_64)
 baseurl=file:///mnt/media/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1

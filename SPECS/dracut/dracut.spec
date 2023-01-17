@@ -3,7 +3,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -29,6 +29,7 @@ BuildRequires:  asciidoc3
 BuildRequires:  systemd-rpm-macros
 
 Requires:       bash >= 4
+Requires:       pkg-config
 Requires:       (coreutils or toybox)
 Requires:       kmod
 Requires:       (util-linux or toybox)
@@ -158,6 +159,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Jan 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-2
+- Add pkg-config to requires
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-1
 - Upgrade to v059
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 057-1
