@@ -9,6 +9,7 @@ from SpecData import SPECS
 from StringUtils import StringUtils
 from Sandbox import Chroot, Container
 
+
 class PackageBuilder(object):
     def __init__(self, mapPackageToCycles, sandboxType):
         # will be initialized in buildPackageFunction()
@@ -20,6 +21,7 @@ class PackageBuilder(object):
         self.doneList = None
         self.sandboxType = sandboxType
         self.sandbox = None
+        self.cmdUtils = CommandUtils()
         self.mapPackageToCycles = mapPackageToCycles
         self.listNodepsPackages = ["glibc", "gmp", "zlib", "file", "binutils", "mpfr",
                                    "mpc", "gcc", "ncurses", "util-linux", "groff", "perl",
@@ -97,8 +99,9 @@ class PackageBuilder(object):
         self.logName = "build-" + package + "-" + version
         self.logPath = constants.logPath + "/" + package + "-" + version
         if not os.path.isdir(self.logPath):
-            cmdUtils = CommandUtils()
-            cmdUtils.runCommandInShell("mkdir -p " + self.logPath)
+            self.cmdUtils.runCommandInShell(f"mkdir -p {self.logPath}")
+        else:
+            self.cmdUtils.runCommandInShell(f"rm -f {self.logPath}/*.log")
         self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
         self.doneList = doneList
 
