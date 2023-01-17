@@ -1,19 +1,23 @@
 %global security_hardening none
 
+%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+
+%define _modulesdir /lib/modules/%{uname_r}
+
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.32.2
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
-URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
+URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=88a98e32285746c2c04bd640495c12a1114a511ef6a9ee276ddaf60ad441effffe8da4879442c82a7fbab76cbecb157bd2cddc01eaa17d3876eb1860e6ec6260
+Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=88a98e32285746c2c04bd640495c12a1114a511ef6a9ee276ddaf60ad441effffe8da4879442c82a7fbab76cbecb157bd2cddc01eaa17d3876eb1860e6ec6260
 
-Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
+Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
 BuildArch:      x86_64
 
@@ -22,7 +26,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
-BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires:  linux-devel = %{uname_r}
 BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
@@ -34,7 +38,7 @@ BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
 
-Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+Requires:       linux = %{uname_r}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
@@ -47,9 +51,6 @@ Requires:       grpc
 Requires:       jq
 Requires:       protobuf
 Requires:       c-ares
-
-%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-%define _modulesdir /lib/modules/%{uname_r}
 
 %package    devel
 Summary:    falco
@@ -67,7 +68,7 @@ Falco lets you continuously monitor and detect container, application, host, and
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DCMAKE_BUILD_TYPE=Debug \
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
@@ -78,20 +79,13 @@ Falco lets you continuously monitor and detect container, application, host, and
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_build
+%{cmake_build}
 
 %install
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_install
+%{cmake_install}
 mkdir -p %{buildroot}%{_modulesdir}/extra
 install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
-
-# falco tests require docker and few other devfs things to run
-#%%if 0%{?with_check}
-#%%check
-#pip3 install -r tests/requirements.txt
-#bash test/run_regression_tests.sh -d %{__cmake_builddir}
-#%%endif
 
 %clean
 rm -rf %{buildroot}/*
