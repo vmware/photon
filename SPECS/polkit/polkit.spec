@@ -1,7 +1,7 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           1%{?dist}
+Release:           2%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 License:           LGPLv2+
@@ -73,9 +73,9 @@ session  include        system-session
 EOF
 
 %pre
-getent group polkitd > /dev/null || groupadd -fg 27 polkitd &&
+getent group polkitd > /dev/null || groupadd -fg 59027 polkitd &&
 getent passwd polkitd > /dev/null || \
-    useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
+    useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 59027 \
         -g polkitd -s /bin/false polkitd
 
 %post
@@ -117,6 +117,8 @@ getent passwd polkitd > /dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 121-2
+- Set polkit uid to 1027 since it's not in range UID_MIN(1000) to UID_MAX(60000).
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 121-1
 - Upgrade to v121
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.120-1

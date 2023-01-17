@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2022.13
-Release:        7%{?dist}
+Version:        2022.19
+Release:        1%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -9,14 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512 %{name}=09f8d7554d694e8fbd61d713d0b01f3076c3638f81698fc8208055e11fc6f1e79f77d8e18386ef579a819b8db5c26178b3926775d87e2eb1a47e0ebf9c606a89
-
+%define sha512 %{name}=0afec5019ab3d2e94578acadcf62b698b3f5880b8755575bf12300368d9e3b0e9e94492d4a311af282d0535dc6df30dd4e3fa58e2f671c30dbfdc788c96a3d7e
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
 
 Patch0:         rpm-ostree-libdnf-build.patch
-Patch1:         util-Fix-fpermissive-warning.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -120,6 +118,8 @@ install -d %{buildroot}%{_bindir}/%{name}-server
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
+mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
+echo "d /tmp/rpm-ostree 0750 root root - -" > %{buildroot}%{_tmpfilesdir}/rpm-ostree.conf
 
 %clean
 rm -rf %{buildroot}/*
@@ -143,6 +143,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/%{name}.1.gz
 %{_mandir}/man5/rpm-ostreed*
 %{_mandir}/man8/%{name}*
+%{_tmpfilesdir}/rpm-ostree.conf
 
 %files devel
 %defattr(-,root,root)
@@ -162,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-1
+- Upgrade to version 2022.19.
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 2022.13-7
 - bump release as part of sqlite update
 * Fri Jan 06 2023 Tapas Kundu <tkundu@vmware.com> 2022.13-6
