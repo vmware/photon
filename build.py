@@ -704,7 +704,7 @@ class RpmBuildTarget:
             print("Creating OSTree repo from local RPMs in ostree-repo.tar.gz...")
             RpmBuildTarget.create_repo()
             cmd = f"{photonDir}/support/image-builder/ostree-tools/make-ostree-image.sh"
-            cmd = f"{cmd} {photonDir} {Build_Config.stagePath} {ph_docker_img}"
+            cmd = f"{cmd} {photonDir} {Build_Config.stagePath} {constants.buildArch} {ph_docker_img}"
             if runShellCmd(cmd):
                 raise Exception("Not able to execute make-ostree-image.sh")
         else:

@@ -11,7 +11,47 @@ fi
 PROGRAM=$0
 SRCROOT=$1
 STAGE_DIR=$2
-PHOTON_DOCKER_IMAGE=$3
+ARCHITECTURE=$3
+PHOTON_DOCKER_IMAGE=$4
+
+cat > ${SRCROOT}/support/image-builder/ostree-tools/photon-base.json<< EOF
+{
+    "comment": "Photon Minimal OSTree",
+
+    "osname": "photon",
+
+    "releasever": "5.0",
+
+    "ref": "photon/5.0/${ARCHITECTURE}/minimal",
+
+    "automatic_version_prefix": "5.0_minimal",
+
+    "repos": ["photon-ostree"],
+
+    "selinux": false,
+
+    "initramfs-args": ["--no-hostonly"],
+
+    "bootstrap_packages": ["filesystem"],
+
+    "documentation": false,
+
+    "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
+                 "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",
+                 "file", "findutils", "gdbm", "grep", "gzip", "iana-etc",
+                 "iptables", "iproute2", "iputils", "libtool", "linux", "motd",
+                 "net-tools", "pkg-config", "photon-release", "photon-repos",
+                 "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
+                 "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
+                 "openssh", "systemd", "systemd-udev", "openssl", "grub2", "grub2-efi",
+                 "grub2-efi-image", "shadow", "ncurses", "grub2-theme-ostree",
+                 "selinux-policy"],
+
+    "packages-x86_64": ["grub2-pc", "open-vm-tools"],
+
+    "units": ["sshd-keygen.service", "sshd.service"]
+}
+EOF
 
 cat > ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh << EOF
 #!/bin/bash

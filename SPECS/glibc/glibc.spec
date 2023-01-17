@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -163,17 +163,17 @@ rm -rf %{buildroot}%{_infodir}
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 #       Begin /etc/nsswitch.conf
 
-    passwd: files
-    group: files
-    shadow: files
+passwd: files
+group: files
+shadow: files
 
-    hosts: files dns
-    networks: files
+hosts: files dns
+networks: files
 
-    protocols: files
-    services: files
-    ethers: files
-    rpc: files
+protocols: files
+services: files
+ethers: files
+rpc: files
 #       End /etc/nsswitch.conf
 EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
@@ -327,6 +327,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.36-2
+- Remove spaces from /etc/nsswitch.conf to avoid failure while adding altfiles.
 * Wed Aug 17 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.36-1
 - Upgrade to 2.36
 - catchsegv is removed, zdump is moved to /usr/bin from /usr/sbin

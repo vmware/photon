@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2022.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -16,6 +16,7 @@ Source1:        91-%{name}.preset
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
 Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
+Patch3:         skip-rebuild-selinux-policy.patch
 
 BuildRequires:  git
 BuildRequires:  autoconf
@@ -33,7 +34,7 @@ BuildRequires:  e2fsprogs-devel
 BuildRequires:  zlib-devel
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
-BuildRequires:  libsoup-devel
+BuildRequires:  libsoup-devel = 2.72.0
 BuildRequires:  attr-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  fuse-devel
@@ -63,7 +64,7 @@ of both.
 %package libs
 Summary:    Development headers for %{name}
 Group:      Development/Libraries
-Requires:   libsoup
+Requires:   libsoup = 2.72.0
 
 %description libs
 The %{name}-libs provides shared libraries for %{name}.
@@ -167,6 +168,9 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Tue Jan 17 2023 Oliver Kurth <okurth@vmware.com> 2022.5-5
+- Use libsoup 2.72 as libostree is not compatible with libsoup-3.x
+- Skip rebuild selinux policy.
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 2022.5-4
 - bump release as part of sqlite update
 * Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 2022.5-3

@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.1p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -78,7 +78,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
     --with-md5-passwords \
-    --with-privsep-path=%{_sharedstatedir}/sshd \
+    --with-privsep-path=%{_datadir}/empty \
     --with-pam \
     --with-maintype=man \
     --enable-strip=no \
@@ -89,7 +89,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_sharedstatedir}/sshd
+install -vdm755 %{buildroot}%{_datadir}/empty
 echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
 echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
 echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
@@ -126,7 +126,7 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests"
 
 %pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
-getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_sharedstatedir}/sshd -g sshd -s /bin/false -u 50 sshd
+getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_sharedstatedir}/sshd -g sshd -s /bin/false -u 1050 sshd
 
 %preun server
 %systemd_preun sshd.service sshd-keygen.service
@@ -157,7 +157,7 @@ rm -rf %{buildroot}/*
 %files server
 %defattr(-,root,root)
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
-%attr(700,root,sys)%{_sharedstatedir}/sshd
+%dir %attr(0711,root,root) %{_datadir}/empty
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
@@ -198,6 +198,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 9.1p1-2
+- Use /usr/share/empty instead of /var/empty/sshd.
+- Create sshd user with uid 1050.
 * Tue Nov 29 2022 Srinidhi Rao <sshedi@vmware.com> 9.1p1-1
 - Update to 9.1p1
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-2
