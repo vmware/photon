@@ -1,15 +1,15 @@
-Summary:    Photon theme for grub2
-Name:       grub2-theme
-Version:    4.0
-Release:    2%{?dist}
-License:    Apache License
-Group:      System Environment/Base
-URL:        https://vmware.github.io/photon/
-Vendor:     VMware, Inc.
-Distribution:   Photon
-Source0:    %{name}-%{version}.tar.xz
-%define sha1 grub2-theme=5bb81b3aa5f82555f8ea507130618aad9fe96c1d
-BuildArch:  noarch
+Summary:       Photon theme for grub2
+Name:          grub2-theme
+Version:       5.0
+Release:       1%{?dist}
+License:       Apache License
+Group:         System Environment/Base
+URL:           https://vmware.github.io/photon/
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       %{name}-%{version}.tar.xz
+%define sha512 grub2-theme=de7a527723f7cacd18582d1c2c6b8ef15b2ae4cc82465f90b4ecf2af2de4fe743c44685b08dce81dfd8a595e672f6510351f28f9d9f54a062721a09c3dcc1a74
+BuildArch:     noarch
 
 %description
 grub2-theme provides content of /boot/grub2/themes/photon plus ascii font.
@@ -22,7 +22,7 @@ Requires: %{name} = %{version}-%{release}
 GRUB fonts required by Ostree
 
 %prep
-%setup -q
+%autosetup -p1
 
 %install
 install -d %{buildroot}/boot
@@ -53,6 +53,8 @@ ln -s grub2 %{buildroot}/boot/grub
 /boot/grub2/fonts/unifont.pf2
 
 %changelog
+* Wed Jan 18 2023 Piyush Gupta <gpiyush@vmware.com> 5.0-1
+- Update 5.0 Beta boot splash image.
 * Tue Feb 16 2021 Anish Swaminathan <anishs@vmware.com> 4.0-2
 - Update GA boot splash image.
 * Mon Nov 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.0-1
