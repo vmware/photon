@@ -1,25 +1,32 @@
-%global security_hardening none
+%global security_hardening      none
+%define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir             /lib/modules/%{uname_r}
 
-%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-
-%define _modulesdir /lib/modules/%{uname_r}
+# check the release bundle & use the right version, example:
+# https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
+%define falcosecurity_libs_ver  0.9.1
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.30.2
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
+Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=08e5c4f6e393838fca0b8b72f152fde9873af2095fe28084463f22238c65ad45f699c724b21f2d25051eae803f253f41a319fb38b405977de382809a74a4f625
 
-Patch0:         get-googletest-sources-from-photonstage.patch
+Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-0.9.1.tar.gz
+%define sha512 falconsecurity-libs=06d894e6ea8cd66c80682dcce64e38667f6d7315c1c552898b3944fa16cf57ae49932bd283e2b5d09e2e0462f438df217c722f98e437aa0989fdef69aefd79a2
 
-BuildArch:      x86_64
+Patch0: get-googletest-sources-from-photonstage.patch
+Patch1: falcosecurity-libs-nodownload.patch
+Patch2: bashcomp-location.patch
+
+BuildArch: x86_64
 
 BuildRequires:  cmake
 BuildRequires:  linux-devel = %{uname_r}
@@ -35,6 +42,7 @@ BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
 BuildRequires:  git
 BuildRequires:  net-tools
+BuildRequires:  jsoncpp-devel
 
 Requires:       linux = %{uname_r}
 Requires:       zlib
@@ -45,6 +53,7 @@ Requires:       grpc
 Requires:       jq
 Requires:       c-ares
 Requires:       protobuf
+Requires:       jsoncpp
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -53,12 +62,12 @@ Sysdig is scriptable in Lua and includes a command line interface and a powerful
 that runs in your terminal
 
 %prep
-%autosetup -p1
+%autosetup -p1 -a0 -a1
 
 %build
 export CFLAGS="-Wno-error=misleading-indentation"
 
-%cmake \
+%{cmake} \
     -DUSE_BUNDLED_OPENSSL=OFF \
     -DUSE_BUNDLED_CURL=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
@@ -66,7 +75,14 @@ export CFLAGS="-Wno-error=misleading-indentation"
     -DUSE_BUNDLED_PROTOBUF=OFF \
     -DUSE_BUNDLED_GRPC=OFF \
     -DUSE_BUNDLED_JQ=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_NJSON=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
+    -DBUILD_DRIVER=ON \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
+    -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
     -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
     -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
     -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
@@ -76,19 +92,17 @@ export CFLAGS="-Wno-error=misleading-indentation"
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
     -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
     -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DCMAKE_BUILD_TYPE=Release
 
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_build
+%{cmake_build}
 
 %install
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_install
+%{cmake_install}
 
-mkdir -p %{buildroot}%{_sysconfdir}
-mv %{buildroot}%{_usr}%{_sysconfdir}/bash_completion.d %{buildroot}%{_sysconfdir}
 rm -rf %{buildroot}%{_datadir}/zsh/
-
 mkdir -p %{buildroot}%{_modulesdir}/extra
 mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
 
@@ -103,15 +117,18 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/bash_completion.d/*
 %{_bindir}/*
-%{_includedir}/sysdig
-%{_libdir}/sysdig
+%{_includedir}/%{name}
+%{_libdir}/%{name}
 %exclude %{_usrsrc}
-%{_datadir}/*
+%{_datadir}/%{name}/*
+%{_datadir}/bash-completion/*
+%{_mandir}/*
 %{_modulesdir}/extra/scap.ko
 
 %changelog
+* Tue Jan 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-2
+- Fix build options to make installation work
 * Mon Dec 19 2022 Bo Gan <ganb@vmware.com> 0.30.2-1
 - Update to 0.30.2
 - Correct cmake configurations
