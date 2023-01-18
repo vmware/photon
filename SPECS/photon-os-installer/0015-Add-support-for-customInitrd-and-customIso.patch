@@ -397,7 +397,7 @@ index 00000000..b7167c65
 +        if "x86_64" in self.architecture:
 +            self.pkg_list.extend(["syslinux", "photon-iso-config"])
 +
-+        linux_flavors = ["linux", "linux-esx", "linux-rt", "linux-aws", "linux-secure"]
++        linux_flavors = ["linux", "linux-esx", "linux-rt", "linux-secure"]
 +        if not any(flavor in self.pkg_list for flavor in linux_flavors):
 +            self.pkg_list.append("linux")
 +
@@ -586,6 +586,6 @@ index 00000000..b7167c65
 +        raise Exception(f"{options.function} not supported...")
 +
 +    isoBuilder.cleanUp()
--- 
+--
 2.23.3
 

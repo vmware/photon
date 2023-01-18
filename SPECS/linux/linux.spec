@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -241,6 +241,8 @@ Requires(preun): (coreutils or toybox)
 Requires(post): (coreutils or toybox)
 Requires(postun): (coreutils or toybox)
 
+Obsoletes:  linux-aws
+
 %description
 The Linux package contains the Linux kernel.
 %if 0%{?fips}
@@ -279,7 +281,7 @@ The Linux package contains the Linux kernel doc files
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
+Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs
 Requires:       xz-libs
 Requires:       libunwind
@@ -289,8 +291,6 @@ Requires:       traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
 %endif
-Obsoletes:      linux-aws-tools <= 4.19.52-1
-Provides:       linux-aws-tools
 %description tools
 This package contains kernel tools like perf, turbostat and cpupower.
 
@@ -699,6 +699,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jan 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.0.7-6
+- Depricate linux-aws kernel flavor
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-5
 - Fix IRQ affinities of i40e, iavf and ice drivers
 * Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-4
