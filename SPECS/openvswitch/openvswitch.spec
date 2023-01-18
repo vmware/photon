@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -16,6 +16,7 @@ Patch0:         openvswitch-CVE-2020-35498.patch
 Patch1:         openvswitch-CVE-2020-27827.patch
 Patch2:         openvswitch-CVE-2021-36980.patch
 Patch3:         openvswitch-CVE-2021-3905.patch
+Patch4:         openvswitch-CVE-2022-4337-CVE-2022-4338.patch
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -269,6 +270,8 @@ make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Wed Jan 18 2023 Dweep Advani <dadvani@vmware.com> 2.12.0-7
+-   Fixed CVE-2022-4337 and CVE-2022-4338
 *   Tue Oct 18 2022 Harinadh D <hdommaraju@vmware.com> 2.12.0-6
 -   fix for CVE-2021-3905
 *   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-5
