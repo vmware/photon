@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       13%{?dist}
+Release:       14%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Fri Jan 20 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0-14
+- Remove depricated package linux-aws from installer
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.0-13
 - Upgrade ostree repo for 5.0.
 * Tue Jan 10 2023 Piyush Gupta <gpiyush@vmware.com> 2.0-12

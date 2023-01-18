@@ -4,7 +4,6 @@
   "linux": 124,
   "linux-rt": 124,
   "linux-secure": 115,
-  "linux-aws": 112,
   "clang": 109,
   "mysql": 103,
   "openjdk10": 98,
