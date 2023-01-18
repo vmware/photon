@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Patch1:         CVE-2021-3156_2.patch
 Patch2:         CVE-2021-3156_3.patch
 Patch3:         CVE-2021-3156_4.patch
 Patch4:         sudo-CVE-2022-43995.patch
+Patch5:         CVE-2023-22809.patch
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -115,6 +116,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+* Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.5-5
+- Fix CVE-2023-22809
 * Tue Nov 08 2022 Ankit Jain <ankitja@vmware.com> 1.9.5-4
 - Fixes CVE-2022-43995
 * Thu Jan 28 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-3
