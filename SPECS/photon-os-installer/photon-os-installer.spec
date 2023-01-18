@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       15%{?dist}
+Release:       16%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -28,16 +28,25 @@ Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
 Patch14:       0015-Add-support-for-customInitrd-and-customIso.patch
 Patch15:       0016-upgrade-ostree-repo.patch
 Patch16:       0017-customIso-Use-branch-specific-license-text-and-EULA.patch
+
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
-Requires:      zlib
-Requires:      glibc
+
+Requires: dosfstools
+Requires: efibootmgr
+Requires: glibc
+Requires: gptfdisk
+Requires: grub2
+Requires: grub2-pc
+Requires: kpartx
+Requires: lvm2
+Requires: zlib
 
 %description
-This is to create rpm for installer code
+Installer to build Photon images
 
 %prep
 %autosetup -p1
@@ -57,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Wed Feb 01 2023 Oliver Kurth <okurth@vmware.com> 2.0-16
+- add requires for tools needed to build image
 * Fri Jan 27 2023 Tapas Kundu <tkundu@vmware.com> 2.0-15
 - Update EULA for 5.0 Beta
 * Fri Jan 20 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0-14
