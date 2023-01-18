@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.0.7
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -482,7 +482,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
+%ifarch x86_64
 %{_mandir}/*
+%endif
 
 %files devel
 %defattr(-,root,root)
@@ -490,6 +492,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 18 2023 Ajay Kaher <akaher@vmware.com> 6.0.7-4
+- Fix aarch64 rpm build issue
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-3
 - Fix IRQ affinities of i40e, iavf and ice drivers
 * Mon Jan 09 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-2
