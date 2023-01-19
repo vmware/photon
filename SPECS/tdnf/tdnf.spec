@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.6
+Version:        3.4.7
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=48e6d5eae24eb94c23d81cf718ff5cd786f93b5a1987252607b072208547593c7d2a77bc57351cddf13764d692f318df6eeba7a7917e2f46670195b5c22c7d0c
+%define sha512  %{name}=3a37839ebe2a2e8c3c94d7944629f2c98ff89c309280b54564c974e46a188ad0c1ae42be9ecd001225821df440a9f46ccb3664d946eaa4fca87d5e1b1162e54d
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -55,6 +55,7 @@ Provides:       yum
 %{name} is a yum/dnf equivalent which uses libsolv and libcurl
 
 %define _tdnfpluginsdir %{_libdir}/%{name}-plugins
+%define _tdnf_history_db_dir /usr/lib/sysimage/%{name}
 
 %package    devel
 Summary:    A Library providing C API for %{name}
@@ -115,7 +116,8 @@ Systemd units that can periodically download package upgrades and apply them.
   -DCMAKE_BUILD_TYPE=Debug \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-  -DSYSTEMD_DIR=%{_unitdir}
+  -DSYSTEMD_DIR=%{_unitdir} \
+  -DHISTORY_DB_DIR=%{_tdnf_history_db_dir}
 
 %cmake_build
 
@@ -132,6 +134,7 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %cmake_install
 find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/%{name} %{buildroot}%{_unitdir}
+mkdir -p %{buildroot}%{_tdnf_history_db_dir}
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
@@ -151,8 +154,7 @@ find %{buildroot} -name '*.pyc' -delete
 # to the new db.
 # must be postrans because we read the rpm db
 # cannot use tdnf because that is still running even in postrans
-[ -d %{_sharedstatedir}/tdnf ] || mkdir -p %{_sharedstatedir}/tdnf
-[ -f %{_sharedstatedir}/tdnf/history.db ] || %{_libdir}/tdnf/tdnf-history-util init
+[ -f %{_tdnf_history_db_dir}/history.db ] || %{_libdir}/tdnf/tdnf-history-util init
 if [ -f %{_sharedstatedir}/tdnf/autoinstalled ] ; then
     %{_libdir}/tdnf/tdnf-history-util mark remove $(cat %{_sharedstatedir}/tdnf/autoinstalled) && \
         rm %{_sharedstatedir}/tdnf/autoinstalled
@@ -215,6 +217,7 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
 %config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
 %dir /var/cache/%{name}
+%dir %{_tdnf_history_db_dir}
 %{_datadir}/bash-completion/completions/%{name}
 
 %files devel
@@ -258,6 +261,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Jan 19 2023 Oliver Kurth <okurth@vmware.com> 3.4.7-1
+- update to 3.4.7 (configurable db dir)
 * Thu Jan 12 2023 Oliver Kurth <okurth@vmware.com> 3.4.6-1
 - update to 3.4.6 (coverity)
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.4.5-3
