@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -98,6 +98,7 @@ Requires:   libslirp
 Requires:   fuse
 Requires:   rootlesskit
 Requires:   %{name} = %{version}-%{release}
+Requires:   dbus-user-session
 
 %description    rootless
 Rootless support for Docker.
@@ -319,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-7
+- Add dbus-user-session to requires
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-6
 - Bump version as a part of containerd upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-5
