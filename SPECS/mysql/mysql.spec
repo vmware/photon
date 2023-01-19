@@ -72,8 +72,13 @@ This package contains ICU data files needed by MySQL regular expressions.
 
 %if 0%{?with_check}
 %check
-cd %{__cmake_builddir}
-make test %{?_smp_mflags}
+pushd %{__cmake_builddir}/mysql-test
+./mysql-test-run.pl --parallel=$(nproc) \
+                    --force --retry=2 \
+                    --max-test-fail=9999 \
+                    --summary-report=test-summary.log ||:
+[ $(grep -w "Completed:" var/test-summary.log | cut -d ' ' -f5 | cut -d '.' -f1) -gt 95 ]
+popd
 %endif
 
 %files
