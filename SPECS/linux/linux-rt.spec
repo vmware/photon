@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -522,6 +522,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jan 19 2023 Keerthana K <keerthanak@vmware.com> 6.0.7-8
+- Enable VMWGFX configs
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-7
 - Revert "PCI: Clear PCI_STATUS when setting up device"
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-6
