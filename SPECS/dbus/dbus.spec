@@ -1,15 +1,18 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512  %{name}=486eab8c4f87d75e988558724bff1b0708c969341ecb62bcb9d0b0612a653ac2674aa7caa4d129dd81c00af7989b122ee7837599262c9a0c5c7f9335ed3dacaf
+Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
+%define sha512 %{name}=486eab8c4f87d75e988558724bff1b0708c969341ecb62bcb9d0b0612a653ac2674aa7caa4d129dd81c00af7989b122ee7837599262c9a0c5c7f9335ed3dacaf
+
+Source1: user/%{name}.service
+Source2: user/%{name}.socket
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -24,11 +27,19 @@ The dbus package contains dbus.
 
 %package        devel
 Summary:        Header and development files
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
 
 %description    devel
 It contains the libraries and header files to create applications
+
+%package        user-session
+Summary:        simple interprocess messaging system (systemd --user integration)
+
+Requires:       %{name} = %{version}-%{release}
+
+%description    user-session
+simple interprocess messaging system (systemd --user integration)
 
 %prep
 %autosetup -p1
@@ -48,33 +59,45 @@ install -vdm755 %{buildroot}%{_lib}
 
 rm -f %{buildroot}%{_libdir}/*.la
 
+mkdir -p %{buildroot}%{_userunitdir}
+cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_userunitdir}
+
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/dbus-1
+%{_sysconfdir}/%{name}-1
 %{_bindir}/*
 %{_libdir}/libdbus-1.so.*
-%{_libdir}/tmpfiles.d/dbus.conf
-%{_libdir}/systemd/system/*
-%exclude %{_libdir}/sysusers.d
+%{_tmpfilesdir}/%{name}.conf
+%{_unitdir}/*
+%exclude %{_sysusersdir}
 %{_libexecdir}/*
-%{_docdir}/*
-%{_datadir}/dbus-1
+%{_datadir}/%{name}-1
 
 %files  devel
 %defattr(-,root,root)
+%{_docdir}/*
 %{_includedir}/*
-%{_datadir}/xml/dbus-1
+%{_datadir}/xml/%{name}-1
 %{_libdir}/cmake/DBus1
-%dir %{_libdir}/dbus-1.0
-%{_libdir}/dbus-1.0/include/
+%dir %{_libdir}/%{name}-1.0
+%{_libdir}/%{name}-1.0/include/
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %{_libdir}/*.so
 
+%files user-session
+%defattr(-,root,root)
+%{_userunitdir}/%{name}.service
+%{_userunitdir}/%{name}.socket
+
 %changelog
+* Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.2-3
+- Add dbus-user-session sub package, needed by rootless containers
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 1.15.2-2
 - bump version as part of xz upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.15.2-1

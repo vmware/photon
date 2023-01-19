@@ -6,7 +6,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
@@ -26,7 +26,7 @@ Requires: slirp4netns
 Requires: libslirp
 Requires: rootlesskit
 Requires: fuse-overlayfs
-Requires: fuse-overlayfs-snapshotter
+Requires: dbus-user-session
 
 %description
 %{summary}
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
+* Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-2
+- Add dbus-user-session to requires
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-1
 - Upgrade to v1.1.0
 * Fri Sep 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.23.0-1
