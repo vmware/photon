@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -17,6 +17,7 @@ Patch2:         krb5-CVE-2021-37750.patch
 %if %{with_check}
 Patch3:         krb5-Make-test-PKINIT-certs-work-with-OpenSSL-3.0.patch
 %endif
+Patch4:         krb5-CVE-2022-42898.patch
 
 Requires:       openssl
 Requires:       e2fsprogs-libs
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+* Thu Jan 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.17-9
+- Fix for CVE-2022-42898
 * Mon Jan 09 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.17-8
 - Update due to change in e2fsprogs version
 * Tue Nov 30 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.17-7
