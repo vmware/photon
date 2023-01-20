@@ -7,11 +7,14 @@
 %endif
 %define debug_package %{nil}
 %define __strip /bin/true
+# To disable rpm requires on libc.so
+%define _use_internal_dependency_generator 0
+%define __find_requires %{nil}
 
 Summary:        Go
 Name:           go
 Version:        1.19.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -21,6 +24,7 @@ Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha512  go=9aa8548597d52455afad8bf3b882eeeb9992814721ff2b9d8ed1f0e1ee0fec74aecd9d4e8c9c00eafbfe690bcdc50f3ad0b00bc4818b87e9d584cce7df97ee76
 Requires:       glibc
+Requires:       gcc
 
 %define ExtraBuildRequires go
 
@@ -112,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Fri Jan 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.19.3-2
+- Remove requires on libc.so.6
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.3-1
 - Upgrade to 1.19.3
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.2-1
