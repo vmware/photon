@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.3.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
@@ -11,13 +11,13 @@ Distribution:   Photon
 Source0: https://repmgr.org/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=803f94ea99454f59cd753db4a8f64066f3988e347b5b8e3de08b941c09ac9128ba48beeecaface7a729b0b4f296ccb4470c18128fdd6c2e418e8e3fbbefcda1e
 
-BuildRequires: postgresql14-devel
+BuildRequires: postgresql15-devel
 BuildRequires: cpio
 
 Requires: readline
 Requires: openssl
 Requires: zlib
-Requires: (postgresql14-libs or postgresql13-libs or postgresql12-libs)
+Requires: (postgresql15-libs or postgresql14-libs or postgresql13-libs)
 
 %description
 repmgr is an open-source tool suite for managing replication and failover in a cluster of PostgreSQL servers.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3
+- Remove pgsql-12 dependency
 * Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-2
 - Bump version as a part of postgresql fixes
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 5.3.2-1

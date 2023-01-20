@@ -1,11 +1,11 @@
 %define srcname         pgaudit
-%global pgmajorversion  12
+%global pgmajorversion  15
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pglibdir       %{_pgbaseinstdir}/lib/postgresql
 %global _pgdatadir      %{_pgbaseinstdir}/share/postgresql
 
-Name:       pgaudit12
-Version:    1.4.3
+Name:       pgaudit15
+Version:    1.7.0
 Release:    1%{?dist}
 Summary:    PostgreSQL Audit Extension
 License:    PostgreSQL
@@ -15,7 +15,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=7503f99049752c000ece71c02d03199434e3e92a167079877ee7c66823c25379dffc9186970424681e52177febfbcc824694088af468bbb6be78ec2dfe943173
+%define sha512 %{srcname}=34a8b6e448a99add4c5d659095632aa0ec421b27289a0c220d198b9352e9225617b5904a23a30da45a4918823847d2fb995470e3b66060754436f9cf2dcb65f4
 
 BuildRequires: build-essential
 BuildRequires: postgresql%{pgmajorversion}-devel
@@ -60,5 +60,5 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
-* Mon Jan 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.3-1
+* Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-1
 - Initial version.

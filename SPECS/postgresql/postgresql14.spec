@@ -24,11 +24,6 @@ Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.
 
 Patch0: llvm-15.x-psql-build-err-fixes.patch
 
-# Macros to be used by find_lang and such.
-%global pgmajorversion 14
-
-# Common libraries needed
-# clang-devel is needed for LLVM.
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
 BuildRequires:  gcc
