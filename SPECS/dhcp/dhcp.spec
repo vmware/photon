@@ -1,7 +1,7 @@
 Summary:    Dynamic host configuration protocol
 Name:       dhcp
 Version:    4.3.5
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    ISC
 Url:        http://isc.org/products/DHCP/
 Group:      System Environment/Base
@@ -20,7 +20,7 @@ Patch5:     dhcp-CVE-2018-5732.patch
 Patch6:     dhcp-CVE-2021-25217.patch
 Patch7:     dhcp-CVE-2022-2928.patch
 Patch8:     dhcp-CVE-2022-2929.patch
-
+Patch9:     dhcp-CVE-2019-6470.patch
 BuildRequires:  systemd
 
 %description
@@ -197,6 +197,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Fri Jan 20 2023 Anmol Jain <anmolja@vmware.com> 4.3.5-10
+- Fixed for CVE-2019-6470
 * Tue Oct 04 2022 Dweep Advani <dadvani@vmware.com> 4.3.5-9
 - Fixed CVE-2022-2928 and CVE-2022-2929
 * Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-8
