@@ -1,18 +1,19 @@
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
+%global __brp_elfperms  /bin/true
 
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha512  %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
+Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
+%define sha512 %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 
@@ -327,6 +328,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-3
+- Don't change elf permissions in glibc
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.36-2
 - Remove spaces from /etc/nsswitch.conf to avoid failure while adding altfiles.
 * Wed Aug 17 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.36-1
