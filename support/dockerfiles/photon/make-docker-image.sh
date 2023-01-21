@@ -68,8 +68,6 @@ fi
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
-ln -sfr ${TEMP_CHROOT}/usr/lib/sysimage/rpm ${TEMP_CHROOT}/var/lib/rpm
-
 # cleanup anything not needed inside rootfs
 pushd $TEMP_CHROOT
 rm -rf usr/src/ home/* var/log/* var/cache/tdnf/
