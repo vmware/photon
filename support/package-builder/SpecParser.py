@@ -423,7 +423,7 @@ class SpecParser(object):
 
     def _readSecurityHardening(self, line):
         data = line.lower().strip()
-        words = data.split(" ")
+        words = data.split()
         nrWords = len(words)
         if nrWords != 3:
             print("Error: Unable to parse line: " + line)
