@@ -1,0 +1,32 @@
+From 98b6c94b577205d31b019286c2a84cc9af244ea0 Mon Sep 17 00:00:00 2001
+From: Mark Laws <mdl@60hz.org>
+Date: Thu, 24 Nov 2022 14:56:29 +0900
+Subject: [PATCH] systemd: Default to OOMPolicy=continue for login session
+ scopes
+
+If the kernel OOM kills a process under a login session scope, we don't want to
+kill the user's other processes for no good reason.
+---
+ src/login/logind-dbus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/login/logind-dbus.c b/src/login/logind-dbus.c
+index 86a5decf3f..2ab26b9c6d 100644
+--- a/src/login/logind-dbus.c
++++ b/src/login/logind-dbus.c
+@@ -3970,6 +3970,12 @@ int manager_start_scope(
+         if (r < 0)
+                 return r;
+ 
++        /* For login session scopes, if a process is OOM killed by the kernel, *don't* terminate the rest of
++           the scope */
++        r = sd_bus_message_append(m, "(sv)", "OOMPolicy", "s", "continue");
++        if (r < 0)
++                return r;
++
+         /* disable TasksMax= for the session scope, rely on the slice setting for it */
+         r = sd_bus_message_append(m, "(sv)", "TasksMax", "t", UINT64_MAX);
+         if (r < 0)
+-- 
+2.35.5
+

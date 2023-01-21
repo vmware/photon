@@ -1,0 +1,171 @@
+From 5fa098357e0ea9f05b00ed5b04a36ef9f64037db Mon Sep 17 00:00:00 2001
+From: Mark Laws <mdl@60hz.org>
+Date: Mon, 14 Nov 2022 21:48:09 +0900
+Subject: [PATCH] systemd: Support OOMPolicy in scope units
+
+Closes #25376.
+---
+ man/org.freedesktop.systemd1.xml |  6 ++++++
+ src/core/dbus-scope.c            |  6 ++++++
+ src/core/scope.c                 | 19 ++++++++++++++++---
+ src/core/scope.h                 |  2 ++
+ src/shared/bus-unit-util.c       |  3 +++
+ 5 files changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/man/org.freedesktop.systemd1.xml b/man/org.freedesktop.systemd1.xml
+index 5e08b35234..7dbf98defd 100644
+--- a/man/org.freedesktop.systemd1.xml
++++ b/man/org.freedesktop.systemd1.xml
+@@ -10139,6 +10139,8 @@ node /org/freedesktop/systemd1/unit/session_2d1_2escope {
+       readonly t RuntimeMaxUSec = ...;
+       @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
+       readonly t RuntimeRandomizedExtraUSec = ...;
++      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
++      readonly s OOMPolicy = '...';
+       @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+       readonly s Slice = '...';
+       @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
+@@ -10313,6 +10315,8 @@ node /org/freedesktop/systemd1/unit/session_2d1_2escope {
+ 
+     <!--property RuntimeRandomizedExtraUSec is not documented!-->
+ 
++    <!--property OOMPolicy is not documented!-->
++
+     <!--property Slice is not documented!-->
+ 
+     <!--property ControlGroupId is not documented!-->
+@@ -10495,6 +10499,8 @@ node /org/freedesktop/systemd1/unit/session_2d1_2escope {
+ 
+     <variablelist class="dbus-property" generated="True" extra-ref="RuntimeRandomizedExtraUSec"/>
+ 
++    <variablelist class="dbus-property" generated="True" extra-ref="OOMPolicy"/>
++
+     <variablelist class="dbus-property" generated="True" extra-ref="Slice"/>
+ 
+     <variablelist class="dbus-property" generated="True" extra-ref="ControlGroup"/>
+diff --git a/src/core/dbus-scope.c b/src/core/dbus-scope.c
+index 7d2ceb0765..7b07bb8bb9 100644
+--- a/src/core/dbus-scope.c
++++ b/src/core/dbus-scope.c
+@@ -5,6 +5,7 @@
+ #include "bus-get-properties.h"
+ #include "dbus-cgroup.h"
+ #include "dbus-kill.h"
++#include "dbus-manager.h"
+ #include "dbus-scope.h"
+ #include "dbus-unit.h"
+ #include "dbus-util.h"
+@@ -39,6 +40,7 @@ int bus_scope_method_abandon(sd_bus_message *message, void *userdata, sd_bus_err
+ }
+ 
+ static BUS_DEFINE_PROPERTY_GET_ENUM(property_get_result, scope_result, ScopeResult);
++static BUS_DEFINE_SET_TRANSIENT_PARSE(oom_policy, OOMPolicy, oom_policy_from_string);
+ 
+ const sd_bus_vtable bus_scope_vtable[] = {
+         SD_BUS_VTABLE_START(0),
+@@ -47,6 +49,7 @@ const sd_bus_vtable bus_scope_vtable[] = {
+         SD_BUS_PROPERTY("Result", "s", property_get_result, offsetof(Scope, result), SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
+         SD_BUS_PROPERTY("RuntimeMaxUSec", "t", bus_property_get_usec, offsetof(Scope, runtime_max_usec), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("RuntimeRandomizedExtraUSec", "t", bus_property_get_usec, offsetof(Scope, runtime_rand_extra_usec), SD_BUS_VTABLE_PROPERTY_CONST),
++        SD_BUS_PROPERTY("OOMPolicy", "s", bus_property_get_oom_policy, offsetof(Scope, oom_policy), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_SIGNAL("RequestStop", NULL, 0),
+         SD_BUS_METHOD("Abandon", NULL, NULL, bus_scope_method_abandon, SD_BUS_VTABLE_UNPRIVILEGED),
+         SD_BUS_VTABLE_END
+@@ -77,6 +80,9 @@ static int bus_scope_set_transient_property(
+         if (streq(name, "RuntimeRandomizedExtraUSec"))
+                 return bus_set_transient_usec(u, name, &s->runtime_rand_extra_usec, message, flags, error);
+ 
++        if (streq(name, "OOMPolicy"))
++                return bus_set_transient_oom_policy(u, name, &s->oom_policy, message, flags, error);
++
+         if (streq(name, "PIDs")) {
+                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+                 unsigned n = 0;
+diff --git a/src/core/scope.c b/src/core/scope.c
+index 54a6cc63e4..e2fc4cc995 100644
+--- a/src/core/scope.c
++++ b/src/core/scope.c
+@@ -43,6 +43,7 @@ static void scope_init(Unit *u) {
+         s->timeout_stop_usec = u->manager->default_timeout_stop_usec;
+         u->ignore_on_isolate = true;
+         s->user = s->group = NULL;
++        s->oom_policy = _OOM_POLICY_INVALID;
+ }
+ 
+ static void scope_done(Unit *u) {
+@@ -194,6 +195,11 @@ static int scope_add_extras(Scope *s) {
+         if (r < 0)
+                 return r;
+ 
++        if (s->oom_policy < 0)
++                s->oom_policy = s->cgroup_context.delegate ? OOM_CONTINUE : UNIT(s)->manager->default_oom_policy;
++
++        s->cgroup_context.memory_oom_group = s->oom_policy == OOM_KILL;
++
+         return scope_add_default_dependencies(s);
+ }
+ 
+@@ -286,11 +292,13 @@ static void scope_dump(Unit *u, FILE *f, const char *prefix) {
+                 "%sScope State: %s\n"
+                 "%sResult: %s\n"
+                 "%sRuntimeMaxSec: %s\n"
+-                "%sRuntimeRandomizedExtraSec: %s\n",
++                "%sRuntimeRandomizedExtraSec: %s\n"
++                "%sOOMPolicy: %s\n",
+                 prefix, scope_state_to_string(s->state),
+                 prefix, scope_result_to_string(s->result),
+                 prefix, FORMAT_TIMESPAN(s->runtime_max_usec, USEC_PER_SEC),
+-                prefix, FORMAT_TIMESPAN(s->runtime_rand_extra_usec, USEC_PER_SEC));
++                prefix, FORMAT_TIMESPAN(s->runtime_rand_extra_usec, USEC_PER_SEC),
++                prefix, oom_policy_to_string(s->oom_policy));
+ 
+         cgroup_context_dump(UNIT(s), f, prefix);
+         kill_context_dump(&s->kill_context, f, prefix);
+@@ -635,11 +643,16 @@ static void scope_notify_cgroup_oom_event(Unit *u, bool managed_oom) {
+         else
+                 log_unit_debug(u, "Process of control group was killed by the OOM killer.");
+ 
+-        /* This will probably need to be modified when scope units get an oom-policy */
++        if (s->oom_policy == OOM_CONTINUE)
++                return;
++
+         switch (s->state) {
+ 
+         case SCOPE_START_CHOWN:
+         case SCOPE_RUNNING:
++                scope_enter_signal(s, SCOPE_STOP_SIGTERM, SCOPE_FAILURE_OOM_KILL);
++                break;
++
+         case SCOPE_STOP_SIGTERM:
+                 scope_enter_signal(s, SCOPE_STOP_SIGKILL, SCOPE_FAILURE_OOM_KILL);
+                 break;
+diff --git a/src/core/scope.h b/src/core/scope.h
+index 6a228f1177..c9574a32c2 100644
+--- a/src/core/scope.h
++++ b/src/core/scope.h
+@@ -38,6 +38,8 @@ struct Scope {
+ 
+         char *user;
+         char *group;
++
++        OOMPolicy oom_policy;
+ };
+ 
+ extern const UnitVTable scope_vtable;
+diff --git a/src/shared/bus-unit-util.c b/src/shared/bus-unit-util.c
+index b850a28e85..922011eccd 100644
+--- a/src/shared/bus-unit-util.c
++++ b/src/shared/bus-unit-util.c
+@@ -2142,6 +2142,9 @@ static int bus_append_scope_property(sd_bus_message *m, const char *field, const
+         if (STR_IN_SET(field, "User", "Group"))
+                 return bus_append_string(m, field, eq);
+ 
++        if (streq(field, "OOMPolicy"))
++                return bus_append_string(m, field, eq);
++
+         return 0;
+ }
+ 
+-- 
+2.35.5
+
