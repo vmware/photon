@@ -1,7 +1,7 @@
 Summary:	Library for accessing X.509 and CMS data structure.
 Name:		libksba
 Version:	1.3.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:		Security/Libraries.
@@ -12,6 +12,8 @@ Distribution:	Photon
 BuildRequires:  libgpg-error-devel >= 1.2
 
 Patch0: 0001-Fix-for-CVE-2022-47629.patch
+# Fix for CVE-2022-3515
+Patch1: 0001-Detect-a-possible-overflow-directly-in-the-TLV-parse.patch
 
 %description
 Libksba is a library to make the tasks of working with X.509 certificates,
@@ -46,6 +48,8 @@ make %{?_smp_mflags} -k check
 %exclude %{_datadir}/info/dir
 
 %changelog
+*   Sun Jan 22 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.5-3
+-   Fix for CVE-2022-3515
 *   Thu Jan 05 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.5-2
 -   Fix for CVE-2022-47629
 *   Tue	Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.3.5-1
