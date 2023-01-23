@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        3.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -43,6 +43,7 @@ install -Dm 0644 %{SOURCE3}  %{buildroot}/etc/sysconfig/
 install -Dm 0644 %{SOURCE4}  %{buildroot}/etc/sysconfig/
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ptp4l.service" > %{buildroot}/usr/lib/systemd/system-preset/50-ptp4l.preset
+echo "disable phc2sys.service" > %{buildroot}/usr/lib/systemd/system-preset/50-phc2sys.preset
 
 %clean
 rm -rf %{buildroot}
@@ -69,6 +70,7 @@ rm -rf %{buildroot}
 %{_libdir}/systemd/system/phc2sys.service
 %{_libdir}/systemd/system/ptp4l.service
 %{_libdir}/systemd/system-preset/50-ptp4l.preset
+%{_libdir}/systemd/system-preset/50-phc2sys.preset
 %{_sbindir}/hwstamp_ctl
 %{_sbindir}/nsm
 %{_sbindir}/phc2sys
@@ -87,6 +89,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ts2phc.8.gz
 
 %changelog
+*   Mon Jan 23 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-2
+-   Disable phc2sys service by default
 *   Tue Sep 06 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-1
 -   Update to version 3.1.1
 *   Wed Apr 14 2021 Vikash Bansal <bvikas@vmware.com> 3.1-2
