@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.7
+Version:        3.4.8
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=3a37839ebe2a2e8c3c94d7944629f2c98ff89c309280b54564c974e46a188ad0c1ae42be9ecd001225821df440a9f46ccb3664d946eaa4fca87d5e1b1162e54d
+%define sha512  %{name}=448dbbe28c378d877c11bb61e448e84248e2b971f34849956baac2ae1ee68589231b01a5aa97c1820a8942cbf0e82bf9b60b75744e8886ca827245838b53113f
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -261,6 +261,10 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Jan 23 2023 Oliver Kurth <okurth@vmware.com> 3.4.8-1
+- update to 3.4.8:
+- fix reinstall issue (PR #388)
+- fix empty rpm db issue (PR #390)
 * Thu Jan 19 2023 Oliver Kurth <okurth@vmware.com> 3.4.7-1
 - update to 3.4.7 (configurable db dir)
 * Thu Jan 12 2023 Oliver Kurth <okurth@vmware.com> 3.4.6-1
