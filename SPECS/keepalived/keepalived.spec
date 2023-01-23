@@ -1,14 +1,14 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.1.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/acassen/keepalived/archive/keepalived-%{version}.tar.gz
-%define sha1    %{name}-%{version}=e7ca90ab9a2deb8f426a9c711fc13aeab215838a
+%define sha512 %{name}=90bbada9b947969d39bfad560373f95e9d38e7f943227615afed380cdb581c2d2f95fa2b9e2fb8d6db265157e2dc301623401ce5ec25dc282f3c3059cbd39f28
 Source1:        %{name}.service
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
@@ -21,6 +21,8 @@ BuildRequires:  systemd
 BuildRequires:  unzip
 Requires:       systemd
 Requires:       libnl-devel
+
+Patch0: keepalived-CVE-2021-44225.patch
 
 %description
 The main goal of the keepalived project is to add a strong & robust keepalive
@@ -35,7 +37,7 @@ failover. So in short keepalived is a userspace daemon for LVS cluster nodes
 healthchecks and LVS directors failover.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 autoreconf -f -i
@@ -85,6 +87,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 2.1.5-5
+-   Fix CVE-2021-44225
 *   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.5-4
 -   Bump up release for openssl
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.1.5-3
