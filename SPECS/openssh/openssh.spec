@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.1p1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source2:        sshd.service
 Source3:        sshd-keygen.service
 
 Patch0:         blfs_systemd_fixes.patch
+Patch1:         0001-sshd_config-Avoid-duplicate-entry.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -57,6 +58,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
+%patch1 -p1
 
 %build
 sh ./configure --host=%{_host} --build=%{_build} \
@@ -78,7 +80,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
     --with-md5-passwords \
-    --with-privsep-path=%{_datadir}/empty \
+    --with-privsep-path=%{_datadir}/empty.sshd \
     --with-pam \
     --with-maintype=man \
     --enable-strip=no \
@@ -89,14 +91,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_datadir}/empty
-echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "TCPKeepAlive no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "AllowAgentForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+install -vdm755 %{buildroot}%{_datadir}/empty.sshd
 #   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} UNITSDIR=%{buildroot}%{_unitdir} install-sshd %{?_smp_mflags}
@@ -114,9 +109,9 @@ install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 if ! getent passwd sshd >/dev/null; then
    useradd sshd
 fi
-if [ ! -d %{_sharedstatedir}/sshd ]; then
-  mkdir %{_sharedstatedir}/sshd
-  chmod 0755 %{_sharedstatedir}/sshd
+if [ ! -d %{_datadir}/empty.sshd ]; then
+  mkdir %{_datadir}/empty.sshd
+  chmod 0755 %{_datadir}/empty.sshd
 fi
 cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
@@ -126,7 +121,7 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests"
 
 %pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
-getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_sharedstatedir}/sshd -g sshd -s /bin/false -u 1050 sshd
+getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_datadir}/empty.sshd -g sshd -s /bin/false -u 1050 sshd
 
 %preun server
 %systemd_preun sshd.service sshd-keygen.service
@@ -134,7 +129,7 @@ getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_sharedstatedir}
 %post server
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    chown -v root:sys %{_sharedstatedir}/sshd
+    chown -v root:sys %{_datadir}/empty.sshd
 fi
 %systemd_post sshd.service sshd-keygen.service
 
@@ -157,7 +152,7 @@ rm -rf %{buildroot}/*
 %files server
 %defattr(-,root,root)
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
-%dir %attr(0711,root,root) %{_datadir}/empty
+%dir %attr(0711,root,root) %{_datadir}/empty.sshd
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
@@ -198,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 9.1p1-3
+- Replace /usr/share/empty with /usr/share/empty.sshd
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 9.1p1-2
 - Use /usr/share/empty instead of /var/empty/sshd.
 - Create sshd user with uid 1050.
