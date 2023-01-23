@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2020.07
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -17,6 +17,12 @@ Source4:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch2:		0005-Fix-no-usb.patch
 Patch3:         add-saveenv-in-bootcmd.patch
+
+# Fix for CVE-2022-34835
+Patch5:         0001-i2c-fix-stack-buffer-overflow-vulnerability-in-i2c-m.patch
+
+# Fix for CVE-2022-30767
+Patch6:         0001-net-nfs-Fix-CVE-2022-30767-old-CVE-2019-14196.patch
 
 BuildRequires:  bison
 Group:          Development/Tools
@@ -87,6 +93,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Fri Jan 20 2023 Ajay Kaher <akaher@vmware.com> 2020.07-6
+-   Fix for CVE-2022-34835, CVE-2022-30767
 *   Sat Oct 15 2022 Piyush Gupta <gpiyush@vmware.com> 2020.07-5
 -   Added bison in BuildRequires.
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 2020.07-4
