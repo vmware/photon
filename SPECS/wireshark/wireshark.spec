@@ -1,11 +1,11 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        3.6.9
+Version:        3.6.11
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org/
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512 %{name}=abf7adfda1a7aef4944e846bd3edde08b64d841edbba2d86d1bfd121760e90560231f778eeaefa43175c7c6be9b1fe0e0ec58c8704b4c9bdff6bb3598970cddd
+%define sha512 %{name}=f526e6e8f9435b69b5c3ce3a7d271f7b66365bdd84cd155ac434be0ef899cc140f58dfe55e90295bba91a8a99f28a55280366fb028d13f6ff45051a9ed3625e8
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -97,6 +97,8 @@ rm -rf %{buildroot}%{_docdir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Jan 23 2023 Susant Sahani <ssahani@vmware.com> 3.6.11-1
+- Update version and fix CVE
 * Mon Nov 21 2022 Nitesh Kumar <ssahani@vmware.com> 3.6.9-1
 - Version upgrade to address CVE-2022-3725
 * Wed Oct 12 2022 Susant Sahani <ssahani@vmware.com> 3.6.8-1
