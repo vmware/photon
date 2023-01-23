@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -118,6 +118,7 @@ install -d %{buildroot}%{_bindir}/%{name}-server
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
+install -vdm711 %{buildroot}%{_datadir}/empty
 mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
 echo "d /tmp/rpm-ostree 0750 root root - -" > %{buildroot}%{_tmpfilesdir}/rpm-ostree.conf
 
@@ -134,6 +135,7 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/*
 %{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*
+%dir %attr(0711,root,root) %{_datadir}/empty
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf
 %{_unitdir}/%{name}-countme.timer
 %{_libdir}/systemd/system/rpm-ostreed-automatic.timer
@@ -163,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 2022.19-2
+- Added /usr/share/empty dir required to bind mount rpm database
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-1
 - Upgrade to version 2022.19.
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 2022.13-7
