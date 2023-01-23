@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2019.10
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -17,6 +17,12 @@ Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
 Patch3:         add_tcp_wget_support.patch
 Patch4:         add-saveenv-in-bootcmd.patch
+
+# Fix for CVE-2022-34835
+Patch5:         0001-i2c-fix-stack-buffer-overflow-vulnerability-in-i2c-m.patch
+
+# Fix for CVE-2022-30767
+Patch6:         0001-net-nfs-Fix-CVE-2022-30767-old-CVE-2019-14196.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
@@ -56,6 +62,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Fri Jan 20 2023 Ajay Kaher <akaher@vmware.com> 2019.10-3
+-   Fix for CVE-2022-34835, CVE-2022-30767
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 2019.10-2
 -   Move /boot/esp/u-boot.bin to /boot/efi/u-boot.bin.
 *   Thu Oct 10 2019 Ajay Kaher <akaher@vmware.com> 2019.10-1
