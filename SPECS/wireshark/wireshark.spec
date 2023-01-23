@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        3.6.9
+Version:        4.0.3
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512 %{name}=abf7adfda1a7aef4944e846bd3edde08b64d841edbba2d86d1bfd121760e90560231f778eeaefa43175c7c6be9b1fe0e0ec58c8704b4c9bdff6bb3598970cddd
+%define sha512 %{name}=ef6d20b9b69e1a2b6b6b5bebe5f13545acb73b2faece32198dbe01c4181524d5f8320712b4440c93fc65ef075ab7b6398394581b3dc09a20b1b5b9b90ec2a13c
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -24,14 +24,14 @@ BuildRequires:  libgcrypt-devel
 BuildRequires:  libnl-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  systemd-devel
 BuildRequires:  git
 BuildRequires:  python3-devel
 
 Requires:       libpcap
 Requires:       libnl
-Requires:       pcre
+Requires:       pcre2
 Requires:       c-ares
 Requires:       libcap
 Requires:       libnl
@@ -73,8 +73,8 @@ and plugins.
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-        -DCMAKE_BUILD_TYPE=Debug
+       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+       -DCMAKE_BUILD_TYPE=Debug
 
 %cmake_build
 
@@ -98,6 +98,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Jan 23 2023 Susant Sahani <ssahani@vmware.com> 4.0.3-1
+- Update version and fix CVE
 * Mon Nov 21 2022 Nitesh Kumar <ssahani@vmware.com> 3.6.9-1
 - Version upgrade to address CVE-2022-3725
 * Tue Sep 20 2022 Susant Sahani <ssahani@vmware.com> 3.6.8-1
