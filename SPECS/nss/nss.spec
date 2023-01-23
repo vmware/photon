@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -13,6 +13,7 @@ Patch0:         nss-3.44-standalone-1.patch
 Patch1:         nss-CVE-2020-12403.patch
 Patch2:         nss-CVE-2021-43527.patch
 Patch3:         nss-CVE-2019-17006.patch
+Patch4:         nss-CVE-2020-25648.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -114,6 +115,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Mon Jan 23 2023 Harinadh D <hdommaraju@vmware.com> 3.44-9
+-   Fix CVE-2020-25648
 *   Wed Oct 19 2022 Harinadh D <hdommaraju@vmware.com> 3.44-8
 -   Fix CVE-2019-17006
 *   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-7
