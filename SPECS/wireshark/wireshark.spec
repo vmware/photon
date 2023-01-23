@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.2
-Release:        2%{?dist}
+Version:        4.0.3
+Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=0f401f639add6483799131dd853a4f4bcf8977fd987915074d0301f553fca9f6cd6e0b7cc47358699c1f4e65872760135dea9889fb34dbb70b917768b6f37ff5
+%define sha512  %{name}=ef6d20b9b69e1a2b6b6b5bebe5f13545acb73b2faece32198dbe01c4181524d5f8320712b4440c93fc65ef075ab7b6398394581b3dc09a20b1b5b9b90ec2a13c
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -99,6 +99,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Jan 23 2023 Susant Sahani <ssahani@vmware.com> 4.0.3-1
+- Update version
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.0.2-2
 - Bump up due to change in elfutils
 * Sat Dec 10 2022 Susant Sahani <ssahani@vmware.com> 4.0.2-1
