@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -20,6 +20,8 @@ Source6:        10-defaults.preset
 
 Patch0:         enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         fetch-dns-servers-from-environment.patch
+Patch2:         0001-systemd-Support-OOMPolicy-in-scope-units.patch
+Patch3:         0001-systemd-Default-to-OOMPolicy-continue-for-login-sess.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -308,6 +310,8 @@ sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel databas
 sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+
+sed -i 's/#DefaultOOMPolicy=stop/DefaultOOMPolicy=continue/' %{buildroot}%{_sysconfdir}/%{name}/system.conf
 
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
@@ -675,6 +679,8 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Jan 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 252.4-6
+- Support OOMPolicy in scope units
 * Tue Jan 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-5
 - bump version as part of xz upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 252.4-4
