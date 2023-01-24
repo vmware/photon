@@ -1,16 +1,16 @@
-Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
-Name:		gnupg
-Version:	2.2.18
-Release:	3%{?dist}
-License:	GPLv3+
-URL:		https://gnupg.org/index.html
-Group:		Applications/Cryptography.
+Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
+Name:           gnupg
+Version:        2.2.18
+Release:        4%{?dist}
+License:        GPLv3+
+URL:            https://gnupg.org/index.html
+Group:          Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
 %define sha512  gnupg=f1b75e420569982ab3b192fc52f8272c924e07c08ea3d93725f2ba3a25a96d8fedf2f32fabd51cbb978e18fb143c961b02cfaefdb7df0e8097d30a5736f992d2
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Patch0:         CVE-2022-34903.patch
-BuildRequires:	zlib-devel
+BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 BuildRequires:  npth-devel
@@ -18,7 +18,13 @@ BuildRequires:  libassuan >= 2.5.0
 BuildRequires:  libksba >= 1.0.7
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error >= 1.24
-Requires:       libksba
+BuildRequires:  gnutls-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  gettext
+
+Requires:       gnutls
+Requires:       sqlite-libs
+Requires:       libksba >= 1.3.5-3
 Requires:       libgcrypt >= 1.7.0
 Requires:       npth
 Requires:       libassuan >= 2.5.0
@@ -37,10 +43,10 @@ a command line tool with features for easy integration with other applications.
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -58,6 +64,8 @@ make %{?_smp_mflags} check
 %exclude /usr/share/doc/*
 
 %changelog
+*   Tue Jan 24 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.2.18-4
+-   Bump release as a part fix to CVE-2022-3515 in libksba
 *   Tue Jul 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.2.18-3
 -   Fix CVE-2022-34903
 *   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.2.18-2
