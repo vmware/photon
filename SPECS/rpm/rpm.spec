@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -73,7 +73,7 @@ Requires: bzip2-libs
 Requires: elfutils-libelf
 Requires: xz-libs
 Requires: zstd-libs
-Requires: (toybox or coreutils-selinux)
+Requires: (toybox or coreutils-selinux or coreutils)
 Requires: (toybox or findutils)
 Requires: (toybox or sed)
 Conflicts:  libsolv < 0.7.19
@@ -308,6 +308,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-7
+- Fix rpm-libs requires
 * Tue Jan 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-6
 - Remove DB migration & DB rebuild logix & related files
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.18.0-5
