@@ -1,7 +1,7 @@
 {
     "installer": {
         "hostname": "photon-machine",
-        "postinstallscripts": [ "azure-patch.sh" ],
+        "postinstallscripts": [ "azure-patch.sh", "../relocate-rpmdb.sh" ],
         "additional_files": [
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
         ],

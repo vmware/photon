@@ -18,7 +18,7 @@
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
                             {"resizefs.service": "/lib/systemd/system/resizefs.service"}
         ],
-        "postinstallscripts": ["rpi-custom-patch.sh" ],
+        "postinstallscripts": [ "rpi-custom-patch.sh", "../relocate-rpmdb.sh" ],
         "linux_flavor": "linux"
     },
     "image_type": "rpi",

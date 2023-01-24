@@ -1,9 +1,9 @@
-%define rpmhome %{_libdir}/rpm
+%define rpmhome %{_libdir}/%{name}
 
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -18,19 +18,12 @@ Source2:    macros.php
 Source3:    macros.perl
 Source4:    macros.vpath
 Source5:    macros.ldconfig
-Source6:    rpmdb-rebuild.sh
-Source7:    rpmdb-migrate.sh
-Source8:    rpmdb-rebuild.service
-Source9:    rpmdb-migrate.service
-Source10:   rpm.conf
-Source11:   lock.c
 
-Patch0:     rpmdb-rename-dir.patch
-Patch1:     silence-warning.patch
-Patch2:     sync-buf-cache.patch
-Patch3:     wait-for-lock.patch
-Patch4:     migrate-rpmdb.patch
-Patch5:     fix-race-condition-in-brp-strip.patch
+Patch0:     silence-warning.patch
+Patch1:     sync-buf-cache.patch
+Patch2:     wait-for-lock.patch
+Patch3:     migrate-rpmdb.patch
+Patch4:     fix-race-condition-in-brp-strip.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -62,7 +55,7 @@ RPM package manager
 
 %package devel
 Summary:    Libraries and header files for rpm
-Provides:   pkgconfig(rpm)
+Provides:   pkgconfig(%{name})
 Requires:   %{name} = %{version}-%{release}
 Requires:   zstd-devel
 
@@ -118,7 +111,7 @@ Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of rpm.
 
-%package -n python3-rpm
+%package -n python3-%{name}
 Summary:  Python 3 bindings for rpm.
 Group:    Development/Libraries
 Requires: python3
@@ -129,7 +122,7 @@ Python3 rpm.
 
 %package plugin-systemd-inhibit
 Summary:  Rpm plugin for systemd inhibit functionality
-Requires: rpm-libs = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
 Requires: dbus
 Requires: systemd
 
@@ -138,7 +131,7 @@ This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
 transaction is running using the systemd-inhibit mechanism.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 # pass -L opts to gcc as well to prioritize it over standard libs
@@ -147,8 +140,9 @@ sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 sh autogen.sh --noconfigure
+
 %configure \
-  CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
+  CPPFLAGS='-I%{_includedir}/nspr -I%{_includedir}/nss -DLUA_COMPAT_APIINTCASTS' \
     --disable-dependency-tracking \
     --disable-static \
     --enable-python \
@@ -166,9 +160,6 @@ sh autogen.sh --noconfigure
 
 %make_build
 
-gcc -Wall -o lock %{SOURCE11}
-chmod 700 lock
-
 pushd python
 %py3_build
 popd
@@ -182,29 +173,19 @@ ln -sfv %{_bindir}/find-debuginfo %{buildroot}%{rpmhome}/find-debuginfo.sh
 %find_lang %{name}
 
 # System macros and prefix
-install -dm644 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE2} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE3} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
-install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
-install -vm755 %{SOURCE6} %{buildroot}%{_libdir}/rpm
-install -vm755 %{SOURCE7} %{buildroot}%{_libdir}/rpm
-
-mkdir -p %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE8} %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE9} %{buildroot}%{_unitdir}
-
-mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-mv lock %{buildroot}%{_libdir}/rpm
+install -dm644 %{buildroot}%{_sysconfdir}/%{name}
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
+install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
+install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
 
 pushd python
 %py3_install
 popd
 
-%check
 %if 0%{?with_check}
+%check
 make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
 make clean %{?_smp_mflags}
 %endif
@@ -212,35 +193,12 @@ make clean %{?_smp_mflags}
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%pre
-# Symlink all rpmdb files to the new location if we're still using /var/lib/rpm
-if [ -d %{_sharedstatedir}/rpm ]; then
-  mkdir -p %{_libdir}/sysimage/rpm
-  rpmdb_files=$(find %{_sharedstatedir}/rpm -maxdepth 1 -type f | sed 's|^/var/lib/rpm/||g' | sort)
-  for fn in ${rpmdb_files[@]}; do
-  ln -sfr %{_sharedstatedir}/rpm/${fn} %{_libdir}/sysimage/rpm/${fn}
-  done
-fi
-
-%posttrans libs
-if [ -f %{_sharedstatedir}/rpm/Packages ]; then
-  if [ -x %{_bindir}/systemctl ]; then
-  systemctl --no-reload preset rpmdb-rebuild || :
-  fi
-  nohup bash %{rpmhome}/rpmdb-rebuild.sh &>/dev/null &
-fi
-
-if [ -d %{_sharedstatedir}/rpm ] && [ -x %{_bindir}/systemctl ]; then
-  touch %{_sharedstatedir}/rpm/.migratedb
-  systemctl --no-reload preset rpmdb-migrate || :
-fi
-
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/rpm
+%{_bindir}/%{name}
 %{_bindir}/gendiff
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmgraph
@@ -248,31 +206,31 @@ rm -rf %{buildroot}
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
 %{rpmhome}/rpmpopt-*
-%{rpmhome}/rpm.daily
-%{rpmhome}/rpm.log
-%{rpmhome}/rpm.supp
+%{rpmhome}/%{name}.daily
+%{rpmhome}/%{name}.log
+%{rpmhome}/%{name}.supp
 %{rpmhome}/rpm2cpio.sh
 %{rpmhome}/tgpg
 %{rpmhome}/platform
-%{_libdir}/rpm-plugins/ima.so
-%{_libdir}/rpm-plugins/syslog.so
-%{_libdir}/rpm-plugins/prioreset.so
-%{_libdir}/rpm-plugins/fsverity.so
-%exclude %{_libdir}/rpm-plugins/dbus_announce.so
+%{_libdir}/%{name}-plugins/ima.so
+%{_libdir}/%{name}-plugins/syslog.so
+%{_libdir}/%{name}-plugins/prioreset.so
+%{_libdir}/%{name}-plugins/fsverity.so
+%exclude %{_libdir}/%{name}-plugins/dbus_announce.so
 
-%{_sysconfdir}/dbus-1/system.d/org.rpm.conf
+%{_sysconfdir}/dbus-1/system.d/org.%{name}.conf
 
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
-%{_mandir}/man8/rpm-misc.8.gz
-%{_mandir}/man8/rpm-plugin-ima.8.gz
-%{_mandir}/man8/rpm-plugin-prioreset.8.gz
-%{_mandir}/man8/rpm-plugin-syslog.8.gz
-%{_mandir}/man8/rpm-plugins.8.gz
-%{_mandir}/man8/rpm.8.gz
-%{_mandir}/man8/rpm-plugin-dbus-announce.8.gz
+%{_mandir}/man8/%{name}-misc.8.gz
+%{_mandir}/man8/%{name}-plugin-ima.8.gz
+%{_mandir}/man8/%{name}-plugin-prioreset.8.gz
+%{_mandir}/man8/%{name}-plugin-syslog.8.gz
+%{_mandir}/man8/%{name}-plugins.8.gz
+%{_mandir}/man8/%{name}.8.gz
+%{_mandir}/man8/%{name}-plugin-dbus-announce.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -283,19 +241,13 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/rpm/macros
+%config(noreplace) %{_sysconfdir}/%{name}/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
 %{rpmhome}/macros
 %{rpmhome}/rpmrc
 %{rpmhome}/rpmdb_*
-%{rpmhome}/rpmdb-rebuild.sh
-%{rpmhome}/rpmdb-migrate.sh
-%{rpmhome}/lock
 %{_bindir}/rpmdb
-%{_unitdir}/rpmdb-rebuild.service
-%{_unitdir}/rpmdb-migrate.service
-%config(noreplace) %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
 
 %files build
 %defattr(-,root,root)
@@ -305,7 +257,7 @@ rm -rf %{buildroot}
 %{_bindir}/rpmlua
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{rpmhome}/macros.d/*
+%{_rpmmacrodir}/*
 %{rpmhome}/perl.req
 %{rpmhome}/find-lang.sh
 %{rpmhome}/find-provides
@@ -337,7 +289,7 @@ rm -rf %{buildroot}
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/rpm.pc
+%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
@@ -346,16 +298,18 @@ rm -rf %{buildroot}
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
-%files -n python3-rpm
+%files -n python3-%{name}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %files plugin-systemd-inhibit
 %defattr(-,root,root)
-%{_libdir}/rpm-plugins/systemd_inhibit.so
-%{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
+%{_libdir}/%{name}-plugins/systemd_inhibit.so
+%{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Jan 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-7
+- Remove DB migration & DB rebuild logix & related files
 * Fri Jan 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.0-6
 - add tools needed to rpm-build requires
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.18.0-5

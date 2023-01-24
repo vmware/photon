@@ -43,6 +43,7 @@ class constants(object):
     currentArch = buildArch
     hostRpmIsNotUsable = -1
     phBuilderTag = ""
+    photonDir = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
     buildDbgInfoRpmList = []
@@ -483,6 +484,10 @@ class constants(object):
         constants.testForceRPMS = listsPackages
 
     @staticmethod
+    def setPhotonDir(phDir):
+        constants.photonDir = phDir
+
+    @staticmethod
     def addMacro(macroName, macroValue):
         constants.userDefinedMacros[macroName] = macroValue
 
@@ -509,6 +514,7 @@ class constants(object):
         cmds = [
             "rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'",
             "rpm -E %{_db_backend} | grep -qw 'sqlite'",
+            "rpm -E %{_dbpath} | grep -qw '/usr/lib/sysimage/rpm'",
         ]
 
         for cmd in cmds:

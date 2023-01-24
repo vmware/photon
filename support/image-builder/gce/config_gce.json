@@ -1,7 +1,7 @@
 {
     "installer": {
         "hostname": "photon-machine",
-        "postinstallscripts": [ "gce-patch.sh" ],
+        "postinstallscripts": [ "gce-patch.sh", "../relocate-rpmdb.sh" ],
         "additional_files": [
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
             {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}

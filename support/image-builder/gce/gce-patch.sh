@@ -104,11 +104,3 @@ chmod a+x /usr/bin/gcloud
 chmod a+x /usr/bin/gsutil
 
 sed -i 's/$photon_cmdline $systemd_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0,38400n8/' /boot/grub/grub.cfg
-
-# Added as a part of rpm db migration from BDB to sqlite
-# No harm in cross checking here
-if [ -f /var/lib/rpm/Packages ]; then
-  if ! rpmdb --rebuilddb; then
-    echo "WARNING: Failed rebuild rpmdb" 1>&2
-  fi
-fi

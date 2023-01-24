@@ -1,6 +1,6 @@
 # Photon Base Build Container
 
-FROM photon:4.0
+FROM photon:5.0
 
 ADD tmp/k8s/usr/bin/kube-apiserver /usr/bin/kube-apiserver
 

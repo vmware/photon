@@ -83,10 +83,10 @@ x86_64/python3-3.11.0-2.ph4.x86_64.rpm
 x86_64/python3-libs-3.11.0-2.ph4.x86_64.rpm
 x86_64/readline-8.2-1.ph4.x86_64.rpm
 x86_64/readline-devel-8.2-1.ph4.x86_64.rpm
-x86_64/rpm-4.16.1.3-7.ph4.x86_64.rpm
-x86_64/rpm-build-4.16.1.3-7.ph4.x86_64.rpm
-x86_64/rpm-devel-4.16.1.3-7.ph4.x86_64.rpm
-x86_64/rpm-libs-4.16.1.3-7.ph4.x86_64.rpm
+x86_64/rpm-4.18.0-7.ph5.x86_64.rpm
+x86_64/rpm-build-4.18.0-7.ph5.x86_64.rpm
+x86_64/rpm-devel-4.18.0-7.ph5.x86_64.rpm
+x86_64/rpm-libs-4.18.0-7.ph5.x86_64.rpm
 x86_64/sed-4.8-1.ph4.x86_64.rpm
 x86_64/sqlite-3.39.4-2.ph4.x86_64.rpm
 x86_64/sqlite-libs-3.39.4-2.ph4.x86_64.rpm

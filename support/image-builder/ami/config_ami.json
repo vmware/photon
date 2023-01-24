@@ -1,7 +1,7 @@
 {
     "installer": {
         "hostname": "photon-machine",
-        "postinstallscripts": [ "ami-patch.sh" ],
+        "postinstallscripts": [ "ami-patch.sh", "../relocate-rpmdb.sh" ],
         "additional_files": [
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
         ],
