@@ -1,7 +1,7 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
 Version:        2.2.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
@@ -19,12 +19,17 @@ BuildRequires:  libassuan-devel >= 2.5.0
 BuildRequires:  libksba-devel >= 1.0.7
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error >= 1.24
+BuildRequires:  gnutls-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  gettext
 
-Requires:       libksba
+Requires:       libksba >= 1.4.0-4
 Requires:       libgcrypt >= 1.7.0
 Requires:       npth
 Requires:       libassuan
 Requires:       pinentry
+Requires:       gnutls
+Requires:       sqlite-libs
 Provides:       gpg
 
 %description
@@ -39,10 +44,10 @@ a command line tool with features for easy integration with other applications.
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %if 0%{?with_check}
 %check
@@ -62,6 +67,8 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Tue Jan 24 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.2.23-3
+- Bump release as a part fix to CVE-2022-3515 in libksba
 * Tue Jul 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.2.23-2
 - Fix CVE-2022-34903
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.23-1
