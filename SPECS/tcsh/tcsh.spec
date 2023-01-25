@@ -1,25 +1,26 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
 Version:          6.24.06
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org
 Group:            System Environment/Shells
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:            http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a69e51d08b56e1326368029c1dfc8ada9221ba0f17369cf3471c764b77e53fa259a3fe713e9443835a20f528b0940ec2af9d7fab4cb943789aab08856fd5c2e8
+Source0: http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a69e51d08b56e1326368029c1dfc8ada9221ba0f17369cf3471c764b77e53fa259a3fe713e9443835a20f528b0940ec2af9d7fab4cb943789aab08856fd5c2e8
 
-Provides:         csh = %{version}
-Provides:         /bin/tcsh
 Provides:         /bin/csh
+Provides:         /bin/%{name}
+Provides:         csh = %{version}-%{release}
 
 BuildRequires:    ncurses-devel
 
 Requires:         ncurses
 Requires(post):   /bin/grep
-Requires(postun): (coreutils or toybox) /bin/grep
+Requires(postun): /bin/grep
+Requires(postun): (coreutils or coreutils-selinux or toybox)
 
 %description
 Tcsh is an enhanced but completely compatible version of csh, the C
@@ -33,26 +34,24 @@ like syntax.
 %autosetup -p1
 
 %build
-sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
-
 %configure
-make %{?_smp_mflags} all
+%make_build
 
 %install
 mkdir -p %{buildroot}%{_mandir}/man1 %{buildroot}%{_bindir}
-install -p -m 755 tcsh %{buildroot}%{_bindir}/tcsh
-install -p -m 644 tcsh.man %{buildroot}%{_mandir}/man1/tcsh.1
-ln -sf tcsh %{buildroot}%{_bindir}/csh
-ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
+install -p -m 755 %{name} %{buildroot}%{_bindir}/%{name}
+install -p -m 644 %{name}.man %{buildroot}%{_mandir}/man1/%{name}.1
+ln -sf %{name} %{buildroot}%{_bindir}/csh
+ln -sf %{name}.1 %{buildroot}%{_mandir}/man1/csh.1
 
 while read lang language; do
   dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
   if test -f nls/$language.cat ; then
     mkdir -p $dest
-    install -p -m 644 nls/$language.cat $dest/tcsh
-    echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
+    install -p -m 644 nls/$language.cat $dest/%{name}
+    echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/%{name}"
   fi
-done > tcsh.lang << _EOF
+done > %{name}.lang << _EOF
 de german
 el greek
 en C
@@ -81,17 +80,17 @@ rm -rf %{buildroot}
 %post
 if [ $1 -eq 1 ] ; then
   if [ ! -f %{_sysconfdir}/shells ]; then
-    echo "%{_bindir}/tcsh" >> %{_sysconfdir}/shells
+    echo "%{_bindir}/%{name}" >> %{_sysconfdir}/shells
     echo "%{_bindir}/csh" >> %{_sysconfdir}/shells
-    echo "/bin/tcsh" >> %{_sysconfdir}/shells
+    echo "/bin/%{name}" >> %{_sysconfdir}/shells
     echo "/bin/csh" >> %{_sysconfdir}/shells
   else
-    grep -q '^%{_bindir}/tcsh$' %{_sysconfdir}/shells || \
-    echo "%{_bindir}/tcsh" >> %{_sysconfdir}/shells
+    grep -q '^%{_bindir}/%{name}$' %{_sysconfdir}/shells || \
+    echo "%{_bindir}/%{name}" >> %{_sysconfdir}/shells
     grep -q '^%{_bindir}/csh$' %{_sysconfdir}/shells || \
     echo "%{_bindir}/csh" >> %{_sysconfdir}/shells
-    grep -q '^/bin/tcsh$' %{_sysconfdir}/shells || \
-    echo "/bin/tcsh" >> %{_sysconfdir}/shells
+    grep -q '^/bin/%{name}$' %{_sysconfdir}/shells || \
+    echo "/bin/%{name}" >> %{_sysconfdir}/shells
     grep -q '^/bin/csh$' %{_sysconfdir}/shells || \
     echo "/bin/csh" >> %{_sysconfdir}/shells
   fi
@@ -99,25 +98,27 @@ fi
 
 %postun
 if [ $1 -eq 0 ] ; then
-  if [ ! -x %{_bindir}/tcsh ]; then
-    grep -v '^%{_bindir}/tcsh$'  %{_sysconfdir}/shells | \
+  if [ ! -x %{_bindir}/%{name} ]; then
+    grep -v '^%{_bindir}/%{name}$'  %{_sysconfdir}/shells | \
     grep -v '^%{_bindir}/csh$' > %{_sysconfdir}/shells.rpm && \
     mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
-  if [ ! -x /bin/tcsh ]; then
-    grep -v '^/bin/tcsh$'  %{_sysconfdir}/shells | \
+  if [ ! -x /bin/%{name} ]; then
+    grep -v '^/bin/%{name}$'  %{_sysconfdir}/shells | \
     grep -v '^/bin/csh$' > %{_sysconfdir}/shells.rpm && \
     mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
   fi
 fi
 
-%files -f tcsh.lang
+%files -f %{name}.lang
 %defattr(-,root,root,-)
-%{_bindir}/tcsh
+%{_bindir}/%{name}
 %{_bindir}/csh
 %{_mandir}/man1/*.1*
 
 %changelog
+* Sat Jan 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.24.06-2
+- Fix requires
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.06-1
 - Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.01-1

@@ -1,14 +1,14 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
+Source0: https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
 %define sha512 %{name}=c876d9b1e5f6e6ab858fa6f302e78152beb3e50cedd93f3c61ab6f747e32199b0601ad4a36d426d43d0e9a37d9bf1d6bbfddccc86df4b31d5e3e6edead6cded3
 
 Source1:        scripts/auto_livepatch.sh
@@ -33,12 +33,12 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or toybox or coreutils-selinux)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
-Requires:       (sed or toybox)
-Requires:       (findutils or toybox)
+Requires:       sed
+Requires:       findutils
 
 %description
 Contains the kpatch utility, which allows loading of kernel livepatches.
@@ -87,15 +87,11 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
-#%check
-# make check require shellcheck package, which is not in photon
-
 %files
 %defattr(-,root,root,-)
-%license COPYING
 %{_sbindir}/kpatch
 %{_unitdir}/*
-%{_sysconfdir}/init/kpatch.conf
+%config(noreplace) %{_sysconfdir}/init/kpatch.conf
 
 %files build
 %defattr(-,root,root,-)
@@ -105,7 +101,6 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %files devel
 %defattr(-,root,root,-)
-%doc README.md doc/patch-author-guide.md
 %{_mandir}/man1/kpatch-build.1*
 %{_mandir}/man1/kpatch.1*
 
@@ -118,6 +113,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.7-3
+- Fix requires
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.9.7-2
 - Bump up due to change in elfutils
 * Thu Dec 15 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1

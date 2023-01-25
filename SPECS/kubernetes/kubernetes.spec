@@ -12,7 +12,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -41,7 +41,7 @@ Requires:       iproute2
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
-Requires:       (util-linux or toybox)
+Requires:       util-linux
 Requires:       cri-tools
 Requires:       conntrack-tools
 
@@ -209,6 +209,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-6
+- Fix requires
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-5
 - Bump version as a part of cni upgrade
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-4

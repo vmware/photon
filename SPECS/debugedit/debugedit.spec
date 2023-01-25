@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -8,10 +8,10 @@ Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://sourceware.org/ftp/debugedit/%{version}/%{name}-%{version}.tar.xz
+Source0: https://sourceware.org/ftp/debugedit/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=7e7f529eafe41b53f0b5bfc58282fdbfa0dfa93ed7908b70e81942d6d2b6f80fc9c6bff2ed9674fd98947e5750b615f4c8b222544989e2900c5f8ff5ae0efb92
 
-Patch0:     tweak-find-debuginfo.patch
+Patch0: tweak-find-debuginfo.patch
 
 BuildRequires: make
 BuildRequires: gcc
@@ -27,7 +27,7 @@ Requires: elfutils
 # For add_minidebug, readelf, awk, nm, sort, comm, objcopy, xz
 Requires: gawk
 Requires: xz
-Requires: (coreutils or toybox)
+Requires: (coreutils or coreutils-selinux)
 # For do_file, gdb_add_index
 # We only need gdb-add-index, so suggest gdb-minimal (full gdb is also ok)
 Requires: gdb-minimal
@@ -58,16 +58,14 @@ autoreconf -f -v -i
 cd %{buildroot}%{_bindir}
 ln -sfv find-debuginfo find-debuginfo.sh
 
-%check
 %if 0%{?with_check}
+%check
 sed -i 's/^\(C\|LD\)FLAGS=.*/\1FLAGS=""/' tests/atlocal
 make check %{?_smp_mflags}
 %endif
 
 %files
 %defattr(-,root,root)
-%license COPYING COPYING3 COPYING.LIB
-%doc README
 %{_bindir}/debugedit
 %{_bindir}/sepdebugcrcfix
 %{_bindir}/find-debuginfo
@@ -77,6 +75,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-4
+- Fix requires
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.0-3
 - Bump up due to change in elfutils
 * Fri Jan 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.0-2

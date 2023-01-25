@@ -2,65 +2,68 @@
 %global __os_install_post %{nil}
 %define _binaries_in_noarch_packages_terminate_build   0
 
-Name:		raspberrypi-firmware
-Summary:	Raspberry Pi firmware
-Version:	1.20210303
-Release:	1%{?dist}
-License:	Broadcom Corporation and Raspberry Pi (Trading) Ltd
-URL:		https://github.com/raspberrypi/firmware
-Group:		System Environment/Boot
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 raspberrypi-firmware=91cd8fbc3515991644c9b8f0ae4dbdd07c3cf3a8
-Source1:	rpi-config-txt.txt
-BuildArch:	noarch
+Name:       raspberrypi-firmware
+Summary:    Raspberry Pi firmware
+Version:    1.20210303
+Release:    2%{?dist}
+License:    Broadcom Corporation and Raspberry Pi (Trading) Ltd
+URL:        https://github.com/raspberrypi/firmware
+Group:      System Environment/Boot
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=5d4542b1f279f30302816542204f15658a3a43f169aea3508dcf963402a40c69c821f0c184183d4db93ebfe8ba8e1f19cfe765817945a2b340c069d1520af632
+
+Source1:    rpi-config-txt.txt
+
+BuildArch:  noarch
 
 %description
 Firmware files for Raspberry Pi
 
 %package pi3
-Summary:	Raspberry Pi 3 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:    Raspberry Pi 3 firmware
+Group:      System Environment/Boot
+Requires:   raspberrypi-firmware = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or coreutils-selinux or toybox)
 
 %description pi3
 Firmware files for Raspberry Pi 3
 
 %package pi3-extra
-Summary:	Extra files for Raspberry Pi 3 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware-pi3 = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:    Extra files for Raspberry Pi 3 firmware
+Group:      System Environment/Boot
+Requires:   raspberrypi-firmware-pi3 = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or coreutils-selinux or toybox)
 
 %description pi3-extra
 Extra Firmware files for Raspberry Pi 3
 
 %package pi4
-Summary:	Raspberry Pi 4 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:    Raspberry Pi 4 firmware
+Group:      System Environment/Boot
+Requires:   raspberrypi-firmware = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or coreutils-selinux or toybox)
 
 %description pi4
 Firmware files for Raspberry Pi 4
 
 %package pi4-extra
-Summary:	Extra files for Raspberry Pi 4 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware-pi4 = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:    Extra files for Raspberry Pi 4 firmware
+Group:      System Environment/Boot
+Requires:   raspberrypi-firmware-pi4 = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or coreutils-selinux or toybox)
 
 %description pi4-extra
 Extra Firmware files for Raspberry Pi 4
 
 %prep
-%setup -q -n firmware-%{version}
+%autosetup -p1 -n firmware-%{version}
 
 %build
 
@@ -111,9 +114,11 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
-*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20210303-1
--   Automatic Version Bump
-*   Mon Nov 02 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-2
--   Use miniuart-bt and fixed core_freq to accommodate for rpi3 uart
-*   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-1
--   Initial packaging
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20210303-2
+- Fix requires
+* Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20210303-1
+- Automatic Version Bump
+* Mon Nov 02 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-2
+- Use miniuart-bt and fixed core_freq to accommodate for rpi3 uart
+* Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-1
+- Initial packaging

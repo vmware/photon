@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -58,7 +58,7 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires:       (coreutils or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
@@ -234,7 +234,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-, root, root)
-%doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/%{name}
 %{_bindir}/python%{VER}
@@ -242,7 +241,6 @@ rm -rf %{buildroot}/*
 
 %dir %{_libdir}/python%{VER}
 %{_libdir}/python%{VER}/site-packages/README.txt
-
 %{_libdir}/libpython3.so
 %{_libdir}/libpython%{VER}.so.1.0
 
@@ -254,7 +252,6 @@ rm -rf %{buildroot}/*
 
 %files libs
 %defattr(-, root, root)
-%doc LICENSE README.rst
 %{_libdir}/python%{VER}
 %exclude %{_libdir}/python%{VER}/lib2to3
 %exclude %{_libdir}/python%{VER}/site-packages/
@@ -290,13 +287,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/python-%{VER}-embed.pc
 %{_libdir}/pkgconfig/%{name}-embed.pc
 
-%doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
 
 %files tools
 %defattr(-, root, root, 755)
-%doc Tools/README
 %{_libdir}/python%{VER}/lib2to3
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
@@ -325,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-6
+- Fix requires
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-5
 - Disable builtin hashes and use openssl backend for the same
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.11.0-4

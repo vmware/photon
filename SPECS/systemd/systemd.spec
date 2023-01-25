@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -116,7 +116,7 @@ resolution.
 Summary:        systemd libraries
 License:        LGPLv2+ and MIT
 Provides:       nss-myhostname = 0.4
-Requires(post): coreutils
+Requires(post): (coreutils or coreutils-selinux or toybox)
 Requires(post): sed
 Requires(post): grep
 
@@ -704,9 +704,11 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-9
+- Fix requires
 * Fri Feb 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-8
 - Enable sysusers
-- Add a patch to use bBFQ scheduler
+- Add a patch to use BFQ scheduler
 - Remove test file packaging with main package
 * Tue Jan 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 252.4-7
 - Support OOMPolicy in scope units

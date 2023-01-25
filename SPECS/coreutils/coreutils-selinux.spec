@@ -1,7 +1,10 @@
+# this is also used in toybox.spec
+%define coreutils_selinux_present    %{_sharedstatedir}/rpm-state/%{name}
+
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -67,8 +70,17 @@ env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root %{?_smp_mflags}
 make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%clean
+rm -rf %{buildroot}/*
+
+%post
+/sbin/ldconfig
+mkdir -p %{_sharedstatedir}/rpm-state
+touch %{coreutils_selinux_present}
+
+%postun
+/sbin/ldconfig
+[ $1 = 0 ] && rm -f %{coreutils_selinux_present}
 
 %files
 %defattr(-,root,root)
@@ -79,6 +91,8 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-4
+- Add a flag file & use it in toybox trigger
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-3
 - Fix binary path
 * Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1

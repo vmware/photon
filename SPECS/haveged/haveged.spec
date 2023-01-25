@@ -1,21 +1,23 @@
-# This spec is extracted from haveged-1.9.1.tar.gz
-
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Daemons
-URL:            http://www.irisa.fr/caps/projects/hipsor/
-Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha512  haveged=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
-Source1:        haveged.service
+URL:            http://www.irisa.fr/caps/projects/hipsor
+
+Source0: http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
+
+Source1:        %{name}.service
+
 Requires:       systemd
-BuildRequires:  systemd
+
+BuildRequires:  systemd-devel
 BuildRequires:  automake
-BuildRequires:  coreutils
+BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  glibc
 
 %description
@@ -38,73 +40,63 @@ attempt to select appropriate values from internal tables.
 %package        devel
 Summary:        Headers and shared development libraries for HAVEGE algorithm
 Group:          Development/Libraries
-Requires:       haveged
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 Headers and shared object symbolic links for the HAVEGE algorithm
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-#autoreconf -fiv
 %configure
-#SMP build is not working
-# make doesn't support _smp_mflags
-make
-
-%check
-# make doesn't support _smp_mflags
-make check
+%make_build
 
 %install
-rm -rf %{buildroot}
-# make doesn't support _smp_mflags
-make install DESTDIR=%{buildroot} INSTALL="install -p"
+%make_install %{?_smp_mflags}
 
-chmod 0644 COPYING README ChangeLog AUTHORS
+rm -rf %{buildroot}%{_sysconfdir}/init.d \
+       %{buildroot}%{_libdir}/libhavege.*a
 
-#Install systemd service file
-rm -rf %{buildroot}/etc/init.d
-pushd %{buildroot}
-mkdir -p ./lib/systemd/system
-install -p -m644 %{SOURCE1} ./lib/systemd/system/haveged.service
-popd
+mkdir -p %{buildroot}%{_unitdir}
+install -p -m644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 
-# We don't ship .la files.
-rm -rf %{buildroot}%{_libdir}/libhavege.*a
+%if 0%{?with_check}
+%check
+make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}
 
 %post
 /sbin/ldconfig
-%systemd_post haveged.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun haveged.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart haveged.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-, root, root, -)
-%{_mandir}/man8/haveged.8*
-%{_sbindir}/haveged
-/lib/systemd/system/haveged.service
+%{_sbindir}/%{name}
+%{_unitdir}/%{name}.service
 %{_libdir}/*so.*
-%doc COPYING README ChangeLog AUTHORS
 
 %files devel
 %defattr(-, root, root, -)
+%{_mandir}/man8/%{name}.8*
 %{_mandir}/man3/libhavege.3*
 %dir %{_includedir}/%{name}
 %{_includedir}/%{name}/havege.h
-%doc contrib/build/havege_sample.c
 %{_libdir}/*.so
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.9.18-2
+- Fix build requires
 * Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.18-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.14-1

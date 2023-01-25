@@ -17,9 +17,9 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
-URL:            http://www.kernel.org/
+URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -250,10 +250,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires(pre):    (coreutils or coreutils-selinux)
+Requires(preun):  (coreutils or coreutils-selinux)
+Requires(post):   (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 The Linux package contains the Linux kernel with RT (real-time)
@@ -505,6 +505,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-11
+- Fix requires
 * Thu Feb 02 2023 Keerthana K <keerthanak@vmware.com> 6.0.7-10
 - Disable CONFIG_SYSFB_SIMPLEFB
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.7-9

@@ -13,7 +13,7 @@ Source0: https://github.com/PhilipHazel/pcre2/releases/download/%{name}-%{versio
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  coreutils
+BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  readline-devel
@@ -68,7 +68,6 @@ This package contains minimal set of shared pcre libraries.
 %install
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
-find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check

@@ -1,15 +1,18 @@
+# this is also used in toybox.spec
+%define coreutils_present %{_sharedstatedir}/rpm-state/%{name}
+
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha512  %{name}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
+Source0: http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
+%define sha512 %{name}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
 
@@ -30,7 +33,7 @@ the basic system
 %package lang
 Summary:    Additional language files for coreutils
 Group:      System Environment/Base
-Requires:   coreutils >= %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description lang
 These are the additional language files of coreutils.
@@ -70,8 +73,17 @@ env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root %{?_smp_mflags}
 make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%clean
+rm -rf %{buildroot}/*
+
+%post
+/sbin/ldconfig
+mkdir -p %{_sharedstatedir}/rpm-state
+touch %{coreutils_present}
+
+%postun
+/sbin/ldconfig
+[ $1 = 0 ] && rm -f %{coreutils_present}
 
 %files
 %defattr(-,root,root)
@@ -85,6 +97,8 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Mon Feb 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-3
+- Add a flag file & use it in toybox trigger
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-2
 - Fix binary path
 * Mon Apr 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1

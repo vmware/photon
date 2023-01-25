@@ -1,19 +1,23 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        18.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=30a408b8f2ae41646f2ce3018862105ee4bd7913dd3cbbe8af8fc4d70cf64ac820342db9becff42c5a2b6f71d8dc3b539f580833f975b46628ad159712a8b109
-BuildRequires:  coreutils, zlib
+
+Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
+%define sha512 node=30a408b8f2ae41646f2ce3018862105ee4bd7913dd3cbbe8af8fc4d70cf64ac820342db9becff42c5a2b6f71d8dc3b539f580833f975b46628ad159712a8b109
+
+BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
-Requires:       (coreutils or toybox)
+
 Requires:       python3
+Requires:       (coreutils or coreutils-selinux)
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -28,18 +32,19 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -n node-%{version}
+%autosetup -p1 -n node-%{version}
 
 %build
-%{__python3} configure.py \
-             --enable-lto \
-             --prefix=%{_prefix} \
-             --libdir=%{_libdir}
-make %{?_smp_mflags}
+%{python3} configure.py \
+         --enable-lto \
+         --prefix=%{_prefix} \
+         --libdir=%{_libdir}
+
+%make_build
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot}
-rm -fr %{buildroot}%{_libdir}/dtrace/  # No systemtap support.
+%make_install %{?_smp_mflags}
+rm -fr %{buildroot}%{_libdir}/dtrace/
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
 
@@ -49,17 +54,19 @@ for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
   find %{buildroot}%{_libdir}/node_modules/ -name "$FILE" -delete
 done
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} cctest
+%endif
 
 %post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/node_modules/*
 %{_mandir}/man*/*
-%doc CHANGELOG.md LICENSE README.md
 
 %files devel
 %defattr(-,root,root)
@@ -69,6 +76,8 @@ make %{?_smp_mflags} cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-3
+- Fix requires
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 18.10.0-2
 - Update release to compile with python 3.11
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 18.10.0-1

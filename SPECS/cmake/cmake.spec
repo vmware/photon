@@ -3,7 +3,7 @@
 Summary:    Cross-platform make system
 Name:       cmake
 Version:    3.25.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
 Group:      Development/Tools
@@ -23,7 +23,7 @@ BuildRequires: zlib-devel
 BuildRequires: libarchive-devel
 BuildRequires: bzip2-devel
 BuildRequires: libgcrypt-devel
-BuildRequires: (toybox or coreutils)
+BuildRequires: (coreutils or coreutils-selinux)
 
 Requires: libgcrypt
 Requires: ncurses
@@ -72,6 +72,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25.1-3
+- Fix requires
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 3.25.1-2
 - bump version as a part of xz upgrade
 * Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.25.1-1

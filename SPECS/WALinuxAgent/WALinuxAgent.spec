@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.7.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -23,7 +23,7 @@ Requires: python3-xml
 Requires: python3-pyasn1
 Requires: openssh
 Requires: openssl
-Requires: (util-linux or toybox)
+Requires: util-linux
 Requires: /bin/sed
 Requires: /bin/grep
 Requires: sudo
@@ -38,7 +38,7 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %py3_build
@@ -80,6 +80,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-3
+- FIx requires
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.3.0-2
 - Update release to compile with python 3.11
 * Fri Aug 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-1

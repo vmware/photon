@@ -1,7 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          MIT
 URL:              http://zsh.org
 Group:            System Environment/Shells
@@ -14,7 +14,7 @@ Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
 Source1: zprofile.rhs
 Source2: zshrc
 
-BuildRequires:    coreutils
+BuildRequires:    (coreutils or coreutils-selinux)
 BuildRequires:    tar
 BuildRequires:    patch
 BuildRequires:    diffutils
@@ -30,7 +30,8 @@ BuildRequires:    gawk
 BuildRequires:    elfutils
 
 Requires(post):   /bin/grep
-Requires(postun): (coreutils or toybox) /bin/grep
+Requires(postun): /bin/grep
+Requires:       (coreutils or coreutils-selinux)
 
 Provides:         /bin/%{name}
 
@@ -42,18 +43,6 @@ command line editing, built-in spelling correction, programmable
 command completion, shell functions (with autoloading), a history
 mechanism, and more.
 
-%package          html
-Summary:          Zsh shell manual in html format
-Group:            System Environment/Shells
-
-%description html
-The %{name} shell is a command interpreter usable as an interactive login
-shell and as a shell script command processor.  Zsh resembles the ksh
-shell (the Korn shell), but includes many enhancements.  Zsh supports
-command line editing, built-in spelling correction, programmable
-command completion, shell functions (with autoloading), a history
-mechanism, and more. This package contains the Zsh manual in html format.
-
 %prep
 %autosetup -p1
 
@@ -61,19 +50,20 @@ mechanism, and more. This package contains the Zsh manual in html format.
 # make loading of module's dependencies work again (#1277996)
 export LIBLDFLAGS='-z lazy'
 
-%configure --enable-etcdir=%{_sysconfdir} \
-           --with-tcsetpgrp \
-           --enable-maildir-support
+%configure \
+    --enable-etcdir=%{_sysconfdir} \
+    --with-tcsetpgrp \
+    --enable-maildir-support
 
-make %{_smp_mflags} all html
+%make_build all html
 
 %install
-%makeinstall %{?_smp_mflags} install.info \
-  fndir=%{buildroot}%{_datadir}/%{name}/%{version}/functions \
-  sitefndir=%{buildroot}%{_datadir}/%{name}/site-functions \
-  scriptdir=%{buildroot}%{_datadir}/%{name}/%{version}/scripts \
-  sitescriptdir=%{buildroot}%{_datadir}/%{name}/scripts \
-  runhelpdir=%{buildroot}%{_datadir}/%{name}/%{version}/help
+%make_install %{?_smp_mflags} install.info \
+  fndir=%{_datadir}/%{name}/%{version}/functions \
+  sitefndir=%{_datadir}/%{name}/site-functions \
+  scriptdir=%{_datadir}/%{name}/%{version}/scripts \
+  sitescriptdir=%{_datadir}/%{name}/scripts \
+  runhelpdir=%{_datadir}/%{name}/%{version}/help
 
 rm -f %{buildroot}%{_bindir}/%{name}-%{version} \
       %{buildroot}%{_infodir}/dir
@@ -86,11 +76,8 @@ done
 
 install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.zshrc
 
-# This is just here to shut up rpmlint, and is very annoying.
-# Note that we can't chmod everything as then rpmlint will complain about
-# those without a she-bang line.
 for i in checkmail harden run-help zcalc zkbd \
-         test-repo-git-rebase-merge _path_files test-repo-git-rebase-apply; do
+         test-repo-git-rebase-{apply,merge} _path_files; do
   sed -i -e 's!/usr/local/bin/zsh!%{_bindir}/zsh!' \
       %{buildroot}%{_datadir}/%{name}/%{version}/functions/$i
   chmod +x %{buildroot}%{_datadir}/%{name}/%{version}/functions/$i
@@ -104,7 +91,6 @@ rm -rf %{buildroot}
 
 %if 0%{?with_check}
 %check
-rm -f Test/C02cond.ztst
 make check %{_smp_mflags}
 %endif
 
@@ -129,21 +115,18 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc README LICENCE Etc/BUGS Etc/CONTRIBUTORS Etc/FAQ FEATURES MACHINES
-%doc NEWS Etc/%{name}-development-guide Etc/completion-style-guide
 %attr(755,root,root) %{_bindir}/%{name}
 %{_mandir}/*
 %{_infodir}/*
-%{_datadir}/%{name}
-%{_libdir}/%{name}
+%{_libdir}/%{name}/*
+%{_datadir}/%{name}/*
 %config(noreplace) %{_sysconfdir}/skel/.z*
 %config(noreplace) %{_sysconfdir}/z*
 
-%files html
-%defattr(-,root,root)
-%doc Doc/*.html
-
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-3
+- Fix requires
+- Remove html sub package
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.9-2
 - Bump up due to change in elfutils
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9-1

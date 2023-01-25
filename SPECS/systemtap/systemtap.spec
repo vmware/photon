@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -97,7 +97,7 @@ Group:         System/Tools
 Summary:       Instrumentation System Server
 Requires:      %{name} = %{version}-%{release}
 Requires:      %{name}-runtime = %{version}-%{release}
-Requires:      (coreutils or toybox)
+Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
@@ -390,6 +390,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-7
+- Fix requires
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.8-6
 - bump release as part of sqlite update
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.8-5

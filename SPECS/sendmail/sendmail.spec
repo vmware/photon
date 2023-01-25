@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -22,13 +22,13 @@ BuildRequires:    cyrus-sasl-devel
 
 Requires:         cyrus-sasl
 Requires:         tinycdb
-Requires:         (coreutils or toybox)
+Requires:         (coreutils or coreutils-selinux)
 Requires:         systemd
 Requires:         m4
 Requires:         openldap
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires:         /bin/sed
-Requires:         (net-tools or toybox)
+Requires:         net-tools
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -193,6 +193,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-7
+- Fix requires
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-6
 - Bump version as a part of openldap upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-5

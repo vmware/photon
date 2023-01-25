@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -238,10 +238,10 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
-Requires(postun): (coreutils or toybox)
+Requires(pre):    (coreutils or coreutils-selinux)
+Requires(preun):  (coreutils or coreutils-selinux)
+Requires(post):   (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 Obsoletes:  linux-aws
 
@@ -685,6 +685,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-8
+- Fix requires
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.7-7
 - Enable CONFIG_PCI_PF_STUB
 * Tue Jan 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.0.7-6

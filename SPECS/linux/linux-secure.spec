@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.0.7
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -149,10 +149,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires(pre):    (coreutils or coreutils-selinux)
+Requires(preun):  (coreutils or coreutils-selinux)
+Requires(post):   (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 Security hardened Linux kernel.
@@ -370,6 +370,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-8
+- Fix requires
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-7
 - Revert "PCI: Clear PCI_STATUS when setting up device"
 * Tue Jan 03 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-6

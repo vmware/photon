@@ -1,9 +1,10 @@
-%define dracutlibdir %{_libdir}/%{name}
+%define dracutlibdir        %{_libdir}/%{name}
+%global __requires_exclude  pkg-config
 
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -13,9 +14,6 @@ Distribution:   Photon
 
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
-
-# Taken from https://www.gnu.org/licenses/lgpl-2.1.txt
-Source1:        lgpl-2.1.txt
 
 Patch0:         Add-mkinitrd-support-to-dracut.patch
 Patch1:         disable-xattr.patch
@@ -29,14 +27,14 @@ BuildRequires:  asciidoc3
 BuildRequires:  systemd-rpm-macros
 
 Requires:       bash >= 4
-Requires:       (coreutils or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
-Requires:       (util-linux or toybox)
+Requires:       util-linux
 Requires:       systemd
 Requires:       /bin/sed
 Requires:       /bin/grep
-Requires:       (findutils or toybox)
-Requires:       (cpio or toybox)
+Requires:       findutils
+Requires:       cpio
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -54,12 +52,11 @@ This package contains tools to assemble the local initrd and host configuration.
 
 %prep
 %autosetup -n %{name}-%{version} -p1
-cp %{SOURCE1} .
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} \
            --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_prefix}/lib \
+           --libdir=%{_libdir} \
            --disable-documentation
 
 %make_build
@@ -102,8 +99,6 @@ rm -rf -- %{buildroot}
 
 %files
 %defattr(-,root,root,0755)
-%{!?_licensedir:%global license %%doc}
-%license COPYING lgpl-2.1.txt
 %{_bindir}/%{name}
 %{_bindir}/mkinitrd
 %{_bindir}/lsinitrd
@@ -158,6 +153,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-2
+- Fix requires
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-1
 - Upgrade to v059
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 057-1
