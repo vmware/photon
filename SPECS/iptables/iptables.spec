@@ -85,6 +85,13 @@ alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-nft
   --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
 done
 
+for target in iptables \
+              ip6tables; do
+alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-legacy 10000 \
+  --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-legacy-save \
+  --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-legacy-restore
+done
+
 %systemd_post iptables.service
 
 %preun
@@ -99,6 +106,8 @@ if [ $1 -eq 0 ]; then
               arptables; do
   alternatives --remove ${target} %{_sbindir}/${target}-nft
   done
+  alternatives --remove iptables %{_sbindir}/iptables-legacy
+  alternatives --remove ip6tables %{_sbindir}/ip6tables-legacy
 fi
 %?ldconfig
 %systemd_postun_with_restart iptables.service
