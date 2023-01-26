@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        3.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -48,6 +48,7 @@ install -Dm 0644 %{SOURCE5}  %{buildroot}/etc/sysconfig/
 install -Dm 0644 %{SOURCE6}  %{buildroot}/etc/sysconfig/
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ptp4l.service" > %{buildroot}/usr/lib/systemd/system-preset/50-ptp4l.preset
+echo "disable phc2sys.service" > %{buildroot}/usr/lib/systemd/system-preset/50-phc2sys.preset
 echo "disable ts2phc.service" > %{buildroot}/usr/lib/systemd/system-preset/50-ts2phc.preset
 
 %clean
@@ -81,6 +82,7 @@ rm -rf %{buildroot}
 %{_libdir}/systemd/system/ptp4l.service
 %{_libdir}/systemd/system/ts2phc.service
 %{_libdir}/systemd/system-preset/50-ptp4l.preset
+%{_libdir}/systemd/system-preset/50-phc2sys.preset
 %{_libdir}/systemd/system-preset/50-ts2phc.preset
 %{_sbindir}/hwstamp_ctl
 %{_sbindir}/nsm
@@ -100,6 +102,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ts2phc.8.gz
 
 %changelog
+*   Tue Feb 14 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-3
+-   Disable phc2sys service by default
 *   Fri Jan 13 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-2
 -   Add service for ts2phc
 *   Tue Sep 06 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-1
