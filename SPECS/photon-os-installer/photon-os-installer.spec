@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       14%{?dist}
+Release:       15%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -27,6 +27,7 @@ Patch12:       0013-isoInstaller-dynamic-retry-mount-media-count.patch
 Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
 Patch14:       0015-Add-support-for-customInitrd-and-customIso.patch
 Patch15:       0016-upgrade-ostree-repo.patch
+Patch16:       0017-customIso-Use-branch-specific-license-text-and-EULA.patch
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
@@ -56,6 +57,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Fri Jan 27 2023 Tapas Kundu <tkundu@vmware.com> 2.0-15
+- Update EULA for 5.0 Beta
 * Fri Jan 20 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0-14
 - Remove depricated package linux-aws from installer
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.0-13
