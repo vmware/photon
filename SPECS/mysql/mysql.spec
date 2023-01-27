@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.31
-Release:        2%{?dist}
+Version:        8.0.32
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=87b1678de8c2fd640fd6f3ae58266ea63fe240578330e3296d0e5fc209bbe9b0c22996214b6ca4cce8c0d9cc2f9897f4e6723d835b33fc4342983c82929c3d96
+%define sha512 %{name}-boost=937e0d0350cb583bb4de15b080f08ed92b253a6d7c09f13a028855dae154fc84f0c95fb082b818b2fa6fa792cd2d9db8d7dc7a20a2a0d3d2b6839fbd2c821b44
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -103,10 +103,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %files icu-data-files
-%defattr(-, root, root, -)
+%defattr(-,root,root)
 %{_libdir}/private/icudt69l
 
 %changelog
+* Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-1
+- Upgrade to v8.0.32
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-2
 - Bump version as a part of libtirpc upgrade
 * Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-1
