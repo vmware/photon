@@ -1,17 +1,21 @@
+%define blfs_systemd_units_ver  20140907
+%define privsep_path            %{_datadir}/empty.sshd
+
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.1p1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a1f02c407f6b621b1d0817d1a0c9a6839b67e416c84f3b76c63003b119035b24c19a1564b22691d1152e1d2d55f4dc7eb1af2d2318751e431a99c4efa77edc70
-Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
-%define sha512  blfs-systemd-units=e8214d2f05c74ee2dc40b357097de4bd6ea068538d215419d7fab37fad22a0ca5900cb50127808480274ef4e4c7c0c7492bcc1bd907e5c1049ee2c004c6beaf9
+Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a1f02c407f6b621b1d0817d1a0c9a6839b67e416c84f3b76c63003b119035b24c19a1564b22691d1152e1d2d55f4dc7eb1af2d2318751e431a99c4efa77edc70
+Source1: http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-%{blfs_systemd_units_ver}.tar.bz2
+%define sha512 blfs-systemd-units=e8214d2f05c74ee2dc40b357097de4bd6ea068538d215419d7fab37fad22a0ca5900cb50127808480274ef4e4c7c0c7492bcc1bd907e5c1049ee2c004c6beaf9
+
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 
@@ -26,9 +30,10 @@ BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd-devel
 BuildRequires:  groff
 
-Requires:       openssh-clients = %{version}-%{release}
-Requires:       openssh-server = %{version}-%{release}
+Requires:       %{name}-clients = %{version}-%{release}
+Requires:       %{name}-server = %{version}-%{release}
 Requires:       systemd
+Requires:       openssl
 
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
@@ -38,7 +43,9 @@ and rcp respectively.
 
 %package clients
 Summary: openssh client applications.
-Requires:   openssl
+Requires: zlib
+Requires: krb5
+
 %description clients
 This provides the ssh client utilities.
 
@@ -47,16 +54,17 @@ Summary: openssh server applications
 Requires:   Linux-PAM
 Requires:   shadow
 Requires:   ncurses-terminfo
-Requires:   openssh-clients = %{version}-%{release}
+Requires:   e2fsprogs-libs
+Requires:   %{name}-clients = %{version}-%{release}
 Requires(post): /usr/bin/chown
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
 %prep
 # Using autosetup is not feasible
-%setup -q
-tar xf %{SOURCE1} --no-same-owner
+%setup -q -a0 -a1
 %patch0 -p0
 %patch1 -p1
 
@@ -80,7 +88,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
     --with-md5-passwords \
-    --with-privsep-path=%{_datadir}/empty.sshd \
+    --with-privsep-path=%{privsep_path} \
     --with-pam \
     --with-maintype=man \
     --enable-strip=no \
@@ -91,9 +99,9 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_datadir}/empty.sshd
+install -vdm755 %{buildroot}%{privsep_path}
 #   Install daemon script
-pushd blfs-systemd-units-20140907
+pushd blfs-systemd-units-%{blfs_systemd_units_ver}
 make DESTDIR=%{buildroot} UNITSDIR=%{buildroot}%{_unitdir} install-sshd %{?_smp_mflags}
 popd
 
@@ -109,19 +117,20 @@ install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 if ! getent passwd sshd >/dev/null; then
    useradd sshd
 fi
-if [ ! -d %{_datadir}/empty.sshd ]; then
-  mkdir %{_datadir}/empty.sshd
-  chmod 0755 %{_datadir}/empty.sshd
+if [ ! -d %{privsep_path} ]; then
+  mkdir %{privsep_path}
+  chmod 0755 %{privsep_path}
 fi
 cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
 useradd test -G root -m
-sudo -u test -s /bin/bash -c "PATH=$PATH make tests"
+sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
 %endif
 
 %pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
-getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_datadir}/empty.sshd -g sshd -s /bin/false -u 1050 sshd
+getent passwd sshd >/dev/null || \
+    useradd -c 'sshd PrivSep' -d %{privsep_path} -g sshd -s /bin/false -u 1050 sshd
 
 %preun server
 %systemd_preun sshd.service sshd-keygen.service
@@ -129,30 +138,24 @@ getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d %{_datadir}/empty.
 %post server
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    chown -v root:sys %{_datadir}/empty.sshd
+    chown -v root:sys %{privsep_path}
 fi
 %systemd_post sshd.service sshd-keygen.service
 
 %postun server
 /sbin/ldconfig
 %systemd_postun_with_restart sshd.service sshd-keygen.service
-if [ $1 -eq 0 ]; then
-  if getent passwd sshd >/dev/null; then
-    userdel sshd
-  fi
-  if getent group sshd >/dev/null; then
-    groupdel sshd
-  fi
-fi
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
+%defattr(-,root,root)
+
 %files server
 %defattr(-,root,root)
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
-%dir %attr(0711,root,root) %{_datadir}/empty.sshd
+%dir %attr(0711,root,root) %{privsep_path}
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
@@ -165,6 +168,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/sftp-server.8.gz
 
 %files clients
+%defattr(-,root,root)
 %attr(0755,root,root) %dir %{_sysconfdir}/ssh
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
@@ -193,6 +197,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-5
+- Set MaxAuthTries to 4
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 9.1p1-4
 - Bump version as a part of krb5 upgrade
 * Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 9.1p1-3

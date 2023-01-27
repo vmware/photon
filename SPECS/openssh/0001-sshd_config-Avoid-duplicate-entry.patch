@@ -16,15 +16,15 @@ index c423eba..af8b702 100644
 +++ b/sshd_config
 @@ -29,9 +29,9 @@
  # Authentication:
- 
+
  #LoginGraceTime 2m
 -#PermitRootLogin prohibit-password
 +PermitRootLogin no
  #StrictModes yes
 -#MaxAuthTries 6
-+MaxAuthTries 2
++MaxAuthTries 4
  #MaxSessions 10
- 
+
  #PubkeyAuthentication yes
 @@ -79,10 +79,10 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # If you just want the PAM account and session checks to run without
@@ -32,7 +32,7 @@ index c423eba..af8b702 100644
  # and KbdInteractiveAuthentication to 'no'.
 -#UsePAM no
 +UsePAM yes
- 
+
 -#AllowAgentForwarding yes
 -#AllowTcpForwarding yes
 +AllowAgentForwarding no
@@ -55,6 +55,6 @@ index c423eba..af8b702 100644
  #UseDNS no
  #PidFile /var/run/sshd.pid
  #MaxStartups 10:30:100
--- 
+--
 2.23.1
 
