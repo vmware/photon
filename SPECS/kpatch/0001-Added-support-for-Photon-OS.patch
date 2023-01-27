@@ -1,4 +1,4 @@
-From bdfb7e97c5c809e2c12e88de3dfd64dfe5dbe68d Mon Sep 17 00:00:00 2001
+From 9949f810d589083c98ecb3a18bb96c35ad5cf684 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <blamoreaux@vmware.com>
 Date: Tue, 31 May 2022 22:39:31 +0000
 Subject: [PATCH] Added support for Photon OS
@@ -6,14 +6,14 @@ Subject: [PATCH] Added support for Photon OS
 This has now been modified and tested (on aws, generic and rt only) to be
 compatible with all Photon OS flavors.
 ---
- kpatch-build/kpatch-build | 92 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 91 insertions(+), 1 deletion(-)
+ kpatch-build/kpatch-build | 94 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 93 insertions(+), 1 deletion(-)
 
 diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
-index 634095d..b358fd1 100755
+index 296fa48..2f15ac2 100755
 --- a/kpatch-build/kpatch-build
 +++ b/kpatch-build/kpatch-build
-@@ -628,6 +628,13 @@ while [[ $# -gt 0 ]]; do
+@@ -631,6 +631,13 @@ while [[ $# -gt 0 ]]; do
  	shift
  done
 
@@ -27,7 +27,7 @@ index 634095d..b358fd1 100755
  if [[ ${#PATCH_LIST[@]} -eq 0 ]]; then
  	warn "no patch file(s) specified"
  	usage
-@@ -712,7 +719,7 @@ if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
+@@ -713,7 +720,7 @@ if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
  	DISTRO="$ID"
  fi
 
@@ -36,7 +36,7 @@ index 634095d..b358fd1 100755
  	[[ -z "$VMLINUX" ]] && VMLINUX="/usr/lib/debug/lib/modules/$ARCHVERSION/vmlinux"
  	[[ -e "$VMLINUX" ]] || die "kernel-debuginfo-$ARCHVERSION not installed"
 
-@@ -824,6 +831,89 @@ else
+@@ -839,6 +846,91 @@ else
  		sed -i "s/^SUBLEVEL.*/${sublevel}/" "$KERNEL_SRCDIR/Makefile" || die
  		echo "$ARCHVERSION" > "$VERSIONFILE" || die
 
@@ -47,13 +47,14 @@ index 634095d..b358fd1 100755
 +
 +		[[ -z "$CONFIGFILE" ]] && CONFIGFILE="/boot/config-$(uname -r)"
 +
++		#extract phX tag
++		[[ $(uname -r) =~ \.ph[0-9]+ ]] && PH_TAG="${BASH_REMATCH:1}"
++
 +		#extract only version number
 +		KERNEL_VERSION=$(uname -r | cut -d '-' -f 1)
 +
-+		declare -A photon_version=(["4.19"]="3.0" ["5.10"]="4.0")
-+
-+		#determine which photon version this is
-+		KERNEL_SHORT_VERSION=$(uname -r | cut -d '.' -f 1-2) && PHOTON_VERSION=${photon_version[$KERNEL_SHORT_VERSION]}
++		#determine which photon version this is (3.0, 4.0, 5.0, etc)
++		PHOTON_VERSION="${PH_TAG//[^0-9]/}".0
 +
 +		#extract photon flavor - aws, esx, etc.
 +		FLAVOR=$(uname -r | cut -d '-' -f 3)
@@ -71,7 +72,7 @@ index 634095d..b358fd1 100755
 +
 +		#download and prep photon kernel source
 +		[ ! -d $PHOTON_TEMP_DIR ] && mkdir $PHOTON_TEMP_DIR
-+		local topdir="${PWD}"
++		topdir="${PWD}"
 +		cd $PHOTON_TEMP_DIR
 +
 +		# src rpm name
@@ -110,7 +111,8 @@ index 634095d..b358fd1 100755
 +
 +		echo "Extracting kernel source from source rpm, this may take a few minutes..."
 +		rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$RPMDIR" &> /dev/null
-+		cp rpmbuild/BUILD/fips-canister*/* "rpmbuild/BUILD/linux-$KERNEL_VERSION/crypto"
++		ls rpmbuild/BUILD/fips*canister* &> /dev/null && cp rpmbuild/BUILD/fips*canister*/* "rpmbuild/BUILD/linux-$KERNEL_VERSION/crypto"
++		[[ -f rpmbuild/SOURCES/fips_canister-kallsyms ]] && cp rpmbuild/SOURCES/fips_canister-kallsyms "rpmbuild/BUILD/linux-$KERNEL_VERSION/crypto"
 +		cp "$CONFIGFILE" rpmbuild/BUILD/linux-"$KERNEL_VERSION"/.config
 +		echo "Finished extracting source"
 +
@@ -127,5 +129,5 @@ index 634095d..b358fd1 100755
  		die "Unsupported distribution"
  	fi
 --
-2.30.3
+2.35.5
 

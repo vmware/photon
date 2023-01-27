@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -17,12 +17,18 @@ Source3:        scripts/README.txt
 Source4:        scripts/dockerfiles/Dockerfile.ph3
 Source5:        scripts/dockerfiles/Dockerfile.ph4
 Source6:        scripts/rpm/spec.file
+Source7:        scripts/dockerfiles/Dockerfile.ph5
 
 BuildArch:      x86_64
 
 Patch0:         0001-Added-support-for-Photon-OS.patch
 Patch1:         0001-adding-option-to-set-description-field-of-module.patch
 Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
+
+# Fix invalid ancestor issue in 5.0
+Patch3:         0001-kpatch-cc-Add-more-file-ignores.patch
+Patch4:         0002-kpatch-build-Add-find_kobj-short-circuit-for-OOT-mod.patch
+Patch5:         0003-kpatch-build-support-Linux-5.19-.cmd-file-format.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -53,6 +59,7 @@ sacrificing security or stability.
 Requires: %{name} = %{version}-%{release}
 Requires: build-essential
 Requires: tar
+Requires: curl
 Summary: Dynamic kernel patching
 
 %description build
@@ -82,7 +89,7 @@ Contains auto_livepatch and gen_livepatch scripts.
 %install
 %make_install PREFIX=%{_usr} %{?_smp_mflags}
 mkdir -p %{buildroot}%{_sysconfdir}/{auto_livepatch/dockerfiles,gen_livepatch}
-cp %{SOURCE4} %{SOURCE5} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
+cp %{SOURCE4} %{SOURCE5} %{SOURCE7} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
 cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
@@ -113,6 +120,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Wed Feb 15 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-4
+- Add support for future Photon versions, including 5.0
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.7-3
 - Fix requires
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.9.7-2
