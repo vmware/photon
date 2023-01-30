@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.54
+Version:        2.4.55
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -8,12 +8,12 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=228493b2ff32c4142c6e484d304f2ea12e467498605fe12adce2b61388d8efe7b2e96ae2fd0abd1dc88a5f12d625e007d8da0ae5628cff2a5272806754f41e18
+Source0:        https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=94982f7a1fedac8961fc17b5a22cf763ac28cb27ee6facab2e6a15b249b927773667493fd3f7354fb13fcb34a6f1afc1bdd5cf4b7be030cba1dfb523e40d43fb
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
-Patch0:         %{name}-%{version}-blfs_layout-3.patch
+Patch0:         %{name}-%{version}-blfs_layout-1.patch
 Patch1:         %{name}-uncomment-ServerName.patch
 
 BuildRequires:  openssl >= 1.1.1
@@ -39,23 +39,21 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides:       apache2
 
-%define _confdir %{_sysconfdir}
-
 %description
 The Apache HTTP Server.
 
 %package devel
-Summary:    Header files for httpd
-Group:      Applications/System
-Requires:   %{name}
+Summary:  Header files for httpd
+Group:    Applications/System
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 These are the header files of httpd.
 
 %package docs
-Summary:    Help files for httpd
-Group:      Applications/System
-Requires:   %{name}
+Summary:  Help files for httpd
+Group:    Applications/System
+Requires: %{name} = %{version}-%{release}
 
 %description docs
 These are the help files of httpd.
@@ -80,7 +78,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --sbindir=%{_sbindir} \
-    --sysconfdir=%{_confdir}/%{name}/conf \
+    --sysconfdir=%{_sysconfdir}/%{name}/conf \
     --datadir=%{_sysconfdir}/%{name} \
     --includedir=%{_includedir} \
     --libdir=%{_libdir} \
@@ -97,7 +95,6 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-layout=RPM \
     --enable-http2
 
-GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 
 make %{?_smp_mflags}
@@ -163,15 +160,6 @@ systemd-tmpfiles --create %{name}.conf
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
-  # this is delete operation
-  if getent passwd apache >/dev/null; then
-    userdel apache
-  fi
-
-  if getent group apache >/dev/null; then
-    groupdel apache
-  fi
-
   if [ -f /etc/mime.types.orig ]; then
     mv /etc/mime.types.orig /etc/mime.types
   fi
@@ -216,6 +204,9 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.55-1
+- Upgrade to v2.4.55 to fix following CVE's:
+- CVE-2006-20001, CVE-2022-37436, and CVE-2022-36760
 * Mon Jun 20 2022 Nitesh Kumar <kunitesh@vmware.com> 2.4.54-1
 - Upgrade to v2.4.54 to fix bunch of CVEs
 * Mon Mar 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.53-1

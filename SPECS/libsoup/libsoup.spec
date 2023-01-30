@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -94,6 +94,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-3
+- Bump version as a part of httpd v2.4.55 upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.2.1-2
 - bump release as part of sqlite update
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1
