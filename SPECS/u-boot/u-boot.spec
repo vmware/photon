@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2019.10
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -23,6 +23,10 @@ Patch5:         0001-i2c-fix-stack-buffer-overflow-vulnerability-in-i2c-m.patch
 
 # Fix for CVE-2022-30767
 Patch6:         0001-net-nfs-Fix-CVE-2022-30767-old-CVE-2019-14196.patch
+
+# Fix for CVE-2022-2347
+Patch7:         0001-usb_gadget_dfu_Fix_the_unchecked_length_field.patch
+Patch8:         0002-usb_gadget_dfu_Fix_check_of_transfer_direction.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
@@ -62,6 +66,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Mon Jan 30 2023 Ajay Kaher <akaher@vmware.com> 2019.10-4
+-   Fix for CVE-2022-2347
 *   Fri Jan 20 2023 Ajay Kaher <akaher@vmware.com> 2019.10-3
 -   Fix for CVE-2022-34835, CVE-2022-30767
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 2019.10-2
