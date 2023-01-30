@@ -1,6 +1,6 @@
 Name:           vulkan-tools
 Version:        1.3.231.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -43,19 +43,19 @@ Vulkan tools
 %autosetup -p1 -n Vulkan-Tools-sdk-%{version}
 
 %build
-mkdir build
-cd build
-python ../scripts/update_deps.py
-cmake .. -C helper.cmake -DBUILD_CUBE=OFF -DBUILD_ICD=OFF -DINSTALL_ICD=OFF
-cmake --build .
+%{cmake} \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_CUBE=OFF \
+    -DBUILD_ICD=OFF \
+    -DINSTALL_ICD=OFF
+
+%{cmake_build}
 
 %install
-cd build
-%make_install
+%{cmake_install}
 
-mv %{buildroot}/usr/local/* %{buildroot}/usr/
-
-%ldconfig_scriptlets
+%{ldconfig_scriptlets}
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,5 +65,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Jan 30 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-2
+- Minor changes in spec file
 * Mon Nov 7 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1
 - Initial version

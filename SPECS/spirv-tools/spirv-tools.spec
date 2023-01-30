@@ -1,7 +1,7 @@
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.3.231.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
@@ -19,6 +19,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  spirv-headers-devel
 
 Requires:       libxml2
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 The package includes an assembler, binary module parser,
@@ -26,7 +27,6 @@ disassembler, and validator for SPIR-V..
 
 %package        libs
 Summary:        Library files for spirv-tools
-Provides:       %{name}-libs = %{version}
 
 %description    libs
 library files for spirv-tools
@@ -43,12 +43,14 @@ Development files for spirv-tools
 %autosetup -p1 -n SPIRV-Tools-sdk-%{version}
 
 %build
-%cmake  -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_LIBDIR=%{_lib} \
-        -DSPIRV-Headers_SOURCE_DIR=%{_prefix} \
-        -DPYTHON_EXECUTABLE=%{__python3} \
-        -DSPIRV_TOOLS_BUILD_STATIC=OFF \
-        -GNinja
+%cmake  \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
+    -DSPIRV-Headers_SOURCE_DIR=%{_prefix} \
+    -DPYTHON_EXECUTABLE=%{__python3} \
+    -DSPIRV_TOOLS_BUILD_STATIC=OFF \
+    -GNinja
+
 %cmake_build
 
 %install
@@ -61,7 +63,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc README.md CHANGES
 %{_bindir}/spirv-as
 %{_bindir}/spirv-cfg
 %{_bindir}/spirv-dis
@@ -90,5 +91,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+*   Mon Jan 30 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-2
+-   Minor changes in spec file
 *   Tue Nov 15 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1
 -   initial version
