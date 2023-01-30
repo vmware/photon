@@ -51,29 +51,6 @@ diff -Naur a/config.layout b/config.layout
  #   Classical Apache path layout.
  <Layout Apache>
      prefix:        /usr/local/apache2
-diff -Naur a/configure b/configure
---- a/configure	2022-03-09 15:17:37.000000000 +0100
-+++ b/configure	2022-03-19 10:58:09.202098385 +0100
-@@ -41141,17 +41141,17 @@
- 
- 
- cat >>confdefs.h <<_ACEOF
--#define HTTPD_ROOT "${ap_prefix}"
-+#define HTTPD_ROOT "/etc/httpd"
- _ACEOF
- 
- 
- cat >>confdefs.h <<_ACEOF
--#define SERVER_CONFIG_FILE "${rel_sysconfdir}/${progname}.conf"
-+#define SERVER_CONFIG_FILE "${progname}.conf"
- _ACEOF
- 
- 
- cat >>confdefs.h <<_ACEOF
--#define AP_TYPES_CONFIG_FILE "${rel_sysconfdir}/mime.types"
-+#define AP_TYPES_CONFIG_FILE "mime.types"
- _ACEOF
- 
  
 diff -Naur a/configure.in b/configure.in
 --- a/configure.in	2022-02-24 23:18:42.000000000 +0100
