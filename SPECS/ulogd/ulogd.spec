@@ -1,7 +1,7 @@
 Summary:        ulogd - The userspace logging daemon for netfilter
 Name:           ulogd
 Version:        2.0.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            https://git.netfilter.org/ulogd2
 Group:          System Environment/Daemons
@@ -63,42 +63,39 @@ Requires: libpcap
 %autosetup -p1
 
 %build
-%configure --enable-static=no \
-           --enable-nfacct=no \
-           --enable-nflog=no \
-           --enable-nfct=no \
-           --with-dbi-lib=%{_libdir} \
-           --with-pcap-lib=%{_libdir} \
-           --with-sqlite3-lib=%{_libdir}
+%configure \
+   --enable-static=no \
+   --enable-nfacct=no \
+   --enable-nflog=no \
+   --enable-nfct=no \
+   --with-dbi-lib=%{_libdir} \
+   --with-pcap-lib=%{_libdir} \
+   --with-sqlite3-lib=%{_libdir}
 
 %make_build
 
 %install
 install -vd %{buildroot}%{_sysconfdir}
-install -vd %{buildroot}%{_libdir}/%{name}
-install -vd %{buildroot}%{_sbindir}/sbin
 install -vd %{buildroot}%{_mandir}/man8
 install -vd %{buildroot}%{_unitdir}
-install -vd %{buildroot}/var/log/%{name}/
+install -vd %{buildroot}%{_var}/log/%{name}/
 
-%make_install
+%make_install %{?_smp_mflags}
 
-rm -f %{buildroot}%{_unitdir}/%{name}.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 install %{name}.8 %{buildroot}%{_mandir}/man8/%{name}.8
-find %{buildroot} -name '*.la' -delete
 
 %post
 /sbin/ldconfig
-%systemd_post ulogd.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun ulogd.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun  ulogd.service
+%systemd_postun %{name}.service
 
 %clean
 rm -rf %{buildroot}
@@ -108,15 +105,10 @@ rm -rf %{buildroot}
 %{_sbindir}/%{name}
 %{_libdir}/%{name}
 %defattr(0644,root,root,0755)
-%doc COPYING
-%doc AUTHORS README
 %doc %{_mandir}/man?/*
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %{_unitdir}/%{name}.service
-%dir %{_localstatedir}/log/%{name}
-%exclude %{_libdir}/%{name}/%{name}_output_MYSQL.so
-%exclude %{_libdir}/%{name}/%{name}_output_PCAP.so
-%exclude %{_libdir}/%{name}/%{name}_output_SQLITE3.so
+%dir %{_var}/log/%{name}
 
 %files mysql
 %defattr(0644,root,root,0755)
@@ -131,6 +123,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/%{name}_output_PCAP.so
 
 %changelog
+* Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-4
+- Bump version as a part of mysql upgrade
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-3
 - Bump version as a part of sqlite upgrade
 * Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.7-2
