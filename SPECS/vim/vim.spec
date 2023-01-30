@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.5169
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -14,6 +14,8 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=e2b85746a4cc9ce2a4deeb0a3cd0365ad3124492b2c0feb4e029c7f58a960382bc0d3f3f4611742fa7a8559204f711c831407289b113386fce1138e3c9fc3c75
 Source1:        vimrc
+
+Patch0: CVE-2022-47024.patch
 
 BuildRequires:  ncurses-devel >= 6.1-4
 Requires:       ncurses-libs >= 6.1-4
@@ -175,6 +177,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Jan 30 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-3
+- fix for CVE-2022-47024
 * Mon Jan 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.2.5169-2
 - Handle E145 exception in vimrc when vim opened in restricted mode
 * Tue Jul 26 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.5169-1
