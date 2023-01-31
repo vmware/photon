@@ -2,8 +2,8 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        8.2.2
-Release:        4%{?dist}
+Version:        8.4.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -11,18 +11,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define         sha512 %{name}=52d8e82979823f61ec6f117db1eb41b23fd8ad3197ae3f9d2cfa3ad9d96636a3d2f0b36720b2041a9261c8b639ddd48e46a2351ce41cb596f7dc432cddf29256
+%define sha512  %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
 
-Source1: %{name}-tmpfiles.conf
-Source2: %{name}-sysusers.conf
+Source1:        %{name}-tmpfiles.conf
+Source2:        %{name}-sysusers.conf
 
-Patch0: enable-openssl.patch
-Patch1: disable-eigrp-crypto.patch
-Patch2: fips-mode.patch
-Patch3: CVE-2022-26126.patch
+Patch0:         enable-openssl.patch
+Patch1:         disable-eigrp-crypto.patch
+Patch2:         fips-mode.patch
 
 %if 0%{?with_check}
-Patch4: remove-grpc-test.patch
+Patch4:         remove-grpc-test.patch
 %endif
 
 BuildRequires:  build-essential
@@ -246,6 +245,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 8.4.1-1
+- Automatic Version Bump
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 8.2.2-4
 - Bump up due to change in elfutils
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.2.2-3
