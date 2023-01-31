@@ -2,10 +2,10 @@
     "packages": [
                  "minimal",
                  "linux",
+                 "linux-esx",
                  "initramfs",
                  "lvm2",
                  "less",
                  "sudo"
-                 ],
-    "packages_x86_64": ["linux-esx"]
+                 ]
 }

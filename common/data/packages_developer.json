@@ -2,6 +2,7 @@
     "packages": [
                  "minimal",
                  "linux",
+                 "linux-esx",
                  "initramfs",
                  "build-essential",
                  "go",
@@ -20,5 +21,5 @@
                  "wget",
                  "sudo"
                  ],
-    "packages_x86_64":["grub2-pc", "linux-esx"]
+    "packages_x86_64":["grub2-pc"]
 }
