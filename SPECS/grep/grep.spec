@@ -1,15 +1,19 @@
 Summary:    Programs for searching through files
 Name:       grep
 Version:    3.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grep
 Group:      Applications/File
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
+Source0: http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
 %define sha512  %{name}=e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
+
+BuildRequires: pcre-devel
+
+Requires: pcre-libs
 
 Conflicts: toybox < 0.8.2-2
 
@@ -32,6 +36,7 @@ These are the additional language files of grep
 %build
 %configure \
     --with-included-regex \
+    --enable-perl-regexp \
     --disable-silent-rules
 
 %make_build
@@ -55,6 +60,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Jan 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7-3
+- Enable perl regex support
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.7-1

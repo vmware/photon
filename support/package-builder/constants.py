@@ -132,7 +132,8 @@ class constants(object):
         "dwz",
         "debugedit",
         "pandoc-bin",
-        "help2man"]
+        "help2man",
+        "pcre-libs"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -233,7 +234,8 @@ class constants(object):
         "rpm-devel",
         "rpm-libs",
         "cpio",
-        "debugedit"]
+        "debugedit",
+        "pcre-libs"]
 
     # List of packages that will be installed in addition for each
     # package to make check

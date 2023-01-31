@@ -73,6 +73,7 @@ aarch64/nss-libs-3.57-2.ph4.aarch64.rpm
 aarch64/openssl-3.0.0-6.ph4.aarch64.rpm
 aarch64/openssl-devel-3.0.0-6.ph4.aarch64.rpm
 aarch64/patch-2.7.6-5.ph4.aarch64.rpm
+aarch64/pcre-libs-8.45-3.ph5.aarch64.rpm
 aarch64/perl-5.30.1-5.ph4.aarch64.rpm
 aarch64/pkg-config-0.29.2-3.ph4.aarch64.rpm
 aarch64/popt-1.16-5.ph4.aarch64.rpm
