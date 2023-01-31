@@ -1,15 +1,15 @@
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
-Version:       2.13.4
-Release:       2%{?dist}
+Version:       2.13.5
+Release:       1%{?dist}
 License:       GPLv2, LGPLv2.1 and MIT
 URL:           https://lttng.org/download/
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=1954c3a4b2600ce50a14b6d54407ad7897e159c662afe3fab724da24b7fccd81da72f0aff22878a5fbc3d262fd143be7d55a3de608925fff5f1dec5614831b74
+Source:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
 
 BuildRequires: userspace-rcu-devel
 
@@ -17,9 +17,8 @@ BuildRequires: userspace-rcu-devel
 BuildRequires: perl
 %endif
 
-Requires: userspace-rcu
-
-Provides: liblttng-ust.so.0()(64bit)
+Requires:      userspace-rcu
+Provides:      liblttng-ust.so.0()(64bit)
 
 %description
 This library may be used by user-space applications to generate
@@ -65,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1
+- Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.4-2
 - Add Provides: liblttng-ust.so.0()(64bit) to fix dotnet-runtime build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
