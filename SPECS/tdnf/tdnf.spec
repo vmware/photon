@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.8
+Version:        3.4.9
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=448dbbe28c378d877c11bb61e448e84248e2b971f34849956baac2ae1ee68589231b01a5aa97c1820a8942cbf0e82bf9b60b75744e8886ca827245838b53113f
+%define sha512  %{name}=704d10292b585cbc481f7cee292b4f91768049ce4d0a889c25c3d7cefe488c6b17160fac4a25bbeea066fce133523f36e729b9ad99e53d1a49b289c1bff3c91a
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -261,6 +261,12 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jan 31 2023 Oliver Kurth <okurth@vmware.com> 3.4.9-1
+- update to 3.4.9:
+- limit the number of open files for rpm transactions
+  to prevent hangs (PR #391 and #393)
+- do not copy packages to cache if they can be accessed through the
+  filesystem (PR #392)
 * Mon Jan 23 2023 Oliver Kurth <okurth@vmware.com> 3.4.8-1
 - update to 3.4.8:
 - fix reinstall issue (PR #388)
