@@ -1,21 +1,25 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-Summary:     Git extension for versioning large files
-Name:        git-lfs
-Version:     2.12.0
-Release:     17%{?dist}
-URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
-Source0:     %{name}-%{version}.tar.gz
-License:     MIT
-Group:       System Environment/Programming
+
+Summary:      Git extension for versioning large files
+Name:         git-lfs
+Version:      2.12.0
+Release:      18%{?dist}
+License:      MIT
+URL:          https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
+Group:        System Environment/Programming
+Vendor:       VMware, Inc.
+Distribution: Photon
+
+Source0: %{name}-%{version}.tar.gz
 %define sha512  %{name}=be143f4008040504357e6e8748e6549bcff08c42340c1cca14b6d617c7a215554c6c3ad8b4c1ce26906bc812ef21c9aa4c8b6f36be2c01a65952c5e075ad81da
-Vendor:      VMware, Inc.
-Distribution:  Photon
+
 BuildRequires: go
 BuildRequires: which
 BuildRequires: rubygem-ronn
 BuildRequires: tar
 BuildRequires: git
+
 Requires: git
 
 %description
@@ -54,6 +58,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Wed Feb 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.12.0-18
+- Bump up version as a part of git upgrade to v2.35.6
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-17
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 2.12.0-16
