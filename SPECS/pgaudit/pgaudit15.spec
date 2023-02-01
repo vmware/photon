@@ -6,7 +6,7 @@
 
 Name:       pgaudit15
 Version:    1.7.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    PostgreSQL Audit Extension
 License:    PostgreSQL
 URL:        http://pgaudit.org
@@ -60,5 +60,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.0-2
+- Bump version as a part of krb5 upgrade
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-1
 - Initial version.

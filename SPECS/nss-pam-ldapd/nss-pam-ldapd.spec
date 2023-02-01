@@ -3,7 +3,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        nsswitch module which uses directory servers
 License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
@@ -93,6 +93,8 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.9.12-2
+- Bump version as a part of krb5 upgrade
 * Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.12-1
 - Automatic Version Bump
 * Wed Dec 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.9.11-1

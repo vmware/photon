@@ -1,6 +1,6 @@
 Name:         distcc
 Version:      3.4
-Release:      1%{?dist}
+Release:      2%{?dist}
 Summary:      Distributed C/C++ compilation
 License:      GPLv2+
 URL:          https://github.com/distcc/distcc
@@ -103,5 +103,7 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.4-2
+- Bump version as a part of krb5 upgrade
 * Tue Apr 12 2022 Oliver Kurth <okurth@vmware.com> 3.4-1
 - initial build for Photon

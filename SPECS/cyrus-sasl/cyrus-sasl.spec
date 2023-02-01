@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/testsaslauthd.8.gz
 
 %changelog
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.1.28-2
+- Bump version as a part of krb5 upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.28-1
 - Automatic Version Bump
 * Fri Mar 04 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.27-6

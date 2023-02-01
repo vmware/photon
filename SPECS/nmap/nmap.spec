@@ -1,7 +1,7 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
 Version:        7.93
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Nmap
 URL:            http://nmap.org
 Group:          Networking
@@ -88,6 +88,8 @@ rm -rf %{buildroot}%{_datadir}/man/ \
 %{_bindir}/ncat
 
 %changelog
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.93-4
+- Bump version as a part of krb5 upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.93-3
 - Bump version as a part of gettext upgrade
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 7.93-2
