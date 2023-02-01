@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.283
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -643,8 +643,8 @@ Patch624: 0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 #Patch to enable nohz with idle=poll
 Patch625: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
-#Patch to add timer padding on guest
-Patch626: 0001-timer-padding-on-guest.patch
+#Patch to add timer advancement feature on guest
+Patch626: Guest-timer-Advancement-Feature.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch630: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -1340,6 +1340,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Fri Jun 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.283-3
+- Fix issues in Guest timer Advancement feature
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
 - Allow cpuidle subsystem to use acpi_idle driver
 - when only one C-state is available
