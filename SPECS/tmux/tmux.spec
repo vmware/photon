@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io
 Group:          Applications/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=2988ccef62337dee0a22579868608b611ce17e2160358a9ba4cc3a353fd1e6b1fea87584ceeed885f986b1786aac1b681c71bdf6a48ed4953809093280b38c09
+Patch0:         tmux-CVE-2022-40716.patch
 
 Requires:       libevent
 Requires:       ncurses
@@ -43,6 +44,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_usrsrc}
 
 %changelog
+* Wed Feb 01 2023 Harinadh D <hdommaraju@vmware.com> 3.3-2
+- fix CVE-2022-40716
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
 - Automatic Version Bump
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2-2
