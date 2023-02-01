@@ -1,0 +1,20 @@
+From 586a53d5a5e9ba605e61697627a97c47fafebae8 Mon Sep 17 00:00:00 2001
+From: Daniel Wagner <wagi@monom.org>
+Date: Sun, 29 Jan 2023 15:49:43 +0100
+Subject: [PATCH 352/352] Linux 4.19.271-rt120 REBASE
+
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..fff72aad59ab 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt120
+-- 
+2.39.1
+

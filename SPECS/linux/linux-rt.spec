@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.269
-Release:        2%{?kat_build:.%kat}%{?dist}
+Version:        4.19.271
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt117
+%define rt_version rt120
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=228e5b67092796ecc04bb04a6630121c3573f8aeb9d854eafc5a62388a0aa8395493b5c808132ab60ad01e87f9e82e3b21e1123103e1404e5848562f6a0be1eb
+%define sha512 linux=858cadba377e01f5e5c0c6bef2d3929ee1c3d14bc1df6afb62e54abc7dda35d8a8fa30e9a1ec1dc55721ebf94029561ab4c0daf48a7a9cea5e95bbeab7f26702
 
 Source1: config-rt
 Source2: initramfs.trigger
@@ -569,11 +569,10 @@ Patch547: 0347-workqueue-Use-rcuwait-for-wq_manager_wait.patch
 Patch548: 0348-timers-Prepare-support-for-PREEMPT_RT.patch
 Patch549: 0349-timers-Move-clearing-of-base-timer_running-under-bas.patch
 Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
+Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 # Keep rt_version matched up with this patch.
-Patch551: 0351-Linux-4.19.265-rt117-REBASE.patch
+Patch552: 0352-Linux-4.19.271-rt120-REBASE.patch
 
-#revert one of the RT patch due to build failure
-Patch598: 0001-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
 
@@ -1221,6 +1220,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
+- Update to version 4.19.271
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-2
 - update to latest ToT vmxnet3 driver
 - Include patch "vmxnet3: correctly report csum_level for encapsulated packet"

@@ -18,15 +18,16 @@ Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
 
 CR: https://cr.amazon.com/r/8361544/
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 ---
  drivers/xen/events/events_base.c | 13 ++++++++++---
  1 file changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index ed24a017d2d6..2babdeffe00c 100644
+index acbb0f0e2..ecef35d50 100644
 --- a/drivers/xen/events/events_base.c
 +++ b/drivers/xen/events/events_base.c
-@@ -343,6 +343,14 @@ static void bind_evtchn_to_cpu(unsigned int chn, unsigned int cpu)
+@@ -434,6 +434,14 @@ static void bind_evtchn_to_cpu(unsigned int chn, unsigned int cpu)
  	info->cpu = cpu;
  }
  
@@ -41,7 +42,7 @@ index ed24a017d2d6..2babdeffe00c 100644
  /**
   * notify_remote_via_irq - send event to remote end of event channel via irq
   * @irq: irq of event channel to send event to
-@@ -1563,6 +1571,7 @@ void xen_irq_resume(void)
+@@ -1999,6 +2007,7 @@ void xen_irq_resume(void)
  	struct irq_info *info;
  
  	/* New event-channel space is not 'live' yet. */
@@ -49,15 +50,15 @@ index ed24a017d2d6..2babdeffe00c 100644
  	xen_evtchn_resume();
  
  	/* No IRQ <-> event-channel mappings. */
-@@ -1680,7 +1689,6 @@ module_param(fifo_events, bool, 0);
+@@ -2140,7 +2149,6 @@ static int xen_evtchn_cpu_dead(unsigned int cpu)
  void __init xen_init_IRQ(void)
  {
  	int ret = -EINVAL;
 -	unsigned int evtchn;
  
- 	if (fifo_events)
+ 	if (xen_fifo_events)
  		ret = xen_evtchn_fifo_init();
-@@ -1692,8 +1700,7 @@ void __init xen_init_IRQ(void)
+@@ -2160,8 +2168,7 @@ void __init xen_init_IRQ(void)
  	BUG_ON(!evtchn_to_irq);
  
  	/* No event channels are 'live' right now. */
@@ -68,5 +69,5 @@ index ed24a017d2d6..2babdeffe00c 100644
  	pirq_needs_eoi = pirq_needs_eoi_flag;
  
 -- 
-2.14.4
+2.35.5
 

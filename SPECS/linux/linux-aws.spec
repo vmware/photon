@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.269
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.271
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=228e5b67092796ecc04bb04a6630121c3573f8aeb9d854eafc5a62388a0aa8395493b5c808132ab60ad01e87f9e82e3b21e1123103e1404e5848562f6a0be1eb
+%define sha512 linux=858cadba377e01f5e5c0c6bef2d3929ee1c3d14bc1df6afb62e54abc7dda35d8a8fa30e9a1ec1dc55721ebf94029561ab4c0daf48a7a9cea5e95bbeab7f26702
 
 Source1: config-aws
 Source2: initramfs.trigger
@@ -509,6 +509,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
+- Update to version 4.19.271
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-2
 - update to latest ToT vmxnet3 driver
 - Include patch "vmxnet3: correctly report csum_level for encapsulated packet"
