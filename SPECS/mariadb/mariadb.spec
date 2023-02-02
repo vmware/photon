@@ -1,15 +1,15 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.9.2
-Release:          3%{?dist}
+Version:          10.9.4
+Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0: https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define sha512 %{name}=2ac411cf2748dad8269b4a09d5014044be187459efea99f47eb75c2fd910b3903d989c605854fa02bf9a5cf90a24f7b10330c10fdc03509dfa3464f24976d95e
+Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -268,8 +268,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mariadb-waitpid.1.gz
 %{_mandir}/man1/mariadbd-safe-helper.1.gz
 %{_mandir}/man1/mariadbd-safe.1.gz
-%config(noreplace) /etc/my.cnf.d/s3.cnf
-%config(noreplace) /etc/my.cnf.d/spider.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/s3.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/spider.cnf
 %doc COPYING CREDITS
 %exclude %{_datadir}/mysql/bench
 %exclude %{_datadir}/mysql/test
@@ -454,6 +454,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Feb 02 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-1
+- Upgrade to v10.9.4 to fix CVE-2022-47015
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.9.2-3
 - Bump version as a part of krb5 upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.9.2-2
