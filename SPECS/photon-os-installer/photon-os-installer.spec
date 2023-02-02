@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       16%{?dist}
+Release:       17%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -40,7 +40,9 @@ Requires: efibootmgr
 Requires: glibc
 Requires: gptfdisk
 Requires: grub2
+%ifarch x86_64
 Requires: grub2-pc
+%endif
 Requires: kpartx
 Requires: lvm2
 Requires: zlib
@@ -66,6 +68,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Thu Feb 02 2023 Oliver Kurth <okurth@vmware.com> 2.0-17
+- require grub-pc only for x86_64
 * Wed Feb 01 2023 Oliver Kurth <okurth@vmware.com> 2.0-16
 - add requires for tools needed to build image
 * Fri Jan 27 2023 Tapas Kundu <tkundu@vmware.com> 2.0-15
