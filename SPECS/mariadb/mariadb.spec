@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.7.5
+Version:          10.9.4
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -8,8 +8,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0: https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define sha512 %{name}=79694df58c49a4a078ea25a97737f25ef2e205c4d35c228031197279ac447abff69b15e7efba12f167dc3df2ea00fcd1f3fb5df1f1a22aed23e8b0f2c8bc5d48
+Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -268,8 +268,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mariadb-waitpid.1.gz
 %{_mandir}/man1/mariadbd-safe-helper.1.gz
 %{_mandir}/man1/mariadbd-safe.1.gz
-%config(noreplace) /etc/my.cnf.d/s3.cnf
-%config(noreplace) /etc/my.cnf.d/spider.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/s3.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/spider.cnf
 %doc COPYING CREDITS
 %exclude %{_datadir}/mysql/bench
 %exclude %{_datadir}/mysql/test
@@ -283,6 +283,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/provider_bzip2.cnf
+%config(noreplace) %{_sysconfdir}/my.cnf.d/hashicorp_key_management.cnf
 %dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
 %{_bindir}/mariadb-install-db
@@ -341,6 +342,7 @@ rm -rf %{buildroot}
 %{_datadir}/policy/selinux/mariadb.te
 %{_datadir}/wsrep.cnf
 %{_datadir}/wsrep_notify
+%{_datadir}/mini-benchmark
 %{_mandir}/man1/aria_s3_copy.1.gz
 %{_mandir}/man1/aria_chk.1.gz
 %{_mandir}/man1/aria_dump_log.1.gz
@@ -452,10 +454,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Feb 02 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-1
+- Upgrade to v10.9.4 to fix CVE-2022-47015
 * Thu Aug 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.5-1
 - Upgrade to v10.7.5 to fix CVE-2022-32091
 * Mon May 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.4-1
-- Upgrade to v10.3.35 to fix bunch of CVEs
+- Upgrade to v10.7.4 to fix bunch of CVEs
 * Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.3-1
 - CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.2-1
