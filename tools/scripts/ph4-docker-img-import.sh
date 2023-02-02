@@ -23,7 +23,7 @@ if [ "${ret}" != "${img_url}" ]; then
 
   echo "Creating photon builder docker image ..."
   if ! docker import "${img_url}" "${img_tag}"; then
-    echo "ERROR: docker import of ph3 docker image failed" 1>&2
+    echo "ERROR: docker import of ${img_url} docker image failed" 1>&2
     exit 1
   fi
 
