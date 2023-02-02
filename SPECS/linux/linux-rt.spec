@@ -18,7 +18,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.0.7
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -522,6 +522,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Feb 02 2023 Keerthana K <keerthanak@vmware.com> 6.0.7-10
+- Disable CONFIG_SYSFB_SIMPLEFB
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.7-9
 - Enable CONFIG_PCI_PF_STUB
 * Thu Jan 19 2023 Keerthana K <keerthanak@vmware.com> 6.0.7-8
