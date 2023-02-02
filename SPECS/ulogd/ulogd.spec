@@ -1,19 +1,19 @@
 Summary:        ulogd - The userspace logging daemon for netfilter
 Name:           ulogd
 Version:        2.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            https://git.netfilter.org/ulogd2
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.netfilter.org/pub/ulogd/%{name}-%{version}.tar.bz2
+Source0: http://ftp.netfilter.org/pub/ulogd/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=1ad12bcf91bebe8bf8580de38693318cdabd17146f1f65acf714334885cf13adf5f783abdf2dd67474ef12f82d2cfb84dd4859439bc7af10a0df58e4c7e48b09
 
-Source1:        %{name}.service
+Source1: %{name}.service
 
-Patch0:         compilation-fix-for-ulogd-mysql.patch
+Patch0: compilation-fix-for-ulogd-mysql.patch
 
 BuildRequires:  mysql-devel
 BuildRequires:  libpcap-devel
@@ -104,6 +104,9 @@ rm -rf %{buildroot}
 %defattr(0755,root,root,0755)
 %{_sbindir}/%{name}
 %{_libdir}/%{name}
+%exclude %{_libdir}/%{name}/%{name}_output_MYSQL.so
+%exclude %{_libdir}/%{name}/%{name}_output_SQLITE3.so
+%exclude %{_libdir}/%{name}/%{name}_output_PCAP.so
 %defattr(0644,root,root,0755)
 %doc %{_mandir}/man?/*
 %config(noreplace) %{_sysconfdir}/%{name}.conf
@@ -123,6 +126,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/%{name}_output_PCAP.so
 
 %changelog
+* Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-5
+- Fix the file packaging to mitigate conflicts
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-4
 - Bump version as a part of mysql upgrade
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-3
