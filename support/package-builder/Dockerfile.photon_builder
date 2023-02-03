@@ -1,3 +1,0 @@
-FROM photon:3.0
-
-RUN tdnf install -y rpm

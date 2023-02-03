@@ -16,8 +16,6 @@ else
   ret=""
 fi
 
-photon_builder_dockerfile="support/package-builder/Dockerfile.photon_builder"
-
 if [ "${ret}" != "${img_url}" ]; then
   docker rmi -f "${img_tag}" "${ph_builder_tag}"
 
@@ -31,8 +29,30 @@ if [ "${ret}" != "${img_url}" ]; then
     exit 0
   fi
 
-  if ! docker build --tag "${ph_builder_tag}" -f ${photon_builder_dockerfile} . 1>/dev/null; then
-    echo "ERROR: failed to build ${ph_builder_tag} docker image" 1>&2
+  tmp_tag="$(mktemp -t photon_builder.XXXX -u | cut -d'/' -f3)"
+  if ! docker run --name "${tmp_tag}" --net=host --privileged "${img_tag}" /bin/bash -c "tdnf install -y rpm" 1>/dev/null; then
+    docker rmi -f "${img_tag}"
+    echo "ERROR: docker run ${tmp_tag} failed" 1>&2
+    exit 1
+  fi
+
+  if ! docker stop "${tmp_tag}" 1>/dev/null; then
+    docker rm -f "${tmp_tag}"
+    docker rmi -f "${img_tag}"
+    echo "ERROR: docker stop ${tmp_tag} failed" 1>&2
+    exit 1
+  fi
+
+  if ! docker commit "${tmp_tag}" "${ph_builder_tag}" 1>/dev/null; then
+    docker rm -f "${tmp_tag}"
+    docker rmi -f "${img_tag}"
+    echo "ERROR: docker commit ${tmp_tag} failed" 1>&2
+    exit 1
+  fi
+
+  if ! docker rm -f "${tmp_tag}" 1>/dev/null; then
+    docker rmi -f "${img_tag}"
+    echo "ERROR: docker rm -f ${tmp_tag} failed" 1>&2
     exit 1
   fi
 fi
