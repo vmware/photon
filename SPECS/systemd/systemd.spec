@@ -1,7 +1,9 @@
+%global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
+
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        252.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -18,10 +20,16 @@ Source4:        99-dhcp-en.network
 Source5:        10-rdrand-rng.conf
 Source6:        10-defaults.preset
 
-Patch0:         enoX-uses-instance-number-for-vmware-hv.patch
-Patch1:         fetch-dns-servers-from-environment.patch
-Patch2:         0001-systemd-Support-OOMPolicy-in-scope-units.patch
-Patch3:         0001-systemd-Default-to-OOMPolicy-continue-for-login-sess.patch
+Source11:       macros.sysusers
+Source12:       sysusers.attr
+Source13:       sysusers.prov
+Source14:       sysusers.generate-pre.sh
+
+Patch0: enoX-uses-instance-number-for-vmware-hv.patch
+Patch1: fetch-dns-servers-from-environment.patch
+Patch2: 0001-systemd-Support-OOMPolicy-in-scope-units.patch
+Patch3: 0001-systemd-Default-to-OOMPolicy-continue-for-login-sess.patch
+Patch4: use-bfq-scheduler.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -144,12 +152,12 @@ Summary: Rule-based device node and kernel event manager
 License:        LGPLv2+
 
 Requires:       %{name} = %{version}-%{release}
-Requires(post):   %{name}
-Requires(preun):  %{name}
-Requires(postun): %{name}
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 Requires(post):   grep
 Requires:         kmod
-Provides:         udev = %{version}
+Provides:         udev = %{version}-%{release}
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
@@ -159,9 +167,9 @@ machines and in virtual machines, but not in containers.
 %package container
 Summary: Tools for containers and VMs
 Requires:       %{name} = %{version}-%{release}
-Requires(post):   %{name}
-Requires(preun):  %{name}
-Requires(postun): %{name}
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 License:          LGPLv2+
 
 %description container
@@ -174,9 +182,9 @@ and %{name}-importd.
 Summary:        Tools to send journal events over the network
 Requires:       %{name} = %{version}-%{release}
 License:        LGPLv2+
-Requires(post):   %{name}
-Requires(preun):  %{name}
-Requires(postun): %{name}
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 Requires:         libmicrohttpd
 Provides:         %{name}-journal-gateway = %{version}-%{release}
 
@@ -246,13 +254,12 @@ fi
 CONFIGURE_OPTS=(
        -Dmode=release
        -Dkmod=true
-       -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
+       -Duser-path=%{_usr}/local/bin:%{_usr}/local/sbin:%{_bindir}:%{_sbindir}
        -Dservice-watchdog=
        -Dblkid=true
        -Dseccomp=true
        -Ddefault-dnssec=no
        -Dfirstboot=false
-       -Dinstall-tests=false
        -Dldconfig=false
        -Dxz=true
        -Dzlib=true
@@ -262,7 +269,7 @@ CONFIGURE_OPTS=(
        -Dsmack=true
        -Dgcrypt=true
        -Dsplit-usr=true
-       -Dsysusers=false
+       -Dsysusers=true
        -Dpam=true
        -Dpolkit=true
        -Dselinux=true
@@ -283,8 +290,8 @@ CONFIGURE_OPTS=(
        -Db_lto=true
        -Db_ndebug=false
        -Ddefault-hierarchy=hybrid
-       -Dsysvinit-path=/etc/rc.d/init.d
-       -Drc-local=/etc/rc.d/rc.local
+       -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
+       -Drc-local=%{_sysconfdir}/rc.d/rc.local
        -Dfallback-hostname=photon
        -Doomd=false
        -Dhomed=false
@@ -297,11 +304,11 @@ CONFIGURE_OPTS=(
        $CROSS_COMPILE_CONFIG
 )
 
-%meson "${CONFIGURE_OPTS[@]}"
-%meson_build
+%{meson} "${CONFIGURE_OPTS[@]}"
+%{meson_build}
 
 %install
-%meson_install
+%{meson_install}
 
 sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
@@ -313,10 +320,13 @@ sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/
 
 sed -i 's/#DefaultOOMPolicy=stop/DefaultOOMPolicy=continue/' %{buildroot}%{_sysconfdir}/%{name}/system.conf
 
-rm -f %{buildroot}%{_var}/log/README
-mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
-mkdir -p %{buildroot}%{_localstatedir}/log
-ln -sfv %{_localstatedir}/opt/journal/log %{buildroot}%{_localstatedir}/log/journal
+rm -f %{buildroot}%{_var}/log/README \
+      %{buildroot}%{_sysusersdir}/README
+
+mkdir -p %{buildroot}%{_var}/opt/journal/log \
+         %{buildroot}%{_var}/log
+
+ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
@@ -333,29 +343,34 @@ ln -sfv multi-user.target %{buildroot}%{_unitdir}/default.target
 %ifarch x86_64
 install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %endif
+
+install -m 0644 -D -t %{buildroot}%{_rpmmacrodir}/ %{SOURCE11}
+install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE12}
+install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
+install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
+
 %find_lang %{name} ../%{name}.lang
 
 %post
 %{name}-machine-id-setup &>/dev/null || :
 
 systemctl daemon-reexec &>/dev/null || {
-    if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] ; then
-        kill -TERM 1 &>/dev/null || :
-    fi
+  if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] ; then
+    kill -TERM 1 &>/dev/null || :
+  fi
 }
 
 journalctl --update-catalog &>/dev/null || :
+systemd-sysusers || :
 %{name}-tmpfiles --create &>/dev/null || :
 
 if [ $1 -eq 1 ] ; then
-        systemctl preset-all &>/dev/null || :
-        systemctl --global preset-all &>/dev/null || :
+  systemctl preset-all &>/dev/null || :
+  systemctl --global preset-all &>/dev/null || :
 fi
 
 %clean
 rm -rf %{buildroot}/*
-
-%global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
@@ -370,9 +385,6 @@ fi
 
 %postun udev
 %systemd_postun_with_restart %{name}-udevd.service
-
-%postun tests
-rm -rf %{_libdir}/%{name}/tests
 
 %files
 %defattr(-,root,root)
@@ -399,6 +411,7 @@ rm -rf %{_libdir}/%{name}/tests
 %config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/%{name}/networkd.conf
 %config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
+%config(noreplace) %{_sysusersdir}/*.conf
 
 %ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
@@ -426,6 +439,7 @@ rm -rf %{_libdir}/%{name}/tests
 %{_bindir}/portablectl
 %{_bindir}/resolvectl
 %{_bindir}/systemctl
+%{_bindir}/%{name}-sysusers
 %{_bindir}/%{name}-analyze
 %{_bindir}/%{name}-ask-password
 %{_bindir}/%{name}-cat
@@ -474,10 +488,21 @@ rm -rf %{_libdir}/%{name}/tests
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
-%{_libdir}/rpm
-%{_libdir}/sysctl.d
-%{_libdir}/%{name}
-
+%{_libdir}/rpm/*
+%{_libdir}/sysctl.d/*
+%{_systemd_util_dir}/boot/*
+%{_systemd_util_dir}/catalog/*
+%{_systemd_util_dir}/*.so
+%{_systemd_util_dir}/network/*
+%{_systemd_util_dir}/ntp-units.d/*
+%{_systemd_util_dir}/portable/*
+%{_systemd_util_dir}/resolv.conf
+%{_systemd_util_dir}/%{name}*
+%{_systemd_util_dir}/user*
+%{_systemd_util_dir}/import-pubring.gpg
+%{_unitdir}/*
+%{_presetdir}/*
+%{_systemdgeneratordir}/*
 %{_datadir}/bash-completion/*
 %{_datadir}/factory/*
 %{_datadir}/dbus-1
@@ -485,24 +510,24 @@ rm -rf %{_libdir}/%{name}/tests
 %{_datadir}/polkit-1
 %{_datadir}/%{name}
 %{_datadir}/zsh/*
-%{_localstatedir}/log/journal
+%{_var}/log/journal
 
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/basic.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/bluetooth.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/default.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/getty.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/graphical.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/local-fs.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/machines.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/multi-user.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/network-online.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/printer.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/remote-fs.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/sockets.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/sysinit.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/system-update.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system/timers.target.wants
-%ghost %dir %attr(0755,-,-) /etc/%{name}/system
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/bluetooth.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/default.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/getty.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/graphical.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/local-fs.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/machines.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/multi-user.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/network-online.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/printer.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/remote-fs.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/sockets.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/sysinit.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/system-update.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/timers.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system
 
 %files devel
 %defattr(-,root,root)
@@ -670,7 +695,7 @@ rm -rf %{_libdir}/%{name}/tests
 
 %files rpm-macros
 %defattr(-,root,root)
-%{_libdir}/rpm/macros.d
+%{_rpmmacrodir}/*
 
 %files tests
 %defattr(-,root,root)
@@ -679,6 +704,10 @@ rm -rf %{_libdir}/%{name}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Feb 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-8
+- Enable sysusers
+- Add a patch to use bBFQ scheduler
+- Remove test file packaging with main package
 * Tue Jan 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 252.4-7
 - Support OOMPolicy in scope units
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 252.4-6
