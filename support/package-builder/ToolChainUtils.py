@@ -65,6 +65,7 @@ class ToolChainUtils(object):
         self.logger.debug("Installing toolchain RPMS.......")
         rpmFiles = ""
         packages = ""
+        ChrootID = chroot.getID()
         listBuildRequiresPackages = []
 
         listRPMsToInstall=list(constants.listToolChainRPMsToInstall)
@@ -76,8 +77,9 @@ class ToolChainUtils(object):
                                       'gcc-'+constants.targetArch+'-linux-gnu'])
         if packageName:
             listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
+
+        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listRPMsToInstall:
-            pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
             version = None
 
@@ -123,32 +125,36 @@ class ToolChainUtils(object):
                 # Safe to use published RPM
                 rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    self.logger.error("Unable to find published rpm " + package)
+                    self.logger.error(f"Unable to find published rpm {package}")
                     raise Exception("Input Error")
-            rpmFiles += " " + rpmFile
-            packages += " " + package+"-"+version
+            rpmFiles += f" {rpmFile}"
+            packages += f" {package}-{version}"
 
         self.logger.debug(rpmFiles)
         self.logger.debug(packages)
-        cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
-               chroot.getID() +" -D \'_dbpath /var/lib/rpm\' "+ rpmFiles)
+        cmd = (
+            f"{self.rpmCommand} -iv --nodeps --force --root {ChrootID} -D '_dbpath /var/lib/rpm' {rpmFiles}"
+        )
 
         # If rpm doesn't have zstd support, use rpm from photon_builder image
         if constants.checkIfHostRpmNotUsable():
             # if we are not root, make installed files owned by effective user to
             # support pure non-root package building.
             if os.geteuid():
-                cmd = cmd + "; chown -R {0}:{1} {2}".format(os.geteuid(), os.getegid(), chroot.getID())
-            cmd = ("docker run --rm -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
-                   " -v " + constants.inputRPMSPath + ":" + constants.inputRPMSPath +
-                   " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
-                   chroot.getID() + " " + constants.phBuilderTag + " /bin/bash -c \"" + cmd + "\"")
+                cmd = cmd + "; chown -R {0}:{1} {ChrootID}".format(os.geteuid(), os.getegid())
+            cmd = (
+                f"docker run --rm -i"
+                f" -v {constants.prevPublishRPMRepo}:{constants.prevPublishRPMRepo}"
+                f" -v {constants.inputRPMSPath}:{constants.inputRPMSPath}"
+                f" -v {constants.rpmPath}:{constants.rpmPath}"
+                f" -v {ChrootID}:{ChrootID} {constants.phBuilderTag} /bin/bash -c \"{cmd}\""
+            )
 
-        self.logger.debug("Executing cmd: " + cmd)
+        self.logger.debug(f"Executing cmd: {cmd}")
         if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
-        self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
+        self.logger.debug(f"Successfully installed default toolchain RPMS in Chroot: {ChrootID}")
 
         if packageName:
             self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
@@ -160,12 +166,11 @@ class ToolChainUtils(object):
         listOfToolChainPkgs = SPECS.getData(constants.buildArch).getExtraBuildRequiresForPackage(packageName, packageVersion)
         if not listOfToolChainPkgs:
             return
-        self.logger.debug("Installing package specific toolchain RPMs for " + packageName +
-                         ": " + str(listOfToolChainPkgs))
+        self.logger.debug(f"Installing package specific toolchain RPMs for {packageName}: " + str(listOfToolChainPkgs))
         rpmFiles = ""
         packages = ""
+        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listOfToolChainPkgs:
-            pkgUtils = PackageUtils(self.logName, self.logPath)
             if re.match("openjre*", packageName) is not None or re.match("openjdk*", packageName):
                 path = constants.prevPublishXRPMRepo
                 sandboxPath = "/publishxrpms"
@@ -174,16 +179,14 @@ class ToolChainUtils(object):
                 sandboxPath = "/publishrpms"
             rpmFile = self._findPublishedRPM(package, path)
             if rpmFile is None:
-                self.logger.error("Unable to find rpm "+ package +
-                                  " in current and previous versions")
+                self.logger.error("Unable to find rpm package in current and previous versions")
                 raise Exception("Input Error")
             rpmFiles += " " + rpmFile.replace(path, sandboxPath)
-            packages += " " + package
+            packages += f" {package}"
 
-        self.logger.debug("Installing custom rpms:" + packages)
-        cmd = ("rpm -i -v --nodeps --noorder --force " + rpmFiles)
-        retVal = sandbox.run(cmd, logfn=self.logger.debug)
-        if retVal != 0:
+        self.logger.debug(f"Installing custom rpms: {packages}")
+        cmd = f"rpm -iv --nodeps --force {rpmFiles}"
+        if sandbox.run(cmd, logfn=self.logger.debug):
             self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing custom toolchains failed")
             raise Exception("RPM installation failed")
@@ -194,6 +197,8 @@ class ToolChainUtils(object):
         pkgUtils = PackageUtils(self.logName, self.logPath)
         rpmFiles = ""
         packages = ""
+        ChrootID = chroot.getID()
+
         for package in constants.listCoreToolChainPackages:
             if stopAtPackage and package == stopAtPackage:
                 break
@@ -205,21 +210,22 @@ class ToolChainUtils(object):
             subpackages = SPECS.getData().getRPMPackages(basePkg, version)
             for p in subpackages:
                 rpmFile = pkgUtils.findRPMFile(p, version, constants.targetArch)
-                rpmFiles += " " + rpmFile
-                packages += " " + package+"-"+version
+                rpmFiles += f" {rpmFile}"
+                packages += f" {package}-{version}"
 
         self.logger.debug(packages)
 
-        cmd = "mkdir -p " + chroot.getID() +"/target-"+ constants.targetArch+"/var/lib/rpm"
+        cmd = f"mkdir -p {ChrootID}/target-{constants.targetArch}/var/lib/rpm"
         CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
 
         if rpmFiles != "":
-            cmd = (self.rpmCommand+" -Uvh --nodeps --ignorearch --noscripts --root "+
-                   chroot.getID() +"/target-"+ constants.targetArch+
-                   " -D \'_dbpath /var/lib/rpm\' "+rpmFiles)
-            retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-            if retVal != 0:
-                self.logger.debug("Command Executed:" + cmd)
+            cmd = (
+                f"{self.rpmCommand} -Uvh --nodeps --ignorearch --noscripts --root"
+                f" {ChrootID}/target-{constants.targetArch}"
+                f" -D '_dbpath /var/lib/rpm' {rpmFiles}"
+            )
+            if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
+                self.logger.debug(f"Command Executed: {cmd}")
                 self.logger.error("Installing toolchain failed")
                 raise Exception("RPM installation failed")
-        self.logger.debug("Successfully installed target toolchain RPMS in chroot:" + chroot.getID())
+        self.logger.debug(f"Successfully installed target toolchain RPMS in chroot: {ChrootID}")

@@ -1,14 +1,16 @@
+%global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
+
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
+Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
 %define sha512 %{name}=9bbf5db0eaa74af658a32c0a9b541a460c4634d041e5d0c1d7d528e3c9d8480714029db0a4b081e33d1334f9656ea536793da2115fa7cd2fa216aee8c0c5ad8b
 
 Source1:        99-vmware-hotplug.rules
@@ -131,7 +133,7 @@ Summary:        Development headers for systemd
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       %{name}-pam = %{version}-%{release}
 Requires:       glib-devel
-Provides:       libudev-devel = %{version}
+Provides:       libudev-devel = %{version}-%{release}
 
 %description devel
 Development headers for developing applications linking to libsystemd
@@ -141,12 +143,12 @@ Summary: Rule-based device node and kernel event manager
 License:        LGPLv2+
 
 Requires:       %{name} = %{version}-%{release}
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 Requires(post):   grep
 Requires:         kmod
-Provides:         udev = %{version}
+Provides:         udev = %{version}-%{release}
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
@@ -156,9 +158,9 @@ machines and in virtual machines, but not in containers.
 %package container
 Summary: Tools for containers and VMs
 Requires:       %{name} = %{version}-%{release}
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 License:          LGPLv2+
 
 %description container
@@ -171,11 +173,11 @@ and systemd-importd.
 Summary:        Tools to send journal events over the network
 Requires:       %{name} = %{version}-%{release}
 License:        LGPLv2+
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
+Requires(post):   %{name} = %{version}-%{release}
+Requires(preun):  %{name} = %{version}-%{release}
+Requires(postun): %{name} = %{version}-%{release}
 Requires:         libmicrohttpd
-Provides:         systemd-journal-gateway = %{version}-%{release}
+Provides:         %{name}-journal-gateway = %{version}-%{release}
 
 %description journal-remote
 Programs to forward journal entries over the network, using encrypted HTTP,
@@ -243,13 +245,12 @@ fi
 CONFIGURE_OPTS=(
        -Dmode=release
        -Dkmod=true
-       -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
+       -Duser-path=%{_usr}/local/bin:%{_usr}/local/sbin:%{_bindir}:%{_sbindir}
        -Dservice-watchdog=
        -Dblkid=true
        -Dseccomp=true
        -Ddefault-dnssec=no
        -Dfirstboot=false
-       -Dinstall-tests=false
        -Dldconfig=false
        -Dxz=true
        -Dzlib=true
@@ -280,8 +281,8 @@ CONFIGURE_OPTS=(
        -Db_lto=true
        -Db_ndebug=false
        -Ddefault-hierarchy=hybrid
-       -Dsysvinit-path=/etc/rc.d/init.d
-       -Drc-local=/etc/rc.d/rc.local
+       -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
+       -Drc-local=%{_sysconfdir}/rc.d/rc.local
        -Dfallback-hostname=photon
        -Doomd=false
        -Dhomed=false
@@ -289,11 +290,11 @@ CONFIGURE_OPTS=(
        $CROSS_COMPILE_CONFIG
 )
 
-%meson "${CONFIGURE_OPTS[@]}"
-%meson_build
+%{meson} "${CONFIGURE_OPTS[@]}"
+%{meson_build}
 
 %install
-%meson_install
+%{meson_install}
 
 sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
@@ -304,17 +305,19 @@ sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.co
 sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 
 rm -f %{buildroot}%{_var}/log/README
-mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
-mkdir -p %{buildroot}%{_localstatedir}/log
-ln -sfv %{_localstatedir}/opt/journal/log %{buildroot}%{_localstatedir}/log/journal
+
+mkdir -p %{buildroot}%{_var}/opt/journal/log \
+         %{buildroot}%{_var}/log
+
+ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
-install -dm 0755 %{buildroot}%{_sysconfdir}/systemd/network
-install -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/systemd/network
+install -dm 0755 %{buildroot}%{_sysconfdir}/%{name}/network
+install -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/%{name}/network
 install -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}
 
 rm %{buildroot}%{_unitdir}/default.target
@@ -326,26 +329,24 @@ install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %find_lang %{name} ../%{name}.lang
 
 %post
-systemd-machine-id-setup &>/dev/null || :
+%{name}-machine-id-setup &>/dev/null || :
 
 systemctl daemon-reexec &>/dev/null || {
-    if [ $1 -gt 1 ] && [ -d /run/systemd/system ] ; then
-        kill -TERM 1 &>/dev/null || :
-    fi
+  if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] ; then
+    kill -TERM 1 &>/dev/null || :
+  fi
 }
 
 journalctl --update-catalog &>/dev/null || :
-systemd-tmpfiles --create &>/dev/null || :
+%{name}-tmpfiles --create &>/dev/null || :
 
 if [ $1 -eq 1 ] ; then
-        systemctl preset-all &>/dev/null || :
-        systemctl --global preset-all &>/dev/null || :
+  systemctl preset-all &>/dev/null || :
+  systemctl --global preset-all &>/dev/null || :
 fi
 
 %clean
 rm -rf %{buildroot}/*
-
-%global udev_services systemd-udevd.service systemd-udev-settle.service systemd-udev-trigger.service systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-timesyncd.service
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
@@ -356,43 +357,40 @@ udevadm hwdb --update &>/dev/null || :
 %systemd_preun %udev_services
 
 %postun udev
-%systemd_postun_with_restart systemd-udevd.service
-
-%postun tests
-rm -rf %{_systemd_util_dir}/tests
+%systemd_postun_with_restart %{name}-udevd.service
 
 %files
 %defattr(-,root,root)
-%dir %{_sysconfdir}/systemd
-%dir %{_sysconfdir}/systemd/user
-%dir %{_sysconfdir}/systemd/network
+%dir %{_sysconfdir}/%{name}
+%dir %{_sysconfdir}/%{name}/user
+%dir %{_sysconfdir}/%{name}/network
 %dir %{_sysconfdir}/tmpfiles.d
 %dir %{_sysconfdir}/sysctl.d
 %dir %{_sysconfdir}/modules-load.d
 %dir %{_sysconfdir}/binfmt.d
 
-%{_sysconfdir}/X11/xinit/xinitrc.d/50-systemd-user.sh
+%{_sysconfdir}/X11/xinit/xinitrc.d/50-%{name}-user.sh
 %{_sysconfdir}/sysctl.d/50-security-hardening.conf
-%{_sysconfdir}/xdg/systemd
+%{_sysconfdir}/xdg/%{name}
 %{_sysconfdir}/rc.d/init.d/README
 
-%config(noreplace) %{_sysconfdir}/systemd/sleep.conf
-%config(noreplace) %{_sysconfdir}/systemd/system.conf
-%config(noreplace) %{_sysconfdir}/systemd/user.conf
-%config(noreplace) %{_sysconfdir}/systemd/logind.conf
-%config(noreplace) %{_sysconfdir}/systemd/journald.conf
-%config(noreplace) %{_sysconfdir}/systemd/resolved.conf
-%config(noreplace) %{_sysconfdir}/systemd/coredump.conf
-%config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
-%config(noreplace) %{_sysconfdir}/systemd/networkd.conf
-%config(noreplace) %{_sysconfdir}/systemd/pstore.conf
+%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
+%config(noreplace) %{_sysconfdir}/%{name}/system.conf
+%config(noreplace) %{_sysconfdir}/%{name}/user.conf
+%config(noreplace) %{_sysconfdir}/%{name}/logind.conf
+%config(noreplace) %{_sysconfdir}/%{name}/journald.conf
+%config(noreplace) %{_sysconfdir}/%{name}/resolved.conf
+%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
+%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
+%config(noreplace) %{_sysconfdir}/%{name}/networkd.conf
+%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
 
 %ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %endif
-%config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
+%config(noreplace) %{_sysconfdir}/%{name}/network/99-dhcp-en.network
 
-%config(noreplace) /boot/systemd.cfg
+%config(noreplace) /boot/%{name}.cfg
 
 %{_sbindir}/halt
 %{_sbindir}/init
@@ -413,31 +411,31 @@ rm -rf %{_systemd_util_dir}/tests
 %{_bindir}/portablectl
 %{_bindir}/resolvectl
 %{_bindir}/systemctl
-%{_bindir}/systemd-analyze
-%{_bindir}/systemd-ask-password
-%{_bindir}/systemd-cat
-%{_bindir}/systemd-cgls
-%{_bindir}/systemd-cgtop
-%{_bindir}/systemd-delta
-%{_bindir}/systemd-detect-virt
-%{_bindir}/systemd-escape
-%{_bindir}/systemd-id128
-%{_bindir}/systemd-inhibit
-%{_bindir}/systemd-machine-id-setup
-%{_bindir}/systemd-mount
-%{_bindir}/systemd-notify
-%{_bindir}/systemd-path
-%{_bindir}/systemd-resolve
-%{_bindir}/systemd-run
-%{_bindir}/systemd-socket-activate
-%{_bindir}/systemd-stdio-bridge
-%{_bindir}/systemd-tmpfiles
-%{_bindir}/systemd-tty-ask-password-agent
-%{_bindir}/systemd-umount
+%{_bindir}/%{name}-analyze
+%{_bindir}/%{name}-ask-password
+%{_bindir}/%{name}-cat
+%{_bindir}/%{name}-cgls
+%{_bindir}/%{name}-cgtop
+%{_bindir}/%{name}-delta
+%{_bindir}/%{name}-detect-virt
+%{_bindir}/%{name}-escape
+%{_bindir}/%{name}-id128
+%{_bindir}/%{name}-inhibit
+%{_bindir}/%{name}-machine-id-setup
+%{_bindir}/%{name}-mount
+%{_bindir}/%{name}-notify
+%{_bindir}/%{name}-path
+%{_bindir}/%{name}-resolve
+%{_bindir}/%{name}-run
+%{_bindir}/%{name}-socket-activate
+%{_bindir}/%{name}-stdio-bridge
+%{_bindir}/%{name}-tmpfiles
+%{_bindir}/%{name}-tty-ask-password-agent
+%{_bindir}/%{name}-umount
 %{_bindir}/timedatectl
 %{_bindir}/userdbctl
-%{_bindir}/systemd-repart
-%{_bindir}/systemd-dissect
+%{_bindir}/%{name}-repart
+%{_bindir}/%{name}-dissect
 
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
@@ -445,9 +443,9 @@ rm -rf %{_systemd_util_dir}/tests
 %{_tmpfilesdir}/legacy.conf
 %{_tmpfilesdir}/portables.conf
 %{_tmpfilesdir}/static-nodes-permissions.conf
-%{_tmpfilesdir}/systemd-nologin.conf
-%{_tmpfilesdir}/systemd-tmp.conf
-%{_tmpfilesdir}/systemd.conf
+%{_tmpfilesdir}/%{name}-nologin.conf
+%{_tmpfilesdir}/%{name}-tmp.conf
+%{_tmpfilesdir}/%{name}.conf
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
@@ -455,47 +453,56 @@ rm -rf %{_systemd_util_dir}/tests
 
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
-%{_libdir}/binfmt.d
-%{_libdir}/rpm
-%{_libdir}/sysctl.d
-%{_systemd_util_dir}
-
+%{_libdir}/rpm/*
+%{_libdir}/sysctl.d/*
+%{_systemd_util_dir}/catalog/*
+%{_systemd_util_dir}/*.so
+%{_systemd_util_dir}/network/*
+%{_systemd_util_dir}/ntp-units.d/*
+%{_systemd_util_dir}/portable/*
+%{_systemd_util_dir}/resolv.conf
+%{_systemd_util_dir}/%{name}*
+%{_systemd_util_dir}/user*
+%{_systemd_util_dir}/import-pubring.gpg
+%{_unitdir}/*
+%{_presetdir}/*
+%{_systemdgeneratordir}/*
 %{_datadir}/bash-completion/*
 %{_datadir}/factory/*
 %{_datadir}/dbus-1
 %{_datadir}/doc/*
 %{_datadir}/polkit-1
-%{_datadir}/systemd
+%{_datadir}/%{name}
 %{_datadir}/zsh/*
-%{_localstatedir}/log/journal
+%{_var}/log/journal
 
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/basic.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/bluetooth.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/default.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/getty.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/graphical.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/local-fs.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/machines.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/multi-user.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/network-online.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/printer.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/remote-fs.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/sockets.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/sysinit.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/system-update.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system/timers.target.wants
-%ghost %dir %attr(0755,-,-) /etc/systemd/system
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/bluetooth.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/default.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/getty.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/graphical.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/local-fs.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/machines.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/multi-user.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/network-online.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/printer.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/remote-fs.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/sockets.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/sysinit.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/system-update.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/timers.target.wants
+%ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system
 
 %files devel
 %defattr(-,root,root)
-%dir %{_includedir}/systemd
+%dir %{_includedir}/%{name}
 %{_libdir}/libudev.so
 %{_libdir}/libsystemd.so
-%{_includedir}/systemd/*.h
+%{_includedir}/%{name}/*.h
 %{_includedir}/libudev.h
 %{_libdir}/pkgconfig/libudev.pc
 %{_libdir}/pkgconfig/libsystemd.pc
-%{_datadir}/pkgconfig/systemd.pc
+%{_datadir}/pkgconfig/%{name}.pc
 %{_datadir}/pkgconfig/udev.pc
 
 %files udev
@@ -504,14 +511,14 @@ rm -rf %{_systemd_util_dir}/tests
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
-%{_sysconfdir}/systemd/pstore.conf
-%{_sysconfdir}/systemd/sleep.conf
-%{_sysconfdir}/systemd/timesyncd.conf
+%{_sysconfdir}/%{name}/pstore.conf
+%{_sysconfdir}/%{name}/sleep.conf
+%{_sysconfdir}/%{name}/timesyncd.conf
 %{_sysconfdir}/udev/udev.conf
-%{_tmpfilesdir}/systemd-pstore.conf
+%{_tmpfilesdir}/%{name}-pstore.conf
 %{_bindir}/bootctl
 %{_bindir}/kernel-install
-%{_bindir}/systemd-hwdb
+%{_bindir}/%{name}-hwdb
 %{_bindir}/udevadm
 
 %{_libdir}/udev/v4l_id
@@ -519,9 +526,9 @@ rm -rf %{_systemd_util_dir}/tests
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
 %{_systemd_util_dir}/network/99-default.link
-%{_systemd_util_dir}/ntp-units.d/80-systemd-timesync.list
-%{_systemd_util_dir}/system-generators/systemd-bless-boot-generator
-%{_systemd_util_dir}/system-generators/systemd-hibernate-resume-generator
+%{_systemd_util_dir}/ntp-units.d/80-%{name}-timesync.list
+%{_systemd_util_dir}/system-generators/%{name}-bless-boot-generator
+%{_systemd_util_dir}/system-generators/%{name}-hibernate-resume-generator
 %{_systemd_util_dir}/system-sleep
 %{_unitdir}/hibernate.target
 %{_unitdir}/hybrid-sleep.target
@@ -529,60 +536,60 @@ rm -rf %{_systemd_util_dir}/tests
 %{_unitdir}/kmod-static-nodes.service
 %{_unitdir}/quotaon.service
 %{_unitdir}/sleep.target
-%{_unitdir}/sockets.target.wants/systemd-udevd-control.socket
-%{_unitdir}/sockets.target.wants/systemd-udevd-kernel.socket
+%{_unitdir}/sockets.target.wants/%{name}-udevd-control.socket
+%{_unitdir}/sockets.target.wants/%{name}-udevd-kernel.socket
 %{_unitdir}/suspend-then-hibernate.target
 %{_unitdir}/suspend.target
 %{_unitdir}/sysinit.target.wants/kmod-static-nodes.service
-%{_unitdir}/sysinit.target.wants/systemd-boot-system-token.service
-%{_unitdir}/sysinit.target.wants/systemd-hwdb-update.service
-%{_unitdir}/sysinit.target.wants/systemd-modules-load.service
-%{_unitdir}/sysinit.target.wants/systemd-random-seed.service
-%{_unitdir}/sysinit.target.wants/systemd-tmpfiles-setup-dev.service
-%{_unitdir}/sysinit.target.wants/systemd-udevd.service
-%{_unitdir}/systemd-backlight@.service
-%{_unitdir}/systemd-bless-boot.service
-%{_unitdir}/systemd-boot-system-token.service
-%{_unitdir}/systemd-fsck-root.service
-%{_unitdir}/systemd-fsck@.service
-%{_unitdir}/systemd-hibernate-resume@.service
-%{_unitdir}/systemd-hibernate.service
-%{_unitdir}/systemd-hwdb-update.service
-%{_unitdir}/systemd-hybrid-sleep.service
-%{_unitdir}/systemd-modules-load.service
-%{_unitdir}/systemd-pstore.service
-%{_unitdir}/systemd-quotacheck.service
-%{_unitdir}/systemd-random-seed.service
-%{_unitdir}/systemd-remount-fs.service
-%{_unitdir}/systemd-rfkill.service
-%{_unitdir}/systemd-rfkill.socket
-%{_unitdir}/systemd-suspend-then-hibernate.service
-%{_unitdir}/systemd-suspend.service
-%{_unitdir}/systemd-timesyncd.service
-%{_unitdir}/systemd-tmpfiles-setup-dev.service
-%{_unitdir}/systemd-udev-settle.service
-%{_unitdir}/systemd-udevd-control.socket
-%{_unitdir}/systemd-udevd-kernel.socket
-%{_unitdir}/systemd-udevd.service
-%{_unitdir}/systemd-vconsole-setup.service
-%{_unitdir}/systemd-volatile-root.service
-%{_systemd_util_dir}/systemd-backlight
-%{_systemd_util_dir}/systemd-bless-boot
-%{_systemd_util_dir}/systemd-fsck
-%{_systemd_util_dir}/systemd-growfs
-%{_systemd_util_dir}/systemd-hibernate-resume
-%{_systemd_util_dir}/systemd-makefs
-%{_systemd_util_dir}/systemd-modules-load
-%{_systemd_util_dir}/systemd-pstore
-%{_systemd_util_dir}/systemd-quotacheck
-%{_systemd_util_dir}/systemd-random-seed
-%{_systemd_util_dir}/systemd-remount-fs
-%{_systemd_util_dir}/systemd-rfkill
-%{_systemd_util_dir}/systemd-sleep
-%{_systemd_util_dir}/systemd-timesyncd
-%{_systemd_util_dir}/systemd-udevd
-%{_systemd_util_dir}/systemd-vconsole-setup
-%{_systemd_util_dir}/systemd-volatile-root
+%{_unitdir}/sysinit.target.wants/%{name}-boot-system-token.service
+%{_unitdir}/sysinit.target.wants/%{name}-hwdb-update.service
+%{_unitdir}/sysinit.target.wants/%{name}-modules-load.service
+%{_unitdir}/sysinit.target.wants/%{name}-random-seed.service
+%{_unitdir}/sysinit.target.wants/%{name}-tmpfiles-setup-dev.service
+%{_unitdir}/sysinit.target.wants/%{name}-udevd.service
+%{_unitdir}/%{name}-backlight@.service
+%{_unitdir}/%{name}-bless-boot.service
+%{_unitdir}/%{name}-boot-system-token.service
+%{_unitdir}/%{name}-fsck-root.service
+%{_unitdir}/%{name}-fsck@.service
+%{_unitdir}/%{name}-hibernate-resume@.service
+%{_unitdir}/%{name}-hibernate.service
+%{_unitdir}/%{name}-hwdb-update.service
+%{_unitdir}/%{name}-hybrid-sleep.service
+%{_unitdir}/%{name}-modules-load.service
+%{_unitdir}/%{name}-pstore.service
+%{_unitdir}/%{name}-quotacheck.service
+%{_unitdir}/%{name}-random-seed.service
+%{_unitdir}/%{name}-remount-fs.service
+%{_unitdir}/%{name}-rfkill.service
+%{_unitdir}/%{name}-rfkill.socket
+%{_unitdir}/%{name}-suspend-then-hibernate.service
+%{_unitdir}/%{name}-suspend.service
+%{_unitdir}/%{name}-timesyncd.service
+%{_unitdir}/%{name}-tmpfiles-setup-dev.service
+%{_unitdir}/%{name}-udev-settle.service
+%{_unitdir}/%{name}-udevd-control.socket
+%{_unitdir}/%{name}-udevd-kernel.socket
+%{_unitdir}/%{name}-udevd.service
+%{_unitdir}/%{name}-vconsole-setup.service
+%{_unitdir}/%{name}-volatile-root.service
+%{_systemd_util_dir}/%{name}-backlight
+%{_systemd_util_dir}/%{name}-bless-boot
+%{_systemd_util_dir}/%{name}-fsck
+%{_systemd_util_dir}/%{name}-growfs
+%{_systemd_util_dir}/%{name}-hibernate-resume
+%{_systemd_util_dir}/%{name}-makefs
+%{_systemd_util_dir}/%{name}-modules-load
+%{_systemd_util_dir}/%{name}-pstore
+%{_systemd_util_dir}/%{name}-quotacheck
+%{_systemd_util_dir}/%{name}-random-seed
+%{_systemd_util_dir}/%{name}-remount-fs
+%{_systemd_util_dir}/%{name}-rfkill
+%{_systemd_util_dir}/%{name}-sleep
+%{_systemd_util_dir}/%{name}-timesyncd
+%{_systemd_util_dir}/%{name}-udevd
+%{_systemd_util_dir}/%{name}-vconsole-setup
+%{_systemd_util_dir}/%{name}-volatile-root
 
 %dir %{_libdir}/udev
 %{_libdir}/udev/ata_id
@@ -622,21 +629,21 @@ rm -rf %{_systemd_util_dir}/tests
 %files pam
 %defattr(-,root,root)
 %{_libdir}/security/pam_systemd.so
-%{_libdir}/pam.d/systemd-user
+%{_libdir}/pam.d/%{name}-user
 
 %files container
 %defattr(-,root,root)
-%{_bindir}/systemd-nspawn
+%{_bindir}/%{name}-nspawn
 %{_bindir}/machinectl
 
-%{_systemd_util_dir}/systemd-machined
-%{_unitdir}/systemd-machined.service
-%{_unitdir}/systemd-nspawn@.service
+%{_systemd_util_dir}/%{name}-machined
+%{_unitdir}/%{name}-machined.service
+%{_unitdir}/%{name}-nspawn@.service
 %{_unitdir}/dbus-org.freedesktop.machine1.service
 %{_unitdir}/var-lib-machines.mount
 %{_unitdir}/machine.slice
 %{_unitdir}/machines.target.wants
-%{_tmpfilesdir}/systemd-nspawn.conf
+%{_tmpfilesdir}/%{name}-nspawn.conf
 
 %{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
@@ -644,18 +651,18 @@ rm -rf %{_systemd_util_dir}/tests
 
 %files journal-remote
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
-%config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
+%config(noreplace) %{_sysconfdir}/%{name}/journal-upload.conf
+%config(noreplace) %{_sysconfdir}/%{name}/journal-remote.conf
 
-%{_systemd_util_dir}/systemd-journal-gatewayd
-%{_systemd_util_dir}/systemd-journal-remote
-%{_systemd_util_dir}/systemd-journal-upload
+%{_systemd_util_dir}/%{name}-journal-gatewayd
+%{_systemd_util_dir}/%{name}-journal-remote
+%{_systemd_util_dir}/%{name}-journal-upload
 
-%{_unitdir}/systemd-journal-gatewayd.service
-%{_unitdir}/systemd-journal-gatewayd.socket
-%{_unitdir}/systemd-journal-remote.service
-%{_unitdir}/systemd-journal-remote.socket
-%{_unitdir}/systemd-journal-upload.service
+%{_unitdir}/%{name}-journal-gatewayd.service
+%{_unitdir}/%{name}-journal-gatewayd.socket
+%{_unitdir}/%{name}-journal-remote.service
+%{_unitdir}/%{name}-journal-remote.socket
+%{_unitdir}/%{name}-journal-upload.service
 
 %files rpm-macros
 %defattr(-,root,root)
@@ -669,6 +676,8 @@ rm -rf %{_systemd_util_dir}/tests
 %defattr(-,root,root)
 
 %changelog
+* Fri Feb 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-2
+- Remove test files from main package
 * Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 247.13-1
 - Update to stable version 247.13
 * Mon Dec 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-6

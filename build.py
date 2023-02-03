@@ -908,8 +908,10 @@ class CheckTools:
 
         ph_docker_img_url = ph_docker_img_url.replace("ARCH", constants.currentArch)
 
-        cmd = f"{photonDir}/tools/scripts/ph4-docker-img-import.sh {ph_docker_img_url}"
-        cmd = f"{cmd} {ph_docker_img} {ph_builder_tag}"
+        cmd = (
+            f"{photonDir}/tools/scripts/ph4-docker-img-import.sh {ph_docker_img_url}"
+            f" {ph_docker_img} {ph_builder_tag}"
+        )
         runShellCmd(cmd)
 
     def check_contain():
@@ -1138,13 +1140,14 @@ class BuildImage:
 
         docker_file_dir = "support/dockerfiles/photon"
         docker_script = f"{docker_file_dir}/make-docker-image.sh"
-
-        cmd = f"cd {photonDir} &&"
-        cmd = f"{cmd} sudo docker build --no-cache --tag photon-build {docker_file_dir}"
-        cmd = f"{cmd} && sudo docker run --rm --privileged --net=host "
-        cmd = f"{cmd} -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
-        cmd = f"{cmd} -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
-        cmd = f"{cmd} -v {photonDir}:/workspace photon-build {docker_script}"
+        cmd = (
+            f"cd {photonDir} &&"
+            f" sudo docker build --no-cache --tag photon-build {docker_file_dir}"
+            f" && sudo docker run --rm --privileged --net=host"
+            f" -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
+            f" -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
+            f" -v {photonDir}:/workspace photon-build {docker_script}"
+        )
 
         runShellCmd(cmd)
         check_prerequesite["photon-docker-image"] = True
