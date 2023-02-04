@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.162
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -71,6 +71,7 @@ Patch8: 9p-support-for-local-file-lock.patch
 Patch9: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch10: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch11: apparmor-af_unix-mediation.patch
+Patch12: Performance-over-security-model.patch
 
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
@@ -602,6 +603,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-4
+- Implement performance over security option for RETBleed (pos=1)
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.162-3
 - initialize MMCONFIG, if already not initialized
 * Fri Jan 20 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2

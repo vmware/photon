@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.162
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -45,6 +45,8 @@ Patch7: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch8: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch9: apparmor-af_unix-mediation.patch
 Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
+
+Patch11: Performance-over-security-model.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
@@ -402,6 +404,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
+- Implement performance over security option for RETBleed (pos=1)
 * Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
 - Update to version 5.10.162
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.159-2

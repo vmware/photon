@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.162
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -51,6 +51,8 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
+
+Patch8: Performance-over-security-model.patch
 
 #HyperV patches
 Patch11: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
@@ -422,6 +424,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
+- Implement performance over security option for RETBleed (pos=1)
 * Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
 - Update to version 5.10.162
 * Thu Jan 12 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.159-3
