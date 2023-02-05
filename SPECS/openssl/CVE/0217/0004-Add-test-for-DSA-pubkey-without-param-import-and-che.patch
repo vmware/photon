@@ -1,0 +1,124 @@
+From c5255f06978a6537e69669d914df7a7316c53fe6 Mon Sep 17 00:00:00 2001
+From: Tomas Mraz <tomas@openssl.org>
+Date: Fri, 13 Jan 2023 18:46:15 +0100
+Subject: [PATCH 4/4] Add test for DSA pubkey without param import and check
+
+---
+ test/recipes/91-test_pkey_check.t             |  48 ++++++++++++++----
+ .../91-test_pkey_check_data/dsapub.pem        |  12 +++++
+ .../dsapub_noparam.der                        | Bin 0 -> 108 bytes
+ 3 files changed, 49 insertions(+), 11 deletions(-)
+ create mode 100644 test/recipes/91-test_pkey_check_data/dsapub.pem
+ create mode 100644 test/recipes/91-test_pkey_check_data/dsapub_noparam.der
+
+diff --git a/test/recipes/91-test_pkey_check.t b/test/recipes/91-test_pkey_check.t
+index 612a3e3d6c..015d7805db 100644
+--- a/test/recipes/91-test_pkey_check.t
++++ b/test/recipes/91-test_pkey_check.t
+@@ -11,19 +11,24 @@ use strict;
+ use warnings;
+ 
+ use File::Spec;
+-use OpenSSL::Test qw/:DEFAULT data_file/;
++use OpenSSL::Test qw/:DEFAULT data_file with/;
+ use OpenSSL::Test::Utils;
+ 
+ sub pkey_check {
+     my $f = shift;
++    my $pubcheck = shift;
++    my @checkopt = ('-check');
+ 
+-    return run(app(['openssl', 'pkey', '-check', '-text',
++    @checkopt = ('-pubcheck', '-pubin') if $pubcheck;
++
++    return run(app(['openssl', 'pkey', @checkopt, '-text',
+                     '-in', $f]));
+ }
+ 
+ sub check_key {
+     my $f = shift;
+     my $should_fail = shift;
++    my $pubcheck = shift;
+     my $str;
+ 
+ 
+@@ -33,11 +38,10 @@ sub check_key {
+     $f = data_file($f);
+ 
+     if ( -s $f ) {
+-        if ($should_fail) {
+-            ok(!pkey_check($f), $str);
+-        } else {
+-            ok(pkey_check($f), $str);
+-        }
++        with({ exit_checker => sub { return shift == $should_fail; } },
++            sub {
++                ok(pkey_check($f, $pubcheck), $str);
++            });
+     } else {
+         fail("Missing file $f");
+     }
+@@ -66,15 +70,37 @@ push(@positive_tests, (
+     "dhpkey.pem"
+     )) unless disabled("dh");
+ 
++my @negative_pubtests = ();
++
++push(@negative_pubtests, (
++    "dsapub_noparam.der"
++    )) unless disabled("dsa");
++
++my @positive_pubtests = ();
++
++push(@positive_pubtests, (
++    "dsapub.pem"
++    )) unless disabled("dsa");
++
+ plan skip_all => "No tests within the current enabled feature set"
+-    unless @negative_tests && @positive_tests;
++    unless @negative_tests && @positive_tests
++           && @negative_pubtests && @positive_pubtests;
+ 
+-plan tests => scalar(@negative_tests) + scalar(@positive_tests);
++plan tests => scalar(@negative_tests) + scalar(@positive_tests)
++              + scalar(@negative_pubtests) + scalar(@positive_pubtests);
+ 
+ foreach my $t (@negative_tests) {
+-    check_key($t, 1);
++    check_key($t, 1, 0);
+ }
+ 
+ foreach my $t (@positive_tests) {
+-    check_key($t, 0);
++    check_key($t, 0, 0);
++}
++
++foreach my $t (@negative_pubtests) {
++    check_key($t, 1, 1);
++}
++
++foreach my $t (@positive_pubtests) {
++    check_key($t, 0, 1);
+ }
+diff --git a/test/recipes/91-test_pkey_check_data/dsapub.pem b/test/recipes/91-test_pkey_check_data/dsapub.pem
+new file mode 100644
+index 0000000000..0ff4bd83ed
+--- /dev/null
++++ b/test/recipes/91-test_pkey_check_data/dsapub.pem
+@@ -0,0 +1,12 @@
++-----BEGIN PUBLIC KEY-----
++MIIBvzCCATQGByqGSM44BAEwggEnAoGBAIjbXpOVVciVNuagg26annKkghIIZFI4
++4WdMomnV+I/oXyxHbZTBBBpW9xy/E1+yMjbp4GmX+VxyDj3WxUWxXllzL+miEkzD
++9Xz638VzIBhjFbMvk1/N4kS4bKVUd9yk7HfvYzAdnRphk0WI+RoDiDrBNPPxSoQD
++CEWgvwgsLIDhAh0A6dbz1IQpQwGF4+Ca28x6OO+UfJJv3ggeZ++fNwKBgQCA9XKV
++lRrTY8ALBxS0KbZjpaIXuUj5nr3i1lIDyP3ISksDF0ekyLtn6eK9VijX6Pm65Np+
++4ic9Nr5WKLKhPaUSpLNRx1gDqo3sd92hYgiEUifzEuhLYfK/CsgFED+l2hDXtJUq
++bISNSHVwI5lsyNXLu7HI1Fk8F5UO3LqsboFAngOBhAACgYATxFY89nEYcUhgHGgr
++YDHhXBQfMKnTKYdvon4DN7WQ9ip+t4VUsLpTD1ZE9zrM2R/B04+8C6KGoViwyeER
++kS4dxWOkX71x4X2DlNpYevcR53tNcTDqmMD7YKfDDmrb0lftMyfW8aESaiymVMys
++DRjhKHBjdo0rZeSM8DAk3ctrXA==
++-----END PUBLIC KEY-----
+
+-- 
+2.32.0 (Apple Git-132)
+

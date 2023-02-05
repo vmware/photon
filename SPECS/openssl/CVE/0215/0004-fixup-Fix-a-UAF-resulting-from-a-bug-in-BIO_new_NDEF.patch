@@ -1,0 +1,60 @@
+From e76921222941bae85627d7031cdc4912c17926b2 Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Tue, 31 Jan 2023 11:54:18 +0000
+Subject: [PATCH 4/4] fixup! Fix a UAF resulting from a bug in BIO_new_NDEF
+
+---
+ crypto/asn1/bio_ndef.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/crypto/asn1/bio_ndef.c b/crypto/asn1/bio_ndef.c
+index ea2c9055cf..b9df3a7a47 100644
+--- a/crypto/asn1/bio_ndef.c
++++ b/crypto/asn1/bio_ndef.c
+@@ -78,8 +78,10 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
+         goto err;
+     pop_bio = asn_bio;
+ 
+-    BIO_asn1_set_prefix(asn_bio, ndef_prefix, ndef_prefix_free);
+-    BIO_asn1_set_suffix(asn_bio, ndef_suffix, ndef_suffix_free);
++    if (BIO_asn1_set_prefix(asn_bio, ndef_prefix, ndef_prefix_free) <= 0
++            || BIO_asn1_set_suffix(asn_bio, ndef_suffix, ndef_suffix_free) <= 0
++            || BIO_ctrl(asn_bio, BIO_C_SET_EX_ARG, 0, ndef_aux) <= 0)
++        goto err;
+ 
+     /*
+      * Now let the callback prepend any digest, cipher, etc., that the BIO's
+@@ -94,8 +96,19 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
+      * The asn1_cb(), must not have mutated asn_bio on error, leaving it in the
+      * middle of some partially built, but not returned BIO chain.
+      */
+-    if (aux->asn1_cb(ASN1_OP_STREAM_PRE, &val, it, &sarg) <= 0)
++    if (aux->asn1_cb(ASN1_OP_STREAM_PRE, &val, it, &sarg) <= 0) {
++        /*
++         * ndef_aux is now owned by asn_bio so we must not free it in the err
++         * clean up block
++         */
++        ndef_aux = NULL;
+         goto err;
++    }
++
++    /*
++     * We must not fail now because the callback has prepended additional
++     * BIOs to the chain
++     */
+ 
+     ndef_aux->val = val;
+     ndef_aux->it = it;
+@@ -103,9 +116,6 @@ BIO *BIO_new_NDEF(BIO *out, ASN1_VALUE *val, const ASN1_ITEM *it)
+     ndef_aux->boundary = sarg.boundary;
+     ndef_aux->out = out;
+ 
+-    if (BIO_ctrl(asn_bio, BIO_C_SET_EX_ARG, 0, ndef_aux) <= 0)
+-        goto err;
+-
+     return sarg.ndef_bio;
+ 
+  err:
+-- 
+2.32.0 (Apple Git-132)
+

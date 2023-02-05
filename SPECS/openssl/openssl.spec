@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -20,9 +20,37 @@ Source3: provider_fips.cnf
 %endif
 Source4: distro.cnf
 Source5: user.cnf
+Source6: dsapub_noparam.der
 
 Patch0: openssl-cnf.patch
 Patch1: 0001-x509-fix-double-locking-problem.patch
+
+#Fix for multiple security issues
+Patch2: 0001-Fix-type-confusion-in-nc_match_single.patch
+Patch3: 0002-Add-testcase-for-nc_match_single-type-confusion.patch
+
+Patch4: 0001-Fix-Timing-Oracle-in-RSA-decryption.patch
+
+Patch5: 0001-Avoid-dangling-ptrs-in-header-and-data-params-for-PE.patch
+Patch6: 0002-Add-a-test-for-CVE-2022-4450.patch
+
+Patch7: 0001-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
+Patch8: 0002-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
+Patch9: 0003-squash-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDE.patch
+Patch10: 0004-fixup-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
+
+Patch11: 0001-Do-not-dereference-PKCS7-object-data-if-not-set.patch
+Patch12: 0002-Add-test-for-d2i_PKCS7-NULL-dereference.patch
+
+Patch13: 0001-Fix-NULL-deference-when-validating-FFC-public-key.patch
+Patch14: 0002-Prevent-creating-DSA-and-DH-keys-without-parameters-.patch
+Patch15: 0003-Do-not-create-DSA-keys-without-parameters-by-decoder.patch
+Patch16: 0004-Add-test-for-DSA-pubkey-without-param-import-and-che.patch
+
+Patch17: 0001-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-3.patch
+
+Patch18: 0001-pk7_doit.c-Check-return-of-BIO_set_md-calls.patch
+Patch19: 0002-Add-testcase-for-missing-return-check-of-BIO_set_md-.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -125,6 +153,7 @@ install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
 
 %if 0%{?with_check}
 %check
+cp %{SOURCE6} test/recipes/91-test_pkey_check_data/
 make tests %{?_smp_mflags}
 %endif
 
@@ -201,6 +230,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-4
+- Fix for Various Security issues
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-3
 - Fix openssl.cnf
 - Keep default provider enabled & activated at all times
