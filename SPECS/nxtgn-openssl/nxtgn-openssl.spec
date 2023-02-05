@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1o
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -13,6 +13,15 @@ Source1:        nxtgn-rehash_ca_certificates.sh
 Patch0:         nxtgn-openssl-CVE-2022-2068.patch
 Patch1:         nxtgn-c_rehash.patch
 Patch2:         nxtgn-openssl-CVE-2022-2097.patch
+
+#Fixes for security issues reported in Feb 2023
+Patch3:         0001-Fix-Timing-Oracle-in-RSA-decryption.patch
+Patch4:         0002-Avoid-dangling-ptrs-in-header-and-data-params-for-PE.patch
+Patch5:         0003-Add-a-test-for-CVE-2022-4450.patch
+Patch6:         0004-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
+Patch7:         0005-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
+Patch8:         0006-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-1.patch
+
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -57,6 +66,12 @@ Perl scripts that convert certificates and keys to various formats.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -125,6 +140,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 1.1.1o-4
+-   Fix for CVE-2023-0286
 *   Mon Jul 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1o-3
 -   Fix CVE-2022-2097
 *   Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1o-2
