@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.162
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.165
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=941c7ddd7c27f49b4491e1c8fbf1efedcbac50b48ed8836ec91091ead69723f820a61bfda795378dcc728a782d2206189903333e83e255b723eec01157bbb0bb
+%define sha512 linux=2c3431a36d4be44b83f70025110ac4b4799e284481d11690f620813d5b4b48cfd1c03f0e93103339ae7d017a61c46d5b8b9b1031f3be444d491ead74a1cb0386
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -101,7 +101,6 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
-Patch41: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # VMW:
 Patch45: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -603,6 +602,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1
+- Update to version 5.10.165
 * Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-4
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.162-3

@@ -1,0 +1,20 @@
+From e5d2552c93de0e4e48e4653b6df4dc228bc16465 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Thu, 12 May 2022 11:34:59 -0300
+Subject: [PATCH 314/319] Linux 5.10.111-rt66 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f..d42c0971b041 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt66
+-- 
+2.39.1
+

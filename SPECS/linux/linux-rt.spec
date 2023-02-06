@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.162
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.165
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt78
+%define rt_version rt81
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=941c7ddd7c27f49b4491e1c8fbf1efedcbac50b48ed8836ec91091ead69723f820a61bfda795378dcc728a782d2206189903333e83e255b723eec01157bbb0bb
+%define sha512 linux=2c3431a36d4be44b83f70025110ac4b4799e284481d11690f620813d5b4b48cfd1c03f0e93103339ae7d017a61c46d5b8b9b1031f3be444d491ead74a1cb0386
 Source1:    config-rt
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -104,7 +104,6 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
-Patch41: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -475,8 +474,9 @@ Patch614: 0314-Linux-5.10.111-rt66-REBASE.patch
 Patch615: 0315-rt-remove-extra-parameter-from-__trace_stack.patch
 Patch616: 0316-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
 Patch617: 0317-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
+Patch618: 0318-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
 # Keep rt_version matched up with this patch.
-Patch618: 0318-Linux-5.10.162-rt78-REBASE.patch
+Patch619: 0319-Linux-5.10.165-rt81-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -913,6 +913,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1
+- Update to version 5.10.165
 * Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
 - Implement performance over security option for RETBleed (pos=1)
 * Tue Jan 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.162-1
