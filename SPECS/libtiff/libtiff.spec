@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -9,9 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
 %define sha512  libtiff-v=5227cb7b496ac6829601d8d689233bd8f318c1d04e5ce3457cdd6eac9e4f8c80cd7211d90cd092c61ad38bc8a4949169a13eabd788c46c15bcee1f72519fa022
+Patch0:         CVE-2022-48281.patch
 BuildRequires:  libjpeg-turbo-devel
-BuildRequires:  ca-certificates
 BuildRequires:  wget
+BuildRequires:  ca-certificates
 Requires:       libjpeg-turbo
 %description
 The LibTIFF package contains the TIFF libraries and associated utilities. The libraries are used by many programs for reading and writing TIFF files and the utilities are used for general work with TIFF files.
@@ -33,8 +34,7 @@ sh autogen.sh
 %make_build
 
 %install
-%make_install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
@@ -58,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/*
 
 %changelog
+*   Mon Feb 06 2023 Anmol Jain <anmolja@vmware.com> 4.5.0-2
+-   Fix for CVE-2022-48281
 *   Fri Jan 06 2023 Anmol Jain <anmolja@vmware.com> 4.5.0-1
 -   Version Update
 *   Sun Nov 20 2022 Anmol Jain <anmolja@vmware.com> 4.4.0-7
