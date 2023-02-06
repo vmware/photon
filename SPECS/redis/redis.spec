@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    7.0.5
-Release:    2%{?dist}
+Version:    7.0.8
+Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -9,20 +9,19 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6431fc4c787f47eef372eb4c75a5873ddceb570d01198602eab2894e144a6857528f4c61ebefd8801eea327c32f98e63c065edeb765ae65d8254df972f334831
+%define sha512 %{name}=ff9f702a13c28e8be1b8aebb423efc99fd24f8c9dc3bd38ae82932f7cb6412bb26218a2fc06c56b194614e839d669d89ad6f1e3c444124c234c5073a659f25a1
 
 Patch0: %{name}-conf.patch
-Patch1: CVE-2022-3647.patch
 
-BuildRequires:  build-essential
-BuildRequires:  systemd-devel
-BuildRequires:  systemd-rpm-macros
-BuildRequires:  tcl-devel
-BuildRequires:  which
+BuildRequires: build-essential
+BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
+BuildRequires: tcl-devel
+BuildRequires: which
 
-Requires:   systemd
-Requires:   openssl
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires: systemd
+Requires: openssl
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 Redis is an in-memory data structure store, used as database, cache and message broker.
@@ -90,6 +89,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Mon Feb 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.8-1
+- Upgrade to v7.0.8
 * Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.5-2
 - Fix CVE-2022-3647
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.5-1
