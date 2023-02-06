@@ -12,7 +12,6 @@
 %if 0%{?kat_build}
 %global fips 0
 %endif
-
 %endif
 
 %ifarch aarch64
@@ -36,6 +35,7 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
 %define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
+
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -71,6 +71,8 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
 Source17:       fips_canister-kallsyms
 %endif
+
+Source18:       spec_install_post.inc
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -459,23 +461,6 @@ make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-  xz $MODULE \
-done \
-%{nil}
-
-# We want to compress modules after stripping. Extra step is added to
-# the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -604,6 +589,7 @@ make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{bu
 
 %include %{SOURCE2}
 %include %{SOURCE6}
+%include %{SOURCE18}
 
 %post
 /sbin/depmod -a %{uname_r}

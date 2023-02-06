@@ -12,7 +12,6 @@
 %if 0%{?kat_build}
 %global fips 0
 %endif
-
 %endif
 
 %ifarch aarch64
@@ -62,9 +61,12 @@ Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
+
 Source17:       fips_canister-kallsyms
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
+
+Source19:       spec_install_post.inc
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -359,25 +361,6 @@ make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
-# Do not compress modules which will be loaded at boot time
-# to speed up boot process
-%define __modules_install_post \
-  for MODULE in `find %{buildroot}%{_modulesdir} -type d -name "crypto" -exec find {} -name *.ko ';'` ; do \
-    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-    rm -f $MODULE.{sig,dig} \
-  done \
-  find %{buildroot}%{_modulesdir} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
-%{nil}
-
-# We want to compress modules after stripping. Extra step is added to
-# the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -459,6 +442,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+%include %{SOURCE19}
 
 %post
 /sbin/depmod -a %{uname_r}

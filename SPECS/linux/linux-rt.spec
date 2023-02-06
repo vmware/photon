@@ -12,7 +12,6 @@
 %if 0%{?kat_build}
 %global fips 0
 %endif
-
 %endif
 
 Summary:        Kernel
@@ -56,10 +55,11 @@ Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
-Source18:        fips_canister-kallsyms
+Source17:        fips_canister-kallsyms
 %endif
 
-Source17:        modify_kernel_configs.inc
+Source18:        modify_kernel_configs.inc
+Source19:        spec_install_post.inc
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -342,12 +342,12 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    crypto/
 # Change m to y for modules that are in the canister
-%include %{SOURCE17}
-cp %{SOURCE18} crypto/
+%include %{SOURCE18}
+cp %{SOURCE17} crypto/
 %else
 %if 0%{?kat_build}
 # Change m to y for modules in katbuild
-%include %{SOURCE17}
+%include %{SOURCE18}
 %endif
 %endif
 
@@ -386,25 +386,7 @@ make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-  xz $MODULE \
-done \
-%{nil}
-
-# We want to compress modules after stripping. Extra step is added to
-# the default __spec_install_post.
-%define __spec_install_post\
-%{?__debug_package:%{__debug_install_post}}\
-%{__arch_install_post}\
-%{__os_install_post}\
-%{__modules_install_post}\
-%{nil}
-
 %install
-
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
@@ -492,6 +474,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
 %include %{SOURCE4}
+%include %{SOURCE19}
 
 %post
 /sbin/depmod -a %{uname_r}
