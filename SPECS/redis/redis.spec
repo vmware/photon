@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    6.2.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -13,13 +13,15 @@ Source0: http://download.redis.io/releases/%{name}-%{version}.tar.gz
 
 Patch0: %{name}-conf.patch
 Patch1: CVE-2022-3647.patch
+Patch2: CVE-2022-35977.patch
+Patch3: CVE-2023-22458.patch
 
-BuildRequires:  build-essential
-BuildRequires:  systemd-devel
-BuildRequires:  tcl-devel
-BuildRequires:  which
+BuildRequires: build-essential
+BuildRequires: systemd-devel
+BuildRequires: tcl-devel
+BuildRequires: which
 
-Requires:   systemd
+Requires: systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -29,10 +31,10 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %autosetup -p1
 
 %build
+# %%make_build hangs for some unknown reason
 make BUILD_TLS=yes %{?_smp_mflags}
 
 %install
-install -vdm 755 %{buildroot}
 make PREFIX=%{buildroot}%{_usr} install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 
@@ -67,8 +69,8 @@ make check %{?_smp_mflags}
 getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
 
 getent passwd %{name} &> /dev/null || \
-useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
--c 'Redis Database Server' %{name} &> /dev/null
+    useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
+        -c 'Redis Database Server' %{name} &> /dev/null
 
 %post
 /sbin/ldconfig
@@ -88,6 +90,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Mon Feb 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-3
+- Fix CVE-2022-35977, CVE-2023-22458
 * Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-2
 - Fix CVE-2022-3647
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-1
