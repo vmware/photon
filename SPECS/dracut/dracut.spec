@@ -1,41 +1,43 @@
-%define dracutlibdir %{_prefix}/lib/dracut
-%define _unitdir /usr/lib/systemd/system
+%define dracutlibdir        %{_libdir}/%{name}
+%global __requires_exclude  pkg-config
 
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
-URL:            https://dracut.wiki.kernel.org/
+URL:            https://dracut.wiki.kernel.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha1    dracut=44f5b7304976b57ac4fca4dd94e99d1a131e6f62
-Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
+
+Source0: http://www.kernel.org/pub/linux/utils/boot/dracut/%{name}-%{version}.tar.xz
+%define sha512 %{name}=eba046cf1c8013369a398e585e0bff233daa8595d469ce9acc8bbc6a32d55c6a5429d4219db19abbf6001104be05b357f0961f9e66b7f926039a5d3ee7c2b850
 
 Patch0:         disable-xattr.patch
 Patch1:         fix-initrd-naming-for-photon.patch
 Patch2:         lvm-no-read-only-locking.patch
 Patch3:         fix-hostonly.patch
 
-BuildRequires:  bash git
+BuildRequires:  bash
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc3
+BuildRequires:  systemd-devel
 
 Requires:       bash >= 4
-Requires:       (coreutils or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
-Requires:       (util-linux or toybox)
+Requires:       util-linux
 Requires:       systemd
 Requires:       systemd-udev
 Requires:       /bin/sed
 Requires:       /bin/grep
-Requires:       (findutils or toybox)
-Requires:       (cpio or toybox)
+Requires:       findutils
+Requires:       cpio
+Requires:       systemd
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -53,157 +55,155 @@ This package contains tools to assemble the local initrd and host configuration.
 
 %prep
 %autosetup -n %{name}-%{version} -p1
-cp %{SOURCE1} .
 
 %build
-%configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_prefix}/lib   --disable-documentation
-make %{?_smp_mflags}
+%configure \
+    --systemdsystemunitdir=%{_unitdir} \
+    --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
+    --libdir=%{_libdir} \
+    --disable-documentation
+
+%make_build
 
 %install
-rm -rf -- %{buildroot}
-make %{?_smp_mflags} install \
-     DESTDIR=%{buildroot} \
-     libdir=%{_prefix}/lib
+%make_install %{?_smp_mflags} libdir=%{_prefix}/lib
 
-echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}/%{dracutlibdir}/dracut-version.sh
+echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni
-
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips \
+          %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
+          %{buildroot}%{dracutlibdir}/modules.d/00bootchart
 
 # we do not support dash in the initramfs
 rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
+          %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
+          %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
+          %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/96securityfs
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/97masterkey
-rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/98integrity
+mkdir -p %{buildroot}/boot/%{name} \
+         %{buildroot}%{_sharedstatedir}/%{name}/overlay \
+         %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/%{name}/log \
+         %{buildroot}%{_sharedstatedir}/initramfs \
+         %{buildroot}%{_sbindir}
 
-mkdir -p %{buildroot}/boot/dracut
-mkdir -p %{buildroot}/var/lib/dracut/overlay
-mkdir -p %{buildroot}%{_localstatedir}/log
-mkdir -p %{buildroot}%{_localstatedir}/opt/dracut/log
-touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
-ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
-mkdir -p %{buildroot}%{_sharedstatedir}/initramfs
+touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
+ln -sfrv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-mkdir -p %{buildroot}%{_sbindir}
-ln -sr %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
+ln -sr %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
 
 %clean
 rm -rf -- %{buildroot}
 
 %files
 %defattr(-,root,root,0755)
-%{!?_licensedir:%global license %%doc}
-%license COPYING lgpl-2.1.txt
-%{_bindir}/dracut
+%{_bindir}/%{name}
 %{_bindir}/mkinitrd
 %{_bindir}/lsinitrd
 # compat symlink
-%{_sbindir}/dracut
-%{_datadir}/bash-completion/completions/dracut
+%{_sbindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/bash-completion/completions/lsinitrd
 %dir %{dracutlibdir}
 %dir %{dracutlibdir}/modules.d
 %{dracutlibdir}/modules.d/*
 %exclude %{_libdir}/kernel
-/usr/lib/dracut/dracut-init.sh
-/usr/share/pkgconfig/dracut.pc
-%{dracutlibdir}/dracut-functions.sh
-%{dracutlibdir}/dracut-functions
-%{dracutlibdir}/dracut-version.sh
-%{dracutlibdir}/dracut-logger.sh
-%{dracutlibdir}/dracut-initramfs-restore
-%{dracutlibdir}/dracut-install
+%{_libdir}/%{name}/%{name}-init.sh
+%{_datadir}/pkgconfig/%{name}.pc
+%{dracutlibdir}/%{name}-functions.sh
+%{dracutlibdir}/%{name}-functions
+%{dracutlibdir}/%{name}-version.sh
+%{dracutlibdir}/%{name}-logger.sh
+%{dracutlibdir}/%{name}-initramfs-restore
+%{dracutlibdir}/%{name}-install
 %{dracutlibdir}/skipcpio
-%config(noreplace) %{_sysconfdir}/dracut.conf
-%dir %{_sysconfdir}/dracut.conf.d
-%dir %{dracutlibdir}/dracut.conf.d
-%dir %{_localstatedir}/opt/dracut/log
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/dracut/log/dracut.log
-%{_localstatedir}/log/dracut.log
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%dir %{_sysconfdir}/%{name}.conf.d
+%dir %{dracutlibdir}/%{name}.conf.d
+%dir %{_var}/opt/%{name}/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_var}/opt/%{name}/log/%{name}.log
+%{_var}/log/%{name}.log
 %dir %{_sharedstatedir}/initramfs
-%{_unitdir}/dracut-shutdown.service
-%{_unitdir}/sysinit.target.wants/dracut-shutdown.service
-%{_unitdir}/dracut-cmdline.service
-%{_unitdir}/dracut-initqueue.service
-%{_unitdir}/dracut-mount.service
-%{_unitdir}/dracut-pre-mount.service
-%{_unitdir}/dracut-pre-pivot.service
-%{_unitdir}/dracut-pre-trigger.service
-%{_unitdir}/dracut-pre-udev.service
-%{_unitdir}/initrd.target.wants/dracut-cmdline.service
-%{_unitdir}/initrd.target.wants/dracut-initqueue.service
-%{_unitdir}/initrd.target.wants/dracut-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-pivot.service
-%{_unitdir}/initrd.target.wants/dracut-pre-trigger.service
-%{_unitdir}/initrd.target.wants/dracut-pre-udev.service
+%{_unitdir}/%{name}-shutdown.service
+%{_unitdir}/sysinit.target.wants/%{name}-shutdown.service
+%{_unitdir}/%{name}-cmdline.service
+%{_unitdir}/%{name}-initqueue.service
+%{_unitdir}/%{name}-mount.service
+%{_unitdir}/%{name}-pre-mount.service
+%{_unitdir}/%{name}-pre-pivot.service
+%{_unitdir}/%{name}-pre-trigger.service
+%{_unitdir}/%{name}-pre-udev.service
+%{_unitdir}/initrd.target.wants/%{name}-cmdline.service
+%{_unitdir}/initrd.target.wants/%{name}-initqueue.service
+%{_unitdir}/initrd.target.wants/%{name}-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-pivot.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-trigger.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-udev.service
 
 %files tools
 %defattr(-,root,root,0755)
-
-%{_bindir}/dracut-catimages
-%dir /boot/dracut
-%dir /var/lib/dracut
-%dir /var/lib/dracut/overlay
+%{_bindir}/%{name}-catimages
+%dir /boot/%{name}
+%dir %{_sharedstatedir}/%{name}
+%dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
-*   Mon Dec 06 2021 Ankit Jain <ankitja@vmware.com> 050-8
--   Add systemd-udev as requires to successfully
--   create initrd.img
-*   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
--   Added a command line option to manually override host_only
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
--   Adjust hostonly based on running environment
-*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
--   Remove fipsify support
-*   Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
--   Fixed hostonly setting logic to generate initrd properly
-*   Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
--   Fix mkitnird and lsinitrd
-*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
--   Use asciidoc3
-*   Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
--   Update to 050
-*   Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
--   Added fips module
-*   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3
--   systemd: install systemd-tty-ask-password-agent systemd-ask-password
-*   Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2
--   lvm.conf: Do not set read-only locking.
-*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 048-1
--   Version update
-*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
--   Fixed the log file directory structure
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
--   Requires coreutils/util-linux/findutils or toybox,
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-9
+- Fix requires
+* Mon Dec 06 2021 Ankit Jain <ankitja@vmware.com> 050-8
+- Add systemd-udev as requires to successfully
+- create initrd.img
+* Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
+- Added a command line option to manually override host_only
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
+- Adjust hostonly based on running environment
+* Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
+- Remove fipsify support
+* Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
+- Fixed hostonly setting logic to generate initrd properly
+* Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
+- Fix mkitnird and lsinitrd
+* Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
+- Use asciidoc3
+* Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
+- Update to 050
+* Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
+- Added fips module
+* Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3
+- systemd: install systemd-tty-ask-password-agent systemd-ask-password
+* Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2
+- lvm.conf: Do not set read-only locking.
+* Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 048-1
+- Version update
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
+- Fixed the log file directory structure
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
+- Requires coreutils/util-linux/findutils or toybox,
     /bin/grep, /bin/sed
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 045-4
--   Add kmod-devel to BuildRequires
-*   Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
--   Fix dependency
-*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 045-2
--   Disable xattr for cp
-*   Wed Apr 12 2017 Chang Lee <changlee@vmware.com> 045-1
--   Updated to 045
-*   Wed Jan 25 2017 Harish Udaiya Kumar <hudaiyakumr@vmware.com> 044-6
--   Added the patch for bash 4.4 support.
-*   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
--   Add systemd initrd root device target to list of modules
-*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
--   GA - Bump release of all rpms
-*   Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
--   Fix incorrect systemd directory.
-*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
--   Updating Version.
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 045-4
+- Add kmod-devel to BuildRequires
+* Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
+- Fix dependency
+* Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 045-2
+- Disable xattr for cp
+* Wed Apr 12 2017 Chang Lee <changlee@vmware.com> 045-1
+- Updated to 045
+* Wed Jan 25 2017 Harish Udaiya Kumar <hudaiyakumr@vmware.com> 044-6
+- Added the patch for bash 4.4 support.
+* Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
+- Add systemd initrd root device target to list of modules
+* Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
+- GA - Bump release of all rpms
+* Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+- Fix incorrect systemd directory.
+* Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
+- Updating Version.
