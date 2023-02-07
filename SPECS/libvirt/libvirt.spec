@@ -12,7 +12,7 @@ Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
 %define sha512 %{name}=1d4006e909e185a89f9163e6d2309841f4086da65b9165c42eb512e2f6ae964749eeb72f74e86476768a09061e2e311cfcc31f4024b4ecbaba04cd3f5f5d849d
 
 BuildRequires:  audit-devel
-BuildRequires:  cyrus-sasl
+BuildRequires:  cyrus-sasl-devel
 BuildRequires:  curl-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  device-mapper-devel

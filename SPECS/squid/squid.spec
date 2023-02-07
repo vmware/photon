@@ -32,6 +32,7 @@ BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  cyrus-sasl-devel
 
 Requires:       openssl
 Requires:       shadow

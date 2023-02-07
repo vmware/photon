@@ -1,17 +1,19 @@
+%define socket_dir  /run/saslauthd
+
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.28
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Custom
-URL:            http://cyrusimap.web.cmu.edu/
+URL:            https://github.com/cyrusimap/cyrus-sasl
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
+Source0: https://github.com/cyrusimap/cyrus-sasl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
 
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  e2fsprogs-devel
@@ -31,20 +33,26 @@ optionally negotiating protection of subsequent protocol interactions.
 If its use is negotiated, a security layer is inserted between the
 protocol and the connection.
 
+%package devel
+Requires: %{name} = %{version}-%{release}
+Requires: pkg-config
+Summary: Files needed for developing applications with Cyrus SASL
+
+%description devel
+The %{name}-devel package contains files needed for developing and
+compiling applications which use the Cyrus SASL library.
+
 %prep
-# Using autosetup is not feasible
-%autosetup -n %{name}-%{name}-%{version}
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
-./autogen.sh
-pushd saslauthd
-popd
+sh ./autogen.sh
 %configure \
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
     --with-plugindir=%{_libdir}/sasl2 \
     --without-dblib \
-    --with-saslauthd=/run/saslauthd \
+    --with-saslauthd=%{socket_dir} \
     --without-authdaemond \
     --disable-macos-framework \
     --disable-sample \
@@ -59,20 +67,18 @@ popd
     --enable-shared \
     --enable-fast-install \
     --enable-krb4
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-install -D -m644 COPYING %{buildroot}/usr/share/licenses/%{name}/LICENSE
+%make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
-cat << EOF >> %{buildroot}/%{_sysconfdir}/sysconfig/saslauthd
+cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/saslauthd
 # Directory in which to place saslauthd's listening socket, pid file, and so
 # on.  This directory must already exist.
-SOCKETDIR=/run/saslauthd
+SOCKETDIR=%{socket_dir}
 
 # Mechanism to use when checking passwords.  Run "saslauthd -v" to get a list
 # of which mechanism your installation was compiled with the ablity to use.
@@ -83,30 +89,32 @@ MECH=pam
 FLAGS=
 EOF
 
-mkdir -p %{buildroot}/lib/systemd/system
-cat << EOF >> %{buildroot}/lib/systemd/system/saslauthd.service
+mkdir -p %{buildroot}%{_unitdir}
+cat << EOF >> %{buildroot}%{_unitdir}/saslauthd.service
 [Unit]
 Description=SASL authentication daemon.
 
 [Service]
 Type=forking
-PIDFile=/run/saslauthd/saslauthd.pid
-EnvironmentFile=/etc/sysconfig/saslauthd
-ExecStart=/usr/sbin/saslauthd -m \$SOCKETDIR -a \$MECH \$FLAGS
+PIDFile=%{socket_dir}/saslauthd.pid
+EnvironmentFile=%{_sysconfdir}/sysconfig/saslauthd
+ExecStart=%{_sbindir}/saslauthd -m \$SOCKETDIR -a \$MECH \$FLAGS
 RuntimeDirectory=saslauthd
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable saslauthd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-saslauthd.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable saslauthd.service" > %{buildroot}%{_presetdir}/50-saslauthd.preset
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post
-%{_sbindir}/ldconfig
+/sbin/ldconfig
 %systemd_post saslauthd.service
 
 %postun
@@ -118,22 +126,29 @@ make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-/etc/sysconfig/saslauthd
-/lib/systemd/system/saslauthd.service
-%{_libdir}/systemd/system-preset/50-saslauthd.preset
-%{_includedir}/*
-%{_libdir}/*.so*
-%{_libdir}/pkgconfig/*
-%{_libdir}/sasl2/*
+%{_sysconfdir}/sysconfig/saslauthd
+%{_unitdir}/saslauthd.service
+%{_presetdir}/50-saslauthd.preset
+%{_libdir}/*.so.*
+%{_libdir}/sasl2/*.so.*
 %{_sbindir}/*
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
+%{_libdir}/sasl2/*.so
 %{_mandir}/man3/*
-%{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
 %{_mandir}/man8/testsaslauthd.8.gz
+%{_libdir}/pkgconfig/*
+%{_includedir}/*
 
 %changelog
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.28-3
+- Add devel sub package
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.1.28-2
 - Bump version as a part of krb5 upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.28-1

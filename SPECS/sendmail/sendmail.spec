@@ -1,15 +1,15 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          https://ftp.sendmail.org/sendmail.%{version}.tar.gz
-%define sha512    %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
+Source0: https://ftp.sendmail.org/sendmail.%{version}.tar.gz
+%define sha512 %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
 
 Patch0: fix-compatibility-with-openssl-3.0.patch
 
@@ -18,7 +18,9 @@ BuildRequires:    openldap
 BuildRequires:    openssl-devel
 BuildRequires:    shadow
 BuildRequires:    tinycdb-devel
+BuildRequires:    cyrus-sasl-devel
 
+Requires:         cyrus-sasl
 Requires:         tinycdb
 Requires:         (coreutils or toybox)
 Requires:         systemd
@@ -191,6 +193,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-5
+- Add cyrus-sasl to requires
 * Thu Nov 17 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-4
 - Config file noplace fixed
 * Sat Jul 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-3

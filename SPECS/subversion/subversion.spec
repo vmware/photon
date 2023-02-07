@@ -17,6 +17,7 @@ Requires:       serf
 Requires:       cyrus-sasl
 Requires:       utf8proc
 
+BuildRequires:  cyrus-sasl-devel
 BuildRequires:  apr-devel
 BuildRequires:  apr-util-devel
 BuildRequires:  sqlite-devel
