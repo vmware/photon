@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20221212
+Version:	20230207
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  linux=1bcc6d4df91e11df6c04029774464628dddbed8602a12ce2b4636c977109f42dcc0e6eb761c7e755741e24950be1bf9510d8062589bdc66469a928d46cdda7e8
+%define sha512  %{name}=f8862c6a58a8a2d79da14fe4d64265407bd1a4062beb821494d1a2b738bae526feb61755f133317458aa1dcadf84275d49d8916d9cae13d291fbb69aa11c2e6b
 BuildArch:	noarch
 
 %description
@@ -34,6 +34,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Tue Feb 07 2023 Ankit Jain <ankitja@vmware.com> 20230207-1
+-   Updated ice firmware version as per linux.spec
 *   Mon Dec 12 2022 Ajay Kaher <akaher@vmware.com> 20221212-1
 -   Updated to v20221212
 *   Tue Sep 27 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 20220802-1
