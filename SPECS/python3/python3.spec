@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -24,6 +24,7 @@ Patch4:         CVE-2021-28861.patch
 Patch5:         CVE-2022-42919.patch
 Patch6:         CVE-2022-45061.patch
 Patch7:         support-non-fips-algorithms.patch
+Patch8:         CVE-2020-10735.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -328,6 +329,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Feb 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-10
+- Fix CVE-2020-10735
 * Sat Jan 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-9
 - Disable builtin hashes and use openssl backend for the same
 - Add a patch Support non fips algos in fips mode
