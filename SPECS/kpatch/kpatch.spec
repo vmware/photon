@@ -1,15 +1,15 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
-%define sha512 kpatch=898c5704098c473187f2eab9bccd5fb3cfc31f4211492d658abcd0b7cac6d03f11a27df19a56ad17c20163803084ddf54a27defcf12b4975a8a8eb5dbad73f21
+Source0: https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
+%define sha512 %{name}=898c5704098c473187f2eab9bccd5fb3cfc31f4211492d658abcd0b7cac6d03f11a27df19a56ad17c20163803084ddf54a27defcf12b4975a8a8eb5dbad73f21
 
 Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh
@@ -33,7 +33,7 @@ BuildRequires:  systemd
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or toybox or coreutils-selinux)
+Requires:       (coreutils or toybox)
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
@@ -87,12 +87,8 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
-#%check
-# make check require shellcheck package, which is not in photon
-
 %files
 %defattr(-,root,root,-)
-%license COPYING
 %{_sbindir}/kpatch
 %{_usr}%{_unitdir}/*
 %{_sysconfdir}/init/kpatch.conf
@@ -118,6 +114,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.6-5
+- Remove coreutils-selinux from requires
 * Wed Sep 7 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-4
 - Adding patch to make livepatch modules visible to modinfo.
 - Adding cabability to package modules as RPMS.
