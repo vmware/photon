@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.271
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -58,6 +58,8 @@ Patch10: 9p-file-attributes-caching-support.patch
 Patch11: fs-9p-support-for-local-file-lock.patch
 Patch12: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch13: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+
+Patch14: Performance-over-security-model.patch
 
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
@@ -802,6 +804,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
+- Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
 - Update to version 4.19.271
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-2

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.271
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -63,6 +63,7 @@ Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8: perf-scripts-python-Convert-python2-scripts-to-python3.patch
 Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
+Patch11: Performance-over-security-model.patch
 #HyperV patches
 Patch13: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
@@ -1096,6 +1097,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
+- Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
 - Update to version 4.19.271
 * Thu Jan 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.269-3
