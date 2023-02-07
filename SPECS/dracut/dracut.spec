@@ -1,11 +1,10 @@
-# Copied this spec file from inside of dracut-041.tar.xz and edited later.
-
-%define dracutlibdir %{_libdir}/dracut
-%define _unitdir %{_libdir}/systemd/system
+%define dracutlibdir        %{_libdir}/%{name}
+%define _unitdir            %{_libdir}/systemd/system
+%global __requires_exclude  pkg-config
 
 Name:           dracut
 Version:        048
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -15,11 +14,8 @@ Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha512  %{name}=97fcfd5d314ef40687c245d95d2f1d0f3f9ff0472e66b6e6324bf9bd6b98186104f9d71fd9af344126d6ea9fa47b744d52831a374225633225f6f17fb15c04e0
-
-# taken from https://www.gnu.org/licenses/lgpl-2.1.txt
-Source1:        lgpl-2.1.txt
+Source0: http://www.kernel.org/pub/linux/utils/boot/dracut/%{name}-%{version}.tar.xz
+%define sha512 %{name}=97fcfd5d314ef40687c245d95d2f1d0f3f9ff0472e66b6e6324bf9bd6b98186104f9d71fd9af344126d6ea9fa47b744d52831a374225633225f6f17fb15c04e0
 
 Patch0:         disable-xattr.patch
 Patch1:         fix-initrd-naming-for-photon.patch
@@ -28,20 +24,20 @@ Patch3:         0001-fips-changes.patch
 Patch4:         fix-hostonly.patch
 
 BuildRequires:  bash
-BuildRequires:  git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc
+BuildRequires:  systemd-devel
 
 Requires:       bash >= 4
-Requires:       (coreutils or toybox)
+Requires:       coreutils
 Requires:       kmod
-Requires:       (util-linux or toybox)
+Requires:       util-linux
 Requires:       systemd
 Requires:       /bin/sed
 Requires:       /bin/grep
-Requires:       (findutils or toybox)
-Requires:       (cpio or toybox)
+Requires:       findutils
+Requires:       cpio
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -58,21 +54,21 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
-cp %{SOURCE1} .
+%autosetup -p1
 
 %build
-%configure --systemdsystemunitdir=%{_unitdir} \
-           --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_libdir} \
-           --disable-documentation
+%configure \
+   --systemdsystemunitdir=%{_unitdir} \
+   --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
+   --libdir=%{_libdir} \
+   --disable-documentation
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot} libdir=%{_libdir}
+%make_install %{?_smp_mflags} libdir=%{_libdir}
 
-echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/dracut-version.sh
+echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
 rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
           %{buildroot}%{dracutlibdir}/modules.d/00bootchart
@@ -86,85 +82,80 @@ rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
           %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
           %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
-mkdir -p %{buildroot}/boot/dracut \
-          %{buildroot}/var/lib/dracut/overlay \
-          %{buildroot}%{_localstatedir}/log \
-          %{buildroot}%{_localstatedir}/opt/dracut/log \
+mkdir -p %{buildroot}/boot/%{name} \
+          %{buildroot}%{_sharedstatedir}/%{name}/overlay \
+          %{buildroot}%{_var}/log \
+          %{buildroot}%{_var}/opt/%{name}/log \
           %{buildroot}%{_sharedstatedir}/initramfs \
           %{buildroot}%{_sbindir}
 
-touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
-ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
+touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
+ln -sfrv %{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-ln -sr %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
-
-%if 0%{?with_check}
-%check
-make %{?_smp_mflags} -k clean check
-%endif
+ln -sfrv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
 
 %clean
 rm -rf -- %{buildroot}
 
 %files
 %defattr(-,root,root,0755)
-%{!?_licensedir:%global license %%doc}
-%license COPYING lgpl-2.1.txt
-%{_bindir}/dracut
+%{_bindir}/%{name}
 %{_bindir}/mkinitrd
 %{_bindir}/lsinitrd
 # compat symlink
-%{_sbindir}/dracut
-%{_datadir}/bash-completion/completions/dracut
+%{_sbindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/bash-completion/completions/lsinitrd
 %dir %{dracutlibdir}
 %dir %{dracutlibdir}/modules.d
 %{dracutlibdir}/modules.d/*
 %exclude %{_libdir}/kernel
-%{_libdir}/dracut/dracut-init.sh
-%{_datadir}/pkgconfig/dracut.pc
-%{dracutlibdir}/dracut-functions.sh
-%{dracutlibdir}/dracut-functions
-%{dracutlibdir}/dracut-version.sh
-%{dracutlibdir}/dracut-logger.sh
-%{dracutlibdir}/dracut-initramfs-restore
-%{dracutlibdir}/dracut-install
+%{_libdir}/%{name}/%{name}-init.sh
+%{_datadir}/pkgconfig/%{name}.pc
+%{dracutlibdir}/%{name}-functions.sh
+%{dracutlibdir}/%{name}-functions
+%{dracutlibdir}/%{name}-version.sh
+%{dracutlibdir}/%{name}-logger.sh
+%{dracutlibdir}/%{name}-initramfs-restore
+%{dracutlibdir}/%{name}-install
 %{dracutlibdir}/skipcpio
-%config(noreplace) %{_sysconfdir}/dracut.conf
-%dir %{_sysconfdir}/dracut.conf.d
-%dir %{dracutlibdir}/dracut.conf.d
-%dir %{_localstatedir}/opt/dracut/log
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/dracut/log/dracut.log
-%{_localstatedir}/log/dracut.log
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%dir %{_sysconfdir}/%{name}.conf.d
+%dir %{dracutlibdir}/%{name}.conf.d
+%dir %{_var}/opt/%{name}/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_var}/opt/%{name}/log/%{name}.log
+%{_var}/log/%{name}.log
 %dir %{_sharedstatedir}/initramfs
-%{_unitdir}/dracut-shutdown.service
-%{_unitdir}/sysinit.target.wants/dracut-shutdown.service
-%{_unitdir}/dracut-cmdline.service
-%{_unitdir}/dracut-initqueue.service
-%{_unitdir}/dracut-mount.service
-%{_unitdir}/dracut-pre-mount.service
-%{_unitdir}/dracut-pre-pivot.service
-%{_unitdir}/dracut-pre-trigger.service
-%{_unitdir}/dracut-pre-udev.service
-%{_unitdir}/initrd.target.wants/dracut-cmdline.service
-%{_unitdir}/initrd.target.wants/dracut-initqueue.service
-%{_unitdir}/initrd.target.wants/dracut-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-mount.service
-%{_unitdir}/initrd.target.wants/dracut-pre-pivot.service
-%{_unitdir}/initrd.target.wants/dracut-pre-trigger.service
-%{_unitdir}/initrd.target.wants/dracut-pre-udev.service
+%{_unitdir}/%{name}-shutdown.service
+%{_unitdir}/sysinit.target.wants/%{name}-shutdown.service
+%{_unitdir}/%{name}-cmdline.service
+%{_unitdir}/%{name}-initqueue.service
+%{_unitdir}/%{name}-mount.service
+%{_unitdir}/%{name}-pre-mount.service
+%{_unitdir}/%{name}-pre-pivot.service
+%{_unitdir}/%{name}-pre-trigger.service
+%{_unitdir}/%{name}-pre-udev.service
+%{_unitdir}/initrd.target.wants/%{name}-cmdline.service
+%{_unitdir}/initrd.target.wants/%{name}-initqueue.service
+%{_unitdir}/initrd.target.wants/%{name}-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-mount.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-pivot.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-trigger.service
+%{_unitdir}/initrd.target.wants/%{name}-pre-udev.service
 
 %files tools
 %defattr(-,root,root,0755)
-%{_bindir}/dracut-catimages
-%dir /boot/dracut
-%dir /var/lib/dracut
-%dir /var/lib/dracut/overlay
+%{_bindir}/%{name}-catimages
+%dir /boot/%{name}
+%dir %{_sharedstatedir}/%{name}
+%dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 048-9
+- Fix requires
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 048-8
 - Don't create orpan debug file under kernel modules directory
 - This was getting created by 0001-fips-changes.patch
