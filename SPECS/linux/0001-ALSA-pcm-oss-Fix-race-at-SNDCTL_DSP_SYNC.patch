@@ -1,0 +1,54 @@
+From 8423f0b6d513b259fdab9c9bf4aaa6188d054c2d Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Mon, 5 Sep 2022 08:07:14 +0200
+Subject: [PATCH] ALSA: pcm: oss: Fix race at SNDCTL_DSP_SYNC
+
+commit 8423f0b6d513b259fdab9c9bf4aaa6188d054c2d upstream
+
+There is a small race window at snd_pcm_oss_sync() that is called from
+OSS PCM SNDCTL_DSP_SYNC ioctl; namely the function calls
+snd_pcm_oss_make_ready() at first, then takes the params_lock mutex
+for the rest.  When the stream is set up again by another thread
+between them, it leads to inconsistency, and may result in unexpected
+results such as NULL dereference of OSS buffer as a fuzzer spotted
+recently.
+
+The fix is simply to cover snd_pcm_oss_make_ready() call into the same
+params_lock mutex with snd_pcm_oss_make_ready_locked() variant.
+
+Reported-and-tested-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/CAFcO6XN7JDM4xSXGhtusQfS2mSBcx50VJKwQpCq=WeLt57aaZA@mail.gmail.com
+Link: https://lore.kernel.org/r/20220905060714.22549-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+[Backported to v4.19.x]
+---
+ sound/core/oss/pcm_oss.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
+index c85fa8528..e74136a2e 100644
+--- a/sound/core/oss/pcm_oss.c
++++ b/sound/core/oss/pcm_oss.c
+@@ -1676,13 +1676,14 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
+ 		runtime = substream->runtime;
+ 		if (atomic_read(&substream->mmap_count))
+ 			goto __direct;
+-		if ((err = snd_pcm_oss_make_ready(substream)) < 0)
+-			return err;
+ 		atomic_inc(&runtime->oss.rw_ref);
+ 		if (mutex_lock_interruptible(&runtime->oss.params_lock)) {
+ 			atomic_dec(&runtime->oss.rw_ref);
+ 			return -ERESTARTSYS;
+ 		}
++		err = snd_pcm_oss_make_ready_locked(substream);
++		if (err < 0)
++			goto unlock;
+ 		format = snd_pcm_oss_format_from(runtime->oss.format);
+ 		width = snd_pcm_format_physical_width(format);
+ 		if (runtime->oss.buffer_used > 0) {
+-- 
+2.35.5
+

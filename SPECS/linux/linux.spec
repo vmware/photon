@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.271
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -499,6 +499,21 @@ Patch513: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch514: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch515: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 
+#Fix for CVE-2021-44879
+Patch516: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch517: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch518: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch519: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-23454
+Patch520: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
+
 #Patches for i40e driver
 Patch1500: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 Patch1501: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -684,7 +699,7 @@ This Linux package contains hmac sha generator kernel module.
 %endif
 
 %ifarch x86_64
-%autopatch -p1 -m281 -M515
+%autopatch -p1 -m281 -M520
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1092,6 +1107,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
+- Fix for CVE-2021-44879/2022-0480/CVE-2022-3061/CVE-2022-3303/CVE-2023-23454
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1

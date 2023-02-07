@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.271
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -215,6 +215,21 @@ Patch151: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch152: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch153: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch154: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
+#Fix for CVE-2021-44879
+Patch155: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch156: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch157: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch158: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-23454
+Patch159: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -1219,6 +1234,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-4
+- Fix for CVE-2021-44879/2022-0480/CVE-2022-3061/CVE-2022-3303/CVE-2023-23454
 * Thu Feb 09 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.271-3
 - Fix regression in RT patchset that leads to a deadlock/hang.
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2

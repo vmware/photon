@@ -1,0 +1,51 @@
+From 15cf0b82271b1823fb02ab8c377badba614d95d5 Mon Sep 17 00:00:00 2001
+From: Zheyu Ma <zheyuma97@gmail.com>
+Date: Mon, 4 Apr 2022 16:47:17 +0800
+Subject: [PATCH] video: fbdev: i740fb: Error out if 'pixclock' equals zero
+
+commit 15cf0b82271b1823fb02ab8c377badba614d95d5 upstream
+
+The userspace program could pass any values to the driver through
+ioctl() interface. If the driver doesn't check the value of 'pixclock',
+it may cause divide error.
+
+Fix this by checking whether 'pixclock' is zero in the function
+i740fb_check_var().
+
+The following log reveals it:
+
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:444 [inline]
+RIP: 0010:i740fb_set_par+0x272f/0x3bb0 drivers/video/fbdev/i740fb.c:739
+Call Trace:
+    fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1036
+    do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1112
+    fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1191
+    vfs_ioctl fs/ioctl.c:51 [inline]
+    __do_sys_ioctl fs/ioctl.c:874 [inline]
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+[Backported for v4.19.x]
+---
+ drivers/video/fbdev/i740fb.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
+index bdbafff45..badb7035c 100644
+--- a/drivers/video/fbdev/i740fb.c
++++ b/drivers/video/fbdev/i740fb.c
+@@ -661,6 +661,9 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 
+ static int i740fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
+ {
++	if (!var->pixclock)
++		return -EINVAL;
++
+ 	switch (var->bits_per_pixel) {
+ 	case 8:
+ 		var->red.offset	= var->green.offset = var->blue.offset = 0;
+-- 
+2.35.5
+

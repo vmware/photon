@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.271
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -152,8 +152,20 @@ Patch88: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch89: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch90: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
+#Fix for CVE-2021-44879
+Patch91: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch92: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3303
+Patch93: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-23454
+Patch94: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
+
 # inherit tcp_limit_output_bytes
-Patch91: tcp-inherit-TSQ-limit-from-root-namespace.patch
+Patch97: tcp-inherit-TSQ-limit-from-root-namespace.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -799,6 +811,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
+- Fix for CVE-2021-44879/2022-0480/CVE-2022-3303/CVE-2023-23454
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1

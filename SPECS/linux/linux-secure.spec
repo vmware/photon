@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.271
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -241,6 +241,21 @@ Patch194: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch195: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch196: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
+#Fix for CVE-2021-44879
+Patch197: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch198: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch199: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch200: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-23454
+Patch201: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -319,7 +334,7 @@ pushd ..
 %patch99 -p0
 popd
 
-%autopatch -p1 -m100 -M196
+%autopatch -p1 -m100 -M201
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -487,6 +502,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
+- Fix for CVE-2021-44879/2022-0480/CVE-2022-3061/CVE-2022-3303/CVE-2023-23454
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1

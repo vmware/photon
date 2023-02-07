@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.271
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -168,10 +168,25 @@ Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
 Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
 Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
 Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
+Patch150: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch157: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch151: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+#Fix for CVE-2021-44879
+Patch152: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch153: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch154: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch155: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-23454
+Patch156: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 
 # CVE-2022-1789
 Patch159: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
@@ -506,6 +521,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
+- Fix for CVE-2021-44879/2022-0480/CVE-2022-3061/CVE-2022-3303/CVE-2023-23454
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
