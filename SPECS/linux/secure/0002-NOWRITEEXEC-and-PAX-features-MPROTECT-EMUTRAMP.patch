@@ -495,16 +495,16 @@ index 9d780f415..07439b77e 100644
  	if (flags & MAP_LOCKED)
  		if (!can_do_mlock())
  			return -EPERM;
-@@ -2983,6 +2994,9 @@ static int do_brk_flags(unsigned long addr, unsigned long len, unsigned long fla
- 	if ((flags & (~VM_EXEC)) != 0)
- 		return -EINVAL;
+@@ -2947,6 +2947,9 @@ static int do_brk_flags(struct ma_state *mas, struct vm_area_struct *vma,
+ 	 * Note: This happens *after* clearing old mappings in some code paths.
+ 	 */
  	flags |= VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
 +#ifdef CONFIG_PAX_MPROTECT
 +	flags &= ~VM_MAYEXEC;
 +#endif
+ 	if (!may_expand_vm(mm, flags, len >> PAGE_SHIFT))
+ 		return -ENOMEM;
  
- 	mapped_addr = get_unmapped_area(NULL, addr, len, 0, MAP_FIXED);
- 	if (IS_ERR_VALUE(mapped_addr))
 @@ -3385,6 +3399,17 @@ static struct vm_area_struct *__install_special_mapping(
  	vma->vm_start = addr;
  	vma->vm_end = addr + len;
@@ -549,9 +549,9 @@ index bc6bddd15..2bd5837d0 100644
  	/*
  	 * We want to check manually if we can change individual PTEs writable
  	 * if we can't do that automatically for all PTEs in a mapping. For
-@@ -728,6 +736,11 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
+@@ -747,6 +747,11 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
  	else
- 		prev = vma->vm_prev;
+ 		prev = mas_prev(&mas, 0);
  
 +#ifdef CONFIG_PAX_MPROTECT
 +	if (current->mm->binfmt && current->mm->binfmt->handle_mprotect)

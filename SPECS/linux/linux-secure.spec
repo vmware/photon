@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.0.7
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        6.1.10
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,8 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
-
+%define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -64,7 +63,6 @@ Patch2:  6.0-9p-transport-for-9p.patch
 Patch3:  9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4:  vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
-Patch6:  Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
 
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -72,7 +70,7 @@ Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
 
 #HyperV patches
 Patch20:  vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch21:  6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
+Patch21:  6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 
 # Out-of-tree patches from AppArmor:
 Patch30:  6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
@@ -89,9 +87,8 @@ Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 #Secure:
 Patch50: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch51: 0002-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch52: 0003-Added-rap_plugin.patch
+Patch52: 0003-gcc-rap-plugin-with-kcfi.patch
 Patch53: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
-Patch54: 0005-rap_plugin-reduce-padding-size.patch
 
 # CVE:
 # Fix CVE-2017-1000252
@@ -101,7 +98,7 @@ Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
@@ -203,7 +200,7 @@ The kernel fips-canister
 %endif
 
 #Secure
-%autopatch -p1 -m50 -M54
+%autopatch -p1 -m50 -M53
 
 # CVE
 %autopatch -p1 -m100 -M100
@@ -370,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-1
+- Update to 6.1.10
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-8
 - Fix requires
 * Fri Jan 13 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-7
