@@ -1,0 +1,75 @@
+From b013e61584add584c978fdf776503d61030c8bfe Mon Sep 17 00:00:00 2001
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
+Date: Fri, 8 Jul 2022 15:02:08 +0200
+Subject: [PATCH] stalld: Detect runnable dying tasks
+
+Juri reported cases of kworkers threads starving in the dying state.
+
+These threads are not reported as 'R', but as 'X', like:
+
+ X   kworker/dying  6313     29027.477058         7   120         0.000000         0.088126         0.000000 /
+ X   kworker/dying   816     35428.512030        64   120         0.000000         0.478006         0.000000 /
+
+Include them in the search of starving tasks by also considering
+tasks in the ' X' state.
+
+Reported-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ src/stalld.c | 25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index b63ad01..8ddf760 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -636,8 +636,8 @@ int detect_task_format(void)
+  */
+ int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entries)
+ {
++	char *R, *X, *start = buffer;
+ 	struct task_info *task;
+-	char *start = buffer;
+ 	int tasks = 0;
+ 	int comm_size;
+ 	char *end;
+@@ -653,22 +653,27 @@ int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entr
+ 		task = &task_info[tasks];
+ 
+ 		/*
+-		 * only care about tasks in the Runnable state
+-		 * Note: the actual scheduled task will show up as
+-		 * "\n>R" so we will skip it.
+-		 *
++		 * Runnable tasks.
+ 		 */
+-		start = strstr(start, "\n R");
++		R = strstr(start, "\n R");
+ 
+ 		/*
+-		 * if no match then there are no more Runnable tasks
++		 * Dying tasks.
+ 		 */
+-		if (!start)
+-			break;
++		X = strstr(start, "\n X");
+ 
+ 		/*
+-		 * Skip '\n R'
++		 * Get the first one, the only one, or break.
+ 		 */
++		if (X && R) {
++			start = R < X ? R : X;
++		} else if (X || R) {
++			start = R ? R : X;
++		} else {
++			break;
++		}
++
++		/* Skip '\n R' || '\n X'. */
+ 		start = &start[3];
+ 
+ 		/*
+-- 
+2.25.1
+
