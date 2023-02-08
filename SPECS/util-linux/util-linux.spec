@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.38
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -52,6 +52,7 @@ These are library files of util-linux.
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 
 %build
+export GTKDOCIZE=true
 autoreconf -fiv
 %configure \
     --disable-nologin \
@@ -109,6 +110,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Sat Feb 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.38-3
+- Fix issue with new autoconf
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.38-2
 - Bump version as a part of readline upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.38-1
