@@ -1,30 +1,25 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.30
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
-%define sha1 tar=0d442c4565f8131745a5dff1cd08f7eaa797f679
+%define sha512 tar=9c8b2cacf8f6ca1b19f788d4ec0410127c4d71e54b9c9cac99ee5af6c002189ccc521302955510bb22a54a069ffd00fc2de12ac776985cbbeb3f1ecf38a4f8d9
 Patch0:		tar-CVE-2019-9923.patch
 Patch1:         tar-CVE-2018-20482.patch
 %if %{with_check}
 Patch2:         make-check-failure.patch
 %endif
 Patch3:         tar-CVE-2021-20193.patch
+Patch4:         tar-CVE-2022-48303.patch
 %description
 Contains GNU archiving program
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%if %{with_check}
-%patch2 -p1
-%endif
-%patch3 -p1
+%autosetup -p1
 
 %build
 autoreconf -i --force
@@ -35,8 +30,8 @@ FORCE_UNSAFE_CONFIGURE=1  ./configure \
 make %{?_smp_mflags}
 %install
 install -vdm 755 %{buildroot}%{_sbindir}
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} -C doc install-html docdir=%{_defaultdocdir}/%{name}-%{version}
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} -C doc install-html docdir=%{_defaultdocdir}/%{name}-%{version}
 install -vdm 755 %{buildroot}/usr/share/man/man1
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
@@ -49,6 +44,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Thu Feb 09 2023 Mukul Sikka <msikka@vmware.com> 1.30-6
+-       Fix CVE-2022-48303
 *       Fri Apr 16 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-5
 -       Fix CVE-2021-20193
 *       Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-4
