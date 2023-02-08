@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os.path
 import re
 import time
@@ -39,7 +41,7 @@ class ToolChainUtils(object):
             self.rpmCommand = "fakeroot-ng rpm"
 
     def _findPublishedRPM(self, package, rpmdirPath):
-        listFoundRPMFiles = CommandUtils.findFile(package + "-*.rpm", rpmdirPath)
+        listFoundRPMFiles = CommandUtils.findFile(f"{package}-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
@@ -73,8 +75,8 @@ class ToolChainUtils(object):
             targetPackageName = packageName
             packageName = None
             packageVersion = None
-            listRPMsToInstall.extend(['binutils-'+constants.targetArch+'-linux-gnu',
-                                      'gcc-'+constants.targetArch+'-linux-gnu'])
+            listRPMsToInstall.extend([f"binutils-{constants.targetArch}-linux-gnu",
+                                      f"gcc-{constants.targetArch}-linux-gnu"])
 
         if packageName:
             listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
@@ -126,13 +128,12 @@ class ToolChainUtils(object):
                 # Safe to use published RPM
                 rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    self.logger.error("Unable to find published rpm " + package)
+                    self.logger.error(f"Unable to find published rpm: {package}")
                     raise Exception("Input Error")
             rpmFiles += f" {rpmFile}"
             packages += f" {package}-{version}"
 
-        self.logger.debug(rpmFiles)
-        self.logger.debug(packages)
+        self.logger.debug(f"{rpmFiles}\n{packages}")
         cmd = f"{self.rpmCommand} -iv --nodeps --force --root {ChrootID} {rpmFiles}"
 
         # If rpm doesn't have zstd support, use rpm from photon_builder image
@@ -166,8 +167,7 @@ class ToolChainUtils(object):
         listOfToolChainPkgs = SPECS.getData(constants.buildArch).getExtraBuildRequiresForPackage(packageName, packageVersion)
         if not listOfToolChainPkgs:
             return
-        self.logger.debug(f"Installing package specific toolchain RPMs for {packageName}: " +
-                          str(listOfToolChainPkgs))
+        self.logger.debug(f"Installing package specific toolchain RPMs for {packageName}: " + str(listOfToolChainPkgs))
         rpmFiles = ""
         packages = ""
 
@@ -186,7 +186,7 @@ class ToolChainUtils(object):
             rpmFiles += " " + rpmFile.replace(path, sandboxPath)
             packages += f" {package}"
 
-        self.logger.debug("Installing custom rpms:" + packages)
+        self.logger.debug(f"Installing custom rpms: {packages}")
         cmd = f"rpm -iv --nodeps --force {rpmFiles}"
         if sandbox.run(cmd, logfn=self.logger.debug):
             self.logger.debug(f"Command Executed: {cmd}")
@@ -222,7 +222,7 @@ class ToolChainUtils(object):
 
         if rpmFiles != "":
             cmd = (
-                f"{self.rpmCommand} -Uvh --nodeps --ignorearch --noscripts --root"
+                f"{self.rpmCommand} -Uv --nodeps --ignorearch --noscripts --root"
                 f" {ChrootID}/target-{constants.targetArch} {rpmFiles}"
             )
             if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):

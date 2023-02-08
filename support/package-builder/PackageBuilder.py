@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import sys
 import os.path
+
 from PackageUtils import PackageUtils
 from Logger import Logger
 from ToolChainUtils import ToolChainUtils
@@ -47,7 +50,7 @@ class PackageBuilder(object):
 
     def _buildPackage(self):
         try:
-            self.sandbox.create(self.package + "-" + self.version)
+            self.sandbox.create(f"{self.package}-{self.version}")
 
             tUtils = ToolChainUtils(self.logName, self.logPath)
             if self.sandbox.hasToolchain():
@@ -65,16 +68,15 @@ class PackageBuilder(object):
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
             pkgUtils.buildRPMSForGivenPackage(self.sandbox, self.package, self.version,
                                               self.logPath)
-            self.logger.debug("Successfully built the package: " + self.package)
+            self.logger.debug(f"Successfully built the package: {self.package}")
         except Exception as e:
-            self.logger.error("Failed while building package: " + self.package)
-            self.logger.debug("Sandbox: " + self.sandbox.getID() +
-                              " not deleted for debugging.")
+            self.logger.error(f"Failed while building package: {self.package}")
+            self.logger.debug("Sandbox: " + self.sandbox.getID() + " not deleted for debugging.")
             if constants.rpmCheck and self.package in constants.testForceRPMS:
-                logFileName = os.path.join(self.logPath, self.package + "-test.log")
+                logFileName = os.path.join(self.logPath, f"{self.package}-test.log")
             else:
-                logFileName = os.path.join(self.logPath, self.package + ".log")
-            fileLog = os.popen('tail -n 100 ' + logFileName).read()
+                logFileName = os.path.join(self.logPath, f"{self.package}.log")
+            fileLog = os.popen(f"tail -n 100 {logFileName}").read()
             self.logger.info(fileLog)
             raise e
         if self.sandbox:

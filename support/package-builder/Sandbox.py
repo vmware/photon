@@ -1,11 +1,15 @@
+#!/usr/bin/env python3
+
 import sys
 import os.path
 import subprocess
 import shutil
 import time
+
 from constants import constants
 from Logger import Logger
 from CommandUtils import CommandUtils
+
 
 class Sandbox(object):
     def __init__(self, logger):
@@ -34,8 +38,8 @@ class Chroot(Sandbox):
         Sandbox.__init__(self, logger)
         self.chrootID = None
         self.prepareBuildRootCmd = os.path.join(os.path.dirname(__file__), "prepare-build-root.sh")
-        self.runInChrootCommand = (str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh ")) + constants.sourcePath +
-                                   " " + constants.rpmPath)
+        self.runInChrootCommand = str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh"))
+        self.runInChrootCommand += f" {constants.sourcePath} {constants.rpmPath}"
         self.chrootCmdPrefix = None
 
     def getID(self):
@@ -43,61 +47,50 @@ class Chroot(Sandbox):
 
     def create(self, chrootName):
         if self.chrootID:
-            raise Exception("Unable to create: " + chrootName + ". Chroot is already active: " + self.chrootID)
+            raise Exception(f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}")
 
-        chrootID = constants.buildRootPath + "/" + chrootName
+        chrootID = f"{constants.buildRootPath}/{chrootName}"
+        self.chrootID = chrootID
         if os.path.isdir(chrootID):
             self._destroy(chrootID)
 
-        # need to add timeout for this step
+        top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
+        extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
+        cmd = (
+            f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"
+        )
+
+        # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         cmdUtils = CommandUtils()
-        returnVal = cmdUtils.runCommandInShell("mkdir -p " + chrootID)
-        if returnVal != 0:
-            raise Exception("Unable to create chroot: " + chrootID + ". Unknown error.")
-        self.logger.debug("Created new chroot: " + chrootID)
-
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/dev")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/etc")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/proc")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/run")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/sys")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/tmp")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/publishrpms")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/publishxrpms")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/inputrpms")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath)
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/RPMS")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/SRPMS")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/SOURCES")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/SPECS")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/LOGS")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/BUILD")
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/BUILDROOT")
-
-        prepareChrootCmd = self.prepareBuildRootCmd + " " + chrootID
-        returnVal = cmdUtils.runCommandInShell(prepareChrootCmd, logfn=self.logger.debug)
-        if returnVal != 0:
+        if cmdUtils.runCommandInShell(cmd):
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
+            raise Exception(f"Unable to create chroot: {chrootID}. Unknown error.")
+
+        self.logger.debug(f"Created new chroot: {chrootID}")
+
+        prepareChrootCmd = f"{self.prepareBuildRootCmd} {chrootID}"
+        if cmdUtils.runCommandInShell(prepareChrootCmd, logfn=self.logger.debug):
+            self.logger.error("Prepare build root script failed. Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
 
         if os.geteuid() == 0:
-            cmdUtils.runCommandInShell("mount --bind " + constants.rpmPath + " " +
-                                        chrootID + constants.topDirPath + "/RPMS")
-            cmdUtils.runCommandInShell("mount --bind " + constants.sourceRpmPath + " " +
-                                        chrootID + constants.topDirPath + "/SRPMS")
-            cmdUtils.runCommandInShell("mount -o ro --bind " + constants.prevPublishRPMRepo + " " +
-                                        chrootID + "/publishrpms")
-            cmdUtils.runCommandInShell("mount -o ro --bind " + constants.prevPublishXRPMRepo + " " +
-                                        chrootID + "/publishxrpms")
+            cmd = (
+                f"mount --bind {constants.rpmPath} {chrootID}{constants.topDirPath}/RPMS"
+                f" && mount --bind {constants.sourceRpmPath} {chrootID}{constants.topDirPath}/SRPMS"
+                f" && mount -o ro --bind {constants.prevPublishRPMRepo} {chrootID}/publishrpms"
+                f" && mount -o ro --bind {constants.prevPublishXRPMRepo} {chrootID}/publishxrpms"
+            )
             if constants.inputRPMSPath:
-                cmdUtils.runCommandInShell("mount -o ro --bind " + constants.inputRPMSPath + " " +
-                                            chrootID + "/inputrpms")
+                cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"
 
-        self.logger.debug("Successfully created chroot:" + chrootID)
+            if cmdUtils.runCommandInShell(cmd):
+                msg = f"failed to mount directories in {chrootID}"
+                self.logger.error(msg)
+                raise Exception(msg)
 
-        self.chrootID = chrootID
-        self.chrootCmdPrefix = self.runInChrootCommand + " " + chrootID + " "
+        self.logger.debug(f"Successfully created chroot: {chrootID}")
+        self.chrootCmdPrefix = f"{self.runInChrootCommand} {chrootID} "
 
     def destroy(self):
         self._destroy(self.chrootID)
@@ -106,31 +99,28 @@ class Chroot(Sandbox):
     def _destroy(self, chrootID):
         if not chrootID:
             return
-        self.logger.debug("Deleting chroot: " + chrootID)
+        self.logger.debug(f"Deleting chroot: {chrootID}")
         self._unmountAll(chrootID)
         self._removeChroot(chrootID)
 
     def run(self, cmd, logfile=None, logfn=None):
-        self.logger.debug("Chroot.run() cmd: " + self.chrootCmdPrefix + cmd)
+        self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
-        return CommandUtils.runCommandInShell(self.chrootCmdPrefix + cmd, logfile, logfn)
+        return CommandUtils.runCommandInShell(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
 
     def put(self, src, dest):
-        shutil.copy2(src, self.chrootID + dest)
+        shutil.copy2(src, f"{self.chrootID}{dest}")
 
     def _removeChroot(self, chrootPath):
-        cmd = "rm -rf " + chrootPath
-        retval = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-        if retval != 0:
-            self.logger.debug("Unable to remove files from chroot " + chrootPath)
+        cmd = f"rm -rf {chrootPath}"
+        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
+            self.logger.debug(f"Unable to remove files from chroot {chrootPath}")
             # Some files are hold by some processes?
             # Print lsof output, wait 10 seconds and repeat
-            CommandUtils.runCommandInShell("lsof +D " + chrootPath, logfn=self.logger.debug)
+            CommandUtils.runCommandInShell(f"lsof +D {chrootPath}", logfn=self.logger.debug)
             time.sleep(10)
-            retval = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-            if retval != 0:
-                raise Exception("Unable to remove files from chroot " + chrootPath)
-
+            if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
+                raise Exception(f"Unable to remove files from chroot {chrootPath}")
 
     def unmountAll(self):
         self._unmountAll(self.chrootID)
@@ -140,32 +130,29 @@ class Chroot(Sandbox):
         if listmountpoints is None:
             return True
         for mountpoint in listmountpoints:
-            cmd = "umount " + mountpoint
-            process = subprocess.Popen("%s && sync && sync && sync" % (cmd),
+            cmd = f"umount {mountpoint}"
+            process = subprocess.Popen(f"{cmd} && sync && sync && sync",
                                        shell=True,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
-            retval = process.wait()
-            if retval != 0:
+            if process.wait():
                 # Try unmount with lazy umount
-                cmd = "umount -l " + mountpoint
-                process = subprocess.Popen("%s && sync && sync && sync" % (cmd),
+                cmd = f"umount -l {mountpoint}"
+                process = subprocess.Popen(f"{cmd} && sync && sync && sync",
                                            shell=True,
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE)
-                retval = process.wait()
-                if retval != 0:
-                    raise Exception("Unable to unmount " + mountpoint)
+                if process.wait():
+                    raise Exception(f"Unable to unmount {mountpoint}")
 
     def _findmountpoints(self, chrootPath):
         if not chrootPath.endswith("/"):
-            chrootPath = chrootPath + "/"
-        cmd = "mount | grep " + chrootPath + " | cut -d' ' -s -f3"
-        process = subprocess.Popen("%s" %cmd, shell=True,
+            chrootPath += "/"
+        cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
+        process = subprocess.Popen(f"{cmd}", shell=True,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
+        if process.wait():
             raise Exception("Unable to find mountpoints in chroot")
 
         mountpoints = process.communicate()[0].decode()
@@ -197,14 +184,12 @@ class Container(Sandbox):
             constants.tmpDirPath: {'bind': '/tmp', 'mode': 'rw'},
             constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
             constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},
-#            constants.logPath: {'bind': constants.topDirPath + "/LOGS", 'mode': 'rw'},
-        # Prepare an empty chroot environment to let docker use the BUILD folder.
-        # This avoids docker using overlayFS which will cause make check failure.
-
-#            chroot.getID() + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD",
-#                                                         'mode': 'rw'},
+            #constants.logPath: {'bind': constants.topDirPath + "/LOGS", 'mode': 'rw'},
+            # Prepare an empty chroot environment to let docker use the BUILD folder.
+            # This avoids docker using overlayFS which will cause make check failure.
+            #chroot.getID() + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD", 'mode': 'rw'},
             constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
-            }
+        }
 
         if constants.inputRPMSPath:
             mountVols[constants.inputRPMSPath] = {'bind': '/inputrpms', 'mode': 'ro'}
@@ -220,26 +205,24 @@ class Container(Sandbox):
             except:
                 pass
 
-        #TODO: Is init=True equivalent of --sig-proxy?
+        # TODO: Is init=True equivalent of --sig-proxy?
         privilegedDocker = False
         cap_list = ['SYS_PTRACE']
-#            if packageName in constants.listReqPrivilegedDockerForTest:
-#                privilegedDocker = True
+        #if packageName in constants.listReqPrivilegedDockerForTest:
+            #privilegedDocker = True
 
         containerID = self.dockerClient.containers.run(constants.buildContainerImage,
                                                        detach=True,
                                                        cap_add=cap_list,
-#                                                           privileged=privilegedDocker,
+                                                       #privileged=privilegedDocker,
                                                        privileged=False,
                                                        name=containerName,
                                                        network_mode="host",
                                                        volumes=mountVols,
                                                        command="tail -f /dev/null")
-
         if not containerID:
-            raise Exception("Unable to start Photon build container for task " +
-                            containerTaskName)
-        self.logger.debug("Successfully created container:" + containerID.short_id)
+            raise Exception(f"Unable to start Photon build container for task {containerTaskName}")
+        self.logger.debug(f"Successfully created container: {containerID.short_id}")
         self.containerID = containerID
 
     def destroy(self):
@@ -258,9 +241,8 @@ class Container(Sandbox):
         return result.exit_code
 
     def put(self, src, dest):
-        copyCmd = "docker cp " + src + " " + self.containerID.short_id + ":" + dest
+        copyCmd = f"docker cp {src} {self.containerID.short_id}:{dest}"
         CommandUtils.runCommandInShell(copyCmd)
 
     def hasToolchain(self):
         return True
-
