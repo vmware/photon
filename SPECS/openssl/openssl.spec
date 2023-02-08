@@ -1,9 +1,14 @@
-%define with_fips 1
+# once certified fips-provider rpm is published, with_certified_fips switch should be turned off
+# with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
+%define with_certified_fips     1
+%define with_latest_fips        0
+%define fips_provider_version   3.0.0
+%define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -15,17 +20,26 @@ Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
-%if %{?with_fips}
-Source3: provider_fips.cnf
+Source3: distro.cnf
+Source4: user.cnf
+
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
+Source5: provider_fips.cnf
 %endif
-Source4: distro.cnf
-Source5: user.cnf
+
+%if 0%{?with_check}
 Source6: dsapub_noparam.der
+%endif
+
+%if 0%{?with_certified_fips}
+Source7: %{fips_provider_srcname}.tar.xz
+%define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
+%endif
 
 Patch0: openssl-cnf.patch
 Patch1: 0001-x509-fix-double-locking-problem.patch
 
-#Fix for multiple security issues
+# Fix for multiple security issues
 Patch2: 0001-Fix-type-confusion-in-nc_match_single.patch
 Patch3: 0002-Add-testcase-for-nc_match_single-type-confusion.patch
 
@@ -74,11 +88,16 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
 
-%if 0%{?with_fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %package fips-provider
 Summary:    FIPS Libraries for openssl
 Group:      Applications/Internet
+
+%if 0%{?with_certified_fips}
+Requires:   %{name} >= %{fips_provider_version}
+%else
 Requires:   %{name} = %{version}-%{release}
+%endif
 
 %description fips-provider
 Fips library for enabling fips.
@@ -110,9 +129,27 @@ Requires:   %{name} = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
+%if 0%{?with_certified_fips} && 0%{?with_latest_fips}
+echo "ERROR: with_latest_fips and with_certified_fips both should not be enabled" 1>&2
+exit 1
+%endif
+
+%if 0%{?with_certified_fips}
+%autosetup -p1 -a0 -a7
+%else
 %autosetup -p1
+%endif
 
 %build
+%if 0%{?with_certified_fips}
+  %undefine with_latest_fips
+%elif 0%{?with_latest_fips}
+  %undefine with_certified_fips
+%else
+  %undefine with_latest_fips
+  %undefine with_certified_fips
+%endif
+
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -131,10 +168,8 @@ export MACHINE=%{_arch}
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    -Wl,-z,noexecstack \
-%if 0%{?with_fips}
-    enable-fips
-%endif
+    %{?with_latest_fips: enable-fips} \
+    -Wl,-z,noexecstack
 
 %make_build
 
@@ -143,13 +178,15 @@ export MACHINE=%{_arch}
 
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
-
-%if %{?with_fips}
 install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
-%endif
-
 install -p -m 644 -D %{SOURCE4} %{buildroot}%{_sysconfdir}/ssl
+
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
+%if 0%{?with_certified_fips}
+install -p -m 644 %{fips_provider_srcname}/%{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/
+%endif
+%endif
 
 %if 0%{?with_check}
 %check
@@ -159,7 +196,7 @@ make tests %{?_smp_mflags}
 
 %ldconfig_scriptlets
 
-%if %{?with_fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %post fips-provider
 if [ "$1" = 2 ]; then
   # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
@@ -195,12 +232,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
 
-%if 0%{?with_fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
 %{_sysconfdir}/ssl/provider_fips.cnf
+
+%if 0%{?with_latest_fips}
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
+%endif
 %endif
 
 %files devel
@@ -230,6 +270,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Feb 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-5
+- Package fips certified fips.so in openssl-fips-provider
 * Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-4
 - Fix for Various Security issues
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-3
