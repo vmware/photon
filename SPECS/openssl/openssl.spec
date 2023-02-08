@@ -1,15 +1,15 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2ze
-Release:        3%{?dist}
+Version:        1.0.2zg
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2ze.tar.gz
-%define sha512 vmware-OpenSSL_1_0_2ze=78a8e373c9d0cfbfdc589931a009e39d194149f9c05fab73ade121c5ecbe71a873a4415320231bd6e0481896a726a6d2246101576c2c77c6d8cdbf26877f10e7
+Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zg.tar.gz
+%define sha512 vmware-OpenSSL_1_0_2zg=b831be56361ace0c8d0fdb34d53555b4c20670633ad196f3551964be7a62038e70cecabfa5d6650bd7d59e6faaa466a37568fcf28e9b3ba1c90b0cc3d4d17759
 
 Source1: rehash_ca_certificates.sh
 
@@ -20,7 +20,6 @@ Source100: %{name}-fips-%{openssl_fips_version}-vmw.tar.gz
 %define sha512 %{name}-fips=6cce1845183d6f208c5e6bdd7f36376ee80fbe1fb722f16b4f67a076c6ce7efd9b5f31a8dd756be258bc0de2ff1a91fc9db824131beb1f5f31e35e7386c11b95
 %endif
 
-Patch0: openssl-CVE-2022-2068.patch
 Patch1: openssl-ipv6apps.patch
 Patch2: openssl-init-conslidate.patch
 Patch3: openssl-drbg-default-read-system-fips.patch
@@ -78,8 +77,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2ze
-%patch0 -p1
+%setup -q -n vmware-OpenSSL_1_0_2zg
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -167,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Wed Feb 08 2023 Srinidhi Rao <srinidhir@vmware.com> 1.0.2zg-1
+- Update to openssl-1.0.2zg
 * Thu Sep 01 2022 Tapas Kundu <tkundu@vmware.com> 1.0.2ze-3
 - Provides libssl.so.1.0.2 and libcrypto.so.1.0.2
 * Thu Jun 16 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2ze-2
