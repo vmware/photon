@@ -123,12 +123,13 @@ def createIso(options):
         initrd_pkg_list_file = os.path.join(options.generated_data_path, 'packages_installer_initrd_expanded.json')
         initrd_pkgs = " ".join(Utils.jsonread(initrd_pkg_list_file)["packages"])
 
-        retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',
+        retval = subprocess.call([f"{script_directory}/iso/mk-install-iso.sh",
                                   working_directory, options.iso_path,
                                   options.rpm_path, options.package_list_file,
-                                  rpm_list, options.stage_path, files_to_copy,
-                                  options.generated_data_path, initrd_pkgs,
-                                  options.ph_docker_image, options.ph_builder_tag])
+                                  rpm_list, options.stage_path,
+                                  files_to_copy, options.generated_data_path,
+                                  initrd_pkgs, options.ph_docker_image,
+                                  options.ph_builder_tag, options.photon_release_version])
 
         if retval:
             raise Exception("Unable to create install ISO")
