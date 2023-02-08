@@ -3,11 +3,11 @@
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 libcalico=c3d0f9f36930389fc3b6f1f2222ebc85440a50ee
+%define sha512 libcalico=f38c850720b635c09fbc32f9be4830531f3cd47f77b1084f3150765d84f7e3ba5d135b7389fd4528c4f78593376907c1e5f7ac7eecfbea3d83bdf3c7d8134edf
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,7 +58,7 @@ Requires:       python-setuptools
 Library for interacting with Calico data model.
 
 %prep
-%setup
+%autosetup
 
 %build
 python2 setup.py build
@@ -71,5 +71,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python2_sitelib}/*
 
 %changelog
-*   Wed Aug 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19.0-1
--   libcalico for PhotonOS.
+* Sun Feb 12 2023 Prashant S Chauhan <psinghchuha@vmware.com> 0.19.0-2
+- Bump up as part of python3-PyYAML update
+* Wed Aug 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19.0-1
+- libcalico for PhotonOS.
