@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os.path
 import re
 import time
@@ -39,7 +41,7 @@ class ToolChainUtils(object):
             self.rpmCommand = "fakeroot-ng rpm"
 
     def _findPublishedRPM(self, package, rpmdirPath):
-        listFoundRPMFiles = CommandUtils.findFile(package + "-*.rpm", rpmdirPath)
+        listFoundRPMFiles = CommandUtils.findFile(f"{package}-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
@@ -73,8 +75,9 @@ class ToolChainUtils(object):
             targetPackageName = packageName
             packageName = None
             packageVersion = None
-            listRPMsToInstall.extend(['binutils-'+constants.targetArch+'-linux-gnu',
-                                      'gcc-'+constants.targetArch+'-linux-gnu'])
+            listRPMsToInstall.extend([f"binutils-{constants.targetArch}-linux-gnu",
+                                      f"gcc-{constants.targetArch}-linux-gnu"])
+
         if packageName:
             listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
 
@@ -125,16 +128,13 @@ class ToolChainUtils(object):
                 # Safe to use published RPM
                 rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    self.logger.error(f"Unable to find published rpm {package}")
+                    self.logger.error(f"Unable to find published rpm: {package}")
                     raise Exception("Input Error")
             rpmFiles += f" {rpmFile}"
             packages += f" {package}-{version}"
 
-        self.logger.debug(rpmFiles)
-        self.logger.debug(packages)
-        cmd = (
-            f"{self.rpmCommand} -iv --nodeps --force --root {ChrootID} -D '_dbpath /var/lib/rpm' {rpmFiles}"
-        )
+        self.logger.debug(f"{rpmFiles}\n{packages}")
+        cmd = f"{self.rpmCommand} -iv --nodeps --force --root {ChrootID} -D '_dbpath /var/lib/rpm' {rpmFiles}"
 
         # If rpm doesn't have zstd support, use rpm from photon_builder image
         if constants.checkIfHostRpmNotUsable():
@@ -220,8 +220,8 @@ class ToolChainUtils(object):
 
         if rpmFiles != "":
             cmd = (
-                f"{self.rpmCommand} -Uvh --nodeps --ignorearch --noscripts --root"
-                f" {ChrootID}/target-{constants.targetArch}"
+                f"{self.rpmCommand} -Uv --nodeps --ignorearch --noscripts --root"
+                f" {ChrootID}/target-{constants.targetArch} {rpmFiles}"
                 f" -D '_dbpath /var/lib/rpm' {rpmFiles}"
             )
             if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):

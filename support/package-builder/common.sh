@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set +u
 [ -n "$_PKGB_COMM_SH_" ] && return || readonly _PKGB_COMM_SH_=1
 set -u

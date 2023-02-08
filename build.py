@@ -509,10 +509,10 @@ class BuildEnvironmentSetup:
             Build_Config.updatedRpmArchPath,
             constants.sourcePath,
             constants.logPath,
+            constants.inputRPMSPath,
         ]
 
-        for d in stage_dirs:
-            runShellCmd(f"mkdir -p {d}")
+        runShellCmd(f"mkdir -p " + " ".join(stage_dirs))
 
         files = ["COPYING", "NOTICE-GPL2.0", "NOTICE-Apachev2", "EULA.txt"]
         stagePath = Build_Config.stagePath
