@@ -1,30 +1,31 @@
-Summary:    Multi-format archive and compression library
-Name:       libarchive
-Version:    3.3.3
-Release:    8%{?dist}
-License:    BSD 2-Clause License
-URL:        http://www.libarchive.org
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:         Multi-format archive and compression library
+Name:            libarchive
+Version:         3.3.3
+Release:         9%{?dist}
+License:         BSD 2-Clause License
+URL:             http://www.libarchive.org
+Group:           System Environment/Development
+Vendor:          VMware, Inc.
+Distribution:    Photon
 
-Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9d12b47d6976efa9f98e62c25d8b85fd745d4e9ca7b7e6d36bfe095dfe5c4db017d4e785d110f3758f5938dad6f1a1b009267fd7e82cb7212e93e1aea237bab7
+Source0:         http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
+%define sha512   %{name}=9d12b47d6976efa9f98e62c25d8b85fd745d4e9ca7b7e6d36bfe095dfe5c4db017d4e785d110f3758f5938dad6f1a1b009267fd7e82cb7212e93e1aea237bab7
 
-Patch0:     libarchive-CVE-2018-1000877.patch
-Patch1:     libarchive-CVE-2018-1000878.patch
-Patch2:     libarchive-CVE-2018-1000879.patch
-Patch3:     libarchive-CVE-2018-1000880.patch
-Patch4:     libarchive-CVE-2019-1000019.patch
-Patch5:     libarchive-CVE-2019-1000020.patch
-Patch6:     libarchive-CVE-2019-18408.patch
-Patch7:     libarchive-CVE-2019-19221.patch
-Patch8:     libarchive-CVE-2020-21674.patch
-Patch9:     libarchive-CVE-2021-23177.patch
+Patch0:          libarchive-CVE-2018-1000877.patch
+Patch1:          libarchive-CVE-2018-1000878.patch
+Patch2:          libarchive-CVE-2018-1000879.patch
+Patch3:          libarchive-CVE-2018-1000880.patch
+Patch4:          libarchive-CVE-2019-1000019.patch
+Patch5:          libarchive-CVE-2019-1000020.patch
+Patch6:          libarchive-CVE-2019-18408.patch
+Patch7:          libarchive-CVE-2019-19221.patch
+Patch8:          libarchive-CVE-2020-21674.patch
+Patch9:          libarchive-CVE-2021-23177.patch
 # Fix for CVE-2021-31566
-Patch10:    0001-archive_write_disk_posix-open-a-fd-when-processing-f.patch
-Patch11:    0002-archive_write_disk_posix-changes.patch
-Patch12:    0003-Do-not-follow-symlinks-when-processing-the-fixup-lis.patch
+Patch10:         0001-archive_write_disk_posix-open-a-fd-when-processing-f.patch
+Patch11:         0002-archive_write_disk_posix-changes.patch
+Patch12:         0003-Do-not-follow-symlinks-when-processing-the-fixup-lis.patch
+Patch13:         libarchive-CVE-2022-36227.patch
 
 BuildRequires:  automake
 BuildRequires:  xz-libs
@@ -51,7 +52,6 @@ autoreconf -ifv
 
 %install
 %make_install
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
 %if 0%{?with_check}
@@ -75,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Feb 08 2023 Harinadh D <hdommaraju@vmware.com> 3.3.3-9
+- fix for CVE-2022-36277
 * Tue Aug 30 2022 Ankit Jain <ankitja@vmware.com> 3.3.3-8
 - Fix for CVE-2021-23177, CVE-2021-31566
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3.3-7
