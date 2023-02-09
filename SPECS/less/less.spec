@@ -1,7 +1,7 @@
 Summary:    Text file viewer
 Name:       less
 Version:    608
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        http://www.greenwoodsoftware.com/less
 Group:      Applications/File
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
 %define sha512 %{name}=7945b7f88921832ebb1b45fba8cbb449ee0133342796b654a52c146dfff3d84db18724ee84e53349eeea6017a0ebe2d8eb5366210275981dde7bb7190118fa66
+
+Patch0: CVE-2022-46663.patch
 
 BuildRequires: ncurses-devel
 
@@ -34,6 +36,8 @@ The Less package contains a text file viewer
 %{_mandir}/*/*
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 608-2
+- Fix CVE-2022-46663
 * Wed Nov 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 608-1
 - Upgrade to v608
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 590-1
