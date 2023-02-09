@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.271
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -573,6 +573,9 @@ Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 # Keep rt_version matched up with this patch.
 Patch552: 0352-Linux-4.19.271-rt120-REBASE.patch
+
+# fix regression in RT patchset that leads to a deadlock
+Patch553: 0001-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -1221,6 +1224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Feb 09 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.271-3
+- Fix regression in RT patchset that leads to a deadlock/hang.
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2
 - Implement performance over security option for RETBleed (pos=1)
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1
