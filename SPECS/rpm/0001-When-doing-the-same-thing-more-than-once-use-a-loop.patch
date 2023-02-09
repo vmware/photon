@@ -1,0 +1,38 @@
+From 9cbc1fe444b048c3f7cf5ea09ab650d1c146d54a Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 20 Feb 2019 14:49:19 +0200
+Subject: [PATCH] When doing the same thing more than once, use a loop...
+
+No functional changes but this'll simplify the next commit quite a bit.
+---
+ build/spec.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/build/spec.c b/build/spec.c
+index e414e4102..80eaca611 100644
+--- a/build/spec.c
++++ b/build/spec.c
+@@ -303,15 +303,13 @@ rpmSpec newSpec(void)
+     spec->pool = rpmstrPoolCreate();
+     
+ #ifdef WITH_LUA
+-    {
+     /* make sure patches and sources tables always exist */
+     rpmlua lua = NULL; /* global state */
+-    rpmluaDelVar(lua, "patches");
+-    rpmluaDelVar(lua, "sources");
+-    rpmluaPushTable(lua, "patches");
+-    rpmluaPushTable(lua, "sources");
+-    rpmluaPop(lua);
+-    rpmluaPop(lua);
++    const char * luavars[] = { "patches", "sources", NULL, };
++    for (const char **vp = luavars; vp && *vp; vp++) {
++	rpmluaDelVar(lua, *vp);
++	rpmluaPushTable(lua, *vp);
++	rpmluaPop(lua);
+     }
+ #endif
+     return spec;
+-- 
+2.26.2
+

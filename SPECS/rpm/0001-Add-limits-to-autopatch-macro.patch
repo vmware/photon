@@ -1,0 +1,44 @@
+From f00bb5be9caa62220c6aeaf3f7264840d5c089e3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20Men=C5=A1=C3=ADk?= <pemensik@redhat.com>
+Date: Tue, 5 Feb 2019 18:15:47 +0100
+Subject: [PATCH] Add limits to autopatch macro
+
+Limits allow to apply only range of patches with given parameters.
+Useful if something needs to be done between patch sets. Allows applying
+of patches with different -pX parameter in one spec file.
+
+Resolves: #626
+Co-authored-by: Florian Festi <ffesti@redhat.com>
+---
+ macros.in | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/macros.in b/macros.in
+index 7b5b63020..912ad5997 100644
+--- a/macros.in
++++ b/macros.in
+@@ -1265,11 +1265,19 @@ else\
+ end}
+ 
+ # Automatically apply all patches
+-%autopatch(vp:)\
++# -m<min>       Apply patches with number >= min only
++# -M<max>       Apply patches with number <= max only
++%autopatch(vp:m:M:)\
+ %{lua:\
+ local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
++local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
++local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+ for i, p in ipairs(patches) do\
+-    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n"))\
++    local inum = patch_nums[i]\
++    if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
++    then\
++        print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
++    end\
+ end}
+ 
+ # One macro to (optionally) do it all.
+-- 
+2.26.2
+

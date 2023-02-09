@@ -39,8 +39,6 @@ Source8: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_versi
 Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
 
-Source10: ApplyPatch.inc
-
 # common
 #Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
@@ -561,40 +559,37 @@ This Linux package contains hmac sha generator kernel module.
 # Using autosetup is not feasible
 %setup -q -T -D -b9 -n linux-%{version}
 
-# ApplyPatch.inc
-%include %{SOURCE10}
-
-ApplyPatch "1" "516"
+%autopatch -p1 -m1 -M516
 
 %if 0%{?vmxnet3_sw_timestamp}
 %patch520 -p1
 %endif
 
-ApplyPatch "521" "530"
+%autopatch -p1 -m521 -M530
 
 # Update vmxnet3 driver to version 6
-ApplyPatch "531" "539"
+%autopatch -p1 -m531 -M539
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "540" "552"
+%autopatch -p1 -m540 -M552
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-ApplyPatch "801" "802"
+%autopatch -p1 -m801 -M802
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-ApplyPatch "811" "814"
+%autopatch -p1 -m811 -M814
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-ApplyPatch "821" "823"
+%autopatch -p1 -m821 -M823
 popd
 
 # Patches for ptp_vmw driver
-ApplyPatch "831" "833"
+%autopatch -p1 -m831 -M833
 
 %if 0%{?kat_build}
 %patch1000 -p1

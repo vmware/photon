@@ -1,0 +1,63 @@
+From 9ad4b813483f8cf6c641f56387248b33b6dfc570 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 20 Feb 2019 15:28:30 +0200
+Subject: [PATCH] Introduce patch_nums and source_nums Lua variables in spec
+ context
+
+The pre-existing patches and sources variables only contains patch and
+source filenames, but for some purposes we need access to the associated
+patch/source number too. We could use the number as the table key, but
+that would make the table unsorted. That we could handle in our own
+macros, but would break compatibility for anybody doing custom stuff
+with these. So it seems best to just add parallel arrays sharing the
+same array indexes so that both values are as easily accessible,
+depending on the need.
+
+Inspired by Pascal "Pixel" Rigaux's similar patch in Mageia, which differs
+in that the number-arrays are indexed by the filename and is unordered.
+Compared to patches/sources this seemed against principle of least
+surprise, and is slightly more cumbersome int the case we want the number
+directly, such as in PR #626. The variable names differ so there
+is no incompatibility to that downstream patch introduced.
+---
+ build/parsePreamble.c | 9 +++++++++
+ build/spec.c          | 3 ++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/build/parsePreamble.c b/build/parsePreamble.c
+index 812c41f9f..9520bac4b 100644
+--- a/build/parsePreamble.c
++++ b/build/parsePreamble.c
+@@ -322,6 +322,15 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
+ 	    rpmluaSetVar(lua, var);
+ 	    rpmluavFree(var);
+ 	    rpmluaPop(lua);
++
++	    what = (flag & RPMBUILD_ISPATCH) ? "patch_nums" : "source_nums";
++	    rpmluaPushTable(lua, what);
++	    var = rpmluavNew();
++	    rpmluavSetListMode(var, 1);
++	    rpmluavSetValueNum(var, p->num);
++	    rpmluaSetVar(lua, var);
++	    rpmluavFree(var);
++	    rpmluaPop(lua);
+ 	}
+ #endif
+ 	free(body);
+diff --git a/build/spec.c b/build/spec.c
+index 80eaca611..55095c6ce 100644
+--- a/build/spec.c
++++ b/build/spec.c
+@@ -305,7 +305,8 @@ rpmSpec newSpec(void)
+ #ifdef WITH_LUA
+     /* make sure patches and sources tables always exist */
+     rpmlua lua = NULL; /* global state */
+-    const char * luavars[] = { "patches", "sources", NULL, };
++    const char * luavars[] = { "patches", "sources",
++			       "patch_nums", "source_nums", NULL, };
+     for (const char **vp = luavars; vp && *vp; vp++) {
+ 	rpmluaDelVar(lua, *vp);
+ 	rpmluaPushTable(lua, *vp);
+-- 
+2.26.2
+

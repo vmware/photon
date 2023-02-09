@@ -1,11 +1,7 @@
-%define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")
-%define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")
-%define rpmhome %{_libdir}/rpm
-
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -26,10 +22,13 @@ Patch3: CVE-2021-20266.patch
 Patch4: Fix-regression-reading-rpm-v3.patch
 Patch5: CVE-2021-3521.patch
 Patch6: os-install-post-improvements.patch
+Patch7: 0001-When-doing-the-same-thing-more-than-once-use-a-loop.patch
+Patch8: 0001-Introduce-patch_nums-and-source_nums-Lua-variables-i.patch
+Patch9: 0001-Add-limits-to-autopatch-macro.patch
 
 Requires: bash
 Requires: libdb
-Requires: rpm-libs = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
 Requires: lua
 Requires: zstd-libs
 
@@ -41,7 +40,6 @@ BuildRequires: elfutils-devel
 BuildRequires: libcap-devel
 BuildRequires: xz-devel
 BuildRequires: file-devel
-BuildRequires: python2-devel
 BuildRequires: python3-devel
 BuildRequires: zstd-devel
 
@@ -50,7 +48,7 @@ RPM package manager
 
 %package devel
 Summary:        Libraries and header files for rpm
-Provides:       pkgconfig(rpm)
+Provides:       pkgconfig(%{name})
 Requires:       %{name} = %{version}-%{release}
 Requires:       zstd-devel
 %description devel
@@ -86,23 +84,16 @@ Requires:       %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of rpm.
 
-%package -n     python-rpm
-Summary:        Python 2 bindings for rpm.
-Group:          Development/Libraries
-Requires:       python2
-Requires:       zstd-libs
-%description -n python-rpm
-
-%package -n     python3-rpm
+%package -n     python3-%{name}
 Summary:        Python 3 bindings for rpm.
 Group:          Development/Libraries
 Requires:       python3
 
-%description -n python3-rpm
+%description -n python3-%{name}
 Python3 rpm.
 
 %prep
-%autosetup -p1 -n rpm-%{name}-%{version}-release
+%autosetup -p1 -n %{name}-%{name}-%{version}-release
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -124,42 +115,41 @@ export CPPFLAGS='-I%{_includedir}/nspr -I%{_includedir}/nss -DLUA_COMPAT_APIINTC
     --disable-silent-rules \
     --with-external-db \
     --enable-zstd \
-    --without-archive
+    --without-archive \
+    PYTHON=%{python3}
 
 %make_build
 
 pushd python
-%py_build
 %py3_build
 popd
-
-%if 0%{?with_check}
-%check
-make check %{?_smp_mflags}
-%endif
 
 %install
 %make_install %{?_smp_mflags}
 
 # All these are unused
-rm -v %{buildroot}%{rpmhome}/macros.python \
-      %{buildroot}%{rpmhome}/macros.php \
-      %{buildroot}%{rpmhome}/macros.perl
+rm -v %{buildroot}%{_rpmconfigdir}/macros.python \
+      %{buildroot}%{_rpmconfigdir}/macros.php \
+      %{buildroot}%{_rpmconfigdir}/macros.perl
 
 find %{buildroot} -name '*.la' -delete
 
 %find_lang %{name}
 
 # System macros and prefix
-install -dm 755 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -dm 755 %{buildroot}%{_sysconfdir}/%{name}
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
 
 pushd python
-%py_install
 %py3_install
 popd
+
+%if 0%{?with_check}
+%check
+make check %{?_smp_mflags}
+%endif
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -169,7 +159,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/rpm
+%{_bindir}/%{name}
 %{_bindir}/gendiff
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
@@ -178,22 +168,22 @@ rm -rf %{buildroot}
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
 
-%{rpmhome}/rpmpopt-*
-%{rpmhome}/rpmdb_*
-%{rpmhome}/rpm.daily
-%{rpmhome}/rpm.log
-%{rpmhome}/rpm.supp
-%{rpmhome}/rpm2cpio.sh
-%{rpmhome}/tgpg
-%{rpmhome}/platform
-%{_libdir}/rpm-plugins/*
-%{_mandir}/man8/rpm.8.gz
+%{_rpmconfigdir}/rpmpopt-*
+%{_rpmconfigdir}/rpmdb_*
+%{_rpmconfigdir}/%{name}.daily
+%{_rpmconfigdir}/%{name}.log
+%{_rpmconfigdir}/%{name}.supp
+%{_rpmconfigdir}/rpm2cpio.sh
+%{_rpmconfigdir}/tgpg
+%{_rpmconfigdir}/platform
+%{_libdir}/%{name}-plugins/*
+%{_mandir}/man8/%{name}.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
-%{_mandir}/man8/rpm-misc.8.gz
-%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
+%{_mandir}/man8/%{name}-misc.8.gz
+%{_mandir}/man8/%{name}-plugin-systemd-inhibit.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -204,12 +194,12 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/rpm/macros
+%config(noreplace) %{_sysconfdir}/%{name}/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
-%{rpmhome}/macros
-%{rpmhome}/rpmrc
-%{rpmhome}/platform/*
+%{_rpmconfigdir}/macros
+%{_rpmconfigdir}/rpmrc
+%{_rpmconfigdir}/platform/*
 
 %files build
 %{_bindir}/rpmbuild
@@ -218,38 +208,38 @@ rm -rf %{buildroot}
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
 %{_rpmmacrodir}/*
-%{rpmhome}/perl.req
-%{rpmhome}/find-debuginfo.sh
-%{rpmhome}/find-lang.sh
-%{rpmhome}/find-provides
-%{rpmhome}/find-requires
-%{rpmhome}/brp-*
-%{rpmhome}/mono-find-provides
-%{rpmhome}/mono-find-requires
-%{rpmhome}/ocaml-find-provides.sh
-%{rpmhome}/ocaml-find-requires.sh
-%{rpmhome}/fileattrs/*
-%{rpmhome}/script.req
-%{rpmhome}/check-buildroot
-%{rpmhome}/check-files
-%{rpmhome}/check-prereqs
-%{rpmhome}/check-rpaths
-%{rpmhome}/check-rpaths-worker
-%{rpmhome}/config.guess
-%{rpmhome}/config.sub
-%{rpmhome}/debugedit
-%{rpmhome}/elfdeps
-%{rpmhome}/libtooldeps.sh
-%{rpmhome}/mkinstalldirs
-%{rpmhome}/pkgconfigdeps.sh
-%{rpmhome}/*.prov
-%{rpmhome}/sepdebugcrcfix
+%{_rpmconfigdir}/perl.req
+%{_rpmconfigdir}/find-debuginfo.sh
+%{_rpmconfigdir}/find-lang.sh
+%{_rpmconfigdir}/find-provides
+%{_rpmconfigdir}/find-requires
+%{_rpmconfigdir}/brp-*
+%{_rpmconfigdir}/mono-find-provides
+%{_rpmconfigdir}/mono-find-requires
+%{_rpmconfigdir}/ocaml-find-provides.sh
+%{_rpmconfigdir}/ocaml-find-requires.sh
+%{_rpmconfigdir}/fileattrs/*
+%{_rpmconfigdir}/script.req
+%{_rpmconfigdir}/check-buildroot
+%{_rpmconfigdir}/check-files
+%{_rpmconfigdir}/check-prereqs
+%{_rpmconfigdir}/check-rpaths
+%{_rpmconfigdir}/check-rpaths-worker
+%{_rpmconfigdir}/config.guess
+%{_rpmconfigdir}/config.sub
+%{_rpmconfigdir}/debugedit
+%{_rpmconfigdir}/elfdeps
+%{_rpmconfigdir}/libtooldeps.sh
+%{_rpmconfigdir}/mkinstalldirs
+%{_rpmconfigdir}/pkgconfigdeps.sh
+%{_rpmconfigdir}/*.prov
+%{_rpmconfigdir}/sepdebugcrcfix
 
-%{rpmhome}/python-macro-helper
-%{rpmhome}/pythondistdeps.py
+%{_rpmconfigdir}/python-macro-helper
+%{_rpmconfigdir}/pythondistdeps.py
 
-%{rpmhome}/pythondeps.sh
-%{rpmhome}/rpmdeps
+%{_rpmconfigdir}/pythondeps.sh
+%{_rpmconfigdir}/rpmdeps
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -260,7 +250,7 @@ rm -rf %{buildroot}
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/rpm.pc
+%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
@@ -269,15 +259,14 @@ rm -rf %{buildroot}
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
-%files -n python-rpm
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-rpm
+%files -n python3-%{name}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-7
+- Remove python2 things
+- Add limits to autopatch macro
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-6
 - Cleanup macros file
 - Remove redundant brp-strip-debug-symbols script

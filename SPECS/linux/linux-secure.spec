@@ -28,8 +28,6 @@ Source5: https://github.com/vmware/photon-checksum-generator/releases/photon-che
 
 Source6: genhmac.inc
 
-Source7: ApplyPatch.inc
-
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
@@ -315,16 +313,13 @@ This Linux package contains hmac sha generator kernel module.
 # Using autosetup is not feasible
 %setup -q -T -D -b5 -n linux-%{version}
 
-# ApplyPatch.inc
-%include %{SOURCE7}
-
-ApplyPatch "0" "98"
+%autopatch -p1 -m0 -M98
 
 pushd ..
 %patch99 -p0
 popd
 
-ApplyPatch "100" "196"
+%autopatch -p1 -m100 -M196
 
 %if 0%{?kat_build}
 %patch1000 -p1

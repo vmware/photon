@@ -27,7 +27,6 @@ Source5: https://github.com/vmware/photon-checksum-generator/releases/photon-che
 %define sha512 photon-checksum-generator=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
 
 Source6: genhmac.inc
-Source7: ApplyPatch.inc
 
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -300,16 +299,13 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 # Using autosetup is not feasible
 %setup -q -T -D -b5 -n linux-%{version}
 
-# ApplyPatch.inc
-%include %{SOURCE7}
-
-ApplyPatch "0" "160"
+%autopatch -p1 -m0 -M160
 
 # Update vmxnet3 driver to version 6
-ApplyPatch "161" "169"
+%autopatch -p1 -m161 -M169
 
 # Update vmxnet3 driver to version 7
-ApplyPatch "170" "185"
+%autopatch -p1 -m170 -M185
 
 %if 0%{?kat_build}
 %patch1000 -p1

@@ -50,8 +50,6 @@ Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_vers
 Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
 
-Source15: ApplyPatch.inc
-
 # common
 Patch1: double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
@@ -672,38 +670,35 @@ This Linux package contains hmac sha generator kernel module.
 # Using autosetup is not feasible
 %setup -q -T -D -b8 -n linux-%{version}
 
-# ApplyPatch.inc
-%include %{SOURCE15}
-
-ApplyPatch "1" "13"
+%autopatch -p1 -m1 -M13
 
 %ifarch x86_64
 %patch17 -p1
 %endif
 
-ApplyPatch "18" "191"
+%autopatch -p1 -m18 -M191
 
 %ifarch aarch64
 # Rpi of_configfs patches
-ApplyPatch "200" "234"
+%autopatch -p1 -m200 -M234
 %endif
 
 %ifarch x86_64
-ApplyPatch "281" "515"
+%autopatch -p1 -m281 -M515
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-ApplyPatch "1500" "1501"
+%autopatch -p1 -m1500 -M1501
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-ApplyPatch "1511" "1514"
+%autopatch -p1 -m1511 -M1514
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-ApplyPatch "1521" "1523"
+%autopatch -p1 -m1521 -M1523
 popd
 
 %endif

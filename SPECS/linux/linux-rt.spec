@@ -58,8 +58,6 @@ Source12: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_versio
 Source13: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version_1_6_4}/ice-%{ice_version_1_6_4}.tar.gz
 %define sha512 ice-1.6.4=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
 
-Source14: ApplyPatch.inc
-
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
@@ -819,10 +817,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 13 -n linux-%{version}
 %endif
 
-# ApplyPatch.inc
-%include %{SOURCE14}
-
-ApplyPatch "0" "637"
+%autopatch -p1 -m0 -M637
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -830,44 +825,44 @@ ApplyPatch "0" "637"
 
 # Patches for i40e v2.16.11 driver
 pushd ../i40e-%{i40e_version_2_16_11}
-ApplyPatch "1500" "1501"
+%autopatch -p1 -m1500 -M1501
 popd
 
 # Patches for i40e v2.15.9 driver
 pushd ../i40e-%{i40e_version_2_15_9}
-ApplyPatch "1502" "1503"
+%autopatch -p1 -m1502 -M1503
 popd
 
 # Patches for iavf v4.5.3 driver
 pushd ../iavf-%{iavf_version_4_5_3}
-ApplyPatch "1511" "1514"
+%autopatch -p1 -m1511 -M1514
 popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-ApplyPatch "1511" "1511"
-ApplyPatch "1515" "1516"
+%autopatch -p1 -m1511 -M1511
+%autopatch -p1 -m1515 -M1516
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-ApplyPatch "1517" "1518"
+%autopatch -p1 -m1517 -M1518
 popd
 
 # Patches for ice v1.9.11 driver
 pushd ../ice-%{ice_version_1_9_11}
-ApplyPatch "1521" "1523"
+%autopatch -p1 -m1521 -M1523
 popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-ApplyPatch "1521" "1521"
-ApplyPatch "1524" "1525"
+%autopatch -p1 -m1521 -M1521
+%autopatch -p1 -m1524 -M1525
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-ApplyPatch "1526" "1527"
+%autopatch -p1 -m1526 -M1527
 popd
 
 %build
