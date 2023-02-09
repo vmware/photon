@@ -3,8 +3,8 @@
 
 Summary:        The Apache Portable Runtime
 Name:           apr
-Version:        1.7.0
-Release:        5%{?dist}
+Version:        1.7.2
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -12,13 +12,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=daa140c83c7e2c45c3980d9dc81d34fa662bebd050653562c39572d0ddf2eaedb71767c518a59d77f59db9b32e00221ef48b9f72ec3666c4521dd511969f3706
+%define sha512 %{name}=3fc607af4b8d7e92dc22e35099ebedec5b6ad7c9457ef971bcbdd715d8b1100a76215f75cedf1fc216ac55ae4919c6ea38fb0517025f153c53ec426f0a34f7c2
 
 %if 0%{?with_check}
 Patch0:         apr-skip-getservbyname-test.patch
 %endif
-
-Patch1:         apr-1.7.0-CVE-2021-35940.patch
 
 %description
 The Apache Portable Runtime.
@@ -68,6 +66,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+* Thu Feb 09 2023 Ankit Jain <ankitja@vmware.com> 1.7.2-1
+- Fix CVE-2022-24963
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-5
 - Don't remove .la files, needed during subversion build
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-4
