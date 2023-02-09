@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,6 +21,8 @@ Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=7f226d917c97752a49bb603829789c02820d5a746e89bf879b63cad6ce22b0000762a2f5584af1a928fcb9a444abbf78f6fd8761898291830a21ac42b2d72858
+
+Patch0: CVE-2022-41862.patch
 
 BuildRequires: diffutils
 BuildRequires: gcc
@@ -271,6 +273,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Thu Feb 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.9-3
+- Fix CVE-2022-41862
 * Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.9-2
 - Fix chkconfig mishap
 * Fri Nov 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 13.9-1
