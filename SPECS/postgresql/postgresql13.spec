@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.8
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -23,6 +23,7 @@ Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.
 %define sha512 %{srcname}=3b39448b291342a5e9b610d410c222aeb85f8acf95632e73e138ae316133af3dadc795a6e706f6447f543cf10df3c786da4f1afa1d91489b50eb77e2d9ed5d84
 
 Patch0: llvm-15.x-psql-build-err-fixes.patch
+Patch1: CVE-2022-41862-v13.patch
 
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
@@ -643,6 +644,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-11
+- Fix CVE-2022-41862
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.8-10
 - Bump version as a part of krb5 upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.8-9

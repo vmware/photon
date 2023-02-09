@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -23,6 +23,7 @@ Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.
 %define sha512 %{srcname}=3051c5ab729f6a55952c6108098b022517398b1de64f7fefbdd6c806c7e2eb0637d00f3c98a6203c5bee654656528c4ff3530db5a69470e7888864c77900178a
 
 Patch0: llvm-15.x-psql-build-err-fixes.patch
+Patch1: CVE-2022-41862-v14.patch
 
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
@@ -659,6 +660,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.5-11
+- Fix CVE-2022-41862
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.5-10
 - Bump version as a part of krb5 upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.5-9
