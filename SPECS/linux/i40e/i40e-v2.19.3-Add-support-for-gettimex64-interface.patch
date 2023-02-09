@@ -152,14 +152,6 @@ diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
 index 26ca803..b550dc2 100644
 --- a/src/kcompat_std_defs.h
 +++ b/src/kcompat_std_defs.h
-@@ -73,7 +73,6 @@
- 
- /*****************************************************************************/
- #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0))
--#define NEED_SKB_FRAG_OFF_ACCESSORS
- #define NEED_FLOW_INDR_BLOCK_CB_REGISTER
- #else /* >= 5.4.0 */
- #endif /* 5.4.0 */
 @@ -85,6 +84,13 @@
  #else /* >= 5.9.0 */
  #endif /* 5.9.0 */

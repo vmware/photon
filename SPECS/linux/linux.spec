@@ -24,7 +24,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -51,9 +51,9 @@ Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
-%define i40e_version 2.16.11
+%define i40e_version 2.19.3
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
+%define sha512 i40e=1cef2de8c96ef78077d7c7878080cef5df931b04e01255791a058c18945d20af2076ad4c6714540e2163a8e4595cc0c9c560580104194b2da78df2cbc49560b8
 
 %define iavf_version 4.5.3
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
@@ -194,10 +194,9 @@ Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
-# Patches for i40e v2.16.11 driver [1500..1509]
-Patch1500: i40e-v2.16.11-linux-linux-esx-i40e-Fix-build-errors-on-kernel-6.0.patch
-Patch1501: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch1502: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+# Patches for i40e v2.19.3 driver [1500..1509]
+Patch1500: i40e-v2.19.3-Add-support-for-gettimex64-interface.patch
+Patch1501: i40e-v2.19.3-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 # Patches for iavf v4.5.3 driver [1510..1519]
 Patch1510: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
@@ -699,6 +698,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sat Feb 11 2023 Ankit Jain <ankitja@vmware.com> 6.0.7-8
+- Updated i40e driver to v2.19.3 to prevent kernel warnings
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.7-7
 - Enable CONFIG_PCI_PF_STUB
 * Tue Jan 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.0.7-6
