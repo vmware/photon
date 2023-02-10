@@ -4,13 +4,25 @@ import os
 import re
 import sys
 import calendar
+import json
+import tempfile
+
 from datetime import datetime
 
-try:
-    from support.pyrpm.spec import Spec, replace_macros
-except ModuleNotFoundError:
-    from pyrpm.spec import Spec, replace_macros
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/../package-builder"
+)
+from  CommandUtils import CommandUtils
 
+from pyrpm.spec import Spec, replace_macros
+
+cfg_dict = {}
+cfg_fn = "check-spec-cfg.json"
+
+with open(os.path.dirname(os.path.realpath(__file__)) + f"/{cfg_fn}", "r") as f:
+    cfg_dict = json.load(f)
+
+g_ignore_list = []
 
 """
 Error Dictionary:
@@ -27,7 +39,7 @@ class ErrorDict:
             "hdr_check": ["Spec header errors"],
             "version_check": ["Version check errros"],
             "dist_tag": ["Dist tag error"],
-            "trailing_space": ["Trailing spaces & empty line errors"],
+            "unallowed_usages": ["Trailing spaces & empty line errors"],
             "bogus_date": ["Bogus date errors"],
             "changelog": ["Changelog erros"],
             "sub_pkg": ["Sub package errors"],
@@ -49,7 +61,7 @@ class ErrorDict:
             self.err_dict[sec] = list(dict.fromkeys(self.err_dict[sec]))
 
     def print_err_dict(self):
-        print("--- List of errors in %s ---" % (self.spec_fn))
+        pr_flg = False
 
         for k, v in self.err_dict.items():
             # proceed if error list has more than 1 item
@@ -58,13 +70,17 @@ class ErrorDict:
             except IndexError:
                 continue
 
+            if not pr_flg:
+                print(f"--- List of errors in {self.spec_fn} ---")
+                pr_flg = True
+
             print("\n --- %s ---" % (v[0]))
 
             for msg in v[1:]:
                 if k == "unused_files":
-                    print("%s" % (msg))
+                    print(f"{msg}")
                 else:
-                    print("ERROR in %s: %s" % (self.spec_fn, msg))
+                    print(f"ERROR in {self.spec_fn}: {msg}")
 
         print("\n")
 
@@ -89,11 +105,11 @@ def check_spec_header(spec, err_dict):
         err_msg = None
 
         if not val:
-            err_msg = "%s must be present in the spec header" % (key)
+            err_msg = f"{key} must be present in the spec header"
         elif key == "Distribution" and val and val != "Photon":
-            err_msg = "%s name must be Photon (Given: %s)" % (key, val)
+            err_msg = f"{key} name must be Photon (Given: {val})"
         elif key == "Vendor" and spec.vendor and spec.vendor != "VMware, Inc.":
-            err_msg = "%s name must be VMware, Inc. (Given: %s)" % (key, val)
+            err_msg = f"{key} name must be VMware, Inc. (Given: {val})"
 
         if err_msg:
             ret = True
@@ -111,7 +127,7 @@ def check_for_version(spec, err_dict):
     changelog_ver = clog[0].split()[-1]
 
     # combine Release & Version from header
-    release_ver = spec.version + "-" + spec.release.split("%")[0]
+    release_ver = f"{spec.version}-" + spec.release.split("%")[0]
 
     if changelog_ver != release_ver:
         err_msg = ("Changelog & Release version mismatch " "%s != %s") % (
@@ -136,12 +152,12 @@ def check_for_dist_tag(spec, err_dict):
     return ret
 
 
-def check_for_trailing_spaces(spec_fn, err_dict):
+def check_for_unallowed_usages(spec_fn, err_dict):
     ret = False
     ret_dict = {}
-    sec = "trailing_space"
+    sec = "unallowed_usages"
 
-    with open(spec_fn) as fp:
+    with open(spec_fn, "r") as fp:
         lines = fp.read().splitlines()
 
     if lines[-1].isspace():
@@ -152,15 +168,18 @@ def check_for_trailing_spaces(spec_fn, err_dict):
     key_found = False
     empty_line_count = 0
     for line_num, line in enumerate(lines):
+        if "\t" in line:
+            err_msg = f"TAB character(s) found in line {line_num + 1}"
+            err_dict.update_err_dict(sec, err_msg)
+            ret = True
+
         if not line or line.isspace():
             empty_line_count += 1
         else:
             empty_line_count = 0
 
         if empty_line_count >= 2:
-            err_msg = ("multiple empty lines found at line number" " %d") % (
-                line_num + 1
-            )
+            err_msg = f"multiple empty lines found at line number {line_num + 1}"
             err_dict.update_err_dict(sec, err_msg)
             empty_line_count = 0
             ret = True
@@ -199,7 +218,7 @@ def check_for_bogus_date(line, cur_date, err_dict):
 
     day_abbr = calendar.day_abbr[cur_date.weekday()]
     if day_abbr != line[1]:
-        err_msg = "bogus date found at:\n%s" % (line)
+        err_msg = f"bogus date found at:\n{line}"
         err_dict.update_err_dict(sec, err_msg)
         ret = True
 
@@ -231,7 +250,7 @@ def check_changelog(spec, err_dict):
         if line.startswith("*"):
             asterisk = True
             if not hyphen:
-                err_msg = "Successive author & version info at:\n%s" % (line)
+                err_msg = f"Successive author & version info at:\n{line}"
                 err_dict.update_err_dict(sec, err_msg)
                 ret = True
             hyphen = False
@@ -247,7 +266,7 @@ def check_changelog(spec, err_dict):
         elif line.startswith((" ", "\t")) and asterisk and hyphen:
             continue
         else:
-            err_msg = "invalid entry in changelog at: %s" % (line)
+            err_msg = f"invalid entry in changelog at: {line}"
             err_dict.update_err_dict(sec, err_msg)
             ret = True
             continue
@@ -259,7 +278,7 @@ def check_changelog(spec, err_dict):
         try:
             cur_date = datetime.strptime(date_text, date_format)
         except ValueError:
-            err_msg = "-%s-" % (date_text)
+            err_msg = f"-{date_text}-"
             err_dict.update_err_dict(sec, err_msg)
             ret = True
             continue
@@ -289,7 +308,7 @@ def check_sub_pkg(spec, err_dict):
         err_msg = ""
         if pkg.is_subpackage:
             if pkg.build_requires:
-                err_msg = "BuildRequires found in sub package %s\n" % (pkg)
+                err_msg = f"BuildRequires found in sub package {pkg}\n"
 
             subpkg_hdr = [pkg.name, pkg.summary, pkg.description]
             if "" in subpkg_hdr or None in subpkg_hdr:
@@ -318,9 +337,9 @@ def check_for_configure(lines_dict, err_dict):
         ret = False
 
         for opt in opt_list:
-            opt = "--" + opt
+            opt = f"--{opt}"
             if line.find(opt) >= 0:
-                err_msg = "%s can be omitted when using %%configure" % (opt)
+                err_msg = f"{opt} can be omitted when using %%configure"
                 err_dict.update_err_dict(sec, err_msg)
                 ret = True
 
@@ -424,6 +443,44 @@ def check_make_smp_flags(lines_dict, err_dict):
     return ret
 
 
+def check_mentioned_but_unused_files(spec_fn):
+    global g_ignore_list
+    parsed_spec = []
+    dirname = os.path.dirname(spec_fn)
+
+    def HandleLogs(log):
+        nonlocal parsed_spec
+        parsed_spec += log.split("\n")
+
+    CommandUtils.runCommandInShell(
+        f"rpmspec -D \"%_sourcedir {dirname}\" -P {spec_fn}",
+        logfn=HandleLogs
+    )
+
+    # ignore everything after files
+    # patch & sources get used much earlier
+    for idx, line in enumerate(parsed_spec):
+        if line.startswith("%files "):
+            parsed_spec = parsed_spec[:idx]
+            break
+
+    source_patch_list = []
+    g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
+
+    search_patterns = ("Source", "Patch")
+    for line in parsed_spec:
+        if line.startswith(search_patterns):
+            fn = os.path.basename(line.split()[1])
+            if fn not in g_ignore_list:
+                source_patch_list.append(fn)
+        elif source_patch_list:
+            for index, fn in enumerate(source_patch_list):
+                if fn in line:
+                    source_patch_list.pop(index)
+
+    return source_patch_list
+
+
 def check_for_unused_files(spec_fn, err_dict):
     ret = False
     sec = "unused_files"
@@ -466,21 +523,24 @@ def check_for_unused_files(spec_fn, err_dict):
     # keep only basenames in source list
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
 
+    mentioned_but_unused = check_mentioned_but_unused_files(spec_fn)
+
     fns = set(other_files) - set(source_patch_list)
-    if not fns:
+    if not fns and not mentioned_but_unused:
         check_for_unused_files.prev_ret = ret
         return ret
 
     ret = True
-    err_msg = "List of unused files in: %s" % (dirname)
+    err_msg = f"List of unused files in: {dirname}"
     err_dict.update_err_dict(sec, err_msg)
     for r, _, _fns in os.walk(dirname):
         for _fn in _fns:
-            if _fn in fns:
+            if _fn in fns or _fn in mentioned_but_unused:
                 _fn = os.path.join(r, _fn)
                 err_dict.update_err_dict(sec, _fn)
 
     check_for_unused_files.prev_ret = ret
+
     return ret
 
 
@@ -491,22 +551,84 @@ def check_for_sha1_usage(spec, err_dict):
     return False
 
 
+def find_file_in_dir(fn, path):
+    for root_d, dirs, files in os.walk(path):
+        if fn in files:
+            return f"{root_d}/{fn}"
+
+
+def create_altered_spec(spec_fn):
+    global g_ignore_list
+
+    lines = []
+
+    with open(spec_fn, "r") as fp:
+        lines = fp.readlines()
+
+    sources = {}
+    output = []
+    dirname = os.path.dirname(spec_fn)
+
+    # find the included files, add the file name to g_ignore_list
+    # replace %include <file> with actual content of <file>
+    for line in lines:
+        if not line.startswith("%include"):
+            if line.startswith("Source"):
+                k, v = line.split()
+                sources[k] = v
+            output.append(f"{line}")
+            continue
+
+        _, included_fn = line.split()
+        # %{SOURCEX} --> SOURCEX
+        for c in {"{", "}", "%"}:
+            included_fn = included_fn.replace(c, "")
+
+        for k, v in sources.items():
+            if k.replace(":", "").lower() == included_fn.lower():
+                included_fn = v
+                break
+
+        sources.pop(k)
+
+        g_ignore_list.append(included_fn)
+        included_fn = find_file_in_dir(included_fn, dirname)
+        with open(included_fn, "r") as fp:
+            for l in fp.readlines():
+                l = l.strip()
+                if l:
+                    output.append(f"{l}\n")
+
+    altered_spec = f"{tempfile.mktemp()}-{os.path.basename(spec_fn)}"
+    with open(f"{altered_spec}", "w") as fp:
+        for l in output:
+            fp.write(l)
+
+    return altered_spec
+
+
 def check_specs(files_list):
     ret = False
     for spec_fn in files_list:
         if not spec_fn.endswith(".spec"):
             continue
 
-        print("Checking spec file: %s" % (spec_fn))
+        print(f"Checking spec file: {spec_fn}")
 
         if not os.path.isfile(spec_fn):
-            print("%s has been deleted in this changeset" % (spec_fn))
+            print(f"{spec_fn} has been deleted in this changeset")
             continue
 
         err_dict = ErrorDict(spec_fn)
-        spec = Spec.from_file(spec_fn)
 
-        err, lines_dict = check_for_trailing_spaces(spec_fn, err_dict)
+        altered_spec = create_altered_spec(spec_fn)
+
+        spec = Spec.from_file(altered_spec)
+
+        err, lines_dict = check_for_unallowed_usages(altered_spec, err_dict)
+
+        if os.path.exists(altered_spec):
+            os.remove(altered_spec)
 
         if any(
             [
