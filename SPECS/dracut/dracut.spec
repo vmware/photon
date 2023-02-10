@@ -4,7 +4,7 @@
 
 Name:           dracut
 Version:        048
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -22,6 +22,7 @@ Patch1:         fix-initrd-naming-for-photon.patch
 Patch2:         lvm-no-read-only-locking.patch
 Patch3:         0001-fips-changes.patch
 Patch4:         fix-hostonly.patch
+Patch5:         mkinitrd-verbose-fix.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -90,7 +91,7 @@ mkdir -p %{buildroot}/boot/%{name} \
           %{buildroot}%{_sbindir}
 
 touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
-ln -sfrv %{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
+ln -sfrv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
@@ -154,6 +155,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 048-10
+- Fix mkinitrd verbose & add a sanity check for initrd
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 048-9
 - Fix requires
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 048-8
