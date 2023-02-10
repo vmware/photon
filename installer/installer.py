@@ -631,10 +631,24 @@ class Installer(object):
         self._bind_installer()
         self._bind_repo_dir()
 
+        rpm_db_path = subprocess.check_output(['rpm', '-E', '%_dbpath'], universal_newlines=True).rstrip('\n')
+        if not rpm_db_path:
+            self.logger.error("Rpm db path empty...")
+            self.exit_gracefully()
+
         # Initialize rpm DB
-        self.cmd.run(['mkdir', '-p', os.path.join(self.photon_root, "var/lib/rpm")])
-        retval = self.cmd.run(['rpm', '--root', self.photon_root, '--initdb',
-                               '--dbpath', '/var/lib/rpm'])
+        self.cmd.run(['mkdir', '-p', os.path.join(self.photon_root, rpm_db_path[1:])])
+
+        rpm_db_init_cmd = f"rpm --root {self.photon_root} --initdb --dbpath {rpm_db_path}"
+        if self.cmd.checkIfHostRpmNotUsable():
+            rpm_db_init_cmd = f"tdnf install -y rpm && {rpm_db_init_cmd}"
+            retval = self.cmd.run(['docker', 'run', '--ulimit',  'nofile=1024:1024', '--rm',
+                                  '-v', f"{self.photon_root}:{self.photon_root}",
+                                   self.install_config['photon_docker_image'],
+                                   '/bin/sh', '-c', rpm_db_init_cmd])
+        else:
+            retval = self.cmd.run(rpm_db_init_cmd)
+
         if retval != 0:
             self.logger.error("Failed to initialize rpm DB")
             self.exit_gracefully()
@@ -648,7 +662,7 @@ class Installer(object):
                                                     self.working_directory)
         retval = self.cmd.run(tdnf_cmd)
         if retval != 0:
-            retval = self.cmd.run(['docker', 'run',
+            retval = self.cmd.run(['docker', 'run', '--ulimit',  'nofile=1024:1024', '--rm',
                                    '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
                                    '-v', self.working_directory+':'+self.working_directory,
                                    self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])
@@ -955,7 +969,7 @@ class Installer(object):
                 self.logger.error(stderr.decode())
                 stderr = None
                 self.logger.info("Retry 'tdnf install' using docker image")
-                retval = self.cmd.run(['docker', 'run',
+                retval = self.cmd.run(['docker', 'run', '--rm',
                                        '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
                                        '-v', self.working_directory+':'+self.working_directory,
                                        self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])

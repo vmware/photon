@@ -34,14 +34,13 @@ fi
 mkdir -p tmp/wavefront-proxy
 cp ${WAVEFRONT_PROXY_RPM_FILE} tmp/wavefront-proxy/
 pushd ./tmp/wavefront-proxy
-rpm2cpio ${WAVEFRONT_PROXY_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${WAVEFRONT_PROXY_RPM}' | cpio -vid"
+run_cmd "${cmd}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${IMG_NAME} -f Dockerfile.wavefront-proxy .
-docker save -o ${WAVEFRONT_PROXY_TAR} ${IMG_NAME}
-gzip ${WAVEFRONT_PROXY_TAR}
-mv -f ${WAVEFRONT_PROXY_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "Dockerfile.wavefront-proxy" "." \
+                             "${WAVEFRONT_PROXY_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

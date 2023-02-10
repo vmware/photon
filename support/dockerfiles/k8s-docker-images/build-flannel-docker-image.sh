@@ -34,14 +34,13 @@ fi
 mkdir -p tmp/flannel
 cp ${FLANNEL_RPM_FILE} tmp/flannel/
 pushd ./tmp/flannel
-rpm2cpio ${FLANNEL_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${FLANNEL_RPM}' | cpio -vid"
+run_cmd "${cmd}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${IMG_NAME} -f Dockerfile.flannel .
-docker save -o ${FLANNEL_TAR} ${IMG_NAME}
-gzip ${FLANNEL_TAR}
-mv -f ${FLANNEL_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "Dockerfile.flannel" "." \
+                             "${FLANNEL_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

@@ -34,12 +34,13 @@ fi
 mkdir -p tmp
 cp ${K8S_COREDNS_RPM_FILE} tmp
 pushd ./tmp
-rpm2cpio ${K8S_COREDNS_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${K8S_COREDNS_RPM}' | cpio -vid"
+run_cmd "${cmd}"
 popd
 
-docker build --rm -t ${IMG_NAME} -f ./Dockerfile.coredns .
-docker save -o ${K8S_COREDNS_TAR} ${IMG_NAME}
-gzip ${K8S_COREDNS_TAR}
-mv -f ${K8S_COREDNS_TAR}.gz ${STAGE_DIR}/docker_images/
+start_repo_server
+
+create_container_img_archive "${IMG_NAME}" "./Dockerfile.coredns" "." \
+                             "${K8S_COREDNS_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

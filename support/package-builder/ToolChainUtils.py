@@ -167,7 +167,7 @@ class ToolChainUtils(object):
 
         if constants.checkIfHostRpmNotUsable():
             cmd = (
-                f"docker run --rm -i"
+                f"docker run --ulimit nofile=1024:1024 --rm -i"
                 f" -v {constants.prevPublishRPMRepo}:{constants.prevPublishRPMRepo}"
                 f" -v {constants.rpmPath}:{constants.rpmPath}"
                 f" -v {ChrootID}:{ChrootID} {constants.ph_builder_tag} /bin/bash -c \"{cmd}\""

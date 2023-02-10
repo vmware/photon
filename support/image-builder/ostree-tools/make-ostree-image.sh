@@ -8,11 +8,14 @@ if [ "$#" -lt 0 ]; then
   exit 1
 fi
 
-PROGRAM=$0
 SRCROOT=$1
 PH_DOCKER_IMG=$2
 
-cat > ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh << EOF
+STAGE_DIR="${SRCROOT}/stage"
+SCRIPT_PATH="$(dirname "$(realpath ${BASH_SOURCE[0]})")"
+REPODIR=${STAGE_DIR}/ostree-repo/repo
+
+cat > ${SCRIPT_PATH}/mk-ostree-server.sh << EOF
 #!/bin/bash
 
 ROOT=$1
@@ -29,20 +32,21 @@ ostree --repo=${ROOT}/srv/rpm-ostree/repo init --mode=archive-z2
 rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json
 EOF
 
-chmod +x ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh
+chmod +x ${SCRIPT_PATH}/mk-ostree-server.sh
 
-rm -rf ${SRCROOT}/stage/ostree-repo
-mkdir -p ${SRCROOT}/stage/ostree-repo
+rm -rf ${STAGE_DIR}/ostree-repo
+mkdir -p ${STAGE_DIR}/ostree-repo
 
-sudo docker run --privileged -v ${SRCROOT}:/photon -v ${SRCROOT}/stage/RPMS:/RPMS \
-  -v ${SRCROOT}/stage/ostree-repo:/srv/rpm-ostree \
+docker run --ulimit nofile=1024:1024 --rm --privileged \
+  -v ${SRCROOT}:/photon \
+  -v ${STAGE_DIR}/RPMS:/RPMS \
+  -v ${STAGE_DIR}/ostree-repo:/srv/rpm-ostree \
   -w="/photon/support/image-builder/ostree-tools/" \
   ${PH_DOCKER_IMG} ./mk-ostree-server.sh /
 
-REPODIR=${SRCROOT}/stage/ostree-repo/repo
 if [ -d "$REPODIR" ]; then
-  tar -zcf ${SRCROOT}/stage/ostree-repo.tar.gz -C ${REPODIR} .
+  tar -zcf ${STAGE_DIR}/ostree-repo.tar.gz -C ${REPODIR} .
 fi
 
-sudo rm -rf ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh \
-             ${SRCROOT}/stage/ostree-repo
+rm -rf ${SCRIPT_PATH}/mk-ostree-server.sh \
+       ${STAGE_DIR}/ostree-repo

@@ -34,12 +34,13 @@ fi
 mkdir -p tmp/k8smetserv
 cp ${K8S_MET_SERV_RPM_FILE} tmp/k8smetserv/
 pushd ./tmp/k8smetserv
-rpm2cpio ${K8S_MET_SERV_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${K8S_MET_SERV_RPM}' | cpio -vid"
+run_cmd "${cmd}"
 popd
 
-docker build --rm -t ${IMG_NAME} -f ./Dockerfile.metrics-server .
-docker save -o ${K8S_MET_SERV_TAR} ${IMG_NAME}
-gzip ${K8S_MET_SERV_TAR}
-mv -f ${K8S_MET_SERV_TAR}.gz ${STAGE_DIR}/docker_images/
+start_repo_server
+
+create_container_img_archive "${IMG_NAME}" "./Dockerfile.metrics-server" "." \
+                             "${K8S_MET_SERV_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

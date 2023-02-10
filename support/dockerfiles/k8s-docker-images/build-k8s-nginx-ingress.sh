@@ -34,14 +34,13 @@ fi
 mkdir -p tmp/nginxinc
 cp ${NGINX_INC_RPM_FILE} tmp/nginxinc/
 pushd ./tmp/nginxinc
-rpm2cpio ${NGINX_INC_RPM} | cpio -vid
+cmd="cd '${PWD}' && rpm2cpio '${NGINX_INC_RPM}' | cpio -vid"
+run_cmd "${cmd}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${IMG_NAME} -f Dockerfile.nginx-ingress .
-docker save -o ${NGINX_INC_TAR} ${IMG_NAME}
-gzip ${NGINX_INC_TAR}
-mv -f ${NGINX_INC_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "Dockerfile.nginx-ingress" "." \
+                             "${NGINX_INC_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

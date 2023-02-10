@@ -1,13 +1,17 @@
 #!/bin/bash
 
-cd /lib/systemd/system/multi-user.target.wants/
+pushd /lib/systemd/system/multi-user.target.wants/
 
 # Create links in multi-user.target to auto-start these scripts and services.
-for i in ../google*; do  ln -s $i `basename $i`; done
+for i in ../google*; do
+  ln -s $i $(basename $i)
+done
 # for i in ../kube*; do  ln -s $i `basename $i`; done
 
 ln -s ../ntpd.service ntpd.service
 ln -s ../docker.service docker.service
+
+popd
 
 # Update /etc/hosts file with GCE values
 echo "169.254.169.254 metadata.google.internal metadata" >> /etc/hosts
@@ -16,7 +20,6 @@ echo "169.254.169.254 metadata.google.internal metadata" >> /etc/hosts
 sed -i -e "/server/d" /etc/ntp.conf
 echo "server metadata.google.internal iburst" >> /etc/ntp.conf
 echo "server 169.254.169.254" >> /etc/ntp.conf
-
 
 # Set UTC timezone
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
@@ -48,7 +51,6 @@ echo "X11Forwarding no" >> /etc/ssh/sshd_config
 echo "ClientAliveInterval 420" >> /etc/ssh/sshd_config
 echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
 echo "UsePAM yes" >> /etc/ssh/sshd_config
-
 
 # ssh client config
 # Override old values
@@ -84,7 +86,7 @@ cat > /usr/bin/gcloud << "EOF"
 docker inspect google/cloud-sdk &> /dev/null
 
 if [ $? == 1 ]; then
-        docker pull google/cloud-sdk &> /dev/null
+  docker pull google/cloud-sdk &> /dev/null
 fi
 
 docker run --rm -it google/cloud-sdk gcloud $*
@@ -94,13 +96,13 @@ cat > /usr/bin/gsutil << "EOF"
 docker inspect google/cloud-sdk &> /dev/null
 
 if [ $? == 1 ]; then
-        docker pull google/cloud-sdk &> /dev/null
+  docker pull google/cloud-sdk &> /dev/null
 fi
 
 docker run --rm -it google/cloud-sdk gsutil $*
 EOF
 
-chmod a+x /usr/bin/gcloud
-chmod a+x /usr/bin/gsutil
+chmod a+x /usr/bin/gcloud \
+          /usr/bin/gsutil
 
 sed -i 's/$photon_cmdline $systemd_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0,38400n8/' /boot/grub/grub.cfg

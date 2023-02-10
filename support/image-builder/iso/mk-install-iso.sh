@@ -61,8 +61,8 @@ fi
 
 TDNF_CMD="tdnf install -y --releasever ${PHOTON_RELEASE_VERSION} --installroot $INITRD --rpmverbosity error -c ${WORKINGDIR}/tdnf.conf $PACKAGES"
 
-# run host's tdnf, if fails - try one from photon:latest docker image
-$TDNF_CMD || docker run --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
+# Run host's tdnf, if fails - try one from photon:latest docker image
+$TDNF_CMD || docker run --ulimit nofile=1024:1024 --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 

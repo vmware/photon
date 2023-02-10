@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set +u
+[ -n "$_DK_COMM_SH_" ] && return || readonly _DK_COMM_SH_=1
+set -u
+
 COMM_DBG=0
 
 cleanup_repo()
@@ -32,7 +36,7 @@ start_repo_server()
   fi
 
   if [ $COMM_DBG -eq 0 ]; then
-    python3 -m http.server --bind ${IFACE_IP} ${PORT} 1>/dev/null &
+    python3 -m http.server --bind ${IFACE_IP} ${PORT} &>/dev/null &
   else
     python3 -m http.server --bind ${IFACE_IP} ${PORT} &
   fi
@@ -65,6 +69,39 @@ start_repo_server()
       exit 1
     fi
   done
+}
+
+run_cmd()
+{
+  local cmd="$1"
+  eval "${cmd}"
+}
+
+docker_build()
+{
+  local img_name="$1"
+  local docker_fn="$2"
+  local path="$3"
+
+  DOCKER_BUILDKIT=0 \
+    docker build --ulimit nofile=1024:1024 --rm -t \
+      "${img_name}" -f "${docker_fn}" "${path}"
+}
+
+create_container_img_archive()
+{
+  local img_name="$1"
+  local docker_fn="$2"
+  local path="$3"
+  local tar_name="$4"
+  local dest_path="$5"
+
+  docker_build "${img_name}" "${docker_fn}" "${path}"
+
+  docker save -o "${tar_name}" "${img_name}"
+
+  gzip -9 "${tar_name}"
+  mv -f "${tar_name}.gz" "${dest_path}"
 }
 
 get_spec_ver()

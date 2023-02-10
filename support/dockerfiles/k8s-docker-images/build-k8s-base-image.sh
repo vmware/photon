@@ -6,6 +6,8 @@ DIST_VER=$1
 BUILD_NUM=$2
 STAGE_DIR=$3
 
+source common.sh
+
 # Base docker image for kubernetes containers
 PHOTON_ROOTFS_FILE=${STAGE_DIR}/photon-rootfs-${DIST_VER}-${BUILD_NUM}.tar.gz
 K8S_BASE_IMG_NAME=k8s-base-image:${DIST_VER}
@@ -25,7 +27,7 @@ mkdir -p tmp/k8sbase
 cp ${PHOTON_ROOTFS_FILE} tmp/k8sbase/photon-rootfs-${DIST_VER}.tar.gz
 cp Dockerfile.k8sbase tmp/k8sbase/
 pushd ./tmp/k8sbase
-docker build --rm -t ${K8S_BASE_IMG_NAME} -f Dockerfile.k8sbase .
+docker_build "${K8S_BASE_IMG_NAME}" "Dockerfile.k8sbase" "."
 popd
 
 rm -rf ./tmp

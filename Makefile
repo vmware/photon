@@ -136,6 +136,7 @@ packages-minimal: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURC
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
+	$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 
 packages-rt: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building minimal RPMS for Real Time..."
@@ -159,6 +160,7 @@ packages-rt: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
+	$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 
 packages-initrd: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all initrd package RPMS..."
@@ -182,6 +184,7 @@ packages-initrd: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCE
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
+	$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 
 packages: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files generate-dep-lists
 	@echo "Building all RPMS..."
@@ -236,6 +239,7 @@ packages-docker: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLI
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
+	$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 
 updated-packages: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
@@ -362,7 +366,7 @@ all: check-tools iso photon-docker-image k8s-docker-images all-images src-iso
 iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon Full ISO..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
-	sudo $(PHOTON_IMAGE_BUILDER) \
+	$(PHOTON_IMAGE_BUILDER) \
 		--iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
 		--debug-iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
@@ -377,10 +381,9 @@ iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 
 minimal-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-minimal packages-initrd
 	@echo "Building Photon Minimal ISO..."
-	@$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 	@$(CP) -f $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) $(PHOTON_GENERATED_DATA_DIR)/
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
-	sudo $(PHOTON_IMAGE_BUILDER) \
+	$(PHOTON_IMAGE_BUILDER) \
 		--iso-path $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUM).iso \
 		--debug-iso-path $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
@@ -396,10 +399,9 @@ minimal-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-minimal p
 
 rt-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-rt packages-initrd
 	@echo "Building Photon Real Time ISO..."
-	@$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR)
 	@$(CP) -f $(PHOTON_DATA_DIR)/$(RT_PACKAGE_LIST_FILE) $(PHOTON_GENERATED_DATA_DIR)/
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
-	sudo $(PHOTON_IMAGE_BUILDER) \
+	$(PHOTON_IMAGE_BUILDER) \
 		--iso-path $(PHOTON_STAGE)/photon-rt-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUM).iso \
 		--debug-iso-path $(PHOTON_STAGE)/photon-rt-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
@@ -416,7 +418,7 @@ rt-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-rt packages-in
 src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
-	sudo $(PHOTON_IMAGE_BUILDER) \
+	$(PHOTON_IMAGE_BUILDER) \
 		--src-iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
 		--log-level $(LOGLEVEL) \
@@ -490,9 +492,10 @@ photon-docker-image: check-tools $(PHOTON_PACKAGES)
 	@if [ -f $(PHOTON_STAGE)/photon-rootfs-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).tar.gz ]; then \
 		echo "Photon docker image already present, not creating again..."; \
 	else \
-		$(PHOTON_REPO_TOOL) $(PHOTON_REPO_TOOL_OPT) $(PHOTON_RPMS_DIR) && \
-		sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon && \
-		sudo docker run \
+		DOCKER_BUILDKIT=0 \
+                docker build --ulimit nofile=1024:1024 --no-cache --tag photon-build ./support/dockerfiles/photon && \
+		docker run \
+			--ulimit nofile=1024:1024 \
 			--rm \
 			--privileged \
 			--net=host \
@@ -652,7 +655,7 @@ check-sanity:
 	@echo ""
 
 install-photon-docker-image: photon-docker-image
-	sudo docker build -t photon:tdnf .
+	docker build -t photon:tdnf .
 #__________________________________________________________________________________
 
 # Spec file checker and utilities
