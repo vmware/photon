@@ -132,14 +132,14 @@ class Chroot(Sandbox):
         for mountpoint in listmountpoints:
             cmd = f"umount {mountpoint}"
             process = subprocess.Popen(f"{cmd} && sync && sync && sync",
-                                       shell=True,
+                                       shell=True, executable="/bin/bash",
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
             if process.wait():
                 # Try unmount with lazy umount
                 cmd = f"umount -l {mountpoint}"
                 process = subprocess.Popen(f"{cmd} && sync && sync && sync",
-                                           shell=True,
+                                           shell=True, executable="/bin/bash",
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE)
                 if process.wait():
@@ -149,7 +149,8 @@ class Chroot(Sandbox):
         if not chrootPath.endswith("/"):
             chrootPath += "/"
         cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
-        process = subprocess.Popen(f"{cmd}", shell=True,
+        process = subprocess.Popen(f"{cmd}",
+                                   shell=True, executable="/bin/bash",
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
         if process.wait():

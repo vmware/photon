@@ -8,11 +8,13 @@ import subprocess
 import uuid
 import sys
 import signal
+
 from argparse import ArgumentParser
 from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
+
 
 class DistributedBuilder:
 
@@ -35,101 +37,102 @@ class DistributedBuilder:
     def getBuildGuid(self):
          guid = str(uuid.uuid4()).split("-")[1]
          guid = guid.lower()
-         self.logger.info("guid: %s"%guid)
+         self.logger.info(f"guid: {guid}")
          return guid
 
     def createPersistentVolume(self):
-        with open(os.path.join(os.path.dirname(__file__), "yaml/persistentVolume.yaml"), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), "yaml/persistentVolume.yaml"), "r") as f:
             for pvFile in yaml.safe_load_all(f):
-                pvFile['metadata']['name'] += "-" + self.buildGuid
-                pvFile['metadata']['labels']['storage-tier'] += "-" + self.buildGuid
-                pvFile['spec']['nfs']['server'] = self.distributedBuildConfig["nfs-server-ip"]
-                if 'nfspod' in pvFile['metadata']['name']:
-                    pvFile['spec']['nfs']['path'] = self.distributedBuildConfig["nfs-server-path"]
+                pvFile["metadata"]["name"] += f"-{self.buildGuid}"
+                pvFile["metadata"]["labels"]["storage-tier"] += f"-{self.buildGuid}"
+                pvFile["spec"]["nfs"]["server"] = self.distributedBuildConfig["nfs-server-ip"]
+                if "nfspod" in pvFile["metadata"]["name"]:
+                    pvFile["spec"]["nfs"]["path"] = self.distributedBuildConfig["nfs-server-path"]
                 else:
-                    pvFile['spec']['nfs']['path'] = self.distributedBuildConfig["nfs-server-path"] + "/build-" + self.buildGuid + pvFile['spec']['nfs']['path']
+                    pvFile["spec"]["nfs"]["path"] = self.distributedBuildConfig["nfs-server-path"] + f"/build-{self.buildGuid}" + pvFile["spec"]["nfs"]["path"]
 
                 try:
                     resp = self.coreV1ApiInstance.create_persistent_volume(body=pvFile)
-                    self.logger.info("Created pv %s"%resp.metadata.name)
+                    self.logger.info(f"Created pv {resp.metadata.name}")
                 except client.rest.ApiException as e:
-                    self.logger.error("Exception when calling CoreV1Api->create_persistent_volume: %s\n" % e.reason)
+                    self.logger.error(f"Exception when calling CoreV1Api->create_persistent_volume: {e.reason}\n")
                     self.clean()
                     sys.exit(1)
 
     def createPersistentVolumeClaim(self):
-        with open(os.path.join(os.path.dirname(__file__), "yaml/persistentVolumeClaim.yaml"), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), "yaml/persistentVolumeClaim.yaml"), "r") as f:
             for pvcFile in yaml.safe_load_all(f):
-                pvcFile['metadata']['name'] += "-" + self.buildGuid
-                pvcFile['spec']['selector']['matchLabels']['storage-tier'] += "-" + self.buildGuid
+                pvcFile["metadata"]["name"] += f"-{self.buildGuid}"
+                pvcFile["spec"]["selector"]["matchLabels"]["storage-tier"] += f"-{self.buildGuid}"
                 try:
-                    resp = self.coreV1ApiInstance.create_namespaced_persistent_volume_claim(namespace='default', body=pvcFile)
-                    self.logger.info("created pvc %s"%resp.metadata.name)
+                    resp = self.coreV1ApiInstance.create_namespaced_persistent_volume_claim(namespace="default", body=pvcFile)
+                    self.logger.info(f"Created pvc {resp.metadata.name}")
                 except client.rest.ApiException as e:
-                    self.logger.error("Exception when calling CoreV1Api->create_namespaced_persistent_volume_claim: %s\n" % e.reason)
+                    self.logger.error(f"Exception when calling CoreV1Api->create_namespaced_persistent_volume_claim: {e.reason}\n")
                     self.clean()
                     sys.exit(1)
 
     def createNfsPod(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/nfspod.yaml")) as f:
             nfspodFile = yaml.safe_load(f)
-            nfspodFile['metadata']['name'] += "-" + self.buildGuid
-            nfspodFile['spec']['containers'][0]['workingDir'] += "/build-" + self.buildGuid
-            nfspodFile['spec']['volumes'][0]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
+            nfspodFile["metadata"]["name"] += f"-{self.buildGuid}"
+            nfspodFile["spec"]["containers"][0]["workingDir"] += f"/build-{self.buildGuid}"
+            nfspodFile["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] += f"-{self.buildGuid}"
             try:
-                resp = self.coreV1ApiInstance.create_namespaced_pod(namespace='default', body=nfspodFile)
-                self.logger.info("created nfspod %s"%resp.metadata.name)
+                resp = self.coreV1ApiInstance.create_namespaced_pod(namespace="default", body=nfspodFile)
+                self.logger.info("Created nfspod {resp.metadata.name}")
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling CoreV1Api->create_namespaced_pod: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling CoreV1Api->create_namespaced_pod: {e.reason}\n")
                 self.clean()
                 sys.exit(1)
 
     def createMasterService(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/masterService.yaml")) as f:
             masterServiceFile = yaml.safe_load(f)
-            masterServiceFile['metadata']['name'] += "-" + self.buildGuid
-            masterServiceFile['spec']['selector']['app'] += "-" + self.buildGuid
+            masterServiceFile["metadata"]["name"] += f"-{self.buildGuid}"
+            masterServiceFile["spec"]["selector"]["app"] += f"-{self.buildGuid}"
             try:
-                resp = self.coreV1ApiInstance.create_namespaced_service(namespace='default', body=masterServiceFile)
-                self.logger.info("created pvc %s"%resp.metadata.name)
+                resp = self.coreV1ApiInstance.create_namespaced_service(namespace="default", body=masterServiceFile)
+                self.logger.info(f"Created pvc {resp.metadata.name}")
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling CoreV1Api->create_namespaced_service: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling CoreV1Api->create_namespaced_service: {e.reason}\n")
                 self.clean()
                 sys.exit(1)
 
     def createMasterJob(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/master.yaml")) as f:
             masterFile = yaml.safe_load(f)
-            masterFile['metadata']['name'] += "-" + self.buildGuid
-            masterFile['spec']['template']['metadata']['labels']['app'] += "-" + self.buildGuid
-            masterFile['spec']['template']['spec']['volumes'][0]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            str = masterFile['spec']['template']['spec']['containers'][0]['args'][1]
-            masterFile['spec']['template']['spec']['containers'][0]['args'][1] = str + " && " + self.distributedBuildConfig["command"]
+            masterFile["metadata"]["name"] += f"-{self.buildGuid}"
+            masterFile["spec"]["template"]["metadata"]["labels"]["app"] += f"-{self.buildGuid}"
+            masterFile["spec"]["template"]["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] += f"-{self.buildGuid}"
+            tmp_str = masterFile["spec"]["template"]["spec"]["containers"][0]["args"][1]
+            masterFile["spec"]["template"]["spec"]["containers"][0]["args"][1] = f"{tmp_str} && " + self.distributedBuildConfig["command"]
             try:
                 resp = self.batchV1ApiInstance.create_namespaced_job(namespace="default", body=masterFile)
-                self.logger.info("Created Job %s"%resp.metadata.name)
+                self.logger.info(f"Created Job {resp.metadata.name}")
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling BatchV1Api->create_namespaced_job: {e.reason}\n")
                 self.clean()
                 sys.exit(1)
 
     def createDeployment(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/worker.yaml")) as f:
             workerFile = yaml.safe_load(f)
-            workerFile['metadata']['name'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['containers'][0]['env'][0]['value'] = self.buildGuid.upper()
-            workerFile['spec']['template']['spec']['volumes'][0]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['volumes'][1]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['volumes'][2]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['volumes'][3]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['volumes'][4]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['template']['spec']['volumes'][5]['persistentVolumeClaim']['claimName'] += "-" + self.buildGuid
-            workerFile['spec']['replicas'] = self.distributedBuildConfig["pods"]
+            workerFile["metadata"]["name"] += "-" + self.buildGuid
+            workerFile["spec"]["template"]["spec"]["containers"][0]["env"][0]["value"] = self.buildGuid.upper()
+            guid = f"-{self.buildGuid}"
+            workerFile["spec"]["template"]["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["template"]["spec"]["volumes"][1]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["template"]["spec"]["volumes"][2]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["template"]["spec"]["volumes"][3]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["template"]["spec"]["volumes"][4]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["template"]["spec"]["volumes"][5]["persistentVolumeClaim"]["claimName"] += guid
+            workerFile["spec"]["replicas"] = self.distributedBuildConfig["pods"]
             try:
                 resp = self.AppsV1ApiInstance.create_namespaced_deployment(body=workerFile, namespace="default")
-                self.logger.info("Created deployment %s"%resp.metadata.name)
+                self.logger.info(f"Created deployment {resp.metadata.name}")
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling AppsV1Api->create_namespaced_deployment: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling AppsV1Api->create_namespaced_deployment: {e.reason}\n")
                 self.clean()
                 sys.exit(1)
 
@@ -138,77 +141,80 @@ class DistributedBuilder:
         for name in pvNames:
             try:
                 resp = self.coreV1ApiInstance.delete_persistent_volume(name + "-" + self.buildGuid)
-                self.logger.info("Deleted pv %s"%name)
+                self.logger.info(f"Deleted pv {name}")
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling CoreV1Api->delete_persistent_volume: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling CoreV1Api->delete_persistent_volume: {e.reason}")
 
     def deletePersistentVolumeClaim(self):
         pvcNames = ["builder", "logs", "specs", "rpms", "publishrpms", "publishxrpms", "photon", "nfspod"]
         for name in pvcNames:
             try:
-                resp = self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(name + "-" + self.buildGuid, namespace="default")
-                self.logger.info("Deleted pvc %s"%name)
+                resp = self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(f"{name}-{self.buildGuid}", namespace="default")
+                self.logger.info(f"Deleted pvc {name"})
             except client.rest.ApiException as e:
-                self.logger.error("Exception when calling CoreV1Api->delete_namespaced_persistent_volume_claim: %s\n" % e.reason)
+                self.logger.error(f"Exception when calling CoreV1Api->delete_namespaced_persistent_volume_claim: {e.reason}\n")
 
     def deleteMasterJob(self):
        try:
-           job = "master" + "-" + self.buildGuid
+           job = f"master-{self.buildGuid}"
            resp = self.batchV1ApiInstance.delete_namespaced_job(name=job, namespace="default", propagation_policy="Foreground", grace_period_seconds=10)
            self.logger.info("deleted job master")
        except client.rest.ApiException as e:
-           self.logger.error("Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e.reason)
+           self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_job: {e.reason}")
 
     def deleteBuild(self):
         self.logger.info("Removing Build folder ...")
-        pod = "nfspod" + "-" + self.buildGuid
-        cmd = ['/bin/sh', '-c', 'rm -rf ' + '/root/build-' + self.buildGuid]
+        pod = f"nfspod-{self.buildGuid}"
+        cmd = ["/bin/bash", "-c", f"rm -rf /root/build-{self.buildGuid}"]
         try:
-            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, 'default', command=cmd, \
+            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, "default", command=cmd, \
                    stderr=True, stdin=False, stdout=True, tty=False, _preload_content=False)
             resp.run_forever(timeout=10)
             self.logger.info("Deleted Build folder Successfully...")
         except client.rest.ApiException as e:
-            self.logger.error("Exception when calling CoreV1Api->connect_namespaced_pod_exec: %s\n" % e.reason)
+            self.logger.error(f"Exception when calling CoreV1Api->connect_namespaced_pod_exec: {e.reason}")
 
     def deleteNfsPod(self):
         try:
-            pod = "nfspod" + "-" + self.buildGuid
+            pod = f"nfspod-{self.buildGuid}"
             resp = self.coreV1ApiInstance.delete_namespaced_pod(name=pod, namespace="default")
             self.logger.info("deleted nfs pod")
         except client.rest.ApiException as e:
-            self.logger.error("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e.reason)
+            self.logger.error(f"Exception when calling CoreV1Api->delete_namespaced_pod: {e.reason}")
 
     def deleteMasterService(self):
        try:
-           service = "master-service" + "-" + self.buildGuid
+           service = f"master-service-{self.buildGuid}"
            resp = self.coreV1ApiInstance.delete_namespaced_service(name=service, namespace="default")
            self.logger.info("deleted master service")
        except client.rest.ApiException as e:
-           self.logger.error("Exception when calling BatchV1Api->delete_namespaced_service %s\n" % e.reason)
+           self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_service {e.reason}\n")
 
     def deleteDeployment(self):
         try:
-            deploy = "worker" + "-" + self.buildGuid
+            deploy = f"worker-{self.buildGuid}"
             resp = self.AppsV1ApiInstance.delete_namespaced_deployment(name = deploy, namespace="default", grace_period_seconds=15)
             self.logger.info("deleted worker deployment ")
         except client.rest.ApiException as e:
-            self.logger.error("Exception when calling AppsV1Api->delete_namespaced_deployment: %s\n" % e.reason)
+            self.logger.error(f"Exception when calling AppsV1Api->delete_namespaced_deployment: {e.reason}\n")
 
     def copyToNfs(self):
-        podName = "nfspod" + "-" + self.buildGuid
+        podName = f"nfspod-{self.buildGuid}"
         while True:
-            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace='default')
+            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace="default")
             status = resp.status.phase
-            if status == 'Running':
+            if status == "Running":
                 break
 
-        cmd = "kubectl cp " + str( os.path.join(os.path.dirname(__file__)).replace('support/package-builder', '')) \
-               + " " + podName + ":/root/" + "build-" + self.buildGuid + "/photon"
-        self.logger.info("%s"%cmd)
-        process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        retval = process.wait()
-        if retval == 0:
+        cmd = "kubectl cp "
+        cmd += str(os.path.join(os.path.dirname(__file__)).replace("support/package-builder", ""))
+        cmd += f" {podName}:/root/build-{self.buildGuid}/photon"
+        self.logger.info(cmd)
+        process = subprocess.Popen(cmd,
+                                   shell=True, executable="/bin/bash",
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT)
+        if process.wait():
             self.logger.info("kubectl cp successfull.")
         else:
             self.logger.error("kubectl cp failed.")
@@ -216,18 +222,21 @@ class DistributedBuilder:
             sys.exit(1)
 
     def copyFromNfs(self):
-        podName = "nfspod" + "-" + self.buildGuid
+        podName = f"nfspod-{self.buildGuid}"
         while True:
-            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace='default')
+            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace="default")
             status = resp.status.phase
-            if status == 'Running':
+            if status == "Running":
                 break
 
-        cmd = "kubectl cp" + " " + podName + ":/root/" + "build-" + self.buildGuid + "/photon/stage" + " " + str( os.path.join(os.path.dirname(__file__)).replace('support/package-builder', '')) + "stage"
-        self.logger.info("%s"%cmd)
-        process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        retval = process.wait()
-        if retval == 0:
+        cmd = f"kubectl cp {podName}:/root/build-{self.buildGuid}/photon/stage "
+        cmd += str(os.path.join(os.path.dirname(__file__)).replace("support/package-builder", "")) + "stage"
+        self.logger.info(cmd)
+        process = subprocess.Popen(cmd,
+                                   shell=True, executable="/bin/bash",
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT)
+        if process.wait():
             self.logger.info("kubectl cp successfull.")
         else:
             self.logger.error("kubectl cp failed.")
@@ -236,9 +245,9 @@ class DistributedBuilder:
 
     def monitorJob(self):
         w = watch.Watch()
-        for job in w.stream(self.batchV1ApiInstance.list_namespaced_job, namespace='default', timeout_seconds=21600):
-            if "master" in job['object'].metadata.name:
-                name = job['object']
+        for job in w.stream(self.batchV1ApiInstance.list_namespaced_job, namespace="default", timeout_seconds=21600):
+            if "master" in job["object"].metadata.name:
+                name = job["object"]
                 self.logger.info("Checking job status ...")
                 self.logger.debug(name.status)
                 if name.status.succeeded or name.status.failed:
@@ -247,19 +256,19 @@ class DistributedBuilder:
                     break
 
     def getLogs(self):
-        label = "app=master" + "-" + self.buildGuid
-        resp = self.coreV1ApiInstance.list_namespaced_pod(label_selector = label, namespace='default')
+        label = f"app=master-{self.buildGuid}"
+        resp = self.coreV1ApiInstance.list_namespaced_pod(label_selector = label, namespace="default")
         podName = resp.items[0].metadata.name
-        status = ''
+        status = ""
         while True:
-            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace='default')
+            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace="default")
             status = resp.status.phase
-            if status == 'Running' or status == 'Succeeded':
+            if status == "Running" or status == "Succeeded":
                 break
 
         w = watch.Watch()
         try:
-            for line in w.stream(self.coreV1ApiInstance.read_namespaced_pod_log, name = podName, namespace='default'):
+            for line in w.stream(self.coreV1ApiInstance.read_namespaced_pod_log, name = podName, namespace="default"):
                 self.logger.info(line)
         except Exception as e:
             self.logger.error(e)
@@ -294,6 +303,7 @@ class DistributedBuilder:
         self.createMasterJob()
         self.createDeployment()
 
+
 def main(distributedBuildConfig):
     distributedBuilder = DistributedBuilder(distributedBuildConfig)
     signal.signal(signal.SIGINT, distributedBuilder.signal_handler)
@@ -302,6 +312,7 @@ def main(distributedBuildConfig):
     distributedBuilder.monitorJob()
     distributedBuilder.copyFromNfs()
     distributedBuilder.clean()
+
 
 if __name__ == "__main__":
 
@@ -313,6 +324,8 @@ if __name__ == "__main__":
     options = parser.parse_args()
     constants.setLogPath(options.logPath)
     constants.setLogLevel(options.logLevel)
-    with open(os.path.join(os.path.dirname(__file__), options.distributedBuildFile), 'r') as configFile:
+
+    with open(os.path.join(os.path.dirname(__file__), options.distributedBuildFile), "r") as configFile:
         distributedBuildConfig = json.load(configFile)
+
     main(distributedBuildConfig)

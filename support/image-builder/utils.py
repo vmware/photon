@@ -54,7 +54,10 @@ class Utils(object):
         # use debug parameter for now, implement logging for image builder later
         if debug:
             print(cmd)
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd,
+                             shell=True, executable="/bin/bash",
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
         output, err = p.communicate()
         rc = p.returncode
         if not ignore_errors:
