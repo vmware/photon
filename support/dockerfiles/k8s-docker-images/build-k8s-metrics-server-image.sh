@@ -36,18 +36,12 @@ mkdir -p tmp/k8smetserv
 cp ${K8S_MET_SERV_RPM_FILE} tmp/k8smetserv/
 pushd ./tmp/k8smetserv
 cmd="cd '${PWD}' && rpm2cpio '${K8S_MET_SERV_RPM}' | cpio -vid"
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${IMG_NAME} -f ./Dockerfile.metrics-server .
-docker save -o ${K8S_MET_SERV_TAR} ${IMG_NAME}
-gzip ${K8S_MET_SERV_TAR}
-mv -f ${K8S_MET_SERV_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "./Dockerfile.metrics-server" "." \
+                             "${K8S_MET_SERV_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

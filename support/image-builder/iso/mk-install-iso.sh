@@ -73,7 +73,7 @@ TDNF_CMD="tdnf install -qy \
           ${PACKAGES}"
 
 # Run host's tdnf, if fails - try one from photon:latest docker image
-$TDNF_CMD || docker run --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
+$TDNF_CMD || docker run --ulimit nofile=1024:1024 --rm -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE /bin/bash -c "$TDNF_CMD"
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 

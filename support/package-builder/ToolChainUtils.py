@@ -143,7 +143,7 @@ class ToolChainUtils(object):
             if os.geteuid():
                 cmd = cmd + "; chown -R {0}:{1} {ChrootID}".format(os.geteuid(), os.getegid())
             cmd = (
-                f"docker run --rm -i"
+                f"docker run --ulimit nofile=1024:1024 --rm -i"
                 f" -v {constants.prevPublishRPMRepo}:{constants.prevPublishRPMRepo}"
                 f" -v {constants.inputRPMSPath}:{constants.inputRPMSPath}"
                 f" -v {constants.rpmPath}:{constants.rpmPath}"

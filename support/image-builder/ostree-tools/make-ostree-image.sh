@@ -34,7 +34,7 @@ chmod +x ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh
 rm -rf ${STAGE_DIR}/ostree-repo
 mkdir -p ${STAGE_DIR}/ostree-repo
 
-sudo docker run --privileged -v ${SRCROOT}:/photon \
+sudo docker run --ulimit nofile=1024:1024 --rm --privileged -v ${SRCROOT}:/photon \
       -v ${STAGE_DIR}/RPMS:/RPMS \
       -v ${STAGE_DIR}/ostree-repo:/srv/rpm-ostree \
       -w="/photon/support/image-builder/ostree-tools/" \

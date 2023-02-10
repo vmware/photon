@@ -37,11 +37,7 @@ mkdir -p tmp/k8dns
 cp ${K8S_DNS_RPM_FILE} tmp/k8dns/
 pushd ./tmp/k8dns
 cmd="cd '${PWD}' && rpm2cpio '${K8S_DNS_RPM}' | cpio -vid"
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 popd
 
 start_repo_server
@@ -49,10 +45,8 @@ start_repo_server
 for K8S_BIN in ${K8S_DNS_BINS[*]}; do
   IMG_NAME=vmware/photon-${DIST_VER}-k8s-dns-${K8S_BIN}-amd64:${K8S_DNS_VER}
   K8S_TAR_NAME=k8s-dns-${K8S_BIN}-${K8S_DNS_VER_REL}.tar
-  docker build --rm -t ${IMG_NAME} -f ./Dockerfile.${K8S_BIN} .
-  docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
-  gzip ${K8S_TAR_NAME}
-  mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/docker_images/
+  create_container_img_archive "${IMG_NAME}" "./Dockerfile.${K8S_BIN}" "." \
+                               "${K8S_TAR_NAME}" "${STAGE_DIR}/docker_images/"
 done
 
 rm -rf ./tmp
