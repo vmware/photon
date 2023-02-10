@@ -26,16 +26,23 @@ class CommandUtils:
     @staticmethod
     def runCommandInShell(cmd, logfile=None, logfn=None):
         if logfn:
-            process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            process = subprocess.Popen(cmd,
+                                       shell=True, executable="/bin/bash",
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
+
             logfn(process.communicate()[0].decode())
         else:
             if logfile is None:
                 logfile = os.devnull
             with open(logfile, "w") as f:
-                process = subprocess.Popen("%s" %cmd, shell=True, stdout=f, stderr=f)
+                process = subprocess.Popen(cmd,
+                                           shell=True, executable="/bin/bash",
+                                           stdout=f, stderr=f)
         return process.wait()
 
     @staticmethod
     def runShellCmd(cmd):
-        if subprocess.Popen([cmd], shell=True).wait():
+        if subprocess.Popen([cmd],
+                            shell=True, executable="/bin/bash").wait():
             raise Exception(f"ERROR: {cmd} failed")

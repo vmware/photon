@@ -140,17 +140,17 @@ class Chroot(Sandbox):
         if listmountpoints is None:
             return True
         for mountpoint in listmountpoints:
-            cmd = "umount " + mountpoint
-            process = subprocess.Popen("%s && sync && sync && sync" % (cmd),
-                                       shell=True,
+            cmd = f"umount {mountpoint}"
+            process = subprocess.Popen(f"{cmd} && sync && sync && sync",
+                                       shell=True, executable="/bin/bash",
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
                 # Try unmount with lazy umount
-                cmd = "umount -l " + mountpoint
-                process = subprocess.Popen("%s && sync && sync && sync" % (cmd),
-                                           shell=True,
+                cmd = f"umount -l {mountpoint}"
+                process = subprocess.Popen(f"{cmd} && sync && sync && sync",
+                                           shell=True, executable="/bin/bash",
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE)
                 retval = process.wait()
@@ -159,9 +159,10 @@ class Chroot(Sandbox):
 
     def _findmountpoints(self, chrootPath):
         if not chrootPath.endswith("/"):
-            chrootPath = chrootPath + "/"
-        cmd = "mount | grep " + chrootPath + " | cut -d' ' -s -f3"
-        process = subprocess.Popen("%s" %cmd, shell=True,
+            chrootPath += "/"
+        cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
+        process = subprocess.Popen(f"{cmd}",
+                                   shell=True, executable="/bin/bash",
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
         retval = process.wait()

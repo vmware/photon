@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+
 import subprocess
 import sys
 
@@ -21,12 +22,12 @@ def cleanUpChroot(chrootPath):
     return True
 
 def removeAllFilesFromChroot(chrootPath):
-    cmd = "rm -rf " + chrootPath
-    process = subprocess.Popen("%s" %cmd, shell=True,
+    cmd = f"rm -rf {chrootPath}"
+    process = subprocess.Popen(cmd,
+                               shell=True, executable="/bin/bash",
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
-    retval = process.wait()
-    if retval != 0:
+    if process.wait():
         print("Unable to remove files from chroot " + chrootPath)
         return False
     return True
@@ -36,11 +37,12 @@ def unmountmountpoints(listmountpoints):
         return True
     result = True
     for mountpoint in listmountpoints:
-        cmd = "umount " + mountpoint
-        process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE,
+        cmd = f"umount {mountpoint}"
+        process = subprocess.Popen(cmd,
+                                   shell=True, executable="/bin/bash",
+                                   stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
+        if process.wait():
             result = False
             print("Unable to unmount " + mountpoint)
             break
@@ -51,13 +53,13 @@ def unmountmountpoints(listmountpoints):
 
 def findmountpoints(chrootPath):
     if not chrootPath.endswith("/"):
-        chrootPath = chrootPath + "/"
-    cmd = "mount | grep " + chrootPath + " | cut -d' ' -s -f3"
-    process = subprocess.Popen("%s" %cmd, shell=True,
+        chrootPath = f"{chrootPath}/"
+    cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
+    process = subprocess.Popen(cmd,
+                               shell=True, executable="/bin/bash",
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
-    retval = process.wait()
-    if retval != 0:
+    if process.wait():
         print("Unable to find mountpoints in chroot")
         return False, None
     mountpoints = process.communicate()[0].decode()
@@ -68,12 +70,14 @@ def findmountpoints(chrootPath):
     listmountpoints = mountpoints.split(" ")
     return True, listmountpoints
 
+
 def sortmountpoints(listmountpoints):
     if listmountpoints is None:
         return True
     sortedmountpoints = listmountpoints
     sorted(sortedmountpoints)
     sortedmountpoints.reverse()
+
 
 def main():
     if len(sys.argv) < 2:
@@ -82,6 +86,7 @@ def main():
     if not cleanUpChroot(sys.argv[1]):
         sys.exit(1)
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

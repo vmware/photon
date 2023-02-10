@@ -603,7 +603,8 @@ class CleanUp:
         )
         command = command.format(ph_path, basecommit)
 
-        with Popen(command, stdout=PIPE, stderr=None, shell=True) as process:
+        with Popen(command, stdout=PIPE, stderr=None,
+                   shell=True, executable="/bin/bash") as process:
             spec_fns = process.communicate()[0].decode("utf-8")
             if process.returncode:
                 raise Exception("Error in clean_stage_for_incremental_build")
@@ -973,7 +974,8 @@ class CheckTools:
             if commit_id:
                 command = "git diff --name-only %s" % commit_id
 
-        with Popen(command, stdout=PIPE, stderr=None, shell=True) as process:
+        with Popen(command, stdout=PIPE, stderr=None,
+                   shell=True, executable="/bin/bash") as process:
             files = process.communicate()[0].decode("utf-8").splitlines()
             if process.returncode:
                 raise Exception("Something went wrong in check_spec_files")
@@ -1008,7 +1010,8 @@ class CheckTools:
             local_hash = photon_installer.__version__.split("+")[1]
 
             remote_hash = "git ls-remote %s HEAD | cut -f1" % url
-            with Popen(remote_hash, stdout=PIPE, stderr=None, shell=True) as p:
+            with Popen(remote_hash, stdout=PIPE, stderr=None,
+                       shell=True, executable="/bin/bash") as p:
                 remote_hash = p.communicate()[0].decode("utf-8")
                 if p.returncode:
                     raise Exception("Something went wrong in check_photon_installer")
@@ -1364,7 +1367,8 @@ def set_default_value_of_config():
         configdict.setdefault(key, {}).setdefault(cfg, None)
 
     key = "photon-build-param"
-    ret = subprocess.check_output(["git rev-parse --short HEAD"], shell=True)
+    ret = subprocess.check_output(["git rev-parse --short HEAD"],
+                                  shell=True, executable="/bin/bash")
     ret = ret.decode("ASCII").rstrip()
     configdict[key]["input-photon-build-number"] = ret
 
