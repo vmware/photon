@@ -3,7 +3,7 @@
 
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
-Version:        6.1.0
+Version:        6.3.0
 Release:        1%{?dist}
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND PSF-2.0
 URL:            https://github.com/ansible-collections/community.general
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ansible-collections/community.general/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=01a32428e97477527b8903b4293eccf9c50aa3e2e7302bc73fac32afb25c1b0400cb080b0a83e692c8be66b7d6661a3533f9d6de544c8f25edcc5356cd65e905
+%define sha512 %{name}-%{version}=33881ae519e6378152cf5ef9d9dcc209bc7e5e218190ba48b61a7635890c6abf5089b8d199e78518d1a06a3e8e0e8c25b5da1d03fc6cbb8929c3bd07cd0798f4
 
 BuildArch: noarch
 
@@ -45,6 +45,8 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
+* Wed Feb 22 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-1
+- Version upgrade to v6.3.0
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1.0-1
 - Automatic Version Bump
 * Fri Nov 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.1-1

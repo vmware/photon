@@ -1,6 +1,6 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.14.1
+Version:        2.14.2
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512 %{name}=609bc51988708245ed7ba18105da86712c34c3f7a58a3e6b47463b9faebf30c5b02c17fbb8ee073c11cf2ed92ddad129ddd6d0abcf4a6d9503e26a9d33470612
+%define sha512 %{name}=46ad59c694bf2aa1fc42d2f3b3074244c8d1d3acb61eb5787bd18d1efe3cc534459fc9c0628a0f60c67bd82c998f8cbbac80babf24258c37ff5ce95c8cf7900d
 
 Source1: tdnf.py
 Source2: macros.ansible
+Source3: ansible_collection.py
 
 BuildArch: noarch
 
@@ -56,6 +57,8 @@ cp -vp %{SOURCE1} lib/%{name}/modules/
 %py3_install
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+install -Dpm0744 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
+touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 
 %files
 %defattr(-, root, root)
@@ -65,8 +68,11 @@ touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %files devel
 %defattr(-, root, root)
 %{_rpmmacrodir}/macros.%{name}
+%{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Wed Feb 22 2023 Nitesh Kumar <kunitesh@vmware.com> 2.14.2-1
+- Version upgrade to v2.14.2
 * Fri Dec 16 2022 Nitesh Kumar <kunitesh@vmware.com> 2.14.1-1
 - Version upgrade to v2.14.1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-2

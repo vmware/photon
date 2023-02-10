@@ -2,7 +2,7 @@
 
 Name:           python3-PyYAML
 Version:        5.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -11,14 +11,14 @@ Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/PyYAML-%{version}.tar.gz
 %define sha512  PyYAML=359c45d843fd839797572efeab121f17b1947647960dfb062f3618f25f71e1a6bc4bab14a1720b6b67f256089d5d48c452ec5419e3130222765c7ca41db11dad
+
 BuildRequires:  libyaml-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  cython3
+
 Requires:       python3-setuptools
 Requires:       python3
-Requires:       python3-libs
 Requires:       libyaml
 
 Provides:       python%{python3_version}dist(pyyaml)
@@ -60,6 +60,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 01 2023 Nitesh Kumar <kunitesh@vmware.com> 5.4.1-2
+- Adding Requires cython3 to build with binding libyaml
+- as needed by ansible-posix v1.5.1
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.4.1-1
 - Update release to compile with python 3.11
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.3.1-1
