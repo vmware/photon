@@ -168,28 +168,18 @@ rpm2cpio '${CALICO_CNI_RPM}' | cpio -vid && \
 rpm2cpio '${K8S_CNI_RPM}' | cpio -vid && \
 rpm2cpio '${CALICO_K8S_POLICY_RPM}' | cpio -vid"
 
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${CALICO_NODE_IMG_NAME} -f Dockerfile.calico-node .
-docker save -o ${CALICO_NODE_TAR} ${CALICO_NODE_IMG_NAME}
-gzip ${CALICO_NODE_TAR}
-mv -f ${CALICO_NODE_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${CALICO_NODE_IMG_NAME}" "Dockerfile.calico-node" "." \
+                             "${CALICO_NODE_TAR}" "${STAGE_DIR}/docker_images/"
 
-docker build --rm -t ${CALICO_CNI_IMG_NAME} -f Dockerfile.calico-cni .
-docker save -o ${CALICO_CNI_TAR} ${CALICO_CNI_IMG_NAME}
-gzip ${CALICO_CNI_TAR}
-mv -f ${CALICO_CNI_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${CALICO_CNI_IMG_NAME}" "Dockerfile.calico-cni" "." \
+                             "${CALICO_CNI_TAR}" "${STAGE_DIR}/docker_images/"
 
-docker build --rm -t ${CALICO_K8S_POLICY_IMG_NAME} -f Dockerfile.calico-k8s-policy .
-docker save -o ${CALICO_K8S_POLICY_TAR} ${CALICO_K8S_POLICY_IMG_NAME}
-gzip ${CALICO_K8S_POLICY_TAR}
-mv -f ${CALICO_K8S_POLICY_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${CALICO_K8S_POLICY_IMG_NAME}" "Dockerfile.calico-k8s-policy" "." \
+                             "${CALICO_K8S_POLICY_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

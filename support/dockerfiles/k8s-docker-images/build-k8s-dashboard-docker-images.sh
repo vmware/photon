@@ -26,7 +26,7 @@ fi
 
 IMG_NAME=vmware/photon-${DIST_VER}-kubernetes-dashboard-amd64:v${K8S_DASH_VER}
 
-IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
+IMG_ID="$(docker images -q ${IMG_NAME} 2> /dev/null)"
 if [[ ! -z "${IMG_ID}" ]]; then
   echo "Removing image ${IMG_NAME}"
   docker rmi -f ${IMG_NAME}
@@ -37,11 +37,7 @@ cp ${K8S_DASH_RPM_FILE} tmp/k8dash/
 
 pushd ./tmp/k8dash
 cmd="cd '${PWD}' && rpm2cpio '${K8S_DASH_RPM}' | cpio -vid"
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 
 mkdir -p img
 
@@ -51,10 +47,8 @@ cp -pr usr/bin/dashboard \
 
 pushd img
 cat Dockerfile
-docker build --rm -t ${IMG_NAME} .
-docker save -o ${K8S_DASH_TAR} ${IMG_NAME}
-gzip ${K8S_DASH_TAR}
-mv -f ${K8S_DASH_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "Dockerfile" "." \
+                             "${K8S_DASH_TAR}" "${STAGE_DIR}/docker_images/"
 popd # img
 popd # tmp/k8dash
 

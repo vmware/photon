@@ -43,20 +43,14 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
 
   pushd ./tmp/k8s
   cmd="cd '${PWD}' && rpm2cpio '${K8S_RPM}' | cpio -vid && rpm2cpio '${K8S_PAUSE_RPM}' | cpio -vid"
-  if ! rpmSupportsZstd; then
-    docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-  else
-    eval "${cmd}"
-  fi
+  run_cmd "${cmd}" "${PH_BUILDER_TAG}"
   popd
 
   for K8S_BIN in ${K8S_BINS[*]}; do
     IMG_NAME=vmware/photon-${DIST_VER}-${K8S_BIN}-amd64:v${K8S_VER}
     K8S_TAR_NAME=${K8S_BIN}-v${K8S_VER_REL}.tar
-    docker build --rm -t ${IMG_NAME} -f ./Dockerfile.${K8S_BIN} .
-    docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
-    gzip ${K8S_TAR_NAME}
-    mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/docker_images/
+    create_container_img_archive "${IMG_NAME}" "./Dockerfile.${K8S_BIN}" "." \
+                                 "${K8S_TAR_NAME}" "${STAGE_DIR}/docker_images/"
   done
 
   # K8S Pause container
@@ -69,10 +63,8 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
     docker rmi -f ${PAUSE_IMG_NAME}
   fi
 
-  docker build --rm -t ${PAUSE_IMG_NAME} -f ./Dockerfile.pause .
-  docker save -o ${PAUSE_TAR_NAME} ${PAUSE_IMG_NAME}
-  gzip ${PAUSE_TAR_NAME}
-  mv -f ${PAUSE_TAR_NAME}.gz ${STAGE_DIR}/docker_images/
+  create_container_img_archive "${PAUSE_IMG_NAME}" "./Dockerfile.pause" "." \
+                               "${PAUSE_TAR_NAME}" "${STAGE_DIR}/docker_images/"
 
   rm -rf ./tmp
 done

@@ -34,19 +34,13 @@ mkdir -p tmp/k8heapster
 cp ${K8S_HEAPSTER_RPM_FILE} tmp/k8heapster/
 pushd ./tmp/k8heapster
 cmd="cd '${PWD}' && rpm2cpio '${K8S_HEAPSTER_RPM}' | cpio -vid"
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 popd
 
 start_repo_server
 
 K8S_TAR_NAME=k8s-heapster-${K8S_HEAPSTER_VER_REL}.tar
-docker build --rm -t ${IMG_NAME} -f ./Dockerfile.heapster .
-docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
-gzip ${K8S_TAR_NAME}
-mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "./Dockerfile.heapster" "." \
+                             "${K8S_TAR_NAME}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

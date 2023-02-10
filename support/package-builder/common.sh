@@ -1,8 +1,19 @@
 #!/bin/bash
 
-_red="\\033[1;31m"
-_normal="\\033[0;39m"
-_green="\\033[1;32m"
+set +u
+[ -n "$_PKGB_COMM_SH_" ] && return || readonly _PKGB_COMM_SH_=1
+set -u
+
+# print colored messages only when in tty
+if test -t 1; then
+  _red="\\033[1;31m"
+  _normal="\\033[0;39m"
+  _green="\\033[1;32m"
+else
+  _red=""
+  _normal=""
+  _green=""
+fi
 
 fail()
 {

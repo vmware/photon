@@ -36,18 +36,12 @@ mkdir -p tmp
 cp ${K8S_COREDNS_RPM_FILE} tmp
 pushd ./tmp
 cmd="cd '${PWD}' && rpm2cpio '${K8S_COREDNS_RPM}' | cpio -vid"
-if ! rpmSupportsZstd; then
-  docker run --rm --privileged -v ${PWD}:${PWD} $PH_BUILDER_TAG bash -c "${cmd}"
-else
-  eval "${cmd}"
-fi
+run_cmd "${cmd}" "${PH_BUILDER_TAG}"
 popd
 
 start_repo_server
 
-docker build --rm -t ${IMG_NAME} -f ./Dockerfile.coredns .
-docker save -o ${K8S_COREDNS_TAR} ${IMG_NAME}
-gzip ${K8S_COREDNS_TAR}
-mv -f ${K8S_COREDNS_TAR}.gz ${STAGE_DIR}/docker_images/
+create_container_img_archive "${IMG_NAME}" "./Dockerfile.coredns" "." \
+                             "${K8S_COREDNS_TAR}" "${STAGE_DIR}/docker_images/"
 
 rm -rf ./tmp

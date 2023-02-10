@@ -1147,9 +1147,10 @@ class BuildImage:
         docker_script = f"{docker_file_dir}/make-docker-image.sh"
 
         cmd = (
-            f"cd {photonDir} &&"
-            f" sudo docker build --no-cache --tag photon-build {docker_file_dir}"
-            f" && sudo docker run --rm --privileged --net=host"
+            f"cd {photonDir} && DOCKER_BUILDKIT=0 "
+            f" docker build --ulimit nofile=1024:1024 --no-cache --tag "
+            f" photon-build {docker_file_dir} && "
+            f" docker run --ulimit nofile=1024:1024 --rm --privileged --net=host"
             f" -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
             f" -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
             f" -v {photonDir}:/workspace photon-build {docker_script}"
