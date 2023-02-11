@@ -117,10 +117,10 @@ class DistributedBuilder:
 
     def createDeployment(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/worker.yaml")) as f:
-            workerFile = yaml.safe_load(f)
-            workerFile["metadata"]["name"] += "-" + self.buildGuid
-            workerFile["spec"]["template"]["spec"]["containers"][0]["env"][0]["value"] = self.buildGuid.upper()
             guid = f"-{self.buildGuid}"
+            workerFile = yaml.safe_load(f)
+            workerFile["metadata"]["name"] += guid
+            workerFile["spec"]["template"]["spec"]["containers"][0]["env"][0]["value"] = self.buildGuid.upper()
             workerFile["spec"]["template"]["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] += guid
             workerFile["spec"]["template"]["spec"]["volumes"][1]["persistentVolumeClaim"]["claimName"] += guid
             workerFile["spec"]["template"]["spec"]["volumes"][2]["persistentVolumeClaim"]["claimName"] += guid
@@ -150,7 +150,7 @@ class DistributedBuilder:
         for name in pvcNames:
             try:
                 resp = self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(f"{name}-{self.buildGuid}", namespace="default")
-                self.logger.info(f"Deleted pvc {name"})
+                self.logger.info(f"Deleted pvc {name}")
             except client.rest.ApiException as e:
                 self.logger.error(f"Exception when calling CoreV1Api->delete_namespaced_persistent_volume_claim: {e.reason}\n")
 
