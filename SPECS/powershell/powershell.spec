@@ -1,10 +1,10 @@
-%global ps_native_ver 7.2.0
-%global libmi_tag 1.6.10-2
+%global ps_native_ver   7.3.2
+%global libmi_tag       1.6.11-0
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.3.0
-Release:        preview.8.1%{?dist}
+Version:        7.3.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -19,35 +19,35 @@ Group:          shells
 # mv PowerShell PowerShell-7.2.0 && cd PowerShell-7.2.0
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
-Source0: %{name}-%{version}-preview.8.tar.gz
-%define sha512 %{name}=f4906cf684e3a1033d0b1bf7b48aad0cafe4f5b18558b0bd3068944685f5a621ca738681bcee515894e8b4f075cd5da97429de9e3001d4409e578f021755b548
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=117d0f4a576eeb12a517fe99f42d376a1a4947da5a109a79c59702393cf0ba82da4f1368cbf78a6a2c8f13438fdb51f9692ee8c122e78b50cae82e6297663266
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1: %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512 %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
+%define sha512 %{name}-native=7b13b2700fc9ce20525414ccf244aad92b005a0d8e5231d72d27e5fe8bfefc9a573ff81cff6702bd0547e6eebcf3f192d797d6f0415846d49a4db79edc33ebb7
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
-Source2: %{name}-%{version}-preview.8-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-preview.8-linux=bb9ba361d75304fbeb8ceba6b4a4aa46c118cee5ec36db7fe6d4205a659bb7081892538ad642ac49713cd9ca349d82f0561dfafa9cb22c69748e9ca9c030bb35
+Source2: %{name}-%{version}-linux-x64.tar.gz
+%define sha512 %{name}-%{version}-linux=c42cd23c0a1fd416d9f1c7b639428af70ef71339cd70629ee459cb5cec940a2376317fef3e251f8dca5fa11ac872a319b96d7472b9d359e102c79d8c47a6ffc9
 
 Source3: build.sh
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 # The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
-# needs libcrypto.1.0.0, we need it to be linked with openssl-1.1.1 (what's present in Photon)
+# needs libcrypto.1.0.0, we need it to be linked with openssl-3.x (what's present in Photon)
 # Hence we need to re-build it.
 # https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
 Source5: omi-%{libmi_tag}.tar.gz
-%define sha512 omi-%{libmi_tag}=226b7892a9962dd7f88248f3821f2fc7d7e46e7806edb4f6bc26ede0fbfd6b09ffd7cd05f6be236212fd1b96c1d2ab464298c850917514ab8ba81c35a5d0bdd7
+%define sha512 omi-%{libmi_tag}=3710cd8a0bc4d5478049a982b5f3a18d80c0167eb152cc6711887c965191c7727af7b4809b56d4e4b10a35b7a1853c3a72a13d8af9b1454fb43b1636b306c952
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 7.0.100
-BuildRequires:  dotnet-runtime = 7.0.0
+BuildRequires:  dotnet-sdk = 7.0.102
+BuildRequires:  dotnet-runtime = 7.0.2
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -63,7 +63,7 @@ BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  which
 BuildRequires:  icu-devel >= 70.1
-#gallery download scripts will fail without this
+# Gallery download scripts will fail without this
 BuildRequires:  zlib-devel
 
 Requires:       icu >= 70.1
@@ -75,7 +75,7 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %prep
 # Using autosetup is not feasible
-%setup -qn PowerShell-%{version}-preview.8
+%setup -qn PowerShell-%{version}
 # Using autosetup is not feasible
 %setup -qcTDa 1 -n PowerShell-Native
 # Using autosetup is not feasible
@@ -85,10 +85,10 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %build
 # Build libmi
-cd %{_builddir}/omi/omi-%{libmi_tag}/Unix && sh ./configure && make %{?_smp_mflags}
+cd %{_builddir}/omi/omi-%{libmi_tag}/Unix && sh ./configure && %make_build
 mv ./output/lib/libmi.so %{_builddir}/powershell-linux-%{version}
 
-cd %{_builddir}/PowerShell-%{version}-preview.8
+cd %{_builddir}/PowerShell-%{version}
 cp %{SOURCE3} .
 cp %{SOURCE4} src
 bash -x build.sh
@@ -100,7 +100,7 @@ pushd src/libpsl-native
 popd
 
 %install
-cd %{_builddir}/PowerShell-%{version}-preview.8
+cd %{_builddir}/PowerShell-%{version}
 rm -rf src/%{name}-unix/bin/{Debug,Linux}
 mkdir -p %{buildroot}%{_libdir}/%{name} %{buildroot}%{_docdir}/%{name}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
@@ -154,6 +154,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-1
+- Upgrade to v7.3.2
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-preview.8.1
 - Bump version as a part of icu upgrade
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-preview.8

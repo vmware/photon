@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        7.0.0
-Release:        rc1%{?dist}
+Version:        7.0.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -16,10 +16,10 @@ Group:          Development/Tools
 # For example:
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
-Source0: %{name}-%{version}-rc1-linux-x64.tar.gz
-%define sha512 %{name}=62145fdaf182581cec5ba6bbafd66e3bb2df28379311f13e6849371a88cc2f428db3663f96ad006bbf4411eba609d486036d3b2aa1e3d86eee53216aec543fc1
+Source0: %{name}-%{version}-linux-x64.tar.gz
+%define sha512 %{name}=56f7f471052b955968b9a4caa27299ac003e0347ae80e8ef23de87d28a2707bdf7ceb70467cc3e9f0c80928a779841dd7e1392ed6b06e66a7a9cda696d5c0a1e
 
-BuildArch:      x86_64
+BuildArch: x86_64
 
 BuildRequires: lttng-ust-devel >= 2.13.4-2
 
@@ -33,20 +33,23 @@ Requires: lttng-ust >= 2.13.4-2
 applications, microservices and modern websites.
 
 %prep
-%autosetup -c %{name}-%{version} -p1
+%autosetup -p1 -c %{name}-%{version} -p1
 
 %build
 
 %install
-mkdir -p %{buildroot}%{_libdir}/dotnet %{buildroot}%{_docdir}/%{name}-%{version}
-cp -r * %{buildroot}%{_libdir}/dotnet
-mkdir -p %{buildroot}%{_bindir}
-cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
-rm LICENSE.txt ThirdPartyNotices.txt
-ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
+mkdir -p %{buildroot}%{_libdir}/dotnet \
+         %{buildroot}%{_docdir}/%{name}-%{version} \
+         %{buildroot}%{_bindir}
+
+cp -pr * %{buildroot}%{_libdir}/dotnet
+ln -sfrv %{buildroot}%{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
@@ -56,6 +59,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.2-1
+- Upgrade to v7.0.2
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-rc1
 - Upgrade to v7.0.0-rc1
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-3
