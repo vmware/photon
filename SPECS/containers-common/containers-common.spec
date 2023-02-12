@@ -4,13 +4,6 @@
 # section itself. Also whenever upgrading podman please check the
 # compaitable version of containers-common and upgrade this by picking
 # the required files like below.
-
-Summary:        Common configuration and documentation for containers
-Name:           containers-common
-Version:        2
-Release:        1%{?dist}
-License:        ASL 2.0
-URL:            https://github.com/containers
 # Clone containers sub repo common, image, shortnames, skopeo and storage
 # Checkout to specific tag for all sub repo & pick the files as per requirment
 # Move those files into directory & create tarball
@@ -37,8 +30,15 @@ URL:            https://github.com/containers
 # cp storage.conf ../containers-common-2/
 #
 # cd .. && tar czf containers-common-2.tar.gz containers-common-2
-Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=2349040d7ce3430e3f97905f2151e1dfcd01674532e4f17cf486c40ccd034206328cd5c493eb3f7db939db9c4fcd4b6f5d9048532d8f70e881bdcce47be76238
+
+Summary:        Common configuration and documentation for containers
+Name:           containers-common
+Version:        3
+Release:        1%{?dist}
+License:        ASL 2.0
+URL:            https://github.com/containers
+Source0:        %{name}-%{version}.tar.gz
+%define sha512  %{name}=74c42f76794998e27b015bb1fe3123df7aa626628753efa003916fedbd6da8a12df52fa420c035555cd4fc4d3e76eae529c2c2092b87ca99646c572c4df345ee
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -104,6 +104,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Sun Feb 12 2023 Piyush Gupta <gpiyush@vmware.com> 3-1
+- Version upgrade to v3
 * Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 2-1
 - Version upgrade to v2
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1-2
