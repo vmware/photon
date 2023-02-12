@@ -5,8 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-EnvironmentFile=-/etc/sysconfig/synce4l
-ExecStart=/usr/sbin/synce4l $OPTIONS
+ExecStart=/usr/sbin/synce4l -f /etc/synce4l.conf
 
 [Install]
 WantedBy=multi-user.target
