@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -8,13 +8,13 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 %{name}=7198960aa13ce5c79c7c057beb0823703cac69ec
+Source0: http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
+%define sha512 %{name}=2d8f9cc3a6bd7ee5bd4bce77399916aa90cd8acb90448f4e1b79c605c7f854c19016f5eb3704f112855c8347e69f0f4dc42f9755dd2ec975ac7799d00bc597be
 
-Patch0:         toybox-change-toys-path.patch
+Patch0: toybox-change-toys-path.patch
 
-Source1:        config-toybox
-Source2:        toybox-toys
+Source1: config-toybox
+Source2: toybox-toys
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -37,7 +37,7 @@ Requires:   %{name} = %{version}-%{release}
 The package contains toybox doc files.
 
 %prep
-%autosetup -p1 -n toybox-%{version}
+%autosetup -p1
 
 %build
 cp %{SOURCE1} .config
@@ -51,6 +51,7 @@ mv %{buildroot}/bin/%{name} %{buildroot}%{_bindir}/toybox
 chmod 755 %{buildroot}%{_bindir}/toybox
 install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/toybox-toys
 
+%if 0%{?with_check}
 %check
 # Do not run all tests, skip losetup
 # make tests
@@ -60,6 +61,7 @@ tests_to_run=`ls *.test | sed 's/.test//;/losetup/d'`
 popd
 tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 ./scripts/test.sh $tests_to_run
+%endif
 
 %define mktoy() %{_bindir}/toybox ln -sf %{_bindir}/toybox %1
 
@@ -172,6 +174,10 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %mktoy /usr/bin/mix
 
 %triggerpostun -- expect
+[ $2 -eq 0 ] || exit 0
+%mktoy /usr/bin/mkpasswd
+
+%triggerpostun -- mkpasswd
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/mkpasswd
 
@@ -415,7 +421,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 # elixir
 %ghost %{_bindir}/mix
 
-# expect
+# expect & mkpasswd
 %ghost %{_bindir}/mkpasswd
 
 # e2fsprogs
@@ -573,6 +579,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %doc README LICENSE
 
 %changelog
+* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-4
+- Add rules for mkpasswd
 * Sat Apr 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.6-3
 - Enable nsenter utility in toybox
 * Fri Feb 04 2022 Ajay Kaher <akaher@vmware.com> 0.8.6-2
