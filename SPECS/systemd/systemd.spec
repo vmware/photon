@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          45%{?dist}
+Release:          46%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -71,6 +71,9 @@ Patch49:          sd-bus-make-bus_slot_disconnect-also-unref-the-slot-object.pat
 Patch50:          meson-debug.patch
 Patch51:          systemd-239-CVE-2022-2526.patch
 Patch52:          systemd-239-CVE--2022-3821-time-util-fix-buffer-over-run.patch
+Patch53:          CVE-2022-4415-1.patch
+Patch54:          CVE-2022-4415-2.patch
+Patch55:          CVE-2022-4415-3.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -336,6 +339,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Mon Feb 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 239-46
+- Fix CVE-2022-4415
 * Mon Nov 14 2022 Susant Sahani <ssahani@vmware.com> 239-45
 - Fix CVE-2022-3821
 * Tue Sep 20 2022 Mukul Sikka <msikka@vmware.com> 239-44
