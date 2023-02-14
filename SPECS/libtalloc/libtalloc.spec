@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.3.4
-Release:    2%{?dist}
+Version:    2.4.0
+Release:    1%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha512 talloc=c46488deda99753fd79566d42cae88899b71196513a127813be2cb855e7f36b77132f0552297ee4153ba4d8f177cea3bb0dc93340caabf321c026657744684d9
+%define sha512 talloc=810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
 
 BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
@@ -88,6 +88,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/pytalloc-util.cpython-311*linux-gnu.pc
 
 %changelog
+* Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.4.0-1
+- Version bump for SSSD
 * Sun Dec 11 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.4-2
 - Fix build error on arm machine
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.4-1

@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -11,6 +11,8 @@ Distribution:   Photon
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha512    bind=c4872daf71f4c0c108a2f0a68bf0b7ee12b6490d1ae7955419847c255bc5fcd092f935fa6ea68ae53db0510e7e9af13b6ab05cb0ca0058cb13339ccbda4ede43
 
+Requires:       krb5
+Requires:       e2fsprogs-libs
 Requires:       openssl
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -21,6 +23,8 @@ BuildRequires:  libuv-devel
 BuildRequires:  nghttp2-devel
 BuildRequires:  libcap-devel
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  krb5-devel
+BuildRequires:  e2fsprogs-devel
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -132,6 +136,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.19.7-2
+- Add dependencies for realm support in nsupdate for SSSD.
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 9.19.7-1
 - Automatic Version Bump
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 9.19.4-1
