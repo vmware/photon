@@ -1,0 +1,44 @@
+From: Junxiao Chang <junxiao.chang@intel.com>
+Date: Wed, 07 Dec 2022 04:02:01 +0000
+Subject: [PATCH] softirq: wake up ktimer thread in softirq context
+
+Occiaionally timer interrupt might be triggered in softirq context,
+ktimer thread should be woken up with RT kernel, or else ktimer
+thread might stay in sleep state although timer interrupt has been
+triggered.
+
+This change fixes a latency issue that timer handler is delayed for
+more than 4ms in network related test.
+
+Fixes: 2165d27554e8 ("softirq: Use a dedicated thread for timer wakeups.")
+Reported-by: Peh, Hock Zhang <hock.zhang.peh@intel.com>
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+---
+ kernel/softirq.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index ab1fe34326bab..34ae39e4a3d10 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -664,13 +664,10 @@ static inline void __irq_exit_rcu(void)
+ #endif
+ 	account_hardirq_exit(current);
+ 	preempt_count_sub(HARDIRQ_OFFSET);
+-	if (!in_interrupt()) {
+-		if (local_softirq_pending())
+-			invoke_softirq();
+-
+-		if (IS_ENABLED(CONFIG_PREEMPT_RT) && local_pending_timers())
+-			wake_timersd();
+-	}
++	if (!in_interrupt() && local_softirq_pending())
++		invoke_softirq();
++	if (!(in_nmi() || in_hardirq()) && local_pending_timers())
++		wake_timersd();
+ 
+ 	tick_irq_exit();
+ }
+-- 
+2.25.1
+
