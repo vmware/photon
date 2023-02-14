@@ -4,21 +4,21 @@
 %define _data_dir    %{_sharedstatedir}/%{name}
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name: 	       kafka
-Version:       3.0.2
+Version:       3.4.0
 Release:       1%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Source0:       %{name}-%{version}-src.tgz
-%define sha512 kafka=02b6f06b2c05a076c5f8486e9df2f4678557c588abc77c2fd45b27ba3e5b54c83ea0545473817d62301823cc31cd31a09f4cf51390a2bd720838975b21b25d42
+%define sha512 kafka=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
 Source1:       %{name}.service
 Source2:       %{name}-build-jars-%{version}.tar.gz
-%define sha512 %{name}-build-jars=3e5d96d00ceffdafcb1ef814c7e3bca6be20e5ce2abc4abd05e285d1d94941d0a55f6d183e718f3b3bcd1be104ce5c98c9189cdf70898dc9c01e77c10a64041e
+%define sha512 %{name}-build-jars=2a932bcccac8c1fe1dfa6b18e397bdb728275b06a397b0e484d735c96f53854db7f94ae18989cbc6fad0643b1d087486128c08479429c6a9f3dee9e2fe87b0c3
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 Provides:      kafka kafka-server
 BuildRequires: systemd
-BuildRequires: openjdk8
+BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
 Requires:      zookeeper
@@ -34,7 +34,7 @@ Kafka is designed to allow a single cluster to serve as the central data backbon
 %build
 tar -xf %{SOURCE2}
 #Keeping the below code for future reference.
-#export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+#export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
 #./gradlew jar
 #./gradlew srcJar
 #./gradlew javadoc
@@ -44,7 +44,7 @@ tar -xf %{SOURCE2}
 #./gradlew docsJar
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
 mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config}
 mkdir -p %{buildroot}/%{_log_dir}
 mkdir -p %{buildroot}/%{_data_dir}
@@ -58,8 +58,8 @@ install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
 install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
 install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.6/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.6/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 tools/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
@@ -68,7 +68,7 @@ install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/l
 install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.6/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/examples/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/upgrade-system-tests-0110/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 
@@ -105,6 +105,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Mon Feb 13 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1
+- Update to 3.4.0, use Java11. Fixes CVE-2023-25194.
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.2-1
 - Update to 3.0.2, Fixes CVE-2022-34917
 * Wed Dec 01 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.0-2
