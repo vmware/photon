@@ -1,0 +1,26 @@
+From c96ea7aab4043b9ca5bc4d17e359b456f7733f48 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 9 Feb 2023 09:59:51 -0800
+Subject: [PATCH] The 'noacl' mount option is deprecated since linux 3.5,
+ removing.
+
+Change-Id: Iab83d5e01f6c57005b841f5bd30a91639fe620e9
+---
+ photon_installer/installer.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index afc5002..f4d5151 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -595,7 +595,7 @@ class Installer(object):
+
+                 # Add supported options according to partition filesystem
+                 if partition.get('mountpoint', '') == '/' and partition.get('filesystem','') != 'xfs':
+-                    options = options + ',barrier,noatime,noacl'
++                    options = options + ',barrier,noatime'
+                     if partition.get('filesystem','') != 'btrfs':
+                         options += ',data=ordered'
+                     fsck = 1
+--
+2.25.1
