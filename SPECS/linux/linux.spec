@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.165
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -173,6 +173,11 @@ Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
+#Fix for CVE-2022-2196
+Patch134: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
+#Fix for CVE-2022-4379
+Patch135: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -412,7 +417,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M133
+%autopatch -p1 -m100 -M135
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -831,6 +836,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
+- Fix for CVE-2022-2196/CVE-2022-4379
 * Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1
 - Update to version 5.10.165
 * Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2

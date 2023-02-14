@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.165
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -191,6 +191,11 @@ Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
+#Fix for CVE-2022-2196
+Patch134: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
+#Fix for CVE-2022-4379
+Patch135: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -348,7 +353,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M92
 
 # CVE
-%autopatch -p1 -m100 -M133
+%autopatch -p1 -m100 -M135
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -602,6 +607,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
+- Fix for CVE-2022-2196/CVE-2022-4379
 * Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1
 - Update to version 5.10.165
 * Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-4

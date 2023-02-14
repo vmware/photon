@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.165
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -116,6 +116,11 @@ Patch131: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch132: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch133: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch134: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
+#Fix for CVE-2022-2196
+Patch135: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
+#Fix for CVE-2022-4379
+Patch136: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -237,7 +242,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M136
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -403,6 +408,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
+- Fix for CVE-2022-2196/CVE-2022-4379
 * Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1
 - Update to version 5.10.165
 * Fri Feb 03 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.162-2
