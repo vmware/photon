@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.0
-Release:       17%{?dist}
+Release:       18%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -28,6 +28,7 @@ Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
 Patch14:       0015-Add-support-for-customInitrd-and-customIso.patch
 Patch15:       0016-upgrade-ostree-repo.patch
 Patch16:       0017-customIso-Use-branch-specific-license-text-and-EULA.patch
+Patch17:       0018-The-noacl-mount-option-is-deprecated-since-linux-3.5.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -68,6 +69,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Tue Feb 14 2023 Oliver Kurth <okurth@vmware.com> 2.0-18
+- add patch to remove noacl option for mount
 * Thu Feb 02 2023 Oliver Kurth <okurth@vmware.com> 2.0-17
 - require grub-pc only for x86_64
 * Wed Feb 01 2023 Oliver Kurth <okurth@vmware.com> 2.0-16
