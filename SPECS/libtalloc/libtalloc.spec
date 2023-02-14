@@ -1,14 +1,14 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.3.1
-Release:    5%{?dist}
+Version:    2.4.0
+Release:    1%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha1 talloc=1ff430a62264b29efac39a3fa26290586c019800
+%define sha512 talloc=810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
 BuildRequires: python3-devel
@@ -54,8 +54,10 @@ make %{?_smp_mflags} V=1
 %make_install
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
+%if 0%{?with_check}
 %check
-make %{_smp_mflags} check
+%make_build check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -76,11 +78,11 @@ make %{_smp_mflags} check
 %{_libdir}/python%{python3_version}/site-packages/*
 %ifarch x86_64
 %{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2.4.0
 %endif
 %ifarch aarch64
 %{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2.4.0
 %endif
 
 %files -n python3-talloc-devel
@@ -96,6 +98,8 @@ make %{_smp_mflags} check
 %endif
 
 %changelog
+*   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.4.0-1
+-   Version upgrade for SSSD.
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.1-5
 -   Update release to compile with python 3.10
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4

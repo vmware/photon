@@ -1,6 +1,6 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.14.12
+Version:        4.17.5
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=9d7dfb75ae050013d30dbf0bf0e7fdb8db3457a9
+%define sha512  samba=352ae8bc161fb07ac6c7330c6ebd02c27eb453ffc1c32c8437edc441ba3044cb2e9b31c8cf181664a2b47098c75a55f06c105f5397c57ce75826ef2af331afa9
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
@@ -37,6 +37,12 @@ BuildRequires: lmdb
 BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
+BuildRequires: sudo
+BuildRequires: libtdb-devel
+BuildRequires: libldb-devel
+BuildRequires: libtevent-devel
+BuildRequires: bison
+BuildRequires: perl-JSON
 
 Requires:      samba-client-libs = %{samba_ver}
 Requires:      libtirpc
@@ -51,6 +57,11 @@ Requires:      lmdb
 Requires:      openldap
 Requires:      perl-Parse-Yapp
 Requires:      dbus
+Requires:      bindutils
+Requires:      libtdb
+Requires:      libldb
+Requires:      libtalloc
+Requires:      libtevent
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -64,6 +75,10 @@ For a more detailed description of Samba, check the Web page https://www.Samba.o
 # Samba Client Libaries
 %package -n samba-client-libs
 Summary: Samba client libraries
+Requires:   libtdb
+Requires:   libldb
+Requires:   libtalloc
+Requires:   libtevent
 
 %description -n samba-client-libs
 The samba-client-libs package contains internal libraries needed by the
@@ -82,6 +97,7 @@ to develop programs.
 %package -n libwbclient
 Summary:        Samba libwbclient Library
 Group:          System/Libraries
+Provides:       pkgconfig(wbclient)
 
 %description -n libwbclient
 This package includes the wbclient library.
@@ -124,8 +140,8 @@ export LDFLAGS="-ltirpc"
         --without-acl-support \
         --with-shared-modules=%{_samba_modules} \
         --disable-python \
-        --without-ads \
-        --without-ntvfs-fileserver &&
+        --bundled-libraries=cmocka,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!tdb,!pytdb,!ldb,!pyldb,!pldb-util \
+        --enable-debug &&
 make bin/smbclient %{?_smp_mflags}
 
 %install
@@ -145,8 +161,11 @@ install -m 0644 packaging/systemd/samba.sysconfig %{buildroot}%{_sysconfdir}/sys
 # Delete Unpackaged File(s)
 for file_dir in \
    %{_libdir}/samba/vfs/* \
+   %{_libdir}/samba/libldb-cmdline-samba4.so \
+   %{_libdir}/samba/libldb-key-value-samba4.so \
+   %{_libdir}/samba/libldb-tdb-err-map-samba4.so \
+   %{_libdir}/samba/libldb-tdb-int-samba4.so \
    %{_libdir}/samba/libkdc-* \
-   %{_libdir}/samba/libldb-* \
    %{_libdir}/samba/libpyldb-* \
    %{_libdir}/samba/libpytalloc-* \
    %{_libdir}/samba/nss_info/* \
@@ -154,9 +173,7 @@ for file_dir in \
    %{_libdir}/samba/krb5/winbind_krb5_locator.so \
    %{_libdir}/samba/krb5/async_dns_krb5_locator.so \
    %{_libdir}/samba/ldb/asq.so \
-   %{_libdir}/samba/ldb/ildap.so \
    %{_libdir}/samba/ldb/ldb.so \
-   %{_libdir}/samba/ldb/ldbsamba_extensions.so \
    %{_libdir}/samba/ldb/paged_searches.so \
    %{_libdir}/samba/ldb/rdn_name.so \
    %{_libdir}/samba/ldb/sample.so \
@@ -167,16 +184,15 @@ for file_dir in \
    %{_libdir}/samba/libauth-unix-token-samba4.so \
    %{_libdir}/samba/libauth4-samba4.so \
    %{_libdir}/samba/libcmocka-samba4.so \
-   %{_libdir}/samba/libdcerpc-samba4.so \
    %{_libdir}/samba/libdsdb-module-samba4.so \
    %{_libdir}/samba/libhdb-* \
    %{_libdir}/samba/libheimntlm-samba4.so.* \
-   %{_libdir}/samba/libidmap-samba4.so \
    %{_libdir}/samba/libnss-info-samba4.so \
    %{_libdir}/samba/libsamba-net.cpython-37m-x86-64-linux-gnu-samba4.so \
    %{_libdir}/samba/libsamba-python.cpython-37m-x86-64-linux-gnu-samba4.so \
    %{_libdir}/samba/libshares-samba4.so \
    %{_libdir}/samba/libsmbpasswdparser-samba4.so \
+   %{_libdir}/samba/libREG-FULL-samba4.so \
    %{_libdir}/samba/libxattr-tdb-samba4.so \
    %{_libdir}/security/pam_winbind.so \
    %{_libdir}/libdcerpc-samr.* \
@@ -185,15 +201,22 @@ for file_dir in \
    %{_libdir}/libsamba-policy.cpython-37m-x86-64-linux-gnu.* \
    %{_libdir}/pkgconfig/dcerpc.pc \
    %{_libdir}/pkgconfig/dcerpc_samr.pc \
-   %{_libdir}/pkgconfig/ndr.pc \
-   %{_libdir}/pkgconfig/ndr_* \
    %{_libdir}/pkgconfig/netapi.pc \
    %{_libdir}/pkgconfig/samba-credentials.pc \
    %{_libdir}/pkgconfig/samba-hostconfig.pc \
    %{_libdir}/pkgconfig/samba-policy.cpython-37m-*-linux-gnu.pc \
-   %{_libdir}/pkgconfig/samba-util.pc \
    %{_libdir}/pkgconfig/samdb.pc \
    %{_libdir}/samba/auth/unix.so \
+   %{_libexecdir}/samba/rpcd_classic \
+   %{_libexecdir}/samba/rpcd_fsrvp \
+   %{_libexecdir}/samba/rpcd_epmapper \
+   %{_libexecdir}/samba/rpcd_lsad \
+   %{_libexecdir}/samba/rpcd_mdssvc \
+   %{_libexecdir}/samba/rpcd_rpcecho \
+   %{_libexecdir}/samba/rpcd_spoolss \
+   %{_libexecdir}/samba/rpcd_winreg \
+   %{_libexecdir}/samba/samba-bgqd \
+   %{_libexecdir}/samba/samba-dcerpcd \
    %{_sbindir}/eventlogadm \
    %{_sbindir}/nmbd \
    %{_sbindir}/samba-gpupdate \
@@ -209,7 +232,6 @@ for file_dir in \
    %{_bindir}/locktest2 \
    %{_bindir}/masktest \
    %{_bindir}/ndrdump \
-   %{_bindir}/net \
    %{_bindir}/nsstest \
    %{_bindir}/ntlm_auth \
    %{_bindir}/pdbedit \
@@ -219,6 +241,7 @@ for file_dir in \
    %{_bindir}/pthreadpooltest_cmocka \
    %{_bindir}/resolvconftest \
    %{_bindir}/rpc_open_tcp \
+   %{_bindir}/samba-tool \
    %{_bindir}/smbconftort \
    %{_bindir}/smbcontrol \
    %{_bindir}/smbpasswd \
@@ -239,25 +262,31 @@ for file_dir in \
    %{_bindir}/vfstest \
    %{_bindir}/vlp \
    %{_bindir}/wbinfo \
-   %{_includedir}/samba-4.0/util/* \
-   %{_includedir}/samba-4.0/core/* \
-   %{_includedir}/samba-4.0/charset.h \
+   %{_includedir}/samba-4.0/util/attr.h \
+   %{_includedir}/samba-4.0/util/blocking.h \
+   %{_includedir}/samba-4.0/util/debug.h \
+   %{_includedir}/samba-4.0/util/fault.h \
+   %{_includedir}/samba-4.0/util/genrand.h \
+   %{_includedir}/samba-4.0/util/idtree.h \
+   %{_includedir}/samba-4.0/util/idtree_random.h \
+   %{_includedir}/samba-4.0/util/signal.h \
+   %{_includedir}/samba-4.0/util/substitute.h \
+   %{_includedir}/samba-4.0/util/tevent_ntstatus.h \
+   %{_includedir}/samba-4.0/util/tevent_unix.h \
+   %{_includedir}/samba-4.0/util/tevent_werror.h \
+   %{_includedir}/samba-4.0/util/tfork.h \
    %{_includedir}/samba-4.0/credentials.h \
    %{_includedir}/samba-4.0/dcerpc.h \
    %{_includedir}/samba-4.0/dcesrv_core.h \
    %{_includedir}/samba-4.0/domain_credentials.h \
-   %{_includedir}/samba-4.0/gen_ndr/* \
    %{_includedir}/samba-4.0/ldb_wrap.h \
    %{_includedir}/samba-4.0/lookup_sid.h \
    %{_includedir}/samba-4.0/machine_sid.h \
-   %{_includedir}/samba-4.0/ndr.h \
-   %{_includedir}/samba-4.0/ndr/* \
    %{_includedir}/samba-4.0/netapi.h \
    %{_includedir}/samba-4.0/param.h \
    %{_includedir}/samba-4.0/passdb.h \
    %{_includedir}/samba-4.0/rpc_common.h \
    %{_includedir}/samba-4.0/samba/session.h \
-   %{_includedir}/samba-4.0/samba/version.h \
    %{_includedir}/samba-4.0/share.h \
    %{_includedir}/samba-4.0/smb* \
    %{_includedir}/samba-4.0/tdr.h \
@@ -335,12 +364,11 @@ done
 %files
 %defattr(-,root,root,-)
 %doc source3/client/README.smbspool
+%{_bindir}/mdsearch
 %{_bindir}/cifsdd
 %{_bindir}/dbwrap_tool
 %{_bindir}/dumpmscat
-%{_bindir}/findsmb
 %{_bindir}/mvxattr
-%{_bindir}/mdfind
 %{_bindir}/nmblookup
 %{_bindir}/oLschema2ldif
 %{_bindir}/regdiff
@@ -357,6 +385,7 @@ done
 %{_bindir}/smbspool
 %{_bindir}/smbtar
 %{_bindir}/smbtree
+%{_bindir}/net
 %ghost %{_libexecdir}/samba/cups_backend_smb
 %{_tmpfilesdir}/samba.conf
 %attr(0700,root,root) %dir /var/log/samba
@@ -368,36 +397,7 @@ done
 %attr(755,root,root) %dir %{_sysconfdir}/samba
 %config(noreplace) %{_sysconfdir}/samba/smb.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/samba
-%{_mandir}/man1/dbwrap_tool.1*
-%{_mandir}/man1/nmblookup.1*
-%{_mandir}/man1/oLschema2ldif.1*
-%{_mandir}/man1/regdiff.1*
-%{_mandir}/man1/regpatch.1*
-%{_mandir}/man1/regshell.1*
-%{_mandir}/man1/regtree.1*
-%{_mandir}/man1/findsmb.1*
-%{_mandir}/man1/log2pcap.1*
-%{_mandir}/man1/mdfind.1*
-%{_mandir}/man1/mvxattr.1*
-%{_mandir}/man1/rpcclient.1*
-%{_mandir}/man1/sharesec.1*
-%{_mandir}/man1/smbcacls.1*
-%{_mandir}/man1/smbclient.1*
-%{_mandir}/man1/smbcquotas.1*
-%{_mandir}/man1/smbget.1*
-%{_mandir}/man1/smbtar.1*
-%{_mandir}/man1/smbtree.1*
-%{_mandir}/man5/smbgetrc.5*
-%{_mandir}/man7/traffic_learner.7.*
-%{_mandir}/man7/traffic_replay.7.*
-%{_mandir}/man8/cifsdd.8.*
-%{_mandir}/man8/samba-regedit.8*
-%{_mandir}/man8/smbspool.8*
-%{_mandir}/man5/smb.conf.5*
-%{_mandir}/man5/smbpasswd.5*
-%{_mandir}/man7/samba.7*
 %{_mandir}/man1/*
-%{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
@@ -423,6 +423,24 @@ done
 %{_libdir}/libsmbdcerpc.so.*
 %{_libdir}/libsmbclient.so.*
 %dir %{_libdir}/samba
+%{_libdir}/samba/libasn1-samba4.so
+%{_libdir}/samba/libcom-err-samba4.so
+%{_libdir}/samba/libdnsserver-common-samba4.so
+%{_libdir}/samba/libgssapi-samba4.so
+%{_libdir}/samba/libhcrypto-samba4.so
+%{_libdir}/samba/libheimbase-samba4.so
+%{_libdir}/samba/libhx509-samba4.so
+%{_libdir}/samba/libroken-samba4.so
+%{_libdir}/samba/libwind-samba4.so
+%{_libdir}/samba/ldb/ildap.so
+%{_libdir}/samba/libRPC-WORKER-samba4.so
+%{_libdir}/samba/libcmdline-samba4.so
+%{_libdir}/samba/libgss-preauth-samba4.so
+%{_libdir}/samba/libheimntlm-samba4.so
+%{_libdir}/samba/libkrb5-samba4.so
+%{_libdir}/samba/libRPC-SERVER-LOOP-samba4.so
+%{_libdir}/samba/ldb/ldbsamba_extensions.so
+%{_libdir}/samba/libdcerpc-samba4.so
 %{_libdir}/samba/libCHARSET3-samba4.so
 %{_libdir}/samba/libMESSAGING-SEND-samba4.so
 %{_libdir}/samba/libMESSAGING-samba4.so
@@ -441,7 +459,6 @@ done
 %{_libdir}/samba/libclidns-samba4.so
 %{_libdir}/samba/libcluster-samba4.so
 %{_libdir}/samba/libcmdline-contexts-samba4.so
-%{_libdir}/samba/libcmdline-credentials-samba4.so
 %{_libdir}/samba/libcommon-auth-samba4.so
 %{_libdir}/samba/libdbwrap-samba4.so
 %{_libdir}/samba/libdcerpc-samba-samba4.so
@@ -499,26 +516,9 @@ done
 %{_libdir}/samba/libtime-basic-samba4.so
 %{_libdir}/samba/libtorture-samba4.so
 %{_libdir}/samba/libtrusts-util-samba4.so
-%{_libdir}/samba/libutil-cmdline-samba4.so
 %{_libdir}/samba/libutil-reg-samba4.so
 %{_libdir}/samba/libutil-setid-samba4.so
 %{_libdir}/samba/libutil-tdb-samba4.so
-%{_libdir}/samba/libasn1-samba4.so.*
-%{_libdir}/samba/libgssapi-samba4.so.*
-%{_libdir}/samba/libcom_err-samba4.so.*
-%{_libdir}/samba/libkrb5-samba4.so.*
-%{_libdir}/samba/libldb.so.*
-%{_libdir}/samba/libtdb.so.*
-%{_libdir}/samba/libtevent.so.*
-%{_libdir}/samba/libtalloc.so.*
-%{_libdir}/samba/libhcrypto-samba4.so.*
-%{_libdir}/samba/libheimbase-samba4.so.*
-%{_libdir}/samba/libhx509-samba4.so.*
-%{_libdir}/samba/libroken-samba4.so.*
-%{_libdir}/samba/libwinbind-client-samba4.so
-%{_libdir}/samba/libwind-samba4.so.*
-%{_libdir}/samba/libpopt-samba3-cmdline-samba4.so
-%{_libdir}/samba/libpopt-samba3-samba4.so
 %dir %{_libdir}/samba/ldb
 %dir %{_libdir}/samba/pdb
 %{_libdir}/samba/pdb/ldapsam.so
@@ -529,6 +529,15 @@ done
 # Devel
 %files -n samba-client-devel
 %{_includedir}/samba-4.0/libsmbclient.h
+%{_includedir}/samba-4.0/core/*.h
+%{_includedir}/samba-4.0/samba/version.h
+%{_includedir}/samba-4.0/ndr.h
+%{_includedir}/samba-4.0/util/discard.h
+%{_includedir}/samba-4.0/util/data_blob.h
+%{_includedir}/samba-4.0/util/time.h
+%{_includedir}/samba-4.0/charset.h
+%{_includedir}/samba-4.0/gen_ndr/*
+%{_includedir}/samba-4.0/ndr/*
 %{_libdir}/libsmbclient.so
 %{_libdir}/libsmbdcerpc.so
 %{_libdir}/libdcerpc-binding.so
@@ -546,6 +555,9 @@ done
 %{_libdir}/libsmbconf.so
 %{_libdir}/libsmbldap.so
 %{_libdir}/libtevent-util.so
+%{_libdir}/samba/libidmap-samba4.so
+%{_libdir}/pkgconfig/ndr*.pc
+%{_libdir}/pkgconfig/samba-util.pc
 %{_libdir}/pkgconfig/smbclient.pc
 %{_mandir}/man7/libsmbclient.7*
 
@@ -562,6 +574,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.5-1
+-   Version bump for SSSD. Include some additional libraries needed.
 *   Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
 -   Upgrade to version 4.14.12
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.14.4-3

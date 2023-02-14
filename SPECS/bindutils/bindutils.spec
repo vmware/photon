@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.38
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
@@ -14,6 +14,11 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
+BuildRequires:  krb5-devel
+BuildRequires:  e2fsprogs-devel
+
+Requires: krb5
+Requires: e2fsprogs-libs
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -33,9 +38,11 @@ make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
 make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
+make -C bin/nsupdate %{?_smp_mflags}
 
 %install
 make -C bin/dig DESTDIR=%{buildroot} install %{?_smp_mflags}
+make -C bin/nsupdate  DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/%{_sysconfdir}
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
@@ -79,6 +86,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Fri Feb 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.16.38-2
+-   Adding e2fsprogs and krb5 as dependencies to get functionality needed for SSSD.
 *   Thu Feb 16 2023 Harinadh D <hdommaraju@vmware.com> 9.16.38-1
 -   fix CVE-2022-3736
 *   Wed Sep 21 2022 Dweep Advani <dadvani@vmware.com> 9.16.33-1
