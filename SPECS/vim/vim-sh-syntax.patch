@@ -1,0 +1,13 @@
+diff --git a/runtime/syntax/sh.vim b/runtime/syntax/sh.vim
+index 13d74db..4f7fafb 100644
+--- a/runtime/syntax/sh.vim
++++ b/runtime/syntax/sh.vim
+@@ -335,7 +335,7 @@ syn match   shEscape	contained	'\%(^\)\@!\%(\\\\\)*\\.'	nextgroup=shComment
+ " systems too, however, so the following syntax will flag $(..) as
+ " an Error under /bin/sh.  By consensus of vimdev'ers!
+ if exists("b:is_kornshell") || exists("b:is_bash") || exists("b:is_posix")
+- syn region shCommandSub matchgroup=shCmdSubRegion start="\$(\ze[^(]\|$"  skip='\\\\\|\\.' end=")"  contains=@shCommandSubList
++ syn region shCommandSub matchgroup=shCmdSubRegion start="\$(\ze[^(]"  skip='\\\\\|\\.' end=")"  contains=@shCommandSubList
+  syn region shArithmetic matchgroup=shArithRegion  start="\$((" skip='\\\\\|\\.' end="))" contains=@shArithList
+  syn region shArithmetic matchgroup=shArithRegion  start="\$\[" skip='\\\\\|\\.' end="\]" contains=@shArithList
+  syn match  shSkipInitWS contained	"^\s\+"

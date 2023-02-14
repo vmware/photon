@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.0.1298
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -15,6 +15,8 @@ Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b98ed58a378fce8dc76fd57cc80ad4f778c678d8569b4b7c2b4c8b046fa684b74b0d020a83d40eb3bcb23e89d7d8c01269870cb0996404f6a36dfc304cc0c6cb
 
 Source1: vimrc
+
+Patch0: vim-sh-syntax.patch
 
 BuildRequires:  ncurses-devel
 
@@ -174,6 +176,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Feb 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1298-2
+- Fix sh file syntax issue
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 9.0.1298-1
 - Automatic Version Bump
 * Mon Jan 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1055-2
