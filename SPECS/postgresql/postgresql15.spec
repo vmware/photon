@@ -11,8 +11,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.1
-Release:        5%{?dist}
+Version:        15.2
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -20,9 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=803900363106d2e343305e6d1546016b6a6a37bbd49d7a84a9a6467c1dc3fc4eb52698411af9c2178590c2f7680967466b1a211a76955dcec5445d0b8b254202
-
-Patch0: CVE-2022-41862-v15.patch
+%define sha512 %{srcname}=115a8a4234791bba4e6dcc4617e9dd77abedcf767894ce9472c59cce9d5d4ef2d4e1746f3a0c7a99de4fc4385fb716652b70dce9f48be45a9db5a682517db7e8
 
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
@@ -663,6 +661,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 15.2-1
+- Upgraded to version  15.2.
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.1-5
 - Bump version as a part of icu upgrade
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.1-4

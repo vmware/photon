@@ -11,8 +11,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.8
-Release:        13%{?dist}
+Version:        13.10
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -20,10 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=3b39448b291342a5e9b610d410c222aeb85f8acf95632e73e138ae316133af3dadc795a6e706f6447f543cf10df3c786da4f1afa1d91489b50eb77e2d9ed5d84
-
-Patch0: llvm-15.x-psql-build-err-fixes.patch
-Patch1: CVE-2022-41862-v13.patch
+%define sha512 %{srcname}=328c81f7c2ca2bad92fa62f4b0377d7cc104f294636db019c68ceccb580003eebe79455bbafa24eab2b3cce305e3d9c702a8544b38556f9c3431cc3c78d00cff
 
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
@@ -644,6 +641,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 13.10-1
+- Upgraded to version  13.10.
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-13
 - Bump version as a part of icu upgrade
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.8-12
