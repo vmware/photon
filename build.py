@@ -6,13 +6,11 @@ import sys
 import docker
 import glob
 import json
-import subprocess
 import shutil
 import traceback
 
 from argparse import ArgumentParser
 from pathlib import PurePath
-from subprocess import PIPE, Popen
 from urllib.parse import urlparse
 
 # photon imports
@@ -110,8 +108,7 @@ configdict = {}
 check_prerequesite = {}
 
 cmdUtils = CommandUtils()
-runCommandInShell = cmdUtils.runCommandInShell
-runShellCmd = cmdUtils.runShellCmd
+runBashCmd = cmdUtils.runBashCmd
 
 curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
@@ -119,10 +116,10 @@ photonDir = os.path.dirname(os.path.realpath(__file__))
 
 def build_vixdiskutil():
     if not os.path.exists(f"{photonDir}/tools/bin"):
-        cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
+        runBashCmd(f"mkdir -p {photonDir}/tools/bin")
 
     if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-        runShellCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
+        runBashCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
 
 
 def url_validator(url):
@@ -263,7 +260,7 @@ class Utilities:
             "SpecDeps", constants.logPath, constants.logLevel
         )
         if not os.path.isdir(Build_Config.generatedDataPath):
-            runCommandInShell(f"mkdir -p {Build_Config.generatedDataPath}")
+            runBashCmd(f"mkdir -p {Build_Config.generatedDataPath}")
 
         if configdict["targetName"] in ["pkgtree", "who_needs", "print_upward_deps"]:
             if "pkg" not in os.environ:
@@ -294,8 +291,11 @@ class Utilities:
             "Generating the install time dependency list for all json files"
         )
         if list_json_files:
-            runShellCmd(
-                f"cp {Build_Config.dataDir}/build_install_options_all.json {Build_Config.dataDir}/build_install_options_minimal.json {Build_Config.dataDir}/build_install_options_rt.json {Build_Config.generatedDataPath}"
+            runBashCmd(
+                f"cp {Build_Config.dataDir}/build_install_options_all.json"
+                f" {Build_Config.dataDir}/build_install_options_minimal.json"
+                f" {Build_Config.dataDir}/build_install_options_rt.json"
+                f" {Build_Config.generatedDataPath}"
             )
 
         for json_file in list_json_files:
@@ -394,15 +394,15 @@ class BuildEnvironmentSetup:
         if not configdict["additional-path"]["photon-cache-path"]:
             raise Exception("ERROR: photon-cache-path is empty")
 
-        runCommandInShell(
+        runBashCmd(
             f"rm -rf {Build_Config.rpmNoArchPath}/* {Build_Config.rpmArchPath}/*"
         )
-        runCommandInShell(
+        runBashCmd(
             "cp -rf "
             + configdict["additional-path"]["photon-cache-path"]
             + f"/RPMS/noarch/* {Build_Config.rpmNoArchPath}"
         )
-        runCommandInShell(
+        runBashCmd(
             "cp -rf "
             + configdict["additional-path"]["photon-cache-path"]
             + f"/RPMS/{constants.currentArch}/* {Build_Config.rpmArchPath}"
@@ -428,7 +428,7 @@ class BuildEnvironmentSetup:
             raise Exception("ERROR: photon-sources-path is empty")
 
         print("Using cached SOURCES...")
-        runCommandInShell(
+        runBashCmd(
             "ln -sf "
             + configdict["additional-path"]["photon-sources-path"]
             + " "
@@ -445,7 +445,7 @@ class BuildEnvironmentSetup:
             cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
             cmd = f"{cmd} {constants.prevPublishRPMRepo} {constants.publishrpmurl} rpmfilelist"
 
-            runShellCmd(cmd)
+            runBashCmd(cmd)
         else:
             BuildEnvironmentSetup.publish_rpms_cached()
 
@@ -460,7 +460,7 @@ class BuildEnvironmentSetup:
             cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
             cmd = f"{cmd} {constants.prevPublishXRPMRepo} {constants.publishXrpmurl} xrpmfilelist"
 
-            runShellCmd(cmd)
+            runBashCmd(cmd)
         else:
             BuildEnvironmentSetup.publish_x_rpms_cached()
 
@@ -475,7 +475,7 @@ class BuildEnvironmentSetup:
         cmd += (
             configdict["additional-path"]["photon-publish-rpms-path"] + " rpmfilelist"
         )
-        runShellCmd(cmd)
+        runBashCmd(cmd)
         check_prerequesite["publish-rpms-cached"] = True
 
     def publish_x_rpms_cached():
@@ -488,7 +488,7 @@ class BuildEnvironmentSetup:
             configdict["additional-path"]["photon-publish-x-rpms-path"]
             + " xrpmfilelist"
         )
-        runShellCmd(cmd)
+        runBashCmd(cmd)
         check_prerequesite["publish-x-rpms-cached"] = True
 
     def photon_stage():
@@ -511,13 +511,13 @@ class BuildEnvironmentSetup:
             constants.inputRPMSPath,
         ]
 
-        runShellCmd(f"mkdir -p " + " ".join(stage_dirs))
+        runBashCmd(f"mkdir -p " + " ".join(stage_dirs))
 
         files = ["COPYING", "NOTICE-GPL2.0", "NOTICE-Apachev2", "EULA.txt"]
         stagePath = Build_Config.stagePath
         for fn in files:
             if not os.path.isfile(f"{stagePath}/{fn}"):
-                runShellCmd(f"install -m 444 {curDir}/{fn} {stagePath}")
+                runBashCmd(f"install -m 444 {curDir}/{fn} {stagePath}")
 
         check_prerequesite["photon-stage"] = True
 
@@ -532,27 +532,25 @@ class CleanUp:
         CleanUp.clean_install()
         CleanUp.clean_chroot()
         print("Deleting Photon ISO...")
-        runCommandInShell(f"rm -f {Build_Config.stagePath}/photon-*.iso")
+        runBashCmd(f"rm -f {Build_Config.stagePath}/photon-*.iso")
         print("Deleting stage dir...")
-        runCommandInShell(f"rm -rf {Build_Config.stagePath}")
+        runBashCmd(f"rm -rf {Build_Config.stagePath}")
         print("Deleting chroot path...")
-        runCommandInShell(f"rm -rf {constants.buildRootPath}")
+        runBashCmd(f"rm -rf {constants.buildRootPath}")
         print("Deleting tools/bin...")
-        runCommandInShell("rm -rf tools/bin")
+        runBashCmd("rm -rf tools/bin")
 
     def clean_install():
         print("Cleaning installer working directory...")
         if os.path.isdir(os.path.join(Build_Config.stagePath, "photon_iso")):
             cmd = f"{photonDir}/support/package-builder/clean-up-chroot.py {Build_Config.stagePath}/photon_iso"
-            if runCommandInShell(cmd):
-                raise Exception("Not able to clean chroot")
+            runBashCmd(cmd)
 
     def clean_chroot():
         print("Cleaning chroot path...")
         if os.path.isdir(constants.buildRootPath):
             cmd = f"{photonDir}/support/package-builder/clean-up-chroot.py {constants.buildRootPath}"
-            if runCommandInShell(cmd):
-                raise Exception("Not able to clean chroot")
+            runBashCmd(cmd)
 
     def removeUpwardDeps(pkg, display_option):
         specDeps = SpecDependencyGenerator(constants.logPath, constants.logLevel)
@@ -561,7 +559,7 @@ class CleanUp:
             specDeps.logger.info(
                 "Removing all staged RPMs since toolchain packages were modified"
             )
-            runCommandInShell(f"rm -rf {constants.rpmPath}")
+            runBashCmd(f"rm -rf {constants.rpmPath}")
         else:
             whoNeedsList = specDeps.process("get-upward-deps", pkg, display_option)
             specDeps.logger.info("Removing upward dependencies: " + str(whoNeedsList))
@@ -575,34 +573,33 @@ class CleanUp:
                         buildarch,
                         f"{p}-{version}-{release}.*{buildarch}.rpm",
                     )
-                    runCommandInShell(f"rm -f {rpmFile}")
+                    runBashCmd(f"rm -f {rpmFile}")
 
     def clean_stage_for_incremental_build():
         rpm_path = constants.rpmPath
         ph_path = configdict["photon-path"]
         basecommit = configdict["photon-build-param"]["base-commit"]
 
-        command = (
+        cmd = (
             "cd {} && test -n "
             "\"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\""
             " && {{ echo 'Remove all staged RPMs'; rm -rf {}; }} || :"
         )
-        command = command.format(ph_path, rpm_path)
+        cmd = cmd.format(ph_path, rpm_path)
 
-        if runCommandInShell(command):
-            raise Exception("Not able to run clean_stage_for_incremental_build")
+        runBashCmd(cmd)
 
         if not os.path.exists(rpm_path):
             print(f"{rpm_path} is empty, return ...")
             return
 
-        command = (
+        cmd = (
             "cd {} && echo `git diff --name-only {} | grep '\.spec' | "
             "xargs -n1 basename 2>/dev/null` | tr ' ' :"
         )
-        command = command.format(ph_path, basecommit)
+        cmd = cmd.format(ph_path, basecommit)
 
-        with Popen(command, stdout=PIPE, stderr=None,
+        with Popen(cmd, stdout=PIPE, stderr=None,
                    shell=True, executable="/bin/bash") as process:
             spec_fns = process.communicate()[0].decode("utf-8")
             if process.returncode:
@@ -654,7 +651,7 @@ class RpmBuildTarget:
         Utilities(None).generate_dep_lists()
 
         if constants.buildArch != constants.targetArch:
-            runCommandInShell(f"mkdir -p {constants.rpmPath}/{constants.targetArch}")
+            runBashCmd(f"mkdir -p {constants.rpmPath}/{constants.targetArch}")
 
         self.logger.debug(f"Source Path : {constants.sourcePath}")
         self.logger.debug(f"Spec Path : {constants.specPath}")
@@ -689,7 +686,7 @@ class RpmBuildTarget:
             return
 
         createrepo_cmd = configdict["createrepo-cmd"]
-        runShellCmd(f"{createrepo_cmd} --update {constants.rpmPath}")
+        runBashCmd(f"{createrepo_cmd} --update {constants.rpmPath}")
         check_prerequesite["create-repo"] = True
 
     @staticmethod
@@ -707,8 +704,7 @@ class RpmBuildTarget:
                 f"{photonDir}/support/image-builder/ostree-tools/make-ostree-image.sh"
                 f" {photonDir} {Build_Config.stagePath} {constants.releaseVersion} {ph_docker_img}"
             )
-            if runShellCmd(cmd):
-                raise Exception("Not able to execute make-ostree-image.sh")
+            runBashCmd(cmd)
         else:
             print("OSTree repo already exists...")
 
@@ -915,7 +911,7 @@ class CheckTools:
             f"{photonDir}/tools/scripts/ph-docker-img-import.sh {ph_docker_img_url}"
             f" {ph_docker_img} {ph_builder_tag}"
         )
-        runShellCmd(cmd)
+        runBashCmd(cmd)
 
     def check_git_hooks():
         if not os.path.exists(f"{photonDir}/.git"):
@@ -928,14 +924,14 @@ class CheckTools:
         for fn in {"commit-msg", "pre-push"}:
             if not os.path.exists(f"{git_hooks_path}/{fn}"):
                 print(f"{hook_scripts_path}/{fn} doesn't exist, create ...")
-                cmdUtils.runShellCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
+                cmdUtils.runBashCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
 
     def check_contain():
         if not os.path.exists(f"{photonDir}/tools/bin"):
-            cmdUtils.runShellCmd(f"mkdir -p {photonDir}/tools/bin")
+            runBashCmd(f"mkdir -p {photonDir}/tools/bin")
 
         if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
-            runShellCmd(f"make -C {photonDir}/tools/src/contain install")
+            runBashCmd(f"make -C {photonDir}/tools/src/contain install")
 
     def check_all_tools():
         tools = ["bison", "g++", "gawk", "makeinfo", "kpartx"]
@@ -943,7 +939,7 @@ class CheckTools:
             if not shutil.which(tool):
                 raise Exception(f"{tool} not present")
 
-        cmdUtils.runShellCmd("pip3 show pyOpenSSL >/dev/null 2>&1")
+        runBashCmd("pip3 show pyOpenSSL &>/dev/null")
 
         createrepo_cmd = ""
         for tool in {"createrepo", "createrepo_c"}:
@@ -958,16 +954,16 @@ class CheckTools:
 
     def check_sanity():
         script = f"{photonDir}/tools/scripts/sanity_check.sh"
-        runShellCmd(script)
+        runBashCmd(script)
 
     def check_docker():
         if not glob.glob(Build_Config.dockerEnv) and not shutil.which("docker"):
             raise Exception("docker not present")
 
-        runShellCmd("systemctl start docker")
+        runBashCmd("systemctl start docker")
 
         if not glob.glob(Build_Config.dockerEnv):
-            runShellCmd("docker ps >/dev/null 2>&1")
+            runBashCmd("docker ps &>/dev/null")
 
         docker_py_ver = "2.3.0"
         if not glob.glob(Build_Config.dockerEnv) and docker.__version__ < docker_py_ver:
@@ -979,19 +975,15 @@ class CheckTools:
         if check_prerequesite["check-spec-files"]:
             return
 
-        command = f"{photonDir}/tools/scripts/get_modified_files.sh"
+        cmd = f"{photonDir}/tools/scripts/get_modified_files.sh"
 
         if "base-commit" in configdict["photon-build-param"]:
             commit_id = str(configdict["photon-build-param"].get("base-commit"))
             if commit_id:
-                command = f"git diff --name-only {commit_id}"
+                cmd = f"git diff --name-only {commit_id}"
 
-        with Popen(command,
-                   stdout=PIPE, stderr=None,
-                   shell=True, executable="/bin/bash") as process:
-            files = process.communicate()[0].decode("utf-8").splitlines()
-            if process.returncode:
-                raise Exception("Something went wrong in check_spec_files")
+        files, _, _ = runBashCmd(cmd, capture=True)
+        files = files.splitlines()
 
         if check_specs(files):
             raise Exception("Spec file check failed")
@@ -1000,12 +992,10 @@ class CheckTools:
 
     def check_photon_installer():
         url = "https://github.com/vmware/photon-os-installer.git"
-        cmd = "pip3 install git+%s" % url
+        cmd = f"pip3 install git+{url}"
 
         def install_from_url(cmd):
-            if runCommandInShell(cmd):
-                raise Exception("Failed to run: %s" % cmd)
-            print("%s - Success" % cmd)
+            runBashCmd(cmd)
 
         try:
             import photon_installer
@@ -1022,12 +1012,8 @@ class CheckTools:
         if hasattr(photon_installer, "__version__"):
             local_hash = photon_installer.__version__.split("+")[1]
 
-            remote_hash = "git ls-remote %s HEAD | cut -f1" % url
-            with Popen(remote_hash, stdout=PIPE, stderr=None,
-                       shell=True, executable="/bin/bash") as p:
-                remote_hash = p.communicate()[0].decode("utf-8")
-                if p.returncode:
-                    raise Exception("Something went wrong in check_photon_installer")
+            cmd = f"git ls-remote {url} HEAD | cut -f1"
+            remote_hash, _, _ = runBashCmd(cmd, capture=True)
 
             if not remote_hash.startswith(local_hash):
                 print("Upstream photon-installer is updated, updating local copy ..")
@@ -1167,7 +1153,7 @@ class BuildImage:
             f" -v {photonDir}:/workspace photon-build {docker_script}"
         )
 
-        runShellCmd(cmd)
+        runBashCmd(cmd)
         check_prerequesite["photon-docker-image"] = True
 
     def k8s_docker_images(self):
@@ -1197,13 +1183,13 @@ class BuildImage:
         script = "build-k8s-base-image.sh"
         cmd = f"./{script} {constants.releaseVersion} {constants.buildNumber}"
         cmd = f"{cmd} {Build_Config.stagePath}"
-        runShellCmd(cmd)
+        runBashCmd(cmd)
 
         for script in k8s_build_scripts:
             cmd = f"./{script} {ph_dist_tag} {constants.releaseVersion}"
             cmd = f"{cmd} {constants.specPath} {Build_Config.stagePath}"
             cmd = f"{cmd} {ph_builder_tag}"
-            runShellCmd(cmd)
+            runBashCmd(cmd)
 
         print("Successfully built all the k8s docker images")
         os.chdir(photonDir)
@@ -1387,10 +1373,8 @@ def set_default_value_of_config():
         configdict.setdefault(key, {}).setdefault(cfg, None)
 
     key = "photon-build-param"
-    ret = subprocess.check_output(["git rev-parse --short HEAD"],
-                                  shell=True, executable="/bin/bash")
-    ret = ret.decode("ASCII").rstrip()
-    configdict[key]["input-photon-build-number"] = ret
+    out, _, _ = runBashCmd("git rev-parse --short HEAD", capture=True)
+    configdict[key]["input-photon-build-number"] = out.rstrip()
 
     ret = f"{curDir}/common/data/" + configdict[key]["pkg-build-options"]
     configdict[key]["pkg-build-options"] = ret
@@ -1485,7 +1469,7 @@ def main():
         raise Exception("Either specify branchName or configpath...")
 
     if branch is not None and not os.path.isdir(f"{curDir}/photon-{branch}"):
-        runCommandInShell(
+        runBashCmd(
             f"git clone https://github.com/vmware/photon.git -b {branch} photon-{branch}"
         )
     elif branch is not None:

@@ -452,7 +452,7 @@ def check_mentioned_but_unused_files(spec_fn):
         nonlocal parsed_spec
         parsed_spec += log.split("\n")
 
-    CommandUtils.runCommandInShell(
+    CommandUtils.runBashCmd(
         f"rpmspec -D \"%_sourcedir {dirname}\" -P {spec_fn}",
         logfn=HandleLogs
     )

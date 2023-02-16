@@ -517,7 +517,8 @@ class constants(object):
         ]
 
         for cmd in cmds:
-            if cmdUtils.runCommandInShell(cmd):
+            _, _, retval = cmdUtils.runBashCmd(cmd, ignore_rc=True)
+            if retval:
                 constants.hostRpmIsNotUsable = 1
                 break
 

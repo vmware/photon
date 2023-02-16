@@ -1,20 +1,20 @@
-#! /usr/bin/python3
-#
-#    Author: Harish Udaiya Kumar <hudaiyakumar@vmware.com>
+#!/usr/bin/env python3
+
 import sys
 import os
 import json
 import queue
 import operator
-from argparse import ArgumentParser
 import shutil
 import traceback
+
 from SpecData import SPECS
 from jsonwrapper import JsonWrapper
 from constants import constants
 from CommandUtils import CommandUtils
 from StringUtils import StringUtils
 from Logger import Logger
+from argparse import ArgumentParser
 
 DEFAULT_INPUT_TYPE = "pkg"
 DEFAULT_DISPLAY_OPTION = "tree"
@@ -141,8 +141,8 @@ class SpecDependencyGenerator(object):
 
         # To generate a new JSON file based on given input json file
         elif displayOption == "json" and inputType == "json":
-            d = {'packages': sortedList}
-            with open(inputValue, 'w') as outfile:
+            d = {"packages": sortedList}
+            with open(inputValue, "w") as outfile:
                 json.dump(d, outfile)
 
         return sortedList
@@ -243,16 +243,16 @@ def main():
     logger = Logger.getLogger("SpecDeps", options.log_path, options.log_level)
 
     if not os.path.isdir(options.output_dir):
-        cmdUtils.runCommandInShell("mkdir -p "+options.output_dir)
+        cmdUtils.runBashCmd(f"mkdir -p {options.output_dir}")
 
-    if not options.input_data_dir.endswith('/'):
-        options.input_data_dir += '/'
+    if not options.input_data_dir.endswith("/"):
+        options.input_data_dir += "/"
     try:
         specDeps = SpecDependencyGenerator(options.log_path, options.log_level)
 
         if options.input_type == "print-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
-            logger.info("Upward dependencies: " + str(whoNeedsList))
+            logger.info(f"Upward dependencies: {whoNeedsList}")
         # To display/print package dependencies on console
         elif (options.input_type == "pkg" or
                 options.input_type == "who-needs" or

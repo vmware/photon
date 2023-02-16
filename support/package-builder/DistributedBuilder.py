@@ -4,7 +4,6 @@ import os
 import yaml
 import time
 import json
-import subprocess
 import uuid
 import sys
 import signal
@@ -14,6 +13,7 @@ from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
+from CommandUtils import CommandUtils
 
 
 class DistributedBuilder:
@@ -33,6 +33,7 @@ class DistributedBuilder:
         self.coreV1ApiInstance = client.CoreV1Api(self.aApiClient)
         self.batchV1ApiInstance = client.BatchV1Api(self.aApiClient)
         self.AppsV1ApiInstance = client.AppsV1Api(self.aApiClient)
+        self.cmdUtils = CommandUtils()
 
     def getBuildGuid(self):
          guid = str(uuid.uuid4()).split("-")[1]
@@ -210,16 +211,7 @@ class DistributedBuilder:
         cmd += str(os.path.join(os.path.dirname(__file__)).replace("support/package-builder", ""))
         cmd += f" {podName}:/root/build-{self.buildGuid}/photon"
         self.logger.info(cmd)
-        process = subprocess.Popen(cmd,
-                                   shell=True, executable="/bin/bash",
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
-        if process.wait():
-            self.logger.info("kubectl cp successfull.")
-        else:
-            self.logger.error("kubectl cp failed.")
-            self.clean()
-            sys.exit(1)
+        self.cmdUtils.runBashCmd(cmd)
 
     def copyFromNfs(self):
         podName = f"nfspod-{self.buildGuid}"
@@ -232,16 +224,7 @@ class DistributedBuilder:
         cmd = f"kubectl cp {podName}:/root/build-{self.buildGuid}/photon/stage "
         cmd += str(os.path.join(os.path.dirname(__file__)).replace("support/package-builder", "")) + "stage"
         self.logger.info(cmd)
-        process = subprocess.Popen(cmd,
-                                   shell=True, executable="/bin/bash",
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
-        if process.wait():
-            self.logger.info("kubectl cp successfull.")
-        else:
-            self.logger.error("kubectl cp failed.")
-            self.clean()
-            sys.exit(1)
+        self.cmdUtils.runBashCmd(cmd)
 
     def monitorJob(self):
         w = watch.Watch()

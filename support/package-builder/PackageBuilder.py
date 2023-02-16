@@ -114,9 +114,9 @@ class PackageBuilder(object):
         self.logName = "build-" + package + "-" + version
         self.logPath = constants.logPath + "/" + package + "-" + version + "." + constants.currentArch
         if not os.path.isdir(self.logPath):
-            self.cmdUtils.runCommandInShell(f"mkdir -p {self.logPath}")
+            self.cmdUtils.runBashCmd(f"mkdir -p {self.logPath}")
         else:
-            self.cmdUtils.runCommandInShell(f"rm -f {self.logPath}/*.log")
+            self.cmdUtils.runBashCmd(f"rm -f {self.logPath}/*.log")
         self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
         self.doneList = doneList
 
@@ -178,7 +178,7 @@ class PackageBuilder(object):
         pkg = package+"-"+packageVersion
         if pkg in listInstalledPackages:
                 return
-        # mark it as installed -  to avoid cyclic recursion
+        # mark it as installed -  to avoid recursion
         listInstalledPackages.append(pkg)
         listInstalledRPMs.append(specificRPM)
         self._installDependentRunTimePackages(pkgUtils, package, packageVersion, sandbox, destLogPath,

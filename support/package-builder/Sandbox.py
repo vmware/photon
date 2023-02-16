@@ -2,7 +2,6 @@
 
 import sys
 import os.path
-import subprocess
 import shutil
 import time
 
@@ -41,6 +40,7 @@ class Chroot(Sandbox):
         self.runInChrootCommand = str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh"))
         self.runInChrootCommand += f" {constants.sourcePath} {constants.rpmPath}"
         self.chrootCmdPrefix = None
+        self.cmdUtils = CommandUtils()
 
     def getID(self):
         return self.chrootID
@@ -62,17 +62,12 @@ class Chroot(Sandbox):
 
         # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
-        cmdUtils = CommandUtils()
-        if cmdUtils.runCommandInShell(cmd):
-            self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
-            raise Exception(f"Unable to create chroot: {chrootID}. Unknown error.")
+        self.cmdUtils.runBashCmd(cmd)
 
         self.logger.debug(f"Created new chroot: {chrootID}")
 
         prepareChrootCmd = f"{self.prepareBuildRootCmd} {chrootID}"
-        if cmdUtils.runCommandInShell(prepareChrootCmd, logfn=self.logger.debug):
-            self.logger.error("Prepare build root script failed. Unable to prepare chroot.")
-            raise Exception("Prepare build root script failed")
+        self.cmdUtils.runBashCmd(prepareChrootCmd, logfn=self.logger.debug)
 
         if os.geteuid() == 0:
             cmd = (
@@ -84,10 +79,7 @@ class Chroot(Sandbox):
             if constants.inputRPMSPath:
                 cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"
 
-            if cmdUtils.runCommandInShell(cmd):
-                msg = f"failed to mount directories in {chrootID}"
-                self.logger.error(msg)
-                raise Exception(msg)
+            self.cmdUtils.runBashCmd(cmd)
 
         self.logger.debug(f"Successfully created chroot: {chrootID}")
         self.chrootCmdPrefix = f"{self.runInChrootCommand} {chrootID} "
@@ -106,21 +98,15 @@ class Chroot(Sandbox):
     def run(self, cmd, logfile=None, logfn=None):
         self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
-        return CommandUtils.runCommandInShell(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
+        (_, _, retval) = self.cmdUtils.runBashCmd(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
+        return retval
 
     def put(self, src, dest):
         shutil.copy2(src, f"{self.chrootID}{dest}")
 
     def _removeChroot(self, chrootPath):
         cmd = f"rm -rf {chrootPath}"
-        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
-            self.logger.debug(f"Unable to remove files from chroot {chrootPath}")
-            # Some files are hold by some processes?
-            # Print lsof output, wait 10 seconds and repeat
-            CommandUtils.runCommandInShell(f"lsof +D {chrootPath}", logfn=self.logger.debug)
-            time.sleep(10)
-            if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
-                raise Exception(f"Unable to remove files from chroot {chrootPath}")
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
     def unmountAll(self):
         self._unmountAll(self.chrootID)
@@ -130,33 +116,19 @@ class Chroot(Sandbox):
         if listmountpoints is None:
             return True
         for mountpoint in listmountpoints:
-            cmd = f"umount {mountpoint}"
-            process = subprocess.Popen(f"{cmd} && sync && sync && sync",
-                                       shell=True, executable="/bin/bash",
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-            if process.wait():
+            cmd = f"umount {mountpoint} && sync"
+            _, _, rc = self.cmdUtils.runBashCmd(cmd, ignore_rc=True)
+            if rc:
                 # Try unmount with lazy umount
-                cmd = f"umount -l {mountpoint}"
-                process = subprocess.Popen(f"{cmd} && sync && sync && sync",
-                                           shell=True, executable="/bin/bash",
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE)
-                if process.wait():
-                    raise Exception(f"Unable to unmount {mountpoint}")
+                cmd = f"umount -l {mountpoint} && sync"
+                self.cmdUtils.runBashCmd(cmd)
 
     def _findmountpoints(self, chrootPath):
         if not chrootPath.endswith("/"):
             chrootPath += "/"
         cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
-        process = subprocess.Popen(f"{cmd}",
-                                   shell=True, executable="/bin/bash",
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-        if process.wait():
-            raise Exception("Unable to find mountpoints in chroot")
+        mountpoints, _, _ = self.cmdUtils.runBashCmd(cmd, capture=True)
 
-        mountpoints = process.communicate()[0].decode()
         mountpoints = mountpoints.replace("\n", " ").strip()
         if mountpoints == "":
             self.logger.debug("No mount points found")
@@ -226,10 +198,6 @@ class Container(Sandbox):
         self.logger.debug(f"Successfully created container: {containerID.short_id}")
         self.containerID = containerID
 
-    def destroy(self):
-        self.containerID.remove(force=True)
-        self.containerID = None
-
     def run(self, cmd, logfile=None, logfn=None):
         result = self.containerID.exec_run(cmd)
         if result.output:
@@ -241,9 +209,13 @@ class Container(Sandbox):
                     f.flush()
         return result.exit_code
 
+    def destroy(self):
+        self.containerID.remove(force=True)
+        self.containerID = None
+
     def put(self, src, dest):
         copyCmd = f"docker cp {src} {self.containerID.short_id}:{dest}"
-        CommandUtils.runCommandInShell(copyCmd)
+        self.cmdUtils.runBashCmd(copyCmd)
 
     def hasToolchain(self):
         return True

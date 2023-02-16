@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This is triggered vy pre-push git hook
+# This is triggered by pre-push git hook
 
 SCRIPT_DIR="$(dirname "$(realpath $0)")"
 

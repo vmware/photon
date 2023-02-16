@@ -12,6 +12,7 @@ import ovagenerator
 
 from utils import Utils
 from argparse import ArgumentParser
+from CommandUtils import CommandUtils
 
 
 def create_container_cmd(src_root, photon_docker_image, cmd):
@@ -22,7 +23,10 @@ def create_container_cmd(src_root, photon_docker_image, cmd):
     )
     return cmd
 
+
 def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
+    cmdUtils = CommandUtils()
+
     photon_release_ver = os.environ["PHOTON_RELEASE_VER"]
     photon_build_num = os.environ["PHOTON_BUILD_NUM"]
 
@@ -60,7 +64,8 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         vhdname = f"/{image_name}.vhd"
         dockerenv = False
         print("Check if inside docker env")
-        if Utils.runshellcommand("grep -c docker /proc/self/cgroup || :").rstrip() != "0":
+        out, _, _ = cmdUtils.runBashCmd("grep -c docker /proc/self/cgroup || :", capture=True)
+        if out.rstrip() != "0":
             dockerenv = True
 
         print("Converting raw disk to vhd ...")
@@ -73,10 +78,10 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0])
-        info_output = Utils.runshellcommand(cmd)
 
+        info_out, _, _ = cmdUtils.runBashCmd(cmd, capture=True)
         mbsize = 1024 * 1024
-        mbroundedsize = (int(json.loads(info_output)["virtual-size"]) / mbsize + 1) * mbsize
+        mbroundedsize = (int(json.loads(info_out)["virtual-size"]) / mbsize + 1) * mbsize
 
         cmd = (
             f"tdnf install -y qemu-img &> /dev/null;"
@@ -86,7 +91,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0], mbroundedsize)
-        Utils.runshellcommand(cmd)
+        cmdUtils.runBashCmd(cmd)
 
         cmd = (
             f"tdnf install -y qemu-img &> /dev/null;"
@@ -98,7 +103,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0], os.path.dirname(raw_image[0]) + vhdname)
-        Utils.runshellcommand(cmd)
+        cmdUtils.runBashCmd(cmd)
 
         if config["artifacttype"] == "vhd.gz":
             outputfile = f"{img_path}/{image_name}.vhd.tar.gz"

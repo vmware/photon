@@ -1,30 +1,32 @@
+#!/usr/bin/env python3
+
 import os
 import ctypes
 import ctypes.util
 import json
 import collections
-import subprocess
 import fileinput
 import re
 import copy
 import shutil
 
+
 class Utils(object):
     def __init__(self):
         self.filesystems = []
-        with open('/proc/filesystems') as fs:
+        with open("/proc/filesystems") as fs:
             for line in fs:
-                self.filesystems.append(line.rstrip('\n').split('\t')[1])
+                self.filesystems.append(line.rstrip("\n").split("\t")[1])
 
-        self.libcloader = ctypes.CDLL(ctypes.util.find_library('c'), use_errno=True)
+        self.libcloader = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
     def mount(self, source, destination, filesystem, flags):
         if not os.access(source, os.R_OK):
-            raise Exception("Could not find path " + source)
+            raise Exception(f"Could not find path {source}")
         if not os.access(destination, os.F_OK):
             os.mkdir(destination)
         if not os.access(destination, os.W_OK):
-            raise Exception("Could not write to path " + destination)
+            raise Exception(f"Could not write to path {destination}")
         if filesystem not in self.filesystems:
             raise ValueError("Filesystem unknown")
         ret = self.libcloader.mount(ctypes.c_char_p(source),
@@ -48,23 +50,6 @@ class Utils(object):
         data = json.load(json_data, object_pairs_hook=collections.OrderedDict)
         json_data.close()
         return data
-
-    @staticmethod
-    def runshellcommand(cmd, ignore_errors=False, debug=True):
-        # use debug parameter for now, implement logging for image builder later
-        if debug:
-            print(cmd)
-        p = subprocess.Popen(cmd,
-                             shell=True, executable="/bin/bash",
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        output, err = p.communicate()
-        rc = p.returncode
-        if not ignore_errors:
-            if rc != 0:
-                print(err)
-                raise RuntimeError("Cannot run command {}".format(cmd))
-        return output.decode()
 
     @staticmethod
     def replaceinfile(filename, pattern, sub):
@@ -109,10 +94,10 @@ class Utils(object):
     def strtobool(val):
         val = val.lower()
 
-        if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        if val in ("y", "yes", "t", "true", "on", "1"):
             return 1
 
-        if val in ('n', 'no', 'f', 'false', 'off', '0'):
+        if val in ("n", "no", "f", "false", "off", "0"):
             return 0
 
         raise ValueError("invalid truth value {!r}".format(val))

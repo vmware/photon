@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 import os
 import threading
 import copy
 import docker
-from PackageBuildDataGenerator import PackageBuildDataGenerator
+
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
@@ -13,6 +15,8 @@ from ThreadPool import ThreadPool
 from SpecData import SPECS
 from StringUtils import StringUtils
 from Sandbox import Chroot, Container
+from PackageBuildDataGenerator import PackageBuildDataGenerator
+
 
 class PackageManager(object):
 
@@ -30,11 +34,12 @@ class PackageManager(object):
         self.sortedPackageList = []
         self.listOfPackagesAlreadyBuilt = set()
         self.pkgBuildType = pkgBuildType
+        self.cmdUtils = CommandUtils()
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
 
     def buildToolChain(self):
-        self.logger.info("Step 1 : Building the core toolchain packages for " + constants.currentArch)
+        self.logger.info(f"Step 1: Building the core toolchain packages for {constants.currentArch}")
         self.logger.info(constants.listCoreToolChainPackages)
         self.logger.info("")
 
@@ -47,15 +52,14 @@ class PackageManager(object):
             rpmPkg = pkgUtils.findRPMFile(package, version)
             self.sortedPackageList.append(package+"-"+version)
             if rpmPkg is not None:
-                doneList.append(package+'-'+version)
+                doneList.append(f"{package}-{version}")
                 continue
-            else:
-                coreToolChainYetToBuild.append(package)
+            coreToolChainYetToBuild.append(package)
 
         self.listOfPackagesAlreadyBuilt = set(doneList)
         pkgCount = len(coreToolChainYetToBuild)
         if coreToolChainYetToBuild:
-            self.logger.info("The following core toolchain packages need to be built :")
+            self.logger.info("The following core toolchain packages need to be built: ")
             self.logger.info(coreToolChainYetToBuild)
         else:
             self.logger.info("Core toolchain packages are already available")
@@ -78,12 +82,12 @@ class PackageManager(object):
                 #TODO image name constants.buildContainerImageName
                 if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
                     self._createBuildContainer(True)
-            self.logger.info("Step 2 : Building stage 2 of the toolchain...")
+            self.logger.info("Step 2: Building stage 2 of the toolchain...")
             self.logger.info(constants.listToolChainPackages)
             self.logger.info("")
             self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
             self.logger.info("The entire toolchain is now available")
-            self.logger.info(45 * '-')
+            self.logger.info(45 * "-")
             self.logger.info("")
         if self.pkgBuildType == "container":
             # Stage 2 build container
@@ -101,7 +105,7 @@ class PackageManager(object):
             self._buildGivenPackages(listPackages, buildThreads)
         else:
             self.buildToolChainPackages(buildThreads)
-            self.logger.info("Step 3 : Building the following package(s) and dependencies...")
+            self.logger.info("Step 3: Building the following package(s) and dependencies...")
             self.logger.info(listPackages)
             self.logger.info("")
             self._buildGivenPackages(listPackages, buildThreads)
@@ -214,7 +218,7 @@ class PackageManager(object):
             self._initializeScheduler(statusEvent)
             self._initializeThreadPool(statusEvent)
             for i in range(0, buildThreads):
-                workerName = "WorkerThread" + str(i)
+                workerName = f"WorkerThread{i}"
                 ThreadPool.addWorkerThread(workerName)
                 ThreadPool.startWorkerThread(workerName)
 
@@ -268,13 +272,12 @@ class PackageManager(object):
 
         # Create photon build container using toolchain chroot
         chroot.unmountAll()
-        #TODO: Coalesce logging
-        cmdUtils = CommandUtils()
+        # TODO: Coalesce logging
         cmd = "cd " + chroot.getID() + " && tar -czf ../tcroot.tar.gz ."
-        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         cmd = "mv " + chroot.getID() + "/../tcroot.tar.gz ."
-        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-        #TODO: Container name, docker file name from constants.
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
+        # TODO: Container name, docker file name from constants.
         self.dockerClient.images.build(tag=constants.buildContainerImage,
                                        path=".",
                                        rm=True,
@@ -282,6 +285,6 @@ class PackageManager(object):
 
         # Cleanup
         cmd = "rm -f ./tcroot.tar.gz"
-        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         chroot.destroy()
         self.logger.debug("Photon build container successfully created.")

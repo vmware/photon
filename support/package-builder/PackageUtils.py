@@ -80,7 +80,7 @@ class PackageUtils(object):
             self.packagesToInstallInAOneShot += f" {package}"
 
     def installRPMSInOneShot(self, sandbox, arch):
-        rpmInstallcmd = self.rpmBinary + " " + self.installRPMPackageOptions
+        rpmInstallcmd = f"{self.rpmBinary} {self.installRPMPackageOptions}"
         if constants.crossCompiling and arch == constants.targetArch:
             rpmInstallcmd += f" --ignorearch --noscripts --root /target-{constants.targetArch}"
 
@@ -177,7 +177,7 @@ class PackageUtils(object):
             logs = []
             rpm_full_path = f"{constants.rpmPath}/" + fn.split(".")[-2] + f"/{fn}"
             cmd = f"{self.rpmBinary} -qlp {rpm_full_path}"
-            self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
+            self.cmdUtils.runBashCmd(cmd, logfn=HandleLogs)
             if look_for in logs:
                 result_logs += logs
                 faulty_rpms.append(rpm_full_path)
@@ -384,10 +384,10 @@ class PackageUtils(object):
             fileContents += log.split("\n")
 
         cmd = f"grep -aw \"^Wrote: \" {stageLogFile}"
-        returnVal = self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
+        (_, _, returnVal) = self.cmdUtils.runBashCmd(cmd, logfn=HandleLogs)
 
         if returnVal or not fileContents:
-            msg = f"{stageLogFile} doesn't have 'Write: ' entries"
+            msg = f"{stageLogFile} doesn't have 'Wrote: ' entries"
             self.logger.error(msg)
             raise Exception(msg)
 

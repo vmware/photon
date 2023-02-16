@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
-import subprocess
 import sys
+
+from CommandUtils import CommandUtils
+
+cmdUtils = CommandUtils()
+
 
 def cleanUpChroot(chrootPath):
     returnVal, listmountpoints = findmountpoints(chrootPath)
@@ -21,16 +25,15 @@ def cleanUpChroot(chrootPath):
 
     return True
 
+
 def removeAllFilesFromChroot(chrootPath):
     cmd = f"rm -rf {chrootPath}"
-    process = subprocess.Popen(cmd,
-                               shell=True, executable="/bin/bash",
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    if process.wait():
+    _, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+    if rc:
         print("Unable to remove files from chroot " + chrootPath)
         return False
     return True
+
 
 def unmountmountpoints(listmountpoints):
     if listmountpoints is None:
@@ -38,11 +41,8 @@ def unmountmountpoints(listmountpoints):
     result = True
     for mountpoint in listmountpoints:
         cmd = f"umount {mountpoint}"
-        process = subprocess.Popen(cmd,
-                                   shell=True, executable="/bin/bash",
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-        if process.wait():
+        _, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+        if rc:
             result = False
             print("Unable to unmount " + mountpoint)
             break
@@ -51,22 +51,21 @@ def unmountmountpoints(listmountpoints):
         return False
     return True
 
+
 def findmountpoints(chrootPath):
     if not chrootPath.endswith("/"):
         chrootPath = f"{chrootPath}/"
     cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
-    process = subprocess.Popen(cmd,
-                               shell=True, executable="/bin/bash",
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    if process.wait():
+    mountpoints, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+    if rc:
         print("Unable to find mountpoints in chroot")
         return False, None
-    mountpoints = process.communicate()[0].decode()
+
     mountpoints = mountpoints.replace("\n", " ").strip()
     if mountpoints == "":
         print("No mount points found")
         return True, None
+
     listmountpoints = mountpoints.split(" ")
     return True, listmountpoints
 

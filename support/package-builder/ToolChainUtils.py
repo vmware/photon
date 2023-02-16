@@ -20,6 +20,8 @@ class ToolChainUtils(object):
             logName = "Toolchain Utils"
         if logPath is None:
             logPath = constants.logPath
+
+        self.cmdUtils = CommandUtils()
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
@@ -41,7 +43,7 @@ class ToolChainUtils(object):
             self.rpmCommand = "fakeroot-ng rpm"
 
     def _findPublishedRPM(self, package, rpmdirPath):
-        listFoundRPMFiles = CommandUtils.findFile(f"{package}-*.rpm", rpmdirPath)
+        listFoundRPMFiles = self.cmdUtils.findFile(f"{package}-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
@@ -152,9 +154,7 @@ class ToolChainUtils(object):
             )
 
         self.logger.debug(f"Executing cmd: {cmd}")
-        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
-            self.logger.error("Installing toolchain RPMS failed")
-            raise Exception("RPM installation failed")
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         self.logger.debug(f"Successfully installed default toolchain RPMS in Chroot: {ChrootID}")
 
         if packageName:
@@ -218,15 +218,12 @@ class ToolChainUtils(object):
         self.logger.debug(packages)
 
         cmd = f"mkdir -p {ChrootID}/target-{constants.targetArch}"
-        CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
         if rpmFiles != "":
             cmd = (
                 f"{self.rpmCommand} -Uv --nodeps --ignorearch --noscripts --root"
                 f" {ChrootID}/target-{constants.targetArch} {rpmFiles}"
             )
-            if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
-                self.logger.debug(f"Command Executed: {cmd}")
-                self.logger.error("Installing toolchain failed")
-                raise Exception("RPM installation failed")
+            self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         self.logger.debug(f"Successfully installed target toolchain RPMS in chroot: {ChrootID}")

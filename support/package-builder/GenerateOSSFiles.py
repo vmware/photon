@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-# pylint: disable=invalid-name,missing-docstring
+
 import os
 import json
 import sys
 import traceback
+
 from argparse import ArgumentParser
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
 
+cmdUtils = CommandUtils()
 
 
 def main():
@@ -38,7 +40,6 @@ def main():
 
     options = parser.parse_args()
     errorFlag = False
-    cmdUtils = CommandUtils()
 
     try:
         logName = "GenerateYamlFiles"
@@ -75,7 +76,7 @@ def main():
 
         if options.generateYamlFiles:
             if not os.path.isdir(options.outputDirPath):
-                cmdUtils.runCommandInShell("mkdir -p "+options.outputDirPath)
+                cmdUtils.runBashCmd("mkdir -p "+options.outputDirPath)
 
         constants.setSpecPath(options.specPath)
         constants.setSourceRpmPath(options.sourceRpmPath)
@@ -139,12 +140,11 @@ def readBlackListPackages(pkgBlackListFile):
 
 
 def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
-    cmdUtils = CommandUtils()
     yamlSourceDir = os.path.join(yamlDir, "yaml_sources")
     if not os.path.isdir(yamlSourceDir):
-        cmdUtils.runCommandInShell("mkdir -p " + yamlSourceDir)
+        cmdUtils.runBashCmd(f"mkdir -p {yamlSourceDir}")
     if singleFile:
-        yamlFile = open(yamlSourceDir + "/sources_list.yaml", "w")
+        yamlFile = open(f"{yamlSourceDir}/sources_list.yaml", "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
     import PullSources
@@ -193,12 +193,11 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
 
 
 def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile=True):
-    cmdUtils = CommandUtils()
     yamlSrpmDir = os.path.join(yamlDir, "yaml_srpms")
     if not os.path.isdir(yamlSrpmDir):
-        cmdUtils.runCommandInShell("mkdir -p " + yamlSrpmDir)
+        cmdUtils.runBashCmd(f"mkdir -p {yamlSrpmDir}")
     if singleFile:
-        yamlFile = open(yamlSrpmDir + "/srpm_list.yaml", "w")
+        yamlFile = open(f"{yamlSrpmDir}/srpm_list.yaml", "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
     for package in listPackages:
@@ -222,24 +221,23 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
             if len(listFoundSRPMFiles) == 1:
                 srpmFullPath = listFoundSRPMFiles[0]
                 srpmName = os.path.basename(srpmFullPath)
-                cpcmd = "cp " + srpmFullPath + " " + yamlSrpmDir + "/"
-                returnVal = cmdUtils.runCommandInShell(cpcmd)
-                if returnVal != 0:
+                cpcmd = f"cp {srpmFullPath} {yamlSrpmDir}/"
+                _, _, returnVal = cmdUtils.runBashCmd(cpcmd)
+                if returnVal:
                     logger.error("Copy SRPM File is failed for package:" + ossname)
             else:
                 logger.error("SRPM file is not found:" + ossname)
 
             if not singleFile:
-                yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
-                                + curleasever + ".yaml", "w")
+                yamlFile = open(f"{yamlSrpmDir}/{ossname}-{ossversion}-{curleasever}.yaml", "w")
 
-            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + curleasever +  ":\n")
+            yamlFile.write(f"baseos:{ossname}:{ossversion}-{curleasever}:\n")
             yamlFile.write("  repository: BaseOS\n")
-            yamlFile.write("  name: '" + ossname + "'\n")
-            yamlFile.write("  version: '" + ossversion + "-" + curleasever +"'\n")
+            yamlFile.write(f"  name: '{ossname}'\n")
+            yamlFile.write(f"  version: '{ossversion}-{curleasever}'\n")
             yamlFile.write("  url: 'http://www.vmware.com'\n")
             yamlFile.write("  baseos-style: rpm\n")
-            yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
+            yamlFile.write(f"  baseos-source: '{srpmName}'\n")
             yamlFile.write("  baseos-osname: 'photon'\n")
             yamlFile.write("\n")
             if not singleFile:
