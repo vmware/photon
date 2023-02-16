@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.271
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.272
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=858cadba377e01f5e5c0c6bef2d3929ee1c3d14bc1df6afb62e54abc7dda35d8a8fa30e9a1ec1dc55721ebf94029561ab4c0daf48a7a9cea5e95bbeab7f26702
+%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -811,6 +811,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1
+- Update to version 4.19.272
 * Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
 - Fix for CVE-2021-44879/2022-0480/CVE-2022-3303/CVE-2023-23454
 * Mon Feb 06 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.271-2

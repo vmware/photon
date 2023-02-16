@@ -7,6 +7,8 @@ Can be used by CRX to collect guest dump on panic.
 Guest dump can be trigerred by triple fault (in debug
 builds) or by cli;hlt event in the guest for directly
 booted VM (debug and release builds).
+
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  kernel/panic.c | 4 ++++
  1 file changed, 4 insertions(+)
@@ -15,14 +17,14 @@ diff --git a/kernel/panic.c b/kernel/panic.c
 index 8138a676fb7d..a0e8351f4b93 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -41,6 +41,7 @@ static int pause_on_oops;
+@@ -42,6 +42,7 @@ static int pause_on_oops;
  static int pause_on_oops_flag;
  static DEFINE_SPINLOCK(pause_on_oops_lock);
  bool crash_kexec_post_notifiers;
 +bool halt_on_panic;
  int panic_on_warn __read_mostly;
- 
- int panic_timeout = CONFIG_PANIC_TIMEOUT;
+ static unsigned int warn_limit __read_mostly;
+
 @@ -297,6 +298,8 @@ void panic(const char *fmt, ...)
  #endif
  	pr_emerg("---[ end Kernel panic - not syncing: %s ]---\n", buf);
