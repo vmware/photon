@@ -1,18 +1,18 @@
-From 577fc59ac60648cfcc60a203e7f0992f49326479 Mon Sep 17 00:00:00 2001
+From 5db966668074923390bb8c0a0d3d1edfaa6384c0 Mon Sep 17 00:00:00 2001
 From: Susant Sahani <ssahani@vmware.com>
-Date: Mon, 30 May 2022 11:30:38 +0000
-Subject: [PATCH 2/2] Fetch dns servers from environment
+Date: Thu, 16 Feb 2023 08:25:04 +0000
+Subject: [PATCH] Fetch dns servers from environment
 
 ---
  src/resolve/resolved-conf.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/resolve/resolved-conf.c b/src/resolve/resolved-conf.c
-index a25dffae63..3958a4ca84 100644
+index d692998..8ee82af 100644
 --- a/src/resolve/resolved-conf.c
 +++ b/src/resolve/resolved-conf.c
-@@ -485,7 +485,7 @@ int manager_parse_config_file(Manager *m) {
-                 return r;
+@@ -578,7 +578,7 @@ int manager_parse_config_file(Manager *m) {
+         read_proc_cmdline(m);  /* … but kernel command line overrides local configuration. */
  
          if (m->need_builtin_fallbacks) {
 -                r = manager_parse_dns_server_string_and_warn(m, DNS_SERVER_FALLBACK, DNS_SERVERS);
@@ -21,5 +21,5 @@ index a25dffae63..3958a4ca84 100644
                          return r;
          }
 -- 
-2.30.3
+2.35.5
 

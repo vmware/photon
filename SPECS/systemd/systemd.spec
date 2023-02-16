@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        252.4
-Release:        9%{?dist}
+Version:        253
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=d4e99a67c59091dae78f654433a6c5e114ae66256b72d9d43292c43a986ee6a58e2d06f12866cbd7ec821b61580ec003af1725f60fd4b038b4a981b3ca839ee2
+%define sha512 %{name}=85bc9a3715d9ccc80df2c5678b74a4a3b72569643d1779511ea631d692dea0fa1da255ef18b1c4fd477a777c036ea2afe9c0ffb29101c09c608933455002f029
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -27,9 +27,7 @@ Source14:       sysusers.generate-pre.sh
 
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
-Patch2: 0001-systemd-Support-OOMPolicy-in-scope-units.patch
-Patch3: 0001-systemd-Default-to-OOMPolicy-continue-for-login-sess.patch
-Patch4: use-bfq-scheduler.patch
+Patch2: use-bfq-scheduler.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -467,6 +465,7 @@ fi
 %{_bindir}/%{name}-dissect
 %{_bindir}/%{name}-sysext
 %{_bindir}/%{name}-creds
+%{_bindir}/%{name}-ac-power
 
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
@@ -483,6 +482,7 @@ fi
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
+%{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/README
 
 %{_environmentdir}/99-environment.conf
@@ -499,6 +499,7 @@ fi
 %{_systemd_util_dir}/resolv.conf
 %{_systemd_util_dir}/%{name}*
 %{_systemd_util_dir}/user*
+%{_systemd_util_dir}/ukify
 %{_systemd_util_dir}/import-pubring.gpg
 %{_unitdir}/*
 %{_presetdir}/*
@@ -704,6 +705,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 253-1
+- Version bump.
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-9
 - Fix requires
 * Fri Feb 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-8
