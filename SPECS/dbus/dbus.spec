@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
-Version:        1.15.2
-Release:        3%{?dist}
+Version:        1.15.4
+Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512 %{name}=486eab8c4f87d75e988558724bff1b0708c969341ecb62bcb9d0b0612a653ac2674aa7caa4d129dd81c00af7989b122ee7837599262c9a0c5c7f9335ed3dacaf
+%define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
 
 Source1: user/%{name}.service
 Source2: user/%{name}.socket
@@ -97,6 +97,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 1.15.4-1
+- Version bump
 * Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.2-3
 - Add dbus-user-session sub package, needed by rootless containers
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 1.15.2-2
