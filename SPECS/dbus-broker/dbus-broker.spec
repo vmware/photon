@@ -1,6 +1,6 @@
 Name:           dbus-broker
-Version:        32
-Release:        2%{?dist}
+Version:        33
+Release:        1%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha512  dbus-broker=aa23d058771f56e6378df0a17ac413813b6350b77e61128c0887f35a546f10534b1a6d598868e9f5c642244c3632a8ce5e315e6794305a56f5abbebd36bf822c
+%define sha512  dbus-broker=776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -81,6 +81,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 33-1
+- Update version
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 32-2
 - Update release to compile with python 3.11
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 32-1
