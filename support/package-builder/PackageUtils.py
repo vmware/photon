@@ -4,10 +4,11 @@ import shutil
 import re
 import random
 import string
+import PullSources
+
 from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
-import PullSources
 from SpecData import SPECS
 
 
@@ -21,6 +22,7 @@ class PackageUtils(object):
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
+        self.cmdUtils = CommandUtils()
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
         self.nodepsRPMPackageOptions = "--nodeps"
@@ -158,7 +160,7 @@ class PackageUtils(object):
                     package in constants.testForceRPMS and
                     SPECS.getData().isCheckAvailable(package, version)):
                 cmd = ("sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' " + logFilePath)
-                CommandUtils().runCommandInShell(cmd, logfn=self.logger.debug)
+                self.cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         self.logger.debug("RPM build is successful")
 
     """
@@ -180,7 +182,7 @@ class PackageUtils(object):
             logs = ""
             rpm_full_path = constants.rpmPath + "/" + fn.split(".")[-2] + "/" + fn
             cmd = self.rpmBinary + " -qlp " + rpm_full_path
-            CommandUtils.runCommandInShell(cmd, logfn=HandleLogs)
+            self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
             if look_for in logs:
                 result_logs += logs
                 faulty_rpms.append(rpm_full_path)
@@ -265,16 +267,15 @@ class PackageUtils(object):
         raise Exception("Failed while adjusting gcc specs")
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
-        cmdUtils = CommandUtils()
         # Fetch/verify sources if checksum not None.
         checksum = SPECS.getData().getChecksum(package, version, source)
         if checksum is not None:
             PullSources.get(package, source, checksum, constants.sourcePath,
                             constants.getPullSourcesURLs(package), self.logger)
 
-        sourcePath = cmdUtils.findFile(source, constants.sourcePath)
+        sourcePath = self.cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
-            sourcePath = cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
+            sourcePath = self.cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
             if not sourcePath:
                 if checksum is None:
                     self.logger.error("No checksum found or missing source for " + source)
@@ -357,21 +358,30 @@ class PackageUtils(object):
                 self.logger.error("Building rpm is failed " + specFile)
                 raise Exception("RPM build failed")
 
-        #Extracting rpms created from log file
+        # Fetch built rpm names from log file
+        fileContents = []
+        stageLogFile = logFile.replace(f"{constants.topDirPath}/LOGS", constants.logPath)
+
+        def HandleLogs(log):
+            nonlocal fileContents
+            fileContents += log.split("\n")
+
+        cmd = f"grep -aw \"^Wrote: \" {stageLogFile}"
+        returnVal = self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
+
+        if returnVal or not fileContents:
+            msg = f"{stageLogFile} doesn't have 'Write: ' entries"
+            self.logger.error(msg)
+            raise Exception(msg)
+
         listRPMFiles = []
         listSRPMFiles = []
-        stageLogFile = logFile.replace(constants.topDirPath + "/LOGS", constants.logPath )
-        with open(stageLogFile, 'r') as logfile:
-            fileContents = logfile.readlines()
-            for i in range(0, len(fileContents)):
-                if re.search("^Wrote:", fileContents[i]):
-                    listcontents = fileContents[i].split()
-                    if ((len(listcontents) == 2) and
-                            listcontents[1].strip().endswith(".rpm") and
-                            "/RPMS/" in listcontents[1]):
-                        listRPMFiles.append(listcontents[1])
-                    if ((len(listcontents) == 2) and
-                            listcontents[1].strip().endswith(".src.rpm") and
-                            "/SRPMS/" in listcontents[1]):
-                        listSRPMFiles.append(listcontents[1])
+        for line in fileContents:
+            if line:
+                listcontents = line.split()
+                if "/RPMS/" in listcontents[1]:
+                    listRPMFiles.append(listcontents[1])
+                elif "/SRPMS/" in listcontents[1]:
+                    listSRPMFiles.append(listcontents[1])
+
         return listRPMFiles, listSRPMFiles
