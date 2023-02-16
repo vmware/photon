@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.165
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.168
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt81
+%define rt_version rt83
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=2c3431a36d4be44b83f70025110ac4b4799e284481d11690f620813d5b4b48cfd1c03f0e93103339ae7d017a61c46d5b8b9b1031f3be444d491ead74a1cb0386
+%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
 Source1:    config-rt
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -480,8 +480,9 @@ Patch615: 0315-rt-remove-extra-parameter-from-__trace_stack.patch
 Patch616: 0316-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
 Patch617: 0317-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
 Patch618: 0318-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
+Patch619: 0319-printk-ignore-consoles-without-write-callback.patch
 # Keep rt_version matched up with this patch.
-Patch619: 0319-Linux-5.10.165-rt81-REBASE.patch
+Patch620: 0320-Linux-5.10.168-rt83-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -918,6 +919,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
+- Update to version 5.10.168
 * Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
 - Fix for CVE-2022-2196/CVE-2022-4379
 * Wed Feb 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-1

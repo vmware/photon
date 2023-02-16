@@ -1,0 +1,20 @@
+From 516d2c0052294e03acd862275fb74e0bd17fe7b4 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Sat, 18 Feb 2023 23:02:45 -0300
+Subject: [PATCH 320/320] Linux 5.10.168-rt83 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index d42c0971b041..6a72c0fb772f 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt66
++-rt83
+-- 
+2.39.2
+

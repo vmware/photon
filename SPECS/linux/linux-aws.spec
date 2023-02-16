@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.165
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.168
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=2c3431a36d4be44b83f70025110ac4b4799e284481d11690f620813d5b4b48cfd1c03f0e93103339ae7d017a61c46d5b8b9b1031f3be444d491ead74a1cb0386
+%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -494,6 +494,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
+- Update to version 5.10.168
 * Thu Feb 16 2023 Keerthana K <keerthanak@vmware.com> 5.10.165-3
 - Add FIPS canister
 * Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
