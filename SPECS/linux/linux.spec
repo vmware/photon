@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -101,6 +101,9 @@ Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# VMware-specific patch to enable turbostat to work on ESXi
+Patch19: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
 
 # Allow PCI resets to be disabled from vfio_pci_core module
 Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -683,6 +686,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 21 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-11
+- Enable turbostat to work in the guest on VMware hypervisor.
 * Tue Feb 21 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-10
 - Update i40e driver to v2.19.3 to prevent kernel warnings
 * Mon Feb 20 2023 Ajay Kaher <akaher@vmware.com> 6.0.7-9
