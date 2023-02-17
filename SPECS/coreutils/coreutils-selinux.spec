@@ -1,39 +1,51 @@
+%define srcname coreutils
+
 # this is also used in toybox.spec
 %define coreutils_selinux_present    %{_sharedstatedir}/rpm-state/%{name}
 
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/coreutils/coreutils-%{version}.tar.xz
-%define sha512  coreutils=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
+Source0: http://ftp.gnu.org/gnu/coreutils/%{srcname}-%{version}.tar.xz
+%define sha512 %{srcname}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
 
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
-Patch0: coreutils-%{version}-i18n-1.patch
+Patch0: %{srcname}-%{version}-i18n-1.patch
 
 BuildRequires: libselinux-devel
 
 Requires: gmp
 
-Provides: sh-utils
-Provides: coreutils = %{version}-%{release}
+Provides: sh-utils = %{version}-%{release}
+Provides: %{srcname} = %{version}-%{release}
 
-Obsoletes: coreutils
+Obsoletes: %{srcname}
 
 %description
 SELinux enabled coreutils package.
 
+%package lang
+Summary:    Additional language files for coreutils
+Group:      System Environment/Base
+Requires:   %{name} = %{version}-%{release}
+Provides:   %{srcname}-lang = %{version}-%{release}
+Obsoletes:  %{srcname}-lang
+
+%description lang
+These are the additional language files of coreutils.
+
 %prep
-%autosetup -p1 -n coreutils-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 autoreconf -fiv
@@ -53,9 +65,10 @@ mv -v %{buildroot}%{_bindir}/chroot %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_mandir}/man1/chroot.1 %{buildroot}%{_mandir}/man8/chroot.8
 sed -i 's/\"1\"/\"8\"/1' %{buildroot}%{_mandir}/man8/chroot.8
 rm -rf %{buildroot}%{_infodir}
-install -vdm755 %{buildroot}/etc/profile.d
-install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
-rm -rf %{buildroot}%{_datadir}/locale
+install -vdm755 %{buildroot}%{_sysconfdir}/profile.d
+install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/
+
+%find_lang %{srcname}
 
 %if 0%{?with_check}
 %check
@@ -90,7 +103,12 @@ touch %{coreutils_selinux_present}
 %{_sbindir}/*
 %{_mandir}/*/*
 
+%files lang -f %{srcname}.lang
+%defattr(-,root,root)
+
 %changelog
+* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-5
+- Add lang sub package
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-4
 - Add a flag file & use it in toybox trigger
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 9.1-3

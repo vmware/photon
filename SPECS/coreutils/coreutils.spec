@@ -59,8 +59,8 @@ mv -v %{buildroot}%{_bindir}/chroot %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_mandir}/man1/chroot.1 %{buildroot}%{_mandir}/man8/chroot.8
 sed -i 's/\"1\"/\"8\"/1' %{buildroot}%{_mandir}/man8/chroot.8
 rm -rf %{buildroot}%{_infodir}
-install -vdm755 %{buildroot}/etc/profile.d
-install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
+install -vdm755 %{buildroot}%{_sysconfdir}/profile.d
+install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/
 
 %find_lang %{name}
 
