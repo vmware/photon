@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.88
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -41,6 +41,14 @@ Requires: apache-ant
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
+
+%package        webapps
+Summary:        Web application for Apache Tomcat
+Group:          Applications/System
+Requires:       apache-tomcat = %{version}-%{release}
+
+%description    webapps
+The web application for Apache Tomcat.
 
 %prep
 %autosetup -n %{name}-%{version}-src -p1
@@ -89,7 +97,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
-%dir %{_webappsdir}
+%dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
@@ -104,13 +112,22 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
-%{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
 %{_logsdir}/catalina.out
 
+%files webapps
+%defattr(-,root,root)
+%dir %{_webappsdir}/manager
+%dir %{_webappsdir}/host-manager
+%{_webappsdir}/ROOT/*
+%{_webappsdir}/manager/*
+%{_webappsdir}/host-manager/*
+
 %changelog
+* Wed Jun 28 2023 Prashant S Chauhan <psinghchauha@vmware.com> 8.5.88-3
+- Package webapps as a subpackage
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.88-2
 - Bump version as a part of openjdk8 upgrade
 * Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.88-1
