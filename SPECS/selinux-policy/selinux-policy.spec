@@ -1,21 +1,25 @@
-%define container_selinux_ver 2.181.0
+%define container_selinux_ver   2.181.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=85bf6c98b1d226019122226ca4761821c6d8b46c7c40b00b67a9279f3d1fc847ea4bdde2fddcdaa161aa577b86a495f5ad80f8736acd813ad74a366b9aeaaa89
-Source1:        https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
-%define sha512  container-selinux=8d85263599cf66b2d83e510ab75056d425ae5cd9b330c820d053e328575129ccca5320c92f29c8e0310d49b90261755567a28b93ae684f21f49698789ea6bf1b
-Source2:        build.conf
-Source3:        modules.conf
+Source0: https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=85bf6c98b1d226019122226ca4761821c6d8b46c7c40b00b67a9279f3d1fc847ea4bdde2fddcdaa161aa577b86a495f5ad80f8736acd813ad74a366b9aeaaa89
+
+Source1: https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
+%define sha512 container-selinux=8d85263599cf66b2d83e510ab75056d425ae5cd9b330c820d053e328575129ccca5320c92f29c8e0310d49b90261755567a28b93ae684f21f49698789ea6bf1b
+
+Source2: build.conf
+Source3: modules.conf
+Source4: macros.%{name}
+Source5: config
 
 Patch0: contrib-container.patch
 Patch1: contrib-cron.patch
@@ -79,32 +83,29 @@ cp -r ../container-selinux-%{container_selinux_ver}/container.* policy/modules/c
 %build
 cp %{SOURCE2} .
 cp %{SOURCE3} policy/
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
-mkdir -p %{buildroot}/var/lib/selinux/default
+%make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sharedstatedir}/selinux/default
 # Use priority 100 instead of default 400
-make %{?_smp_mflags} DESTDIR=%{buildroot} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
-make %{?_smp_mflags} DESTDIR=%{buildroot} install-headers
+%make_install %{?_smp_mflags} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
+%make_install %{?_smp_mflags} install-headers
 mkdir %{buildroot}%{_datadir}/selinux/devel
 cp doc/Makefile.example %{buildroot}%{_datadir}/selinux/devel/Makefile
 cp config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/default/contexts/files/
-cat > %{buildroot}%{_sysconfdir}/selinux/config << EOF
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-#     enforcing - SELinux security policy is enforced.
-#     permissive - SELinux prints warnings instead of enforcing.
-#     disabled - No SELinux policy is loaded.
-SELINUX=permissive
-# SELINUXTYPE= can take one of these values:
-#     default - minimal Photon container host MCS protection.
-SELINUXTYPE=default
-EOF
+cp -p %{SOURCE5} %{buildroot}%{_sysconfdir}/selinux/config
+
+mkdir -p %{buildroot}%{_rpmmacrodir}
+cp -p %{SOURCE4} %{buildroot}%{_rpmmacrodir}/
+
+rel="$(echo %{release} | sed 's/\.[^.]*$//')"
+sed -i "s/SELINUXPOLICYVERSION/%{version}-${rel}/" %{buildroot}%{_rpmmacrodir}/macros.%{name}
+sed -i "s@SELINUXSTOREPATH@%{_sharedstatedir}/selinux@" %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %posttrans
 if [ $1 -ge 0 ]; then
-  /sbin/setfiles /etc/selinux/default/contexts/files/file_contexts /
+  %{_sbindir}/setfiles %{_sysconfdir}/selinux/default/contexts/files/file_contexts /
 fi
 
 %files
@@ -114,12 +115,15 @@ fi
 %{_sysconfdir}/selinux/default
 %{_sharedstatedir}/selinux/default
 %{_sysconfdir}/selinux/default/contexts/files/file_contexts.subs_dist
+%{_rpmmacrodir}/macros.%{name}
 
 %files devel
 %defattr(-,root,root,-)
 %{_datadir}/selinux
 
 %changelog
+* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-3
+- Add rpm macros
 * Thu Sep 1 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-2
 - Added selinux policy for k8's deployment with containerd
 * Mon Mar 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-1
