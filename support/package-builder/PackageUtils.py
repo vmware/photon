@@ -138,6 +138,9 @@ class PackageUtils(object):
             listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, specPath + specName,
                                                          logFilePath, package, version, macros)
 
+            if constants.rpmCheck:
+                return
+
             logmsg = ""
             RpmsToCheck = []
             self.logger.debug("Checking for debug symbols in built rpms of: " + package)
@@ -353,6 +356,8 @@ class PackageUtils(object):
             if returnVal != 0 and constants.rpmCheckStopOnError:
                 self.logger.error("Checking rpm is failed " + specFile)
                 raise Exception("RPM check failed")
+
+            return [], []
         else:
             if returnVal != 0:
                 self.logger.error("Building rpm is failed " + specFile)
