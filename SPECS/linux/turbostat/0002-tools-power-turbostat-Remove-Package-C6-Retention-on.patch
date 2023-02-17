@@ -1,0 +1,160 @@
+From 0035a92975e9fd4268540a47c43c1bd225277337 Mon Sep 17 00:00:00 2001
+From: Chen Yu <yu.c.chen@intel.com>
+Date: Tue, 4 May 2021 17:52:34 +0300
+Subject: [PATCH 2/3] tools/power/turbostat: Remove Package C6 Retention on Ice
+ Lake Server
+
+commit 25368d7cefcd87a94ccabcc6f9f31796607bbe4e upstream.
+
+Currently the turbostat treats ICX the same way as SKX and shares the
+code among them. But one difference is that ICX does not support Package
+C6 Retention, unlike SKX and CLX.
+
+So this patch:
+
+1. Splitting SKX and ICX in turbostat.
+2. Removing Package C6 Rentention for ICX.
+
+And after this split, it would be easier to cutomize Ice Lake Server
+in turbostat in the future.
+
+Suggested-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+Reviewed-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Tested-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+[ Srivatsa: Backported to 5.10.y ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ tools/power/x86/turbostat/turbostat.c | 36 ++++++++++++++++++++++-----
+ 1 file changed, 30 insertions(+), 6 deletions(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 6602e90af6a4..1013615de976 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -2174,7 +2174,7 @@ int amt_pkg_cstate_limits[16] = {PCLUNL, PCL__1, PCL__2, PCLRSV, PCLRSV, PCLRSV,
+ int phi_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL_6N, PCL_6R, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ int glm_pkg_cstate_limits[16] = {PCLUNL, PCL__1, PCL__3, PCL__6, PCL__7, PCL_7S, PCL__8, PCL__9, PCL_10, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ int skx_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL_6N, PCL_6R, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+-
++int icx_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL__6, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ 
+ static void
+ calculate_tsc_tweak()
+@@ -2289,6 +2289,7 @@ int has_turbo_ratio_group_limits(int family, int model)
+ 	switch (model) {
+ 	case INTEL_FAM6_ATOM_GOLDMONT:
+ 	case INTEL_FAM6_SKYLAKE_X:
++	case INTEL_FAM6_ICELAKE_X:
+ 	case INTEL_FAM6_ATOM_GOLDMONT_D:
+ 	case INTEL_FAM6_ATOM_TREMONT_D:
+ 		return 1;
+@@ -3529,6 +3530,10 @@ int probe_nhm_msrs(unsigned int family, unsigned int model)
+ 		pkg_cstate_limits = skx_pkg_cstate_limits;
+ 		has_misc_feature_control = 1;
+ 		break;
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
++		pkg_cstate_limits = icx_pkg_cstate_limits;
++		has_misc_feature_control = 1;
++		break;
+ 	case INTEL_FAM6_ATOM_SILVERMONT:	/* BYT */
+ 		no_MSR_MISC_PWR_MGMT = 1;
+ 	case INTEL_FAM6_ATOM_SILVERMONT_D:	/* AVN */
+@@ -3617,6 +3622,20 @@ int is_skx(unsigned int family, unsigned int model)
+ 	}
+ 	return 0;
+ }
++
++int is_icx(unsigned int family, unsigned int model)
++{
++
++	if (!genuine_intel)
++		return 0;
++
++	switch (model) {
++	case INTEL_FAM6_ICELAKE_X:
++		return 1;
++	}
++	return 0;
++}
++
+ int is_ehl(unsigned int family, unsigned int model)
+ {
+ 	if (!genuine_intel)
+@@ -3719,6 +3738,7 @@ int has_glm_turbo_ratio_limit(unsigned int family, unsigned int model)
+ 	switch (model) {
+ 	case INTEL_FAM6_ATOM_GOLDMONT:
+ 	case INTEL_FAM6_SKYLAKE_X:
++	case INTEL_FAM6_ICELAKE_X:
+ 		return 1;
+ 	default:
+ 		return 0;
+@@ -3744,6 +3764,7 @@ int has_config_tdp(unsigned int family, unsigned int model)
+ 	case INTEL_FAM6_SKYLAKE_L:	/* SKL */
+ 	case INTEL_FAM6_CANNONLAKE_L:	/* CNL */
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* Knights Landing */
+ 		return 1;
+@@ -4274,6 +4295,7 @@ void rapl_probe_intel(unsigned int family, unsigned int model)
+ 	case INTEL_FAM6_HASWELL_X:	/* HSX */
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
+ 		do_rapl = RAPL_PKG | RAPL_DRAM | RAPL_DRAM_POWER_INFO | RAPL_DRAM_PERF_STATUS | RAPL_PKG_PERF_STATUS | RAPL_PKG_POWER_INFO;
+ 		BIC_PRESENT(BIC_PKG__);
+@@ -4430,7 +4452,8 @@ void perf_limit_reasons_probe(unsigned int family, unsigned int model)
+ 
+ void automatic_cstate_conversion_probe(unsigned int family, unsigned int model)
+ {
+-	if (is_skx(family, model) || is_bdx(family, model))
++	if (is_skx(family, model) || is_bdx(family, model) ||
++	    is_icx(family, model))
+ 		has_automatic_cstate_conversion = 1;
+ }
+ 
+@@ -4645,6 +4668,7 @@ int has_snb_msrs(unsigned int family, unsigned int model)
+ 	case INTEL_FAM6_SKYLAKE_L:		/* SKL */
+ 	case INTEL_FAM6_CANNONLAKE_L:		/* CNL */
+ 	case INTEL_FAM6_SKYLAKE_X:		/* SKX */
++	case INTEL_FAM6_ICELAKE_X:		/* ICX */
+ 	case INTEL_FAM6_ATOM_GOLDMONT:		/* BXT */
+ 	case INTEL_FAM6_ATOM_GOLDMONT_PLUS:
+ 	case INTEL_FAM6_ATOM_GOLDMONT_D:	/* DNV */
+@@ -4982,9 +5006,8 @@ unsigned int intel_model_duplicates(unsigned int model)
+ 	case INTEL_FAM6_ATOM_TREMONT_L:
+ 		return INTEL_FAM6_ATOM_TREMONT;
+ 
+-	case INTEL_FAM6_ICELAKE_X:
+ 	case INTEL_FAM6_SAPPHIRERAPIDS_X:
+-		return INTEL_FAM6_SKYLAKE_X;
++		return INTEL_FAM6_ICELAKE_X;
+ 	}
+ 	return model;
+ }
+@@ -5071,8 +5094,9 @@ void process_cpuid()
+ 			edx_flags & (1 << 28) ? "HT" : "-",
+ 			edx_flags & (1 << 29) ? "TM" : "-");
+ 	}
+-	if (genuine_intel)
++	if (genuine_intel) {
+ 		model = intel_model_duplicates(model);
++	}
+ 
+ 	if (!(edx_flags & (1 << 5)))
+ 		errx(1, "CPUID: no MSR");
+@@ -5282,7 +5306,7 @@ void process_cpuid()
+ 		BIC_NOT_PRESENT(BIC_Pkgpc7);
+ 		use_c1_residency_msr = 1;
+ 	}
+-	if (is_skx(family, model)) {
++	if (is_skx(family, model) || is_icx(family, model)) {
+ 		BIC_NOT_PRESENT(BIC_CPU_c3);
+ 		BIC_NOT_PRESENT(BIC_Pkgpc3);
+ 		BIC_NOT_PRESENT(BIC_CPU_c7);
+-- 
+2.25.1
+

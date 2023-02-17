@@ -1,0 +1,31 @@
+From d7e11dec7fd3227fc32594c6c4865c2a31a981a9 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <rui.zhang@intel.com>
+Date: Thu, 11 Mar 2021 10:05:13 +0800
+Subject: [PATCH 3/3] tools/power turbostat: Fix DRAM Energy Unit on SKX
+
+commit abdc75ab53b7fd2ef42c79e88cf0caf2d007c4f2 upstream.
+
+SKX uses fixed DRAM Energy Unit, just like HSX and BDX.
+
+Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 1013615de976..323ab2657fee 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -4209,6 +4209,7 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	switch (model) {
+ 	case INTEL_FAM6_HASWELL_X:	/* HSX */
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
++	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
+ 	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
+-- 
+2.25.1
+

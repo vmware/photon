@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.168
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -98,10 +98,16 @@ Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14: apparmor-af_unix-mediation.patch
 # floppy:
-Patch17: 0001-floppy-lower-printk-message-priority.patch
+Patch15: 0001-floppy-lower-printk-message-priority.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch16: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# VMware-specific patch to enable turbostat to work on ESXi
+Patch17: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
+# Backports of upstream patches to add Ice Lake support to turbostat
+Patch18: 0002-tools-power-turbostat-Remove-Package-C6-Retention-on.patch
+Patch19: 0003-tools-power-turbostat-Fix-DRAM-Energy-Unit-on-SKX.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
@@ -836,6 +842,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 17 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
+- Enable turbostat to work in the guest on VMware hypervisor.
+- Add support for Intel Ice Lake server CPUs to turbostat.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
 - Update to version 5.10.168
 * Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2
