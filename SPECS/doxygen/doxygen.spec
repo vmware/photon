@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.8.20
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -14,6 +14,8 @@ Source0: http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
 BuildRequires:  cmake
 BuildRequires:  python3
 BuildRequires:  python3-xml
+BuildRequires:  libxml2
+BuildRequires:  freetype2-devel
 BuildRequires:  bison
 
 %description
@@ -42,7 +44,7 @@ but it also supports other popular programming languages such as C, Objective-C,
 %if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-make %{?_smp_mflags} check
+make %{?_smp_mflags} test
 %endif
 
 %files
@@ -50,6 +52,8 @@ make %{?_smp_mflags} check
 %{_bindir}/%{name}
 
 %changelog
+* Fri Feb 17 2023 Harinadh D <hdommaraju@vmware.com> 1.8.20-4
+- fix make test
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.20-3
 - Use cmake macros
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.20-2
