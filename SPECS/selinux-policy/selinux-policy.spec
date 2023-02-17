@@ -1,9 +1,9 @@
-%define container_selinux_ver 2.181.0
+%define container_selinux_ver   2.181.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -18,6 +18,8 @@ Source1: https://github.com/containers/container-selinux/archive/container-selin
 
 Source2:        build.conf
 Source3:        modules.conf
+Source4:        macros.%{name}
+Source5:        config
 
 Patch0: contrib-container.patch
 Patch1: contrib-cron.patch
@@ -46,6 +48,7 @@ Patch23: Fix-kubernetes-denials-for-K8-deployment.patch
 Patch24: Fix-bin-denials-for-K8-deployment-with-containerd.patch
 Patch25: Fix-etcd-denials-for-K8-deployment-with-containerd.patch
 Patch26: fix_systemd_gpt_denials.patch
+Patch27: Fix-kubernetes-watch-denials-for-K8-deployment.patch
 
 BuildArch:      noarch
 
@@ -82,32 +85,29 @@ cp -r ../container-selinux-%{container_selinux_ver}/container.* policy/modules/c
 %build
 cp %{SOURCE2} .
 cp %{SOURCE3} policy/
-make %{?_smp_mflags}
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
-mkdir -p %{buildroot}/var/lib/selinux/default
+%make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sharedstatedir}/selinux/default
 # Use priority 100 instead of default 400
-make %{?_smp_mflags} DESTDIR=%{buildroot} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
-make %{?_smp_mflags} DESTDIR=%{buildroot} install-headers
+%make_install %{?_smp_mflags} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
+%make_install %{?_smp_mflags} install-headers
 mkdir %{buildroot}%{_datadir}/selinux/devel
 cp doc/Makefile.example %{buildroot}%{_datadir}/selinux/devel/Makefile
 cp config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/default/contexts/files/
-cat > %{buildroot}%{_sysconfdir}/selinux/config << EOF
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-#     enforcing - SELinux security policy is enforced.
-#     permissive - SELinux prints warnings instead of enforcing.
-#     disabled - No SELinux policy is loaded.
-SELINUX=permissive
-# SELINUXTYPE= can take one of these values:
-#     default - minimal Photon container host MCS protection.
-SELINUXTYPE=default
-EOF
+cp -p %{SOURCE5} %{buildroot}%{_sysconfdir}/selinux/config
+
+mkdir -p %{buildroot}%{_rpmmacrodir}
+cp -p %{SOURCE4} %{buildroot}%{_rpmmacrodir}/
+
+rel="$(echo %{release} | sed 's/\.[^.]*$//')"
+sed -i "s/SELINUXPOLICYVERSION/%{version}-${rel}/" %{buildroot}%{_rpmmacrodir}/macros.%{name}
+sed -i "s@SELINUXSTOREPATH@%{_sharedstatedir}/selinux@" %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %posttrans
 if [ $1 -ge 0 ]; then
-  /sbin/setfiles /etc/selinux/default/contexts/files/file_contexts /
+  %{_sbindir}/setfiles %{_sysconfdir}/selinux/default/contexts/files/file_contexts /
 fi
 
 %files
@@ -117,12 +117,15 @@ fi
 %{_sysconfdir}/selinux/default
 %{_sharedstatedir}/selinux/default
 %{_sysconfdir}/selinux/default/contexts/files/file_contexts.subs_dist
+%{_rpmmacrodir}/macros.%{name}
 
 %files devel
 %defattr(-,root,root,-)
 %{_datadir}/selinux
 
 %changelog
+* Fri Feb 17 2023 Shivani Agarwal <shivania2@vmware.com> 36.5-4
+- Added rpm macros and selinux policy for k8's watch denial message
 * Fri Sep 16 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-3
 - Added selinux policy for k8's deployment with containerd
 * Fri Sep 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 36.5-2
