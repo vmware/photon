@@ -1,13 +1,17 @@
+#!/usr/bin/env python3
+
 import os
 import shutil
 import re
 import random
 import string
-from CommandUtils import CommandUtils
+import PullSources
+
 from Logger import Logger
 from constants import constants
-import PullSources
 from SpecData import SPECS
+from CommandUtils import CommandUtils
+
 
 class PackageUtils(object):
 
@@ -19,6 +23,7 @@ class PackageUtils(object):
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
+        self.cmdUtils = CommandUtils()
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
         self.nodepsRPMPackageOptions = "--nodeps"
@@ -136,6 +141,9 @@ class PackageUtils(object):
             listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, specPath + specName,
                                                          logFilePath, package, version, macros)
 
+            if constants.rpmCheck:
+                return
+
             logmsg = ""
             RpmsToCheck = []
             self.logger.debug("Checking for debug symbols in built rpms of: " + package)
@@ -160,21 +168,21 @@ class PackageUtils(object):
     Upon rerun rpm won't be rebuilt but devs should carefully examine the faulty rpms.
     """
     def CheckForDbgSymbols(self, RpmsToCheck):
-        logs = ""
-        result_logs = ""
+        logs = []
+        result_logs = []
         faulty_rpms = []
         dbg_symbols_found = False
         look_for = "/usr/lib/debug/.build-id"
 
         def HandleLogs(log):
             nonlocal logs
-            logs += log
+            logs += log.split("\n")
 
         for fn in RpmsToCheck:
-            logs = ""
-            rpm_full_path = constants.rpmPath + "/" + fn.split(".")[-2] + "/" + fn
-            cmd = self.rpmBinary + " -qlp " + rpm_full_path
-            CommandUtils.runCommandInShell(cmd, logfn=HandleLogs)
+            logs = []
+            rpm_full_path = f"{constants.rpmPath}/" + fn.split(".")[-2] + f"/{fn}"
+            cmd = f"{self.rpmBinary} -qlp {rpm_full_path}"
+            self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
             if look_for in logs:
                 result_logs += logs
                 faulty_rpms.append(rpm_full_path)
@@ -184,11 +192,10 @@ class PackageUtils(object):
         if dbg_symbols_found:
             self.logger.error("Debug symbols found in following rpms:")
             self.logger.error("\n".join(faulty_rpms))
-            self.logger.error(result_logs)
+            self.logger.error("\n".join(result_logs))
             self.logger.error("Use 'rpm -qlp <rpm>' to know more on the issue\n")
-            return True
 
-        return False
+        return dbg_symbols_found
 
     def findRPMFile(self, package,version="*",arch=None, throw=False):
         if not arch:
@@ -269,16 +276,15 @@ class PackageUtils(object):
         raise Exception("Failed while adjusting gcc specs")
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
-        cmdUtils = CommandUtils()
         # Fetch/verify sources if checksum not None.
         checksum = SPECS.getData().getChecksum(package, version, source)
         if checksum is not None:
             PullSources.get(package, source, checksum, constants.sourcePath,
                             constants.getPullSourcesURLs(package), self.logger)
 
-        sourcePath = cmdUtils.findFile(source, constants.sourcePath)
+        sourcePath = self.cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
-            sourcePath = cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
+            sourcePath = self.cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
             if not sourcePath:
                 if checksum is None:
                     self.logger.error("No checksum found or missing source for " + source)
@@ -366,31 +372,36 @@ class PackageUtils(object):
             if returnVal != 0 and constants.rpmCheckStopOnError:
                 self.logger.error("Checking rpm is failed " + specFile)
                 raise Exception("RPM check failed")
+            return [], []
         else:
             if returnVal != 0:
                 self.logger.error("Building rpm is failed " + specFile)
                 raise Exception("RPM build failed")
 
-        #Extracting rpms created from log file
+        # Fetch built rpm names from log file
+        fileContents = []
+        stageLogFile = logFile.replace(f"{constants.topDirPath}/LOGS", constants.logPath)
+
+        def HandleLogs(log):
+            nonlocal fileContents
+            fileContents += log.split("\n")
+
+        cmd = f"grep -aw \"^Wrote: \" {stageLogFile}"
+        returnVal = self.cmdUtils.runCommandInShell(cmd, logfn=HandleLogs)
+
+        if returnVal or not fileContents:
+            msg = f"{stageLogFile} doesn't have 'Write: ' entries"
+            self.logger.error(msg)
+            raise Exception(msg)
+
         listRPMFiles = []
         listSRPMFiles = []
-        stageLogFile = logFile.replace(constants.topDirPath + "/LOGS", constants.logPath )
-        with open(stageLogFile, 'r') as logfile:
-            try:
-                fileContents = logfile.readlines()
-                for i in range(0, len(fileContents)):
-                    if re.search("^Wrote:", fileContents[i]):
-                        listcontents = fileContents[i].split()
-                        if ((len(listcontents) == 2) and
-                                listcontents[1].strip().endswith(".rpm") and
-                                "/RPMS/" in listcontents[1]):
-                            listRPMFiles.append(listcontents[1])
-                        if ((len(listcontents) == 2) and
-                                listcontents[1].strip().endswith(".src.rpm") and
-                                "/SRPMS/" in listcontents[1]):
-                            listSRPMFiles.append(listcontents[1])
-            except UnicodeDecodeError:
-                pass
+        for line in fileContents:
+            if line:
+                listcontents = line.split()
+                if "/RPMS/" in listcontents[1]:
+                    listRPMFiles.append(listcontents[1])
+                elif "/SRPMS/" in listcontents[1]:
+                    listSRPMFiles.append(listcontents[1])
 
         return listRPMFiles, listSRPMFiles
-
