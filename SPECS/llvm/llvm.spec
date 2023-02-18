@@ -3,7 +3,7 @@
 
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        15.0.6
+Version:        15.0.7
 Release:        1%{?dist}
 License:        NCSA
 URL:            https://llvm.org
@@ -12,10 +12,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
-%define sha512 %{name}=91b53674c140f8eda6e8373a9e3ea013807236e98702b6666f3b4144d95d97dcfa0a59591ab74aa7a320c32f88d579a585dc5a6db6666f1754f68493f95cff1e
+%define sha512 %{name}=ed8d565515b1bc6164e4ff06d3388ba92e332850305496fd65db9adf1ec87bd9dd1bfde49dd41be5d5216289efc72bfd287cd7392f2bba80b740d4c314c749e5
 
 Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
-%define sha512 cmake=a078b9b426515414dae41c8732d7cd955e8ddc9638b4ba9c7dd0925db68e5ea760096f08fd7e1cb9d55b6d73da75f9b4318a2fac36d7aa64f47536ac383b3edc
+%define sha512 cmake=a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -116,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Sat Feb 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 15.0.7-1
+- Upgrade to v15.0.7
 * Fri Dec 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 15.0.6-1
 - Upgrade to v15.0.6
 - Don't package libLLVM shared libraries
