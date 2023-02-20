@@ -1,14 +1,16 @@
 Summary:        Google's C++ logging module
 Name:           glog
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/google/glog
-Source0:        https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
-%define sha512  glog=fd2c42583d0dd72c790a8cf888f328a64447c5fb9d99b2e2a3833d70c102cb0eb9ae874632c2732424cc86216c8a076a3e24b23a793eaddb5da8a1dc52ba9226
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=fd2c42583d0dd72c790a8cf888f328a64447c5fb9d99b2e2a3833d70c102cb0eb9ae874632c2732424cc86216c8a076a3e24b23a793eaddb5da8a1dc52ba9226
+
 BuildRequires:  build-essential
 BuildRequires:  cmake
 BuildRequires:  libgcc
@@ -19,22 +21,27 @@ Google's C++ logging module
 %package devel
 Summary:        glog devel
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
+
 %description devel
 This contains development tools and libraries for glog.
 
 %package docs
 Summary:        glog docs
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
+
 %description docs
 The contains glog package doc files.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %cmake \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Release
+
 %cmake_build
 
 %install
@@ -45,6 +52,12 @@ The contains glog package doc files.
 cd %{__cmake_builddir}
 make test %{?_smp_mflags}
 %endif
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -61,6 +74,8 @@ make test %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Mon Feb 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-2
+- Fix spec issues
 * Wed Feb 15 2023 Harinadh D <hdommaraju@vmware.com> 0.6.0-1
 - Version upgrade to use new features
 - EnableLogCleaner is introduced in 0.5.0
