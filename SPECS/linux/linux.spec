@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.0.7
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -670,8 +670,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/cpupower
 %config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
 %{_sbindir}/cpufreq-bench
-%{_mandir}/man1/cpupower*.gz
-%{_mandir}/man8/turbostat*.gz
 %{_datadir}/locale/*/LC_MESSAGES/cpupower.mo
 %endif
 
@@ -685,6 +683,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Feb 20 2023 Ajay Kaher <akaher@vmware.com> 6.0.7-9
+- exclude man dir from linux-tools
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-8
 - Fix requires
 * Wed Jan 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.7-7
