@@ -1,26 +1,19 @@
 %global debug_package %{nil}
 
-Summary:    Photon OS Installer
-Name:       photon-os-installer
-Version:    2.0
-Release:    8%{?dist}
-License:    Apache 2.0 and GPL 2.0
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
-Distribution:   Photon
-URL:        https://github.com/vmware/photon-os-installer
-
-Source0:    %{name}-%{version}.tar.gz
-%define sha512 %{name}=3a7567802a6b94cf9e51fcaaab5d2dbfbc42cd1d92427a2b0739a9df9994df01a2eb81e3133832fd39d575376ecf859451a8a3049d6993a42861544de9b4f3fe
-
-Patch0:     error_screen_selectdisk.patch
-Patch1:     fix-installroot-commands.patch
-Patch2:     0001-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
-Patch3:     0001-installer-Adding-support-for-dev-disk-by-path.patch
-Patch4:     0001-installer-Removed-insecure_installation-and-photon_r.patch
-Patch5:     0001-photon-installer-fixes-remove-photon_release_version.patch
-Patch6:     0001-installer-Adding-support-for-preinstall-script.patch
-Patch7:     isoInstaller-dynamic-retry-mount-media-count.patch
+Summary:       Photon OS Installer
+Name:          photon-os-installer
+Version:       2.1
+Release:       1%{?dist}
+License:       Apache 2.0 and GPL 2.0
+Group:         System Environment/Base
+Vendor:        VMware, Inc.
+Distribution:  Photon
+URL:           https://github.com/vmware/photon-os-installer
+Source0:       %{name}-%{version}.tar.gz
+%define sha512 %{name}=16429b9b801b8bc57f6ded0a9bc0f45af49fd5e5449b9f3ab1fc25277c273899e8c45c6bd7774c65db399e9e6665419a77d266dc488d5b89177413a28f66e6f7
+Patch0:        0001-setup.py-Bump-up-version-to-2.1.patch
+Patch1:        0002-isoInstaller.py-Raise-exception-in-case-installer-fa.patch
+Patch2:        0003-installer.py-Set-default-value-of-live-to-True.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -28,8 +21,19 @@ BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
 
-Requires:      zlib
-Requires:      glibc
+Requires: dosfstools
+Requires: efibootmgr
+Requires: glibc
+Requires: gptfdisk
+Requires: grub2
+%ifarch x86_64
+Requires: grub2-pc
+%endif
+Requires: kpartx
+Requires: lvm2
+Requires: zlib
+Requires: cdrkit
+Requires: findutils
 
 %description
 This is to create rpm for installer code
@@ -38,20 +42,23 @@ This is to create rpm for installer code
 %autosetup -p1
 
 %build
-pyinstaller --onefile photon-installer.spec
+%py3_build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-cp dist/photon-installer %{buildroot}%{_bindir}
+%py3_install
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
+%{python3_sitelib}/*
 %{_bindir}/photon-installer
+%{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Feb 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.1-1
+- Upgrade to v2.1.
 * Tue Nov 22 2022 Ankit Jain <ankitja@vmware.com> 2.0-8
 - commandline parameter for mount retry of media
 * Fri Nov 04 2022 Ankit Jain <ankitja@vmware.com> 2.0-7
