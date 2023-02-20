@@ -1,11 +1,12 @@
 Summary:        C debugger
 Name:           gdb
 Version:        10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha512  gdb=0dc54380435c6853db60f1e388b94836d294dfa9ad7f518385a27db4edd03cb970f8717d5f1e9c9a0d4a33d7fcf91bc2e5d6c9cf9e4b561dcc74e65b806c1537
+Source1:        gdbinit
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,6 +38,7 @@ mkdir build && cd build
 ../configure \
   --host=%{_host} --build=%{_build} \
   --prefix=%{_prefix} \
+  --with-system-gdbinit=%{_sysconfdir}/gdbinit \
   --with-python=/usr/bin/python3
 %make_build
 
@@ -61,6 +63,8 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
 %endif
 %find_lang %{name} --all-name ../%{name}.lang
+mkdir -p %{buildroot}%{_sysconfdir}/gdbinit.d
+install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/gdbinit
 
 %check
 # disable security hardening for tests
@@ -82,8 +86,12 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_datadir}/gdb/system-gdbinit/*
 %{_bindir}/*
 %{_mandir}/*/*
+%{_sysconfdir}/gdbinit
+%{_sysconfdir}/gdbinit.d
 
 %changelog
+* Mon Feb 20 2023 Ajay Kaher <akaher@vmware.com> 10.1-2
+- Compile with --with-system-gdbinit
 * Tue Jan 03 2023 Harinadh D <hdommaraju@vmware.com> 10.1-1
 - Version update to fix multiple CVE's in binutils
 * Sun May 24 2020 Vikash Bansal <bvikas@vmware.com> 8.2-3
