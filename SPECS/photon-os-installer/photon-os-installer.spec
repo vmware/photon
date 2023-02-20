@@ -2,33 +2,18 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.0
-Release:       18%{?dist}
+Version:       2.1
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=3a7567802a6b94cf9e51fcaaab5d2dbfbc42cd1d92427a2b0739a9df9994df01a2eb81e3133832fd39d575376ecf859451a8a3049d6993a42861544de9b4f3fe
-Patch0:        0001-Correct-brand-and-project-names-in-installer.py.patch
-Patch1:        0002-Update-installer.py.patch
-Patch2:        0003-selectdisk.py-Display-appropriate-error-if-no-block-.patch
-Patch3:        0004-installer.py-fix-installroot-commands.patch
-Patch4:        0005-isoInstaller-Refresh-devices-in-retries-if-mount-fai.patch
-Patch5:        0006-installer.py-check-if-host-rpm-supports-sqlite-backe.patch
-Patch6:        0007-installer.py-Added-support-to-provide-fs-options-wit.patch
-Patch7:        0008-installer-Adding-support-for-dev-disk-by-path.patch
-Patch8:        0009-installer-Removed-insecure_installation-and-photon_r.patch
-Patch9:        0010-installer-Adding-support-for-preinstall-script.patch
-Patch10:       0011-photon-installer-fixes-remove-photon_release_version.patch
-Patch11:       0012-custompartition.py-support-xfs-and-btrfs-filesystem.patch
-Patch12:       0013-isoInstaller-dynamic-retry-mount-media-count.patch
-Patch13:       0014-installer.py-Parse-string-before-passing-to-int.patch
-Patch14:       0015-Add-support-for-customInitrd-and-customIso.patch
-Patch15:       0016-upgrade-ostree-repo.patch
-Patch16:       0017-customIso-Use-branch-specific-license-text-and-EULA.patch
-Patch17:       0018-The-noacl-mount-option-is-deprecated-since-linux-3.5.patch
+%define sha512 %{name}=16429b9b801b8bc57f6ded0a9bc0f45af49fd5e5449b9f3ab1fc25277c273899e8c45c6bd7774c65db399e9e6665419a77d266dc488d5b89177413a28f66e6f7
+Patch0:        0001-setup.py-Bump-up-version-to-2.1.patch
+Patch1:        0002-isoInstaller.py-Raise-exception-in-case-installer-fa.patch
+Patch2:        0003-installer.py-Set-default-value-of-live-to-True.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -47,6 +32,8 @@ Requires: grub2-pc
 Requires: kpartx
 Requires: lvm2
 Requires: zlib
+Requires: cdrkit
+Requires: findutils
 
 %description
 Installer to build Photon images
@@ -55,20 +42,23 @@ Installer to build Photon images
 %autosetup -p1
 
 %build
-pyinstaller photon-installer.spec
+%py3_build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-cp dist/photon-installer %{buildroot}%{_bindir}
+%py3_install
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
+%{python3_sitelib}/*
 %{_bindir}/photon-installer
+%{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Feb 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.1-1
+- Upgrade to v2.1.
 * Tue Feb 14 2023 Oliver Kurth <okurth@vmware.com> 2.0-18
 - add patch to remove noacl option for mount
 * Thu Feb 02 2023 Oliver Kurth <okurth@vmware.com> 2.0-17
