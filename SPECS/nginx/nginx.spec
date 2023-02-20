@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.22.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            https://nginx.org
 Group:          Applications/System
@@ -55,6 +55,7 @@ sh ./configure \
     --with-http_sub_module \
     --with-http_stub_status_module \
     --with-http_v2_module \
+    --with-http_realip_module \
     --user=%{nginx_user} \
     --group=%{nginx_user}
 
@@ -112,6 +113,9 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Mon Feb 20 2023 Harinadh D <hdommaraju@vmware.com> 1.22.0-4
+- Enable http_realip_module
+- Author: Brian Munro <bmunro-peralex>
 * Wed Oct 26 2022 Keerthana K <keerthanak@vmware.com> 1.22.0-3
 - Fix CVE-2022-41741 & CVE-2022-41742
 * Tue Aug 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.22.0-2
