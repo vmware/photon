@@ -25,6 +25,18 @@
 
 #define RUNTIME_HMAC_SIZE	32
 
+#define SREL_INSN_TYPE_ADD_1				0x0		/* "0000" = Rel type 0, Addend 0 */
+#define SREL_INSN_TYPE_ADD_2				0x1		/* "0001" = Rel type 1, Addend -1 */
+#define SREL_INSN_TYPE_ADD_3				0x2		/* "0010" = Rel type 1, Addend -2 */
+#define SREL_INSN_TYPE_ADD_4				0x3		/* "0011" = Rel type 1, Addend -3 */
+#define SREL_INSN_TYPE_ADD_5				0x6		/* "0110" = Rel type 1, Addend -4 */
+#define SREL_INSN_TYPE_ADD_6				0x5		/* "0101" = Rel type 1, Addend -5 */
+#define SREL_INSN_TYPE_ADD_7				0x4		/* "0100" = Rel type 1, Addend 0 */
+#define SREL_INSN_TYPE_ADD_8				0x7		/* "0111" = Rel type 1, Addend 5 */
+#define SREL_INSN_TYPE_ADD_9				0xC		/* "1100" = Rel type 2, Addend 0 */
+#define SREL_INSN_TYPE_ADD_10				0xD		/* "1101" = Rel type 1, Addend 7 */
+#define SREL_INSN_TYPE_ADD_11				0xE		/* "1110" = Rel type 2, Addend 4 */
+
 static unsigned char *canister;
 /* Set at canister creation time by final linking */
 extern const int canister_size;
@@ -180,25 +192,37 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 		r->symbol = ((c & 0x0F) << 4) + (n_1 >> 4);
 		/* Rel Type, Addend combination (4 bits) = 5, 6, 7, 8 bits from next byte */
 		rel_add = n_1 & 0x0F;
-		if (rel_add == 0x0) {
+		if (rel_add == SREL_INSN_TYPE_ADD_1) {
 			r->type = 0;
 			r->addend = 0;
-		} else if (rel_add == 0x6) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_2) {
+			r->type = 1;
+			r->addend = -1;
+		} else if (rel_add == SREL_INSN_TYPE_ADD_3) {
+			r->type = 1;
+			r->addend = -2;
+		} else if (rel_add == SREL_INSN_TYPE_ADD_4) {
+			r->type = 1;
+			r->addend = -3;
+		} else if (rel_add == SREL_INSN_TYPE_ADD_5) {
 			r->type = 1;
 			r->addend = -4;
-		} else if (rel_add == 0x5) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_6) {
 			r->type = 1;
 			r->addend = -5;
-		} else if (rel_add == 0x4) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_7) {
 			r->type = 1;
 			r->addend = 0;
-		} else if (rel_add == 0x7) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_8) {
 			r->type = 1;
 			r->addend = 5;
-		} else if (rel_add == 0xC) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_9) {
 			r->type = 2;
 			r->addend = 0;
-		} else if (rel_add == 0xE) {
+		} else if (rel_add == SREL_INSN_TYPE_ADD_10) {
+			r->type = 1;
+			r->addend = 7;
+		} else if (rel_add == SREL_INSN_TYPE_ADD_11) {
 			r->type = 2;
 			r->addend = 4;
 		} else {

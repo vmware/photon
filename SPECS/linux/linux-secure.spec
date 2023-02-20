@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -110,7 +110,7 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.0-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 %if 0%{?kat_build}
@@ -119,9 +119,8 @@ Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000:      6.0-0001-FIPS-canister-binary-usage.patch
+Patch10000:      6.1-0001-FIPS-canister-binary-usage.patch
 Patch10001:      0002-FIPS-canister-creation.patch
-Patch10002:      0003-FIPS-canister-creation-secure.patch
 Patch10003:      0004-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
 Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
@@ -368,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-2
+- FIPS canister build for 6.1.10 secure kernel
 * Wed Feb 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-1
 - Update to 6.1.10
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-8

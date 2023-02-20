@@ -12,6 +12,7 @@ This patch can be used at two stages:
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/Makefile |  4 --
  crypto/Makefile          | 88 ++++++++++++++++++++++++++++++++--------
@@ -20,7 +21,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  4 files changed, 74 insertions(+), 33 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index 04d07ab74..4ba9e03ac 100644
+index 3b1d701a4..3836c4e30 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -46,10 +46,6 @@ obj-$(CONFIG_CRYPTO_CHACHA20_X86_64) += chacha-x86_64.o
@@ -35,7 +36,7 @@ index 04d07ab74..4ba9e03ac 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 97f7d05df..f5a5fb946 100644
+index d7fcab76d..7289ccb84 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -206,10 +207,10 @@ index 97f7d05df..f5a5fb946 100644
 +endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index 1fe7942f5..c0acf2ee9 100644
+index aa21add5f..4db7e4edd 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -878,6 +878,8 @@ static int __init early_randomize_kstack_offset(char *buf)
+@@ -885,6 +885,8 @@ static int __init early_randomize_kstack_offset(char *buf)
  early_param("randomize_kstack_offset", early_randomize_kstack_offset);
  #endif
  
@@ -218,19 +219,19 @@ index 1fe7942f5..c0acf2ee9 100644
  void __init __weak arch_call_rest_init(void)
  {
  	rest_init();
-@@ -976,6 +978,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 		parse_args("Setting extra init args", extra_init_args,
- 			   NULL, 0, -1, -1, NULL, set_init_arg);
+@@ -986,6 +988,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	/* Architectural and non-timekeeping rng init, before allocator init */
+ 	random_init_early(command_line);
  
 +	fips_integrity_init();
  	/*
  	 * These use large bootmem allocations and must precede
  	 * kmem_cache_init()
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 919cbb2c2..c127a84d4 100644
+index c852f067a..84ec57dba 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
-@@ -4,9 +4,6 @@
+@@ -7,9 +7,6 @@ libcryptoutils-y				:= memneq.o utils.o
  obj-y						+= chacha.o
  obj-$(CONFIG_CRYPTO_LIB_CHACHA_GENERIC)		+= libchacha.o
  
@@ -240,7 +241,7 @@ index 919cbb2c2..c127a84d4 100644
  obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
  libarc4-y					:= arc4.o
  
-@@ -26,20 +23,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
+@@ -29,20 +26,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
  obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
  libcurve25519-y					+= curve25519.o
  
@@ -262,5 +263,5 @@ index 919cbb2c2..c127a84d4 100644
  libblake2s-y					+= blake2s-selftest.o
  libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
-2.37.3
+2.39.1
 

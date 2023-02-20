@@ -66,6 +66,12 @@
 |________________|______________________|
 |  {0, 0}	 |	0000		|
 |----------------|----------------------|
+|  {1, -1}	 |	0001		|
+|----------------|----------------------|
+|  {1, -2}	 |	0010		|
+|----------------|----------------------|
+|  {1, -3}	 |	0011		|
+|----------------|----------------------|
 |  {1, -4}	 |	0110		|
 |----------------|----------------------|
 |  {1, -5}	 |	0101		|
@@ -73,6 +79,8 @@
 |  {1, 0}	 |	0100		|
 |----------------|----------------------|
 |  {1, 5}	 |	0111		|
+|----------------|----------------------|
+|  {1, 7}	 |	1101		|
 |----------------|----------------------|
 |  {2, 0}	 |	1100		|
 |----------------|----------------------|
@@ -98,12 +106,16 @@
 /* Short Rel Instructions */
 #define SREL_INSN_OPCODE				0xC000		/* 1100 0000 0000 0000 */
 #define SREL_INSN_TYPE_ADD_1				0x0		/* "0000" = Rel type 0, Addend 0 */
-#define SREL_INSN_TYPE_ADD_2				0x6		/* "0110" = Rel type 1, Addend -4 */
-#define SREL_INSN_TYPE_ADD_3				0x5		/* "0101" = Rel type 1, Addend -5 */
-#define SREL_INSN_TYPE_ADD_4				0x4		/* "0100" = Rel type 1, Addend 0 */
-#define SREL_INSN_TYPE_ADD_5				0x7		/* "0111" = Rel type 1, Addend 5 */
-#define SREL_INSN_TYPE_ADD_6				0xC		/* "1100" = Rel type 2, Addend 0 */
-#define SREL_INSN_TYPE_ADD_7				0xE		/* "1110" = Rel type 2, Addend 4 */
+#define SREL_INSN_TYPE_ADD_2				0x1		/* "0001" = Rel type 1, Addend -1 */
+#define SREL_INSN_TYPE_ADD_3				0x2		/* "0010" = Rel type 1, Addend -2 */
+#define SREL_INSN_TYPE_ADD_4				0x3		/* "0011" = Rel type 1, Addend -3 */
+#define SREL_INSN_TYPE_ADD_5				0x6		/* "0110" = Rel type 1, Addend -4 */
+#define SREL_INSN_TYPE_ADD_6				0x5		/* "0101" = Rel type 1, Addend -5 */
+#define SREL_INSN_TYPE_ADD_7				0x4		/* "0100" = Rel type 1, Addend 0 */
+#define SREL_INSN_TYPE_ADD_8				0x7		/* "0111" = Rel type 1, Addend 5 */
+#define SREL_INSN_TYPE_ADD_9				0xC		/* "1100" = Rel type 2, Addend 0 */
+#define SREL_INSN_TYPE_ADD_10				0xD		/* "1101" = Rel type 1, Addend 7 */
+#define SREL_INSN_TYPE_ADD_11				0xE		/* "1110" = Rel type 2, Addend 4 */
 
 
 /* Long Rel Instructions */
@@ -683,18 +695,28 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 	srel = SREL_INSN_OPCODE | (symbol << 4);
 	if (type == 0 && addend == 0) {
 		srel = srel | SREL_INSN_TYPE_ADD_1;
-	} else if (type == 1 && addend == -4) {
+	} else if (type == 1 && addend == -1) {
 		srel = srel | SREL_INSN_TYPE_ADD_2;
-	} else if (type == 1 && addend == -5) {
+	} else if (type == 1 && addend == -2) {
 		srel = srel | SREL_INSN_TYPE_ADD_3;
-	} else if (type == 1 && addend == 0) {
+	} else if (type == 1 && addend == -3) {
 		srel = srel | SREL_INSN_TYPE_ADD_4;
-	} else if (type == 1 && addend == 5) {
+	} else if (type == 1 && addend == -4) {
 		srel = srel | SREL_INSN_TYPE_ADD_5;
-	} else if (type == 2 && addend == 0) {
+	} else if (type == 1 && addend == -5) {
 		srel = srel | SREL_INSN_TYPE_ADD_6;
-	} else if (type == 2 && addend == 4) {
+	} else if (type == 1 && addend == 0) {
 		srel = srel | SREL_INSN_TYPE_ADD_7;
+	} else if (type == 1 && addend == 5) {
+		srel = srel | SREL_INSN_TYPE_ADD_8;
+	} else if (type == 2 && addend == 0) {
+		srel = srel | SREL_INSN_TYPE_ADD_9;
+	} else if (type == 1 && addend == 7) {
+		srel = srel | SREL_INSN_TYPE_ADD_10;
+	} else if (type == 2 && addend == 4) {
+		srel = srel | SREL_INSN_TYPE_ADD_11;
+	} else {
+		printf("WARNING: Unknown rel type and addend combination!!! %d %d\n", type, addend);
 	}
 	print_insn_byte_wise(srel, nfd);
 }
