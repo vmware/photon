@@ -1,0 +1,104 @@
+From 476afb1d08513cb74cd1d28490c5e028c70f67c2 Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Wed, 15 Feb 2023 11:44:18 -0500
+Subject: [PATCH] daemon: Use a socket in `/run`, require non-abstract
+
+This fixes https://bugzilla.redhat.com/show_bug.cgi?id=2169622
+
+The new glib changed to use non-abstract sockets by default,
+which broke us because we'd slowly grown more isolation, specifically
+the daemon has been using `PrivateTmp` for a while and we'd
+been relying on abstract sockets to pierce that.
+
+Change to use `/run` which should always be shared by client
+and daemon.  While we're here, make it a well-known static path
+because there can be only one transaction at a time.
+
+We also do need to explicitly make the socket world-accessible
+because that was the semantics of the previous abstract socket.
+
+Also, plug leaks here by ensuring we call `g_dbus_server_stop()`.
+
+(But really we should also change this to be crash safe, probably
+ with a temporary directory, but that's a larger change)
+---
+ src/daemon/rpmostreed-transaction.cxx  | 26 ++++++++++++++++++++++----
+ tests/vmcheck/test-cached-rpm-diffs.sh |  3 ++-
+ 2 files changed, 24 insertions(+), 5 deletions(-)
+
+diff --git a/src/daemon/rpmostreed-transaction.cxx b/src/daemon/rpmostreed-transaction.cxx
+index 6d184f9cab..f50db49450 100644
+--- a/src/daemon/rpmostreed-transaction.cxx
++++ b/src/daemon/rpmostreed-transaction.cxx
+@@ -31,6 +31,10 @@
+ #include "rpmostreed-sysroot.h"
+ #include "rpmostreed-transaction.h"
+ 
++// The well-known transaction socket path.  This used to be randomly
++// generated, but there's no point because there can be at most one transaction.
++#define CLIENT_TRANSACTION_PATH "/run/rpm-ostree-transaction.sock"
++
+ struct _RpmostreedTransactionPrivate
+ {
+   GDBusMethodInvocation *invocation;
+@@ -482,6 +486,10 @@ transaction_dispose (GObject *object)
+   g_clear_object (&priv->invocation);
+   g_clear_object (&priv->cancellable);
+   g_clear_object (&priv->sysroot);
++  if (priv->server)
++    {
++      g_dbus_server_stop (priv->server);
++    }
+   g_clear_object (&priv->server);
+   g_clear_pointer (&priv->sysroot_path, g_free);
+ 
+@@ -578,14 +586,24 @@ transaction_initable_init (GInitable *initable, GCancellable *cancellable, GErro
+     priv->cancellable = (GCancellable *)g_object_ref (cancellable);
+ 
+   /* Set up a private D-Bus server over which to emit
+-   * progress and informational messages to the caller. */
+-
++   * progress and informational messages to the caller.
++   * The socket needs to be non-abstract (for security reasons so it can't
++   * be accessed outside of our namespace)
++   * and it needs to be in `/run` so that it can be found by the client;
++   * the default daemon sandboxing uses PrivateTmp= implicitly.
++   */
+   g_autofree char *guid = g_dbus_generate_guid ();
+-  priv->server = g_dbus_server_new_sync ("unix:tmpdir=/tmp/rpm-ostree", G_DBUS_SERVER_FLAGS_NONE,
+-                                         guid, NULL, cancellable, error);
++  if (unlink (CLIENT_TRANSACTION_PATH) < 0 && errno != ENOENT)
++    return glnx_throw_errno_prefix (error, "Failed to unlink %s", CLIENT_TRANSACTION_PATH);
++  g_autofree char *addr = g_strdup_printf ("unix:path=%s", CLIENT_TRANSACTION_PATH);
++  priv->server
++      = g_dbus_server_new_sync (addr, G_DBUS_SERVER_FLAGS_NONE, guid, NULL, cancellable, error);
+   if (priv->server == NULL)
+     return FALSE;
+ 
++  if (chmod (CLIENT_TRANSACTION_PATH, 0666) < 0)
++    return glnx_throw_errno_prefix (error, "Failed to chmod %s", CLIENT_TRANSACTION_PATH);
++
+   g_signal_connect_object (priv->server, "new-connection",
+                            G_CALLBACK (transaction_new_connection_cb), self,
+                            static_cast<GConnectFlags> (0));
+diff --git a/tests/vmcheck/test-cached-rpm-diffs.sh b/tests/vmcheck/test-cached-rpm-diffs.sh
+index 05c0f3f0da..55ab242490 100755
+--- a/tests/vmcheck/test-cached-rpm-diffs.sh
++++ b/tests/vmcheck/test-cached-rpm-diffs.sh
+@@ -68,7 +68,7 @@ run_transaction() {
+   sig=$1; shift
+   args=$1; shift
+   cur=$(vm_get_journal_cursor)
+-  vm_run_container --privileged -i -v /var/run/dbus:/var/run/dbus --net=host -- \
++  vm_run_container --privileged -i -v /run:/run/host/run -v /var/run/dbus:/var/run/dbus --net=host -- \
+     /bin/bash << EOF
+ set -xeuo pipefail
+ dnf install -y python3-dbus
+@@ -77,6 +77,7 @@ import dbus
+ addr = dbus.SystemBus().call_blocking(
+   "org.projectatomic.rpmostree1", "$ospath", "org.projectatomic.rpmostree1.OS",
+   "$method", "$sig", ($args))
++addr = addr.replace("/run/", "/run/host/run/")
+ t = dbus.connection.Connection(addr)
+ t.call_blocking(
+   "org.projectatomic.rpmostree1", "/",

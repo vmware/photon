@@ -94,6 +94,8 @@ if ! rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json
   echo "ERROR: rpm-ostree compose failed" 1>&2
   exit 1
 fi
+ostree summary --repo=${ROOT}/srv/rpm-ostree/repo --update
+ostree summary -v --repo=${ROOT}/srv/rpm-ostree/repo
 EOF
 
 chmod +x ${SCRIPT_PATH}/mk-ostree-server.sh

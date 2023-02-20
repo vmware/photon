@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -15,6 +15,7 @@ Source2:        function.inc
 Source3:        mkostreerepo
 
 Patch0:         rpm-ostree-libdnf-build.patch
+Patch1:         rpm-ostree-use-a-socket-in-run.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -119,8 +120,6 @@ install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/%{name}-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/%{name}-server
 install -vdm711 %{buildroot}%{_datadir}/empty
-mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
-echo "d /tmp/rpm-ostree 0750 root root - -" > %{buildroot}%{_tmpfilesdir}/rpm-ostree.conf
 
 %clean
 rm -rf %{buildroot}/*
@@ -145,7 +144,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/%{name}.1.gz
 %{_mandir}/man5/rpm-ostreed*
 %{_mandir}/man8/%{name}*
-%{_tmpfilesdir}/rpm-ostree.conf
 
 %files devel
 %defattr(-,root,root)
@@ -165,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Feb 20 2023 Ankit Jain <ankitja@vmware.com> 2022.19-3
+- Fix dbus socket leak under /tmp
 * Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 2022.19-2
 - Added /usr/share/empty dir required to bind mount rpm database
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-1

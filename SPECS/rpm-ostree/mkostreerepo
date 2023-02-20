@@ -158,6 +158,8 @@ function do-commit()
     umask $UMASKVAL
     exit $rc
   fi
+  ostree summary --repo=$REPODATAPATH --update
+  ostree summary -v --repo=$REPODATAPATH
   umask $UMASKVAL
 }
 
