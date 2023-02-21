@@ -29,6 +29,7 @@ RUN tdnf install -y \
     xml-security-c-devel \
     coreutils \
     util-linux \
+    findutils \
     kpatch \
     kpatch-build \
     kpatch-utils

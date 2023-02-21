@@ -1,15 +1,15 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
-Version:        0.9.6
-Release:        3%{?dist}
+Version:        0.9.7
+Release:        1%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
-%define sha512 kpatch=898c5704098c473187f2eab9bccd5fb3cfc31f4211492d658abcd0b7cac6d03f11a27df19a56ad17c20163803084ddf54a27defcf12b4975a8a8eb5dbad73f21
+Source0:        https://github.com/dynup/kpatch/archive/refs/tags/%{name}-v%{version}.tar.gz
+%define sha512  %{name}=c876d9b1e5f6e6ab858fa6f302e78152beb3e50cedd93f3c61ab6f747e32199b0601ad4a36d426d43d0e9a37d9bf1d6bbfddccc86df4b31d5e3e6edead6cded3
 
 Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh
@@ -17,12 +17,18 @@ Source3:        scripts/README.txt
 Source4:        scripts/dockerfiles/Dockerfile.ph3
 Source5:        scripts/dockerfiles/Dockerfile.ph4
 Source6:        scripts/rpm/spec.file
+Source7:        scripts/dockerfiles/Dockerfile.ph5
 
 BuildArch:      x86_64
 
 Patch0:         0001-Added-support-for-Photon-OS.patch
 Patch1:         0001-adding-option-to-set-description-field-of-module.patch
 Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
+
+# Fix invalid ancestor issue in 5.0
+Patch3:         0001-kpatch-cc-Add-more-file-ignores.patch
+Patch4:         0002-kpatch-build-Add-find_kobj-short-circuit-for-OOT-mod.patch
+Patch5:         0003-kpatch-build-support-Linux-5.19-.cmd-file-format.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -33,7 +39,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or toybox or coreutils-selinux)
+Requires:       (coreutils or toybox)
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
@@ -53,6 +59,7 @@ sacrificing security or stability.
 Requires: %{name} = %{version}-%{release}
 Requires: build-essential
 Requires: tar
+Requires: curl
 Summary: Dynamic kernel patching
 
 %description build
@@ -82,23 +89,20 @@ Contains auto_livepatch and gen_livepatch scripts.
 %install
 %make_install PREFIX=%{_usr} %{?_smp_mflags}
 mkdir -p %{buildroot}%{_sysconfdir}/{auto_livepatch/dockerfiles,gen_livepatch}
-cp %{SOURCE4} %{SOURCE5} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
+cp %{SOURCE4} %{SOURCE5} %{SOURCE7} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
 cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
-#%check
-# make check require shellcheck package, which is not in photon
-
 %files
 %defattr(-,root,root,-)
-%license COPYING
 %{_sbindir}/kpatch
 %{_unitdir}/*
 %{_sysconfdir}/init/kpatch.conf
 
 %files build
 %defattr(-,root,root,-)
+%exclude %{_bindir}/{auto_livepatch.sh,gen_livepatch.sh}
 %{_bindir}/*
 %{_libexecdir}/*
 %{_datadir}/%{name}
@@ -118,6 +122,8 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1
+- Update to latest version and add support for Photon 5.0
 * Mon Sep 12 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.6-3
 - Adding option to package livepatch modules as rpm.
 - Adding patch to enable modinfo to find livepatch modules.

@@ -30,7 +30,7 @@ set -o pipefail
 
 # keeps track of what version of kpatch-utils this is
 # very important to know when to rebuild the docker images
-VERSION_TAG=3
+VERSION_TAG=4
 
 if [[ "$EUID" -ne 0 ]]; then
     echo "Please run as root user"
@@ -173,7 +173,7 @@ parse_args() {
         VERSION_RELEASE_FLAVOR=$(uname -r)
     fi
 
-    [[ $VERSION_RELEASE_FLAVOR =~ \.ph[3-4]+ ]] && PH_TAG="${BASH_REMATCH:1}"
+    [[ $VERSION_RELEASE_FLAVOR =~ \.ph[0-9]+ ]] && PH_TAG="${BASH_REMATCH:1}"
 
     if [ -z "$PH_TAG" ]; then
         echo "Wrong kernel version detected: $VERSION_RELEASE_FLAVOR"
