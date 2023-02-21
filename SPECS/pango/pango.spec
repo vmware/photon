@@ -1,14 +1,14 @@
 Summary:	library for laying out and rendering of text.
 Name:		pango
 Version:	1.40.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://pango.org
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://download.gnome.org/sources/pango/1.40/%{name}-%{version}.tar.xz
-%define sha1 pango=761458faab28cb70ba62e01ec9379d03bc5339c0
+%define sha512  pango=8c7413f6712eaf9fd4bd92a9260a85e7e4bd5e1a03c4c89db139e1704e8681e9834f8b98394b9f4b87babd45155a15b6cffd583ad8f89a48a4849305d43aa613
 BuildRequires:	glib-devel
 BuildRequires:	cairo
 BuildRequires:	cairo-devel
@@ -26,17 +26,16 @@ Pango is a library for laying out and rendering of text, with an emphasis on int
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 %build
-./configure \
-	--prefix=%{_prefix}
-make %{?_smp_mflags}
+%configure
+%make_build
+
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
 #These tests are known to fail. Hence sending exit 0
@@ -52,14 +51,17 @@ make %{?_smp_mflags} -k check || exit 0
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so*
-%{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gtk-doc/*
+%{_datadir}/man/*
 
 %changelog
+*       Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 1.40.4-2
+-       Upgrade to build with new harfbuzz
 *       Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
 -       Initial version
