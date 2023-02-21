@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        24%{?dist}
+Release:        25%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -134,16 +134,6 @@ Requires:       python3 = %{version}-%{release}
 %description    tools
 The Python package includes several development tools that are used
 to build python programs.
-
-%package        setuptools
-Summary:        Download, build, install, upgrade, and uninstall Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
-
-%description    setuptools
-setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
 
 %package test
 Summary: Regression tests package for Python.
@@ -284,20 +274,13 @@ rm -rf %{buildroot}/*
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
-%files setuptools
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/site-packages/pkg_resources/*
-%{_libdir}/python%{VER}/site-packages/_distutils_hack/*
-%{_libdir}/python%{VER}/site-packages/distutils-precedence.pth
-%{_libdir}/python%{VER}/site-packages/setuptools/*
-%{_libdir}/python%{VER}/site-packages/setuptools-57.4.0.dist-info/*
-%exclude %{_libdir}/python%{VER}/site-packages/setuptools/*.exe
-
 %files test
 %defattr(-, root, root, 755)
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Tue Feb 07 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-25
+- Separate python3-setuptools from python3
 * Tue Jan 31 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-24
 - Fix CVE-2020-10735
 * Tue Nov 15 2022 Prashant S Chauhan <psinghchauhan@vmware.com> 3.7.5-23
