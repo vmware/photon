@@ -1,15 +1,15 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
-Version:        2.6.7
-Release:        3%{?dist}
+Version:        7.0.1
+Release:        1%{?dist}
 License:        MIT
-URL:            http://harfbuzz.org
+URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version}.tar.xz
-%define sha512 %{name}=6fdd6e0952a73e1949349aa5416ef8fb3fc351b15c95be4fe1f341b111159fe58113b73a334db2697f4e3aaef5a761bd8f1d8964514406cad40f9862768d59de
+Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.xz
+%define sha512  %{name}=2f2fe4604c062549bf5975cde4022bb137fc04f05ef99fcb566411408cfd136371eae2139b943f70bd17eb758690cbd5183acd552bc901d13c634da11eea404c
 
 BuildRequires:  glib-devel
 BuildRequires:  freetype2-devel
@@ -70,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 7.0.1-1
+- Update version 7.0.1
 * Wed Nov 23 2022 Shivani Agarwal <shivania2@vmware.com> 2.6.7-3
 - Enabled introspection
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.6.7-2
