@@ -67,6 +67,8 @@
 #include <openssl/proverr.h>
 #include <openssl/evp.h>
 
+#define UNUSED(var)		(void)(var)
+
 /* Required to make this shared object executable */
 const char service_interp[] __attribute__((section(".interp"))) = "/lib/" LD_SO;
 
@@ -172,6 +174,8 @@ static void *rand_newctx(void *provctx, void *parent,
 {
 	PROV_SEED_SRC *s;
 
+	UNUSED(parent_dispatch);
+
 	if (parent != NULL) {
 		ERR_raise(ERR_LIB_PROV, PROV_R_SEED_SOURCES_MUST_NOT_HAVE_A_PARENT);
 		return NULL;
@@ -200,6 +204,11 @@ static int rand_instantiate(void *vseed, unsigned int strength,
 {
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
 
+	UNUSED(strength);
+	UNUSED(prediction_resistance);
+	UNUSED(pstr);
+	UNUSED(pstr_len);
+
 	s->state = EVP_RAND_STATE_READY;
 	return 1;
 }
@@ -220,6 +229,8 @@ static int rand_generate(void *vseed, unsigned char *out, size_t outlen,
 {
 	int socket, ret;
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
+
+	UNUSED(strength);
 
 	if (s->state != EVP_RAND_STATE_READY) {
 		ERR_raise(ERR_LIB_PROV,
@@ -365,8 +376,8 @@ const OSSL_DISPATCH rand_functions[] = {
 };
 
 static const OSSL_ALGORITHM jitterentropy_rands[] = {
-	{ "jitterentropy", "fips=yes", rand_functions },
-	{ NULL, NULL, NULL }
+	{ "jitterentropy", "fips=yes", rand_functions, NULL },
+	{ NULL, NULL, NULL, NULL }
 };
 
 typedef struct prov_ctx_st {
@@ -401,12 +412,15 @@ static void jitterentropy_teardown(void *provctx)
 
 static const OSSL_PARAM *jitterentropy_gettable_params(void *provctx)
 {
+	UNUSED(provctx);
 	return jitterentropy_param_types;
 }
 
 static int jitterentropy_get_params(void *provctx, OSSL_PARAM params[])
 {
 	OSSL_PARAM *p;
+
+	UNUSED(provctx);
 
 	p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_NAME);
 	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, "OpenSSL Jitter Entropy Provider"))
@@ -421,6 +435,8 @@ static const OSSL_ALGORITHM *jitterentropy_query(void *provctx, int operation_id
                                          int *no_cache)
 {
 	*no_cache = 0;
+
+	UNUSED(provctx);
 
 	if (operation_id == OSSL_OP_RAND)
 		return jitterentropy_rands;

@@ -1,0 +1,45 @@
+From 8386d224589c66d8471a5986743824eff8e447f2 Mon Sep 17 00:00:00 2001
+From: Tomas Mraz <tomas@openssl.org>
+Date: Fri, 13 Jan 2023 17:57:59 +0100
+Subject: [PATCH 2/4] Prevent creating DSA and DH keys without parameters
+ through import
+
+---
+ providers/implementations/keymgmt/dh_kmgmt.c  | 4 ++--
+ providers/implementations/keymgmt/dsa_kmgmt.c | 5 +++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/providers/implementations/keymgmt/dh_kmgmt.c b/providers/implementations/keymgmt/dh_kmgmt.c
+index 58a5fd009f..c2d87b4a7f 100644
+--- a/providers/implementations/keymgmt/dh_kmgmt.c
++++ b/providers/implementations/keymgmt/dh_kmgmt.c
+@@ -198,8 +198,8 @@ static int dh_import(void *keydata, int selection, const OSSL_PARAM params[])
+     if ((selection & DH_POSSIBLE_SELECTIONS) == 0)
+         return 0;
+ 
+-    if ((selection & OSSL_KEYMGMT_SELECT_ALL_PARAMETERS) != 0)
+-        ok = ok && ossl_dh_params_fromdata(dh, params);
++    /* a key without parameters is meaningless */
++    ok = ok && ossl_dh_params_fromdata(dh, params);
+ 
+     if ((selection & OSSL_KEYMGMT_SELECT_KEYPAIR) != 0) {
+         int include_private =
+diff --git a/providers/implementations/keymgmt/dsa_kmgmt.c b/providers/implementations/keymgmt/dsa_kmgmt.c
+index 100e917167..881680c085 100644
+--- a/providers/implementations/keymgmt/dsa_kmgmt.c
++++ b/providers/implementations/keymgmt/dsa_kmgmt.c
+@@ -199,8 +199,9 @@ static int dsa_import(void *keydata, int selection, const OSSL_PARAM params[])
+     if ((selection & DSA_POSSIBLE_SELECTIONS) == 0)
+         return 0;
+ 
+-    if ((selection & OSSL_KEYMGMT_SELECT_ALL_PARAMETERS) != 0)
+-        ok = ok && ossl_dsa_ffc_params_fromdata(dsa, params);
++    /* a key without parameters is meaningless */
++    ok = ok && ossl_dsa_ffc_params_fromdata(dsa, params);
++
+     if ((selection & OSSL_KEYMGMT_SELECT_KEYPAIR) != 0) {
+         int include_private =
+             selection & OSSL_KEYMGMT_SELECT_PRIVATE_KEY ? 1 : 0;
+-- 
+2.32.0 (Apple Git-132)
+

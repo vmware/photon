@@ -1,0 +1,57 @@
+From ef16eee060be97e5ee5f9a6a501eb61487ed21f6 Mon Sep 17 00:00:00 2001
+From: Tomas Mraz <tomas@openssl.org>
+Date: Mon, 16 Jan 2023 19:45:23 +0100
+Subject: [PATCH 1/2] Do not dereference PKCS7 object data if not set
+
+Fixes CVE-2023-0216
+---
+ crypto/pkcs7/pk7_lib.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/crypto/pkcs7/pk7_lib.c b/crypto/pkcs7/pk7_lib.c
+index 753f1276e6..936e50da54 100644
+--- a/crypto/pkcs7/pk7_lib.c
++++ b/crypto/pkcs7/pk7_lib.c
+@@ -414,6 +414,8 @@ PKCS7_SIGNER_INFO *PKCS7_add_signature(PKCS7 *p7, X509 *x509, EVP_PKEY *pkey,
+ 
+ static STACK_OF(X509) *pkcs7_get_signer_certs(const PKCS7 *p7)
+ {
++    if (p7->d.ptr == NULL)
++        return NULL;
+     if (PKCS7_type_is_signed(p7))
+         return p7->d.sign->cert;
+     if (PKCS7_type_is_signedAndEnveloped(p7))
+@@ -423,6 +425,8 @@ static STACK_OF(X509) *pkcs7_get_signer_certs(const PKCS7 *p7)
+ 
+ static STACK_OF(PKCS7_RECIP_INFO) *pkcs7_get_recipient_info(const PKCS7 *p7)
+ {
++    if (p7->d.ptr == NULL)
++        return NULL;
+     if (PKCS7_type_is_signedAndEnveloped(p7))
+         return p7->d.signed_and_enveloped->recipientinfo;
+     if (PKCS7_type_is_enveloped(p7))
+@@ -440,13 +444,17 @@ void ossl_pkcs7_resolve_libctx(PKCS7 *p7)
+     const PKCS7_CTX *ctx = ossl_pkcs7_get0_ctx(p7);
+     OSSL_LIB_CTX *libctx = ossl_pkcs7_ctx_get0_libctx(ctx);
+     const char *propq = ossl_pkcs7_ctx_get0_propq(ctx);
+-    STACK_OF(PKCS7_RECIP_INFO) *rinfos = pkcs7_get_recipient_info(p7);
+-    STACK_OF(PKCS7_SIGNER_INFO) *sinfos = PKCS7_get_signer_info(p7);
+-    STACK_OF(X509) *certs = pkcs7_get_signer_certs(p7);
++    STACK_OF(PKCS7_RECIP_INFO) *rinfos;
++    STACK_OF(PKCS7_SIGNER_INFO) *sinfos;
++    STACK_OF(X509) *certs;
+ 
+-    if (ctx == NULL)
++    if (ctx == NULL || p7->d.ptr == NULL)
+         return;
+ 
++    rinfos = pkcs7_get_recipient_info(p7);
++    sinfos = PKCS7_get_signer_info(p7);
++    certs = pkcs7_get_signer_certs(p7);
++
+     for (i = 0; i < sk_X509_num(certs); i++)
+         ossl_x509_set0_libctx(sk_X509_value(certs, i), libctx, propq);
+ 
+-- 
+2.32.0 (Apple Git-132)
+

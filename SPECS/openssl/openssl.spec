@@ -1,10 +1,14 @@
-# Set this flag to 0 to build without fips provider
-%global fips 1
+# once certified fips-provider rpm is published, with_certified_fips switch should be turned off
+# with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
+%define with_certified_fips     1
+%define with_latest_fips        0
+%define fips_provider_version   3.0.0
+%define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,15 +20,52 @@ Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
-%if %{?fips}
-Source3: provider_fips.cnf
-Source4: jitterentropy.c
+Source3: distro.cnf
+Source4: user.cnf
+
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
+Source5: provider_fips.cnf
+Source6: jitterentropy.c
 %endif
-Source5: distro.cnf
-Source6: user.cnf
+
+%if 0%{?with_certified_fips}
+Source7: %{fips_provider_srcname}.tar.xz
+%define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
+%endif
+
+%if 0%{?with_check}
+Source8: dsapub_noparam.der
+%endif
 
 Patch0: openssl-cnf.patch
 Patch1: 0001-x509-fix-double-locking-problem.patch
+
+# Fix for multiple security issues
+Patch2: 0001-Fix-type-confusion-in-nc_match_single.patch
+Patch3: 0002-Add-testcase-for-nc_match_single-type-confusion.patch
+
+Patch4: 0001-Fix-Timing-Oracle-in-RSA-decryption.patch
+
+Patch5: 0001-Avoid-dangling-ptrs-in-header-and-data-params-for-PE.patch
+Patch6: 0002-Add-a-test-for-CVE-2022-4450.patch
+
+Patch7: 0001-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
+Patch8: 0002-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
+Patch9: 0003-squash-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDE.patch
+Patch10: 0004-fixup-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
+
+Patch11: 0001-Do-not-dereference-PKCS7-object-data-if-not-set.patch
+Patch12: 0002-Add-test-for-d2i_PKCS7-NULL-dereference.patch
+
+Patch13: 0001-Fix-NULL-deference-when-validating-FFC-public-key.patch
+Patch14: 0002-Prevent-creating-DSA-and-DH-keys-without-parameters-.patch
+Patch15: 0003-Do-not-create-DSA-keys-without-parameters-by-decoder.patch
+Patch16: 0004-Add-test-for-DSA-pubkey-without-param-import-and-che.patch
+
+Patch17: 0001-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-3.patch
+
+Patch18: 0001-pk7_doit.c-Check-return-of-BIO_set_md-calls.patch
+Patch19: 0002-Add-testcase-for-missing-return-check-of-BIO_set_md-.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -48,11 +89,16 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
 
-%if %{?fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %package fips-provider
 Summary:    FIPS Libraries for openssl
 Group:      Applications/Internet
+
+%if 0%{?with_certified_fips}
+Requires:   %{name} >= %{fips_provider_version}
+%else
 Requires:   %{name} = %{version}-%{release}
+%endif
 
 %description fips-provider
 Fips library for enabling fips.
@@ -84,9 +130,27 @@ Requires:   %{name} = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
+%if 0%{?with_certified_fips} && 0%{?with_latest_fips}
+echo "ERROR: with_latest_fips and with_certified_fips both should not be enabled" 1>&2
+exit 1
+%endif
+
+%if 0%{?with_certified_fips}
+%autosetup -p1 -a0 -a7
+%else
 %autosetup -p1
+%endif
 
 %build
+%if 0%{?with_certified_fips}
+  %undefine with_latest_fips
+%elif 0%{?with_latest_fips}
+  %undefine with_certified_fips
+%else
+  %undefine with_latest_fips
+  %undefine with_certified_fips
+%endif
+
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -105,10 +169,8 @@ export MACHINE=%{_arch}
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    -Wl,-z,noexecstack \
-%if %{?fips}
-    enable-fips
-%endif
+    %{?with_latest_fips: enable-fips} \
+    -Wl,-z,noexecstack
 
 %make_build
 
@@ -116,24 +178,30 @@ export MACHINE=%{_arch}
 %make_install %{?_smp_mflags}
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
-
-%if %{?fips}
 install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
-gcc -shared -Wall -O2 -g -fPIC -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
-    %{SOURCE4} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
+install -p -m 644 -D %{SOURCE4} %{buildroot}%{_sysconfdir}/ssl
+
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
+install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
+
+%if 0%{?with_certified_fips}
+install -p -m 644 %{fips_provider_srcname}/%{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/
 %endif
 
-install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
-install -p -m 644 -D %{SOURCE6} %{buildroot}%{_sysconfdir}/ssl
+gcc -shared -Wall -Werror -Wextra -O2 -g -fPIC \
+        -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
+        %{SOURCE6} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
+%endif
 
 %if 0%{?with_check}
 %check
+cp %{SOURCE8} test/recipes/91-test_pkey_check_data/
 make tests %{?_smp_mflags}
 %endif
 
 %ldconfig_scriptlets
 
-%if %{?fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %post fips-provider
 if [ "$1" = 2 ]; then
   # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
@@ -169,13 +237,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
 
-%if %{?fips}
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
 %{_libdir}/ossl-modules/jitterentropy.so
 %{_sysconfdir}/ssl/provider_fips.cnf
+
+%if 0%{?with_latest_fips}
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
+%endif
 %endif
 
 %files devel
@@ -205,6 +276,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Feb 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-3
+- Package fips certified fips.so in openssl-fips-provider
+- Fix various security issues
+- Use strict gcc flags while compiling jitterentropy
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-2
 - Fix openssl.cnf
 - Keep default provider enabled & activated at all times
