@@ -1,11 +1,7 @@
-%define VER 6.0.0
+%define VER 6.1.0
 Summary:        A Python-based command-line client for running simple CQL commands on a Cassandra cluster.
 Name:           python3-cqlsh
-# Note: "ga" is added to version because previous version was
-# 6.0.0b4 so tdnf update/install considers 6.0.0b4 as latest version
-# Thus, to overcome this appended "ga" at the end 6.0.0 to make it latest one
-# Once next version > 6.0.0 is available then we can remove "ga"
-Version:        6.0.0
+Version:        6.1.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Development/Languages/Python
@@ -13,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/cqlsh
 Source0:        https://files.pythonhosted.org/packages/source/c/cqlsh/cqlsh-%{VER}.tar.gz
-%define sha512  cqlsh=762f9fb17d2a0123ae01df7898d9fa912a211a9283649035ba1e21b8ce0fc348a4520c89a9073821127e86261f457edb127a436cc2594308f082e7c25eae8f9b
+%define sha512  cqlsh=4e045e9cf2ea8bc4d720eeabf23d0a215893bb0407d9c6f6c386798f74f7cc465fc38be39ee5abeb35578c7d23b685257f1499be47e88d116dac1acc374c81f4
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -28,6 +24,8 @@ Requires:       python3-six
 Requires:       cassandra
 
 BuildArch:      noarch
+
+Patch0: 0001-cqlshlib-Added-support-for-python-3.11.patch
 
 %description
 cqlsh is a Python-based command-line tool, and the most direct way to run simple CQL commonds on a Cassandra cluster.
@@ -51,6 +49,8 @@ python3 setup.py check
 %{python3_sitelib}/*
 
 %changelog
+* Tue Feb 21 2023 Ankit Jain <ankitja@vmware.com> 6.1.0-1
+- Update to 6.1.0
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.0.0-1
 - Automatic Version Bump
 * Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0ga-1
