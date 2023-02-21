@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.41.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -69,7 +69,7 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so*
-%{_datadir}/*
+%{_datadir}/gir-1.0/*
 
 %files devel
 %defattr(-,root,root)
@@ -77,8 +77,12 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/girepository-1.0/
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gtk-doc/*
+%{_datadir}/man/*
 
 %changelog
+* Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 1.41.1-2
+- upgrade to build with new harfbuzz
 * Thu Sep 08 2022 Shivani Agarwal <shivania2@vmware.com> 1.41.1-1
 - Upgrade Version
 * Thu Dec 16 2021 Alexey Makhalov <amakhalov@vmware.com> 1.40.4-2
