@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.15.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -79,6 +79,8 @@ rmdir %{buildroot}%{_sysconfdir}/grub.d
 mkdir -p %{buildroot}%{_var}/lib/tuned
 mkdir -p %{buildroot}%{_sysconfdir}/modprobe.d
 touch %{buildroot}%{_sysconfdir}/modprobe.d/kvm.rt.tuned.conf
+mkdir -p %{buildroot}%{_datadir}/dbus-1/system.d
+mv %{buildroot}%{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf %{buildroot}%{_datadir}/dbus-1/system.d/com.redhat.tuned.conf
 
 #removing powertop2tuned as we do not have powertop for this.
 rm %{buildroot}%{_bindir}/powertop2tuned
@@ -106,7 +108,7 @@ make test %{?_smp_mflags}
 %{_sysconfdir}/tuned/active_profile
 %config(noreplace) %{_sysconfdir}/modprobe.d/kvm.rt.tuned.conf
 %config(noreplace) %{_sysconfdir}/tuned/tuned-main.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
+%{_datadir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
 %config(noreplace) /boot/tuned.cfg
 %config(noreplace) %{_sysconfdir}/tuned/
@@ -141,6 +143,9 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-6
+-   Fix tuned daemon startup failure by moving tuned's dbus config file
+-   to the correct location
 *   Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 2.15.0-5
 -   Add /var/lib/tuned folder to rpm
 *   Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-4
