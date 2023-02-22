@@ -1,14 +1,16 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
-Version:          1.15.3
-Release:          16%{?dist}
+Version:          1.25.2
+Release:          1%{?dist}
 License:          MIT
 URL:              https://github.com/influxdata/telegraf
 Source0:          https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512  telegraf=755ca49954f3cba7145214f95050f42705d2d2c8f082175414ba67bd00f1c8ccb3ca0f5196cba6237a91e95ccd13903261d942718aad4b8be89c0bbc83100a20
+%define sha512  telegraf=5ed242b70f19af865a6ea1625a3e600d4bf8f3bb5de56ae18470cfe586f5e8c9998e80e3ca5cf032b41ba513e368005db46bdef8dc089e1fe4c2ac4f4ee9f9fb
 Source1:          https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512  telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:          https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
+Source3:         golang-dep-0.5.4.tar.gz
+%define sha512   golang-dep-0.5.4=b7657447c13a34d44bce47a0e0e4a3e7471efd7dffbbc18366d941302c561995ef1f2b58f92a46ed7e3d86322627964637772aab5216d334ad53fba94c1e241b
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -29,6 +31,10 @@ Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Goo
 
 %prep
 %autosetup
+mkdir -p ${GOPATH}/src/github.com/golang/dep
+tar xf %{SOURCE3} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
+mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
+tar xf %{SOURCE0} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/influxdata/telegraf
 cat << EOF >>%{SOURCE2}
 [[outputs.wavefront]]
 host = "localhost"
@@ -44,14 +50,16 @@ unzip %{SOURCE1}
 popd
 
 %build
-mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
-cp -r * ${GOPATH}/src/github.com/influxdata/telegraf
+pushd ${GOPATH}/src/github.com/golang/dep
+CGO_ENABLED=0 GOOS=linux GO111MODULE=auto go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
+popd
 mkdir -p ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront
 pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
 popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
-make %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make
 popd
 
 %install
@@ -91,6 +99,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+* Tue Feb 21 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.25.2-1
+- Update to 1.25.2
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.15.3-16
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.15.3-15
