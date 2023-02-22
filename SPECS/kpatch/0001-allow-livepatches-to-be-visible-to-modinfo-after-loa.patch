@@ -1,7 +1,7 @@
-From 7824520b34ee246c6ed67300eaaaa7cda428b930 Mon Sep 17 00:00:00 2001
+From ca27f78e8186fbcce8872a73a70bee64e57ea6da Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <blamoreaux@vmware.com>
-Date: Wed, 24 Aug 2022 01:18:53 +0000
-Subject: [PATCH] allow livepatches to be visible to modinfo after load/install
+Date: Thu, 15 Dec 2022 21:33:31 +0000
+Subject: [PATCH] Allow livepatches to be visible to modinfo after loading
 
 There is a problem with kpatch where livepatch modules, once loaded, can be seen with lsmod, but not modinfo.
 This is because kpatch by default installs livepatches into /ver/lib/kpatch/<kernel-version>.
@@ -16,7 +16,7 @@ information about loaded/installed livepatch modules.
  1 file changed, 23 insertions(+), 13 deletions(-)
 
 diff --git a/kpatch/kpatch b/kpatch/kpatch
-index f4eb516..dbb67f5 100755
+index 2a00b07..3184b5a 100755
 --- a/kpatch/kpatch
 +++ b/kpatch/kpatch
 @@ -23,7 +23,8 @@
@@ -27,7 +27,7 @@ index f4eb516..dbb67f5 100755
 +KVER="$(uname -r)"
 +INSTALLDIR="/lib/modules/$KVER/livepatches"
  SCRIPTDIR="$(readlink -f "$(dirname "$(type -p "$0")")")"
- VERSION="0.9.6"
+ VERSION="0.9.7"
  POST_ENABLE_WAIT=15	# seconds
 @@ -76,7 +77,7 @@ __find_module () {
  	MODULE="$1"
@@ -47,7 +47,7 @@ index f4eb516..dbb67f5 100755
  			mod_name "$i"
  			if [[ "$MODNAME" == "$arg" ]]; then
  				MODULE="$i"
-@@ -456,7 +457,7 @@ case "$1" in
+@@ -460,7 +461,7 @@ case "$1" in
  	[[ "$#" -ne 2 ]] && usage
  	case "$2" in
  	"--all")
@@ -56,7 +56,7 @@ index f4eb516..dbb67f5 100755
  			[[ -e "$i" ]] || continue
  			load_module "$i" || die "failed to load module $i"
  		done
-@@ -464,9 +465,18 @@ case "$1" in
+@@ -468,9 +469,18 @@ case "$1" in
  	*)
  		PATCH="$2"
  		find_module "$PATCH" || die "can't find $PATCH"
@@ -75,7 +75,7 @@ index f4eb516..dbb67f5 100755
  	;;
  
  "unload")
-@@ -514,7 +524,6 @@ case "$1" in
+@@ -518,7 +528,6 @@ case "$1" in
  	;;
  
  "install")
@@ -83,7 +83,7 @@ index f4eb516..dbb67f5 100755
  	shift
  	options="$(getopt -o k: -l "kernel-version:" -- "$@")" || die "getopt failed"
  	eval set -- "$options"
-@@ -538,16 +547,18 @@ case "$1" in
+@@ -542,16 +551,18 @@ case "$1" in
  	get_module_version "$PATCH" || die "modinfo failed"
  	[[ "$KVER" != "$MODVER" ]] && die "invalid module version $MODVER for kernel $KVER"
  
@@ -106,7 +106,7 @@ index f4eb516..dbb67f5 100755
  	shift
  	options="$(getopt -o k: -l "kernel-version:" -- "$@")" || die "getopt failed"
  	eval set -- "$options"
-@@ -566,11 +577,11 @@ case "$1" in
+@@ -570,11 +581,11 @@ case "$1" in
  		shift
  	done
  
@@ -120,7 +120,7 @@ index f4eb516..dbb67f5 100755
  			mod_name "$i"
  			if [[ "$MODNAME" == "$PATCHNAME" ]]; then
  				MODULE="$i"
-@@ -583,9 +594,8 @@ case "$1" in
+@@ -587,9 +598,8 @@ case "$1" in
  
  	echo "uninstalling $PATCH ($KVER)"
  	rm -f "$MODULE" || die "failed to uninstall module $PATCH"
@@ -132,5 +132,5 @@ index f4eb516..dbb67f5 100755
  
  "list")
 -- 
-2.30.3
+2.35.5
 

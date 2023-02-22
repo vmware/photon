@@ -60,7 +60,6 @@ RPM_VERSION=""
 RPM_RELEASE=""
 BUILD_RPM_SPECFILE=/etc/gen_livepatch/build-rpm.spec
 patches=()
-declare -A photon_version=(["4.19"]="3.0" ["5.10"]="4.0")
 
 # args
 #   1. string to match
@@ -399,10 +398,10 @@ parse_source_rpm() {
 
     # make sure vermagic gets the right tag, otherwise kpatch load may fail
     # basically just make sure vermagic in modinfo is the same as uname -r
-    if [[ $KERNEL_FLAVOR == rt ]]; then
-        sed -i "s/$/-$KERNEL_RELEASE_TAG/" "rpmbuild/BUILD/linux-$LINUX_VERSION/localversion-rt"
+    if [[ $KERNEL_FLAVOR == "generic" ]]; then
+        sed -i s/^CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-$KERNEL_RELEASE_TAG\"/g rpmbuild/BUILD/linux-"$LINUX_VERSION"/.config
     else
-        echo "-$KERNEL_RELEASE_TAG" >> "rpmbuild/BUILD/linux-$LINUX_VERSION/localversion-$KERNEL_FLAVOR"
+        sed -i s/^CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-$KERNEL_RELEASE_TAG-$KERNEL_FLAVOR\"/g rpmbuild/BUILD/linux-"$LINUX_VERSION"/.config
     fi
 
 }
@@ -424,7 +423,7 @@ parse_debuginfo_rpm() {
 # vmlinux path is set when we parse the debuginfo package
 set_filenames_and_paths() {
     #determine which photon version this is
-    PHOTON_VERSION=${photon_version[$(cut -d '.' -f 1-2 <<< $KERNEL_VERSION_RELEASE_TAG)]}
+    PHOTON_VERSION="${PH_TAG//[^0-9]/}".0
 
     #determine which linux version this is
     LINUX_VERSION=$(cut -d '-' -f 1 <<< $KERNEL_VERSION_RELEASE_TAG)
@@ -498,6 +497,9 @@ kpatch_build() {
 package_module_in_rpm() {
     echo -e "\nPreparing to build rpm"
 
+    local linux_version
+    [[ "$KERNEL_FLAVOR" == "generic" ]] && linux_version="$KERNEL_VERSION_RELEASE_TAG" || linux_version="${KERNEL_VERSION_RELEASE_TAG}-${KERNEL_FLAVOR}"
+
     pushd "$TEMP_DIR" > /dev/null 2>&1 || error
     # set up temporary rpm build environment
     local rpmdir="%_topdir %(echo $PWD)/rpmbuild"
@@ -513,12 +515,12 @@ package_module_in_rpm() {
     sed -i "s/@@VERSION@@/$RPM_VERSION/g" "$spec_file" || error "Filling in RPM vesion for spec file skeleton failed"
     sed -i "s/@@RELEASE@@/$RPM_RELEASE/g" "$spec_file" || error "Filling in RPM release for  spec file skeleton failed"
     sed -i "s/@@LIVEPATCH_NAME@@/$LIVEPATCH_NAME/g" "$spec_file" || error "Filling in livepatch name for spec file skeleton failed"
-    sed -i "s/@@LINUX_VERSION@@/$KERNEL_VERSION_RELEASE_TAG/g" "$spec_file" || error "Filling in linux version for spec file skeleton failed"
+    sed -i "s/@@LINUX_VERSION@@/$linux_version/g" "$spec_file" || error "Filling in linux version for spec file skeleton failed"
 
     if [ -f "$RPM_DESCFILE" ]; then
         sed -i "s/@@DESCRIPTION@@/$(cat $RPM_DESCFILE)/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
     else
-        sed -i "s/@@DESCRIPTION@@/Livepatch module for Linux $KERNEL_VERSION_RELEASE_TAG\n/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
+        sed -i "s/@@DESCRIPTION@@/Livepatch module for Linux $linux_version\n/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
     fi
 
     echo "Building rpm"
