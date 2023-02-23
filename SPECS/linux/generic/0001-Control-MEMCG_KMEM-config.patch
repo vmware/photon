@@ -16,8 +16,8 @@ diff --git a/init/Kconfig b/init/Kconfig
 index 5eb91dde4018..63194057e093 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -909,9 +909,16 @@ config MEMCG_SWAP
- 	default y
+@@ -909,9 +909,16 @@ config MEMCG
+ 	  Provides control over the memory footprint of tasks in a cgroup.
  
  config MEMCG_KMEM
 -	bool

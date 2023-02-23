@@ -47,7 +47,7 @@ index 599cf81f5685..08f53dfa7c30 100644
 +++ b/arch/arm64/mm/dma-mapping.c
 @@ -9,6 +9,7 @@
  #include <linux/dma-map-ops.h>
- #include <linux/dma-iommu.h>
+ #include <linux/iommu.h>
  #include <xen/xen.h>
 +#include <linux/dma-page-touching.h>
 

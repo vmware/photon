@@ -55,25 +55,26 @@ index c16df629907e..16958df28982 100644
  struct suspend_info {
  	int cancelled;
  };
-@@ -99,6 +110,10 @@ static void do_suspend(void)
+@@ -98,6 +109,11 @@ static void do_suspend(void)
+ {
  	int err;
  	struct suspend_info si;
-
-+	lock_system_sleep();
++	unsigned int sleep_flags;
++
++	sleep_flags = lock_system_sleep();
 +
 +	suspend_mode = XEN_SUSPEND;
-+
+ 
  	shutting_down = SHUTDOWN_SUSPEND;
-
- 	err = freeze_processes();
-@@ -162,6 +177,10 @@ static void do_suspend(void)
+ 
+@@ -162,6 +178,10 @@ static void do_suspend(void)
  	thaw_processes();
  out:
  	shutting_down = SHUTDOWN_INVALID;
 +
 +	suspend_mode = NO_SUSPEND;
 +
-+	unlock_system_sleep();
++	unlock_system_sleep(sleep_flags);
  }
  #endif	/* CONFIG_HIBERNATE_CALLBACKS */
 

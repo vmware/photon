@@ -52,7 +52,7 @@ index 69fbb2f4e74f..880ab1799ea7 100644
  		return 0;
  	}
 @@ -524,6 +534,7 @@ static long __init flush_buffer(void *bufv, unsigned long len)
- static unsigned long my_inptr; /* index of next byte to be processed in inbuf */
+ static unsigned long my_inptr __initdata; /* index of next byte to be processed in inbuf */
  
  #include <linux/decompress/generic.h>
 +extern unsigned long initrd_start;

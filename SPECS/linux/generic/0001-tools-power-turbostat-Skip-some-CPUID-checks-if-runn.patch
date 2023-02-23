@@ -33,8 +33,8 @@ index b7d2a0cd0ac2..b18800a55549 100644
 --- a/tools/power/x86/turbostat/turbostat.c
 +++ b/tools/power/x86/turbostat/turbostat.c
 @@ -5506,6 +5506,8 @@ void process_cpuid()
+ 	unsigned int eax, ebx, ecx, edx;
  	unsigned int fms, family, model, stepping, ecx_flags, edx_flags;
- 	unsigned int has_turbo;
  	unsigned long long ucode_patch = 0;
 +	unsigned int hyper_vendor_id[3];
 +	int retry_count;

@@ -1,19 +1,25 @@
-commit ddadbf89752e21262fd2d17db38ea3a3fd16a14e
-Author: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date:   Mon Feb 28 22:51:52 2022 +0530
+From ddadbf89752e21262fd2d17db38ea3a3fd16a14e
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Mon Feb 28 22:51:52 2022 +0530
+Subject: [PATCH] 0003-vmw_extcfg: Introduce CPU hotplug via Ext Config
 
-    0003-vmw_extcfg: Introduce CPU hotplug via Ext Config
-    
-    When the interrupt handler is invoked
-    
-    * Find the CPU attached or removed.
-    * Add or Remove CPU to the guest OS
-    * Expect the userspace to online/offile the cpu
-    * Acknowledge the event
-    
-    Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-    Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
-    Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+When the interrupt handler is invoked
+
+* Find the CPU attached or removed.
+* Add or Remove CPU to the guest OS
+* Expect the userspace to online/offile the cpu
+* Acknowledge the event
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+---
+ drivers/misc/vmw_extcfg/Makefile             |  2 +-
+ drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c | 95 ++++++++++++++++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_device.h      | 18 ++++++
+ drivers/misc/vmw_extcfg/extcfg_hotplug.c     |  4 ++
+ 4 files changed, 118 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c
 
 diff --git a/drivers/misc/vmw_extcfg/Makefile b/drivers/misc/vmw_extcfg/Makefile
 index 8f86fbd4d..3f69112a1 100644
@@ -182,3 +188,6 @@ index 2c2dea365..dc5a9b8d7 100644
  		break;
  	default:
  		pr_err("Unknown/Unsupported Hotplug request %d", command);
+-- 
+2.7.4
+

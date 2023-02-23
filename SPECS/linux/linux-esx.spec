@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.0.7
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        6.1.10
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
+%define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -79,10 +79,9 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch6: 6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
-Patch9: Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
 Patch10: 9p-file-attributes-caching-support.patch
 Patch11: 9p-support-for-local-file-lock.patch
-Patch13: 6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
+Patch13: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
 Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
@@ -115,7 +114,7 @@ Patch53: 6.0-x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch54: 07-vmware-only.patch
 Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
-# linux-esx [60..79]
+# linux-esx [60..89]
 Patch60: init-do_mounts-recreate-dev-root.patch
 Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch62: 01-clear-linux.patch
@@ -135,7 +134,7 @@ Patch75: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
 Patch76: 0001-MMIO_should_have_more_priority_then_IO.patch
 Patch77: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
 
-# Hotplug support without firmware (not applied, pending review)
+# Hotplug support without firmware
 Patch80: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch81: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
@@ -159,7 +158,7 @@ Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
@@ -187,16 +186,19 @@ Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 # Patches for i40e v2.19.3 driver [1500..1509]
 Patch1500: i40e-v2.19.3-Add-support-for-gettimex64-interface.patch
 Patch1501: i40e-v2.19.3-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1502: i40e-v2.19.3-Fix-build-errors-on-6.1.y.patch
 
 # Patches for iavf v4.5.3 driver [1510..1519]
 Patch1510: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1511: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 Patch1512: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1513: iavf-v4.5.3-Fix-build-errors-on-6.1.y.patch
 
 # Patches for ice v1.9.11 driver [1520..1529]
 Patch1520: ice-v1.9.11-linux-linux-esx-ice-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1523: ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -274,7 +276,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # linux-esx
-%autopatch -p1 -m60 -M79
+%autopatch -p1 -m60 -M89
 
 # CVE
 %autopatch -p1 -m100 -M129
@@ -476,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 22 2023 Bo Gan <ganb@vmware.com> 6.1.10-1
+- Update to 6.1.10
 * Thu Feb 16 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-8
 - Update i40e driver to v2.19.3 to prevent kernel warnings
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.7-7

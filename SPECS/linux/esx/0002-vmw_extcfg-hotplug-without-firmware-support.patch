@@ -1,22 +1,30 @@
-commit b2aa18053c2651e0e99c1671c3a86b4bf2b70631
-Author: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date:   Mon Feb 28 22:48:48 2022 +0530
+From b2aa18053c2651e0e99c1671c3a86b4bf2b70631
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Mon Feb 28 22:48:48 2022 +0530
+Subject: [PATCH] 0002-vmw_extcfg: Introduce Memory hotplug via Ext Config
 
-    0002-vmw_extcfg: Introduce Memory hotplug via Ext Config
-    
-    Detects available memory regions during device init.
-    Add a handler to detect IRQ 9 which can handle memory
-    hotplug.
-    
-    When the interrupt handler is invoked
-    
-    * Find the Memory device attached and reserve the region.
-    * Add memory device to guest OS
-    * Acknowledge the event
-    
-    Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-    Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
-    Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+Detects available memory regions during device init.
+Add a handler to detect IRQ 9 which can handle memory
+hotplug.
+
+When the interrupt handler is invoked
+
+* Find the Memory device attached and reserve the region.
+* Add memory device to guest OS
+* Acknowledge the event
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+---
+ drivers/misc/vmw_extcfg/Makefile                |   2 +-
+ drivers/misc/vmw_extcfg/extcfg_device.h         |  40 +++++
+ drivers/misc/vmw_extcfg/extcfg_driver.c         |   6 +
+ drivers/misc/vmw_extcfg/extcfg_hotplug.c        | 189 ++++++++++++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c |  90 +++++++++++
+ 5 files changed, 326 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_hotplug.c
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
 
 diff --git a/drivers/misc/vmw_extcfg/Makefile b/drivers/misc/vmw_extcfg/Makefile
 index 909b41339..8f86fbd4d 100644
@@ -404,7 +412,7 @@ index 000000000..bab4f24e6
 +	}
 +
 +	/* Add the memory to the memory manager. */
-+	ret = add_memory_resource(numa_node, res, memhp_default_online_type);
++	ret = add_memory_resource(numa_node, res, mhp_default_online_type);
 +	if (ret < 0) {
 +		pr_err("Failed to add hot added memory to the memory manager.\n");
 +		kfree(res);
@@ -415,3 +423,6 @@ index 000000000..bab4f24e6
 +	       mem.base, mem.end, numa_node);
 +	return ret;
 +}
+-- 
+2.7.4
+

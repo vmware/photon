@@ -1,29 +1,46 @@
-commit 9fa6c217ab796ac8372ba005762dab73b876010a
-Author: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date:   Wed Feb 23 09:25:56 2022 +0530
+From 9fa6c217ab796ac8372ba005762dab73b876010a
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Wed Feb 23 09:25:56 2022 +0530
+Subject: [PATCH] 0001-vmw_extcfg: Prepare for Non-ACPI Hotplug support
 
-    0001-vmw_extcfg: Prepare for Non-ACPI Hotplug support
-    
-    Provide a way to receive hotplug events when ACPI is disabled.
-    
-    VMX provides a way to register and access cpu, memory and device
-    information via Extended Config space of PCI root. This is helpful
-    when the guest is booted with ACPI turned off, CRX/directBoot.
-    There is no access to chipset when the kernel is booted with out
-    ACPI.
-    
-    Summary of method used to achieve hotplug without ACPI
-    
-    * When ACPI is disabled, reserve IO, MMIO addresses
-    * Let root PCI device know about these addresses
-    * Register a PnP device that responds on IRQ 9
-    * When the Interrupt handler is invoked, read from Ext Config space
-    and figure out the exact device that was hot added/removed.
-    * Add/remove the resource to the OS similar to the ACPI handler.
-    
-    Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-    Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
-    Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+Provide a way to receive hotplug events when ACPI is disabled.
+
+VMX provides a way to register and access cpu, memory and device
+information via Extended Config space of PCI root. This is helpful
+when the guest is booted with ACPI turned off, CRX/directBoot.
+There is no access to chipset when the kernel is booted with out
+ACPI.
+
+Summary of method used to achieve hotplug without ACPI
+
+* When ACPI is disabled, reserve IO, MMIO addresses
+* Let root PCI device know about these addresses
+* Register a PnP device that responds on IRQ 9
+* When the Interrupt handler is invoked, read from Ext Config space
+  and figure out the exact device that was hot added/removed.
+* Add/remove the resource to the OS similar to the ACPI handler.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+---
+ arch/x86/include/asm/io_apic.h          |   2 +
+ arch/x86/kernel/acpi/boot.c             |   6 ++
+ drivers/misc/Kconfig                    |   1 +
+ drivers/misc/Makefile                   |   1 +
+ drivers/misc/vmw_extcfg/Kconfig         |  15 +++
+ drivers/misc/vmw_extcfg/Makefile        |   3 +
+ drivers/misc/vmw_extcfg/extcfg_device.c |  67 +++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_device.h |  74 ++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_driver.c | 170 ++++++++++++++++++++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_driver.h |  26 +++++
+ 10 files changed, 365 insertions(+)
+ create mode 100644 drivers/misc/vmw_extcfg/Kconfig
+ create mode 100644 drivers/misc/vmw_extcfg/Makefile
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_device.c
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_device.h
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_driver.c
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_driver.h
 
 diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
 index a1a26f6d3..792ae9d20 100644
@@ -59,20 +76,20 @@ diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
 index fafa8b0d8..12f8bb440 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -481,4 +481,5 @@ source "drivers/misc/ocxl/Kconfig"
- source "drivers/misc/cardreader/Kconfig"
- source "drivers/misc/habanalabs/Kconfig"
+@@ -514,4 +514,5 @@ source "drivers/misc/habanalabs/Kconfig"
  source "drivers/misc/uacce/Kconfig"
+ source "drivers/misc/pvpanic/Kconfig"
+ source "drivers/misc/mchp_pci1xxxx/Kconfig"
 +source "drivers/misc/vmw_extcfg/Kconfig"
  endmenu
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
 index d23231e73..18ab71ea7 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -57,3 +57,4 @@ obj-$(CONFIG_HABANA_AI)		+= habanalabs/
- obj-$(CONFIG_UACCE)		+= uacce/
- obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
- obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+@@ -62,3 +62,4 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+ obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+ obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
+ obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
 +obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
 \ No newline at end of file
 diff --git a/drivers/misc/vmw_extcfg/Kconfig b/drivers/misc/vmw_extcfg/Kconfig
@@ -467,3 +484,6 @@ index 000000000..ca20e97d3
 +#define VMW_EXTCFG_MMIO_SIZE (18 << 20)
 +
 +#endif /* _EXTCFG_DRIVER_H_ */
+-- 
+2.7.4
+

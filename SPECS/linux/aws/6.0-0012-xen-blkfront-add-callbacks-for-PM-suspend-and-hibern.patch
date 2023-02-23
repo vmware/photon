@@ -1,5 +1,3 @@
-
-m 94f65a2637a6d9ee7fc035c669e5d10783027955 Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Thu, 8 Jun 2017 19:15:55 +0000
 Subject: xen-blkfront: add callbacks for PM suspend and hibernation

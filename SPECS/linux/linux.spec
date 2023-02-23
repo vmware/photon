@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.0.7
-Release:        11%{?kat_build:.kat}%{?dist}
+Version:        6.1.10
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,14 +34,14 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a03e67781a3b5593e1f663907079fe4618c0259634d5f8dfed620884c2c154f45e4d371b70353f8dbc88f71148b8a31c8863b26756e81bf82699a2b72be9df8e
+%define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.8.0
+%define ena_version 2.8.3
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
-%define sha512 ena_linux=549b33f913bc4fa48f27d24e66d77032e32992f7f9c6afb1ce82e89d343516201442c70f3146d919b81632b97baee699f1c60001cb2a1730720681fa28452e3e
+%define sha512 ena_linux=173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
 
 %define efa_version 2.1.1
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
@@ -85,7 +85,6 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch6: 6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
-Patch9: Revert-PCI-Clear-PCI_STATUS-when-setting-up-device.patch
 
 # ttyXRUSB support
 Patch11: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -94,7 +93,7 @@ Patch12: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patchx: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch13: 6.0-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
+Patch13: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
 Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
@@ -106,7 +105,7 @@ Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 Patch19: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
 
 # Allow PCI resets to be disabled from vfio_pci_core module
-Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
@@ -135,6 +134,9 @@ Patch207: 6.0-0003-arm64-VMware-hypervisor-detection.patch
 Patch208: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
 Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
+Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
+Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+
 # TODO: rebase to 6.0:
 Patch220: 0001-Add-rpi-poe-fan-driver.patch
 %endif
@@ -171,7 +173,7 @@ Patch324: 6.0-0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: 6.0-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
@@ -202,16 +204,19 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Patches for i40e v2.19.3 driver [1500..1509]
 Patch1500: i40e-v2.19.3-Add-support-for-gettimex64-interface.patch
 Patch1501: i40e-v2.19.3-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1502: i40e-v2.19.3-Fix-build-errors-on-6.1.y.patch
 
 # Patches for iavf v4.5.3 driver [1510..1519]
 Patch1510: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1511: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 Patch1512: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1513: iavf-v4.5.3-Fix-build-errors-on-6.1.y.patch
 
 # Patches for ice v1.9.11 driver [1520..1529]
 Patch1520: ice-v1.9.11-linux-linux-esx-ice-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1523: ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -686,6 +691,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Feb 22 2023 Bo Gan <ganb@vmware.com> 6.1.10-1
+- Update to 6.1.10
 * Tue Feb 21 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-11
 - Enable turbostat to work in the guest on VMware hypervisor.
 * Tue Feb 21 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-10
