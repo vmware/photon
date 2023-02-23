@@ -3,7 +3,7 @@
 Name:           abupdate
 Summary:        A/B partition set update and rollback
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -19,7 +19,9 @@ BuildRequires:  systemd-rpm-macros
 
 Requires:       bash
 Requires:       systemd
+%ifarch x86_64
 Requires:       kexec-tools
+%endif
 Requires:       util-linux
 Requires:       rsync
 Requires:       grub2
@@ -51,5 +53,7 @@ cp %{SOURCE3} %{buildroot}%{_docdir}
 %{_unitdir}/abupdate.service
 
 %changelog
+* Thu Feb 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2
+- Requires kexec-tools only in x86_64
 * Thu Oct 20 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-1
 - Initial addition to Photon.
