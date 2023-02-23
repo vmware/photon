@@ -288,7 +288,7 @@ class PackageUtils(object):
                     raise Exception(msg)
         else:
             if checksum is None:
-                nsg = f"No checksum found for {source}"
+                msg = f"No checksum found for {source}"
                 self.logger.error(msg)
                 raise Exception(msg)
         if len(sourcePath) > 1:
