@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -367,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-3
+- Add stackleak_track_stack() in fips_canister_wrapper
 * Fri Feb 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-2
 - FIPS canister build for 6.1.10 secure kernel
 * Wed Feb 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-1

@@ -33,6 +33,18 @@
 #include <asm/fpu/api.h>
 
 
+/*
+ * Replicate a no-op stackleak_track_stack() function for other linux flavours
+ * where CONFIG_GCC_PLUGIN_STACKLEAK is disabled to overcome missing symbols.
+ * stackleak_track_stack() is inserted for the functions with a stack frame size
+ * greater than or equal to CONFIG_STACKLEAK_TRACK_MIN_SIZE.
+ */
+#ifndef CONFIG_GCC_PLUGIN_STACKLEAK
+void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
+{
+}
+#endif
+
 int fcw_cond_resched(void)
 {
 	return cond_resched();

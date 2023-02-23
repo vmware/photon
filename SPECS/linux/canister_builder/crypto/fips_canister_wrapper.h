@@ -22,6 +22,10 @@
 #include <crypto/skcipher.h>
 #include <crypto/kpp.h>
 
+#ifndef CONFIG_GCC_PLUGIN_STACKLEAK
+void __used __no_caller_saved_registers noinstr stackleak_track_stack(void);
+#endif
+
 extern int fcw_cond_resched(void);
 
 extern void *fcw_kmalloc(size_t size, gfp_t flags);
