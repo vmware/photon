@@ -1,0 +1,32 @@
+From 562222dc8c40b9d0a5d1e2c33dc5619f0f2e8c22 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 14 Mar 2023 15:56:38 +0530
+Subject: [PATCH 4/4] cc_ca_certs.py: move util.write_file with if block
+
+if cert file size if zero, out_lines won't get initialized
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ cloudinit/config/cc_ca_certs.py | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/cloudinit/config/cc_ca_certs.py b/cloudinit/config/cc_ca_certs.py
+index 2c0b1f33..54153638 100644
+--- a/cloudinit/config/cc_ca_certs.py
++++ b/cloudinit/config/cc_ca_certs.py
+@@ -203,9 +203,10 @@ def disable_system_ca_certs(distro_cfg):
+                     out_lines.append(header_comment)
+                     added_header = True
+                 out_lines.append("!" + line)
+-    util.write_file(
+-        ca_cert_cfg_fn, "\n".join(out_lines) + "\n", omode="wb"
+-    )
++
++        util.write_file(
++            ca_cert_cfg_fn, "\n".join(out_lines) + "\n", omode="wb"
++        )
+ 
+ 
+ def remove_default_ca_certs(distro_cfg):
+-- 
+2.34.1

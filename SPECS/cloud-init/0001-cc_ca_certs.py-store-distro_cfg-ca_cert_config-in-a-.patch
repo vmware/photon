@@ -1,0 +1,50 @@
+From 9ab893043254e7c8fdc219579fbc958366d32ca8 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 14 Mar 2023 15:51:15 +0530
+Subject: [PATCH 1/4] cc_ca_certs.py: store distro_cfg['ca_cert_config'] in a
+ variable
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ cloudinit/config/cc_ca_certs.py | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/cloudinit/config/cc_ca_certs.py b/cloudinit/config/cc_ca_certs.py
+index b1c4a2bf..77375285 100644
+--- a/cloudinit/config/cc_ca_certs.py
++++ b/cloudinit/config/cc_ca_certs.py
+@@ -177,14 +177,20 @@ def disable_system_ca_certs(distro_cfg):
+ 
+     @param distro_cfg: A hash providing _distro_ca_certs_configs function.
+     """
+-    if distro_cfg["ca_cert_config"] is None:
++
++    ca_cert_cfg_fn = distro_cfg["ca_cert_config"]
++
++    if ca_cert_cfg_fn is None:
+         return
++
+     header_comment = (
+         "# Modified by cloud-init to deselect certs due to user-data"
+     )
++
+     added_header = False
+-    if os.stat(distro_cfg["ca_cert_config"]).st_size != 0:
+-        orig = util.load_file(distro_cfg["ca_cert_config"])
++
++    if os.stat(ca_cert_cfg_fn).st_size != 0:
++        orig = util.load_file(ca_cert_cfg_fn)
+         out_lines = []
+         for line in orig.splitlines():
+             if line == header_comment:
+@@ -198,7 +204,7 @@ def disable_system_ca_certs(distro_cfg):
+                     added_header = True
+                 out_lines.append("!" + line)
+     util.write_file(
+-        distro_cfg["ca_cert_config"], "\n".join(out_lines) + "\n", omode="wb"
++        ca_cert_cfg_fn, "\n".join(out_lines) + "\n", omode="wb"
+     )
+ 
+ 
+-- 
+2.34.1
