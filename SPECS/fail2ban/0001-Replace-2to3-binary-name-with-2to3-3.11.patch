@@ -1,0 +1,25 @@
+From bfe0ca44db431d20ac2d155b6af1d0b9c431d4ac Mon Sep 17 00:00:00 2001
+From: Nitesh Kumar <kunitesh@vmware.com>
+Date: Wed, 15 Feb 2023 14:16:54 +0530
+Subject: [PATCH] Replace 2to3 binary name with 2to3-3.10
+
+---
+ fail2ban-2to3 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fail2ban-2to3 b/fail2ban-2to3
+index 2015ed5..c8d955d 100755
+--- a/fail2ban-2to3
++++ b/fail2ban-2to3
+@@ -5,7 +5,7 @@
+ 
+ set -eu
+ 
+-if 2to3 -w --no-diffs bin/* fail2ban;then
++if 2to3-3.11 -w --no-diffs bin/* fail2ban;then
+   echo "Success!" >&2
+   exit 0
+ else
+-- 
+2.17.1
+

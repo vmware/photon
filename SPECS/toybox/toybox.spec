@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -12,13 +12,13 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
+Source0: http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
 %define sha512  %{name}=3ffe4de6b17770ad9c43f98f2c69a110f94e5a85da909f8f770bbc9abaff42a524237b4ffaaa8b9800c8d31f0a8b6d3521f03bfdd0d1260fa421ef2525a34290
 
-Patch0:         %{name}-change-toys-path.patch
+Patch0: %{name}-change-toys-path.patch
 
-Source1:        config-%{name}
-Source2:        %{name}-toys
+Source1: config-%{name}
+Source2: %{name}-toys
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -43,7 +43,7 @@ Requires:   %{name} = %{version}-%{release}
 The package contains %{name} doc files.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 cp %{SOURCE1} .config
@@ -278,6 +278,11 @@ mktoy %{_bindir}/mix
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_bindir}/mkpasswd
+
+%triggerpostun -- mkpasswd
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy /usr/bin/mkpasswd
 
 %triggerpostun -- e2fsprogs
 [ $2 -eq 0 ] || exit 0
@@ -543,7 +548,7 @@ mktoy %{_bindir}/which
 # elixir
 %ghost %{_bindir}/mix
 
-# expect
+# expect & mkpasswd
 %ghost %{_bindir}/mkpasswd
 
 # e2fsprogs
@@ -702,6 +707,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.8-3
+- Add rules for mkpasswd
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.8-2
 - Fix triggers
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.8.8-1
