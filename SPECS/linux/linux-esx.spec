@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -460,7 +460,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %ifarch x86_64
-%{_sysconfdir}/modprobe.d/iavf.conf
+# iavf.conf is used to just blacklist the deprecated i40evf
+# and create alias of i40evf to iavf.
+# By default iavf is used for VF driver.
+# This file creates conflict with other flavour of linux
+# thus excluding this file from packaging
+%exclude %{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -478,6 +483,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 6.1.10-2
+- Exclude iavf.conf
 * Wed Feb 22 2023 Bo Gan <ganb@vmware.com> 6.1.10-1
 - Update to 6.1.10
 * Thu Feb 16 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.0.7-8
