@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.168
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -758,7 +758,12 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %ifarch x86_64
 %exclude %{_modulesdir}/kernel/arch/x86/oprofile/
 %exclude %{_modulesdir}/extra/intel_sgx.ko.xz
-%{_sysconfdir}/modprobe.d/iavf.conf
+# iavf.conf is used to just blacklist the deprecated i40evf
+# and create alias of i40evf to iavf.
+# By default iavf is used for VF driver.
+# This file creates conflict with other flavour of linux
+# thus excluding this file from packaging
+%exclude %{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
@@ -840,6 +845,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 28 2023 Ankit Jain <ankitja@vmware.com> 5.10.168-4
+- Exclude iavf.conf
 * Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 5.10.168-3
 - exclude man dir from linux-tools
 * Fri Feb 17 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
