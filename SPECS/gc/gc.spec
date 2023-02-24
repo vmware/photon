@@ -1,9 +1,9 @@
 Summary:    A garbage collector for C and C++
 Name:       gc
 Version:    8.0.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
-Url:        http://www.hboehm.info/gc/
+Url:        http://www.hboehm.info/gc
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
@@ -32,7 +32,7 @@ developing applications that use gc.
 
 %build
 %configure --enable-cplusplus
-make %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Feb 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.4-2
+- Fix the missed version bump
 * Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 8.0.4-1
 - Upgrade to version 8.0.4
 * Mon Sep 17 2018 Sujay G <gsujay@vmware.com> 8.0.0-1
