@@ -1,6 +1,6 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        22.3.0
+Version:        23.0.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=654c91666eb231e6952da1cdc4fc694252707ab3aa5ab806dde45a74edcb551bad5ca127c768cafe93b0564d5f3e58cd9d9c6390c037207da948c9fa093290fe
+%define sha512  %{name}=79e115c2e21198b61353d98f2eb44093ff7247e2793163b17bb00b6f30125253dc64761c3290bfb456df6de7b5dba9b7b7e9cc503aa0ff28516483f2f26f00ba
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -140,6 +140,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Fri Feb 24 2023 Shivani Agarwal <shivania2@vmware.com> 23.0.0-1
+- Upgrade Version
 * Tue Jan 10 2023 Shivani Agarwal <shivania2@vmware.com> 22.3.0-1
 - Upgrade mesa to 22.3.0 and enabled intel and Nvidia driver support
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 22.2.2-3
