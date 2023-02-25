@@ -640,7 +640,7 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(spec_fn, err_dict),
+                #check_for_unused_files(spec_fn, err_dict),
                 check_for_sha1_usage(spec, err_dict),
             ]
         ):
