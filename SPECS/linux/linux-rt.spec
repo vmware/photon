@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.272
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -657,41 +657,47 @@ Patch1000: fips-kat-tests.patch
 %endif
 
 # Patches for i40e v2.16.11 driver
-Patch1500: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch1501: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1501: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1502: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1503: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch1504: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 # Patches for i40e v2.15.9 driver
-Patch1502: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
-Patch1503: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1505: i40e-v2.15.9-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1506: i40e-v2.15.9-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1507: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
+Patch1508: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
-# Common Patches for iavf v4.5.3 and iavf v4.4.2 driver
-Patch1511: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 # Patches for iavf v4.5.3 driver
+Patch1511: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1512: iavf-v4.5.3-no-aux-symvers.patch
 Patch1513: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 Patch1514: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for iavf v4.4.2 driver
-Patch1515: iavf-v4.4.2-no-aux-symvers.patch
-Patch1516: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1515: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1516: iavf-v4.4.2-no-aux-symvers.patch
+Patch1517: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
 # Patches for iavf v4.2.7 driver
-Patch1517: iavf-v4.2.7-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1518: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1518: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1519: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1520: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 
-# Common Patches for ice v1.9.11 and ice v1.8.3 driver
-Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 # Patches for ice v1.9.11 driver
+Patch1521: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1522: ice-v1.9.11-no-aux-bus.patch
 Patch1523: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 # Patches for ice v1.8.3 driver
-Patch1524: ice-v1.8.3-no-aux-bus.patch
-Patch1525: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1524: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1525: ice-v1.8.3-no-aux-bus.patch
+Patch1526: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 # Patches for ice v1.6.4 driver
-Patch1526: ice-v1.6.4-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1527: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1527: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
+Patch1528: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1529: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
 BuildArch: x86_64
 
@@ -847,12 +853,12 @@ The Linux package contains the Linux kernel doc files
 
 # Patches for i40e v2.16.11 driver
 pushd ../i40e-%{i40e_version_2_16_11}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1501 -M1504
 popd
 
 # Patches for i40e v2.15.9 driver
 pushd ../i40e-%{i40e_version_2_15_9}
-%autopatch -p1 -m1502 -M1503
+%autopatch -p1 -m1505 -M1508
 popd
 
 # Patches for iavf v4.5.3 driver
@@ -862,13 +868,12 @@ popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-%autopatch -p1 -m1511 -M1511
-%autopatch -p1 -m1515 -M1516
+%autopatch -p1 -m1515 -M1517
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-%autopatch -p1 -m1517 -M1518
+%autopatch -p1 -m1518 -M1520
 popd
 
 # Patches for ice v1.9.11 driver
@@ -878,13 +883,12 @@ popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-%autopatch -p1 -m1521 -M1521
-%autopatch -p1 -m1524 -M1525
+%autopatch -p1 -m1524 -M1526
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-%autopatch -p1 -m1526 -M1527
+%autopatch -p1 -m1527 -M1529
 popd
 
 %build
@@ -1241,6 +1245,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Mar 02 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3
+- Use Photon kernel macros to simplify building i40e, iavf and ice drivers
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1

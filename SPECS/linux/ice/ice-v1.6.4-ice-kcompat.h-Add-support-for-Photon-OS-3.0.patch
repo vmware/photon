@@ -1,0 +1,95 @@
+From 78c40612c27e60ddca4337b27ff26b0bd589328b Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 2 Mar 2023 16:37:44 -0800
+Subject: [PATCH] ice, kcompat.h: Add support for Photon OS 3.0
+
+Photon OS 3.0 is based on the linux kernel version (stable series)
+4.19 with additional patches on top.
+
+The PTP_SYS_OFFSET_EXTENDED_IOCTL and PTP_CLOCK_INFO_GETTIMEX64
+features were added to linux mainline in v5.0. However, they have also
+been backported to Photon OS 3.0's linux kernels (multiple flavors) in
+the following versions:
+
+linux (generic): 4.19.154-6
+linux-rt: 4.19.154-5
+linux-esx: 4.19.189-3
+
+kcompat.h assumes that kernel versions less than 5.0 do not support
+these features, and adds empty stubs for such kernels. So, modify
+kcompat.h to detect Photon OS kernel flavors/versions that have these
+features, to make sure that the empty stubs are not used when building
+the driver for these kernels.
+
+A precise check for the exact kernel flavors and their minimum
+versions supporting the above mentioned features is shown below for
+reference; but as is evident, it gets a bit lengthy.
+
+\#if (defined(PHOTON_KERNEL) && \
+    LINUX_VERSION_MAJOR == 4 && LINUX_VERSION_PATCHLEVEL == 19 && \
+    (defined(PHOTON_KERNEL_FLAVOR_GENERIC) && \
+     (LINUX_VERSION_SUBLEVEL > 154 || \
+     (LINUX_VERSION_SUBLEVEL == 154 && \
+      PHOTON_KERNEL_RELEASE >= 6))) || \
+    (defined(PHOTON_KERNEL_FLAVOR_RT) && \
+     (LINUX_VERSION_SUBLEVEL > 154 || \
+     (LINUX_VERSION_SUBLEVEL == 154 && \
+      PHOTON_KERNEL_RELEASE >= 5))) || \
+    (defined(PHOTON_KERNEL_FLAVOR_ESX) && \
+     (LINUX_VERSION_SUBLEVEL > 189 || \
+     (LINUX_VERSION_SUBLEVEL == 189 && \
+      PHOTON_KERNEL_RELEASE >= 3))))
+
+\#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+\#define HAVE_PTP_CLOCK_INFO_GETTIMEX64
+
+\#endif
+
+Instead, in this particular case, we can trade-off precision for
+simplicity by rounding up the check to the minimum *common* kernel
+version in each of those kernel flavors that supports those features,
+namely 4.19.190-1.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/kcompat.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/src/kcompat.h b/src/kcompat.h
+index 6549382..877d707 100644
+--- a/src/kcompat.h
++++ b/src/kcompat.h
+@@ -3086,6 +3086,30 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
+      (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
+ #define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+ #define HAVE_PTP_CLOCK_INFO_GETTIMEX64
++
++/*
++ * The PTP_SYS_OFFSET_EXTENDED_IOCTL and PTP_CLOCK_INFO_GETTIMEX64
++ * features are available in the following Photon OS 3.0 kernel
++ * flavors and versions:
++ * - linux (generic) kernel version 4.19.154-6 and above
++ * - linux-rt kernel version 4.19.154-5 and above
++ * - linux-esx kernel version 4.19.189-3 and above
++ * For simplicity, check for the minimum common kernel version in each
++ * of these kernel flavors that supports these features, namely
++ * 4.19.190-1.
++ *
++ * NOTE: Do NOT use LINUX_VERSION_CODE for comparison as it is
++ * deprecated, and more importantly, the sublevel info (i.e., y in
++ * 4.19.y) either gets lost or clamped at 255.
++ */
++#elif (defined(PHOTON_KERNEL) && \
++       LINUX_VERSION_MAJOR == 4 && LINUX_VERSION_PATCHLEVEL == 19 && \
++       (defined(PHOTON_KERNEL_FLAVOR_GENERIC) || \
++        defined(PHOTON_KERNEL_FLAVOR_RT) || \
++        defined(PHOTON_KERNEL_FLAVOR_ESX)) && \
++       LINUX_VERSION_SUBLEVEL >= 190)
++#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
++#define HAVE_PTP_CLOCK_INFO_GETTIMEX64
+ #else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
+ struct ptp_system_timestamp {
+ 	struct timespec64 pre_ts;
+-- 
+2.25.1
+

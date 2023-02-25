@@ -3,15 +3,11 @@ From: Vivek Thampi <vithampi@vmware.com>
 Date: Wed, 4 Nov 2020 01:46:06 -0800
 Subject: [PATCH] Add support for gettimex64 interface
 
-[Srinidhi Rao: Ported this patch to kerbel version 4.19.205]
+[Srinidhi Rao: Ported this patch to kernel version 4.19.205]
 
 Signed-off-by: Vivek Thampi <vithampi@vmware.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- src/i40e_ptp.c                                 | 24 ++++++++++++++--------
- src/kcompat.h                                  | 23 +--------------------
- src/kcompat_std_defs.h                         |  8 +++++++-
- 3 files changed, 23 insertions(+), 32 deletions(-)
 
 diff --git a/src/i40e_ptp.c b/src/i40e_ptp.c
 index e9c1318..af1b9de 100644
@@ -112,65 +108,3 @@ index e9c1318..af1b9de 100644
  	/* Get a monotonic starting time for this reset */
  	pf->ptp_reset_start = ktime_get();
  }
-diff --git a/src/kcompat.h b/src/kcompat.h
-index d785507..40baa6c 100644
---- a/src/kcompat.h
-+++ b/src/kcompat.h
-@@ -6892,30 +6892,9 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
- 
- #define dev_change_flags _kc_dev_change_flags
- #endif /* !(RHEL_RELEASE_CODE && RHEL > RHEL(8,0)) */
--#if (RHEL_RELEASE_CODE && \
--     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(7,7) && \
--      RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(8,0)) || \
--     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
--#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
--#define HAVE_PTP_CLOCK_INFO_GETTIMEX64
--#else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
--struct ptp_system_timestamp {
--	struct timespec64 pre_ts;
--	struct timespec64 post_ts;
--};
- 
--static inline void
--ptp_read_system_prets(struct ptp_system_timestamp __always_unused *sts)
--{
--	;
--}
-+#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
- 
--static inline void
--ptp_read_system_postts(struct ptp_system_timestamp __always_unused *sts)
--{
--	;
--}
--#endif /* !(RHEL >= 7.7 && RHEL != 8.0) */
- #if (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
- #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
- #endif /* RHEL 8.1 */
-diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
-index 26ca803..b550dc2 100644
---- a/src/kcompat_std_defs.h
-+++ b/src/kcompat_std_defs.h
-@@ -73,7 +73,6 @@
- 
- /*****************************************************************************/
- #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0))
--#define NEED_SKB_FRAG_OFF_ACCESSORS
- #define NEED_FLOW_INDR_BLOCK_CB_REGISTER
- #else /* >= 5.4.0 */
- #endif /* 5.4.0 */
-@@ -85,6 +84,13 @@
- #else /* >= 5.9.0 */
- #endif /* 5.9.0 */
- 
-+/*****************************************************************************/
-+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,201))
-+#define NEED_SKB_FRAG_OFF_ACCESSORS
-+#else /* >= 4.19.201 */
-+#undef NEED_SKB_FRAG_OFF_ACCESSORS
-+#endif /* 4.19.201 */
-+
- /*****************************************************************************/
- #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
- #define NEED_NET_PREFETCH

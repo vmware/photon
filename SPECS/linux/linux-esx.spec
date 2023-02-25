@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.272
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -482,17 +482,19 @@ Patch551: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch552: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 
 # Patches for i40e driver
-Patch801: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch802: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch801: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch802: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch803: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch804: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
-Patch811: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch811: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch812: iavf-v4.5.3-no-aux-symvers.patch
 Patch813: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 Patch814: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice driver
-Patch821: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch821: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch822: ice-v1.9.11-no-aux-bus.patch
 Patch823: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 
@@ -594,7 +596,7 @@ This Linux package contains hmac sha generator kernel module.
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m801 -M802
+%autopatch -p1 -m801 -M804
 popd
 
 #Patches for iavf driver
@@ -818,6 +820,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Mar 02 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3
+- Use Photon kernel macros to simplify building i40e, iavf and ice drivers
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1

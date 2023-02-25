@@ -1,0 +1,33 @@
+From 738a16c6247d1929568f8542b65ef74e34cbdb5b Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 2 Mar 2023 17:35:47 -0800
+Subject: [PATCH] i40e: Fix skb_frag_off usage for kernel versions 4.19.201 and
+ above
+
+skb_frag_off() was added to linux-stable 4.19.y in 4.19.201, so remove
+that from the compat implementation.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/kcompat.h | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/src/kcompat.h b/src/kcompat.h
+index 0bacae7..fbbc7e4 100644
+--- a/src/kcompat.h
++++ b/src/kcompat.h
+@@ -7245,11 +7245,6 @@ devlink_flash_update_status_notify(struct devlink __always_unused *devlink,
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0))
+ #if (!(RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,2)) && \
+      !(SLE_VERSION_CODE >= SLE_VERSION(15,2,0)))
+-static inline unsigned int skb_frag_off(const skb_frag_t *frag)
+-{
+-	return frag->page_offset;
+-}
+-
+ static inline void skb_frag_off_add(skb_frag_t *frag, int delta)
+ {
+ 	frag->page_offset += delta;
+-- 
+2.25.1
+

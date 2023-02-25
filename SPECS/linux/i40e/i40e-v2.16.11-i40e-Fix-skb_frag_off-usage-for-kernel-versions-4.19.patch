@@ -1,0 +1,38 @@
+From a162f68bf3a38b7998674e66eed785466f9db85a Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 2 Mar 2023 17:48:57 -0800
+Subject: [PATCH] i40e: Fix skb_frag_off usage for kernel versions 4.19.201 and
+ above
+
+skb_frag_off() was added to linux-stable 4.19.y in 4.19.201, so remove
+that from the compat implementation.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/kcompat_impl.h | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/kcompat_impl.h b/src/kcompat_impl.h
+index 6fac605..c7bf97b 100644
+--- a/src/kcompat_impl.h
++++ b/src/kcompat_impl.h
+@@ -41,13 +41,11 @@ static inline void net_prefetch(void *p)
+  *
+  * Implementing the wrappers directly for older kernels which still have the
+  * old implementation of skb_frag_t is trivial.
++ *
++ * skb_frag_off was added to linux-stable 4.19.y in 4.19.201, so
++ * remove that from the compat implementation.
+  */
+ #ifdef NEED_SKB_FRAG_OFF_ACCESSORS
+-static inline unsigned int skb_frag_off(const skb_frag_t *frag)
+-{
+-	return frag->page_offset;
+-}
+-
+ static inline void skb_frag_off_add(skb_frag_t *frag, int delta)
+ {
+ 	frag->page_offset += delta;
+-- 
+2.25.1
+
