@@ -19,6 +19,9 @@ from pyrpm.spec import Spec, replace_macros
 cfg_dict = {}
 cfg_fn = "check-spec-cfg.json"
 
+source_regex = re.compile(r"^(Source\d*\s*):\s*(.+)", re.IGNORECASE)
+patch_regex = re.compile(r"^([#]*Patch\d*\s*):\s*(\S+)", re.IGNORECASE)
+
 with open(os.path.dirname(os.path.realpath(__file__)) + f"/{cfg_fn}", "r") as f:
     cfg_dict = json.load(f)
 
@@ -443,10 +446,9 @@ def check_make_smp_flags(lines_dict, err_dict):
     return ret
 
 
-def check_mentioned_but_unused_files(spec_fn):
+def check_mentioned_but_unused_files(spec_fn, dirname):
     global g_ignore_list
     parsed_spec = []
-    dirname = os.path.dirname(spec_fn)
 
     def HandleLogs(log):
         nonlocal parsed_spec
@@ -454,37 +456,37 @@ def check_mentioned_but_unused_files(spec_fn):
 
     CommandUtils.runBashCmd(
         f"rpmspec -D \"%_sourcedir {dirname}\" -P {spec_fn}",
-        logfn=HandleLogs
+        logfn=HandleLogs,
     )
 
     # ignore everything after files
     # patch & sources get used much earlier
     for idx, line in enumerate(parsed_spec):
-        if line.startswith("%files "):
+        if line.startswith("%changelog"):
             parsed_spec = parsed_spec[:idx]
             break
 
     source_patch_list = []
     g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
 
-    search_patterns = ("Source", "Patch")
     for line in parsed_spec:
-        if line.startswith(search_patterns):
+        if re.search(source_regex, line) or re.search(patch_regex, line):
             fn = os.path.basename(line.split()[1])
             if fn not in g_ignore_list:
                 source_patch_list.append(fn)
         elif source_patch_list:
             for index, fn in enumerate(source_patch_list):
-                if fn in line:
+                # there can be multiple sources mentioned in same line
+                # so don't break after first hit
+                if f"{dirname}/{fn}" in line:
                     source_patch_list.pop(index)
 
     return source_patch_list
 
 
-def check_for_unused_files(spec_fn, err_dict):
+def check_for_unused_files(spec_fn, err_dict, dirname):
     ret = False
     sec = "unused_files"
-    dirname = os.path.dirname(spec_fn)
 
     if not hasattr(check_for_unused_files, "prev_dir"):
         check_for_unused_files.prev_dir = None
@@ -515,15 +517,22 @@ def check_for_unused_files(spec_fn, err_dict):
                 other_files.append(fn)
                 continue
 
-            fn = os.path.join(r, fn)
+            if fn == os.path.basename(spec_fn):
+                fn = spec_fn
+            else:
+                fn = create_altered_spec(f"{dirname}/{fn}")
+
             tmp = Spec.from_file(fn)
             populate_list(tmp.sources, source_patch_list)
             populate_list(tmp.patches, source_patch_list)
 
+            if fn != spec_fn:
+                os.remove(fn)
+
     # keep only basenames in source list
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
 
-    mentioned_but_unused = check_mentioned_but_unused_files(spec_fn)
+    mentioned_but_unused = check_mentioned_but_unused_files(spec_fn, dirname)
 
     fns = set(other_files) - set(source_patch_list)
     if not fns and not mentioned_but_unused:
@@ -536,8 +545,15 @@ def check_for_unused_files(spec_fn, err_dict):
     for r, _, _fns in os.walk(dirname):
         for _fn in _fns:
             if _fn in fns or _fn in mentioned_but_unused:
+                # needed for Source0 unused type of errors
+                if _fn in mentioned_but_unused:
+                    mentioned_but_unused.remove(_fn)
                 _fn = os.path.join(r, _fn)
                 err_dict.update_err_dict(sec, _fn)
+
+    # needed for Source0 unused type of errors
+    for item in mentioned_but_unused:
+        err_dict.update_err_dict(sec, item)
 
     check_for_unused_files.prev_ret = ret
 
@@ -573,7 +589,7 @@ def create_altered_spec(spec_fn):
     # replace %include <file> with actual content of <file>
     for line in lines:
         if not line.startswith("%include"):
-            if line.startswith("Source"):
+            if re.search(source_regex, line):
                 k, v = line.split()
                 sources[k] = v
             output.append(f"{line}")
@@ -589,8 +605,6 @@ def create_altered_spec(spec_fn):
                 included_fn = v
                 break
 
-        sources.pop(k)
-
         g_ignore_list.append(included_fn)
         included_fn = find_file_in_dir(included_fn, dirname)
         with open(included_fn, "r") as fp:
@@ -599,7 +613,7 @@ def create_altered_spec(spec_fn):
                 if l:
                     output.append(f"{l}\n")
 
-    altered_spec = f"{tempfile.mktemp()}-{os.path.basename(spec_fn)}"
+    altered_spec = f"/tmp/{os.path.basename(spec_fn)}"
     with open(f"{altered_spec}", "w") as fp:
         for l in output:
             fp.write(l)
@@ -621,17 +635,11 @@ def check_specs(files_list):
 
         err_dict = ErrorDict(spec_fn)
 
-        #altered_spec = create_altered_spec(spec_fn)
-        altered_spec = spec_fn
+        altered_spec = create_altered_spec(spec_fn)
 
         spec = Spec.from_file(altered_spec)
 
         err, lines_dict = check_for_unallowed_usages(altered_spec, err_dict)
-
-        """
-        if os.path.exists(altered_spec):
-            os.remove(altered_spec)
-        """
 
         if any(
             [
@@ -643,7 +651,7 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                #check_for_unused_files(spec_fn, err_dict),
+                check_for_unused_files(altered_spec, err_dict, os.path.dirname(spec_fn)),
                 check_for_sha1_usage(spec, err_dict),
             ]
         ):
@@ -653,23 +661,33 @@ def check_specs(files_list):
             ret = True
             err_dict.print_err_dict()
 
+        if os.path.exists(altered_spec):
+            os.remove(altered_spec)
+
     return ret
 
 
 if __name__ == "__main__":
     files = []
 
+    def get_specs_in_dir(dirname):
+        files = []
+        for r, d, fns in os.walk(dirname):
+            for fn in fns:
+                if fn.endswith(".spec"):
+                    files.append(os.path.join(r, fn))
+        return files
+
     arglen = len(sys.argv)
     if arglen >= 2:
         for arg in range(1, arglen):
             if sys.argv[arg].endswith(".spec"):
                 files.append(sys.argv[arg])
+            elif os.path.isdir(sys.argv[arg]):
+                files += get_specs_in_dir(sys.argv[arg])
     else:
         dirname = "SPECS/"
-        for r, d, fns in os.walk(dirname):
-            for fn in fns:
-                if fn.endswith(".spec"):
-                    files.append(os.path.join(r, fn))
+        files = get_specs_in_dir(dirname)
 
     if check_specs(files):
         print("ERROR: spec check failed")
