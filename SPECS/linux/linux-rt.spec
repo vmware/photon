@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.272
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -71,6 +71,13 @@ Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch11: Performance-over-security-model.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch12: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch13: 0002-kbuild-Fix-linux-version.h-for-empty-SUBLEVEL-or-PAT.patch
+Patch14: 0003-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch15: 0004-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch16: 0005-linux-rt-Makefile-Add-kernel-flavor-info-to-the-gene.patch
 
 Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Out-of-tree patches from AppArmor:
@@ -1234,6 +1241,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1
 - Update to version 4.19.272
 * Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-4

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.272
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -57,13 +57,20 @@ Patch1: double-tcp_mem-limits.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
-Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8: perf-scripts-python-Convert-python2-scripts-to-python3.patch
-Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
-Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
-Patch11: Performance-over-security-model.patch
+Patch6: 9p-trans_fd-extend-port-variable-to-u32.patch
+Patch7: perf-scripts-python-Convert-python2-scripts-to-python3.patch
+Patch8: vsock-delay-detach-of-QP-with-outgoing-data.patch
+Patch9: 0001-cgroup-v1-cgroup_stat-support.patch
+Patch10: Performance-over-security-model.patch
 #HyperV patches
-Patch13: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch11: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch12: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch13: 0002-kbuild-Fix-linux-version.h-for-empty-SUBLEVEL-or-PAT.patch
+Patch14: 0003-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch15: 0004-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch16: 0005-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
 %ifarch x86_64
 # floppy:
@@ -685,7 +692,7 @@ This Linux package contains hmac sha generator kernel module.
 # Using autosetup is not feasible
 %setup -q -T -D -b8 -n linux-%{version}
 
-%autopatch -p1 -m1 -M13
+%autopatch -p1 -m1 -M16
 
 %ifarch x86_64
 %patch17 -p1
@@ -1105,6 +1112,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 4.19.272-2
 - exclude man dir from linux-tools
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1

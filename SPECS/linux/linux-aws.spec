@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.272
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -42,6 +42,13 @@ Patch10: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch11: Performance-over-security-model.patch
 #HyperV patches
 Patch13: 0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch14: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch15: 0002-kbuild-Fix-linux-version.h-for-empty-SUBLEVEL-or-PAT.patch
+Patch16: 0003-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch17: 0004-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch18: 0005-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
@@ -521,6 +528,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1
 - Update to version 4.19.272
 * Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3

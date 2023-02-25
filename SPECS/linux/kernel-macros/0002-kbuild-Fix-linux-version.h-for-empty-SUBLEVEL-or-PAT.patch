@@ -1,0 +1,58 @@
+From c71a9b85e339e6c1289c9266f1461565a4ff5c1c Mon Sep 17 00:00:00 2001
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Sat, 27 Feb 2021 23:20:23 +0900
+Subject: [PATCH 2/5] kbuild: Fix <linux/version.h> for empty SUBLEVEL or
+ PATCHLEVEL again
+
+commit 207da4c82ade9a6d59f7e794d737ba0748613fa2 upstream.
+
+Commit 78d3bb4483ba ("kbuild: Fix <linux/version.h> for empty SUBLEVEL
+or PATCHLEVEL") fixed the build error for empty SUBLEVEL or PATCHLEVEL
+by prepending a zero.
+
+Commit 9b82f13e7ef3 ("kbuild: clamp SUBLEVEL to 255") re-introduced
+this issue.
+
+This time, we cannot take the same approach because we have C code:
+
+  #define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL)
+  #define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
+
+Replace empty SUBLEVEL/PATCHLEVEL with a zero.
+
+Fixes: 9b82f13e7ef3 ("kbuild: clamp SUBLEVEL to 255")
+Reported-by: Christian Zigotzky <chzigotzky@xenosoft.de>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-and-tested-by: Sasha Levin <sashal@kernel.org>
+[ Srivatsa: Dropped the changes related to clamping the sublevel at
+255, as this has been done differently for the 4.19.y stable series by
+commit a256aac5b700 ("stable: clamp SUBLEVEL in 4.19"). ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 9ae15f86b74c..e083210d1877 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1163,13 +1163,15 @@ endef
+ 
+ define filechk_version.h
+ 	(echo \#define LINUX_VERSION_CODE $(shell				\
+-	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 255);		\
++	expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + 255);			\
+ 	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))';	\
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);				\
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);			\
+ 	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);)
+ endef
+ 
++$(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
++$(version_h): SUBLEVEL := $(if $(SUBLEVEL), $(SUBLEVEL), 0)
+ $(version_h): FORCE
+ 	$(call filechk,version.h)
+ 	$(Q)rm -f $(old_version_h)
+-- 
+2.25.1
+

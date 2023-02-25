@@ -1,0 +1,123 @@
+From 038eb6a6db6968e6eec49a4fc643ecbcf7495d76 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 23 Feb 2023 14:50:26 -0800
+Subject: [PATCH 4/5] kbuild, Makefile: Introduce macros to distinguish Photon
+ kernel flavors/versions
+
+Out-of-tree drivers such as Intel i40e, iavf and ice, which support
+multiple kernel versions and distros, use kernel compability checks
+based on the kernel version or distro version to identify if certain
+features required by those drivers are available in the given version
+of the distro or upstream kernel that the driver is being built for.
+
+We have backported certain features from upstream (ex: 5.0+) to older
+kernel versions (ex: 4.19) in Photon OS (such as the support for
+PTP_SYS_OFFSET_EXTENDED_IOCTL and PTP_CLOCK_INFO_GETTIMEX64), as they
+help enhance the functionality of these drivers. Therefore, kernel
+compat checks performed by these out-of-tree drivers at build-time
+purely based on the Linux kernel version alone are not sufficient to
+accurately identify the supported features in a given Photon distro
+kernel version or flavor. (For example, kcompat.h in the ice driver
+assumes that kernel versions less than 5.0 do not support these
+features, and adds empty stubs for these functions).
+
+To mitigate this problem, introduce Photon kernel macros to help
+identify and parse Photon kernel flavors and versions to simplify
+building out-of-tree drivers for Photon OS.
+
+For example, the exposed macros can be used by the driver to identify
+Photon kernel flavors and versions that have the
+PTP_SYS_OFFSET_EXTENDED_IOCTL and PTP_CLOCK_INFO_GETTIMEX64 support
+included, so that the empty stubs from kcompat.h can be skipped when
+building i40e/iavf/ice drivers for such kernels. The design for
+exposing these Photon kernel macros is generic and can be used to
+build other out-of-tree drivers too.
+
+A typical Photon kernel version output from uname -r looks like this:
+	4.19.247-14.ph3-xyz
+where,
+	4.19.247 = Linux kernel version <major>.<patchlevel>.<sublevel>
+	14 = Photon Kernel Release Number
+	ph3 = Distro Version (ex: The number '3' represents Photon OS 3.0)
+	-xyz = Photon Kernel Flavor (an empty suffix indicates the
+	       generic flavor)
+
+Thus, the combination of LINUX_VERSION_MAJOR/PATCHLEVEL/SUBLEVEL,
+PHOTON_KERNEL_RELEASE, and PHOTON_KERNEL_FLAVOR_XYZ gives sufficient
+info to parse Photon kernel versions.
+
+In addition, the PHOTON_KERNEL macro is defined irrespective of the
+kernel flavor, which helps identify any Photon kernel.
+
+A sample snippet of include/generated/uapi/linux/version.h after this
+change is shown below:
+
+\#define LINUX_VERSION_MAJOR 4
+\#define LINUX_VERSION_PATCHLEVEL 19
+\#define LINUX_VERSION_SUBLEVEL 247
+
+\#define PHOTON_KERNEL
+\#define PHOTON_KERNEL_RELEASE 14
+\#define PHOTON_KERNEL_FLAVOR_RT
+
+[ Notes: Add include/config/kernel.release as a dependency for
+generating the include/generated/uapi/linux/version.h file, to make
+sure that the $KERNELRELEASE variable is not empty when attempting to
+use it in generating version.h ]
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ Makefile | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 0ea04ef9525d..167d56b0bd0c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1162,17 +1162,36 @@ define filechk_utsrelease.h
+ endef
+ 
+ define filechk_version.h
+-	(echo \#define LINUX_VERSION_CODE $(shell				\
+-	expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + 255);			\
+-	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))';	\
+-	echo \#define LINUX_VERSION_MAJOR $(VERSION);				\
+-	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);			\
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);)
++	(echo \#define LINUX_VERSION_CODE $(shell                         		\
++	expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + 255);				\
++	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; 		\
++	echo \#define LINUX_VERSION_MAJOR $(VERSION);					\
++	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);				\
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);				\
++	echo -e "\n\
++	/*\n\
++	 * Sample Photon kernel versioning from uname -r output: 4.19.247-14.ph3-xyz\n\
++	 * where,\n\
++	 *   4.19.247 = Linux version <major>.<patchlevel>.<sublevel>\n\
++	 *   14 = Photon Kernel Release Number (same as PHOTON_KERNEL_RELEASE below)\n\
++	 *   ph3 = Distro Version (ex: The number '3' represents Photon OS 3.0)\n\
++	 *   -xyz = Photon Kernel Flavor (an empty suffix indicates generic flavor)\n\
++	 *\n\
++	 * Thus, the combination of LINUX_VERSION_MAJOR/PATCHLEVEL/SUBLEVEL,\n\
++	 * PHOTON_KERNEL_RELEASE, and PHOTON_KERNEL_FLAVOR_XYZ gives sufficient info\n\
++	 * to parse Photon kernel versions.\n\
++	 * In addition, the PHOTON_KERNEL macro is defined irrespective of the kernel\n\
++	 * flavor, which helps identify any Photon kernel.\n\
++	 */\n";\
++	echo '#define PHOTON_KERNEL';							\
++	echo '#define PHOTON_KERNEL_RELEASE						\
++	$(shell echo -n "$(KERNELRELEASE)" | cut -d'-' -f2 | cut -d'.' -f1)';		\
++	echo '#define PHOTON_KERNEL_FLAVOR_';)
+ endef
+ 
+ $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+ $(version_h): SUBLEVEL := $(or $(SUBLEVEL), 0)
+-$(version_h): FORCE
++$(version_h): include/config/kernel.release FORCE
+ 	$(call filechk,version.h)
+ 	$(Q)rm -f $(old_version_h)
+ 
+-- 
+2.25.1
+
