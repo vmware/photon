@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.0.19
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ Patch4:         CVE-2022-2719.patch
 Patch5:         CVE-2022-0284.patch
 Patch6:         CVE-2022-1115.patch
 Patch7:         CVE-2022-3213.patch
+Patch8:         CVE-2022-44268.patch
 Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -181,6 +182,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-8
+-   Fix for CVE-2022-44268, CVE-2022-44267
 *   Tue Sep 27 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-7
 -   Fix for CVE-2022-3213
 *   Mon Sep 12 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-6
