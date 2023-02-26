@@ -1,0 +1,170 @@
+From 2ec590cfdc4e8f4f8954b544143bc385e2f1375e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sun, 26 Feb 2023 17:05:19 +0530
+Subject: [PATCH] Fix %setup and %patch not getting expanded in rpmspec --parse
+  output
+
+Handling %setup and %patch pseudo-macros in %prep is, ahem, special.
+Which is why they don't appear expanded in --parse output despite
+getting expanded at actual build-time. Add a flag to spec parsing
+machinery to allow handling spec->parsed locally where needed, and
+do so for %prep.
+
+This is slightly ugly, but the alternatives are far more complicated
+and still wont get rid of the ugliness as long as %patchN syntax
+preprocessing is needed.
+
+Fixes: #2048
+
+[sshedi: ported fix to rpm-4.14.x]
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ build/parsePrep.c         | 30 ++++++++++++++++++------------
+ build/parseSpec.c         |  1 +
+ build/rpmbuild_internal.h |  1 +
+ 3 files changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/build/parsePrep.c b/build/parsePrep.c
+index 5454b7a..1d6f53b 100644
+--- a/build/parsePrep.c
++++ b/build/parsePrep.c
+@@ -16,6 +16,12 @@
+ #include "lib/rpmug.h"
+ #include "debug.h"
+ 
++static void appendBuf(rpmSpec spec, const char *s, int nl)
++{
++    appendStringBufAux(spec->prep, s, nl);
++    appendStringBufAux(spec->parsed, s, nl);
++}
++
+ /**
+  * Check that file owner and group are known.
+  * @param urlfn		file url
+@@ -352,7 +358,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
+ 
+ 	rasprintf(&buf, "cd '%s'", buildDir);
+-	appendLineStringBuf(spec->prep, buf);
++	appendBuf(spec, buf, 1);
+ 	free(buf);
+ 	free(buildDir);
+     }
+@@ -360,17 +366,17 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+     /* delete any old sources */
+     if (!leaveDirs) {
+ 	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
+-	appendLineStringBuf(spec->prep, buf);
++	appendBuf(spec, buf, 1);
+ 	free(buf);
+     }
+ 
+-    appendStringBuf(spec->prep, getStringBuf(before));
++    appendBuf(spec, getStringBuf(before), 0);
+ 
+     /* if necessary, create and cd into the proper dir */
+     if (createDir) {
+ 	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
+ 			"cd '", spec->buildSubdir, "'", NULL);
+-	appendLineStringBuf(spec->prep, buf);
++	appendBuf(spec, buf, 1);
+ 	free(buf);
+     }
+ 
+@@ -379,13 +385,13 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+ 	char *chptr = doUntar(spec, 0, quietly);
+ 	if (!chptr)
+ 	    goto exit;
+-	appendLineStringBuf(spec->prep, chptr);
++	appendBuf(spec, chptr, 1);
+ 	free(chptr);
+     }
+ 
+     if (!createDir) {
+ 	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
+-	appendLineStringBuf(spec->prep, buf);
++	appendBuf(spec, buf, 1);
+ 	free(buf);
+     }
+ 
+@@ -393,7 +399,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+ 	char *chptr = doUntar(spec, 0, quietly);
+ 	if (chptr == NULL)
+ 	    goto exit;
+-	appendLineStringBuf(spec->prep, chptr);
++	appendBuf(spec, chptr, 1);
+ 	free(chptr);
+     }
+     
+@@ -402,7 +408,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+     /* Fix the permissions of the setup build tree */
+     {	char *fix = rpmExpand("%{_fixperms} .", NULL);
+ 	if (fix && *fix != '%') {
+-	    appendLineStringBuf(spec->prep, fix);
++	    appendBuf(spec, fix, 1);
+ 	}
+ 	free(fix);
+     }
+@@ -513,7 +519,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+ 	if (s == NULL) {
+ 	    goto exit;
+ 	}
+-	appendLineStringBuf(spec->prep, s);
++	appendBuf(spec, s, 1);
+ 	free(s);
+     }
+ 	
+@@ -539,7 +545,7 @@ int parsePrep(rpmSpec spec)
+     spec->prep = newStringBuf();
+ 
+     /* There are no options to %prep */
+-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
++    if ((rc = readLine(spec, STRIP_PARSED)) > 0) {
+ 	return PART_NONE;
+     } else if (rc < 0) {
+ 	return PART_ERROR;
+@@ -549,7 +555,7 @@ int parsePrep(rpmSpec spec)
+ 	/* Need to expand the macros inline.  That way we  */
+ 	/* can give good line number information on error. */
+ 	argvAdd(&saveLines, spec->line);
+-	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
++	if ((rc = readLine(spec, STRIP_PARSED)) > 0) {
+ 	    nextPart = PART_NONE;
+ 	    break;
+ 	} else if (rc < 0) {
+@@ -564,7 +570,7 @@ int parsePrep(rpmSpec spec)
+ 	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
+ 	    rc = doPatchMacro(spec, *lines);
+ 	} else {
+-	    appendStringBuf(spec->prep, *lines);
++	    appendBuf(spec, *lines, 0);
+ 	}
+ 	if (rc != RPMRC_OK && !(spec->flags & RPMSPEC_FORCE)) {
+ 	    goto exit;
+diff --git a/build/parseSpec.c b/build/parseSpec.c
+index 606a0d8..e3c4b9a 100644
+--- a/build/parseSpec.c
++++ b/build/parseSpec.c
+@@ -483,6 +483,7 @@ int readLine(rpmSpec spec, int strip)
+     /* Collect parsed line */
+     if (spec->parsed == NULL)
+ 	spec->parsed = newStringBuf();
++    if (!(strip & STRIP_PARSED))
+     appendStringBufAux(spec->parsed, spec->line,(strip & STRIP_TRAILINGSPACE));
+ 
+     /* FIX: spec->readStack->next should be dependent */
+diff --git a/build/rpmbuild_internal.h b/build/rpmbuild_internal.h
+index 50b021a..0730965 100644
+--- a/build/rpmbuild_internal.h
++++ b/build/rpmbuild_internal.h
+@@ -188,6 +188,7 @@ typedef enum rpmParseState_e {
+ #define STRIP_NOTHING             0
+ #define STRIP_TRAILINGSPACE (1 << 0)
+ #define STRIP_COMMENTS      (1 << 1)
++#define STRIP_PARSED        (1 << 2) /* Avoid adding to spec->parsed (hack) */
+ 
+ #ifdef __cplusplus
+ extern "C" {
+-- 
+2.39.2
+

@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -25,6 +25,7 @@ Patch6: os-install-post-improvements.patch
 Patch7: 0001-When-doing-the-same-thing-more-than-once-use-a-loop.patch
 Patch8: 0001-Introduce-patch_nums-and-source_nums-Lua-variables-i.patch
 Patch9: 0001-Add-limits-to-autopatch-macro.patch
+Patch10: setup-macro-fix.patch
 
 Requires: bash
 Requires: libdb
@@ -264,6 +265,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Feb 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-8
+- Fix setup macro parsing issue in rpmspec
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-7
 - Remove python2 things
 - Add limits to autopatch macro
