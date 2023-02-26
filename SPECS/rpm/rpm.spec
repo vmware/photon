@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -32,6 +32,7 @@ Patch5: sync-buf-cache.patch
 Patch6: wait-for-lock.patch
 Patch7: CVE-2021-3521.patch
 Patch8: os-install-post-improvements.patch
+Patch9: setup-macro-fix.patch
 
 Requires: bash
 Requires: zstd-libs
@@ -323,6 +324,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Sun Feb 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-15
+- Fix setup macro parsing in rpmspec
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-14
 - Cleanup macros file
 - Remove redundant brp-strip-debug-symbols script
