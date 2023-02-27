@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
@@ -12,6 +12,8 @@ Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha512  %{name}=07e9026423438049b11f4f784d57401ece4e940570f613bd6958b3714fe7fbc2c048470bcce3e7d7d9f93331cdf3881d30dcc964cb113a071143a02b28e5b127
+
+Source1:        gdbinit
 
 Patch0:         gdb-7.12-pstack.patch
 Patch1:         gdb-Stop-inaccessible-region-from-getting-dumped.patch
@@ -57,6 +59,7 @@ mkdir -p build && cd build
 sh ../configure \
   --host=%{_host} --build=%{_build} \
   --prefix=%{_prefix} \
+  --with-system-gdbinit=%{_sysconfdir}/gdbinit \
   --with-python=%{_bindir}/python3
 
 make %{?_smp_mflags}
@@ -112,6 +115,8 @@ rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
 %endif
 
 %find_lang %{name} --all-name ../%{name}.lang
+mkdir -p %{buildroot}%{_sysconfdir}/gdbinit.d
+install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/gdbinit
 
 %check
 %if 0%{?with_check}
@@ -136,6 +141,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_datadir}/gdb/system-gdbinit/*
 %{_bindir}/*
 %{_mandir}/*/*
+%{_sysconfdir}/gdbinit
+%{_sysconfdir}/gdbinit.d
 
 %if 0%{?build_minimal_gdb}
 %files minimal
@@ -145,6 +152,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+* Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 11.2-6
+- Compile with --with-system-gdbinit
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 11.2-5
 - bump version as a part of xz upgrade
 * Wed Dec 07 2022 Shivani Agarwal <shivania2@vmware.com> 11.2-4
