@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ BuildRequires:  lua-devel
 BuildRequires:  pkg-config
 BuildRequires:  zlib-devel
 BuildRequires:  systemd-devel
+Patch0:         haproxy-CVE-2023-25725.patch
 
 Requires:       systemd
 
@@ -44,7 +45,6 @@ sed -i "s/\/run/\/var\/run/g" admin/systemd/haproxy.service
 sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux-glibc install %{?_smp_mflags}
 install -vDm755 admin/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service
@@ -62,6 +62,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Mon Feb 27 2023 Harinadh D <hdommaraju@vmware.com> 2.6.0-2
+- fix CVE-2023-25725
 * Fri Sep 16 2022 Nitesh Kumar <kunitesh@vmware.com> 2.6.0-1
 - Upgrade to v2.6.0
 * Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.3.4-6
