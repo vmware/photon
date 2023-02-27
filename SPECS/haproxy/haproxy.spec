@@ -1,18 +1,19 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.2.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.2/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=530c4883a1297ec21750d4ed2383e4f75a6ee20f
+%define sha512  haproxy=b9afa4a4112dccaf192fce07b1cdbb1547060d998801595147a41674042741b62852f65a65aa9b2d033db8808697fd3a522494097710a19071fbb0c604544de5
 Patch0:         haproxy-CVE-2021-39242.patch
 Patch1:         haproxy-CVE-2021-39240.patch
 Patch2:         haproxy-CVE-2021-40346.patch
 Patch3:         haproxy-CVE-2022-0711.patch
+Patch4:         haproxy-CVE-2023-25725.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -47,7 +48,6 @@ sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
 sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux2628 install %{?_smp_mflags}
 install -vDm755 contrib/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service
@@ -65,6 +65,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Mon Feb 27 2023 Harinadh D <hdommaraju@vmware.com> 2.2.6-5
+-   fix CVE-2023-25725
 *   Tue Mar 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.2.6-4
 -   Fix CVE-2022-0711
 *   Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.2.6-3
