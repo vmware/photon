@@ -18,8 +18,6 @@ Fixes: #2048
 
 [sshedi: ported fix to rpm-4.16.1.3]
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  build/parsePrep.c         | 31 +++++++++++--------
  build/parseSpec.c         |  1 +
@@ -235,4 +233,3 @@ index 2b11201..96b140d 100644
 +AT_CLEANUP
 -- 
 2.39.2
-
