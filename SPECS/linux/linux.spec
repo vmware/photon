@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.272
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -1086,8 +1086,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_lib64dir}/libcpupower.so.*
 %config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
 %{_sbindir}/cpufreq-bench
-%{_mandir}/man1/cpupower*.gz
-%{_mandir}/man8/turbostat*.gz
 %{_datadir}/locale/*
 %endif
 
@@ -1107,6 +1105,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 4.19.272-2
+- exclude man dir from linux-tools
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1
 - Update to version 4.19.272
 * Tue Feb 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-3
