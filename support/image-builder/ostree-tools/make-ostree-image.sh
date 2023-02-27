@@ -16,6 +16,8 @@ PHOTON_DOCKER_IMAGE=$3
 cat > ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh << EOF
 #!/bin/bash
 
+set -xe
+
 ROOT=$1
 
 cp photon-ostree.repo /etc/yum.repos.d
@@ -27,6 +29,8 @@ fi
 mkdir -p ${ROOT}/srv/rpm-ostree
 ostree --repo=${ROOT}/srv/rpm-ostree/repo init --mode=archive-z2
 rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json
+ostree summary --repo=${ROOT}/srv/rpm-ostree/repo --update
+ostree summary -v --repo=${ROOT}/srv/rpm-ostree/repo
 EOF
 
 chmod +x ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh

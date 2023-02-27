@@ -159,6 +159,12 @@ function do-commit()
     exit $rc
   fi
   umask $UMASKVAL
+  ostree summary --repo=$REPODATAPATH --update
+  if [ "$rc" -ne 0 ]; then
+    echo "ERROR: ostree summary failed !!"
+    exit $rc
+  fi
+  ostree summary -v --repo=$REPODATAPATH
 }
 
 function create-base-tree()

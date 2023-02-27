@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -109,6 +109,7 @@ install -d %{buildroot}%{_bindir}/rpm-ostree-server
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
+install -vdm711 %{buildroot}%{_datadir}/empty
 
 %files
 %defattr(-,root,root)
@@ -120,6 +121,7 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_libexecdir}/*
 %{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*
+%dir %attr(0711,root,root) %{_datadir}/empty
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf
 %{_unitdir}/rpm-ostree-countme.timer
 %{_libdir}/systemd/system/rpm-ostreed-automatic.timer
@@ -149,6 +151,8 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 2021.10-6
+- Added /usr/share/empty dir required to bind mount rpm database
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-5
 - Bump version as a part of sqlite upgrade
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-4
