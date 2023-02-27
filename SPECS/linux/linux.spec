@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.168
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -827,8 +827,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/cpupower
 %config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
 %{_sbindir}/cpufreq-bench
-%{_mandir}/man1/cpupower*.gz
-%{_mandir}/man8/turbostat*.gz
 %{_datadir}/locale/*/LC_MESSAGES/cpupower.mo
 %endif
 
@@ -842,6 +840,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 5.10.168-3
+- exclude man dir from linux-tools
 * Fri Feb 17 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
 - Enable turbostat to work in the guest on VMware hypervisor.
 - Add support for Intel Ice Lake server CPUs to turbostat.
