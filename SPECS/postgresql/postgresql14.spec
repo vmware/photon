@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -51,7 +51,7 @@ Requires:       systemd
 Requires:       %{name}-libs = %{version}-%{release}
 
 Provides:       postgresql = %{version}-%{release}
-Obsoletes:      postgresql < %{obsoletes_version}
+Obsoletes:      postgresql <= %{obsoletes_version}
 
 %description
 PostgreSQL is an object-relational database management system.
@@ -62,7 +62,7 @@ Group:      Applications/Databases
 Requires:   chkconfig
 Requires(postun): chkconfig
 Provides:   postgresql-libs = %{version}-%{release}
-Obsoletes:  postgresql-libs < %{obsoletes_version}
+Obsoletes:  postgresql-libs <= %{obsoletes_version}
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
@@ -75,7 +75,7 @@ Summary:        Development files for postgresql.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Provides:       postgresql-devel = %{version}-%{release}
-Obsoletes:      postgresql-devel < %{obsoletes_version}
+Obsoletes:      postgresql-devel <= %{obsoletes_version}
 
 %description    devel
 The postgresql-devel package contains libraries and header files for
@@ -275,6 +275,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-2
+- Obsolete postgresql <= 14.5-1
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-1
 - Upgrade to v14.7 to fix CVE-2022-41862
 - Use alternatives for creating files in standard locations
