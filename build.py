@@ -578,33 +578,31 @@ class CleanUp:
     def clean_stage_for_incremental_build():
         rpm_path = constants.rpmPath
         ph_path = configdict["photon-path"]
-        basecommit = configdict["photon-build-param"]["base-commit"]
 
         cmd = (
-            "cd {} && test -n "
-            "\"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\""
-            " && {{ echo 'Remove all staged RPMs'; rm -rf {}; }} || :"
+            f"cd {ph_path} && test -n "
+            f"\"$(git diff --name-only @~1 @ | grep '^support/\(package-builder\|pullpublishrpms\)')\""
+            f" && {{ echo 'Remove all staged RPMs'; rm -rf {rpm_path}; }} || :"
         )
-        cmd = cmd.format(ph_path, rpm_path)
 
         runBashCmd(cmd)
-
         if not os.path.exists(rpm_path):
             print(f"{rpm_path} is empty, return ...")
             return
 
+        basecommit = ""
+        if "base-commit" in configdict["photon-build-param"]:
+            basecommit = str(configdict["photon-build-param"].get("base-commit"))
+
+        if not basecommit:
+            return
+
         cmd = (
-            "cd {} && echo `git diff --name-only {} | grep '\.spec' | "
-            "xargs -n1 basename 2>/dev/null` | tr ' ' :"
+            f"cd {ph_path} && echo `git diff --name-only {basecommit} | grep '\.spec'"
+            f" | xargs -n1 basename 2>/dev/null` | tr ' ' :"
         )
-        cmd = cmd.format(ph_path, basecommit)
 
-        with Popen(cmd, stdout=PIPE, stderr=None,
-                   shell=True, executable="/bin/bash") as process:
-            spec_fns = process.communicate()[0].decode("utf-8")
-            if process.returncode:
-                raise Exception("Error in clean_stage_for_incremental_build")
-
+        spec_fns, _, _ = runBashCmd(cmd, capture=True)
         if not spec_fns:
             print("No spec files were changed in this incremental build")
             return
@@ -924,7 +922,7 @@ class CheckTools:
         for fn in {"commit-msg", "pre-push"}:
             if not os.path.exists(f"{git_hooks_path}/{fn}"):
                 print(f"{hook_scripts_path}/{fn} doesn't exist, create ...")
-                cmdUtils.runBashCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
+                runBashCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
 
     def check_contain():
         if not os.path.exists(f"{photonDir}/tools/bin"):
@@ -992,7 +990,7 @@ class CheckTools:
 
     def check_photon_installer():
         url = "https://github.com/vmware/photon-os-installer.git"
-        cmd = f"pip3 install git+{url}"
+        install_cmd = f"pip3 install git+{url}"
 
         def install_from_url(cmd):
             runBashCmd(cmd)
@@ -1001,7 +999,7 @@ class CheckTools:
             import photon_installer
         except Exception as e:
             print("Warning: %s" % e)
-            install_from_url(cmd)
+            install_from_url(install_cmd)
             return
 
         key = "SKIP_INSTALLER_UPDATE"
@@ -1017,9 +1015,9 @@ class CheckTools:
 
             if not remote_hash.startswith(local_hash):
                 print("Upstream photon-installer is updated, updating local copy ..")
-                install_from_url(cmd)
+                install_from_url(install_cmd)
         else:
-            install_from_url(cmd)
+            install_from_url(install_cmd)
 
 
 """
