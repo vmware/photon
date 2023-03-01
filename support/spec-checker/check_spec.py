@@ -628,8 +628,10 @@ def check_specs(files_list):
 
         err, lines_dict = check_for_unallowed_usages(altered_spec, err_dict)
 
+        """
         if os.path.exists(altered_spec):
             os.remove(altered_spec)
+        """
 
         if any(
             [
