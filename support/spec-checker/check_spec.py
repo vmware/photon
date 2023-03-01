@@ -621,7 +621,8 @@ def check_specs(files_list):
 
         err_dict = ErrorDict(spec_fn)
 
-        altered_spec = create_altered_spec(spec_fn)
+        #altered_spec = create_altered_spec(spec_fn)
+        altered_spec = spec_fn
 
         spec = Spec.from_file(altered_spec)
 
