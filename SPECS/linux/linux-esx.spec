@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -67,6 +67,8 @@ Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 Source19:       spec_install_post.inc
+
+Source20:       %{name}-dracut.conf
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -145,6 +147,7 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 
 # aarch64 [200..219]
+%ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
 Patch201: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
 Patch202: 6.0-0003-arm64-VMware-hypervisor-detection.patch
@@ -153,6 +156,7 @@ Patch204: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch205: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch206: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+%endif
 
 # Crypto: [500..529]
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -221,6 +225,8 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
+Requires: dracut >= 059-3
+Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -415,12 +421,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "dm-mod"
-EOF
-
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
       %{buildroot}%{_modulesdir}/build
@@ -442,6 +442,9 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE20} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %include %{SOURCE2}
 %include %{SOURCE3}
 %include %{SOURCE19}
@@ -456,7 +459,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %ifarch x86_64
@@ -469,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -483,6 +487,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-3
+- Fix initrd generation logic
+- Add dracut, initramfs to requires
 * Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 6.1.10-2
 - Exclude iavf.conf
 * Wed Feb 22 2023 Bo Gan <ganb@vmware.com> 6.1.10-1

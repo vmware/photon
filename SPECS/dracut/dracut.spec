@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -15,10 +15,14 @@ Distribution:   Photon
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
 
-Patch0:         Add-mkinitrd-support-to-dracut.patch
-Patch1:         disable-xattr.patch
-Patch2:         fix-initrd-naming-for-photon.patch
-Patch4:         fix-hostonly.patch
+Patch0: Add-mkinitrd-support-to-dracut.patch
+Patch1: disable-xattr.patch
+Patch2: fix-initrd-naming-for-photon.patch
+Patch4: fix-hostonly.patch
+Patch5: 0001-mkinitrd-verbose-fix.patch
+Patch6: 0002-dracut.sh-validate-instmods-calls.patch
+Patch7: 0003-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch8: 0004-feat-dracut.sh-support-mutliple-config-files.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -153,6 +157,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-3
+- Fix mkinitrd verbose & add a sanity check
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-2
 - Fix requires
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-1

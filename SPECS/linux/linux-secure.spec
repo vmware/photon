@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -55,6 +55,7 @@ Source24: gen_canister_relocs.c
 %endif
 
 Source25: spec_install_post.inc
+Source26: %{name}-dracut.conf
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -146,6 +147,8 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
+Requires: dracut >= 059-3
+Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -306,12 +309,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod"
-EOF
-
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
       %{buildroot}%{_modulesdir}/build
@@ -332,6 +329,9 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 # symling to the build folder
 ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE26} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %include %{SOURCE2}
 %include %{SOURCE3}
 %include %{SOURCE25}
@@ -346,10 +346,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %exclude %{_usrsrc}
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -367,6 +368,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
+- Fix initrd generation logic
+- Add dracut, initramfs to requires
 * Thu Feb 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-3
 - Add stackleak_track_stack() in fips_canister_wrapper
 * Fri Feb 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-2

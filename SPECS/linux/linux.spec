@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -73,6 +73,7 @@ Source17:       fips_canister-kallsyms
 %endif
 
 Source18:       spec_install_post.inc
+Source19:       %{name}-dracut.conf
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -128,6 +129,7 @@ Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # Rpi fan driver
 # arm64 hypervisor detection and kmsg dumper
+%ifarch aarch64
 Patch205: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
 Patch206: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
 Patch207: 6.0-0003-arm64-VMware-hypervisor-detection.patch
@@ -136,6 +138,7 @@ Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+%endif
 
 # TODO: rebase to 6.0:
 Patch220: 0001-Add-rpi-poe-fan-driver.patch
@@ -246,6 +249,8 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
+Requires: dracut >= 059-3
+Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -548,18 +553,6 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
-add_drivers_list="xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod megaraid_sas"
-
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << EOF
-%ifarch x86_64
---add-drivers "${add_drivers_list}"
-%endif
-
-%ifarch aarch64
---add-drivers "${add_drivers_list} nvme nvme-core"
-%endif
-EOF
-
 # Cleanup dangling symlinks
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
@@ -595,6 +588,14 @@ make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
 
 make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
+%ifarch aarch64
+echo "add_drivers+=\" nvme nvme-core \"" >> \
+    %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+%endif
+
 %include %{SOURCE2}
 %include %{SOURCE6}
 %include %{SOURCE18}
@@ -615,7 +616,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
@@ -634,6 +634,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -696,6 +698,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-3
+- Fix initrd generation logic
+- Add dracut, initramfs to requires
 * Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 6.1.10-2
 - Exclude iavf.conf
 * Wed Feb 22 2023 Bo Gan <ganb@vmware.com> 6.1.10-1
