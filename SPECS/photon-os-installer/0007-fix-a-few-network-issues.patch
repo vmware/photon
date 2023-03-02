@@ -1,0 +1,249 @@
+From e4e1247d30439a591bc9fb61f810f27ae039ee50 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Mon, 27 Feb 2023 11:28:07 -0800
+Subject: [PATCH 7/7] fix a few network issues
+
+Change-Id: Ia63fd488d18760321bbbb75b95fb758047e0126e
+---
+ photon_installer/filedownloader.py | 13 +++++---
+ photon_installer/installer.py      |  2 +-
+ photon_installer/iso_config.py     | 50 ++++++++++++++++++++++++++++--
+ photon_installer/networkmanager.py | 35 ++++++++++++++++-----
+ photon_installer/sample_ui.cfg     |  4 ++-
+ 5 files changed, 87 insertions(+), 17 deletions(-)
+
+diff --git a/photon_installer/filedownloader.py b/photon_installer/filedownloader.py
+index 3366090..b01455f 100644
+--- a/photon_installer/filedownloader.py
++++ b/photon_installer/filedownloader.py
+@@ -18,7 +18,7 @@ from confirmwindow import ConfirmWindow
+ 
+ class FileDownloader(object):
+ 
+-    def __init__(self, maxy, maxx, install_config, title, intro, dest, setup_network=False):
++    def __init__(self, maxy, maxx, install_config, title, intro, dest, setup_network=False, root_dir="/"):
+         self.install_config = install_config
+         self.maxy = maxy
+         self.maxx = maxx
+@@ -27,8 +27,8 @@ class FileDownloader(object):
+         self.netmgr = None
+         self.dest = dest
+         self.setup_network = setup_network
+-        if self.setup_network:
+-            self.netmgr = NetworkManager(install_config)
++        self.root_dir = root_dir
++
+ 
+     def ask_proceed_unsafe_download(self, fingerprint):
+         msg = ('This server could not prove its authenticity. Its '
+@@ -44,7 +44,8 @@ class FileDownloader(object):
+         return True
+ 
+     def do_setup_network(self):
+-        if not self.netmgr.setup_network():
++        netmgr = NetworkManager(self.install_config['network'], self.root_dir)
++        if not netmgr.setup_network():
+             msg = 'Failed to setup network configuration!'
+             conf_message_height = 12
+             conf_message_width = 80
+@@ -52,7 +53,9 @@ class FileDownloader(object):
+             ConfirmWindow(conf_message_height, conf_message_width, self.maxy, self.maxx,
+                           conf_message_button_y, msg, True).do_action()
+             return False
+-        self.netmgr.restart_networkd()
++        netmgr.set_perms()
++        if self.root_dir == "/":
++            netmgr.restart_networkd()
+         return True
+ 
+     def display(self):
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index aab3339..963fe05 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -496,7 +496,7 @@ class Installer(object):
+             return
+ 
+         # setup network config files in chroot
+-        nm = NetworkManager(self.install_config['network'], self.photon_root)
++        nm = NetworkManager(self.install_config['network'], root_dir=self.photon_root)
+         if not nm.setup_network():
+             self.logger.error("Failed to setup network!")
+             self.exit_gracefully()
+diff --git a/photon_installer/iso_config.py b/photon_installer/iso_config.py
+index 96aa6b5..a57a895 100644
+--- a/photon_installer/iso_config.py
++++ b/photon_installer/iso_config.py
+@@ -9,6 +9,8 @@ import secrets
+ import requests
+ import cracklib
+ import curses
++import getopt
++import json
+ from logger import Logger
+ from custompartition import CustomPartition
+ from packageselector import PackageSelector
+@@ -26,7 +28,7 @@ from netconfig import NetworkConfigure
+ class IsoConfig(object):
+     g_ostree_repo_url = None
+     """This class handles iso installer configuration."""
+-    def __init__(self):
++    def __init__(self, root_dir="/"):
+         self.alpha_chars = list(range(65, 91))
+         self.alpha_chars.extend(range(97, 123))
+         self.hostname_accepted_chars = self.alpha_chars
+@@ -37,6 +39,7 @@ class IsoConfig(object):
+         self.random_id = '%12x' % secrets.randbelow(16**12)
+         self.random_hostname = "photon-" + self.random_id.strip()
+         self.logger = Logger.get_logger()
++        self.root_dir = root_dir
+ 
+     @staticmethod
+     def validate_hostname(hostname):
+@@ -160,7 +163,7 @@ class IsoConfig(object):
+         # UI screens showing
+         while True:
+             ar = items[index][0]()
+-            # Skip inactive window and continue previos direction.
++            # Skip inactive window and continue previous direction.
+             if ar.result and ar.result.get('inactive_screen', False):
+                 ar.success = go_next
+             go_next = ar.success
+@@ -256,7 +259,7 @@ class IsoConfig(object):
+             title = ui_config['download_screen'].get('title', None)
+             intro = ui_config['download_screen'].get('intro', None)
+             dest  = ui_config['download_screen'].get('destination', None)
+-            fd = FileDownloader(maxy, maxx, install_config, title, intro, dest, True)
++            fd = FileDownloader(maxy, maxx, install_config, title, intro, dest, True, root_dir=self.root_dir)
+             items.append((fd.display, True))
+ 
+         linux_selector = LinuxSelector(maxy, maxx, install_config)
+@@ -271,3 +274,44 @@ class IsoConfig(object):
+ 
+         return items
+ 
++
++# for debugging
++def main():
++    config_file = None
++    root_dir = "/"
++
++    try:
++        opts, args = getopt.getopt(sys.argv[1:], 'D:f:')
++    except:
++        print ("invalid option")
++        sys.exit(2)
++
++    for o, a in opts:
++        if o == '-D':
++            root_dir = a
++        elif o == '-f':
++            config_file = a
++        else:
++            assert False, "unhandled option 'o'"
++
++    if config_file != None:
++        f = open(config_file, 'r')
++    else:
++        f = sys.stdin
++
++    ui_config = json.load(f)
++    if f != sys.stdin:
++        f.close()
++
++    # EVIL hack
++    ui_config['options_file'] = "input.json"
++
++    ui = IsoConfig(root_dir=root_dir)
++    config = curses.wrapper(ui.configure, ui_config)
++
++    print(json.dumps(config, indent=4))
++
++
++if __name__ == "__main__":
++    main()
++
+diff --git a/photon_installer/networkmanager.py b/photon_installer/networkmanager.py
+index df92fef..893d0f2 100644
+--- a/photon_installer/networkmanager.py
++++ b/photon_installer/networkmanager.py
+@@ -117,7 +117,8 @@ class NetworkManager:
+     # world has no perms
+     SYSTEMD_NETWORK_MODE = 0o660
+ 
+-    def __init__(self, config, root_dir):
++    def __init__(self, config, root_dir="/"):
++
+         self.root_dir = root_dir
+         self.systemd_network_dir = os.path.join(self.root_dir, SYSTEMD_NETWORK_DIR)
+ 
+@@ -373,6 +374,21 @@ class NetworkManager:
+                 fout.write(hostname)
+ 
+ 
++    def exec_cmd(self, cmd):
++        process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, shell=True)
++        retval = process.wait()
++        if retval != 0:
++            return False
++        return True
++
++
++    def restart_networkd(self):
++        if self.root_dir != "/":
++            return
++        if not self.exec_cmd('systemctl restart systemd-networkd'):
++            raise Exception('Failed to restart networkd')
++
++
+     def setup_network(self, do_clean=True):
+         if do_clean and os.path.isdir(self.systemd_network_dir):
+             for filename in os.listdir(self.systemd_network_dir):
+@@ -389,11 +405,15 @@ class NetworkManager:
+ 
+ 
+     def set_perms(self, uid=SYSTEMD_NETWORK_UID, gid=SYSTEMD_NETWORK_UID, mode=SYSTEMD_NETWORK_MODE):
+-        for filename in os.listdir(self.systemd_network_dir):
+-            filepath = os.path.join(self.systemd_network_dir, filename)
+-            if os.path.isfile(filepath):
+-                os.chmod(filepath, mode)
+-                os.chown(filepath, uid, gid)
++        try:
++            for filename in os.listdir(self.systemd_network_dir):
++                filepath = os.path.join(self.systemd_network_dir, filename)
++                if os.path.isfile(filepath):
++                    os.chmod(filepath, mode)
++                    os.chown(filepath, uid, gid)
++        except PermissionError:
++            # pass if we are debugging as unprivileged user
++            pass
+ 
+ 
+ def main():
+@@ -423,7 +443,8 @@ def main():
+         f = sys.stdin
+ 
+     config = json.load(f)
+-    f.close()
++    if f != sys.stdin:
++        f.close()
+ 
+     nm = NetworkManager(config, dest_dir)
+     nm.setup_network()
+diff --git a/photon_installer/sample_ui.cfg b/photon_installer/sample_ui.cfg
+index d417c10..089ffe7 100644
+--- a/photon_installer/sample_ui.cfg
++++ b/photon_installer/sample_ui.cfg
+@@ -1,6 +1,8 @@
+ {
++    "license_display_title": "Licence Display Title",
++    "eula_file_path": null,
+ 	"download_screen": {
+-		"title": "[!] Downlaod File from URL Page",
++		"title": "[!] Download File from URL Page",
+ 		"intro": "This is a short description on what this window is doing",
+ 		"destination": "/etc/config/config.file"
+ 	}
+-- 
+2.25.1
+
