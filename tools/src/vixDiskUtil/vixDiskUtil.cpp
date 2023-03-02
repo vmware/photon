@@ -1,5 +1,5 @@
 /* *************************************************
- * Copyright 2007-2015 VMware, Inc.
+ * Copyright 2007-2023 VMware, Inc.
  * *************************************************/
 
 /*
@@ -120,7 +120,6 @@ static void DumpBytes(const uint8 *buf, size_t n, int step);
 static void DoRWBench(bool read);
 static void DoCheckRepair(Bool repair);
 
-
 #define THROW_ERROR(vixError) \
    throw VixDiskLibErrWrapper((vixError), __FILE__, __LINE__)
 
@@ -159,7 +158,6 @@ GenerateRandomFilename(const string& prefix, string& randomFilename)
     randomFilename = prefix + retStr;
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -175,14 +173,12 @@ GenerateRandomFilename(const string& prefix, string& randomFilename)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 LogFunc(const char *fmt, va_list args)
 {
    printf("Log: ");
    vprintf(fmt, args);
 }
-
 
 /*
  *--------------------------------------------------------------------------
@@ -199,14 +195,12 @@ LogFunc(const char *fmt, va_list args)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 WarnFunc(const char *fmt, va_list args)
 {
    printf("Warning: ");
    vprintf(fmt, args);
 }
-
 
 /*
  *--------------------------------------------------------------------------
@@ -223,7 +217,6 @@ WarnFunc(const char *fmt, va_list args)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 PanicFunc(const char *fmt, va_list args)
 {
@@ -234,9 +227,7 @@ PanicFunc(const char *fmt, va_list args)
 
 typedef void (VixDiskLibGenericLogFunc)(const char *fmt, va_list args);
 
-
 // Wrapper class for VixDiskLib disk objects.
-
 class VixDiskLibErrWrapper
 {
 public:
@@ -298,7 +289,6 @@ private:
     VixDiskLibHandle _handle;
 };
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -314,7 +304,6 @@ private:
  *
  *--------------------------------------------------------------------------
  */
-
 static int
 PrintUsage(void)
 {
@@ -350,12 +339,12 @@ PrintUsage(void)
            "(default='scsi')\n");
     printf(" -disktype [1-6] : virtual disk type for 'create' option"
            "(default='VIXDISKLIB_DISK_MONOLITHIC_SPARSE')\n");
-    printf("	1 - VIXDISKLIB_DISK_MONOLITHIC_SPARSE \n");
-    printf("	2 - VIXDISKLIB_DISK_MONOLITHIC_FLAT \n");
-    printf("	3 - VIXDISKLIB_DISK_SPLIT_SPARSE \n");
-    printf("	4 - VIXDISKLIB_DISK_SPLIT_FLAT \n");
-    printf("	5 - VIXDISKLIB_DISK_VMFS_FLAT \n");
-    printf("	6 - VIXDISKLIB_DISK_STREAM_OPTIMIZED \n");
+    printf("    1 - VIXDISKLIB_DISK_MONOLITHIC_SPARSE \n");
+    printf("    2 - VIXDISKLIB_DISK_MONOLITHIC_FLAT \n");
+    printf("    3 - VIXDISKLIB_DISK_SPLIT_SPARSE \n");
+    printf("    4 - VIXDISKLIB_DISK_SPLIT_FLAT \n");
+    printf("    5 - VIXDISKLIB_DISK_VMFS_FLAT \n");
+    printf("    6 - VIXDISKLIB_DISK_STREAM_OPTIMIZED \n");
     printf(" -start n : start sector for 'dump/fill' options (default=0)\n");
     printf(" -count n : number of sectors for 'dump/fill' options (default=1)\n");
     printf(" -val byte : byte value to fill with for 'write' option (default=255)\n");
@@ -373,13 +362,12 @@ PrintUsage(void)
     printf(" -initex configfile : Specify path and filename of config file \n");
     printf(" -ssmoref moref : Managed object reference of VM snapshot \n");
     printf(" -mode mode : Mode string to pass into VixDiskLib_ConnectEx. "
-	        "Valid modes are: nbd, nbdssl, san, hotadd \n");
+            "Valid modes are: nbd, nbdssl, san, hotadd \n");
     printf(" -thumb string : Provides a SSL thumbprint string for validation. "
            "Format: xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx\n");
 
     return 1;
 }
-
 
 /*
  *--------------------------------------------------------------------------
@@ -396,7 +384,6 @@ PrintUsage(void)
  *
  *--------------------------------------------------------------------------
  */
-
 int
 main(int argc, char* argv[])
 {
@@ -422,13 +409,13 @@ main(int argc, char* argv[])
         return retval;
     }
 
-	// Initialize random generator
+    // Initialize random generator
     struct timeval time;
     gettimeofday(&time, NULL);
 
     srand((time.tv_sec * 1000) + (time.tv_usec/1000));
 
-    VixDiskLibConnectParams cnxParams = {0};
+    VixDiskLibConnectParams cnxParams = {};
     VixError vixError;
     try {
        if (appGlobals.isRemote) {
@@ -494,13 +481,13 @@ main(int argc, char* argv[])
             DoRWBench(true);
         } else if (appGlobals.command & COMMAND_WRITEBENCH) {
             DoRWBench(false);
-	} else if (appGlobals.command & COMMAND_CHECKREPAIR) {
-	    DoCheckRepair(appGlobals.repair);
-	} else if (appGlobals.command & COMMAND_MOUNTDISK) {
-	    DoMountDisk();
-	} else if (appGlobals.command & COMMAND_CONVERT) {
-	    DoConvert();
-	}
+    } else if (appGlobals.command & COMMAND_CHECKREPAIR) {
+        DoCheckRepair(appGlobals.repair);
+    } else if (appGlobals.command & COMMAND_MOUNTDISK) {
+        DoMountDisk();
+    } else if (appGlobals.command & COMMAND_CONVERT) {
+        DoConvert();
+    }
         retval = 0;
     } catch (const VixDiskLibErrWrapper& e) {
        cout << "Error: [" << e.File() << ":" << e.Line() << "]  " <<
@@ -520,7 +507,6 @@ main(int argc, char* argv[])
     return retval;
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -536,7 +522,6 @@ main(int argc, char* argv[])
  *
  *--------------------------------------------------------------------------
  */
-
 static int
 ParseArguments(int argc, char* argv[])
 {
@@ -812,7 +797,6 @@ ParseArguments(int argc, char* argv[])
     return 0;
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -828,7 +812,6 @@ ParseArguments(int argc, char* argv[])
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoInfo(void)
 {
@@ -870,7 +853,6 @@ DoInfo(void)
        VixDiskLib_ListTransportModes() << endl;
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -886,7 +868,6 @@ DoInfo(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoCreate(void)
 {
@@ -907,7 +888,6 @@ DoCreate(void)
    CHECK_AND_THROW(vixError);
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -923,7 +903,6 @@ DoCreate(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoRedo(void)
 {
@@ -935,7 +914,6 @@ DoRedo(void)
                                      NULL, NULL);
    CHECK_AND_THROW(vixError);
 }
-
 
 /*
  *--------------------------------------------------------------------------
@@ -952,7 +930,6 @@ DoRedo(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoFill(void)
 {
@@ -971,7 +948,6 @@ DoFill(void)
     }
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -987,7 +963,6 @@ DoFill(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoReadMetadata(void)
 {
@@ -1009,7 +984,6 @@ DoReadMetadata(void)
     cout << appGlobals.metaKey << " = " << &val[0] << endl;
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -1025,7 +999,6 @@ DoReadMetadata(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoWriteMetadata(void)
 {
@@ -1035,7 +1008,6 @@ DoWriteMetadata(void)
                                                  appGlobals.metaVal);
     CHECK_AND_THROW(vixError);
 }
-
 
 /*
  *--------------------------------------------------------------------------
@@ -1052,7 +1024,6 @@ DoWriteMetadata(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoDumpMetadata(void)
 {
@@ -1085,7 +1056,6 @@ DoDumpMetadata(void)
     }
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -1101,7 +1071,6 @@ DoDumpMetadata(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static void
 DoDump(void)
 {
@@ -1118,7 +1087,6 @@ DoDump(void)
     }
 }
 
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -1134,7 +1102,6 @@ DoDump(void)
  *
  *--------------------------------------------------------------------------
  */
-
 static int
 BitCount(int number)    // IN
 {
@@ -1145,7 +1112,6 @@ BitCount(int number)    // IN
     }
     return bits;
 }
-
 
 /*
  *----------------------------------------------------------------------
@@ -1162,7 +1128,6 @@ BitCount(int number)    // IN
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DumpBytes(const unsigned char *buf,     // IN
           size_t n,                     // IN
@@ -1191,7 +1156,6 @@ DumpBytes(const unsigned char *buf,     // IN
    printf("\n");
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1207,7 +1171,6 @@ DumpBytes(const unsigned char *buf,     // IN
  *
  *----------------------------------------------------------------------
  */
-
 #define TASK_OK ((void*)0)
 #define TASK_FAIL ((void*)1)
 
@@ -1239,7 +1202,6 @@ CopyThread(void *arg)
     return TASK_OK;
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1255,7 +1217,6 @@ CopyThread(void *arg)
  *
  *----------------------------------------------------------------------
  */
-
 static void
 PrepareThreadData(VixDiskLibConnection &dstConnection,
                   ThreadData &td)
@@ -1294,7 +1255,6 @@ PrepareThreadData(VixDiskLibConnection &dstConnection,
    CHECK_AND_THROW(vixError);
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1311,15 +1271,14 @@ PrepareThreadData(VixDiskLibConnection &dstConnection,
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DoTestMultiThread(void)
 {
-   VixDiskLibConnectParams cnxParams = { 0 };
+   VixDiskLibConnectParams cnxParams = {};
    VixDiskLibConnection dstConnection;
    VixError vixError;
    vector<ThreadData> threadData(appGlobals.numThreads);
-   int i;
+   unsigned int i;
 
    vixError = VixDiskLib_Connect(&cnxParams, &dstConnection);
    CHECK_AND_THROW(vixError);
@@ -1346,7 +1305,6 @@ DoTestMultiThread(void)
    }
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1362,7 +1320,6 @@ DoTestMultiThread(void)
  *
  *----------------------------------------------------------------------
  */
-
 static Bool
 CloneProgressFunc(void * /*progressData*/,      // IN
                   int percentCompleted)         // IN
@@ -1370,7 +1327,6 @@ CloneProgressFunc(void * /*progressData*/,      // IN
    cout << "Cloning : " << percentCompleted << "% Done" << "\r";
    return TRUE;
 }
-
 
 /*
  *----------------------------------------------------------------------
@@ -1387,12 +1343,11 @@ CloneProgressFunc(void * /*progressData*/,      // IN
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DoClone(void)
 {
    VixDiskLibConnection srcConnection;
-   VixDiskLibConnectParams cnxParams = { 0 };
+   VixDiskLibConnectParams cnxParams = {};
    VixError vixError = VixDiskLib_Connect(&cnxParams, &srcConnection);
    CHECK_AND_THROW(vixError);
 
@@ -1434,7 +1389,6 @@ DoClone(void)
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DoConvert(void)
 {
@@ -1468,7 +1422,6 @@ DoConvert(void)
    cout << "\n Done" << "\n";
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1484,7 +1437,6 @@ DoConvert(void)
  *
  *----------------------------------------------------------------------
  */
-
 static void
 PrintStat(bool read,            // IN
           struct timeval start, // IN
@@ -1504,7 +1456,6 @@ PrintStat(bool read,            // IN
           (uint32)(numSectors /(2048)), (uint32)elapsed, speed);
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1521,12 +1472,11 @@ PrintStat(bool read,            // IN
  *
  *----------------------------------------------------------------------
  */
-
 static void
 InitBuffer(uint32 *buf,     // OUT
            uint32 numElems) // IN
 {
-   int i;
+   uint32 i;
 
    srand(time(NULL));
 
@@ -1534,7 +1484,6 @@ InitBuffer(uint32 *buf,     // OUT
       buf[i] = (uint32)rand();
    }
 }
-
 
 /*
  *----------------------------------------------------------------------
@@ -1553,7 +1502,6 @@ InitBuffer(uint32 *buf,     // OUT
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DoRWBench(bool read) // IN
 {
@@ -1621,7 +1569,6 @@ DoRWBench(bool read) // IN
    delete [] buf;
 }
 
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1637,7 +1584,6 @@ DoRWBench(bool read) // IN
  *
  *----------------------------------------------------------------------
  */
-
 static void
 DoCheckRepair(Bool repair)
 {
@@ -1665,7 +1611,6 @@ DoCheckRepair(Bool repair)
 *
 *----------------------------------------------------------------------
 */
-
 static void
 DoMountDisk()
 {
@@ -1681,16 +1626,16 @@ DoMountDisk()
    // Init Mount Lib
    err = VixMntapi_Init(VIXMNTAPI_VERSION_MAJOR,
                   VIXMNTAPI_VERSION_MINOR,
-		  NULL, NULL, NULL,
-		  appGlobals.libdir,
-		  appGlobals.cfgFile);
+          NULL, NULL, NULL,
+          appGlobals.libdir,
+          appGlobals.cfgFile);
    CHECK_AND_THROW(err);
    // VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
 
    // Open Disks
    err = VixMntapi_OpenDisks(appGlobals.connection,
-		       diskNames,
-		       1, appGlobals.openFlags, &diskSetHandle);
+               diskNames,
+               1, appGlobals.openFlags, &diskSetHandle);
    CHECK_AND_THROW(err);
    err = VixMntapi_GetDiskSetInfo(diskSetHandle, &diskSetInfo);
    CHECK_AND_THROW(err);
@@ -1728,5 +1673,3 @@ DoMountDisk()
    }
    VixMntapi_Exit();
 }
-
-

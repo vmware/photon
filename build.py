@@ -115,11 +115,8 @@ photonDir = os.path.dirname(os.path.realpath(__file__))
 
 
 def build_vixdiskutil():
-    if not os.path.exists(f"{photonDir}/tools/bin"):
-        runBashCmd(f"mkdir -p {photonDir}/tools/bin")
-
     if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-        runBashCmd(f"make -C {photonDir}/tools/src/vixDiskUtil")
+        runBashCmd(f"bash {photonDir}/tools/src/vixDiskUtil/make.sh")
 
 
 def url_validator(url):
@@ -925,11 +922,8 @@ class CheckTools:
                 runBashCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
 
     def check_contain():
-        if not os.path.exists(f"{photonDir}/tools/bin"):
-            runBashCmd(f"mkdir -p {photonDir}/tools/bin")
-
         if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
-            runBashCmd(f"make -C {photonDir}/tools/src/contain install")
+            runBashCmd(f"bash {photonDir}/tools/src/contain/make.sh")
 
     def check_all_tools():
         tools = ["bison", "g++", "gawk", "makeinfo", "kpartx"]
