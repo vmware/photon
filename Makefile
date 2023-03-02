@@ -93,17 +93,17 @@ else
 VIXDISKUTIL :=
 endif
 
-#marker file indicating if run from container
+# Marker file indicating if run from container
 DOCKER_ENV=/.dockerenv
 
 $(TOOLS_BIN):
-	mkdir -p $(TOOLS_BIN)
+	@mkdir -p $(TOOLS_BIN)
 
 $(CONTAIN): $(TOOLS_BIN)
-	@make -C $(SRCROOT)/tools/src/contain
+	@./tools/src/contain/make.sh
 
 $(VIXDISKUTIL): $(TOOLS_BIN)
-	@make -C $(SRCROOT)/tools/src/vixDiskUtil
+	@./tools/src/vixDiskUtil/make.sh
 
 .PHONY : all iso clean image all-images \
 check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-sanity \
