@@ -1,0 +1,83 @@
+From 0e8f8e0e3ddeb3392f1eb20278b6bccd607d2c42 Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Fri, 17 Feb 2023 09:02:19 +0000
+Subject: [PATCH 5/7] generate_initrd.sh: Remove rpmdb files from the installer
+ image, not needed in installer.
+
+Change-Id: Idefbe30cda8372ec78f38842dce17a47ffc02b01
+---
+ photon_installer/generate_initrd.sh | 32 ++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
+
+diff --git a/photon_installer/generate_initrd.sh b/photon_installer/generate_initrd.sh
+index de8d981..cdf2eda 100755
+--- a/photon_installer/generate_initrd.sh
++++ b/photon_installer/generate_initrd.sh
+@@ -38,17 +38,6 @@ clean_requirements_on_remove=true
+ repodir=${WORKINGDIR}
+ EOF
+ 
+-rpmdb_init_cmd="rpm --root ${INITRD} --initdb --dbpath /var/lib/rpm"
+-echo "${rpmdb_init_cmd}"
+-if [ "$(rpm -E %{_db_backend})" != "sqlite" ]; then
+-  rpmdb_init_cmd="docker run --privileged --ulimit nofile=1024:1024 --rm -v ${INITRD}:${INITRD} photon:$PHOTON_RELEASE_VER /bin/bash -c \"tdnf install -y rpm && ${rpmdb_init_cmd}\""
+-fi
+-
+-if ! eval "${rpmdb_init_cmd}"; then
+-  echo "ERROR: failed to initialize rpmdb" 1>&2
+-  exit 1
+-fi
+-
+ TDNF_CMD="tdnf install -qy \
+           --releasever $PHOTON_RELEASE_VER \
+           --installroot $INITRD \
+@@ -171,12 +160,18 @@ mkdir -p ${INITRD}/mnt/photon-root/photon-chroot
+ rm -rf ${INITRD}/RPMS
+ rm -rf ${INITRD}/LOGS
+ 
+-find ${INITRD}/usr/lib/ -maxdepth 1 -mindepth 1 -type f | xargs -i sh -c "grep ELF {} >/dev/null 2>&1 && strip {} || :"
++find ${INITRD}/usr/lib/ -maxdepth 1 -mindepth 1 -type f -print0 | \
++   xargs -0 -r -P$(nproc) -n32 sh -c "file \"\$@\" | \
++   sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
++   xargs -I\{\} strip \{\}" ARG0
+ 
+ rm -rf ${INITRD}/home/*         \
++        ${INITRD}/var/cache     \
+         ${INITRD}/var/lib/rpm*  \
+         ${INITRD}/var/lib/.rpm* \
+-        ${INITRD}/cache         \
++        ${INITRD}/usr/lib/sysimage/rpm* \
++        ${INITRD}/usr/lib/sysimage/.rpm* \
++        ${INITRD}/usr/lib/sysimage/tdnf \
+         ${INITRD}/boot          \
+         ${INITRD}/usr/include   \
+         ${INITRD}/usr/sbin/sln  \
+@@ -210,18 +205,21 @@ rm -rf ${INITRD}/home/*         \
+         ${INITRD}/usr/lib/libnss_compat*        \
+         ${INITRD}/usr/lib/grub/i386-pc/*.module \
+         ${INITRD}/usr/lib/grub/x86_64-efi/*.module \
+-        ${INITRD}/lib64/libmvec*        \
+-        ${INITRD}/usr/lib64/gconv
++        ${INITRD}/usr/lib/grub/arm64-efi/*.module \
++        ${INITRD}/lib/libmvec*        \
++        ${INITRD}/usr/lib/gconv
+ 
+ find "${INITRD}/usr/sbin" -mindepth 1 -maxdepth 1 -name "grub2*" \
+-                        ! -name grub2-install -exec rm -rvf {} \;
++                        ! -name grub2-install -print0 | \
++                        xargs -0 -r -P$(nproc) -n32 rm -rvf
+ 
+ find "${INITRD}/usr/share" -mindepth 1 -maxdepth 1 \
+                         ! -name terminfo \
+                         ! -name cracklib \
+                         ! -name grub    \
+                         ! -name factory \
+-                        ! -name dbus-1 -exec rm -rvf {} \;
++                        ! -name dbus-1 -print0 |
++                        xargs -0 -r -P$(nproc) -n32 rm -rvf
+ 
+ # Set password max days to 99999 (disable aging)
+ chroot ${INITRD} /bin/bash -c "chage -M 99999 root"
+-- 
+2.25.1
+

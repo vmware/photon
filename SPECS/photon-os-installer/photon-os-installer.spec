@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -14,6 +14,9 @@ Source0:       %{name}-%{version}.tar.gz
 Patch0:        0001-setup.py-Bump-up-version-to-2.1.patch
 Patch1:        0002-isoInstaller.py-Raise-exception-in-case-installer-fa.patch
 Patch2:        0003-installer.py-Set-default-value-of-live-to-True.patch
+Patch3:        0005-generate_initrd.sh-Remove-rpmdb-files-from-the-insta.patch
+Patch4:        0006-test.log-Remove-test.log.patch
+Patch5:        0007-fix-a-few-network-issues.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -57,6 +60,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Wed Mar 1 2023 Oliver Kurth <okurth@vmware.com> 2.1-2
+- bug fixes
 * Mon Feb 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.1-1
 - Upgrade to v2.1.
 * Tue Feb 14 2023 Oliver Kurth <okurth@vmware.com> 2.0-18
