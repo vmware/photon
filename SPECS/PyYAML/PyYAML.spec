@@ -4,7 +4,7 @@
 
 Name:           PyYAML
 Version:        5.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -12,20 +12,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
-%define sha512 PyYAML=359c45d843fd839797572efeab121f17b1947647960dfb062f3618f25f71e1a6bc4bab14a1720b6b67f256089d5d48c452ec5419e3130222765c7ca41db11dad
-BuildRequires:  python2
-BuildRequires:  python2-libs
+%define sha512 %{name}=359c45d843fd839797572efeab121f17b1947647960dfb062f3618f25f71e1a6bc4bab14a1720b6b67f256089d5d48c452ec5419e3130222765c7ca41db11dad
+
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  libyaml-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  libyaml-devel
+BuildRequires:  cython3
 
 Requires:       python2
-Requires:       python2-libs
 Requires:       libyaml
 
 %description
@@ -44,14 +41,13 @@ configuration files to object serialization and persistence.
 %package -n     python3-PyYAML
 Summary:        python3-PyYAML
 Requires:       python3
-Requires:       python3-libs
 Requires:       libyaml
 
 %description -n python3-PyYAML
 Python 3 version.
 
 %prep
-%autosetup -p1 -n PyYAML-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 rm -rf ../p3dir
 cp -a . ../p3dir
@@ -92,6 +88,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Mar 02 2023 Nitesh Kumar <kunitesh@vmware.com> 5.4.1-2
+- Adding Requires cython3 to build with binding libyaml
 * Mon Feb 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 5.4.1-1
 - Update to version 5.4
 * Wed Jan 27 2021 Tapas Kundu <tkundu@vmware.com> 3.13-6
