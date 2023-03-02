@@ -61,7 +61,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         compressed = generateCompressedFile(raw_image[0], outputfile, "w:xz")
     elif "vhd" in config["artifacttype"]:
         relrawpath = os.path.relpath(raw_image[0], src_root)
-        vhdname = f"/{image_name}.vhd"
+        vhdname = f"{image_name}.vhd"
         dockerenv = False
         print("Check if inside docker env")
         out, _, _ = cmdUtils.runBashCmd("grep -c docker /proc/self/cgroup || :", capture=True)
@@ -70,11 +70,9 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
         print("Converting raw disk to vhd ...")
 
-        cmd  = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img info -f raw --output json /mnt/{relrawpath}"
-        )
+        cmd = "tdnf install -qy qemu-img; qemu-img info -f raw --output json {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0])
@@ -83,34 +81,29 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         mbsize = 1024 * 1024
         mbroundedsize = (int(json.loads(info_out)["virtual-size"]) / mbsize + 1) * mbsize
 
-        cmd = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img resize -f raw /mnt/{relrawpath} {mbroundedsize}"
-        )
+        cmd = "tdnf install -qy qemu-img; qemu-img resize -f raw {} {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}", f"{mbroundedsize}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0], mbroundedsize)
         cmdUtils.runBashCmd(cmd)
 
-        cmd = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img convert /mnt/{relrawpath} -O"
-            f" vpc -o subformat=fixed,force_size"
-            f" /mnt/" + os.path.dirname(relrawpath) + vhdname
-        )
+        cmd = "tdnf install -qy qemu-img; "
+        cmd += "qemu-img convert {} -O vpc -o subformat=fixed,force_size {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}", f"/mnt/{os.path.dirname(relrawpath)}/{vhdname}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
-            cmd = cmd.format(raw_image[0], os.path.dirname(raw_image[0]) + vhdname)
+            cmd = cmd.format(raw_image[0], f"{os.path.dirname(raw_image[0])}/{vhdname}")
         cmdUtils.runBashCmd(cmd)
 
         if config["artifacttype"] == "vhd.gz":
             outputfile = f"{img_path}/{image_name}.vhd.tar.gz"
-            compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
+            compressed = generateCompressedFile(f"{img_path}/{vhdname}", outputfile, "w:gz")
             # remove raw image and call the vhd as raw image
             os.remove(raw_image[0])
-            raw_image = img_path + vhdname
+            raw_image = f"{img_path}/{vhdname}"
     elif config["artifacttype"] == "ova":
         ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
     elif config["artifacttype"] == "raw":
@@ -148,6 +141,7 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
         print(e)
         return False
     return True
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
