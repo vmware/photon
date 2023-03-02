@@ -52,7 +52,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
-*   Sun feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.4-1
+*   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.4-1
 -   Upgrade version to 1.2.4
 *   Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.2.2-1
 -   initial version
