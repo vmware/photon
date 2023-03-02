@@ -22,6 +22,7 @@ def create_container_cmd(src_root, photon_docker_image, cmd):
     )
     return cmd
 
+
 def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ["PHOTON_RELEASE_VER"]
     photon_build_num = os.environ["PHOTON_BUILD_NUM"]
@@ -39,7 +40,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         new_name.append(f"{img_path}/disk.raw")
     else:
         for img_num in range(len(raw_image_path)):
-            new_name.append(f"{img_path}/{image_name}" + str(img_num) + ".raw")
+            new_name.append(f"{img_path}/{image_name}{img_num}.raw")
     for img_num, raw_img in enumerate(raw_image_path):
         shutil.move(raw_img, new_name[img_num])
     raw_image = new_name
@@ -57,55 +58,49 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         compressed = generateCompressedFile(raw_image[0], outputfile, "w:xz")
     elif "vhd" in config["artifacttype"]:
         relrawpath = os.path.relpath(raw_image[0], src_root)
-        vhdname = f"/{image_name}.vhd"
+        vhdname = f"{image_name}.vhd"
         dockerenv = False
         print("Check if inside docker env")
-        if Utils.runshellcommand("grep -c docker /proc/self/cgroup || :").rstrip() != "0":
+        out = Utils.runshellcommand("grep -c docker /proc/self/cgroup || :")
+        if out.rstrip() != "0":
             dockerenv = True
 
         print("Converting raw disk to vhd ...")
 
-        cmd  = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img info -f raw --output json /mnt/{relrawpath}"
-        )
+        cmd = "tdnf install -qy qemu-img; qemu-img info -f raw --output json {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0])
-        info_output = Utils.runshellcommand(cmd)
 
+        info_output = Utils.runshellcommand(cmd)
         mbsize = 1024 * 1024
         mbroundedsize = (int(json.loads(info_output)["virtual-size"]) / mbsize + 1) * mbsize
 
-        cmd = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img resize -f raw /mnt/{relrawpath} {mbroundedsize}"
-        )
+        cmd = "tdnf install -qy qemu-img; qemu-img resize -f raw {} {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}", f"{mbroundedsize}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
             cmd = cmd.format(raw_image[0], mbroundedsize)
         Utils.runshellcommand(cmd)
 
-        cmd = (
-            f"tdnf install -y qemu-img &> /dev/null;"
-            f" qemu-img convert /mnt/{relrawpath} -O"
-            f" vpc -o subformat=fixed,force_size"
-            f" /mnt/" + os.path.dirname(relrawpath) + vhdname
-        )
+        cmd = "tdnf install -qy qemu-img; "
+        cmd += "qemu-img convert {} -O vpc -o subformat=fixed,force_size {}"
         if not dockerenv:
+            cmd = cmd.format(f"/mnt/{relrawpath}", f"/mnt/{os.path.dirname(relrawpath)}/{vhdname}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
-            cmd = cmd.format(raw_image[0], os.path.dirname(raw_image[0]) + vhdname)
+            cmd = cmd.format(raw_image[0], f"{os.path.dirname(raw_image[0])}/{vhdname}")
         Utils.runshellcommand(cmd)
 
         if config["artifacttype"] == "vhd.gz":
             outputfile = f"{img_path}/{image_name}.vhd.tar.gz"
-            compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
+            compressed = generateCompressedFile(f"{img_path}/{vhdname}", outputfile, "w:gz")
             # remove raw image and call the vhd as raw image
             os.remove(raw_image[0])
-            raw_image = img_path + vhdname
+            raw_image = f"{img_path}/{vhdname}"
     elif config["artifacttype"] == "ova":
         ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
     elif config["artifacttype"] == "raw":
@@ -143,6 +138,7 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
         print(e)
         return False
     return True
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
