@@ -9,10 +9,8 @@ import tempfile
 
 from datetime import datetime
 
-sys.path.append(
-    f"{os.path.dirname(os.path.realpath(__file__))}/../package-builder"
-)
-from  CommandUtils import CommandUtils
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/../package-builder")
+from CommandUtils import CommandUtils
 
 from pyrpm.spec import Spec, replace_macros
 
@@ -447,25 +445,18 @@ def check_make_smp_flags(lines_dict, err_dict):
 
 
 def check_mentioned_but_unused_files(spec_fn, dirname):
-    return []
     global g_ignore_list
-    parsed_spec = []
 
-    def HandleLogs(log):
-        nonlocal parsed_spec
-        parsed_spec += log.split("\n")
-
-    CommandUtils.runBashCmd(
-        f"rpmspec -D \"%_sourcedir {dirname}\" -P {spec_fn}",
-        logfn=HandleLogs,
+    parsed_spec, _, _ = CommandUtils.runBashCmd(
+        f'rpmspec -D "%_sourcedir {dirname}" -P {spec_fn}', capture=True
     )
+
+    parsed_spec = parsed_spec.split("\n")
 
     # ignore everything after files
     # patch & sources get used much earlier
-    for idx, line in enumerate(parsed_spec):
-        if line.startswith("%changelog"):
-            parsed_spec = parsed_spec[:idx]
-            break
+    idx = parsed_spec.index("%changelog")
+    parsed_spec = parsed_spec[:idx]
 
     source_patch_list = []
     g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
@@ -589,6 +580,9 @@ def create_altered_spec(spec_fn):
     # find the included files, add the file name to g_ignore_list
     # replace %include <file> with actual content of <file>
     for line in lines:
+        if line.lower().startswith("buildarch"):
+            line = f"#{line}"
+
         if not line.startswith("%include"):
             if re.search(source_regex, line):
                 k, v = line.split()
@@ -652,7 +646,9 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(altered_spec, err_dict, os.path.dirname(spec_fn)),
+                check_for_unused_files(
+                    altered_spec, err_dict, os.path.dirname(spec_fn)
+                ),
                 check_for_sha1_usage(spec, err_dict),
             ]
         ):
