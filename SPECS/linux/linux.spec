@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -257,6 +257,21 @@ Patch510: 0003-FIPS-broken-kattest.patch
 Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
+%if 0%{?acvp_build:1} && 0%{?fips}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+Patch512:       0001-crypto-AF_ALG-add-sign-verify-API.patch
+Patch513:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
+Patch514:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
+Patch515:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
+Patch516:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
+Patch517:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
+Patch518:       0007-crypto-AF_ALG-add-KPP-support.patch
+Patch519:       0008-crypto-AF_ALG-add-ECC-support.patch
+Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
+Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
+%endif
+
 %ifarch x86_64
 # SEV on VMware:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -476,6 +491,21 @@ manipulation of eBPF programs and maps.
 %patch511 -p1
 %endif
 
+%if 0%{?acvp_build:1} && 0%{?fips}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+%patch512 -p1
+%patch513 -p1
+%patch514 -p1
+%patch515 -p1
+%patch516 -p1
+%patch517 -p1
+%patch518 -p1
+%patch519 -p1
+%patch520 -p1
+%patch521 -p1
+%endif
+
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M605
@@ -520,6 +550,22 @@ popd
 %build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
+
+%if 0%{?acvp_build:1} && 0%{?fips}
+#ACVP test harness changes in kernel configs.
+sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
+sed -i 's/# CONFIG_CRYPTO_DH is not set/CONFIG_CRYPTO_DH=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API=m/CONFIG_CRYPTO_USER_API=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_HASH=m/CONFIG_CRYPTO_USER_API_HASH=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_SKCIPHER=m/CONFIG_CRYPTO_USER_API_SKCIPHER=y/' .config
+sed -i 's/# CONFIG_CRYPTO_USER_API_RNG is not set/CONFIG_CRYPTO_USER_API_RNG=y/' .config
+sed -i 's/# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set/CONFIG_CRYPTO_USER_API_RNG_CAVP=y/' .config
+sed -i '/CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE/ a # CONFIG_CRYPTO_STATS is not set' .config
+sed -i '/CONFIG_CRYPTO_STATS/ a CONFIG_CRYPTO_USER_API_AKCIPHER=y' .config
+sed -i '/CONFIG_CRYPTO_USER_API_AKCIPHER/ a CONFIG_CRYPTO_USER_API_KPP=y' .config
+sed -i '/CONFIG_CRYPTO_USER_API_KPP=y/ a CONFIG_CRYPTO_USER_API_ECC=y' .config
+%endif
+
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
@@ -847,6 +893,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed May 17 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-8
+- Added support for ACVP build
 * Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-7
 - Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-6
