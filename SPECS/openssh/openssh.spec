@@ -1,10 +1,10 @@
-%define blfs_systemd_units_ver  20140907
-%define privsep_path            %{_sharedstatedir}/sshd
+%define privsep_path %{_sharedstatedir}/sshd
+%global sshd_services sshd.service sshd.socket sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.8p1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -14,14 +14,15 @@ Distribution:   Photon
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
 %define sha512 %{name}=d44cd04445f9c8963513b0d5a7e8348985114ff2471e119a6e344498719ef40f09c61c354888a3be9dabcb5870e5cbe5d3aafbb861dfa1d82a4952f3d233a8df
 
-Source1: http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-%{blfs_systemd_units_ver}.tar.bz2
-%define sha512 blfs-systemd-units=e8214d2f05c74ee2dc40b357097de4bd6ea068538d215419d7fab37fad22a0ca5900cb50127808480274ef4e4c7c0c7492bcc1bd907e5c1049ee2c004c6beaf9
+# These sources are taken from:
+# http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz
+# And are modified to Photon's needs
+Source1: sshd.socket
+Source2: sshd.service
+Source3: sshd-keygen.service
+Source4: sshdat.service
 
-Source2:        sshd.service
-Source3:        sshd-keygen.service
-
-Patch0:         blfs_systemd_fixes.patch
-Patch1:         0001-sshd_config-Avoid-duplicate-entry.patch
+Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -33,7 +34,6 @@ BuildRequires:  groff
 
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
-Requires:       systemd
 Requires:       openssl
 
 %description
@@ -52,6 +52,7 @@ This provides the ssh client utilities.
 
 %package server
 Summary: openssh server applications
+Requires:   systemd
 Requires:   Linux-PAM
 Requires:   shadow
 Requires:   ncurses-terminfo
@@ -64,10 +65,7 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 This provides the ssh server daemons, utilities, configuration and service files.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -a0 -a1
-%patch0 -p0
-%patch1 -p1
+%autosetup -p1
 
 %build
 sh ./configure --host=%{_host} --build=%{_build} \
@@ -93,7 +91,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-pam \
     --with-maintype=man \
     --enable-strip=no \
-    --with-kerberos5=/usr \
+    --with-kerberos5=%{_usr} \
     --with-sandbox=rlimit
 
 %make_build
@@ -102,13 +100,12 @@ sh ./configure --host=%{_host} --build=%{_build} \
 %make_install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{privsep_path}
 
-#   Install daemon script
-pushd blfs-systemd-units-%{blfs_systemd_units_ver}
-make DESTDIR=%{buildroot} UNITSDIR=%{buildroot}%{_unitdir} install-sshd %{?_smp_mflags}
-popd
-
+mkdir -p %{buildroot}%{_unitdir}
+install -m644 %{SOURCE1} %{buildroot}%{_unitdir}/sshd.socket
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/sshd.service
 install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/sshd-keygen.service
+install -m644 %{SOURCE4} %{buildroot}%{_unitdir}/sshd@.service
+
 install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
@@ -135,18 +132,18 @@ getent passwd sshd >/dev/null || \
     useradd -c 'sshd PrivSep' -d %{privsep_path} -g sshd -s /bin/false -u 50 sshd
 
 %preun server
-%systemd_preun sshd.service sshd-keygen.service
+%systemd_preun %{sshd_services}
 
 %post server
 /sbin/ldconfig
 if [ $1 -eq 1 ] ; then
     chown -v root:sys %{privsep_path}
 fi
-%systemd_post sshd.service sshd-keygen.service
+%systemd_post %{sshd_services}
 
 %postun server
 /sbin/ldconfig
-%systemd_postun_with_restart sshd.service sshd-keygen.service
+%systemd_postun_with_restart %{sshd_services}
 
 %clean
 rm -rf %{buildroot}/*
@@ -199,6 +196,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-5
+- Add systemd to Requires of server
+- Remove blfs tarball dependency
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-4
 - Set MaxAuthTries to 4
 * Tue Apr 12 2022 Ankit Jain <ankitja@vmware.comm> 8.8p1-3
