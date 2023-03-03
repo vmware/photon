@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -47,7 +47,6 @@ BuildRequires:  systemd
 BuildRequires:  groff
 BuildRequires:  systemd-devel
 
-Requires:       systemd
 Requires:       openssl
 Requires:       %{name}-clients = %{version}-%{release}
 Requires:       %{name}-server = %{version}-%{release}
@@ -69,6 +68,7 @@ This provides the ssh client utilities.
 
 %package server
 Summary: openssh server applications
+Requires:   systemd
 Requires:   Linux-PAM
 Requires:   shadow
 Requires:   ncurses-terminfo
@@ -214,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+* Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-15
+- Add systemd to Requires of server
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-14
 - Set MaxAuthTries to 4
 * Tue Apr 12 2022 Ankit Jain <ankitja@vmware.comm> 7.8p1-13
