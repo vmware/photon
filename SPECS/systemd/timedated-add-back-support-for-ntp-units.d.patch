@@ -1,0 +1,396 @@
+From afaae43bb191dc187a366fc3595b6b4e34039acf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 21 Jul 2019 15:06:35 +0200
+Subject: [PATCH 1/3] timedated: add back support for ntp-units.d/
+
+We removed support for foreign services (and ntp-units.d/) in b72ddf0f4.
+Support for foreign services was added back in 5d280742, but through an
+environment variable.
+
+The problem with the env var approach is that it only works as a mechanism
+to select one item, and doesn't work nicely as a mechinism to create a list
+of items through drop-ins (because the env var can be easily overridden, but not
+extended). Having a list of "ntp providers" is important to be able to reliably disable
+all of them when that is requested.
+
+Another problem is that nobody ever bothered to care about our new "standard".
+ntp-units.d/ is a nice simple format that works and is already supported by
+chrony and ntpd and timedatex. If we were to introduce and ask people to follow
+a new standard, there should be some good reason for this. The idea with env
+vars has lower functionality, requires systemd-specific syntax. We should just
+re-adopt the format that we originally introduced and that seems to work for
+everyone, and more on to more interesting problems.
+---
+ man/systemd-timedated.service.xml     | 49 +++++++++++-------
+ man/timedatectl.xml                   | 31 ++++++------
+ meson.build                           |  1 +
+ src/basic/fileio.c                    | 22 ++++++--
+ src/basic/fileio.h                    |  1 +
+ src/timedate/timedated.c              | 72 ++++++++++++++++++++++++---
+ src/timesync/80-systemd-timesync.list |  1 +
+ src/timesync/meson.build              |  2 +
+ units/systemd-timesyncd.service.in    |  1 +
+ 9 files changed, 132 insertions(+), 48 deletions(-)
+ create mode 100644 src/timesync/80-systemd-timesync.list
+
+diff --git a/man/systemd-timedated.service.xml b/man/systemd-timedated.service.xml
+index e334e8a848..3e7a26dbc7 100644
+--- a/man/systemd-timedated.service.xml
++++ b/man/systemd-timedated.service.xml
+@@ -34,7 +34,7 @@
+ 
+     <para><filename>systemd-timedated</filename> is a system service
+     that may be used as a mechanism to change the system clock and
+-    timezone, as well as to enable/disable NTP time synchronization.
++    timezone, as well as to enable/disable network time synchronization.
+     <filename>systemd-timedated</filename> is automatically activated
+     on request and terminates itself when it is unused.</para>
+ 
+@@ -49,25 +49,36 @@
+   </refsect1>
+ 
+   <refsect1>
+-    <title>Environment</title>
+-
+-    <variablelist class='environment-variables'>
+-      <varlistentry>
+-        <term><varname>$SYSTEMD_TIMEDATED_NTP_SERVICES</varname></term>
+-
+-        <listitem><para>Colon-separated list of unit names of NTP client services.
+-        If not set, then
+-        <citerefentry><refentrytitle>systemd-timesyncd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+-        is used. See the entries of NTP related commands of
+-        <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+-        for details about this.</para>
+-
+-        <para>Example:
+-        <programlisting>SYSTEMD_TIMEDATED_NTP_SERVICES=ntpd.service:chronyd.service:systemd-timesyncd.service</programlisting>
+-        </para></listitem>
+-      </varlistentry>
+-    </variablelist>
++    <title>List of network time synchronization services</title>
++
++    <para><command>systemd-timesyncd</command> will look for files with a <literal>.list</literal> extension
++    in <filename>ntp-units.d/</filename> directories. Each file is parsed as a list of unit names, one per
++    line. Empty lines and lines with comments (<literal>#</literal>) are ignored.  Files are read from
++    <filename>/usr/lib/systemd/ntp-units.d/</filename> and the corresponding directories under
++    <filename>/etc/</filename>, <filename>/run/</filename>, <filename>/usr/local/lib/</filename>. Files in
++    <filename>/etc/</filename> override files with the same name in <filename>/run/</filename>,
++    <filename>/usr/local/lib/</filename>, and <filename>/usr/lib/</filename>. Files in
++    <filename>/run/</filename> override files with the same name under <filename>/usr/</filename>. Packages
++    should install their configuration files in <filename>/usr/lib/</filename> (distribution packages) or
++    <filename>/usr/local/lib/</filename> (local installs).</para>
++
++    <example>
++      <title><filename>ntp-units.d/</filename> entry for <command>systemd-timesyncd</command></title>
++      <programlisting># /usr/lib/systemd/ntp-units.d/80-systemd-timesync.list
++systemd-timesyncd.service
++</programlisting>
++    </example>
++
++    <para>If the environment variable <varname>$SYSTEMD_TIMEDATED_NTP_SERVICES</varname> is set,
++    <command>systemd-timesyncd</command> will parse the contents of that variable as a colon-separated list
++    of unit names. When set, this variable overrides the file-based list described above.</para>
++
++    <example>
++      <title>An override that specifies that <command>chronyd</command> should be used if available</title>
++      <programlisting>SYSTEMD_TIMEDATED_NTP_SERVICES=chronyd.service:systemd-timesyncd.service</programlisting>
++    </example>
+   </refsect1>
++
+   <refsect1>
+     <title>See Also</title>
+     <para>
+diff --git a/man/timedatectl.xml b/man/timedatectl.xml
+index 39cd78666e..f8d93b546a 100644
+--- a/man/timedatectl.xml
++++ b/man/timedatectl.xml
+@@ -26,22 +26,25 @@
+ 
+   <refsynopsisdiv>
+     <cmdsynopsis>
+-      <command>timedatectl <arg choice="opt" rep="repeat">OPTIONS</arg> <arg choice="req">COMMAND</arg></command>
++      <command>timedatectl</command>
++      <arg choice="opt" rep="repeat">OPTIONS</arg>
++      <arg choice="req">COMMAND</arg>
+     </cmdsynopsis>
+   </refsynopsisdiv>
+ 
+   <refsect1>
+     <title>Description</title>
+ 
+-    <para><command>timedatectl</command> may be used to query and
+-    change the system clock and its settings.</para>
++    <para><command>timedatectl</command> may be used to query and change the system clock and its settings,
++    and enable or disable time synchronization services.</para>
+ 
+     <para>Use
+     <citerefentry><refentrytitle>systemd-firstboot</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     to initialize the system time zone for mounted (but not booted)
+     system images.</para>
+ 
+-    <para><command>timedatectl</command> may be used to show the current status of
++    <para><command>timedatectl</command> may be used to show the current status of time synchronization
++    services, for example
+     <citerefentry><refentrytitle>systemd-timesyncd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+     </para>
+ 
+@@ -125,11 +128,8 @@
+       <varlistentry>
+         <term><command>status</command></term>
+ 
+-        <listitem><para>Show current settings of the system clock and RTC,
+-        including whether network time synchronization through
+-        <filename>systemd-timesyncd.service</filename> is active. Even if it is
+-        inactive, a different service might still synchronize the clock.
+-        If no command is specified, this is the implied default.
++        <listitem><para>Show current settings of the system clock and RTC, including whether network time
++        synchronization is active. If no command is specified, this is the implied default.
+         </para></listitem>
+       </varlistentry>
+ 
+@@ -195,11 +195,11 @@
+       <varlistentry>
+         <term><command>set-ntp [BOOL]</command></term>
+ 
+-        <listitem><para>Takes a boolean argument. Controls whether network time synchronization is active
+-        and enabled (if available). If the argument is true, this enables and starts the first existed
+-        service listed in the environment variable <varname>$SYSTEMD_TIMEDATED_NTP_SERVICES</varname>
+-        of <filename>systemd-timedated.service</filename>. If the argument is false, then this disables and
+-        stops the all services listed in <varname>$SYSTEMD_TIMEDATED_NTP_SERVICES</varname>.</para></listitem>
++        <listitem><para>Takes a boolean argument. Controls whether network time synchronization is active and
++        enabled (if available). If the argument is true, this enables and starts the first existing network
++        synchronization service. If the argument is false, then this disables and stops the known network
++        synchronization services. The way that the list of services is built is described below.</para>
++        </listitem>
+       </varlistentry>
+ 
+     </variablelist>
+@@ -238,8 +238,7 @@
+   <refsect1>
+     <title>Exit status</title>
+ 
+-    <para>On success, 0 is returned, a non-zero failure
+-    code otherwise.</para>
++    <para>On success, 0 is returned, a non-zero failure code otherwise.</para>
+   </refsect1>
+ 
+   <xi:include href="less-variables.xml" />
+diff --git a/meson.build b/meson.build
+index 04331dd41a..1acb3c64a7 100644
+--- a/meson.build
++++ b/meson.build
+@@ -137,6 +137,7 @@ systemdstatedir = join_paths(localstatedir, 'lib/systemd')
+ catalogstatedir = join_paths(systemdstatedir, 'catalog')
+ randomseeddir = join_paths(localstatedir, 'lib/systemd')
+ profiledir = join_paths(rootlibexecdir, 'portable', 'profile')
++ntpservicelistdir = join_paths(rootprefixdir, 'lib/systemd/ntp-units.d')
+ 
+ docdir = get_option('docdir')
+ if docdir == ''
+diff --git a/src/basic/fileio.c b/src/basic/fileio.c
+index 6b0bad5b71..7e9d9796d6 100644
+--- a/src/basic/fileio.c
++++ b/src/basic/fileio.c
+@@ -38,6 +38,19 @@
+ 
+ #define READ_FULL_BYTES_MAX (4U*1024U*1024U)
+ 
++int fopen_unlocked(const char *path, const char *options, FILE **ret) {
++        assert(ret);
++
++        FILE *f = fopen(path, options);
++        if (!f)
++                return -errno;
++
++        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
++
++        *ret = f;
++        return 0;
++}
++
+ int write_string_stream_ts(
+                 FILE *f,
+                 const char *line,
+@@ -241,6 +254,7 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
+         _cleanup_fclose_ FILE *f = NULL;
+         _cleanup_free_ char *buf = NULL;
+         size_t l, k;
++        int r;
+ 
+         assert(fn);
+         assert(blob);
+@@ -254,11 +268,9 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
+         if (!buf)
+                 return -ENOMEM;
+ 
+-        f = fopen(fn, "re");
+-        if (!f)
+-                return -errno;
+-
+-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
++        r = fopen_unlocked(fn, "re", &f);
++        if (r < 0)
++                return r;
+ 
+         /* We try to read one byte more than we need, so that we know whether we hit eof */
+         errno = 0;
+diff --git a/src/basic/fileio.h b/src/basic/fileio.h
+index 77e6206e95..6d662181cb 100644
+--- a/src/basic/fileio.h
++++ b/src/basic/fileio.h
+@@ -32,6 +32,7 @@ int write_string_file_ts(const char *fn, const char *line, WriteStringFileFlags
+ static inline int write_string_file(const char *fn, const char *line, WriteStringFileFlags flags) {
+         return write_string_file_ts(fn, line, flags, NULL);
+ }
++int fopen_unlocked(const char *path, const char *options, FILE **ret);
+ 
+ int write_string_filef(const char *fn, WriteStringFileFlags flags, const char *format, ...) _printf_(3, 4);
+ 
+diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
+index 82eb213e95..54c48d0df0 100644
+--- a/src/timedate/timedated.c
++++ b/src/timedate/timedated.c
+@@ -13,7 +13,9 @@
+ #include "bus-error.h"
+ #include "bus-util.h"
+ #include "clock-util.h"
++#include "conf-files.h"
+ #include "def.h"
++#include "fd-util.h"
+ #include "fileio-label.h"
+ #include "fs-util.h"
+ #include "hashmap.h"
+@@ -30,6 +32,8 @@
+ #define NULL_ADJTIME_UTC "0.0 0 0\n0\nUTC\n"
+ #define NULL_ADJTIME_LOCAL "0.0 0 0\n0\nLOCAL\n"
+ 
++#define UNIT_LIST_DIRS (const char* const*) CONF_PATHS_STRV("systemd/ntp-units.d")
++
+ typedef struct UnitStatusInfo {
+         char *name;
+         char *load_state;
+@@ -103,20 +107,17 @@ static int context_add_ntp_service(Context *c, const char *s) {
+         return 0;
+ }
+ 
+-static int context_parse_ntp_services(Context *c) {
++static int context_parse_ntp_services_from_environment(Context *c) {
+         const char *env, *p;
+         int r;
+ 
+         assert(c);
+ 
+         env = getenv("SYSTEMD_TIMEDATED_NTP_SERVICES");
+-        if (!env) {
+-                r = context_add_ntp_service(c, "systemd-timesyncd.service");
+-                if (r < 0)
+-                        log_warning_errno(r, "Failed to add NTP service \"systemd-timesyncd.service\", ignoring: %m");
+-
++        if (!env)
+                 return 0;
+-        }
++
++        log_debug("Using list of ntp services from environment variable $SYSTEMD_TIMEDATED_NTP_SERVICES.");
+ 
+         for (p = env;;) {
+                 _cleanup_free_ char *word = NULL;
+@@ -136,7 +137,62 @@ static int context_parse_ntp_services(Context *c) {
+                         log_warning_errno(r, "Failed to add NTP service \"%s\", ignoring: %m", word);
+         }
+ 
+-        return 0;
++        return 1;
++}
++
++static int context_parse_ntp_services_from_disk(Context *c) {
++        _cleanup_strv_free_ char **files = NULL;
++        char **f;
++        int r;
++
++        r = conf_files_list_strv(&files, ".list", NULL, CONF_FILES_FILTER_MASKED, UNIT_LIST_DIRS);
++        if (r < 0)
++                return log_error_errno(r, "Failed to enumerate .list files: %m");
++
++        STRV_FOREACH(f, files) {
++                _cleanup_fclose_ FILE *file = NULL;
++
++                log_debug("Reading file '%s'", *f);
++
++                r = fopen_unlocked(*f, "re", &file);
++                if (r < 0) {
++                        log_error_errno(r, "Failed to open %s, ignoring: %m", *f);
++                        continue;
++                }
++
++                for (;;) {
++                        _cleanup_free_ char *line = NULL;
++                        const char *word;
++
++                        r = read_line(file, LINE_MAX, &line);
++                        if (r < 0) {
++                                log_error_errno(r, "Failed to read %s, ignoring: %m", *f);
++                                continue;
++                        }
++                        if (r == 0)
++                                break;
++
++                        word = strstrip(line);
++                        if (isempty(word) || startswith("#", word))
++                                continue;
++
++                        r = context_add_ntp_service(c, word);
++                        if (r < 0)
++                                log_warning_errno(r, "Failed to add NTP service \"%s\", ignoring: %m", word);
++                }
++        }
++
++        return 1;
++}
++
++static int context_parse_ntp_services(Context *c) {
++        int r;
++
++        r = context_parse_ntp_services_from_environment(c);
++        if (r != 0)
++                return r;
++
++        return context_parse_ntp_services_from_disk(c);
+ }
+ 
+ static int context_ntp_service_is_active(Context *c) {
+diff --git a/src/timesync/80-systemd-timesync.list b/src/timesync/80-systemd-timesync.list
+new file mode 100644
+index 0000000000..d5959ade89
+--- /dev/null
++++ b/src/timesync/80-systemd-timesync.list
+@@ -0,0 +1 @@
++systemd-timesyncd.service
+diff --git a/src/timesync/meson.build b/src/timesync/meson.build
+index b79ef08277..e5c118c8db 100644
+--- a/src/timesync/meson.build
++++ b/src/timesync/meson.build
+@@ -32,6 +32,8 @@ if conf.get('ENABLE_TIMESYNCD') == 1
+                      install_dir : dbuspolicydir)
+         install_data('org.freedesktop.timesync1.service',
+                      install_dir : dbussystemservicedir)
++        install_data('80-systemd-timesync.list',
++                     install_dir : ntpservicelistdir)
+ endif
+ 
+ ############################################################
+diff --git a/units/systemd-timesyncd.service.in b/units/systemd-timesyncd.service.in
+index 4a490b6e16..7e547530c9 100644
+--- a/units/systemd-timesyncd.service.in
++++ b/units/systemd-timesyncd.service.in
+@@ -15,6 +15,7 @@ ConditionVirtualization=!container
+ DefaultDependencies=no
+ After=systemd-remount-fs.service
+ Before=time-sync.target sysinit.target shutdown.target
++Conflicts=chronyd.service ntpd.service
+ Conflicts=shutdown.target
+ Wants=time-sync.target
+ 
+-- 
+2.35.6
+
