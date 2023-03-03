@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -265,6 +265,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sat Mar 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-9
+- Further fix to setup macro parsing issue
 * Sun Feb 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-8
 - Fix setup macro parsing issue in rpmspec
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-7

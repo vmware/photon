@@ -1,8 +1,8 @@
-From 2ec590cfdc4e8f4f8954b544143bc385e2f1375e Mon Sep 17 00:00:00 2001
+From 83122cb8b940894a4af1d3469a46e6068de93024 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sun, 26 Feb 2023 17:05:19 +0530
 Subject: [PATCH] Fix %setup and %patch not getting expanded in rpmspec --parse
-  output
+ output
 
 Handling %setup and %patch pseudo-macros in %prep is, ahem, special.
 Which is why they don't appear expanded in --parse output despite
@@ -19,13 +19,13 @@ Fixes: #2048
 [sshedi: ported fix to rpm-4.14.x]
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- build/parsePrep.c         | 30 ++++++++++++++++++------------
+ build/parsePrep.c         | 58 +++++++++++++++++++++------------------
  build/parseSpec.c         |  1 +
  build/rpmbuild_internal.h |  1 +
- 3 files changed, 20 insertions(+), 12 deletions(-)
+ 3 files changed, 34 insertions(+), 26 deletions(-)
 
 diff --git a/build/parsePrep.c b/build/parsePrep.c
-index 5454b7a..1d6f53b 100644
+index 5454b7a..fd83916 100644
 --- a/build/parsePrep.c
 +++ b/build/parsePrep.c
 @@ -16,6 +16,12 @@
@@ -41,7 +41,54 @@ index 5454b7a..1d6f53b 100644
  /**
   * Check that file owner and group are known.
   * @param urlfn		file url
-@@ -352,7 +358,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+@@ -104,7 +110,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+     } else arg_fuzz = xstrdup("");
+ 
+     rasprintf(&args, "%s -p%d %s%s%s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, arg_dir, arg_outfile,
+-		reverse ? " -R" : "", 
++		reverse ? " -R" : "",
+ 		removeEmpties ? " -E" : "");
+ 
+     /* Avoid the extra cost of fork and pipe for uncompressed patches */
+@@ -123,11 +129,11 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+ 
+     if (c != INT_MAX) {
+ 	rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
+-			"%s\n", 
++			"%s\n",
+ 			c, basename(fn), patchcmd);
+     } else {
+ 	rasprintf(&buf, "echo \"Patch (%s):\"\n"
+-			"%s\n", 
++			"%s\n",
+ 			basename(fn), patchcmd);
+     }
+     free(patchcmd);
+@@ -325,7 +331,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+     if (arg < -1) {
+ 	rpmlog(RPMLOG_ERR, _("line %d: Bad %%setup option %s: %s\n"),
+ 		 spec->lineNum,
+-		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
++		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+ 		 poptStrerror(arg));
+ 	goto exit;
+     }
+@@ -333,7 +339,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+     if (dirName) {
+ 	spec->buildSubdir = xstrdup(dirName);
+     } else {
+-	rasprintf(&spec->buildSubdir, "%s-%s", 
++	rasprintf(&spec->buildSubdir, "%s-%s",
+ 		  headerGetString(spec->packages->header, RPMTAG_NAME),
+ 		  headerGetString(spec->packages->header, RPMTAG_VERSION));
+     }
+@@ -347,30 +353,30 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+ 	rc = RPMRC_OK;
+ 	goto exit;
+     }
+-    
++
+     /* cd to the build dir */
      {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
  
  	rasprintf(&buf, "cd '%s'", buildDir);
@@ -50,7 +97,8 @@ index 5454b7a..1d6f53b 100644
  	free(buf);
  	free(buildDir);
      }
-@@ -360,17 +366,17 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+-    
++
      /* delete any old sources */
      if (!leaveDirs) {
  	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
@@ -87,7 +135,7 @@ index 5454b7a..1d6f53b 100644
  	free(buf);
      }
  
-@@ -393,7 +399,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+@@ -393,16 +399,16 @@ static int doSetupMacro(rpmSpec spec, const char *line)
  	char *chptr = doUntar(spec, 0, quietly);
  	if (chptr == NULL)
  	    goto exit;
@@ -95,8 +143,11 @@ index 5454b7a..1d6f53b 100644
 +	appendBuf(spec, chptr, 1);
  	free(chptr);
      }
-     
-@@ -402,7 +408,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+-    
+-    appendStringBuf(spec->prep, getStringBuf(after));
++
++    appendBuf(spec, getStringBuf(after), 0);
+ 
      /* Fix the permissions of the setup build tree */
      {	char *fix = rpmExpand("%{_fixperms} .", NULL);
  	if (fix && *fix != '%') {
@@ -105,7 +156,34 @@ index 5454b7a..1d6f53b 100644
  	}
  	free(fix);
      }
-@@ -513,7 +519,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+@@ -440,7 +446,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     const char **argv = NULL;
+     ARGV_t patch, patchnums = NULL;
+     rpmRC rc = RPMRC_FAIL; /* assume failure */
+-    
++
+     struct poptOption const patchOpts[] = {
+ 	{ NULL, 'P', POPT_ARG_STRING, NULL, 'P', NULL, NULL },
+ 	{ NULL, 'p', POPT_ARG_INT, &opt_p, 'p', NULL, NULL },
+@@ -471,7 +477,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     poptParseArgvString(buf, &argc, &argv);
+     free(buf);
+ 
+-    /* 
++    /*
+      * Grab all -P<N> numbers for later processing. Stored as strings
+      * at this point so we only have to worry about conversion in one place.
+      */
+@@ -492,7 +498,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     }
+ 
+     if (c < -1) {
+-	rpmlog(RPMLOG_ERR, _("%s: %s: %s\n"), poptStrerror(c), 
++	rpmlog(RPMLOG_ERR, _("%s: %s: %s\n"), poptStrerror(c),
+ 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), line);
+ 	goto exit;
+     }
+@@ -513,10 +519,10 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
  	if (s == NULL) {
  	    goto exit;
  	}
@@ -113,8 +191,12 @@ index 5454b7a..1d6f53b 100644
 +	appendBuf(spec, s, 1);
  	free(s);
      }
- 	
-@@ -539,7 +545,7 @@ int parsePrep(rpmSpec spec)
+-	
++
+     rc = RPMRC_OK;
+ 
+ exit:
+@@ -539,17 +545,17 @@ int parsePrep(rpmSpec spec)
      spec->prep = newStringBuf();
  
      /* There are no options to %prep */
@@ -123,7 +205,10 @@ index 5454b7a..1d6f53b 100644
  	return PART_NONE;
      } else if (rc < 0) {
  	return PART_ERROR;
-@@ -549,7 +555,7 @@ int parsePrep(rpmSpec spec)
+     }
+-    
++
+     while (! (nextPart = isPart(spec->line))) {
  	/* Need to expand the macros inline.  That way we  */
  	/* can give good line number information on error. */
  	argvAdd(&saveLines, spec->line);
