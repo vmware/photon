@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -14,7 +14,10 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 %define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
+
 Source1: fedora.patches
+
+Source2: grub-sbat.csv
 
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 %include %{SOURCE1}
@@ -84,9 +87,9 @@ sh ../configure \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 
-make %{?_smp_mflags}
+%make_build
 
-make DESTDIR=${PWD}/../install-for-pc install %{?_smp_mflags}
+%make_install DESTDIR=${PWD}/../install-for-pc %{?_smp_mflags}
 popd
 %endif
 
@@ -104,9 +107,9 @@ sh ../configure \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 
-make %{?_smp_mflags}
+%make_build
 
-make DESTDIR=${PWD}/../install-for-efi install %{?_smp_mflags}
+%make_install DESTDIR=${PWD}/../install-for-efi %{?_smp_mflags}
 popd
 
 %install
@@ -124,23 +127,23 @@ touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
 # Generate grub efi image
 install -d %{buildroot}/boot/efi/EFI/BOOT
+
+sed -e "s,@@VERSION@@,%{version},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@GRUB_PH_GEN@@,%{grub_photon_generation},g" \
+    %{SOURCE2} > grub-sbat.csv
+
 %ifarch x86_64
-cat << EOF > grub-sbat.csv
-sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
-grub,1,Free Software Foundation,grub,2.06,https//www.gnu.org/software/grub/
-grub.photon,%{grub_photon_generation},VMware Photon OS,grub2,%{version}-%{release},https://github.com/vmware/photon/tree/5.0/SPECS/grub2/
-EOF
-
-./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
-
+./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 %endif
+
 %ifarch aarch64
 cat > grub-embed-config.cfg << EOF
 search.fs_label rootfs root
 configfile /boot/grub2/grub.cfg
 EOF
 
-./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
 %endif
 
 %if 0%{?with_check}
@@ -201,6 +204,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.06-8
+- Fix aarch64 build error
 * Fri Feb 24 2023 Alexey Makhalov <amakhalov@vmware.com> 2.06-7
 - Generate efi image during the build.
 - Remove unneeded patches.
