@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.272
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -38,17 +38,17 @@ Source9: genhmac.inc
 Source10: https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{dcap_version}.tar.gz
 %define sha512 DCAP=264c2c9e6554e533c41df34291d5809bd18b32384c5d871687dae7d3587b200459fcfffe0a95d93063cb29c6b5a50feebc99612e3d7403c24c410c43b0e2f64c
 
-%define i40e_version 2.16.11
+%define i40e_version 2.22.18
 Source11: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
+%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.5.3
+%define iavf_version 4.8.2
 Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
+%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
-%define ice_version 1.9.11
+%define ice_version 1.11.14
 Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 
 # common
 Patch1: double-tcp_mem-limits.patch
@@ -522,21 +522,18 @@ Patch519: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 Patch520: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 
 #Patches for i40e driver
-Patch1501: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1502: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1503: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch1504: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1502: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1503: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch1504: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
-Patch1511: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1512: iavf-v4.5.3-no-aux-symvers.patch
-Patch1513: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1514: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1511: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1512: iavf-v4.8.2-no-aux-symvers.patch
+Patch1513: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 #Patches for ice driver
-Patch1521: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1522: ice-v1.9.11-no-aux-bus.patch
-Patch1523: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1521: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1522: ice-v1.11.14-no-aux-bus.patch
 %endif
 
 %if 0%{?kat_build}
@@ -712,17 +709,17 @@ This Linux package contains hmac sha generator kernel module.
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1501 -M1504
+%autopatch -p1 -m1502 -M1504
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m1511 -M1514
+%autopatch -p1 -m1511 -M1513
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-%autopatch -p1 -m1521 -M1523
+%autopatch -p1 -m1521 -M1522
 popd
 
 %endif
@@ -851,31 +848,49 @@ popd
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
-            modules_install mandocs_install %{?_smp_mflags}
+            INSTALL_MOD_DIR=temp MANDIR=%{_mandir} \
+            modules_install_no_aux mandocs_install %{?_smp_mflags}
+
+# keep only intel_auxiliary.ko from iavf
+# newer driver versions install intel_auxiliary.ko into INSTALL_MOD_DIR,
+# which would overwrite itself everytime if we use INSTALL_MOD_DIR=extra
+# So install to temp, then install only the module want to extra. Delete temp
+# and along with it the excess auxiliary module
+install -Dvm 644 %{buildroot}%{_modulesdir}/temp/i40e.ko* \
+        -t %{buildroot}%{_modulesdir}/extra
+
+rm -rf %{buildroot}%{_modulesdir}/temp
 popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
+# The intel_auxiliary.ko kernel module is a common dependency for both iavf
 # and ice drivers.  Install it only once, along with the iavf driver
 # and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
             INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
-            modules_install mandocs_install %{?_smp_mflags}
+            modules_install_no_aux mandocs_install %{?_smp_mflags}
 
 install -Dvm 644 src/linux/auxiliary_bus.h \
         %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
+# The intel_auxiliary.ko kernel module is a common dependency for both iavf
 # and ice drivers.  Install it only once, along with the iavf driver
 # and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
+            INSTALL_MOD_DIR=temp MANDIR=%{_mandir} \
             modules_install mandocs_install %{?_smp_mflags}
+
+# keep only intel_auxiliary.ko from iavf
+install -Dvm 644 %{buildroot}%{_modulesdir}/temp/ice.ko* \
+        -t %{buildroot}%{_modulesdir}/extra
+
+rm -rf %{buildroot}%{_modulesdir}/temp
+
 popd
 
 # Verify for build-id match
@@ -1114,6 +1129,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-5
+- Upgrade ice driver to 1.11.14
+- Upgrade iavf driver to 4.8.2
+- Upgrade i40e driver to 2.22.18
 * Thu Mar 02 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-4
 - Use Photon kernel macros to simplify building i40e, iavf and ice drivers
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3
