@@ -2,8 +2,8 @@
 
 Summary:    Apache Maven
 Name:       apache-maven
-Version:    3.8.6
-Release:    2%{?dist}
+Version:    3.9.0
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/apache/maven/archive/refs/tags/maven-%{version}.tar.gz
-%define sha512 maven=8bdd1bda0f7eccc866dc2f2036fb08f9b29ed86fc74ec2ddaf2653f06327e68b1536d2e913652bbe3c67779c090e0006f2f4746a4659e8865a8818c0cb1aa550
+%define sha512 maven=488a47b9f04889b12c2c62ea1ffec3aa071dbdd6def384b77dce259249ca49e92d7cc211a0711ff69f3b54ac7c5171bff22809089807cdaa96fc9d337fbd150c
 
 BuildRequires: openjdk11
 BuildRequires: apache-ant
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 3.9.0-1
+- Upgrade to v3.9.0
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.8.6-2
 - Use openjdk11
 * Sat Sep 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.6-1
