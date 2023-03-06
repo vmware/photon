@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -23,7 +23,7 @@ Source2: %{name}-toys
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 
-Requires:       openssl
+Requires:       openssl-libs
 Requires:       zlib
 
 Provides:       /bin/grep
@@ -707,6 +707,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-2
+- Require openssl-libs
 * Mon Mar 06 2023 Harinadh D <hdommaraju@vmware.com> 0.8.9-1
 - version upgrade
 - fix copy_file_range() issue when copying to another filesystem

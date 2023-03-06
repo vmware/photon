@@ -1,22 +1,22 @@
-Summary:             Certificate Authority certificates
-Name:                ca-certificates
-Version:             20220706
-Release:             1%{?dist}
-License:             Custom
-URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
-Group:               System Environment/Security
-Vendor:              VMware, Inc.
-Distribution:        Photon
+Summary:        Certificate Authority certificates
+Name:           ca-certificates
+Version:        20220706
+Release:        2%{?dist}
+License:        Custom
+URL:            http://anduin.linuxfromscratch.org/BLFS/other
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-Source0:             certdata.txt
+Source0: certdata.txt
 
-Requires:            openssl
-Requires:            ca-certificates-pki = %{version}-%{release}
+Requires: openssl-libs
+Requires: ca-certificates-pki = %{version}-%{release}
 Requires(posttrans): /usr/bin/ln
 
-BuildRequires:       openssl
+BuildRequires: openssl
 
-Provides:            ca-certificates-mozilla
+Provides: ca-certificates-mozilla = %{version}-%{release}
 
 %description
 The Public Key Inrastructure is used for many security issues in a
@@ -241,6 +241,7 @@ done
 exit 0
 
 %clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -254,6 +255,8 @@ exit 0
 %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 20220706-2
+- Require openssl-libs
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 20220706-1
 - Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 20210429-2

@@ -16,7 +16,6 @@ STAGE_DIR=$(pwd)/stage
 rm -rf /etc/yum.repos.d/*
 
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
-
 [photon-local]
 name=VMware Photon Linux ${PHOTON_RELEASE_VERSION}($arch)
 baseurl=file://$(pwd)/stage/RPMS
@@ -24,7 +23,6 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
 enabled=1
 skip_if_unavailable=True
-
 EOF
 
 rm -rf $TEMP_CHROOT
@@ -48,8 +46,8 @@ expected_pkg_list=(
   bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc krb5
   libcap libgcc libsolv libssh2 lua ncurses-libs nspr nss-libs
-  openssl photon-release photon-repos popt readline rpm-libs sqlite-libs
-  tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
+  openssl-libs photon-release photon-repos popt readline rpm-libs
+  sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
 
 actual_pkg_count=${#actual_pkg_list[@]}

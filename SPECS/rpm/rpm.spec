@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -28,7 +28,6 @@ Patch4:     fix-race-condition-in-brp-strip.patch
 Requires:   bash
 Requires:   zstd-libs
 Requires:   lua
-Requires:   openssl >= 1.1.1
 Requires:   %{name}-libs = %{version}-%{release}
 
 BuildRequires:  pandoc-bin
@@ -43,7 +42,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
 BuildRequires:  python3-devel
-BuildRequires:  openssl-devel >= 1.1.1
+BuildRequires:  openssl-devel
 BuildRequires:  zstd-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  debugedit
@@ -73,6 +72,7 @@ Requires: bzip2-libs
 Requires: elfutils-libelf
 Requires: xz-libs
 Requires: zstd-libs
+Requires: openssl-libs
 Conflicts:  libsolv < 0.7.19
 
 %description  libs
@@ -305,6 +305,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-9
+- Require openssl-libs
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-8
 - Fix requires
 * Tue Jan 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-7

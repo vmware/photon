@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -17,6 +17,7 @@ Requires:       curl-libs
 Requires:       %{name}-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       zlib
+Requires:       openssl-libs
 
 BuildRequires:  curl-devel
 BuildRequires:  libsolv-devel
@@ -264,6 +265,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.0-2
+- Require openssl-libs
 * Thu Mar 09 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-1
 - update to 3.5.0
 * Tue Jan 31 2023 Oliver Kurth <okurth@vmware.com> 3.4.9-1
