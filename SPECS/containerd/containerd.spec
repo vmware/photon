@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -24,6 +24,8 @@ Source2: disable-%{name}-by-default.preset
 Patch0: %{name}-service.patch
 Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
 Patch2: CVE-2022-23471.patch
+Patch3: CVE-2023-25153.patch
+Patch4: CVE-2023-25173.patch
 
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
@@ -66,6 +68,8 @@ mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch0 -p1 -d %{name}-%{version}
 %patch1 -p1 -d %{name}-%{version}
 %patch2 -p1 -d %{name}-%{version}
+%patch3 -p1 -d %{name}-%{version}
+%patch4 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -136,6 +140,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Mon Mar 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.8-4
+- Fix CVE-2023-25153 & CVE-2023-25173
 * Tue Jan 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.8-3
 - Fix CVE-2022-23471
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.8-2
