@@ -3,8 +3,8 @@
 %define coreutils_selinux_present   %{_sharedstatedir}/rpm-state/coreutils-selinux
 
 Name:           toybox
-Version:        0.8.8
-Release:        3%{?dist}
+Version:        0.8.9
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha512  %{name}=3ffe4de6b17770ad9c43f98f2c69a110f94e5a85da909f8f770bbc9abaff42a524237b4ffaaa8b9800c8d31f0a8b6d3521f03bfdd0d1260fa421ef2525a34290
+%define sha512  %{name}=73a3ec2a0d69b1566e1663e94b2bc7764b9f93e53978725f036f066837ab2769033e8bf17d5550e565656781cacf27d93960dd611ffed5425fa006d1d3104351
 
 Patch0: %{name}-change-toys-path.patch
 
@@ -707,6 +707,9 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Mon Mar 06 2023 Harinadh D <hdommaraju@vmware.com> 0.8.9-1
+- version upgrade
+- fix copy_file_range() issue when copying to another filesystem
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.8-3
 - Add rules for mkpasswd
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.8-2
