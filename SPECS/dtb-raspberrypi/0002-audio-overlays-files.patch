@@ -21,9 +21,9 @@ index 52b81cc..0db9de5 100644
  	rpi-disable-spi0.dtbo \
 +	rpi-enable-audio.dtbo \
 +	rpi-disable-audio.dtbo \
- 	rpivid-v4l2.dtbo \
  	rra-digidac1-wm8741-audio.dtbo \
  	sainsmart18.dtbo \
+ 	sc16is750-i2c.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/rpi-disable-audio-overlay.dts b/arch/arm/boot/dts/overlays/rpi-disable-audio-overlay.dts
 new file mode 100644
 index 0000000..21bd4e3
