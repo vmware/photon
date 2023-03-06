@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.18.1
+Version:        16.19.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=f6f93bd9eb69a556880a72f49cf9209b8c23d1164bf6b35f5161f27a0750300b2d6758677b32ccfd1d3cb7d5f6f8368b97552099e419b39f08e72bdb8a2d037a
+%define         sha512 node=2c72b7980f38064e8589a95e5e8241872a12efcc4a0082a0f493170a2e7a69fdb646742434ccbb3bdc9c1d234ff40cddbee824f4b2f2e4499f52e2e74bdaf257
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -59,6 +59,7 @@ make cctest %{?_smp_mflags}
 %{_bindir}/*
 %{_libdir}/node_modules/*
 %{_mandir}/man*/*
+%{_datadir}/systemtap/tapset/node.stp
 %doc CHANGELOG.md LICENSE README.md
 
 %files devel
@@ -68,6 +69,8 @@ make cctest %{?_smp_mflags}
 %{_docdir}/node/gdbinit
 
 %changelog
+*   Mon Mar 06 2023 Shivani Agarwal <shivania2@vmware.com> 16.19.1-1
+-   Upgrade nodejs version to 16.19.1 for CVE-2023-23918, CVE-2023-23919 and CVE-2023-23920
 *   Tue Dec 13 2022 Shivani Agarwal <shivania2@vmware.com> 16.18.1-1
 -   Upgrade to 16.18.1 for CVE-2022-43548
 *   Mon Oct 10 2022 Shivani Agarwal <shivania2@vmware.com> 16.17.1-1
