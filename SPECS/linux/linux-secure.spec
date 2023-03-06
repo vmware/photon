@@ -40,6 +40,8 @@ Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
 %endif
 
+Source21:       spec_install_post.inc
+
 # common
 Patch0: net-Double-tcp_mem-limits.patch
 Patch1: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
@@ -331,23 +333,6 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" \
 %include %{SOURCE9}
 %endif
 
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-  xz $MODULE \
-done \
-%{nil}
-
-# __os_install_post strips signature from modules. We need to resign it again
-# and then compress. Extra step is added to the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
-
 %install
 install -vdm 755 %{buildroot}/%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -402,6 +387,7 @@ ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+%include %{SOURCE21}
 
 %post
 /sbin/depmod -a %{uname_r}
