@@ -99,6 +99,7 @@ create_container_img_archive()
   docker_build "${img_name}" "${docker_fn}" "${path}"
 
   docker save -o "${tar_name}" "${img_name}"
+  docker rmi -f "${img_name}"
 
   gzip -9 "${tar_name}"
   mv -f "${tar_name}.gz" "${dest_path}"
