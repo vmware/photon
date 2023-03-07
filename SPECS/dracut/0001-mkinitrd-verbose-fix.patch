@@ -414,7 +414,7 @@ index 0ef65bd..8732bb5 100755
 +
 +  # this check is for combination of newer and older kernels
 +  if [ -d "/lib/modules/${kernel}/dracut.conf.d" ]; then
-+    dracut_cmd+=" --confdir /lib/modules/${kernel}/dracut.conf.d"
++    dracut_cmd+=" --confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\""
 +  elif [ -d "/var/lib/initramfs/kernel" ]; then
 +    kernel_ver_dir="/var/lib/initramfs/kernel"
 +    if [ -s "$kernel_ver_dir/$kernel" ]; then

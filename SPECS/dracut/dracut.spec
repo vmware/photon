@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -22,7 +22,6 @@ Patch4: fix-hostonly.patch
 Patch5: 0001-mkinitrd-verbose-fix.patch
 Patch6: 0002-dracut.sh-validate-instmods-calls.patch
 Patch7: 0003-feat-dracut.sh-support-multiple-config-dirs.patch
-Patch8: 0004-feat-dracut.sh-support-mutliple-config-files.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -157,6 +156,9 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-4
+- Add /etc/dracut.conf.d to conf dirs list during initrd creation
+- Drop multiple conf file support
 * Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-3
 - Fix mkinitrd verbose & add a sanity check
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-2
