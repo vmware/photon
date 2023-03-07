@@ -43,7 +43,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         new_name.append(f"{img_path}/disk.raw")
     else:
         for img_num in range(len(raw_image_path)):
-            new_name.append(f"{img_path}/{image_name}" + str(img_num) + ".raw")
+            new_name.append(f"{img_path}/{image_name}.raw")
     for img_num, raw_img in enumerate(raw_image_path):
         shutil.move(raw_img, new_name[img_num])
     raw_image = new_name

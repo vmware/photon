@@ -1083,7 +1083,35 @@ class BuildImage:
             self.debug_iso_path = None
             self.src_iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.src.iso"
 
+    def img_present(self, img):
+        build_num = constants.buildNumber
+        release_ver = constants.releaseVersion
+        img_fn = f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-{build_num}"
+
+        if img in {"ova", "ova_uefi"}:
+            img_fn = f"{img_fn}.ova"
+        elif img in {"ami", "gce"}:
+            img_fn = f"{img_fn}.tar.gz"
+        elif img == "azure":
+            img_fn = f"{img_fn}.vhd.tar.gz"
+        elif img in {"iso", "minimal-iso", "rt-iso", "src-iso"}:
+            img = img.strip("-iso")
+            if img:
+                img = f"-{img}"
+            img_fn = f"{Build_Config.stagePath}/photon{img}-{release_ver}-{build_num}.iso"
+        else:
+            raise Exception(f"Invalid image format {img}")
+
+        retval = os.path.exists(img_fn)
+        if retval:
+            print(f"{img_fn} already exists ...")
+
+        return retval
+
     def build_iso(self):
+        if self.img_present(self.img_name):
+           return
+
         rpmBuildTarget = RpmBuildTarget()
         BuildEnvironmentSetup.photon_stage()
         if self.img_name == "iso":
@@ -1106,6 +1134,9 @@ class BuildImage:
         imagebuilder.createIso(self)
 
     def build_image(self):
+        if self.img_present(self.img_name):
+            return
+
         BuildEnvironmentSetup.photon_stage()
 
         local_build = not configdict["photon-build-param"]["start-scheduler-server"]
@@ -1114,6 +1145,7 @@ class BuildImage:
 
         if local_build:
             RpmBuildTarget.ostree_repo()
+
         print(f"Building {self.img_name} image")
         imagebuilder.createImage(self)
 
@@ -1149,12 +1181,16 @@ class BuildImage:
         check_prerequesite["photon-docker-image"] = True
 
     def k8s_docker_images(self):
+        if glob.glob(f"{Build_Config.stagePath}/docker_images/*.gz"):
+            print(f"k8s images are already present in {Build_Config.stagePath}/docker_images")
+            return
+
         BuildImage.photon_docker_image()
 
         if not os.path.isdir(os.path.join(Build_Config.stagePath, "docker_images")):
             os.mkdir(os.path.join(Build_Config.stagePath, "docker_images"))
 
-        os.chdir(os.path.join(photonDir, "support/dockerfiles/k8s-docker-images"))
+        os.chdir(f"{photonDir}/support/dockerfiles/k8s-docker-images")
 
         ph_dist_tag = configdict["photon-build-param"]["photon-dist-tag"]
         ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
@@ -1202,8 +1238,8 @@ class BuildImage:
         ]
         for img in images:
             self.img_name = img
-            self.set_Iso_Parameters(img)
-            if img in ["iso", "src-iso"]:
+            if img in ["iso", "src-iso", "minimal-iso"]:
+                self.set_Iso_Parameters(img)
                 self.build_iso()
             else:
                 configdict["targetName"] = img.replace("-", "_")
