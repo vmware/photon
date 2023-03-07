@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.14
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -70,7 +70,7 @@ Requires:       libseccomp
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
-Requires:       containerd
+Requires:       containerd-extras
 # 20.10 uses containerd v2 shim by default
 Requires:       /usr/bin/containerd-shim-runc-v2
 
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Mar 07 2023 Ankit Jain <ankitja@vmware.com> 20.10.14-6
+- Corrected Requires for contained-shim binary
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-5
 - Bump version as a part of containerd upgrade
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-4
