@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -331,11 +331,11 @@ manipulation of eBPF programs and maps.
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
-%ifarch x86_64
 # Using autosetup is not feasible
 %setup -q -T -D -b 3 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -q -T -D -b 4 -n linux-%{version}
+%ifarch x86_64
 # Using autosetup is not feasible
 %setup -q -T -D -b 10 -n linux-%{version}
 # Using autosetup is not feasible
@@ -376,12 +376,14 @@ manipulation of eBPF programs and maps.
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M609
+%endif
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
 %autopatch -p1 -m1400 -M1409
 popd
 
+%ifarch x86_64
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %autopatch -p1 -m1500 -M1509
@@ -438,6 +440,7 @@ make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 %ifarch x86_64
 #build turbostat and cpupower
 make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+%endif
 
 # build ENA module
 bldroot="${PWD}"
@@ -454,6 +457,7 @@ cd build
 %cmake_build
 popd
 
+%ifarch x86_64
 # build i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
@@ -482,7 +486,6 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
-%ifarch x86_64
 # install ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
@@ -495,6 +498,7 @@ pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
+%ifarch x86_64
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
@@ -693,6 +697,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Mar 07 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1.10-5
+- Add ENA and EFA drivers to ARM build
 * Tue Mar 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
 - Fix initrd driver list for aarch64
 * Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-3
