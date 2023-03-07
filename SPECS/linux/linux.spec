@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -73,7 +73,7 @@ Source17:       fips_canister-kallsyms
 %endif
 
 Source18:       spec_install_post.inc
-Source19:       %{name}-dracut.conf
+Source19:       %{name}-dracut-%{_arch}.conf
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -591,11 +591,6 @@ make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{bu
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
-%ifarch aarch64
-echo "add_drivers+=\" nvme nvme-core \"" >> \
-    %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
-%endif
-
 %include %{SOURCE2}
 %include %{SOURCE6}
 %include %{SOURCE18}
@@ -698,6 +693,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Mar 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
+- Fix initrd driver list for aarch64
 * Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-3
 - Fix initrd generation logic
 - Add dracut, initramfs to requires
