@@ -229,6 +229,7 @@ class constants(object):
         "zstd-libs",
         "zstd-devel",
         "lua",
+        "lua-libs",
         "lua-devel",
         "rpm",
         "rpm-build",

@@ -9,7 +9,7 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
@@ -36,6 +36,7 @@ Patch3: CVE-2022-33099.patch
 BuildRequires: readline-devel
 
 Requires: readline
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 Lua is a powerful light-weight programming language designed for
@@ -54,6 +55,13 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 This package contains development files for %{name}.
 
+%package libs
+Summary: Libraries for %{name}
+Conflicts: %{name} < 5.4.4-5
+
+%description libs
+This package contains the shared libraries for %{name}.
+
 %prep
 %if 0%{?bootstrap}
 # Using autosetup is not feasible
@@ -61,7 +69,7 @@ This package contains development files for %{name}.
 pushd %{name}-%{bootstrap_version}
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
-%patch1 -p1
+%{__patch} -p1 < %{PATCH1}
 popd
 %else
 # Using autosetup is not feasible
@@ -71,9 +79,9 @@ popd
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
 
-%patch0 -p1
-%patch2 -p1
-%patch3 -p1
+%{__patch} -p1 < %{PATCH0}
+%{__patch} -p1 < %{PATCH2}
+%{__patch} -p1 < %{PATCH3}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -90,11 +98,10 @@ lua_make_install() {
   local v1="$2"
   local v2="$3"
 
-  make %{?_smp_mflags} \
+  make install %{?_smp_mflags} \
       INSTALL_TOP=${loc} TO_LIB="liblua.so liblua.so.${v1} liblua.so.${v2}" \
       INSTALL_DATA="cp -d" \
-      INSTALL_MAN=${loc}/share/man/man1 \
-      install
+      INSTALL_MAN=${loc}/share/man/man1
 }
 
 lua_make_install %{buildroot}%{_prefix} %{major_version} %{version}
@@ -147,16 +154,21 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+
+%files libs
+%defattr(-,root,root)
 %{_libdir}/liblua.so.*
-%{_mandir}/*/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/liblua.so
+%{_mandir}/*
 
 %changelog
+* Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-5
+- Add lua-libs sub package
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-4
 - Bump version as a part of readline upgrade
 * Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-3

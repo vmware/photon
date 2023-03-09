@@ -45,7 +45,7 @@ actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
 expected_pkg_list=(
   bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc krb5
-  libcap libgcc libsolv libssh2 lua ncurses-libs nspr nss-libs
+  libcap libgcc libsolv libssh2 lua-libs ncurses-libs nspr nss-libs
   openssl-libs photon-release photon-repos popt readline rpm-libs
   sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
