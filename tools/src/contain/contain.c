@@ -34,7 +34,7 @@ GID and UID maps are specified as START:LOWER:COUNT[,START:LOWER:COUNT]...\n\
 int main(int argc, char **argv) {
   char *gidmap = NULL, *inside = NULL, *outside = NULL, *uidmap = NULL;
   char *bind = NULL;
-  int hostnet = 0, primary, option, stdio = 0;
+  int hostnet = 0, primary = 0, option, stdio = 0;
   pid_t child, parent;
 
   while ((option = getopt(argc, argv, "+:b:cg:i:no:u:")) > 0)

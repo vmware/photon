@@ -28,7 +28,7 @@ int getconsole(void) {
 }
 
 static void rawmode() {
-  struct termios termios;
+  struct termios termios = {};
 
   if (!isatty(STDIN_FILENO))
     return;
@@ -50,7 +50,7 @@ static void savemode() {
 
 void setconsole(char *name) {
   int console;
-  struct termios termios;
+  struct termios termios = {};
 
   setsid();
 
@@ -73,11 +73,11 @@ void setconsole(char *name) {
 }
 
 int supervise(pid_t child, int console) {
-  char buffer[PIPE_BUF];
-  int signals, status;
-  sigset_t mask;
-  ssize_t count, length, offset;
-  struct pollfd fds[3];
+  char buffer[PIPE_BUF] = {};
+  int signals = 0, status = 0;
+  sigset_t mask = {};
+  ssize_t count = 0, length = 0, offset = 0;
+  struct pollfd fds[3] = {};
 
   if (console < 0) {
     if (waitpid(child, &status, 0) < 0)
