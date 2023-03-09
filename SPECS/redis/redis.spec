@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    6.2.7
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -15,6 +15,8 @@ Patch0: %{name}-conf.patch
 Patch1: CVE-2022-3647.patch
 Patch2: CVE-2022-35977.patch
 Patch3: CVE-2023-22458.patch
+Patch4: CVE-2022-36021.patch
+Patch5: CVE-2023-25155.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -90,6 +92,8 @@ getent passwd %{name} &> /dev/null || \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-4
+- Fix CVE-2023-25155, CVE-2022-36021
 * Mon Feb 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-3
 - Fix CVE-2022-35977, CVE-2023-22458
 * Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-2
