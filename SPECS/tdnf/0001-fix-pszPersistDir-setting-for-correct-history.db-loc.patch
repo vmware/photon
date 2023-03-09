@@ -1,0 +1,25 @@
+From dea03fdd65db433ff380a79f4ae703e24be323c1 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 9 Mar 2023 20:40:17 -0800
+Subject: [PATCH] fix pszPersistDir setting for correct history.db location
+
+---
+ client/config.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/client/config.c b/client/config.c
+index 73e294a..8d0128a 100644
+--- a/client/config.c
++++ b/client/config.c
+@@ -238,6 +238,8 @@ TDNFReadConfig(
+         pConf->pszCacheDir = strdup(TDNF_DEFAULT_CACHE_LOCATION);
+     if (pConf->pszDistroVerPkg == NULL)
+         pConf->pszDistroVerPkg = strdup(TDNF_DEFAULT_DISTROVERPKG);
++    if (pConf->pszPersistDir == NULL)
++        pConf->pszPersistDir = strdup(TDNF_DEFAULT_DB_LOCATION);
+ 
+     /* We need a copy of pszConfFile because dirname() modifies its argument */
+     dwError = TDNFAllocateString(pszConfFile, &pszConfFileCopy);
+-- 
+2.25.1
+

@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.9
+Version:        3.5.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,9 +9,8 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=704d10292b585cbc481f7cee292b4f91768049ce4d0a889c25c3d7cefe488c6b17160fac4a25bbeea066fce133523f36e729b9ad99e53d1a49b289c1bff3c91a
-
-Patch0:         pool_flag_noinstalledobsoletes.patch
+%define sha512  %{name}=99b6c791e70c7a6610a3b83ae9ade8ed09f7a83e73af819902f54a934a579fecacf62e212cb9ddf8624b679561d57183ef0ad0c378b81220290a5d5534fd67bb
+Patch0:         0001-fix-pszPersistDir-setting-for-correct-history.db-loc.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -138,6 +137,9 @@ mkdir -p %{buildroot}%{_tdnf_history_db_dir}
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
+rm -f %{buildroot}%{_bindir}/jsondumptest
+# should move into its onw package:
+rm -rf %{buildroot}%{_datadir}/tdnf
 
 pushd %{__cmake_builddir}/python
 %py3_install
@@ -209,6 +211,7 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_bindir}/tyum
 %{_bindir}/yum
 %{_bindir}/tdnfj
+%{_bindir}/tdnf-config
 %{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
 %{_libdir}/tdnf/tdnf-history-util
@@ -261,6 +264,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Mar 09 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-1
+- update to 3.5.0
 * Tue Jan 31 2023 Oliver Kurth <okurth@vmware.com> 3.4.9-1
 - update to 3.4.9:
 - limit the number of open files for rpm transactions
