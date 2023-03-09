@@ -44,7 +44,7 @@ using std::vector;
 #define COMMAND_WRITEBENCH      (1 << 11)
 #define COMMAND_CHECKREPAIR     (1 << 12)
 #define COMMAND_MOUNTDISK       (1 << 13)
-#define COMMAND_CONVERT     (1 << 14)
+#define COMMAND_CONVERT         (1 << 14)
 
 #define VIXDISKLIB_VERSION_MAJOR 6
 #define VIXDISKLIB_VERSION_MINOR 0
@@ -123,11 +123,11 @@ static void DoCheckRepair(Bool repair);
 #define THROW_ERROR(vixError) \
    throw VixDiskLibErrWrapper((vixError), __FILE__, __LINE__)
 
-#define CHECK_AND_THROW(vixError)                                    \
-   do {                                                              \
-      if (VIX_FAILED((vixError))) {                                  \
+#define CHECK_AND_THROW(vixError) \
+   do { \
+      if (VIX_FAILED((vixError))) { \
          throw VixDiskLibErrWrapper((vixError), __FILE__, __LINE__); \
-      }                                                              \
+      } \
    } while (0)
 
 /*
@@ -148,10 +148,11 @@ static void DoCheckRepair(Bool repair);
 static void
 GenerateRandomFilename(const string& prefix, string& randomFilename)
 {
-    string retStr;
+    string retStr = "";
     int strLen = sizeof(randChars) - 1;
 
-    for (unsigned int i = 0; i < 8; i++)
+    unsigned int i;
+    for (i = 0; i < 8; i++)
     {
         retStr += randChars[rand() % strLen];
     }
@@ -390,7 +391,7 @@ main(int argc, char* argv[])
     int retval;
     bool bVixInit(false);
 
-    memset(&appGlobals, 0, sizeof appGlobals);
+    memset(&appGlobals, 0, sizeof(appGlobals));
     appGlobals.command = 0;
     appGlobals.adapterType = VIXDISKLIB_ADAPTER_SCSI_LSILOGIC;
     appGlobals.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
@@ -410,13 +411,13 @@ main(int argc, char* argv[])
     }
 
     // Initialize random generator
-    struct timeval time;
+    struct timeval time = {};
     gettimeofday(&time, NULL);
 
     srand((time.tv_sec * 1000) + (time.tv_usec/1000));
 
     VixDiskLibConnectParams cnxParams = {};
-    VixError vixError;
+    VixError vixError = {};
     try {
        if (appGlobals.isRemote) {
           cnxParams.vmxSpec = appGlobals.vmxSpec;
@@ -817,7 +818,7 @@ DoInfo(void)
 {
     VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
     VixDiskLibInfo *info = NULL;
-    VixError vixError;
+    VixError vixError = {};
 
     vixError = VixDiskLib_GetInfo(disk.Handle(), &info);
 
@@ -871,8 +872,8 @@ DoInfo(void)
 static void
 DoCreate(void)
 {
-   VixDiskLibCreateParams createParams;
-   VixError vixError;
+   VixDiskLibCreateParams createParams = {};
+   VixError vixError = {};
 
    createParams.adapterType = appGlobals.adapterType;
 
@@ -906,7 +907,7 @@ DoCreate(void)
 static void
 DoRedo(void)
 {
-   VixError vixError;
+   VixError vixError = {};
    VixDisk parentDisk(appGlobals.connection, appGlobals.parentPath, 0);
    vixError = VixDiskLib_CreateChild(parentDisk.Handle(),
                                      appGlobals.diskPath,
@@ -934,13 +935,13 @@ static void
 DoFill(void)
 {
     VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
-    uint8 buf[VIXDISKLIB_SECTOR_SIZE];
-    VixDiskLibSectorType startSector;
+    uint8 buf[VIXDISKLIB_SECTOR_SIZE] = {};
+    VixDiskLibSectorType startSector = {};
 
     memset(buf, appGlobals.filler, sizeof buf);
 
     for (startSector = 0; startSector < appGlobals.numSectors; ++startSector) {
-       VixError vixError;
+       VixError vixError = {};
        vixError = VixDiskLib_Write(disk.Handle(),
                                    appGlobals.startSector + startSector,
                                    1, buf);
@@ -966,7 +967,7 @@ DoFill(void)
 static void
 DoReadMetadata(void)
 {
-    size_t requiredLen;
+    size_t requiredLen = 0;
     VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
     VixError vixError = VixDiskLib_ReadMetadata(disk.Handle(),
                                                 appGlobals.metaKey,
@@ -1029,7 +1030,7 @@ DoDumpMetadata(void)
 {
     VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
     char *key;
-    size_t requiredLen;
+    size_t requiredLen = 0;
 
     VixError vixError = VixDiskLib_GetMetadataKeys(disk.Handle(),
                                                    NULL, 0, &requiredLen);
@@ -1075,7 +1076,7 @@ static void
 DoDump(void)
 {
     VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
-    uint8 buf[VIXDISKLIB_SECTOR_SIZE];
+    uint8 buf[VIXDISKLIB_SECTOR_SIZE] = {};
     VixDiskLibSectorType i;
 
     for (i = 0; i < appGlobals.numSectors; i++) {
@@ -1107,7 +1108,7 @@ BitCount(int number)    // IN
 {
     int bits = 0;
     while (number) {
-        number = number & (number - 1);
+        number &= number - 1;
         bits++;
     }
     return bits;
@@ -1221,10 +1222,11 @@ static void
 PrepareThreadData(VixDiskLibConnection &dstConnection,
                   ThreadData &td)
 {
-   VixError vixError;
-   VixDiskLibCreateParams createParams;
+   VixError vixError = {};
+   VixDiskLibCreateParams createParams = {};
    VixDiskLibInfo *info = NULL;
-   string prefixName,randomFilename;
+   string prefixName = "";
+   string randomFilename = "";
 
    prefixName = "/tmp/test";
    GenerateRandomFilename(prefixName, randomFilename);
@@ -1275,8 +1277,8 @@ static void
 DoTestMultiThread(void)
 {
    VixDiskLibConnectParams cnxParams = {};
-   VixDiskLibConnection dstConnection;
-   VixError vixError;
+   VixDiskLibConnection dstConnection = {};
+   VixError vixError = {};
    vector<ThreadData> threadData(appGlobals.numThreads);
    unsigned int i;
 
@@ -1346,7 +1348,7 @@ CloneProgressFunc(void * /*progressData*/,      // IN
 static void
 DoClone(void)
 {
-   VixDiskLibConnection srcConnection;
+   VixDiskLibConnection srcConnection = {};
    VixDiskLibConnectParams cnxParams = {};
    VixError vixError = VixDiskLib_Connect(&cnxParams, &srcConnection);
    CHECK_AND_THROW(vixError);
@@ -1355,7 +1357,7 @@ DoClone(void)
     *  Note : These createParams are ignored for remote case
     */
 
-   VixDiskLibCreateParams createParams;
+   VixDiskLibCreateParams createParams = {};
    createParams.adapterType = appGlobals.adapterType;
    createParams.capacity = appGlobals.mbSize * 2048;
    createParams.diskType = VIXDISKLIB_DISK_STREAM_OPTIMIZED;
@@ -1395,21 +1397,22 @@ DoConvert(void)
 
    appGlobals.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
    DoCreate();
-   VixError vixError;
+   VixError vixError = {};
    VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
 
    VixDiskLibInfo* info = 0;
    setbuf(stdout, (char *)NULL);
    vixError = VixDiskLib_GetInfo(disk.Handle(), &info);
    CHECK_AND_THROW(vixError);
-   unsigned char diskbuf[VIXDISKLIB_SECTOR_SIZE];
+   unsigned char diskbuf[VIXDISKLIB_SECTOR_SIZE] = {};
    FILE* fp = fopen(appGlobals.srcPath, "rb");
    if (fp == NULL) {
       printf("Problem reading input raw file");
       return;
    }
 
-   for(size_t i = 0; i < info->capacity; i += 1)
+   size_t i;
+   for (i = 0; i < info->capacity; i += 1)
    {
        size_t data = fread(diskbuf, VIXDISKLIB_SECTOR_SIZE, 1, fp);
        vixError = VixDiskLib_Write(disk.Handle(), i, data, diskbuf);
@@ -1506,13 +1509,13 @@ static void
 DoRWBench(bool read) // IN
 {
    VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
-   size_t bufSize;
-   uint8 *buf;
-   VixDiskLibInfo *info;
-   VixError err;
-   uint32 maxOps, i;
-   uint32 bufUpdate;
-   struct timeval start, end, total;
+   size_t bufSize = 0;
+   uint8 *buf = NULL;
+   VixDiskLibInfo *info = NULL;
+   VixError err = 0;
+   uint32 maxOps = 0, i = 0;
+   uint32 bufUpdate = 0;
+   struct timeval start = {}, end = {}, total = {};
 
    if (appGlobals.bufSize == 0) {
       appGlobals.bufSize = DEFAULT_BUFSIZE;
@@ -1587,7 +1590,7 @@ DoRWBench(bool read) // IN
 static void
 DoCheckRepair(Bool repair)
 {
-   VixError err;
+   VixError err = {};
 
    err = VixDiskLib_CheckRepair(appGlobals.connection, appGlobals.diskPath,
                                 repair);
@@ -1614,8 +1617,8 @@ DoCheckRepair(Bool repair)
 static void
 DoMountDisk()
 {
-   VixError err;
-   const char *diskNames[1];
+   VixError err = {};
+   const char *diskNames[1] = {};
    diskNames[0] = appGlobals.diskPath;
    VixDiskSetHandle diskSetHandle = NULL;
    VixVolumeHandle *volumeHandles = NULL;
