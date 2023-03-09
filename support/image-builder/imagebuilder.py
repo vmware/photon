@@ -16,7 +16,7 @@ def runInstaller(options, install_config, working_directory):
         raise ImportError("Module photon_installer not found!\nPlease use 'pip3 install git+https://github.com/vmware/photon-os-installer.git' before running")
 
     # Run the installer
-    installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
+    installer = Installer(working_directory=working_directory,
                           log_path=options.log_path, photon_release_version=options.photon_release_version)
     installer.configure(install_config)
     installer.execute()
@@ -234,6 +234,13 @@ def createImage(options):
     # commandline param 'PHOTON_DOCKER_IMAGE' and 'config.json' value
     if 'photon_docker_image' not in install_config:
         install_config['photon_docker_image'] = options.ph_docker_image
+
+    # Take default "repo" baseurl as options.rpm_path if not specified in config_<img>.json
+    if "repos" not in install_config:
+        install_config["repos"] = {"photon-local": { "name": "VMware Photon OS Installer",
+                                                     "baseurl": f"file://{os.path.abspath(options.rpm_path)}",
+                                                     "gpgcheck": 0,
+                                                     "enabled": 1 }}
 
     if 'size' in config and 'disks' in config:
         raise Exception("Both 'size' and 'disks' key should not be defined together.Please use 'disks' for defining multidisks only.")
