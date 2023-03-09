@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.14.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -33,6 +33,7 @@ Patch13:        0001-throttling-Always-null-terminate-sched_rt_runtime_us.patch
 Patch14:        0001-stalld-print-process-comm-and-cpu-when-boosting.patch
 Patch15:        0001-stalld-Fix-memory-leak-in-print_boosted_info.patch
 Patch16:        0001-stalld-Detect-runnable-dying-tasks.patch
+Patch17:        0001-stalld-utils-Fix-freeing-of-invalid-pointer.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -79,6 +80,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Mar 06 2023 Ankit Jain <ankitja@vmware.com> 1.14.1-6
+- Fix freeing of invalid pointer
 * Fri Feb 17 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.14.1-5
 - Detect and boost runnable dying tasks
 * Wed Nov 16 2022 Keerthana K <keerthanak@vmware.com> 1.14.1-4
