@@ -1,17 +1,20 @@
 Name:           kapacitor
 Version:        1.5.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=948d5a2a495ff05c10ca3a2a57dcdddba633579b096dc520e8575e0da46f0d5c0e6f961c9f97e6d1bce7dc695c178e4b9e04b201cec70db913943f601445bbcd
+Source1:        %{name}.sysusers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Monitoring
 BuildRequires:  go
 BuildRequires:  systemd
+BuildRequires:  systemd-devel
 Requires:       systemd
+Requires:       systemd-rpm-macros
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
@@ -47,6 +50,7 @@ cp -r usr/share/bash-completion/completions/kapacitor %{buildroot}%{_datadir}/ba
 cp -r scripts/kapacitor.service %{buildroot}%{_libdir}/systemd/system/
 cp -r etc/logrotate.d/kapacitor %{buildroot}%{_sysconfdir}/logrotate.d/
 cp -r etc/kapacitor/kapacitor.conf %{buildroot}%{_sysconfdir}/kapacitor
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}/*
@@ -54,9 +58,7 @@ rm -rf %{buildroot}/*
 %pre
 if [ $1 -eq 1 ]; then
     # Initial installation.
-    getent group %{name} >/dev/null || groupadd -r %{name}
-    getent passwd %{name} >/dev/null || useradd -r -g %{name} -d /var/lib/%{name} -s /sbin/nologin \
-            -c "Kapacitor" %{name}
+    %sysusers_create_compat %{SOURCE1}
 fi
 
 %post
@@ -87,8 +89,11 @@ fi
 %{_libdir}/systemd/system/kapacitor.service
 %config(noreplace) %{_sysconfdir}/logrotate.d/kapacitor
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.5.9-6
+- Use systemd-rpm-macros for user creation
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-5
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-4

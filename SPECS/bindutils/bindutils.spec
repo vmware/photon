@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -11,18 +11,20 @@ Distribution:   Photon
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha512    bind=c4872daf71f4c0c108a2f0a68bf0b7ee12b6490d1ae7955419847c255bc5fcd092f935fa6ea68ae53db0510e7e9af13b6ab05cb0ca0058cb13339ccbda4ede43
 
+Source1:        %{name}.sysusers
+
 Requires:       krb5
 Requires:       e2fsprogs-libs
 Requires:       openssl
 Requires:       %{name}-libs = %{version}-%{release}
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):  systemd-rpm-macros
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
 BuildRequires:  nghttp2-devel
 BuildRequires:  libcap-devel
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  systemd-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 
@@ -71,15 +73,11 @@ zone "." in {
 };
 EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %posttrans
 if [ $1 -eq 1 ]; then
-  if ! getent group named >/dev/null; then
-   groupadd -r named
-  fi
-  if ! getent passwd named >/dev/null; then
-    useradd -g named -d /var/lib/bind -s /bin/false -M -r named
-  fi
+  %{_sysusersdir}/%{name}.sysusers
 fi
 
 %post
@@ -103,6 +101,7 @@ fi
 %{_sysconfdir}/*
 %{_tmpfilesdir}/named.conf
 %{_mandir}/man1/*
+%{_sysusersdir}/%{name}.sysusers
 
 %files libs
 %defattr(-,root,root)
@@ -136,6 +135,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-3
+- Use systemd-rpm-macros for user creation
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.19.7-2
 - Add dependencies for realm support in nsupdate for SSSD.
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 9.19.7-1

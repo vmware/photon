@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.55
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=94982f7a1fedac8961fc17b5a22cf763ac28cb27ee6facab2e6a15b249b927773667493fd3f7354fb13fcb34a6f1afc1bdd5cf4b7be030cba1dfb523e40d43fb
-
+Source1:        %{name}.sysusers
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
 Patch0: %{name}-%{version}-blfs_layout-1.patch
@@ -32,7 +32,7 @@ Requires:       apr-util
 Requires:       openssl
 Requires:       openldap
 Requires:       lua
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):  systemd-rpm-macros
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides:       apache2
@@ -102,6 +102,7 @@ $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_sysconfdir}/%{name}/logs
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
@@ -134,14 +135,7 @@ EOF
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
   # this is initial installation
-  if ! getent group apache >/dev/null; then
-    groupadd -g 25 apache
-  fi
-
-  if ! getent passwd apache >/dev/null; then
-    useradd -c "Apache Server" -d /srv/www -g apache \
-        -s /bin/false -u 25 apache
-  fi
+  %sysusers_create_compat %{SOURCE1}
 
   if [ -h %{_sysconfdir}/mime.types ]; then
     mv %{_sysconfdir}/mime.types %{_sysconfdir}/mime.types.orig
@@ -195,6 +189,7 @@ fi
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
 %{_localstatedir}/log/%{name}
+%{_sysusersdir}/%{name}.sysusers
 
 %files tools
 %defattr(-,root,root)
@@ -202,6 +197,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.4.55-3
+- Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.55-2
 - Bump version as a part of openldap upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.55-1
