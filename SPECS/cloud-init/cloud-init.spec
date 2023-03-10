@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        22.4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -68,6 +68,7 @@ Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
+Requires: btrfs-progs
 
 BuildArch: noarch
 
@@ -154,6 +155,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 22.4.2-4
+- Add btrfs-progs to requires
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-3
 - Add mount_default_fields in cloud.cfg
 * Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-2
