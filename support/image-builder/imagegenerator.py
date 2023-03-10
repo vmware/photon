@@ -129,7 +129,7 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
             in_file = open(inputfile, "rb")
             in_data = in_file.read()
 
-            out_file = open(f"{inputfile}.xz", "wb")
+            out_file = open(outputfile, "wb")
             out_file.write(xz.compress(in_data))
             in_file.close()
             out_file.close()

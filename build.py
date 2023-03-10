@@ -1099,6 +1099,8 @@ class BuildImage:
             if img:
                 img = f"-{img}"
             img_fn = f"{Build_Config.stagePath}/photon{img}-{release_ver}-{build_num}.iso"
+        elif img in {"rpi", "ls1012afrwy"}:
+            img_fn = f"{img_fn}.xz"
         else:
             raise Exception(f"Invalid image format {img}")
 
