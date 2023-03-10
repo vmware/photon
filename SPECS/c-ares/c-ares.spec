@@ -1,6 +1,6 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.17.1
+Version:        1.19.0
 Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
@@ -8,8 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    c-ares=431d5ff705db752f5d25e610827b7cb3653fc7ff
-Patch1:         CVE-2021-3672.patch
+%define sha512  c-ares=a7f5988bef393afec08a225be92f6eee54a3e67170fb26cbe00dcc5c5a457b27037bbcfeccc39fb855ed72f100196958d6cbbe251bf1ccfbdd353be18f098359
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -42,9 +41,7 @@ autoreconf -if
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
-rm -f %{buildroot}/%{_libdir}/libcares.la
+%make_install %{?_smp_mflags}
 
 %check
 pushd test
@@ -70,11 +67,15 @@ rm -rf %{buildroot}
 %{_includedir}/ares_dns.h
 %{_includedir}/ares_rules.h
 %{_includedir}/ares_version.h
+%{_includedir}/ares_nameser.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libcares.pc
 %{_mandir}/man3/ares_*
+%doc README.md README.msvc README.cares CHANGES NEWS
 
 %changelog
+* Sat Mar 11 2023 Anmol Jain <anmolja@vmware.com> 1.19.0-1
+- Fix for CVE-2022-4904
 * Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.1-1
 - Fix CVE-2021-3672
 * Sun Mar 14 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2

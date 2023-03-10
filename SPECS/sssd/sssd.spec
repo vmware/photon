@@ -25,7 +25,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -1076,6 +1076,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 2.8.2-2
+- Version bump up to use c-ares
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-1
 - Initial addition to Photon. Reorganized, edited and updated
 - for Photon OS from provided spec file in the sssd github repo.
