@@ -1,7 +1,7 @@
 From e4e1247d30439a591bc9fb61f810f27ae039ee50 Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <okurth@gmail.com>
 Date: Mon, 27 Feb 2023 11:28:07 -0800
-Subject: [PATCH 7/7] fix a few network issues
+Subject: [PATCH 06/13] fix a few network issues
 
 Change-Id: Ia63fd488d18760321bbbb75b95fb758047e0126e
 ---
@@ -245,5 +245,5 @@ index d417c10..089ffe7 100644
  		"destination": "/etc/config/config.file"
  	}
 -- 
-2.25.1
+2.23.1
 
