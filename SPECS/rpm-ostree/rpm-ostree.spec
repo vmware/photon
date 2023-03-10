@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -163,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2022.19-4
+- Fix /tmp symlink issue after systemd-v253 upgrade
 * Mon Feb 20 2023 Ankit Jain <ankitja@vmware.com> 2022.19-3
 - Fix dbus socket leak under /tmp
 * Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 2022.19-2

@@ -37,6 +37,8 @@ cat > ${SCRIPT_PATH}/photon-base.json << EOF
 
     "documentation": false,
 
+    "tmp-is-dir": true,
+
     "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
                  "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",
                  "file", "findutils", "gdbm", "grep", "gzip", "iana-etc",
