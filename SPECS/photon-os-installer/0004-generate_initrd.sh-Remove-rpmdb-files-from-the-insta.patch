@@ -1,8 +1,8 @@
 From 0e8f8e0e3ddeb3392f1eb20278b6bccd607d2c42 Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Fri, 17 Feb 2023 09:02:19 +0000
-Subject: [PATCH 5/7] generate_initrd.sh: Remove rpmdb files from the installer
- image, not needed in installer.
+Subject: [PATCH 04/13] generate_initrd.sh: Remove rpmdb files from the
+ installer image, not needed in installer.
 
 Change-Id: Idefbe30cda8372ec78f38842dce17a47ffc02b01
 ---
@@ -79,5 +79,5 @@ index de8d981..cdf2eda 100755
  # Set password max days to 99999 (disable aging)
  chroot ${INITRD} /bin/bash -c "chage -M 99999 root"
 -- 
-2.25.1
+2.23.1
 
