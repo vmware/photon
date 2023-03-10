@@ -5,7 +5,7 @@
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.8.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -29,12 +29,15 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 
 %install
 NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%{_fixperms} %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 1.8.4-4
+-   Fix file and directory permission
 *   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.4-3
 -   Bump version as a part of libxslt upgrade
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.8.4-2
