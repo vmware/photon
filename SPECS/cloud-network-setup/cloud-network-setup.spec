@@ -7,7 +7,7 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.1-6
+- Bump up version to compile with new go
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.2.1-5
 - Use systemd-rpm-macros for user creation
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4

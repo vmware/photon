@@ -1,6 +1,6 @@
 Name:           kapacitor
 Version:        1.5.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -92,23 +92,25 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-7
+- Bump up version to compile with new go
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.5.9-6
 - Use systemd-rpm-macros for user creation
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-5
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-4
 - Bump up version to compile with new go
-*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-3
--   Bump up version to compile with new go
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.9-2
--   Bump up version to compile with new go
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.9-1
--   Automatic Version Bump
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.5.6-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.5.6-2
--   Bump up version to compile with new go
-*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.6-1
--   Automatic Version Bump
-*   Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
--   Initial kapacitor package for Photon.
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-3
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.9-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.9-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.5.6-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.5.6-2
+- Bump up version to compile with new go
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.6-1
+- Automatic Version Bump
+* Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
+- Initial kapacitor package for Photon.

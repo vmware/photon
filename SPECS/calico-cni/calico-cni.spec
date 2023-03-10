@@ -1,7 +1,7 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
 Version:        3.15.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -22,8 +22,8 @@ Project Calico network plugin for CNI. This allows kubernetes to use Calico netw
 
 %build
 mkdir -p dist
-go build -v -i -o dist/calico -ldflags "-X main.VERSION= -s -w" ./cmd/calico
-go build -v -i -o dist/calico-ipam -ldflags "-X main.VERSION= -s -w" ./cmd/calico-ipam
+go build -v -o dist/calico -ldflags "-X main.VERSION= -s -w" ./cmd/calico
+go build -v -o dist/calico-ipam -ldflags "-X main.VERSION= -s -w" ./cmd/calico-ipam
 
 %install
 install -vdm 755 %{buildroot}/opt/cni/bin
@@ -41,6 +41,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 %{_datadir}/calico-cni/k8s/calico.conf.default
 
 %changelog
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.15.2-8
+- Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-7
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-6

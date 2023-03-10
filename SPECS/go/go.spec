@@ -13,8 +13,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.19.3
-Release:        2%{?dist}
+Version:        1.20.2
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=9aa8548597d52455afad8bf3b882eeeb9992814721ff2b9d8ed1f0e1ee0fec74aecd9d4e8c9c00eafbfe690bcdc50f3ad0b00bc4818b87e9d584cce7df97ee76
+%define sha512  go=ba8f894b1baa6b3c1bdaafa113feff8d16c25d91f8e44bd4e7ffb46d7b329309290f27385804399baa9834691290a209fc7a193b24fd197ea11a16ce4a1b9d39
 Requires:       glibc
 Requires:       gcc
 
@@ -116,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.2-1
+- Upgrade to 1.20.2
 * Fri Jan 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.19.3-2
 - Remove requires on libc.so.6
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.3-1

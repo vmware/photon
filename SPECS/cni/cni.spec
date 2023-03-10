@@ -1,7 +1,7 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containernetworking/plugins
 Group:          Development/Tools
@@ -40,6 +40,8 @@ make -k check %{?_smp_mflags}
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-2
+- Bump up version to compile with new go
 * Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.1-1
 - Upgrade v1.1.1
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.9.1-5

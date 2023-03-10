@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -19,7 +19,6 @@ Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # https://listman.redhat.com/archives/linux-audit/2022-February/msg00085.html
 # patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-flex-array-workaround.patch
 Patch0: audit-3.0.8-flex-array-workaround.patch
-# patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-undo-flex-array.patch
 Patch1: audit-3.0.8-undo-flex-array.patch
 
 BuildRequires:  krb5-devel
@@ -69,7 +68,7 @@ and libauparse.
 # Using autosetup is not feasible
 %setup -q
 cp %{_includedir}/linux/%{name}.h lib/
-%patch0 -p1
+%autopatch -p1 -M0
 
 %build
 %configure \
@@ -169,6 +168,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-7
+- Bump up version to compile with new go
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-6
 - Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.0.9-5
