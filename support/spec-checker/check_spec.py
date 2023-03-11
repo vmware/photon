@@ -525,6 +525,12 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
 
     mentioned_but_unused = check_mentioned_but_unused_files(spec_fn, dirname)
+    if mentioned_but_unused:
+        msg = ("\nSome mentioned but unused files found in the spec.\n"
+                "If you think it's a false positive, try the following methods:\n"
+                "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
+                "- If you are using any other distro, contact - 'sshedi@vmware.com'\n")
+        print(msg)
 
     fns = set(other_files) - set(source_patch_list)
     if not fns and not mentioned_but_unused:
