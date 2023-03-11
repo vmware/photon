@@ -1,7 +1,7 @@
 Summary:         Programs for finding and viewing man pages
 Name:            man-db
 Version:         2.11.1
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         GPLv2+
 URL:             http://www.nongnu.org/man-db
 Group:           Applications/System
@@ -9,13 +9,16 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
 %define sha512   man-db=249d65d01d83feac2503bfc1fba6d018ea0f7485c1112f1bfb4849ef7fbc3c1a50b97ab0844a7792d83bb1084a89abb4fa309ce1bc2bdf1183fe35b9e4f06263
+Source1:         %{name}.sysusers
+
 Requires:        libpipeline
 Requires:        gdbm
 Requires:        xz
 Requires:        groff
+Requires(pre):   systemd-rpm-macros
 Requires(pre):   /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:   shadow
 %endif
 BuildRequires:   libpipeline-devel
@@ -23,6 +26,7 @@ BuildRequires:   gdbm-devel
 BuildRequires:   xz
 BuildRequires:   groff
 BuildRequires:   systemd
+BuildRequires:   systemd-devel
 Requires:        systemd
 
 %description
@@ -45,26 +49,20 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
+%if 0%{?with_check}
 %check
-getent group man >/dev/null || groupadd -r man
-getent passwd man >/dev/null || useradd -c "man" -d /var/cache/man -g man \
-        -s /bin/false -M -r man
+%sysusers_create_compat %{SOURCE1}
 make %{?_smp_mflags} check
+%endif
 
 %pre
-getent group man >/dev/null || groupadd -r man
-getent passwd man >/dev/null || useradd -c "man" -d /var/cache/man -g man \
-        -s /bin/false -M -r man
+%sysusers_create_compat %{SOURCE1}
 
 %post -p /sbin/ldconfig
 
-%postun
-if [ $1 -eq 0 ] ; then
-    getent passwd man >/dev/null && userdel man
-    getent group man >/dev/null && groupdel man
-fi
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -78,8 +76,11 @@ fi
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+*   Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.11.1-2
+-   Use systemd-rpm-macros for user creation
 *   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.1-1
 -   Automatic Version Bump
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.0-1

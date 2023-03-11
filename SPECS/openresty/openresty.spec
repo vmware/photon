@@ -10,7 +10,7 @@
 Summary:    A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:       openresty
 Version:    1.21.4.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD
 URL:        https://openresty.org/en
 Group:      Applications/System
@@ -22,7 +22,7 @@ Source0: https://openresty.org/download/%{name}-%{version}.tar.gz
 
 Source1: %{name}.service
 Source2: %{name}.sh
-
+Source3: %{name}.sysusers
 AutoReqProv:        no
 
 BuildRequires: gcc
@@ -41,6 +41,7 @@ Requires: systemd
 Requires: perl
 Requires: lua
 
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -159,13 +160,10 @@ sed -i -e "s|@@ORPREFIX@@|%{orprefix}|" %{buildroot}%{_unitdir}/%{name}.service
 
 install -Dm755 %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 sed -i -e "s|@@ORPREFIX@@|%{orprefix}|" %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-getent group %{nginx_user} > /dev/null || groupadd -r %{nginx_user}
-
-getent passwd %{nginx_user} > /dev/null || \
-  useradd -r -d %{_sharedstatedir}/nginx -g %{nginx_user} \
-    -s /sbin/nologin -c "Nginx web server" %{nginx_user}
+%sysusers_create_compat %{SOURCE3}
 
 %preun
 %systemd_preun %{name}.service
@@ -184,6 +182,7 @@ rm -rf %{buildroot}
 %{orprefix}/COPYRIGHT
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_unitdir}/%{name}.service
+%{_sysusersdir}/%{name}.sysusers
 %exclude %{orprefix}/bin/resty*
 %exclude %{orprefix}/bin/opm
 %exclude %{orprefix}/bin/md2pod.pl
@@ -221,6 +220,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.21.4.1-4
+- Use systemd-rpm-macros for user creation
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.21.4.1-3
 - Bump release as a part of readline upgrade
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.21.4.1-2

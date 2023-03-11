@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.23.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -18,6 +18,7 @@ Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.t
 %define sha512 %{name}-njs=3fd9e9b84e416e95dbdffced78eabd76a519cccec7c386d8acaccd0d891dea5ceeb702408d4450107c7e3909586753e4eeb5e38c06657cd8f273180beb8fae74
 
 Source2: %{name}.service
+Source3: %{name}.sysusers
 
 Patch0: WebCrypto-fixed-dangling-pointer-warning-by-gcc-12.patch
 
@@ -30,6 +31,7 @@ Requires: openssl
 Requires: pcre
 Requires: systemd
 
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -40,7 +42,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 %setup -q -a0 -a1
 
 pushd njs-%{njs_ver}
-%patch0 -p1
+%{__patch} -p1 < %{PATCH0}
 popd
 
 %build
@@ -74,16 +76,13 @@ install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
 ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}
 
 %pre
-getent group %{nginx_user} > /dev/null || groupadd -r %{nginx_user}
-
-getent passwd %{nginx_user} > /dev/null || \
-  useradd -r -d %{_sharedstatedir}/nginx -g %{nginx_user} \
-    -s /sbin/nologin -c "Nginx web server" %{nginx_user}
+%sysusers_create_compat %{SOURCE3}
 
 %post
 %systemd_post %{name}.service
@@ -112,12 +111,15 @@ getent passwd %{nginx_user} > /dev/null || \
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
+%{_sysusersdir}/%{name}.sysusers
 %{_sbindir}/*
 %{_unitdir}/%{name}.service
 %dir %{_var}/opt/%{name}/log
 %{_var}/log/%{name}
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-4
+- Use systemd-rpm-macros for user creation
 * Mon Feb 20 2023 Harinadh D <hdommaraju@vmware.com> 1.23.1-3
 - enable http_realip_module
 - Author: Brian Munro <bmunro-peralex>

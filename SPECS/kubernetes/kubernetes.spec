@@ -12,7 +12,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.8
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -27,10 +27,11 @@ Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.g
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
-
+Source4:        %{name}.sysusers
 BuildRequires:  go >= 1.16.2
 BuildRequires:  rsync
 BuildRequires:  which
+BuildRequires:  systemd-devel
 
 Requires:       cni
 Requires:       ebtables
@@ -38,8 +39,8 @@ Requires:       etcd >= 3.5.0
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
+Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
 Requires:       util-linux
 Requires:       cri-tools
@@ -123,6 +124,8 @@ install -m 0644 -t %{buildroot}%{_unitdir} contrib-%{contrib_ver}/init/systemd/*
 install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
 install -dm755 %{buildroot}%{_var}/run/%{name}
 
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
 d %{_var}/run/%{name} 0755 kube kube -
@@ -139,9 +142,7 @@ rm -rf %{buildroot}/*
 %pre
 if [ $1 -eq 1 ]; then
     # Initial installation.
-    getent group kube >/dev/null || groupadd -r kube
-    getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
-            -c "Kubernetes user" kube
+    %sysusers_create_compat %{SOURCE4}
 fi
 
 %post
@@ -162,8 +163,6 @@ fi
 %postun
 if [ $1 -eq 0 ]; then
     # Package deletion
-    userdel kube
-    groupdel kube
     systemctl daemon-reload
 fi
 
@@ -197,6 +196,7 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/kubeconfig
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
+%{_sysusersdir}/%{name}.sysusers
 
 %files kubeadm
 %defattr(-,root,root)
@@ -209,6 +209,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.8-8
+- Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.8-7
 - Bump up version to compile with new go
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-6
