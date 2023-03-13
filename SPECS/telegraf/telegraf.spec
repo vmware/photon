@@ -1,7 +1,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.18.2
-Release:          6%{?dist}
+Release:          7%{?dist}
 License:          MIT
 URL:              https://github.com/influxdata/telegraf
 Source0:          https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:          https://github.com/influxdata/telegraf/archive/%{name}-%{versi
 Source1:          https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512    telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:          https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
+Source3:          %{name}.sysusers
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -18,8 +19,8 @@ BuildRequires:    systemd-devel
 BuildRequires:    unzip
 Requires:         systemd
 Requires:         logrotate
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics.
@@ -59,14 +60,13 @@ install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} %{buildroo
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}/*
 
 %pre
-getent group telegraf >/dev/null || groupadd -r telegraf
-getent passwd telegraf >/dev/null || useradd -c "Telegraf" -d %{_localstatedir}/lib/%{name} -g %{name} \
-        -s /sbin/nologin -M -r %{name}
+%sysusers_create_compat %{SOURCE3}
 
 %post
 chown -R telegraf:telegraf /etc/telegraf
@@ -77,10 +77,6 @@ systemctl daemon-reload
 %systemd_preun %{name}.service
 
 %postun
-if [ $1 -eq 0 ] ; then
-    getent passwd telegraf >/dev/null && userdel telegraf
-    getent group telegraf >/dev/null && groupdel telegraf
-fi
 %systemd_postun_with_restart %{name}.service
 
 %files
@@ -88,9 +84,12 @@ fi
 %{_bindir}/telegraf
 %{_unitdir}/telegraf.service
 %{_sysconfdir}/logrotate.d/%{name}
+%{_sysusersdir}/%{name}.sysusers
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.18.2-7
+- Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.18.2-6
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.2-5
