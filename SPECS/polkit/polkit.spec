@@ -1,7 +1,7 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           2%{?dist}
+Release:           3%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 License:           LGPLv2+
@@ -10,6 +10,7 @@ Distribution:      Photon
 
 Source0: https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
+Source1:           %{name}.sysusers
 
 BuildRequires:     autoconf
 BuildRequires:     meson
@@ -26,8 +27,8 @@ Requires:          expat
 Requires:          glib
 Requires:          Linux-PAM
 Requires:          systemd
+Requires(pre):     systemd-rpm-macros
 Requires(pre):     /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):  /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 polkit provides an authorization API intended to be used by privileged programs
@@ -48,12 +49,12 @@ header files and libraries for polkit
 %build
 %meson \
     -D js_engine=duktape \
-	-D os_type=redhat \
-	-D authfw=pam \
-	-D examples=false \
-	-D introspection=true \
-	-D session_tracking=libsystemd-login \
-	-D tests=false
+  -D os_type=redhat \
+  -D authfw=pam \
+  -D examples=false \
+  -D introspection=true \
+  -D session_tracking=libsystemd-login \
+  -D tests=false
 
 %meson_build
 
@@ -71,12 +72,10 @@ session  include        system-session
 
 # End /etc/pam.d/polkit-1
 EOF
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-getent group polkitd > /dev/null || groupadd -fg 59027 polkitd &&
-getent passwd polkitd > /dev/null || \
-    useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 59027 \
-        -g polkitd -s /bin/false polkitd
+%sysusers_create_compat %{SOURCE1}
 
 %post
 /sbin/ldconfig
@@ -108,6 +107,7 @@ getent passwd polkitd > /dev/null || \
 %{_datadir}/gettext/its
 %{_libdir}/girepository-1.0/*.typelib
 %{_datadir}/polkit-1/policyconfig-1.dtd
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root)
@@ -117,6 +117,8 @@ getent passwd polkitd > /dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 121-3
+- Use systemd-rpm-macros for user creation
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 121-2
 - Set polkit uid to 1027 since it's not in range UID_MIN(1000) to UID_MAX(60000).
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 121-1

@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.1p1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -21,7 +21,7 @@ Source1: sshd.socket
 Source2: sshd.service
 Source3: sshd-keygen.service
 Source4: sshdat.service
-
+Source5: %{name}.sysusers
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
@@ -36,6 +36,7 @@ Requires:       %{name}-clients = %{version}-%{release}
 Requires:       %{name}-server = %{version}-%{release}
 Requires:       systemd
 Requires:       openssl
+Requires(pre):  systemd-rpm-macros
 
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
@@ -107,6 +108,7 @@ install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m644 %{SOURCE4} %{buildroot}%{_unitdir}/sshd@.service
 install -m755 contrib/ssh-copy-id %{buildroot}%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}%{_mandir}/man1/
+install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %{_fixperms} %{buildroot}/*
 
@@ -126,9 +128,7 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
 %endif
 
 %pre server
-getent group sshd >/dev/null || groupadd -g 50 sshd
-getent passwd sshd >/dev/null || \
-    useradd -c 'sshd PrivSep' -d %{privsep_path} -g sshd -s /bin/false -u 1050 sshd
+%sysusers_create_compat %{SOURCE5}
 
 %preun server
 %systemd_preun %{sshd_services}
@@ -164,6 +164,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/sshd.8.gz
 %{_mandir}/man5/moduli.5.gz
 %{_mandir}/man8/sftp-server.8.gz
+%{_sysusersdir}/%{name}.sysusers
 
 %files clients
 %defattr(-,root,root)
@@ -195,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.1p1-7
+- Use systemd-rpm-macros for user creation
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-6
 - Add systemd to Requires of server
 - Remove blfs tarball dependency

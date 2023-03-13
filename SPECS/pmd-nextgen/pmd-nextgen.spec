@@ -7,11 +7,12 @@
 Summary:        pmd-nextgen is an open source, super light weight remote management API Gateway
 Name:           pmd-nextgen
 Version:        1.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        pmd-nextgen-%{version}.tar.gz
 %define sha512  %{name}=daa7cf9f708355274d34705f31910d2ca463b94815b7a7c3d4d47e13afb0694eb816e20e7005199862b690021a76a21370bc649f824681777d27796c5d26f908
+Source1:        %{name}.sysusers
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,11 +20,11 @@ Distribution:   Photon
 BuildRequires:  glibc
 BuildRequires:  git
 BuildRequires:  go
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  systemd-devel
 
 Requires:  systemd
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 Requires:  glibc
 Obsoletes: pmd
 %global debug_package %{nil}
@@ -50,7 +51,7 @@ install -m 755 -d %{buildroot}%{_unitdir}
 install bin/photon-mgmtd %{buildroot}%{_bindir}
 install bin/pmctl %{buildroot}%{_bindir}
 install -m 755 distribution/photon-mgmt.toml %{buildroot}%{_sysconfdir}/photon-mgmt
-
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 install -m 0644 units/photon-mgmtd.service %{buildroot}%{_unitdir}
 
 %clean
@@ -63,15 +64,10 @@ rm -rf %{buildroot}/*
 
 %{_sysconfdir}/photon-mgmt/photon-mgmt.toml
 %{_unitdir}/photon-mgmtd.service
+%{_sysusersdir}/%{name}.sysusers
 
 %pre
-if ! getent group photon-mgmt >/dev/null; then
-    /sbin/groupadd -r photon-mgmt
-fi
-
-if ! getent passwd photon-mgmt >/dev/null; then
-    /sbin/useradd -g photon-mgmt photon-mgmt -s /sbin/nologin
-fi
+%sysusers_create_compat %{SOURCE1}
 
 %post
 %systemd_post photon-mgmtd.service
@@ -82,16 +78,9 @@ fi
 %postun
 %systemd_postun_with_restart photon-mgmtd.service
 
-if [ $1 -eq 0 ] ; then
-    if getent passwd photon-mgmt >/dev/null; then
-        /sbin/userdel photon-mgmt
-    fi
-    if getent group photon-mgmt >/dev/null; then
-        /sbin/groupdel photon-mgmt
-    fi
-fi
-
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.0.1-5
+- Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.1-4
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.1-3

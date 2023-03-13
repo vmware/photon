@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       7%{?dist}
+Release:       8%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -18,7 +18,8 @@ License:       GPLv2+
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
-
+Source1: systemtap-runtime.sysusers
+Source2: systemtap-server.sysusers
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
 BuildRequires: elfutils-libelf-devel
@@ -35,7 +36,7 @@ BuildRequires: nss
 BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-devel
-
+BuildRequires: systemd-devel
 %if 0%{?with_boost}
 BuildRequires: boost-devel
 %endif
@@ -58,8 +59,8 @@ Requires:   linux-devel
 Requires:   make
 Requires:   elfutils
 Requires:   %{name}-runtime = %{version}-%{release}
+Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 SystemTap is an instrumentation system for systems running Linux.
@@ -199,7 +200,8 @@ ln -sfv %{_localstatedir}/opt/stap-server/log %{buildroot}%{_localstatedir}/log/
 touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
-
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.sysusers
 rm -rf %{buildroot}%{_mandir}/cs/
 
 %find_lang %{name}
@@ -216,16 +218,10 @@ rm -rf %{buildroot}
 getent group stap-server >/dev/null || groupadd -g 155 -r stap-server || groupadd -r stap-server
 
 %pre runtime
-getent group stapdev >/dev/null || groupadd -r stapdev
-getent group stapusr >/dev/null || groupadd -r stapusr
-exit 0
+%sysusers_create_compat %{SOURCE1}
 
 %pre server
-getent passwd stap-server >/dev/null || \
-/usr/sbin/useradd -c "Systemtap Compile Server" -u 155 -g stap-server -d %{_localstatedir}/lib/stap-server -m -r -s /sbin/nologin stap-server || \
-/usr/sbin/useradd -c "Systemtap Compile Server" -g stap-server -d %{_localstatedir}/lib/stap-server -m -r -s /sbin/nologin stap-server
-test -e ~stap-server && chmod 755 ~stap-server
-exit 0
+%sysusers_create_compat %{SOURCE2}
 
 %post server
 if [ $1 -eq 1 ]; then
@@ -342,7 +338,7 @@ fi
 %{_libexecdir}/%{name}/stapio
 %{_libexecdir}/%{name}/stap-env
 %{_libexecdir}/%{name}/stap-authorize-cert
-
+%{_sysusersdir}/%{name}_runtime.sysusers
 %if 0%{?with_crash}
 %{_libdir}/%{name}/staplog.so*
 %endif
@@ -364,6 +360,7 @@ fi
 %{_libexecdir}/%{name}/stap-gen-cert
 %{_libexecdir}/%{name}/stap-sign-module
 %{_sysconfdir}/rc.d/init.d/stap-server
+%{_sysusersdir}/%{name}_server.sysusers
 %config(noreplace) %{_sysconfdir}/logrotate.d/stap-server
 %dir %{_sysconfdir}/stap-server
 %dir %{_sysconfdir}/stap-server/conf.d
@@ -390,6 +387,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.8-8
+- Use systemd-rpm-macros for user creation
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-7
 - Fix requires
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 4.8-6
