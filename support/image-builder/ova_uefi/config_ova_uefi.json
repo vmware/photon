@@ -1,14 +1,16 @@
 {
     "installer": {
-        "bootmode":"efi",
+        "bootmode": "efi",
         "hostname": "photon-machine",
         "password": {
             "age": 0,
             "crypted": false,
             "text": "changeme"
         },
-        "postinstallscripts": [ "../relocate-rpmdb.sh" ],
- 	"public_key": "",
+        "postinstallscripts": [
+            "../relocate-rpmdb.sh"
+        ],
+        "public_key": "",
         "packagelist_file": "packages_ova.json",
         "linux_flavor": "linux-esx"
     },
@@ -17,4 +19,3 @@
     "artifacttype": "ova",
     "keeprawdisk": false
 }
-

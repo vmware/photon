@@ -1,10 +1,17 @@
 {
     "installer": {
         "hostname": "photon-machine",
-        "postinstallscripts": [ "gce-patch.sh", "../relocate-rpmdb.sh" ],
+        "postinstallscripts": [
+            "gce-patch.sh",
+            "../relocate-rpmdb.sh"
+        ],
         "additional_files": [
-            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
-            {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
+            {
+                "cloud-photon.cfg": "/etc/cloud/cloud.cfg"
+            },
+            {
+                "ntpd.service": "/usr/lib/systemd/system/ntpd.service"
+            }
         ],
         "packagelist_file": "packages_gce.json",
         "linux_flavor": "linux"
@@ -14,4 +21,3 @@
     "artifacttype": "tgz",
     "keeprawdisk": false
 }
-

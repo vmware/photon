@@ -6,18 +6,34 @@
         "packagelist_file": "packages_ls1012afrwy.json",
         "partition_type": "msdos",
         "partitions": [
-            {"mountpoint": "/boot/efi", "size": 12, "filesystem": "vfat", "mkfs_options": "-n EFI"},
-            {"mountpoint": "/", "size": 0, "filesystem": "ext4", "mkfs_options": "-F -v -O ^huge_file -b 4096 -L rootfs"}
+            {
+                "mountpoint": "/boot/efi",
+                "size": 12,
+                "filesystem": "vfat",
+                "mkfs_options": "-n EFI"
+            },
+            {
+                "mountpoint": "/",
+                "size": 0,
+                "filesystem": "ext4",
+                "mkfs_options": "-F -v -O ^huge_file -b 4096 -L rootfs"
+            }
         ],
         "password": {
             "age": 0,
             "crypted": false,
             "text": "changeme"
         },
-        "postinstallscripts": ["ls1012afrwy-custom-patch.sh" ],
+        "postinstallscripts": [
+            "ls1012afrwy-custom-patch.sh"
+        ],
         "additional_files": [
-            {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
-            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
+            {
+                "resizefs.sh": "/usr/local/bin/resizefs.sh"
+            },
+            {
+                "resizefs.service": "/lib/systemd/system/resizefs.service"
+            }
         ],
         "linux_flavor": "linux"
     },
@@ -26,4 +42,3 @@
     "artifacttype": "xz",
     "keeprawdisk": true
 }
-
