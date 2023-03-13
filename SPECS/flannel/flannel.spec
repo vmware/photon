@@ -1,20 +1,21 @@
 %define debug_package %{nil}
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.20.2
-Release:        2%{?dist}
+Version:        0.21.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha512  flannel=a08c7e9c1168911463c983b60cd6a36f36ca25ce51b3e4b14b90d9a82c4783511dd03220c916a463665a3afe0cefa051cb348fbc44215150e636117dac93d721
+%define sha512  flannel=862713a14a8280f81c3b08d63c241f9aa551fdf3d6c3e87240b5d8f917b46c14ceb55610400146670a1e6ff5abaf621538ce82ea655a18fc63a5c70b16938609
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  etcd >= 2.0.0
+BuildRequires:  etcd >= 3.5.4
 BuildRequires:  gcc
 BuildRequires:  unzip
 BuildRequires:  go
-Requires:       etcd >= 2.0.0
+BuildRequires:  ca-certificates
+Requires:       etcd >= 3.5.4
 
 %description
 flannel is a virtual network that provides a subnet to a container runtime
@@ -93,6 +94,8 @@ GOPATH=%{_builddir} make test %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+* Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.3-1
+- Update to 0.21.3
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 0.20.2-2
 - Bump up version to compile with new go
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.20.2-1

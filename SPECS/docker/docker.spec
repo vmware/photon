@@ -1,39 +1,42 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
+# Must be in sync with package version
+%define DOCKER_ENGINE_GITCOMMIT bc3805a
+%define DOCKER_CLI_GITCOMMIT a5ee5b1
+%define TINI_GITCOMMIT de40ad0
+
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 %define gopath_comp_libnetwork github.com/docker/libnetwork
 
-# Must be in sync with package version
-%define DOCKER_GITCOMMIT 99e3ed8
-%define TINI_GITCOMMIT fec3683
-
 Summary:        Docker
 Name:           docker
-Version:        19.03.15
-Release:        6%{?dist}
+Version:        23.0.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ffd8e683a93a6ce69789603d24457aebe3379594692cb3dadc25bc8d407771a29d76087b0ca70856707f151622b1853f283a1071311c033ff90a1e44b0d9ffbc
+Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
+%define sha512 moby=135e312b76fbd61c425713c51b1b9622491d1d03264cd5100296fec6c00778bf7d9c2c7cb0522d0474753b797a6e87552b47dad7e05e44400561a833bc8616f0
 
-Source1: https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
-%define sha512 tini=dbca1d3717a228dfd1cb8a4dd6cd3b89328714c28666ba9364f1f033e44d4916ef4d12cd18c498f8a1f47b5901fc1fbb0aaf4ad37b44d1ce766fa04d8e6d1341
+Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
+%define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
 
-Source2: https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
-%define sha512 libnetwork=cdfa7e7b08ecab09859d1bdfbe5ad3c2c678155895c25fca321cf725e11437b14a738fc1767c28d495f40375d5f3763fbc798bc694067767d255f77cfb27f3f5
+Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
+%define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
-Source3:       default-disable.preset
+Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
+%define sha512 docker-cli=77d30945160dc4d9c50354c57d2efed49b99c872c8782f6ad121e6dc1489899d8967ba95cca36499c1b59bc5ef71f4a6b516c635b0cf41b50722bb71597aa496
+
+Source4:       docker-post19.service
+Source5:       docker-post19.socket
+Source6:       default-disable.preset
 
 Patch0:        tini-disable-git.patch
-Patch1:        remove-firewalld-1809.patch
-Patch2:        disable-docker-cli-md2man-install.patch
-Patch3:        CVE-2021-41089.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -48,6 +51,8 @@ BuildRequires:  cmake
 BuildRequires:  sed
 BuildRequires:  jq
 BuildRequires:  libapparmor-devel
+BuildRequires:  libslirp-devel
+BuildRequires:  slirp4netns
 
 Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
@@ -65,6 +70,8 @@ Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
 Requires:       containerd
+# 20.10 uses containerd v2 shim by default
+Requires:       /usr/bin/containerd-shim-runc-v2
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -79,14 +86,28 @@ Docker is an open source project to build, ship and run any application as a lig
 
 %package        doc
 Summary:        Documentation and vimfiles for docker
-Requires:       docker = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    doc
 Documentation and vimfiles for docker
 
+%package    rootless
+Summary:    Rootless support for Docker
+Requires:   slirp4netns
+Requires:   libslirp
+Requires:   fuse
+Requires:   rootlesskit
+Requires:   %{name} = %{version}-%{release}
+Requires:   dbus-user-session
+
+%description    rootless
+Rootless support for Docker.
+Use dockerd-rootless.sh to run the daemon.
+Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
+
 %prep
 # Using autosetup is not feasible
-%setup -q -c
+%setup -q -c -n moby-%{version}
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
@@ -94,22 +115,23 @@ mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          tini \
          bin
 
+mv moby-%{version} src/%{gopath_comp_engine}
+
+tar -xf %{SOURCE3}
+mv cli-%{version} src/%{gopath_comp_cli}
+
 tar -C tini -xf %{SOURCE1}
 
-pushd tini
-%autopatch -p1 -M0
-popd
-
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
-cd %{name}-ce-%{version}
-%autopatch -p1 -m1
-mv components/engine ../src/%{gopath_comp_engine}
-mv components/cli ../src/%{gopath_comp_cli}
-mv components/packaging ../
+
+# Patch sources
+pushd tini
+%patch0 -p1
+popd
 
 %build
 export GOPATH="${PWD}"
-export GO111MODULE=auto
+export GO111MODULE=off
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
@@ -123,7 +145,7 @@ pushd "src/%{gopath_comp_cli}"
   VERSION=%{version} \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
-  GITCOMMIT=%{DOCKER_GITCOMMIT} \
+  GITCOMMIT=%{DOCKER_CLI_GITCOMMIT} \
   make dynbinary manpages %{?_smp_mflags}
 popd
 
@@ -135,12 +157,12 @@ popd
 # daemon
 pushd "src/%{gopath_comp_engine}"
   VERSION=%{version} \
-  DOCKER_GITCOMMIT=%{DOCKER_GITCOMMIT} \
+  DOCKER_GITCOMMIT=%{DOCKER_ENGINE_GITCOMMIT} \
   PRODUCT=docker \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   DEFAULT_PRODUCT_LICENSE="$DEFAULT_PRODUCT_LICENSE" \
-  DOCKER_BUILDTAGS="seccomp apparmor selinux exclude_graphdriver_aufs" \
+  DOCKER_BUILDTAGS="seccomp selinux apparmor exclude_graphdriver_aufs" \
   ./hack/make.sh dynbinary
 popd
 
@@ -179,8 +201,8 @@ install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
-install -p -m 755 "src/%{gopath_comp_cli}/build/docker" %{buildroot}%{_bindir}/docker
-install -p -m 755 "src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd" %{buildroot}%{_bindir}/dockerd
+install -p -m 755 src/%{gopath_comp_cli}/build/docker %{buildroot}%{_bindir}/docker
+install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{buildroot}%{_bindir}/dockerd
 
 # install proxy
 install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
@@ -192,8 +214,8 @@ install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
 install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
-install -p -m 644 packaging/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
-install -p -m 644 packaging/systemd/docker.socket %{buildroot}%{_unitdir}/docker.socket
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
 install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
@@ -206,23 +228,21 @@ install -p -m 644 src/%{gopath_comp_cli}/man/man1/*.1 %{buildroot}%{_mandir}/man
 install -p -m 644 src/%{gopath_comp_cli}/man/man5/*.5 %{buildroot}%{_mandir}/man5
 install -p -m 644 src/%{gopath_comp_cli}/man/man8/*.8 %{buildroot}%{_mandir}/man8
 
-# add vimfiles
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/doc
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
-install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/syntax
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-install -p -m 644 src/%{gopath_comp_engine}/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+# vimfiles are now upstream, no vim files installed
 
 mkdir -p build-docs
-for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
+for engine_file in AUTHORS CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
   cp "src/%{gopath_comp_engine}/$engine_file" "build-docs/engine-$engine_file"
 done
 for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
   cp "src/%{gopath_comp_cli}/$cli_file" "build-docs/cli-$cli_file"
 done
 
-install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_presetdir}/50-docker.preset
+install -v -D -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}/50-docker.preset
+
+# docker-rootless
+install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
+install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless-setuptool.sh %{buildroot}%{_bindir}/dockerd-rootless-setuptool.sh
 
 %pre engine
 if [ $1 -gt 0 ] ; then
@@ -288,39 +308,35 @@ rm -rf %{buildroot}/*
 
 %files doc
 %defattr(-,root,root)
-%doc build-docs/engine-AUTHORS build-docs/engine-CHANGELOG.md build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
+%doc build-docs/engine-AUTHORS build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
 %doc build-docs/cli-LICENSE build-docs/cli-MAINTAINERS build-docs/cli-NOTICE build-docs/cli-README.md
 %doc
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+
+%files rootless
+%{_bindir}/dockerd-rootless.sh
+%{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
-* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 19.03.15-6
+* Fri Mar 10 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-1
+- Update to 23.0.1
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 20.10.14-9
 - Bump up version to compile with new go
-* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-5
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-8
+- Bump version as a part of rootlesskit upgrade
+* Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-7
+- Add dbus-user-session to requires
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-6
 - Bump version as a part of containerd upgrade
-* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-4
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-5
 - Bump up version to compile with new go
-* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-3
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.14-4
 - Bump up version to compile with new go
-* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-2
-- Bump up version to compile with new go
-* Wed Apr 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-1
-- Upgrade to 19.03.15
-- Enable selinux in DOCKER_BUILDTAGS
-* Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 19.03.10-6
-- Bump up version to use containerd 1.4.12.
-* Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 19.03.10-5
-- Bump up version to compile with new glibc
-* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.10-4
-- Bump up version to compile with new go
-* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 19.03.10-3
-- Bump up version to compile with new go
-* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.10-2
-- Bump up version to compile with new go
-* Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
-- Initial version
+* Sun Jul 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-3
+- Add seperate package for rootlesskit & add proper conflicts.
+* Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-2
+- Add docker-rootless support
+* Wed Apr 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 20.10.14-1
+- Initial packaging of 20.10

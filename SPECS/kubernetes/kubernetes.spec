@@ -11,8 +11,8 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.23.8
-Release:        8%{?dist}
+Version:        1.26.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=e69250fbab9cfa6488ae69040a2f8cd7f269121e954cacdb2478a46bf519bcd05fedf0bca74b482386e44127be462d95488c1ec60be772506a0d7e736751885b
+%define sha512 %{name}-%{version}.tar.gz=8794322c1e943ca47a059e6866bda9dee04acc8a202a984efe5c82403e394c4f5aa2c0218fb43582016c7276e17e837f64c39fc3af0c633461bf026aaacc97ae
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
@@ -28,14 +28,15 @@ Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.g
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 Source4:        %{name}.sysusers
-BuildRequires:  go >= 1.16.2
+
+BuildRequires:  go
 BuildRequires:  rsync
 BuildRequires:  which
 BuildRequires:  systemd-devel
 
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.5.0
+Requires:       etcd >= 3.5.5
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -209,6 +210,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Thu Mar 16 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.26.1-1
+- Update k8s to 1.26
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.8-8
 - Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.8-7

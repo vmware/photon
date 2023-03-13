@@ -1,34 +1,40 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.17.1
-Release:        6%{?dist}
+Version:        3.25.0
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/projectcalico/node
+URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  calico=94572f760a039a056f582e7a2078cf7e053f0c5b51a5665d2e2428f48b2745a3c66e341680d2cd76d53f2d4742aca7fbcac823b0fc7fbfee23be5d47b3ff53ce
+%define sha512  calico=8899b65be0b3b93f371942113f6bb0c958b31ff0db106d181152c3c5bf6f2f3e842719bc3ac21c573ae5fd681176ee46222798b43ebf029140a5c32ab27d9fbf
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
 BuildRequires:  go
 BuildRequires:  make
+BuildRequires:  libbpf-devel
+BuildRequires:  libxml2-devel
 
 %description
-Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine.
+Calico node is a container that bundles together various components reqiured for networking
+containers using project calico.
+This includes key components such as felix agent for programming routes and ACLs,
+BIRD routing daemon, and confd datastore monitor engine.
 
 %prep
-%autosetup -p1 -n node-%{version}
+%autosetup -p1 -n calico-%{version}
 
 %build
+cd node
 mkdir -p dist
-go build -v -o dist/calico-node cmd/calico-node/main.go
+CGO_ENABLED=0 go build -v -o dist/calico-node ./cmd/calico-node/main.go
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install dist/calico-node %{buildroot}%{_bindir}/
+install node/dist/calico-node %{buildroot}%{_bindir}/
 install -vdm 0755 %{buildroot}%{_datadir}/calico/docker/fs
-cp -r filesystem/etc %{buildroot}%{_datadir}/calico/docker/fs/
-cp -r filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
+cp -r node/filesystem/etc %{buildroot}%{_datadir}/calico/docker/fs/
+cp -r node/filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
 
@@ -38,6 +44,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+* Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.25.0-1
+- Update to 3.25.0
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.17.1-6
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.17.1-5

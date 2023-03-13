@@ -1,15 +1,16 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
-Version:        1.15.6
-Release:        8%{?dist}
+Version:        1.22.20
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        https://github.com/kubernetes/dns/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}.tar.gz=7b89cd39b8f32546c3e5486bb602aa8c6eb8aedaa373246917915c9398d303d5a9dd71bd5d3912223c29295005ff06ee5c07cfa6548659f757d5ff5ab32c42a7
+%define sha512  %{name}=d62ea9ed6eae29e023530777896732bff4964d06f09bf1b80575af9ecb76b82ea6e7fc0ac04be41e92609cb6d5bb87de68488d57ef923c77d38cd60930e9f6cf
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  go
+BuildRequires:  ca-certificates
 
 %description
 Kubernetes DNS is a name lookup service for kubernetes pods.
@@ -39,7 +40,6 @@ export GO111MODULE=auto
 mkdir -p ${GOPATH}/src/${PKG}
 cp -r * ${GOPATH}/src/${PKG}/
 pushd ${GOPATH}/src/${PKG}
-go mod init
 ARCH=${ARCH} VERSION=${VERSION} PKG=${PKG} go install \
     -installsuffix "static" \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}" \
@@ -73,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.20-1
+- Update to 1.22.20
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.6-8
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.15.6-7

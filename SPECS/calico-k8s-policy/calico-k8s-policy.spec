@@ -1,14 +1,14 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        3.17.1
-Release:        7%{?dist}
+Version:        3.25.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=2bea904aadea05b7a22311899ce07cdbba88c96c124a9aad622b2fe2b54f325010854815dbf44d74a60a7419017937e7c071c335ccb50d48a2952f1452771ce5
+Source0:        https://github.com/projectcalico/calico/archive/refs/tags/calico-%{version}.tar.gz
+%define sha512  calico=8899b65be0b3b93f371942113f6bb0c958b31ff0db106d181152c3c5bf6f2f3e842719bc3ac21c573ae5fd681176ee46222798b43ebf029140a5c32ab27d9fbf
 BuildRequires:  git
 BuildRequires:  go
 BuildRequires:  libcalico
@@ -53,22 +53,25 @@ Requires:       python3-setuptools
 Calico Network Policy enables Calico to enforce network policy on top of Calico BGP, Flannel, or GCE native.
 
 %prep
-%autosetup -p1 -n kube-controllers-%{version}
+%autosetup -p1 -n calico-%{version}
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
+cd kube-controllers
 mkdir -p dist
-go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./cmd/kube-controllers/
+CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./cmd/kube-controllers/
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
+install -vpm 0755 -t %{buildroot}%{_bindir}/ kube-controllers/dist/controller
 
 %files
 %defattr(-,root,root)
 %{_bindir}/controller
 
 %changelog
+* Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.25.0-1
+- Update to 3.25.0
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.17.1-7
 - Bump up version to compile with new go
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-6

@@ -1,38 +1,43 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
-Version:       3.17.1
-Release:       6%{?dist}
+Version:       3.25.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
-URL:           https://github.com/projectcalico/felix
-Source0:       https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 calico-felix=140aeb5dfeea84dc5c46227372c297065aa89847a1eaf06e8875d28ce4e57ecf53e31f87ca0e863b4c242ab681e9b6c049b37164bbe3b4f022167153bf4e25f0
+URL:           https://github.com/projectcalico/calico
+Source0:       https://github.com/projectcalico/calico/archive/refs/tags/calico-%{version}.tar.gz
+%define sha512 calico=8899b65be0b3b93f371942113f6bb0c958b31ff0db106d181152c3c5bf6f2f3e842719bc3ac21c573ae5fd681176ee46222798b43ebf029140a5c32ab27d9fbf
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go
 
 %description
-A per-host daemon for Calico.
+ain task is to program routes and ACLs, and anything else required on the host to provide
+desired connectivity for the endpoints on that host. Runs on each machine that hosts endpoints.
+Runs as an agent daemon.
 
 %prep
-%autosetup -p1 -n felix-%{version}
+%autosetup -p1 -n calico-%{version}
 
 %build
-mkdir -p bin
-go build -v -o bin/calico-felix -v \
+cd felix
+mkdir -p dist
+CGO_ENABLED=0 go build -v -o dist/calico-felix -v \
   -ldflags " -X github.com/projectcalico/felix/buildinfo.GitVersion=<unknown>" \
   ./cmd/calico-felix
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install bin/calico-felix %{buildroot}%{_bindir}/
+install felix/dist/calico-felix %{buildroot}%{_bindir}/
 
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-felix
 
 %changelog
+* Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.25.0-1
+- Update to 3.25.0
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.17.1-6
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.17.1-5
