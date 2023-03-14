@@ -467,11 +467,11 @@ def check_mentioned_but_unused_files(spec_fn, dirname):
             if fn not in g_ignore_list:
                 source_patch_list.append(fn)
         elif source_patch_list:
-            for index, fn in enumerate(source_patch_list):
+            for fn in source_patch_list[:]:
                 # there can be multiple sources mentioned in same line
                 # so don't break after first hit
                 if f"{dirname}/{fn}" in line:
-                    source_patch_list.pop(index)
+                    source_patch_list.remove(fn)
 
     return source_patch_list
 
