@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -11,6 +11,8 @@ Group:          Applications/RPM
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=99b6c791e70c7a6610a3b83ae9ade8ed09f7a83e73af819902f54a934a579fecacf62e212cb9ddf8624b679561d57183ef0ad0c378b81220290a5d5534fd67bb
 Patch0:         0001-fix-pszPersistDir-setting-for-correct-history.db-loc.patch
+Patch1:         0003-fix-segfault-when-name-isn-t-set-in-repo-similar-to-.patch
+Patch2:         0004-include-string.h-to-fix-strdup-warning.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -265,6 +267,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-3
+- fix segfault when name isn't set in repo (similar to PR #401)
+- fix compile warning
 * Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.0-2
 - Require openssl-libs
 * Thu Mar 09 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-1

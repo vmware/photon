@@ -1,11 +1,12 @@
-From dea03fdd65db433ff380a79f4ae703e24be323c1 Mon Sep 17 00:00:00 2001
+From f480ba7bbd24da43aa999aaed3f47664ffaecd50 Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <okurth@gmail.com>
 Date: Thu, 9 Mar 2023 20:40:17 -0800
-Subject: [PATCH] fix pszPersistDir setting for correct history.db location
+Subject: [PATCH 1/4] fix pszPersistDir setting for correct history.db location
 
 ---
  client/config.c | 2 ++
- 1 file changed, 2 insertions(+)
+ client/utils.c  | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/client/config.c b/client/config.c
 index 73e294a..8d0128a 100644
@@ -20,6 +21,19 @@ index 73e294a..8d0128a 100644
  
      /* We need a copy of pszConfFile because dirname() modifies its argument */
      dwError = TDNFAllocateString(pszConfFile, &pszConfFileCopy);
+diff --git a/client/utils.c b/client/utils.c
+index bfafe77..d5ae62b 100644
+--- a/client/utils.c
++++ b/client/utils.c
+@@ -266,7 +266,7 @@ TDNFIsFileOrSymlink(
+     if(stat(pszPath, &stStat))
+     {
+         if (errno == ENOENT)
+-	{
++        {
+             nPathIsFile = 0;
+         }
+         else
 -- 
 2.25.1
 

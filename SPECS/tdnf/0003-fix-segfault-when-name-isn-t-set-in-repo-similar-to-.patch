@@ -1,0 +1,28 @@
+From d9cac08f450c0b386e39d8ce0a3c65da1b68ccea Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Tue, 14 Mar 2023 12:10:46 -0700
+Subject: [PATCH 3/4] fix segfault when name isn't set in repo (similar to PR
+ #401)
+
+---
+ client/repolist.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/client/repolist.c b/client/repolist.c
+index e7b0e33..782f633 100644
+--- a/client/repolist.c
++++ b/client/repolist.c
+@@ -603,6 +603,10 @@ TDNFLoadReposFromFile(
+         dwError = TDNFEventRepoReadConfigEnd(pTdnf, cn_section);
+         BAIL_ON_TDNF_ERROR(dwError);
+ 
++        /* default to repo id if name isn't set */
++        if (pRepo->pszName == NULL)
++            pRepo->pszName = strdup(pRepo->pszId);
++
+         pRepo->pNext = pRepos;
+         pRepos = pRepo;
+         pRepo = NULL;
+-- 
+2.25.1
+
