@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -34,6 +34,7 @@ Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
 Requires:       util-linux
 Requires:       systemd
+Requires:       systemd-udev
 Requires:       /bin/sed
 Requires:       /bin/grep
 Requires:       findutils
@@ -84,13 +85,13 @@ rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
 
 mkdir -p %{buildroot}/boot/%{name} \
          %{buildroot}%{_sharedstatedir}/%{name}/overlay \
-         %{buildroot}%{_localstatedir}/log \
-         %{buildroot}%{_localstatedir}/opt/%{name}/log \
+         %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/%{name}/log \
          %{buildroot}%{_sharedstatedir}/initramfs \
          %{buildroot}%{_sbindir}
 
-touch %{buildroot}%{_localstatedir}/opt/%{name}/log/%{name}.log
-ln -sfv %{_localstatedir}/opt/%{name}/log/%{name}.log %{buildroot}%{_localstatedir}/log/
+touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
+ln -srv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 rm -f %{buildroot}%{_mandir}/man?/*suse*
 
@@ -126,9 +127,9 @@ rm -rf -- %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}.conf.d
 %dir %{dracutlibdir}/%{name}.conf.d
-%dir %{_localstatedir}/opt/%{name}/log
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/%{name}/log/%{name}.log
-%{_localstatedir}/log/%{name}.log
+%dir %{_var}/opt/%{name}/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_var}/opt/%{name}/log/%{name}.log
+%{_var}/log/%{name}.log
 %dir %{_sharedstatedir}/initramfs
 %{_unitdir}/%{name}-shutdown.service
 %{_unitdir}/sysinit.target.wants/%{name}-shutdown.service
@@ -156,6 +157,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-5
+- Add systemd-udev to requires
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-4
 - Add /etc/dracut.conf.d to conf dirs list during initrd creation
 - Drop multiple conf file support
