@@ -2,65 +2,65 @@
 %global __os_install_post %{nil}
 %define _binaries_in_noarch_packages_terminate_build   0
 
-Name:		raspberrypi-firmware
-Summary:	Raspberry Pi firmware
-Version:	1.2020.09.02
-Release:	2%{?dist}
-License:	Broadcom Corporation and Raspberry Pi (Trading) Ltd
-URL:		https://github.com/raspberrypi/firmware
-Group:		System Environment/Boot
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 raspberrypi-firmware=d0d28eac967aefdb2963fd2dc8b8cd1bbf8883e7
-Source1:	rpi-config-txt.txt
-BuildArch:	noarch
+Name:           raspberrypi-firmware
+Summary:        Raspberry Pi firmware
+Version:        1.2020.09.02
+Release:        3%{?dist}
+License:        Broadcom Corporation and Raspberry Pi (Trading) Ltd
+URL:            https://github.com/raspberrypi/firmware
+Group:          System Environment/Boot
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha512  raspberrypi-firmware=a44f038700fa9ebe23495011a52b36cafb35a3e653ca3529f7b602f6b80aaef640351e2ea947af3476d06ed25d2a86b1f244c7de4fde6249993856b3636d5138
+Source1:        rpi-config-txt.txt
+BuildArch:      noarch
 
 %description
 Firmware files for Raspberry Pi
 
 %package pi3
-Summary:	Raspberry Pi 3 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:         Raspberry Pi 3 firmware
+Group:           System Environment/Boot
+Requires:        raspberrypi-firmware = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post):  (coreutils or coreutils-selinux or toybox)
 
 %description pi3
 Firmware files for Raspberry Pi 3
 
 %package pi3-extra
-Summary:	Extra files for Raspberry Pi 3 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware-pi3 = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:         Extra files for Raspberry Pi 3 firmware
+Group:           System Environment/Boot
+Requires:        raspberrypi-firmware-pi3 = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post):  (coreutils or coreutils-selinux or toybox)
 
 %description pi3-extra
 Extra Firmware files for Raspberry Pi 3
 
 %package pi4
-Summary:	Raspberry Pi 4 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:         Raspberry Pi 4 firmware
+Group:           System Environment/Boot
+Requires:        raspberrypi-firmware = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post):  (coreutils or coreutils-selinux or toybox)
 
 %description pi4
 Firmware files for Raspberry Pi 4
 
 %package pi4-extra
-Summary:	Extra files for Raspberry Pi 4 firmware
-Group:		System Environment/Boot
-Requires:	raspberrypi-firmware-pi4 = %{version}-%{release}
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
+Summary:         Extra files for Raspberry Pi 4 firmware
+Group:           System Environment/Boot
+Requires:        raspberrypi-firmware-pi4 = %{version}-%{release}
+Requires(preun): (coreutils or coreutils-selinux or toybox)
+Requires(post):  (coreutils or coreutils-selinux or toybox)
 
 %description pi4-extra
 Extra Firmware files for Raspberry Pi 4
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 
@@ -111,6 +111,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+*   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 1.2020.09.02-3
+-   Fix for requires
 *   Mon Nov 02 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-2
 -   Use miniuart-bt and fixed core_freq to accommodate for rpi3 uart
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-1

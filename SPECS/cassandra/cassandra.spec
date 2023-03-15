@@ -1,18 +1,19 @@
 %global debug_package %{nil}
-
 %global __os_install_post %{nil}
+
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.3
-Release:        1%{?dist}
-URL:            http://cassandra.apache.org/
+Release:        2%{?dist}
+URL:            http://cassandra.apache.org
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=3db945ededce697ce614412f3b7e0495895ebc48
+Source0: http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha512 apache-cassandra=516a646cbafb83d3f855f6729a135754f563a0caecd23b3fa52099703af9932b47a0d2173f446329670d0ac67d0bd9cb898570eb3995b3c922e201c56bfe45ac
+
 Source1:        cassandra.service
 
 BuildRequires:  apache-ant
@@ -25,7 +26,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       openjre8
 Requires:       gawk
 Requires:       shadow
-Requires(post): /bin/chown
+Requires(post): /usr/bin/chown
 %{?systemd_requires}
 
 %description
@@ -36,18 +37,18 @@ Cassandra brings together the distributed systems technologies from Dynamo and t
 %autosetup -p1 -n apache-%{name}-%{version}-src
 
 %build
-export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 ant jar javadoc -Drelease=true
 
 %install
-mkdir -p %{buildroot}/var/opt/%{name}/data \
-         %{buildroot}/var/log/%{name} \
+mkdir -p %{buildroot}%{_var}/opt/%{name}/data \
+         %{buildroot}%{_var}/log/%{name} \
          %{buildroot}%{_bindir} \
          %{buildroot}%{_sbindir} \
          %{buildroot}%{_datadir}/cassandra \
          %{buildroot}%{_sysconfdir}/cassandra \
          %{buildroot}%{_sysconfdir}/sysconfig \
-         %{buildroot}/etc/profile.d \
+         %{buildroot}%{_sysconfdir}/profile.d \
          %{buildroot}%{_unitdir}
 
 cp -pr conf/* %{buildroot}%{_sysconfdir}/cassandra/
@@ -56,30 +57,30 @@ rm -f bin/cqlsh bin/cqlsh.py
 mv bin/%{name} %{buildroot}%{_sbindir}
 mv bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
 cp -p bin/* tools/bin/* %{buildroot}%{_bindir}/
-cp -r lib build %{buildroot}/var/opt/cassandra/
-cp -p build/tools/lib/stress.jar %{buildroot}/var/opt/cassandra/lib
-cp -p build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
+cp -r lib build %{buildroot}%{_var}/opt/cassandra/
+cp -p build/tools/lib/stress.jar %{buildroot}%{_var}/opt/cassandra/lib
+cp -p build/apache-cassandra-%{version}.jar %{buildroot}%{_var}/opt/cassandra/lib
 
 install -p -D -m 644 %{SOURCE1}  %{buildroot}%{_unitdir}/%{name}.service
 
-cat >> %{buildroot}/etc/sysconfig/cassandra <<- "EOF"
-CASSANDRA_HOME=/var/opt/cassandra/
+cat >> %{buildroot}%{_sysconfdir}/sysconfig/cassandra <<- "EOF"
+CASSANDRA_HOME=%{_var}/opt/cassandra/
 CASSANDRA_CONF=%{_sysconfdir}/cassandra/
 EOF
 
-cat >> %{buildroot}/etc/profile.d/cassandra.sh <<- "EOF"
-export CASSANDRA_HOME=/var/opt/cassandra/
+cat >> %{buildroot}%{_sysconfdir}/profile.d/cassandra.sh <<- "EOF"
+export CASSANDRA_HOME=%{_var}/opt/cassandra/
 export CASSANDRA_CONF=%{_sysconfdir}/cassandra/
 EOF
 
 %pre
 getent group cassandra >/dev/null || /usr/sbin/groupadd -r cassandra
-getent passwd cassandra >/dev/null || /usr/sbin/useradd --comment "Cassandra" --shell /bin/bash -M -r --groups cassandra --home /var/opt/%{name}/data cassandra
+getent passwd cassandra >/dev/null || /usr/sbin/useradd --comment "Cassandra" --shell /bin/bash -M -r --groups cassandra --home %{_var}/opt/%{name}/data cassandra
 
 %post
 %{_sbindir}/ldconfig
-chown -R cassandra: /var/opt/cassandra
-source /etc/profile.d/cassandra.sh
+chown -R cassandra: %{_var}/opt/cassandra
+source %{_sysconfdir}/profile.d/cassandra.sh
 %systemd_post cassandra.service
 
 %preun
@@ -96,18 +97,20 @@ fi
 %files
 %defattr(-,root,root)
 %doc README.asc CHANGES.txt NEWS.txt conf/cqlshrc.sample LICENSE.txt NOTICE.txt
-%dir /var/opt/cassandra
+%dir %{_var}/opt/cassandra
 %{_bindir}/*
 %{_datadir}/cassandra
-/var/opt/cassandra
+%{_var}/opt/cassandra
 %{_sbindir}
 %{_sysconfdir}/cassandra
 %{_sysconfdir}/sysconfig/cassandra
 %{_sysconfdir}/profile.d/cassandra.sh
 %{_unitdir}/cassandra.service
-%exclude /var/opt/cassandra/build/lib
+%exclude %{_var}/opt/cassandra/build/lib
 
 %changelog
+* Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.3-2
+- Fix requires
 * Mon Feb 21 2022 Ankit Jain <ankitja@vmware.com> 4.0.3-1
 - Update to 4.0.3 to fix CVE-2021-44521
 * Tue Sep 21 2021 Ankit Jain <ankitja@vmware.com> 4.0.1-1

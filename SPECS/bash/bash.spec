@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -23,9 +23,9 @@ BuildRequires:  readline
 
 Requires:           readline
 Requires(post):     /bin/grep
-Requires(post):     /bin/cp
+Requires(post):     /usr/bin/cp
 Requires(postun):   /bin/grep
-Requires(postun):   /bin/mv
+Requires(postun):   /usr/bin/mv
 
 %description
 The package contains the Bourne-Again SHell
@@ -56,7 +56,7 @@ The package contains bash doc files.
 %build
 %configure \
     "CFLAGS=-fPIC" \
-    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
+    --htmldir=%{_docdir}/%{name}-%{version} \
     --without-bash-malloc \
     --with-installed-readline
 
@@ -337,11 +337,13 @@ fi
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_defaultdocdir}/%{name}/*
+%{_docdir}/%{name}-%{version}/*
+%{_docdir}/%{name}/*
 %{_mandir}/*/*
 
 %changelog
+* Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-4
+- Fix requires
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.0-3
 - Make bash completion work for regular user sudo commands
 * Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0-2

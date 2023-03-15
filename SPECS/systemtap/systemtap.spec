@@ -8,10 +8,10 @@
 
 Name:          systemtap
 Version:       4.5
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap
 License:       GPLv2+
@@ -51,15 +51,15 @@ Requires:      crash
 BuildRequires: rpm-devel
 %endif
 
-Requires:      gcc
-Requires:      linux-devel
-Requires:      make
-Requires:      elfutils
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Requires:         gcc
+Requires:         linux-devel
+Requires:         make
+Requires:         elfutils
+Requires:         %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
-BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+BuildRoot:        %{_tmppath}/%{name}-%{version}-root
 
 %description
 SystemTap is an instrumentation system for systems running Linux.
@@ -97,7 +97,7 @@ Group:         System/Tools
 Summary:       Instrumentation System Server
 Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      (coreutils or toybox)
+Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
@@ -113,34 +113,34 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 %build
 %configure \
 %if %{with_crash}
-	--enable-crash \
+    --enable-crash \
 %else
-	--disable-crash \
+    --disable-crash \
 %endif
-	--disable-docs \
+    --disable-docs \
 %if %{with_sqlite}
-	--enable-sqlite \
+    --enable-sqlite \
 %else
-	--disable-sqlite \
+    --disable-sqlite \
 %endif
 %if %{with_rpm}
-	--with-rpm \
+    --with-rpm \
 %else
-	--without-rpm \
+    --without-rpm \
 %endif
 %if %{with_pie}
-	--enable-pie \
+    --enable-pie \
 %else
-	--disable-pie \
+    --disable-pie \
 %endif
-	--disable-grapher \
-        --disable-virt \
-	--disable-silent-rules
+    --disable-grapher \
+    --disable-virt \
+    --disable-silent-rules
 
 %make_build
 
 %install
-%make_install mandir=%{_mandir}
+%make_install mandir=%{_mandir} %{?_smp_mflags}
 
 mv %{buildroot}%{_datadir}/%{name}/examples examples
 
@@ -218,10 +218,9 @@ if [ $1 -eq 1 ] ; then
   }
 
   if test ! -e ~stap-server/.%{name}/ssl/server/stap.cert; then
-	runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
-
-	%{_bindir}/stap-authorize-server-cert ~stap-server/.%{name}/ssl/server/stap.cert
-	%{_bindir}/stap-authorize-signing-cert ~stap-server/.%{name}/ssl/server/stap.cert
+      runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
+      %{_bindir}/stap-authorize-server-cert ~stap-server/.%{name}/ssl/server/stap.cert
+      %{_bindir}/stap-authorize-signing-cert ~stap-server/.%{name}/ssl/server/stap.cert
   fi
   /sbin/chkconfig --add stap-server
   exit 0
@@ -229,46 +228,46 @@ fi
 
 %preun server
 if [ $1 = 0 ] ; then
-	/sbin/service stap-server stop >/dev/null 2>&1
-	/sbin/chkconfig --del stap-server
+    /sbin/service stap-server stop >/dev/null 2>&1
+    /sbin/chkconfig --del stap-server
 fi
 exit 0
 
 %postun server
 if [ "$1" -ge "1" ] ; then
-	/sbin/service stap-server condrestart >/dev/null 2>&1 || :
+    /sbin/service stap-server condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post initscript
 if [ $1 -eq 1 ] ; then
-	/sbin/chkconfig --add %{name}
-	exit 0
+    /sbin/chkconfig --add %{name}
+    exit 0
 fi
 
 %preun initscript
 if [ $1 = 0 ] ; then
-	/sbin/service %{name} stop >/dev/null 2>&1
-	/sbin/chkconfig --del %{name}
+    /sbin/service %{name} stop >/dev/null 2>&1
+    /sbin/chkconfig --del %{name}
 fi
 exit 0
 
 %postun initscript
 if [ "$1" -ge "1" ] ; then
-	/sbin/service %{name} condrestart >/dev/null 2>&1 || :
+    /sbin/service %{name} condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post
 if [ $1 -eq 1 ] ; then
-	(make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	(make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/%{name}/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %files -f %{name}.lang
@@ -303,7 +302,6 @@ fi
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/%{name}.8*
 %{_mandir}/man8/stapbpf.8*
-%doc AUTHORS COPYING
 %{_bindir}/dtrace
 
 %files initscript
@@ -331,7 +329,6 @@ fi
 %defattr(-,root,root)
 %{_includedir}/sys/sdt.h
 %{_includedir}/sys/sdt-config.h
-%doc NEWS examples
 
 %files server
 %defattr(-,root,root)
@@ -355,6 +352,8 @@ fi
 %{_mandir}/man8/%{name}-service.8*
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.5-5
+- Fix for requires
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.5-4
 - Bump version as a part of sqlite upgrade
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.5-3

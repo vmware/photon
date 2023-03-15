@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -34,12 +34,12 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
-Requires:       (sed or toybox)
-Requires:       (findutils or toybox)
+Requires:       sed
+Requires:       findutils
 
 %description
 Contains the kpatch utility, which allows loading of kernel livepatches.
@@ -92,7 +92,7 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %defattr(-,root,root,-)
 %{_sbindir}/kpatch
 %{_unitdir}/*
-%{_sysconfdir}/init/kpatch.conf
+%config(noreplace) %{_sysconfdir}/init/kpatch.conf
 
 %files build
 %defattr(-,root,root,-)
@@ -103,7 +103,6 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %files devel
 %defattr(-,root,root,-)
-%doc README.md doc/patch-author-guide.md
 %{_mandir}/man1/kpatch-build.1*
 %{_mandir}/man1/kpatch.1*
 
@@ -115,6 +114,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 0.9.8-2
+- Fix for requires
 * Mon Apr 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.8-1
 - Update to 0.9.8, consume latest scripts
 * Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1

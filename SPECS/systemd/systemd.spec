@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -17,7 +17,9 @@ Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
 Source4:        99-dhcp-en.network
+%ifarch x86_64
 Source5:        10-rdrand-rng.conf
+%endif
 Source6:        10-defaults.preset
 
 Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
@@ -107,7 +109,7 @@ resolution.
 Summary:        systemd libraries
 License:        LGPLv2+ and MIT
 Provides:       nss-myhostname = 0.4
-Requires(post): coreutils
+Requires(post): (coreutils or coreutils-selinux or toybox)
 Requires(post): sed
 Requires(post): grep
 
@@ -676,6 +678,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 247.13-3
+- Fix for requires
 * Fri Feb 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-2
 - Remove test files from main package
 * Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 247.13-1

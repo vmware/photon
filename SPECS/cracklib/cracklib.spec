@@ -3,7 +3,7 @@ Name:             cracklib
 Version:          2.9.7
 Release:          3%{?dist}
 Group:            System Environment/Libraries
-URL:              http://sourceforge.net/projects/cracklib/
+URL:              http://sourceforge.net/projects/cracklib
 License:          GPL
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -20,9 +20,10 @@ BuildRequires:    python3-xml
 
 # cross compilation requires native dicts generating tools
 %define BuildRequiresNative cracklib-dicts
-Requires:         /bin/ln
-Requires(post):   /bin/ln
-Requires(postun): /bin/rm
+
+Requires:         /usr/bin/ln
+Requires(post):   /usr/bin/ln
+Requires(postun): /usr/bin/rm
 
 %description
 CrackLib tests passwords to determine whether they match certain
@@ -102,15 +103,17 @@ export CFLAGS="$RPM_OPT_FLAGS"
 %configure \
   --disable-static \
   --without-python
-make %{_smp_mflags}
+
+%make_build
+
 pushd python
 python3 setup.py build
 popd
 
 %install
-make %{?_smp_mflags} install DESTDIR=%{buildroot}/
-chmod 755 ./util/cracklib-format
-chmod 755 ./util/cracklib-packer
+%make_install %{?_smp_mflags}
+chmod 755 ./util/cracklib-format \
+          ./util/cracklib-packer
 if [ %{_host} = %{_build} ]; then
   export PATH=./util:$PATH
 fi
@@ -128,8 +131,8 @@ python3 setup.py install --skip-build --root %{buildroot}
 popd
 
 %check
-mkdir -p /usr/share/cracklib
-cp %{buildroot}%{_datadir}/cracklib/* /usr/share/cracklib/
+mkdir -p %{_datadir}cracklib
+cp %{buildroot}%{_datadir}/cracklib/* %{_datadir}cracklib/
 make %{?_smp_mflags} test
 
 %clean
@@ -172,7 +175,6 @@ rm -f %{_datadir}/cracklib/pw_dict.hwm \
 
 %files devel
 %defattr(-,root,root)
-%doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
 

@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -20,14 +20,14 @@ BuildRequires: shadow
 BuildRequires: tinycdb-devel
 
 Requires: tinycdb
-Requires: (coreutils or toybox)
+Requires: (coreutils or coreutils-selinux)
 Requires: systemd
 Requires: m4
 Requires: openldap
 Requires(pre): /usr/sbin/useradd
 Requires(pre): /usr/sbin/groupadd
 Requires: /bin/sed
-Requires: (net-tools or toybox)
+Requires: net-tools
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 8.17.1-3
+- Fix for requires
 * Thu Nov 17 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-2
 - Config file noplace fixed
 * Mon Apr 11 2022 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-1

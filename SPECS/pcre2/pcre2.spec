@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2/
 License:        BSD
 Group:          Development/Tools
@@ -13,7 +13,7 @@ Source0:        https://github.com/PhilipHazel/pcre2/releases/download/pcre2-%{v
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  coreutils
+BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  readline-devel
@@ -66,7 +66,6 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
@@ -97,5 +96,7 @@ make check %{?_smp_mflags}
 %{_libdir}/*.so*
 
 %changelog
-*   Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 10.40-1
--   Initial addition of pcre2
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 10.40-2
+- Fix for requires
+* Fri Mar 25 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 10.40-1
+- Initial addition of pcre2

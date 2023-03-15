@@ -1,14 +1,14 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.8.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/shadow-maint/shadow/releases/download/4.6/%{name}-%{version}.tar.xz
-%define sha1    shadow=63457a0ba58dc4e81b2663b839dc6c89d3343f12
+%define sha512  shadow=780a983483d847ed3c91c82064a0fa902b6f4185225978241bc3bc03fcc3aa143975b46aee43151c6ba43efcfdb1819516b76ba7ad3d1d3c34fcc38ea42e917b
 Source1:        chage
 Source2:        chpasswd
 Source3:        login
@@ -27,7 +27,7 @@ Requires:       cracklib
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
 Requires:       libpwquality
-Requires:       (%{name}-tools = %{version}-%{release} or toybox)
+Requires:       %{name}-tools = %{version}-%{release}
 
 %description
 The Shadow package contains programs for handling passwords
@@ -61,12 +61,12 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
 %build
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
-    --sysconfdir=/etc --with-libpam \
+    --with-libpam \
     --with-libcrack --with-group-name-max-length=32
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/passwd %{buildroot}/bin
 sed -i 's/yes/no/' %{buildroot}/etc/default/useradd
@@ -119,8 +119,10 @@ done
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post
 %{_sbindir}/pwconv
@@ -169,6 +171,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.8.1-4
+-   Fix for requires
 *   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
 -   Added patch to be lenient with usernames
 *   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2

@@ -1,15 +1,19 @@
-Summary:	Stream editor
-Name:		sed
-Version:	4.8
-Release:	1%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/sed
-Group:		Applications/Editors
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
-%define sha1 sed=61bd770062d49cdab3f0f45df473e2bf950ba266
+Summary:    Stream editor
+Name:       sed
+Version:    4.8
+Release:    2%{?dist}
+License:    GPLv3
+URL:        http://www.gnu.org/software/sed
+Group:      Applications/Editors
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0: http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
+%define sha512 %{name}=7de25d9bc2981c63321c2223f3fbcab61d7b0df4fcf7d4394b72400b91993e1288d8bf53948ed5fffcf5a98c75265726a68ad4fb98e1d571bf768603a108c1c8
+
 Conflicts:      toybox < 0.8.2-2
+
+Provides:       /bin/sed
 
 %description
 The Sed package contains a stream editor.
@@ -17,40 +21,45 @@ The Sed package contains a stream editor.
 %package lang
 Summary: Additional language files for sed
 Group: System Environment/Programming
-Requires: sed >= 4.5
+Requires: %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of sed.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--bindir=/bin \
-	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
-make %{?_smp_mflags}
+%configure \
+    --htmldir=%{_docdir}/%{name}-%{version} \
+    --disable-silent-rules
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
+
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 sed -i 's|print_ver_ sed|Exit $fail|g' testsuite/panic-tests.sh
 sed -i 's|compare exp-out out|#compare exp-out out|g' testsuite/subst-mb-incomplete.sh
-make check
+make check %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root)
-/bin/*
+%{_bindir}/*
 %{_mandir}/man1/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-2
+- Fix file packaging
 * Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8-1
 - Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.5-2

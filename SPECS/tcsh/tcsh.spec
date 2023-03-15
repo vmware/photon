@@ -2,21 +2,22 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
 Version:          6.22.02
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org/
 Group:            System Environment/Shells
 Source:           http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
-%define sha1      tcsh=d3c916c82eec7e20c49dedf660edd51a7971f8ab
+%define sha512    %{name}=32d271b568c63265ea4c98494f5e60b37c3a3fc2594e8763b8f6f0b09018ab9db7ef6f951120b37f7880ccf04ba3a2559e30dc08d24f4ba9dc36853238d55980
 Patch0:           tcsh-6.21.00-fno-common.patch
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Provides:         csh = %{version}
-Provides:         /bin/tcsh, /bin/csh
+Provides:         csh = %{version}-%{release}
+Provides:         /bin/%{name}, /bin/csh
 BuildRequires:    ncurses-devel
 Requires:         ncurses
 Requires(post):   /bin/grep
-Requires(postun): (coreutils or toybox) /bin/grep
+Requires(postun): /bin/grep
+Requires(postun): (coreutils or coreutils-selinux or toybox)
 
 %description
 Tcsh is an enhanced but completely compatible version of csh, the C
@@ -27,21 +28,19 @@ spelling correction, a history mechanism, job control and a C language
 like syntax.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
-
 %configure
-make %{?_smp_mflags} all
+%make_build
 
 %install
 mkdir -p %{buildroot}%{_mandir}/man1 %{buildroot}%{_bindir}
-install -p -m 755 tcsh %{buildroot}%{_bindir}/tcsh
-install -p -m 644 tcsh.man %{buildroot}%{_mandir}/man1/tcsh.1
-ln -sf tcsh %{buildroot}%{_bindir}/csh
-ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
+install -p -m 755 %{name} %{buildroot}%{_bindir}/tcsh
+install -p -m 644 %{name}.man %{buildroot}%{_mandir}/man1/tcsh.1
+ln -sf %{name} %{buildroot}%{_bindir}/csh
+ln -sf %{name}.1 %{buildroot}%{_mandir}/man1/csh.1
 
 while read lang language ; do
   dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
@@ -50,7 +49,7 @@ while read lang language ; do
     install -p -m 644 nls/$language.cat $dest/tcsh
     echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
   fi
-done > tcsh.lang << _EOF
+done > %{name}.lang << _EOF
 de german
 el greek
 en C
@@ -77,17 +76,17 @@ rm -rf %{buildroot}
 %post
 if [ $1 -eq 1 ] ; then
   if [ ! -f /etc/shells ]; then
-   echo "%{_bindir}/tcsh" >> /etc/shells
+   echo "%{_bindir}/%{name}" >> /etc/shells
    echo "%{_bindir}/csh"  >> /etc/shells
-   echo "/bin/tcsh" >> /etc/shells
+   echo "/bin/%{name}" >> /etc/shells
    echo "/bin/csh"  >> /etc/shells
   else
-   grep -q '^%{_bindir}/tcsh$' /etc/shells || \
-   echo "%{_bindir}/tcsh" >> /etc/shells
+   grep -q '^%{_bindir}/%{name}$' /etc/shells || \
+   echo "%{_bindir}/%{name}" >> /etc/shells
    grep -q '^%{_bindir}/csh$'  /etc/shells || \
    echo "%{_bindir}/csh"  >> /etc/shells
-   grep -q '^/bin/tcsh$' /etc/shells || \
-   echo "/bin/tcsh" >> /etc/shells
+   grep -q '^/bin/%{name}$' /etc/shells || \
+   echo "/bin/%{name}" >> /etc/shells
    grep -q '^/bin/csh$'  /etc/shells || \
    echo "/bin/csh"  >> /etc/shells
   fi
@@ -95,25 +94,27 @@ fi
 
 %postun
 if [ $1 -eq 0 ] ; then
-  if [ ! -x %{_bindir}/tcsh ]; then
-   grep -v '^%{_bindir}/tcsh$'  /etc/shells | \
+  if [ ! -x %{_bindir}/%{name} ]; then
+   grep -v '^%{_bindir}/%{name}$'  /etc/shells | \
    grep -v '^%{_bindir}/csh$' > /etc/shells.rpm && \
    mv /etc/shells.rpm /etc/shells
   fi
-  if [ ! -x /bin/tcsh ]; then
-   grep -v '^/bin/tcsh$'  /etc/shells | \
+  if [ ! -x /bin/%{name} ]; then
+   grep -v '^/bin/%{name}$'  /etc/shells | \
    grep -v '^/bin/csh$' > /etc/shells.rpm && \
    mv /etc/shells.rpm /etc/shells
   fi
 fi
 
-%files -f tcsh.lang
+%files -f %{name}.lang
 %defattr(-,root,root,-)
-%{_bindir}/tcsh
+%{_bindir}/%{name}
 %{_bindir}/csh
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 6.22.02-3
+-   Fix for requires
 *   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 6.22.02-2
 -   GCC-10 support.
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 6.22.02-1

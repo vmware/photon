@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        18.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,13 +11,13 @@ URL:            https://github.com/nodejs/node
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define sha512  node=60607a813a4f1ec5b844471b7d1eb61875cb25960da36708fd6f1b9406309e0ad5a6a060feb9b520c002b06a454664ccfe423ed1058c12b13d0892fd889e439b
 
-BuildRequires:  coreutils >= 8.22
+BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
 BuildRequires:  ninja-build
 
-Requires:       (coreutils >= 8.22 or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       python3
 Requires:       zlib
 
@@ -52,7 +52,7 @@ sh ./configure \
 
 %install
 ./tools/install.py install %{buildroot} %{_prefix}
-rm -fr %{buildroot}%{_libdir}/dtrace/  # No systemtap support.
+rm -fr %{buildroot}%{_libdir}/dtrace/
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
 
@@ -75,7 +75,6 @@ make cctest %{?_smp_mflags}
 %{_bindir}/*
 %{_libdir}/node_modules/*
 %{_mandir}/man*/*
-%doc CHANGELOG.md LICENSE README.md
 
 %files devel
 %defattr(-,root,root)
@@ -85,6 +84,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 18.12.1-2
+- Fix for requires
 * Tue Dec 13 2022 Shivani Agarwal <shivania2@vmware.com> 18.12.1-1
 - Upgrade to 18.12.1 for  CVE-2022-43548
 * Wed Oct 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-2

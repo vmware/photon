@@ -28,15 +28,19 @@ command-line frontend, parted, which can also be used in scripts.
 #Add a header to allow building with glibc-2.28 or later
 sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 
-%configure --without-readline --disable-debug \
-	   --disable-nls --disable-device-mapper
-make %{?_smp_mflags}
+%configure \
+    --without-readline \
+    --disable-debug \
+    --disable-nls \
+    --disable-device-mapper
+
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)

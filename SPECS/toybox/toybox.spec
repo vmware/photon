@@ -1,6 +1,10 @@
+# also defined in coreutils.spec and coreutils-selinux.spec
+%define coreutils_present           %{_sharedstatedir}/rpm-state/coreutils
+%define coreutils_selinux_present   %{_sharedstatedir}/rpm-state/coreutils-selinux
+
 Name:           toybox
-Version:        0.8.6
-Release:        4%{?dist}
+Version:        0.8.9
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -9,18 +13,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2d8f9cc3a6bd7ee5bd4bce77399916aa90cd8acb90448f4e1b79c605c7f854c19016f5eb3704f112855c8347e69f0f4dc42f9755dd2ec975ac7799d00bc597be
+%define sha512  %{name}=73a3ec2a0d69b1566e1663e94b2bc7764b9f93e53978725f036f066837ab2769033e8bf17d5550e565656781cacf27d93960dd611ffed5425fa006d1d3104351
 
-Patch0: toybox-change-toys-path.patch
+Patch0: %{name}-change-toys-path.patch
 
-Source1: config-toybox
-Source2: toybox-toys
+Source1: config-%{name}
+Source2: %{name}-toys
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 
 Requires:       openssl
 Requires:       zlib
+
+Provides:       /bin/grep
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -29,12 +35,12 @@ standards-compliant, and powerful enough to turn Android into a development
 environment.
 
 %package docs
-Summary:    toybox docs
+Summary:    %{name} docs
 Group:      Documentation
 Requires:   %{name} = %{version}-%{release}
 
 %description docs
-The package contains toybox doc files.
+The package contains %{name} doc files.
 
 %prep
 %autosetup -p1
@@ -45,323 +51,442 @@ cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g" %{?_smp_mflags}
 
 %install
-install -d %{buildroot}%{_bindir}
-PREFIX=%{buildroot} make install %{?_smp_mflags}
-mv %{buildroot}/bin/%{name} %{buildroot}%{_bindir}/toybox
-chmod 755 %{buildroot}%{_bindir}/toybox
-install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/toybox-toys
+install -d %{buildroot}{%{_bindir},%{_sbindir}}
+%make_install %{?_smp_mflags} PREFIX=%{buildroot}
+mv %{buildroot}/bin/* %{buildroot}%{_bindir}
+mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
+chmod 755 %{buildroot}%{_bindir}/%{name}
+install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}-toys
 
 %if 0%{?with_check}
 %check
-# Do not run all tests, skip losetup
-# make tests
+# Do not run all tests, skip losetup make tests
 sed -i "s/^  if \[ \$# -ne 0 \]/  if false; /" scripts/test.sh
 pushd tests
-tests_to_run=`ls *.test | sed 's/.test//;/losetup/d'`
+tests_to_run=$(ls *.test | sed 's/.test//;/losetup/d')
 popd
-tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
+tests_to_run=$(echo $tests_to_run | sed -e 's/pkill//g')
 ./scripts/test.sh $tests_to_run
 %endif
 
-%define mktoy() %{_bindir}/toybox ln -sf %{_bindir}/toybox %1
+%global _mktoy_() \
+mktoy() { \
+  local arg='' \
+  for arg in $@; do \
+    %{_bindir}/toybox ln -sf %{_bindir}/toybox "${arg}" \
+  done \
+}
 
 %posttrans
-%{_bindir}/toybox-toys --install
+%{_bindir}/%{name}-toys --install
 
 %preun
-%{_bindir}/toybox-toys --uninstall
+%{_bindir}/%{name}-toys --uninstall
 
 %triggerpostun -- dos2unix
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/dos2unix
-%mktoy /usr/bin/unix2dos
+%{_mktoy_}
+mktoy %{_bindir}/dos2unix %{_bindir}/unix2dos
 
 %triggerpostun -- bzip2
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/bunzip2
-%mktoy /usr/bin/bzcat
+%{_mktoy_}
+mktoy %{_bindir}/bunzip2 %{_bindir}/bzcat
 
 %triggerpostun -- coreutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/cat
-%mktoy /bin/chgrp
-%mktoy /bin/chmod
-%mktoy /bin/chown
-%mktoy /bin/cksum
-%mktoy /bin/cp
-%mktoy /bin/date
-%mktoy /bin/df
-%mktoy /bin/echo
-%mktoy /bin/false
-%mktoy /bin/ln
-%mktoy /bin/ls
-%mktoy /bin/mkdir
-%mktoy /bin/mknod
-%mktoy /bin/mktemp
-%mktoy /bin/mv
-%mktoy /bin/nice
-%mktoy /bin/printenv
-%mktoy /bin/pwd
-%mktoy /bin/rm
-%mktoy /bin/rmdir
-%mktoy /bin/sleep
-%mktoy /bin/stat
-%mktoy /bin/stty
-%mktoy /bin/sync
-%mktoy /bin/touch
-%mktoy /bin/true
-%mktoy /bin/uname
-%mktoy /usr/bin/[
-%mktoy /usr/bin/base64
-%mktoy /usr/bin/basename
-%mktoy /usr/bin/comm
-%mktoy /usr/bin/cut
-%mktoy /usr/bin/dirname
-%mktoy /usr/bin/du
-%mktoy /usr/bin/env
-%mktoy /usr/bin/expand
-%mktoy /usr/bin/factor
-%mktoy /usr/bin/groups
-%mktoy /usr/bin/head
-%mktoy /usr/bin/id
-%mktoy /usr/bin/install
-%mktoy /usr/bin/link
-%mktoy /usr/bin/logname
-%mktoy /usr/bin/md5sum
-%mktoy /usr/bin/mkfifo
-%mktoy /usr/bin/nl
-%mktoy /usr/bin/nohup
-%mktoy /usr/bin/nproc
-%mktoy /usr/bin/od
-%mktoy /usr/bin/paste
-%mktoy /usr/bin/printf
-%mktoy /usr/bin/readlink
-%mktoy /usr/bin/realpath
-%mktoy /usr/bin/seq
-%mktoy /usr/bin/sha1sum
-%mktoy /usr/bin/sha224sum
-%mktoy /usr/bin/sha256sum
-%mktoy /usr/bin/sha384sum
-%mktoy /usr/bin/sha512sum
-%mktoy /usr/bin/shred
-%mktoy /usr/bin/sort
-%mktoy /usr/bin/split
-%mktoy /usr/bin/tac
-%mktoy /usr/bin/tail
-%mktoy /usr/bin/tee
-%mktoy /usr/bin/test
-%mktoy /usr/bin/timeout
-%mktoy /usr/bin/truncate
-%mktoy /usr/bin/tty
-%mktoy /usr/bin/uniq
-%mktoy /usr/bin/unlink
-%mktoy /usr/bin/wc
-%mktoy /usr/bin/who
-%mktoy /usr/bin/whoami
-%mktoy /usr/bin/yes
-%mktoy /usr/sbin/chroot
+[ -f %{coreutils_selinux_present} ] && exit 0
+%{_mktoy_}
+mktoy %{_bindir}/cat \
+    %{_bindir}/chgrp \
+    %{_bindir}/chmod \
+    %{_bindir}/chown \
+    %{_bindir}/cksum \
+    %{_bindir}/cp \
+    %{_bindir}/date \
+    %{_bindir}/df \
+    %{_bindir}/echo \
+    %{_bindir}/false \
+    %{_bindir}/ln \
+    %{_bindir}/ls \
+    %{_bindir}/mkdir \
+    %{_bindir}/mknod \
+    %{_bindir}/mktemp \
+    %{_bindir}/mv \
+    %{_bindir}/nice \
+    %{_bindir}/printenv \
+    %{_bindir}/pwd \
+    %{_bindir}/rm \
+    %{_bindir}/rmdir \
+    %{_bindir}/sleep \
+    %{_bindir}/stat \
+    %{_bindir}/stty \
+    %{_bindir}/sync \
+    %{_bindir}/touch \
+    %{_bindir}/true \
+    %{_bindir}/uname \
+    %{_bindir}/[ \
+    %{_bindir}/base64 \
+    %{_bindir}/basename \
+    %{_bindir}/comm \
+    %{_bindir}/cut \
+    %{_bindir}/dirname \
+    %{_bindir}/du \
+    %{_bindir}/env \
+    %{_bindir}/expand \
+    %{_bindir}/factor \
+    %{_bindir}/groups \
+    %{_bindir}/head \
+    %{_bindir}/id \
+    %{_bindir}/install \
+    %{_bindir}/link \
+    %{_bindir}/logname \
+    %{_bindir}/md5sum \
+    %{_bindir}/mkfifo \
+    %{_bindir}/nl \
+    %{_bindir}/nohup \
+    %{_bindir}/nproc \
+    %{_bindir}/od \
+    %{_bindir}/paste \
+    %{_bindir}/printf \
+    %{_bindir}/readlink \
+    %{_bindir}/realpath \
+    %{_bindir}/seq \
+    %{_bindir}/sha1sum \
+    %{_bindir}/sha224sum \
+    %{_bindir}/sha256sum \
+    %{_bindir}/sha384sum \
+    %{_bindir}/sha512sum \
+    %{_bindir}/shred \
+    %{_bindir}/sort \
+    %{_bindir}/split \
+    %{_bindir}/tac \
+    %{_bindir}/tail \
+    %{_bindir}/tee \
+    %{_bindir}/test \
+    %{_bindir}/timeout \
+    %{_bindir}/truncate \
+    %{_bindir}/tty \
+    %{_bindir}/uniq \
+    %{_bindir}/unlink \
+    %{_bindir}/wc \
+    %{_bindir}/who \
+    %{_bindir}/whoami \
+    %{_bindir}/yes \
+    %{_sbindir}/chroot
+
+%triggerpostun -- coreutils-selinux
+[ $2 -eq 0 ] || exit 0
+[ -f %{coreutils_present} ] && exit 0
+%{_mktoy_}
+mktoy %{_bindir}/cat \
+    %{_bindir}/chgrp \
+    %{_bindir}/chmod \
+    %{_bindir}/chown \
+    %{_bindir}/cksum \
+    %{_bindir}/cp \
+    %{_bindir}/date \
+    %{_bindir}/df \
+    %{_bindir}/echo \
+    %{_bindir}/false \
+    %{_bindir}/ln \
+    %{_bindir}/ls \
+    %{_bindir}/mkdir \
+    %{_bindir}/mknod \
+    %{_bindir}/mktemp \
+    %{_bindir}/mv \
+    %{_bindir}/nice \
+    %{_bindir}/printenv \
+    %{_bindir}/pwd \
+    %{_bindir}/rm \
+    %{_bindir}/rmdir \
+    %{_bindir}/sleep \
+    %{_bindir}/stat \
+    %{_bindir}/stty \
+    %{_bindir}/sync \
+    %{_bindir}/touch \
+    %{_bindir}/true \
+    %{_bindir}/uname \
+    %{_bindir}/[ \
+    %{_bindir}/base64 \
+    %{_bindir}/basename \
+    %{_bindir}/comm \
+    %{_bindir}/cut \
+    %{_bindir}/dirname \
+    %{_bindir}/du \
+    %{_bindir}/env \
+    %{_bindir}/expand \
+    %{_bindir}/factor \
+    %{_bindir}/groups \
+    %{_bindir}/head \
+    %{_bindir}/id \
+    %{_bindir}/install \
+    %{_bindir}/link \
+    %{_bindir}/logname \
+    %{_bindir}/md5sum \
+    %{_bindir}/mkfifo \
+    %{_bindir}/nl \
+    %{_bindir}/nohup \
+    %{_bindir}/nproc \
+    %{_bindir}/od \
+    %{_bindir}/paste \
+    %{_bindir}/printf \
+    %{_bindir}/readlink \
+    %{_bindir}/realpath \
+    %{_bindir}/seq \
+    %{_bindir}/sha1sum \
+    %{_bindir}/sha224sum \
+    %{_bindir}/sha256sum \
+    %{_bindir}/sha384sum \
+    %{_bindir}/sha512sum \
+    %{_bindir}/shred \
+    %{_bindir}/sort \
+    %{_bindir}/split \
+    %{_bindir}/tac \
+    %{_bindir}/tail \
+    %{_bindir}/tee \
+    %{_bindir}/test \
+    %{_bindir}/timeout \
+    %{_bindir}/truncate \
+    %{_bindir}/tty \
+    %{_bindir}/uniq \
+    %{_bindir}/unlink \
+    %{_bindir}/wc \
+    %{_bindir}/who \
+    %{_bindir}/whoami \
+    %{_bindir}/yes \
+    %{_sbindir}/chroot
 
 %triggerpostun -- cpio
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/cpio
+%{_mktoy_}
+mktoy %{_bindir}/cpio
 
 %triggerpostun -- diffutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/cmp
+%{_mktoy_}
+mktoy %{_bindir}/cmp
 
 %triggerpostun -- elixir
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/mix
+%{_mktoy_}
+mktoy %{_bindir}/mix
 
 %triggerpostun -- expect
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/mkpasswd
+%{_mktoy_}
+mktoy %{_bindir}/mkpasswd
 
 %triggerpostun -- mkpasswd
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/mkpasswd
+%{_mktoy_}
+mktoy /usr/bin/mkpasswd
 
 %triggerpostun -- e2fsprogs
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/chattr
-%mktoy /bin/lsattr
+%{_mktoy_}
+mktoy %{_bindir}/chattr %{_bindir}/lsattr
 
 %triggerpostun -- file
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/file
+%{_mktoy_}
+mktoy %{_bindir}/file
 
 %triggerpostun -- findutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/find
-%mktoy /usr/bin/xargs
+%{_mktoy_}
+mktoy %{_bindir}/find %{_bindir}/xargs
 
 %triggerpostun -- grep
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/egrep
-%mktoy /bin/fgrep
-%mktoy /bin/grep
+%{_mktoy_}
+mktoy %{_bindir}/egrep \
+      %{_bindir}/fgrep \
+      %{_bindir}/grep
 
 %triggerpostun -- gzip
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/gunzip
-%mktoy /usr/bin/gzip
-%mktoy /usr/bin/zcat
+%{_mktoy_}
+mktoy %{_bindir}/gunzip \
+      %{_bindir}/gzip \
+      %{_bindir}/zcat
 
 %triggerpostun -- iotop
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/sbin/iotop
+%{_mktoy_}
+mktoy %{_sbindir}/iotop
 
 %triggerpostun -- iputils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/ping
-%mktoy /usr/bin/ping6
+%{_mktoy_}
+mktoy %{_bindir}/ping %{_bindir}/ping6
 
 %triggerpostun -- kbd
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/chvt
+%{_mktoy_}
+mktoy %{_bindir}/chvt
 
 %triggerpostun -- kmod
 [ $2 -eq 0 ] || exit 0
-%mktoy /sbin/insmod
-%mktoy /sbin/lsmod
-%mktoy /sbin/modinfo
-%mktoy /sbin/rmmod
+%{_mktoy_}
+mktoy %{_sbindir}/insmod \
+      %{_sbindir}/lsmod \
+      %{_sbindir}/modinfo \
+      %{_sbindir}/rmmod
 
 %triggerpostun -- netcat
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/netcat
-%mktoy /usr/bin/nc
+%{_mktoy_}
+mktoy %{_bindir}/netcat %{_bindir}/nc
 
 %triggerpostun -- net-tools
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/hostname
-%mktoy /bin/netstat
-%mktoy /sbin/ifconfig
+%{_mktoy_}
+mktoy %{_bindir}/hostname \
+      %{_bindir}/netstat \
+      %{_sbindir}/ifconfig
 
 %triggerpostun -- parted
 [ $2 -eq 0 ] || exit 0
-%mktoy /sbin/partprobe
+%{_mktoy_}
+mktoy %{_sbindir}/partprobe
 
 %triggerpostun -- patch
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/patch
+%{_mktoy_}
+mktoy %{_bindir}/patch
 
 %triggerpostun -- pciutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/sbin/lspci
+%{_mktoy_}
+mktoy %{_sbindir}/lspci
 
 %triggerpostun -- procps-ng
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/ps
-%mktoy /usr/bin/pidof
-%mktoy /usr/bin/free
-%mktoy /usr/bin/w
-%mktoy /usr/bin/pgrep
-%mktoy /usr/bin/uptime
-%mktoy /usr/bin/vmstat
-%mktoy /usr/bin/pmap
-%mktoy /usr/bin/pwdx
-%mktoy /usr/bin/top
-%mktoy /usr/bin/pkill
-%mktoy /usr/sbin/sysctl
+%{_mktoy_}
+mktoy %{_bindir}/ps \
+      %{_bindir}/pidof \
+      %{_bindir}/free \
+      %{_bindir}/w \
+      %{_bindir}/pgrep \
+      %{_bindir}/uptime \
+      %{_bindir}/vmstat \
+      %{_bindir}/pmap \
+      %{_bindir}/pwdx \
+      %{_bindir}/top \
+      %{_bindir}/pkill \
+      %{_sbindir}/sysctl
 
 %triggerpostun -- psmisc
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/killall
+%{_mktoy_}
+mktoy %{_bindir}/killall
 
 %triggerpostun -- sed
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/sed
+%{_mktoy_}
+mktoy %{_bindir}/sed
 
 %triggerpostun -- shadow-tools
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/login
-%mktoy /bin/su
-%mktoy /usr/bin/passwd
+%{_mktoy_}
+mktoy %{_bindir}/login \
+      %{_bindir}/su \
+      %{_bindir}/passwd
 
 %triggerpostun -- tar
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/tar
+%{_mktoy_}
+mktoy %{_bindir}/tar
 
 %triggerpostun -- usbutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/lsusb
+%{_mktoy_}
+mktoy %{_bindir}/lsusb
 
 %triggerpostun -- util-linux
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/dmesg
-%mktoy /bin/kill
-%mktoy /bin/mount
-%mktoy /bin/mountpoint
-%mktoy /bin/umount
-%mktoy /sbin/blkid
-%mktoy /sbin/blockdev
-%mktoy /sbin/hwclock
-%mktoy /sbin/losetup
-%mktoy /sbin/mkswap
-%mktoy /sbin/pivot_root
-%mktoy /sbin/swapoff
-%mktoy /sbin/swapon
-%mktoy /sbin/switch_root
-%mktoy /usr/bin/cal
-%mktoy /usr/bin/eject
-%mktoy /usr/bin/fallocate
-%mktoy /usr/bin/flock
-%mktoy /usr/bin/ionice
-%mktoy /usr/bin/nsenter
-%mktoy /usr/bin/renice
-%mktoy /usr/bin/rev
-%mktoy /usr/bin/setsid
-%mktoy /usr/bin/taskset
-%mktoy /usr/sbin/fsfreeze
-%mktoy /usr/sbin/rfkill
+%{_mktoy_}
+mktoy %{_bindir}/dmesg \
+      %{_bindir}/kill \
+      %{_bindir}/mount \
+      %{_bindir}/mountpoint \
+      %{_bindir}/umount \
+      %{_sbindir}/blkid \
+      %{_sbindir}/blockdev \
+      %{_sbindir}/hwclock \
+      %{_sbindir}/losetup \
+      %{_sbindir}/mkswap \
+      %{_sbindir}/pivot_root \
+      %{_sbindir}/swapoff \
+      %{_sbindir}/swapon \
+      %{_sbindir}/switch_root \
+      %{_bindir}/cal \
+      %{_bindir}/eject \
+      %{_bindir}/fallocate \
+      %{_bindir}/flock \
+      %{_bindir}/ionice \
+      %{_bindir}/nsenter \
+      %{_bindir}/renice \
+      %{_bindir}/rev \
+      %{_bindir}/setsid \
+      %{_bindir}/taskset \
+      %{_sbindir}/fsfreeze \
+      %{_sbindir}/rfkill
 
 %triggerpostun -- vim-extra
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/xxd
+%{_mktoy_}
+mktoy %{_bindir}/xxd
+
+%triggerpostun -- wget
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_bindir}/wget
 
 %triggerpostun -- which
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/which
+%{_mktoy_}
+mktoy %{_bindir}/which
 
 %files
 %defattr(-,root,root)
-%{_bindir}/toybox
-%{_bindir}/toybox-toys
+%{_bindir}/%{name}
+%{_bindir}/%{name}-toys
 
 # bzip2
 %ghost %{_bindir}/bunzip2
 %ghost %{_bindir}/bzcat
 
 # coreutils
-%ghost /bin/cat
-%ghost /bin/chgrp
-%ghost /bin/chmod
-%ghost /bin/chown
-%ghost /bin/cksum
-%ghost /bin/cp
-%ghost /bin/date
-%ghost /bin/df
-%ghost /bin/echo
-%ghost /bin/false
-%ghost /bin/ln
-%ghost /bin/ls
-%ghost /bin/mkdir
-%ghost /bin/mknod
-%ghost /bin/mktemp
-%ghost /bin/mv
-%ghost /bin/nice
-%ghost /bin/printenv
-%ghost /bin/pwd
-%ghost /bin/rm
-%ghost /bin/rmdir
-%ghost /bin/sleep
-%ghost /bin/stat
-%ghost /bin/stty
-%ghost /bin/sync
-%ghost /bin/touch
-%ghost /bin/true
-%ghost /bin/uname
+%ghost %{_bindir}/cat
+%ghost %{_bindir}/chgrp
+%ghost %{_bindir}/chmod
+%ghost %{_bindir}/chown
+%ghost %{_bindir}/cksum
+%ghost %{_bindir}/cp
+%ghost %{_bindir}/date
+%ghost %{_bindir}/df
+%ghost %{_bindir}/echo
+%ghost %{_bindir}/false
+%ghost %{_bindir}/ln
+%ghost %{_bindir}/ls
+%ghost %{_bindir}/mkdir
+%ghost %{_bindir}/mknod
+%ghost %{_bindir}/mktemp
+%ghost %{_bindir}/mv
+%ghost %{_bindir}/nice
+%ghost %{_bindir}/printenv
+%ghost %{_bindir}/pwd
+%ghost %{_bindir}/rm
+%ghost %{_bindir}/rmdir
+%ghost %{_bindir}/sleep
+%ghost %{_bindir}/stat
+%ghost %{_bindir}/stty
+%ghost %{_bindir}/sync
+%ghost %{_bindir}/touch
+%ghost %{_bindir}/true
+%ghost %{_bindir}/uname
 %ghost %{_bindir}/[
 %ghost %{_bindir}/base64
 %ghost %{_bindir}/basename
@@ -413,7 +538,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_sbindir}/chroot
 
 # cpio
-%ghost /bin/cpio
+%ghost %{_bindir}/cpio
 
 # diffutils
 %ghost %{_bindir}/cmp
@@ -425,8 +550,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/mkpasswd
 
 # e2fsprogs
-%ghost /bin/chattr
-%ghost /bin/lsattr
+%ghost %{_bindir}/chattr
+%ghost %{_bindir}/lsattr
 
 # file
 %ghost %{_bindir}/file
@@ -436,9 +561,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/xargs
 
 # grep
-%ghost /bin/egrep
-%ghost /bin/fgrep
-%ghost /bin/grep
+%ghost %{_bindir}/egrep
+%ghost %{_bindir}/fgrep
+%ghost %{_bindir}/grep
 
 # gzip
 %ghost %{_bindir}/gunzip
@@ -456,22 +581,22 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/chvt
 
 # kmod
-%ghost /sbin/insmod
-%ghost /sbin/lsmod
-%ghost /sbin/modinfo
-%ghost /sbin/rmmod
+%ghost %{_sbindir}/insmod
+%ghost %{_sbindir}/lsmod
+%ghost %{_sbindir}/modinfo
+%ghost %{_sbindir}/rmmod
 
 # netcat
-%ghost /bin/netcat
+%ghost %{_bindir}/netcat
 %ghost %{_bindir}/nc
 
 # net-tools
-%ghost /bin/hostname
-%ghost /bin/netstat
-%ghost /sbin/ifconfig
+%ghost %{_bindir}/hostname
+%ghost %{_bindir}/netstat
+%ghost %{_sbindir}/ifconfig
 
 # parted
-%ghost /sbin/partprobe
+%ghost %{_sbindir}/partprobe
 
 # patch
 %ghost %{_bindir}/patch
@@ -497,11 +622,11 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/killall
 
 # sed
-%ghost /bin/sed
+%ghost %{_bindir}/sed
 
 # shadow-tools
-%ghost /bin/login
-%ghost /bin/su
+%ghost %{_bindir}/login
+%ghost %{_bindir}/su
 %ghost %{_bindir}/passwd
 
 # tar
@@ -511,20 +636,20 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost %{_bindir}/lsusb
 
 # util-linux
-%ghost /bin/dmesg
-%ghost /bin/kill
-%ghost /bin/mount
-%ghost /bin/mountpoint
-%ghost /bin/umount
-%ghost /sbin/blkid
-%ghost /sbin/blockdev
-%ghost /sbin/hwclock
-%ghost /sbin/losetup
-%ghost /sbin/mkswap
-%ghost /sbin/pivot_root
-%ghost /sbin/swapoff
-%ghost /sbin/swapon
-%ghost /sbin/switch_root
+%ghost %{_bindir}/dmesg
+%ghost %{_bindir}/kill
+%ghost %{_bindir}/mount
+%ghost %{_bindir}/mountpoint
+%ghost %{_bindir}/umount
+%ghost %{_sbindir}/blkid
+%ghost %{_sbindir}/blockdev
+%ghost %{_sbindir}/hwclock
+%ghost %{_sbindir}/losetup
+%ghost %{_sbindir}/mkswap
+%ghost %{_sbindir}/pivot_root
+%ghost %{_sbindir}/swapoff
+%ghost %{_sbindir}/swapon
+%ghost %{_sbindir}/switch_root
 %ghost %{_bindir}/cal
 %ghost %{_bindir}/eject
 %ghost %{_bindir}/fallocate
@@ -540,6 +665,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 # vim-extra
 %ghost %{_bindir}/xxd
+
+# wget
+%ghost %{_bindir}/wget
 
 # which
 %ghost %{_bindir}/which
@@ -558,9 +686,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/oneit
 %{_sbindir}/vconfig
 %{_bindir}/acpi
-%{_bindir}/catv
 %{_bindir}/count
-%{_bindir}/devmem
 %{_bindir}/ftpget
 %{_bindir}/ftpput
 %{_bindir}/hexedit
@@ -576,9 +702,10 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %files docs
 %defattr(-,root,root)
-%doc README LICENSE
 
 %changelog
+* Wed Mar 15 2023 Harinadh D <hdommaraju@vmware.com> 0.8.9-1
+- version upgrade
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-4
 - Add rules for mkpasswd
 * Sat Apr 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.6-3

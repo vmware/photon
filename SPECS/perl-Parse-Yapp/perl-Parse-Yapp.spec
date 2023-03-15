@@ -1,17 +1,17 @@
 Summary:        Perl extension for generating and using LALR parsers
 Name:           perl-Parse-Yapp
 Version:        1.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 URL:            https://metacpan.org/release/Parse-Yapp
 Group:          Development/Libraries/Perl
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-%{version}.tar.gz
-%define sha1 Parse-Yapp=dad25e0e73a4873ef021308b23d51bb2ccdc7ce4
+%define sha512  Parse-Yapp=dbf6182d4813ff7e355ea1713c748bfdf8290040a93f123acec645c7a1733fe457ab6e0ab51c4ec83cf82bc43d7fb35cbf89875df7b5c2ffc9635e85458cfeee
 
 BuildArch:      noarch
-BuildRequires:  coreutils
+BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  make
 BuildRequires:  perl
 
@@ -24,29 +24,30 @@ object oriented interface.  The script yapp is a front-end to the Parse::Yapp
 module and let you easily create a Perl OO parser from an input grammar file.
 
 %prep
-%setup -q -n Parse-Yapp-%{version}
-chmod 644 README lib/Parse/{*.pm,Yapp/*.pm}
+%autosetup -p1 -n Parse-Yapp-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
-make %{?_smp_mflags}
+%make_build
 
 %install
 make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
 chmod -R u+w %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 make test %{?_smp_mflags}
+%endif
 
 %files
 %defattr(-,root,root,-)
-%doc Changes README
 %{_bindir}/yapp
 %{perl_vendorlib}/Parse/
 %{_mandir}/man1/*.1*
 %{_mandir}/man3/*.3*
 
-
 %changelog
-*   Fri Mar 13 2020 Shreyas B. <shreyasb@vmware.com> 1.21-1
--   Initial version.
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 1.21-2
+- Fix for requires
+* Fri Mar 13 2020 Shreyas B. <shreyasb@vmware.com> 1.21-1
+- Initial version.

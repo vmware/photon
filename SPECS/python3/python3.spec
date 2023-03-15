@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -66,7 +66,7 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires:       (coreutils or toybox)
+Requires:       (coreutils or coreutils-selinux)
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
@@ -240,18 +240,14 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-, root, root)
-%doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/%{name}
 %{_bindir}/python%{VER}
 %{_mandir}/*/*
-
 %dir %{_libdir}/python%{VER}
 %{_libdir}/python%{VER}/site-packages/README.txt
-
 %{_libdir}/libpython3.so
 %{_libdir}/libpython%{VER}.so.1.0
-
 %exclude %{_libdir}/python%{VER}/ctypes/test
 %exclude %{_libdir}/python%{VER}/distutils/tests
 %exclude %{_libdir}/python%{VER}/sqlite3/test
@@ -261,7 +257,6 @@ rm -rf %{buildroot}/*
 
 %files libs
 %defattr(-, root, root)
-%doc LICENSE README.rst
 %{_libdir}/python%{VER}
 %exclude %{_libdir}/python%{VER}/lib2to3
 %exclude %{_libdir}/python%{VER}/site-packages/
@@ -329,6 +324,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 3.10.0-11
+- Fix for requires
 * Mon Feb 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-10
 - Fix CVE-2020-10735
 * Sat Jan 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-9

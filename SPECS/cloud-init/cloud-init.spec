@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -64,7 +64,7 @@ BuildRequires: shadow
 Requires: shadow
 Requires: iproute2
 Requires: systemd
-Requires: (net-tools or toybox)
+Requires: net-tools
 Requires: python3
 Requires: python3-configobj
 Requires: python3-prettytable
@@ -157,6 +157,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 23.1.1-4
+- Fix for requires
 * Thu Apr 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-3
 - Fix CVE-2023-1786
 * Thu Mar 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-2

@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -84,7 +84,7 @@ Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
 Requires:   openssl
-Requires:   (toybox or coreutils)
+Requires:   (toybox or coreutils or coreutils-selinux)
 
 Conflicts:  libsolv < 0.7.19
 
@@ -325,6 +325,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.16.1.3-17
+- Fix for requires
 * Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-16
 - Fix patch parsing logic
 * Sun Feb 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-15

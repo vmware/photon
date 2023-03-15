@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.8p1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -58,7 +58,7 @@ Requires:   shadow
 Requires:   ncurses-terminfo
 Requires:   e2fsprogs-libs
 Requires:   openssh-clients = %{version}-%{release}
-Requires(post): /bin/chown
+Requires(post): /usr/bin/chown
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description server
@@ -196,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-6
+- Fix requires
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-5
 - Add systemd to Requires of server
 - Remove blfs tarball dependency

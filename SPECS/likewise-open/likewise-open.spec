@@ -17,14 +17,14 @@ Patch2:         fix_arm_build_dcerpc_lwopen.patch
 Patch3:         0001-likewise-open-compatibility-with-openssl-3.0.patch
 
 Requires:       Linux-PAM
-Requires:       (coreutils >= 8.22 or toybox)
+Requires:       coreutils
 Requires:       /bin/grep
 Requires:       krb5 >= 1.12
 Requires:       libxml2
 Requires:       haveged >= 1.9
 Requires:       openldap >= 2.4
 Requires:       openssl >= 1.1.1
-Requires:       (procps-ng or toybox)
+Requires:       procps-ng
 Requires:       /bin/sed
 Requires:       sqlite-libs
 
