@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -16,8 +16,7 @@ Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 %define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
 Source1: fedora.patches
-
-Source2: grub-sbat.csv
+Source2: grub-sbat.csv.in
 
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 %include %{SOURCE1}
@@ -204,6 +203,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Tue Mar 14 2023 Alexey Makhalov <amakhalov@vmware.com> 2.06-9
+- Fix Photon URL in sbat table.
 * Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.06-8
 - Fix aarch64 build error
 * Fri Feb 24 2023 Alexey Makhalov <amakhalov@vmware.com> 2.06-7
