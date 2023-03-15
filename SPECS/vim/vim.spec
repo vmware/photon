@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.0.1298
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -27,6 +27,7 @@ The VIM package contains a powerful text editor.
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
+Requires:   python3
 Requires:   %{name} = %{version}-%{release}
 Conflicts:  toybox < 0.8.2-2
 
@@ -176,6 +177,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1298-3
+- Add python3 requires to vim-extra
 * Tue Feb 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1298-2
 - Fix sh file syntax issue
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 9.0.1298-1
