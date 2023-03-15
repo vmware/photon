@@ -1,7 +1,7 @@
 From 0e8f8e0e3ddeb3392f1eb20278b6bccd607d2c42 Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Fri, 17 Feb 2023 09:02:19 +0000
-Subject: [PATCH 04/13] generate_initrd.sh: Remove rpmdb files from the
+Subject: [PATCH 04/16] generate_initrd.sh: Remove rpmdb files from the
  installer image, not needed in installer.
 
 Change-Id: Idefbe30cda8372ec78f38842dce17a47ffc02b01

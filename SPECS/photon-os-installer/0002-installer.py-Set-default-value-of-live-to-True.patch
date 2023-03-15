@@ -1,7 +1,7 @@
 From db093194a30c7328c3792c19407b3568061cc398 Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Mon, 27 Feb 2023 13:30:32 +0000
-Subject: [PATCH 02/13] installer.py: Set default value of "live" to True.
+Subject: [PATCH 02/16] installer.py: Set default value of "live" to True.
 
 Change-Id: Ia47223758899a112d1900d82b54f7798fbd99434
 ---

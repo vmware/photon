@@ -1,7 +1,7 @@
 From a4a1b9b0283169b92209cae8230d0ace74d6a99f Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Fri, 8 Apr 2022 07:18:22 +0000
-Subject: [PATCH 07/13] m_{postinstall,preinstall}.py: Fix post install
+Subject: [PATCH 07/16] m_{postinstall,preinstall}.py: Fix post install
  arbitrary script execution
 
 Post and pre install scripts are listed using os.listdir() after copying

@@ -1,7 +1,7 @@
 From 76713b3536a106c7b92338946a51f974919a1c3e Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Tue, 7 Mar 2023 16:24:41 +0000
-Subject: [PATCH 13/13] photon-os-installer: progressbar: Fix installer UI
+Subject: [PATCH 15/16] photon-os-installer: progressbar: Fix installer UI
 
 commit https://github.com/vmware/photon/commit/b4d48c6729bf15076220871bb63b156661a8fe32
 enabled dracut logs which produces dracut logs longer than

@@ -1,7 +1,7 @@
 From e1acdbabda7575ef151af22fc5981b22301e54d3 Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Wed, 8 Mar 2023 14:31:32 +0000
-Subject: [PATCH 11/13] ostreeinstaller.py: Use photon_release_version from
+Subject: [PATCH 12/16] ostreeinstaller.py: Use photon_release_version from
  installer object as                     key doesn't exist in 'known_keys'.
 
 Change-Id: I772a5b774a7a172b529df7bf6e28b303c92166c6

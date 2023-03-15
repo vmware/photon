@@ -1,0 +1,191 @@
+From 6ddb52f7afcb3d2b66d3546712e938cd522080a9 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Tue, 7 Mar 2023 10:01:25 -0800
+Subject: [PATCH 13/16] Add disk size percentages
+
+Change-Id: If83606389d03d71f7cb8aa8f2c874a92a4ab2f28
+---
+ docs/ks_config.md             | 35 +++++++++++++---
+ photon_installer/installer.py | 79 +++++++++++++++++++++++++++++------
+ 2 files changed, 96 insertions(+), 18 deletions(-)
+
+diff --git a/docs/ks_config.md b/docs/ks_config.md
+index e6dd010..272009a 100644
+--- a/docs/ks_config.md
++++ b/docs/ks_config.md
+@@ -1,6 +1,6 @@
+ # Kickstart Features
+ 
+-Kickstart config file is a json format with following possible parameters:
++The kickstart config file is a json format file with the following possible parameters:
+ 
+ 
+ ### _"additional_files":_ (optional)
+@@ -208,10 +208,34 @@ Loop device is also supported.
+       - _"/dev/hdX"_ : IDE drives based devices
+   - _"mountpoint":_ (required for non "swap" partitions)
+     - Mount point for the partition.
+-  - _"size":_ (required)
++  - _"size":_
++    - Exactly one of "size" or "sizepercent" (see below) is required.
+     - Size of the partition in MB. If 0 then partition is considered
+   as expansible to fill rest of the disk. Only one expansible
+   partition is allowed.
++  - _"sizepercent":_
++    - Size of the partition in percent of the total disk space.
++    - Only one of "size" and "sizepercent" can be set per partition.
++
++    Example - `/boot` has a fixed size of 128 MB, swap has 5 percent of
++    the total disk size and the root fs gets the remaining space:
++    ```json
++    "partitions": [
++    {
++      "mountpoint": "/",
++      "size": 0,
++      "filesystem": "ext4"
++    },
++    {
++      "mountpoint": "/boot",
++      "size": 128,
++      "filesystem": "ext4"
++    },
++    {
++      "sizepercent": 5,
++      "filesystem": "swap"
++    }
++    ```
+   - _"mkfs_options":_ (optional)
+     - Additional parameters for the mkfs command as a string
+   - _"fs_options":_ (optional)
+@@ -340,8 +364,9 @@ Loop device is also supported.
+   AB System Upgrade mechanism.
+     - **Acceptable values:** _true_, _false_
+     - **Default value:** _false_
+-
+-    Example: In given the partition table below, the "/" partition will have
++    - Note that the space set is per individual partition. So if the size is
++      for example set to 128 MB, a total of 256 MB will be used.
++    - Example: If given the partition table below, the "/" partition will have
+   a shadow partition but the "/sda" partition will not have a shadow partition:
+     ```json
+     {
+@@ -374,7 +399,7 @@ Loop device is also supported.
+  - _"hostname":_ set the host name.
+ 
+  - _"ethernets":_ Settings for ethernet interfaces. Each interface has an 'id',
+-    which can be any name which may be refrenced for examplev for VLANs. Can
++    which can be any name which may be referenced for example for VLANs. Can
+     be the interface name.
+ 
+     - Within any _'id'_:
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index cfd7388..63651c1 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -155,10 +155,48 @@ class Installer(object):
+         self.install_config = install_config
+ 
+         self.ab_present = self._is_ab_present()
+-
++        self._get_disk_sizes()
++        self._calc_size_percentages()
+         self._insert_boot_partitions()
+-
+         self._add_shadow_partitions()
++        self._check_disk_space()
++
++
++    def _get_disk_sizes(self):
++        partitions = self.install_config['partitions']
++        disk_sizes = {}
++        all_disks = set([p.get('disk', self.install_config['disk']) for p in partitions])
++        for disk in all_disks:
++            retval, size = CommandUtils.get_disk_size_bytes(disk)
++            if retval != 0:
++                self.logger.info("Error code: {}".format(retval))
++                raise Exception(f"Failed to get disk {disk} size")
++            disk_sizes[disk] = int(size)
++        self.disk_sizes = disk_sizes
++
++
++    def _calc_size_percentages(self):
++        partitions = self.install_config['partitions']
++        for partition in partitions:
++            if not 'sizepercent' in partition:
++                continue
++            size_percent = partition['sizepercent']
++            disk = partition.get('disk', self.install_config['disk'])
++            partition['size'] = int(self.disk_sizes[disk] * size_percent / (100 * 1024**2))
++
++
++    def _check_disk_space(self):
++        partitions = self.install_config['partitions']
++        disk_totals = {}
++        for partition in partitions:
++            disk = partition.get('disk', self.install_config['disk'])
++            if disk not in disk_totals:
++                disk_totals[disk] = 0
++            disk_totals[disk] += partition['size']
++        for disk, size in disk_totals.items():
++            disk_size = self.disk_sizes[disk] / 1024**2
++            if size > disk_size:
++                raise Exception(f"Total space requested for {disk} ({size} MB) exceeds disk size ({disk_size} MB)")
+ 
+ 
+     def execute(self):
+@@ -327,14 +365,33 @@ class Installer(object):
+         for partition in install_config['partitions']:
+             disk = partition.get('disk', default_disk)
+             mntpoint = partition.get('mountpoint', '')
++
+             if disk not in has_extensible:
+                 has_extensible[disk] = False
+-            size = partition['size']
+-            if size == 0:
+-                if has_extensible[disk]:
+-                    return "Disk {} has more than one extensible partition".format(disk)
+-                else:
+-                    has_extensible[disk] = True
++
++            if 'size' not in partition and 'sizepercent' not in partition:
++                return "Need to specify 'size' or 'sizepercent'"
++
++            if 'size' in partition:
++                if type(partition['size']) != int:
++                    return "'size' must be an integer"
++                if 'sizepercent' in partition:
++                    return "Only one of 'size' or 'sizepercent' can be specified"
++                size = partition['size']
++                if size == 0:
++                    if has_extensible[disk]:
++                        return "Disk {} has more than one extensible partition".format(disk)
++                    else:
++                        has_extensible[disk] = True
++
++            if 'sizepercent' in partition:
++                if type(partition['sizepercent']) != int:
++                    return "'sizepercent' must be an integer"
++                if partition['sizepercent'] <= 0:
++                    return "'sizepercent' must be greater than 0"
++                elif partition['sizepercent'] > 100:
++                    return "'sizepercent' must not be greater than 100"
++
+             if mntpoint != '':
+                 mountpoints.append(mntpoint)
+             if mntpoint == '/boot' and 'lvm' in partition:
+@@ -1378,11 +1435,7 @@ class Installer(object):
+         # same.
+         if self.ab_present:
+             for disk, l2entries in ptv.items():
+-                retval, total_disk_size = CommandUtils.get_disk_size_bytes(disk)
+-                if retval != 0:
+-                    self.logger.info("Error code: {}".format(retval))
+-                    raise Exception("Failed to get disk {0} size".format(disk))
+-                total_disk_size = int(total_disk_size)
++                total_disk_size = self.disk_sizes[disk]
+                 is_last_partition_ab = False
+                 used_size = 1 # first usable sector is 2048, 512 * 2048 = 1MB
+                 for l2 in l2entries:
+-- 
+2.23.1
+

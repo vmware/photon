@@ -1,7 +1,7 @@
 From 0d9d6f45339bebafd5135a434f13651caa72b093 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Thu, 2 Mar 2023 12:32:05 +0000
-Subject: [PATCH 10/13] photon-os-installer: Adding docs and sample_ks
+Subject: [PATCH 10/16] photon-os-installer: Adding docs and sample_ks
  directory
 
 - Moved ks_config.txt to docs/ks_config.md

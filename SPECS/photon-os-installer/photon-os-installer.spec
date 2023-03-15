@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -21,9 +21,12 @@ Patch6: 0007-m_-postinstall-preinstall-.py-Fix-post-install-arbit.patch
 Patch7: 0008-Update-isoInstaller.py.patch
 Patch8: 0009-setup.py-Bump-up-version-to-2.1.patch
 Patch9: 0010-photon-os-installer-Adding-docs-and-sample_ks-direct.patch
-Patch10: 0011-ostreeinstaller.py-Use-photon_release_version-from-i.patch
-Patch11: 0012-add-network-examples.patch
-Patch12: 0013-photon-os-installer-progressbar-Fix-installer-UI.patch
+Patch10: 0011-installer.py-Code-cleanup.patch
+Patch11: 0012-ostreeinstaller.py-Use-photon_release_version-from-i.patch
+Patch12: 0013-Add-disk-size-percentages.patch
+Patch13: 0014-add-network-examples.patch
+Patch14: 0015-photon-os-installer-progressbar-Fix-installer-UI.patch
+Patch15: 0016-installer-Fix-preinstall-dynamic-value-parsing.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -67,6 +70,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Wed Mar 15 2023 Ankit Jain <ankitja@vmware.com> 2.1-4
+- Sync with upstream
 * Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2.1-3
 - Sync with upstream
 * Wed Mar 1 2023 Oliver Kurth <okurth@vmware.com> 2.1-2

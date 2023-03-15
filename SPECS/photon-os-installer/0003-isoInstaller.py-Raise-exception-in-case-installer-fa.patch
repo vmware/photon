@@ -1,7 +1,7 @@
 From b42ba1c5dac0b0202a7dae93c02370afb611e615 Mon Sep 17 00:00:00 2001
 From: Piyush Gupta <gpiyush@vmware.com>
 Date: Mon, 27 Feb 2023 12:42:42 +0000
-Subject: [PATCH 03/13] isoInstaller.py: Raise exception in case installer
+Subject: [PATCH 03/16] isoInstaller.py: Raise exception in case installer
  fails.
 
 Fixes https://github.com/vmware/photon-os-installer/commit/ede221e30e17feb733f8327b1ba03386bc5884b5
