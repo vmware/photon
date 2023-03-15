@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:           u-boot
 Version:        2023.01
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ Source4:        fw_env.config
 Patch0:         0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch2:         0005-Fix-no-usb.patch
 Patch3:         add-saveenv-in-bootcmd.patch
+Patch4:         0001-Revert-board_r-Relocate-OF_EMBED-if-NEEDS_MANUAL_REL.patch
 
 BuildRequires:  bison
 Group:          Development/Tools
@@ -87,6 +88,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Wed Mar 15 2023 Ajay Kaher <akaher@vmware.com> 2023.01-3
+-   Fix rpi3 booting
 *   Thu Mar 02 2023 Piyush Gupta <gpiyush@vmware.com> 2023.01-2
 -   Added bison in BuildRequires.
 *   Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 2023.01-1
