@@ -2,7 +2,7 @@
 %global lkcm_version 5.0.0
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,11 +37,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 4.0.1-5.10.21-3-secure
+%define fips_canister_version 5.0.0-6.1.10-5%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
-
-Source17:       fips_canister-kallsyms
+%define sha512 fips-canister=3321bf7e690f9ea5d2baaa9d04b6950d80a7af71fb230bd2f687f73f6630b606522bddb56bd75e8596e6ea5faada804855a93218a67b9828d7c842028f33c13d
 %endif
 
 %if 0%{?canister_build}
@@ -157,7 +155,8 @@ Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 Security hardened Linux kernel.
-%if 0%{?fips}
+# Enable post FIPS certification
+%if 0
 This kernel is FIPS certified.
 %endif
 
@@ -229,8 +228,9 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE17} crypto/
 %endif
 
 %if 0%{?canister_build}
@@ -369,6 +369,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
+- Build with fips canister binary
 * Wed Mar 15 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-5
 - Add fips=2 and alg_request_report support
 * Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4

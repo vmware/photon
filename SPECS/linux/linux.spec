@@ -6,7 +6,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -66,10 +66,9 @@ Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 4.0.1-5.10.21-3-secure
+%define fips_canister_version 5.0.0-6.1.10-5%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
-Source17:       fips_canister-kallsyms
+%define sha512 fips-canister=3321bf7e690f9ea5d2baaa9d04b6950d80a7af71fb230bd2f687f73f6630b606522bddb56bd75e8596e6ea5faada804855a93218a67b9828d7c842028f33c13d
 %endif
 
 Source18:       spec_install_post.inc
@@ -188,11 +187,12 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %else
 %if 0%{?kat_build}
-Patch510: 0003-FIPS-broken-kattest.patch
+Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
@@ -260,7 +260,8 @@ Obsoletes:  linux-aws
 
 %description
 The Linux package contains the Linux kernel.
-%if 0%{?fips}
+# Enable post FIPS certification
+%if 0
 This kernel is FIPS certified.
 %endif
 
@@ -371,7 +372,14 @@ manipulation of eBPF programs and maps.
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M529
+%autopatch -p1 -m500 -M506
+
+%if 0%{?fips}
+%autopatch -p1 -m508 -M510
+%endif
+%if 0%{?kat_build}
+%autopatch -p1 -m511 -M511
+%endif
 
 %ifarch x86_64
 # SEV on VMware
@@ -406,8 +414,9 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE17} crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -697,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
+- Enable FIPS canister binary usage
 * Tue Mar 07 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1.10-5
 - Add ENA and EFA drivers to ARM build
 * Tue Mar 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
