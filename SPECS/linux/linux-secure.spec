@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -113,10 +113,11 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 # FIPS canister usage patch
 Patch508: 6.1-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 %if 0%{?kat_build}
-Patch510: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch511: 0003-FIPS-broken-kattest.patch
+Patch511: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
@@ -212,10 +213,10 @@ The kernel fips-canister
 %autopatch -p1 -m500 -M506
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %endif
 %if 0%{?kat_build}
-%autopatch -p1 -m510 -M511
+%autopatch -p1 -m511 -M512
 %endif
 
 %if 0%{?canister_build}
@@ -368,6 +369,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 15 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-5
+- Add fips=2 and alg_request_report support
 * Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
 - Fix initrd generation logic
 - Add dracut, initramfs to requires
