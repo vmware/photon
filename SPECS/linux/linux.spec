@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -706,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-7
+- Fix initramfs trigger
 * Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
 - Enable FIPS canister binary usage
 * Tue Mar 07 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1.10-5
