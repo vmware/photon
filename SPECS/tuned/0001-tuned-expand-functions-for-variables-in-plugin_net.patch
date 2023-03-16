@@ -1,6 +1,6 @@
-From c267d4fc599e6ac470dcd4db76782db5b6b62bb8 Mon Sep 17 00:00:00 2001
-From: Brenan Lamoreaux <blamoreaux@vmware.com>
-Date: Thu, 9 Mar 2023 23:44:29 +0000
+From 4d1fc446cf152e59adda5e67d693d3fd912e02e2 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Mon, 20 Mar 2023 17:33:50 +0000
 Subject: [PATCH] tuned: expand functions for variables in plugin_net
 
 tuned-adm verify fails on realtime profile (and likely others), because
@@ -9,39 +9,23 @@ in from tuned.conf files. Instead, they are simply parsed by delimiters
 like a normal parameter.
 
 Fix this issue by properly evaluating config file functions in plugin_net.py.
-
 ---
- tuned/plugins/plugin_net.py | 3 +++
- 1 file changed, 3 insertions(+)
+ tuned/plugins/plugin_net.py | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/tuned/plugins/plugin_net.py b/tuned/plugins/plugin_net.py
-index 1cc7b17..d38de90 100644
+index 1cc7b17..105646b 100644
 --- a/tuned/plugins/plugin_net.py
 +++ b/tuned/plugins/plugin_net.py
-@@ -6,6 +6,7 @@ from tuned.utils.nettool import ethcard
- from tuned.utils.commands import commands
- import os
- import re
-+from tuned.profiles import variables
-
- log = tuned.logs.get()
-
-@@ -158,6 +159,7 @@ class NetTuningPlugin(hotplug.Plugin):
- 		self._cmd = commands()
- 		self._re_ip_link_show = {}
- 		self._use_ip = True
-+		self._variables = variables.Variables()
-
- 	def _init_devices(self):
- 		self._devices_supported = True
-@@ -646,6 +648,7 @@ class NetTuningPlugin(hotplug.Plugin):
- 				command_name = context,
- 				device_name = device)
- 		if start:
-+			value = self._variables.expand(value)
- 			params_current = self._get_device_parameters(context,
- 					device)
- 			if params_current is None or len(params_current) == 0:
---
-2.39.0
+@@ -329,6 +329,8 @@ class NetTuningPlugin(hotplug.Plugin):
+ 	# parse features/coalesce config parameters (those defined in profile configuration)
+ 	# context is for error message
+ 	def _parse_config_parameters(self, value, context):
++		# expand config variables
++		value = self._variables.expand(value)
+ 		# split supporting various dellimeters
+ 		v = str(re.sub(r"(:\s*)|(\s+)|(\s*;\s*)|(\s*,\s*)", " ", value)).split()
+ 		lv = len(v)
+-- 
+2.35.6
 
