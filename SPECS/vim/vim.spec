@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.5169
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -16,11 +16,18 @@ Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1:        vimrc
 
-Patch0: CVE-2022-47024.patch
-Patch1: CVE-2023-0433.patch
-Patch2: CVE-2023-0049.patch
-Patch3: CVE-2023-0051.patch
-Patch4: CVE-2023-0054.patch
+Patch0:  CVE-2022-47024.patch
+Patch1:  CVE-2023-0433.patch
+Patch2:  CVE-2023-0049.patch
+Patch3:  CVE-2023-0051.patch
+Patch4:  CVE-2023-0054.patch
+Patch5:  CVE-2022-3520.patch
+Patch6:  CVE-2022-4292.patch
+Patch7:  CVE-2022-2946.patch
+Patch8:  CVE-2022-3591.patch
+Patch9:  CVE-2022-2819.patch
+Patch10: backport-for-CVE-2022-3324.patch
+Patch11: CVE-2022-3324.patch
 
 BuildRequires:  ncurses-devel
 
@@ -180,6 +187,10 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Feb 7 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-5
+- fixed multiple P1 CVEs
+- CVE-2022-3520, CVE-2022-4292, CVE-2022-2946
+- CVE-2022-3591, CVE-2022-2819, CVE-2022-3324
 * Tue Feb 7 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-4
 - fix CVE-2023-0433.patch, CVE-2023-0049.patch, CVE-2023-0051.patch, and CVE-2023-0054.patch
 * Mon Jan 30 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-3
