@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.277
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -16,14 +16,20 @@ Distribution:   Photon
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha512 %{name}=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
 
+%ifarch x86_64
 Source1: config
+%endif
+
 Source2: initramfs.trigger
 
 %define ena_version 1.6.0
 Source3: https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha512 ena_linux=3106ed2f098ae0963875443e6d6f96c6ccb6e379abd5616e8f4dd8c11f0adad45d2d2699729e658819b2141e87eff97517518b43b27ce94de1c0bf593ba77ad7
 
+%ifarch aarch64
 Source4: config_aarch64
+%endif
+
 # contains pre, postun, filetriggerun tasks
 Source6: scriptlets.inc
 Source7: check_for_config_applicability.inc
@@ -525,6 +531,7 @@ Patch520: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 Patch1502: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1503: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
 Patch1504: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1505: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
 Patch1511: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
@@ -533,7 +540,7 @@ Patch1513: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 #Patches for ice driver
 Patch1521: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1522: ice-v1.11.14-no-aux-bus.patch
+Patch1522: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 %endif
 
 %if 0%{?kat_build}
@@ -709,7 +716,7 @@ This Linux package contains hmac sha generator kernel module.
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1502 -M1504
+%autopatch -p1 -m1502 -M1505
 popd
 
 #Patches for iavf driver
@@ -845,52 +852,34 @@ install -vm 644 10-sgx.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 install -vm 644 intel_sgx.ko %{buildroot}%{_modulesdir}/extra/
 popd
 
+# The intel_auxiliary.ko kernel module is a common dependency for i40e, iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice and i40e drivers.
+
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-            INSTALL_MOD_DIR=temp MANDIR=%{_mandir} \
+            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
             modules_install_no_aux mandocs_install %{?_smp_mflags}
-
-# keep only intel_auxiliary.ko from iavf
-# newer driver versions install intel_auxiliary.ko into INSTALL_MOD_DIR,
-# which would overwrite itself everytime if we use INSTALL_MOD_DIR=extra
-# So install to temp, then install only the module want to extra. Delete temp
-# and along with it the excess auxiliary module
-install -Dvm 644 %{buildroot}%{_modulesdir}/temp/i40e.ko* \
-        -t %{buildroot}%{_modulesdir}/extra
-
-rm -rf %{buildroot}%{_modulesdir}/temp
 popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The intel_auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-            INSTALL_MOD_DIR=extra MANDIR=%{_mandir} \
-            modules_install_no_aux mandocs_install %{?_smp_mflags}
+            INSTALL_MOD_DIR=extra INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} \
+            modules_install mandocs_install %{?_smp_mflags}
 
 install -Dvm 644 src/linux/auxiliary_bus.h \
         %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
-
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The intel_auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-            INSTALL_MOD_DIR=temp MANDIR=%{_mandir} \
-            modules_install mandocs_install %{?_smp_mflags}
+            INSTALL_MOD_DIR=extra modules_install_no_aux %{?_smp_mflags}
 
-# keep only intel_auxiliary.ko from iavf
-install -Dvm 644 %{buildroot}%{_modulesdir}/temp/ice.ko* \
-        -t %{buildroot}%{_modulesdir}/extra
-
-rm -rf %{buildroot}%{_modulesdir}/temp
-
+make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
+            mandocs_install %{?_smp_mflags}
 popd
 
 # Verify for build-id match
@@ -1129,6 +1118,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
+- Patch drivers to not install aux module on modules_install_no_aux
+- Clean up driver installation code
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
 - Update to version 4.19.277
 * Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-5

@@ -1,0 +1,28 @@
+From 512484170281d5117d88443e17e192dc43f0f170 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 19:44:34 +0000
+Subject: [PATCH] i40e v2.15.9: add alias for modules_install_no_aux
+
+The linux spec files use modules_install_no_aux for all driver versions,
+so just add an alias here to be compatiable, even though
+modules_install in this case does not install any auxiliary modules.
+---
+ src/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index e9a83b9..4ed8c42 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -108,6 +108,8 @@ modules_install: default
+ 	@echo "Installing modules..."
+ 	@+$(call kernelbuild,modules_install)
+ 
++modules_install_no_aux: modules_install
++
+ # After installing all the files, perform necessary work to ensure the system
+ # will use the new modules. This includes running depmod to update module
+ # dependencies and updating the initramfs image in case the module is loaded
+-- 
+2.35.6
+

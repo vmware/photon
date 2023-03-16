@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.277
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -670,18 +670,21 @@ Patch1000: fips-kat-tests.patch
 Patch1497: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1498: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
 Patch1499: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1500: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
 
 # Patches for i40e v2.16.11 driver
 Patch1501: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
 Patch1502: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1503: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
 Patch1504: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1505: i40e-v2.16.11-add-alias-to-modules_install_no_aux.patch
 
 # Patches for i40e v2.15.9 driver
-Patch1505: i40e-v2.15.9-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1506: i40e-v2.15.9-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1507: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
-Patch1508: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1506: i40e-v2.15.9-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1507: i40e-v2.15.9-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1508: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
+Patch1509: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1510: i40e-v2.15.9-add-alias-for-modules_install_no_aux.patch
 
 # Patches for iavf v4.8.2 driver
 Patch1511: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
@@ -689,39 +692,41 @@ Patch1512: iavf-v4.8.2-no-aux-symvers.patch
 Patch1513: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for iavf v4.5.3 driver
-Patch1514: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1515: iavf-v4.5.3-no-aux-symvers.patch
-Patch1516: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1517: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1515: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1516: iavf-v4.5.3-no-aux-symvers.patch
+Patch1517: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1518: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for iavf v4.4.2 driver
-Patch1518: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1519: iavf-v4.4.2-no-aux-symvers.patch
-Patch1520: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1520: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1521: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1522: iavf-v4.4.2-introduce-modules-install-no-aux.patch
 
 # Patches for iavf v4.2.7 driver
-Patch1521: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1522: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1523: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1524: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1525: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1526: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1527: iavf-v4.2.7-add-alias-to-modules_install_no_aux.patch
 
 # Patch for ice v1.11.14 driver
-Patch1524: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1525: ice-v1.11.14-no-aux-bus.patch
+Patch1528: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1529: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 
 # Patches for ice v1.9.11 driver
-Patch1526: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1527: ice-v1.9.11-no-aux-bus.patch
-Patch1528: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1530: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1531: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1532: ice-v1.9.11-don-t-install-auxiliary-module-on-module.patch
 
 # Patches for ice v1.8.3 driver
-Patch1529: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1530: ice-v1.8.3-no-aux-bus.patch
-Patch1531: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1533: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1534: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1535: ice-v1.8.3-introduce-modules_install_no_aux.patch
 
 # Patches for ice v1.6.4 driver
-Patch1532: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
-Patch1533: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1534: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1536: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
+Patch1537: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1538: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1539: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
 
 BuildArch: x86_64
 
@@ -920,17 +925,17 @@ The Linux package contains the Linux kernel doc files
 
 # Patches for i40e v2.22.18 driver
 pushd ../i40e-%{i40e_version_2_22_18}
-%autopatch -p1 -m1497 -M1499
+%autopatch -p1 -m1497 -M1500
 popd
 
 # Patches for i40e v2.16.11 driver
 pushd ../i40e-%{i40e_version_2_16_11}
-%autopatch -p1 -m1501 -M1504
+%autopatch -p1 -m1501 -M1505
 popd
 
 # Patches for i40e v2.15.9 driver
 pushd ../i40e-%{i40e_version_2_15_9}
-%autopatch -p1 -m1505 -M1508
+%autopatch -p1 -m1506 -M1510
 popd
 
 # Patches for iavf v4.8.2 driver
@@ -940,37 +945,37 @@ popd
 
 # Patches for iavf v4.5.3 driver
 pushd ../iavf-%{iavf_version_4_5_3}
-%autopatch -p1 -m1514 -M1517
+%autopatch -p1 -m1515 -M1518
 popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-%autopatch -p1 -m1518 -M1520
+%autopatch -p1 -m1520 -M1522
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-%autopatch -p1 -m1521 -M1523
+%autopatch -p1 -m1524 -M1527
 popd
 
 # Patches for ice v1.11.14 driver
 pushd ../ice-%{ice_version_1_11_14}
-%autopatch -p1 -m1524 -M1525
+%autopatch -p1 -m1528 -M1529
 popd
 
 # Patches for ice v1.9.11 driver
 pushd ../ice-%{ice_version_1_9_11}
-%autopatch -p1 -m1526 -M1528
+%autopatch -p1 -m1530 -M1532
 popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-%autopatch -p1 -m1529 -M1531
+%autopatch -p1 -m1533 -M1535
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-%autopatch -p1 -m1532 -M1534
+%autopatch -p1 -m1536 -M1539
 popd
 
 %build
@@ -998,7 +1003,6 @@ build_drivers=(
     i40e-%{i40e_version_2_16_11} \
     i40e-%{i40e_version_2_15_9} \
     # iavf driver versions
-    iavf-%{iavf_version_4_8_2} \
     iavf-%{iavf_version_4_8_2} \
     iavf-%{iavf_version_4_5_3} \
     iavf-%{iavf_version_4_4_2} \
@@ -1053,6 +1057,21 @@ bldroot="${PWD}"
 
 %ifarch x86_64
 
+# ___________________________________________________________
+# |         Dependency map for auxiliary module             |
+# |_________________________________________________________|
+# |  auxiliary.ko   | intel_auxiliary.ko | Not needed       |
+# |_________________|____________________|__________________|
+# |     iavf-4.5.3  |   i40e-2.22.18     |  ice-1.6.4       |
+# |     iavf-4.4.2  |   iavf-4.8.2       |  iavf-4.2.7      |
+# |     ice-1.9.11  |   ice-1.11.14      |  i40e-2.16.11    |
+# |     ice-1.8.3   |                    |  i40e-2.15.9     |
+# |_________________|____________________|__________________|
+#
+# auxiliary.ko/intel_auxiliary.ko are common dependencies, so
+# install with iavf-4.8.2 and iavf-4.5.3 only. Skip installation
+# in all other driver versions with "modules_install_no_aux".
+
 # install i40e drivers
 i40e_versions=( \
     %{i40e_version_2_22_18} \
@@ -1065,9 +1084,8 @@ for i40e_version in "${i40e_versions[@]}"; do
     pushd ../i40e-$i40e_version
     make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
         INSTALL_MOD_DIR=extra/i40e-$i40e_version/ \
-        MANDIR=%{_mandir} modules_install mandocs_install \
+        MANDIR=%{_mandir} modules_install_no_aux mandocs_install \
         %{?_smp_mflags}
-
     popd
 done
 
@@ -1083,32 +1101,28 @@ for iavf_version in "${iavf_versions[@]}"; do
     # only install intel_auxiliary.ko/auxiliary.ko with the most up to date iavf driver (v4.8.2)
     if [[ "$iavf_version" == "%{iavf_version_4_8_2}" ]] || [[ "$iavf_version" == "%{iavf_version_4_5_3}" ]]; then
         pushd ../iavf-$iavf_version
-        # The intel_auxiliary.ko (previously named auxiliary.ko) kernel module is a common dependency for both iavf
-        # and ice drivers. Install intel_auxiliary.ko only once, and auxiliary.ko only once, along with the most recent
-        # iavf driver and re-use it in the most recent ice driver.
+        # Install intel_auxiliary.ko only once with iavf 4.8.2 and auxiliary.ko only once with iavf 4.5.3.
         # However, since it is a common dependency, install the intel_auxiliary.ko/auxiliary.ko
-        # module under the extra/ directory, so that it gets included in the
+        # module under the extra/auxiliary/ directory, so that it gets included in the
         # linux-rt main package, rather than getting bundled with the
         # subpackage of a specific driver/version.
         make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
                 INSTALL_MOD_DIR=extra/iavf-$iavf_version/ \
-                INSTALL_AUX_DIR=extra MANDIR=%{_mandir} \
+                INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} \
                 modules_install mandocs_install %{?_smp_mflags}
 
-        # only install this once, with the most recent version
+        # only install this once, with iavf 4.8.2
         if [[ "$iavf_version" == "%{iavf_version_4_8_2}" ]]; then
             install -Dvm 644 src/linux/auxiliary_bus.h \
                     %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
         fi
-
         popd
     else
         pushd ../iavf-$iavf_version
         make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
             INSTALL_MOD_DIR=extra/iavf-$iavf_version/ \
-            MANDIR=%{_mandir} modules_install mandocs_install \
+            MANDIR=%{_mandir} modules_install_no_aux mandocs_install \
             %{?_smp_mflags}
-
         popd
     fi
 done
@@ -1121,26 +1135,15 @@ ice_versions=( \
     %{ice_version_1_6_4} \
 )
 
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers. Install it only once, along with the most up-to-date
-# iavf driver and re-use it in the most up-to-date ice driver.
 for ice_version in "${ice_versions[@]}"; do
     pushd ../ice-$ice_version
     make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=extra/ice-$ice_version/ \
-        MANDIR=%{_mandir} modules_install mandocs_install \
+        INSTALL_MOD_DIR=extra/ice-$ice_version/ modules_install_no_aux \
         %{?_smp_mflags}
+    make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+        MANDIR=%{_mandir} mandocs_install %{?_smp_mflags}
     popd
 done
-
-# Newer driver versions, with modules_install, will run auxiliary_install by default and
-# without INSTALL_AUX_DIR specified, will install these files to default locations.
-# We specify specific INSTALL_AUX_DIR for the most recent iavf to put auxiliary files into the
-# places we want them and all other times we just let these be installed into the default locations.
-# For older driver versions, auxiliary_install will not happen, so this was not an issue.
-# We can delete these auxiliary files, since we only plan to package the specific one from iavf.
-rm -f %{buildroot}/${bldroot}/include/linux/auxiliary_bus.h
-rm -rf %{buildroot}%{_modulesdir}/updates
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -1256,8 +1259,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %dir %{_modulesdir}/extra/
-%{_modulesdir}/extra/intel_auxiliary.ko.xz
-%{_modulesdir}/extra/auxiliary.ko.xz
+%{_modulesdir}/extra/auxiliary/intel_auxiliary.ko.xz
+%{_modulesdir}/extra/auxiliary/auxiliary.ko.xz
 %exclude %{_modulesdir}/build
 %{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
@@ -1335,6 +1338,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
+- Patch drivers to not install aux module on modules_install_no_aux
+- Clean up driver installation code
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
 - Update to version 4.19.277
 * Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-4

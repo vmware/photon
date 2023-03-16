@@ -1,0 +1,38 @@
+From beebb830c0808670459b018869c602d073cc9b56 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 18:56:11 +0000
+Subject: [PATCH] iavf-v4.2.2: introduce modules_install_no_aux
+
+Backport modules_install_no_aux build target from iavf v4.5.3 and above.
+This can be used to install the driver module without installing the
+auxiliary module, as opposed to the regular modules_install.
+
+---
+ src/Makefile | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index 49507c2..83009d7 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -110,6 +110,18 @@ modules_install: default
+ 	echo "blacklist i40evf"  >  "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
+ 	echo "alias i40evf iavf" >> "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
+
++# Install kernel module files without auxiliary. This target is called by the
++# RPM specfile when  generating binary RPMs, and is not expected to modify
++# files outside of the build root. Thus, it must not update initramfs, or run depmod.
++modules_install_no_aux:
++	@echo "Installing modules..."
++	@rm -f .tmp_versions/auxiliary.mod
++	@+$(call kernelbuild,modules_install)
++	@echo "Creating /etc/modprobe.d/iavf.conf file ..."
++	mkdir -p "${INSTALL_MOD_PATH}/etc/modprobe.d/"
++	echo "blacklist i40evf"  >  "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
++	echo "alias i40evf iavf" >> "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
++
+ # After installing all the files, perform necessary work to ensure the system
+ # will use the new modules. This includes running depmod to update module
+ # dependencies and updating the initramfs image in case the module is loaded
+--
+2.35.6

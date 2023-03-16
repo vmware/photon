@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.277
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -485,6 +485,7 @@ Patch552: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch805: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
 Patch811: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
@@ -493,7 +494,7 @@ Patch813: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice driver
 Patch821: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch822: ice-v1.11.14-no-aux-bus.patch
+Patch822: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 
 # ptp_vmw
 Patch831: 0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
@@ -593,7 +594,7 @@ This Linux package contains hmac sha generator kernel module.
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m802 -M804
+%autopatch -p1 -m802 -M805
 popd
 
 #Patches for iavf driver
@@ -697,31 +698,22 @@ cp -v vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 
 bldroot="${PWD}"
 
+# The intel_auxiliary.ko kernel module is a common dependency for i40e, iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice and i40e drivers.
+
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=temp MANDIR=%{_mandir} modules_install_no_aux \
+        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux \
         mandocs_install %{?_smp_mflags}
-
-# keep only intel_auxiliary.ko from iavf
-# newer driver versions install intel_auxiliary.ko into INSTALL_MOD_DIR,
-# which would overwrite itself everytime if we use INSTALL_MOD_DIR=extra
-# So install to temp, then install only the module want to extra. Delete temp
-# and along with it the excess auxiliary module
-install -Dvm 644 %{buildroot}%{_modulesdir}/temp/i40e.ko* \
-        -t %{buildroot}%{_modulesdir}/extra
-
-rm -rf %{buildroot}%{_modulesdir}/temp
 popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The intel_auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux \
-        mandocs_install %{?_smp_mflags}
+        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install \
+        INSTALL_AUX_DIR=extra/auxiliary mandocs_install %{?_smp_mflags}
 
 install -Dvm 644 src/linux/auxiliary_bus.h \
         %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
@@ -729,18 +721,11 @@ popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The intel_auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=temp MANDIR=%{_mandir} modules_install \
+        INSTALL_MOD_DIR=extra modules_install_no_aux %{?_smp_mflags}
+
+make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
         mandocs_install %{?_smp_mflags}
-
-# keep only intel_auxiliary.ko from iavf
-install -Dvm 644 %{buildroot}%{_modulesdir}/temp/ice.ko* \
-        -t %{buildroot}%{_modulesdir}/extra
-
-rm -rf %{buildroot}%{_modulesdir}/temp
 popd
 
 #install photon-checksum-generator module
@@ -833,6 +818,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
+- Patch drivers to not install aux module on modules_install_no_aux
+- Clean up driver installation code
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
 - Update to version 4.19.277
 * Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-4

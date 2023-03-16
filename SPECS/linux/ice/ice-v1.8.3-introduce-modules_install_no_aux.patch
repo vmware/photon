@@ -1,0 +1,40 @@
+From 456b9941e4b770626cf082c0d4ea3572d88179e2 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 19:20:29 +0000
+Subject: [PATCH] ice v1.8.3: introduce modules_install_no_aux
+
+Backport modules_install_no_aux build target so we can install the
+driver module without the auxiliary module.
+
+---
+ src/Makefile | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index 789a908..fa40fa4 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -150,6 +150,20 @@ ifneq (${DDP_PKG_ORIGIN},)
+ 		2>/dev/null || true
+ endif
+
++# Install kernel module files without auxiliary. This target is called by the
++# RPM specfile when  generating binary RPMs, and is not expected to modify
++# files outside of the build root. Thus, it must not update initramfs, or run depmod.
++modules_install_no_aux:
++	@rm -f .tmp_versions/auxiliary.mod
++	+$(call kernelbuild,modules_install)
++ifneq (${DDP_PKG_ORIGIN},)
++	@# Install DDP package file if provided/required with ice module
++	install -D -m 644 ${DDP_PKG_ORIGIN} ${DDP_PKG_DEST}
++	(cd ${DDP_PKG_DEST_PATH} && ln -sf ${DDP_PKG_NAME} ${DDP_PKG_LINK})
++	install -D -m 644 ../ddp/LICENSE ${DDP_PKG_DEST_PATH}/LICENSE \
++		2>/dev/null || true
++endif
++
+ mandocs_install: all
+ 	install -D -m 644 ${DRIVER}.${MANSECTION}.gz ${INSTALL_MOD_PATH}/${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz
+
+--
+2.35.6
+

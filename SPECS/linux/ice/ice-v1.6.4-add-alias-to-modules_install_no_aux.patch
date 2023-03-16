@@ -1,0 +1,28 @@
+From 2c2df047c435c80b2917ecba07ac5dd75cc773df Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 19:31:54 +0000
+Subject: [PATCH] ice v1.6.4: add alias to modules_install_no_aux
+
+The linux spec files use modules_install_no_aux for all driver versions,
+so just add an alias here to be compatiable, even though
+modules_install in this case does not install any auxiliary modules.
+---
+ src/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index 5f004da..042f2f1 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -141,6 +141,8 @@ ifneq (${DDP_PKG_ORIGIN},)
+ 		2>/dev/null || true
+ endif
+
++modules_install_no_aux: modules_install
++
+ mandocs_install: all
+ 	install -D -m 644 ${DRIVER}.${MANSECTION}.gz ${INSTALL_MOD_PATH}${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz
+
+--
+2.35.6
+
