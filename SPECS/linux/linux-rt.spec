@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.175
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -64,6 +64,7 @@ Source20:        Add-alg_request_report-cmdline.patch
 %endif
 
 Source21:        spec_install_post.inc
+Source22:        %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -618,12 +619,12 @@ BuildRequires:  bison
 BuildRequires: gdb
 %endif
 
-Requires:       kmod
-Requires:       filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires: kmod
+Requires: filesystem
+Requires(pre): (coreutils or coreutils-selinux)
+Requires(preun): (coreutils or coreutils-selinux)
+Requires(post): (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 The Linux package contains the Linux kernel with RT (real-time)
@@ -859,12 +860,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "cn dm-mod megaraid_sas"
-EOF
-
 # Cleanup dangling symlinks
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
@@ -883,6 +878,9 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manual
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %include %{SOURCE2}
 %include %{SOURCE4}
 %include %{SOURCE21}
@@ -897,7 +895,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
@@ -910,6 +907,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
@@ -921,6 +920,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
+- Fix initrd generation logic
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
 - Fix for CVE-2022-39189
 * Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2

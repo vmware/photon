@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -80,6 +80,7 @@ Source20:       Add-alg_request_report-cmdline.patch
 %endif
 
 Source21:       spec_install_post.inc
+Source22:       %{name}-dracut-%{_arch}.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -320,10 +321,10 @@ BuildRequires:  gdb
 
 Requires: filesystem
 Requires: kmod
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
-Requires(postun): (coreutils or toybox)
+Requires(pre): (coreutils or coreutils-selinux)
+Requires(preun): (coreutils or coreutils-selinux)
+Requires(post): (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 The Linux package contains the Linux kernel.
@@ -672,21 +673,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-
-add_drivers_list="xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod megaraid_sas"
-
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << EOF
-%ifarch x86_64
---add-drivers "${add_drivers_list}"
-%endif
-
-%ifarch aarch64
---add-drivers "${add_drivers_list} nvme nvme-core"
-%endif
-EOF
-
 # Cleanup dangling symlinks
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
@@ -722,6 +708,9 @@ make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
 
 make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %include %{SOURCE2}
 %include %{SOURCE6}
 %include %{SOURCE21}
@@ -751,7 +740,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
@@ -772,6 +760,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
 %endif
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -850,6 +840,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Apr 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-5
+- Fix initrd generation logic
 * Wed Apr 12 2023 Ajay Kaher <akaher@vmware.com> 5.10.175-4
 - perf: remove libunwind dependency
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
