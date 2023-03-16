@@ -1,7 +1,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20220706
-Release:        2%{?dist}
+Version:        20230315
+Release:        1%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -255,6 +255,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Thu Mar 16 2023 Gerrit Photon <photon-checkins@vmware.com> 20230315-1
+- Automatic Version Bump
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 20220706-2
 - Require openssl-libs
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 20220706-1
