@@ -1,9 +1,10 @@
 %global dnsnamevers 1.3.1
+%global gvisorvers 0.6.0
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.2.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -16,8 +17,8 @@ Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{versio
 Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
 %define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 
-Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-fdc231ae7b8fe1aec4cf0b8777274fa21b70d789.tar.gz
-%define sha512 gvisor-tap-vsock=eedc553378abdb4a2aff3ba10e77c52c8cdec0de67ad70dc69e418255b0f78663271ac0ac3f3a887bc5fd0871309b5c9769c92c26b894d836dcf6e7385836abf
+Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
+%define sha512 gvisor-tap-vsock-%{gvisorvers}=793ebb4224d4b16a4fd29f43471c0558d391f8cc807d54c51a009af1ddf7d27c971484684befefbf1156fa855763d4a8fd0887ee52300175ff00092b296d151e
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -99,7 +100,7 @@ make %{?_smp_mflags}
 popd
 
 #build gvproxy
-pushd gvisor-tap-vsock
+pushd gvisor-tap-vsock-%{gvisorvers}
 make %{?_smp_mflags}
 popd
 
@@ -123,7 +124,7 @@ make install %{?_smp_mflags} PREFIX=%{_prefix} DESTDIR=%{buildroot}
 cd ..
 
 #install gvproxy
-cd gvisor-tap-vsock
+cd gvisor-tap-vsock-%{gvisorvers}
 install -dp %{buildroot}%{_libexecdir}/%{name}
 install -p -m0755 bin/gvproxy %{buildroot}%{_libexecdir}/%{name}
 cd ..
@@ -170,12 +171,11 @@ cd ..
 
 %files gvproxy
 %defattr(-,root,root)
-%license gvisor-tap-vsock/LICENSE
-%doc gvisor-tap-vsock/README.md
-%dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 4.2.0-6
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 4.2.0-5
 - Bump up version to compile with new go
 * Sat Nov 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2.0-4

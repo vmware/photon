@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -65,11 +65,9 @@ Documentation for containerd.
 # Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
-%patch0 -p1 -d %{name}-%{version}
-%patch1 -p1 -d %{name}-%{version}
-%patch2 -p1 -d %{name}-%{version}
-%patch3 -p1 -d %{name}-%{version}
-%patch4 -p1 -d %{name}-%{version}
+cd %{name}-%{version}
+%autopatch -p1
+cd ..
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -140,6 +138,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.8-5
+- Bump up version to compile with new go
 * Mon Mar 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.8-4
 - Fix CVE-2023-25153 & CVE-2023-25173
 * Tue Jan 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.8-3
