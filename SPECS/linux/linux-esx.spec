@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.168
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -29,18 +29,19 @@ Source2:        initramfs.trigger
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
-%define i40e_version 2.15.9
+%ifarch x86_64
+%define i40e_version 2.22.18
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
+%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.4.2
+%define iavf_version 4.8.2
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
-%define ice_version 1.8.3
+%define ice_version 1.11.14
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-
-%define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
+%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
+%endif
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -244,17 +245,18 @@ Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 
+%ifarch x86_64
 #Patches for i40e driver
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
+Patch1502: i40e-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: no-aux-symvers.patch
 
 # Patches for ice driver
-Patch1513: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1514: no-aux-bus.patch
+Patch1513: ice-don-t-install-auxiliary-module-on-modul.patch
+%endif
 
 #Patches for vmci driver
 Patch1521:       001-return-correct-error-code.patch
@@ -384,19 +386,17 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1500 -M1502
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
 %patch1512 -p1
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
 %patch1513 -p1
-%patch1514 -p1
 popd
 
 %endif
@@ -460,19 +460,19 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build iavf module
 pushd ../iavf-%{iavf_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build ice module
 pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 %endif
@@ -485,32 +485,32 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
+# The auxiliary.ko kernel module is a common dependency for i40e, iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice and i40e drivers.
 
 # install i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux mandocs_install
 popd
 
-# install iavf module
+# install iavf module (with aux module)
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
-    INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+    INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} modules_install \
+    mandocs_install %{?_smp_mflags}
 install -Dvm 644 src/linux/auxiliary_bus.h \
        %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
+make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
+            mandocs_install %{?_smp_mflags}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+    INSTALL_MOD_DIR=extra modules_install_no_aux
 popd
 %endif
 
@@ -596,6 +596,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.168-3
+- Update intel ethernet driver versions:
+- iavf: 4.8.2
+- i40e: 2.22.18
+- ice: 1.11.14
 * Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 5.10.168-2
 - Exclude iavf.conf
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
