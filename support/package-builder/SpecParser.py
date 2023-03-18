@@ -273,9 +273,10 @@ class SpecParser(object):
         return False
 
     def _isChecksum(self, line):
-        if re.search('^%define *sha*=*', line, flags=re.IGNORECASE):
-            return True
-        return False
+        w = line.split()
+        if len(w) != 3 or w[0] != "%define" or w[1] not in {"sha1", "sha512"}:
+            return False
+        return re.match(".*=[a-z0-9]+$", w[2])
 
     def _isDefinition(self, line):
         if line.startswith(('%define', '%global')):
@@ -446,11 +447,11 @@ class SpecParser(object):
         words = data.split()
         nrWords = len(words)
         if nrWords != 3:
-            print("Error: Unable to parse line: " + line)
+            print(f"Error: Unable to parse line: {line}")
             return False
         value = words[2].split("=")
         if len(value) != 2:
-            print("Error: Unable to parse line: "+line)
+            print(f"Error: Unable to parse line: {line}")
             return False
         matchedSources = []
         for source in pkg.sources:
