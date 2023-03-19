@@ -2,28 +2,15 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.1
-Release:       3%{?dist}
+Version:       2.2
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=16429b9b801b8bc57f6ded0a9bc0f45af49fd5e5449b9f3ab1fc25277c273899e8c45c6bd7774c65db399e9e6665419a77d266dc488d5b89177413a28f66e6f7
-Patch0: 0001-create-abupdate.conf.patch
-Patch1: 0002-installer.py-Set-default-value-of-live-to-True.patch
-Patch2: 0003-isoInstaller.py-Raise-exception-in-case-installer-fa.patch
-Patch3: 0004-generate_initrd.sh-Remove-rpmdb-files-from-the-insta.patch
-Patch4: 0005-test.log-Remove-test.log.patch
-Patch5: 0006-fix-a-few-network-issues.patch
-Patch6: 0007-m_-postinstall-preinstall-.py-Fix-post-install-arbit.patch
-Patch7: 0008-Update-isoInstaller.py.patch
-Patch8: 0009-setup.py-Bump-up-version-to-2.1.patch
-Patch9: 0010-photon-os-installer-Adding-docs-and-sample_ks-direct.patch
-Patch10: 0011-ostreeinstaller.py-Use-photon_release_version-from-i.patch
-Patch11: 0012-add-network-examples.patch
-Patch12: 0013-photon-os-installer-progressbar-Fix-installer-UI.patch
+%define sha512 %{name}=2f4408d0a57a7ed81760cad3c191628ce40d86eb3a048a46d9e8d55c66d6f6429ddf00c1a5852f023670157d861dc5ad32fed43506296c8d7aa3fc450f55a499
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -67,6 +54,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2.2-1
+- Upgrade to v2.2
 * Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2.1-3
 - Sync with upstream
 * Wed Mar 1 2023 Oliver Kurth <okurth@vmware.com> 2.1-2
