@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:           u-boot
 Version:        2023.01
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Patch2:         0005-Fix-no-usb.patch
 Patch3:         add-saveenv-in-bootcmd.patch
 Patch4:         0001-Revert-board_r-Relocate-OF_EMBED-if-NEEDS_MANUAL_REL.patch
 Patch5:         0001-Bump_LMB_MAX_REGIONS_default_to_16.patch
+Patch6:         0001-usb-xhci-Implement-DMA-mapping.patch
 
 BuildRequires:  bison
 Group:          Development/Tools
@@ -89,6 +90,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Mon Mar 20 2023 Ajay Kaher <akaher@vmware.com> 2023.01-5
+-   Fix rpi4 xhci for Unexpected XHCI event TRB
 *   Fri Mar 17 2023 Ajay Kaher <akaher@vmware.com> 2023.01-4
 -   Fix rpi4 booting with dtb v6.1
 *   Wed Mar 15 2023 Ajay Kaher <akaher@vmware.com> 2023.01-3
