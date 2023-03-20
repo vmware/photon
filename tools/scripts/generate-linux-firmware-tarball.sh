@@ -11,7 +11,7 @@ git clone git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git --depth=1
 # ICE driver firmware
 # Version should be same as provided in linux/linux-rt spec
-ice_version=1.3.2
+ice_version=$(curl --compressed "https://github.com/vmware/photon/blob/$(git branch | grep '^\*' | cut -d' ' -f2)/SPECS/linux/linux.spec" 2> /dev/null | grep -m 1 'ice_version' | cut -d'<' -f4 | cut -d' ' -f3)
 wget https://sourceforge.net/projects/e1000/files/ice%20stable/$ice_version/ice-$ice_version.tar.gz
 tar -xpf ice-$ice_version.tar.gz
 
@@ -49,11 +49,12 @@ cp linux-firmware/intel/ibt-11-5.* $DST/intel/
 cp linux-firmware/LICENCE.ibt_firmware $DST/
 # ICE driver firmware and license
 mkdir -p $DST/updates/intel/ice/ddp
-cp ice-$ice_version/ddp/ice-1.3.20.0.pkg $DST/updates/intel/ice/ddp/
+cp ice-$ice_version/ddp/ice-*.pkg $DST/updates/intel/ice/ddp/
 cp ice-$ice_version/ddp/LICENSE $DST/updates/intel/ice/ddp/
-chmod 0644 $DST/updates/intel/ice/ddp/ice-1.3.20.0.pkg
+chmod 0644 $DST/updates/intel/ice/ddp/ice-*.pkg
 chmod 0644 $DST/updates/intel/ice/ddp/LICENSE
-ln -s ice-1.3.20.0.pkg $DST/updates/intel/ice/ddp/ice.pkg
+ice_pkg=$(find ice-$ice_version -name ice*.pkg | cut -d'/' -f3)
+ln -s $ice_pkg $DST/updates/intel/ice/ddp/ice.pkg
 
 cp linux-firmware/iwlwifi-8000C-*.ucode $DST/
 cp linux-firmware/LICENCE.iwlwifi_firmware $DST/
