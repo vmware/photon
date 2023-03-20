@@ -1,14 +1,15 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.6.b
+Version:        0.6.b1
 Release:        1%{?dist}
 License:        Apache 2.0
-URL:            https://github.com/vmware/network-config-manager
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            https://github.com/vmware/network-config-manager
+
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=0574d7074c089cda71d2fb948c02d9ad3a3d9c7e7c321bca8919d9322dd7eaafa16cf4bc9c5a841aaf8e94769a3d688794fd4d28d42de46ba811289757cb2b40
+%define sha512  %{name}-%{version}=585df293d39b2efc96d9a067bcd5b7f05561cc0554b80a6f2b114f6293c1aece7ab5c3825752e71d4cf9abb11d9d906dbc329ed36c785844a9f00f4f560c4629
 
 BuildRequires:  glib-devel
 BuildRequires:  json-c-devel
@@ -76,10 +77,12 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Mar 20 2023 Nitesh Kumar <kunitesh@vmware.com> 0.6.b1-1
+- Update to v0.6.b1
 * Sat Dec 17 2022 Susant Sahani <ssahani@vmware.com> 0.6.b-1
-- Update to 0.60.b
+- Update to v0.6.b
 * Wed Nov 30 2022 Susant Sahani <ssahani@vmware.com> 0.6.a-1
-- Update to 0.60.a
+- Update to v0.6.a
 * Wed Mar 02 2022 Nitesh Kumar <kunitesh@vmware.com> 0.5.2-1
 - Update to v0.5.2
 * Wed Feb 02 2022 Susant Sahani <ssahani@vmware.com> 0.5.1-1
