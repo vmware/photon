@@ -36,6 +36,7 @@
 #define SREL_INSN_TYPE_ADD_9				0xC		/* "1100" = Rel type 2, Addend 0 */
 #define SREL_INSN_TYPE_ADD_10				0xD		/* "1101" = Rel type 1, Addend 7 */
 #define SREL_INSN_TYPE_ADD_11				0xE		/* "1110" = Rel type 2, Addend 4 */
+#define SREL_INSN_TYPE_ADD_12				0xF		/* "1111" = Rel type 1, Addend 6 */
 
 static unsigned char *canister;
 /* Set at canister creation time by final linking */
@@ -225,6 +226,9 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 		} else if (rel_add == SREL_INSN_TYPE_ADD_11) {
 			r->type = 2;
 			r->addend = 4;
+		} else if (rel_add == SREL_INSN_TYPE_ADD_12) {
+			r->type = 1;
+			r->addend = 6;
 		} else {
 			err = -ENOENT;
 			return err;

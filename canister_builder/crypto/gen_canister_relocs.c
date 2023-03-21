@@ -116,6 +116,7 @@
 #define SREL_INSN_TYPE_ADD_9				0xC		/* "1100" = Rel type 2, Addend 0 */
 #define SREL_INSN_TYPE_ADD_10				0xD		/* "1101" = Rel type 1, Addend 7 */
 #define SREL_INSN_TYPE_ADD_11				0xE		/* "1110" = Rel type 2, Addend 4 */
+#define SREL_INSN_TYPE_ADD_12				0xF		/* "1111" = Rel type 1, Addend 6 */
 
 
 /* Long Rel Instructions */
@@ -715,8 +716,10 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 		srel = srel | SREL_INSN_TYPE_ADD_10;
 	} else if (type == 2 && addend == 4) {
 		srel = srel | SREL_INSN_TYPE_ADD_11;
+	} else if (type == 1 && addend == 6) {
+		srel = srel | SREL_INSN_TYPE_ADD_12;
 	} else {
-		printf("WARNING: Unknown rel type and addend combination!!! %d %d\n", type, addend);
+		error("Unknown rel type and addend combination!!! %d %d\n", type, addend);
 	}
 	print_insn_byte_wise(srel, nfd);
 }

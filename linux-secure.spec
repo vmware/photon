@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -119,7 +119,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000:      6.1-0001-FIPS-canister-binary-usage.patch
+Patch10000:      6.1.10-8-0001-FIPS-canister-binary-usage.patch
 Patch10001:      0002-FIPS-canister-creation.patch
 Patch10003:      0004-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
 Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
@@ -252,6 +252,13 @@ sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not
 sed -i "s/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/" .config
 sed -i "s/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/" .config
 sed -i "s/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/" .config
+sed -i "s/CONFIG_CRYPTO_CMAC=m/CONFIG_CRYPTO_CMAC=y/" .config
+sed -i "s/CONFIG_CRYPTO_CTS=m/CONFIG_CRYPTO_CTS=y/" .config
+sed -i "s/CONFIG_CRYPTO_CCM=m/CONFIG_CRYPTO_CCM=y/" .config
+sed -i "s/CONFIG_CRYPTO_GHASH=m/CONFIG_CRYPTO_GHASH=y/" .config
+sed -i "s/CONFIG_CRYPTO_GF128MUL=m/CONFIG_CRYPTO_GF128MUL=y/" .config
+sed -i "s/CONFIG_CRYPTO_NULL=m/CONFIG_CRYPTO_NULL=y/" .config
+sed -i "s/CONFIG_CRYPTO_GCM=m/CONFIG_CRYPTO_GCM=y/" .config
 
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
@@ -369,6 +376,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 23 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-8
+- Add new algorithms to canister.
+- cfb, cmac, cts, ecdsa, ccm, gcm
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-7
 - Fix initramfs trigger
 * Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
