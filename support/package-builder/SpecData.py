@@ -42,7 +42,7 @@ class SpecData(object):
             buildarch = spec.packages.get('default').buildarch
             if (buildarch != "noarch" and
                     platform.machine() != buildarch):
-                self.logger.info("skipping spec file: "+str(specFile))
+                self.logger.info(f"Skipping spec file: {specFile}")
                 continue
 
             specObj = spec.createSpecObject()
