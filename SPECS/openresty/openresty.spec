@@ -10,7 +10,7 @@
 Summary:    A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:       openresty
 Version:    1.21.4.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
 URL:        https://openresty.org/en
 Group:      Applications/System
@@ -24,6 +24,8 @@ Source1: %{name}.service
 Source2: %{name}.sh
 
 AutoReqProv:        no
+
+Conflicts: nginx
 
 BuildRequires: gcc
 BuildRequires: openssl-devel
@@ -221,5 +223,7 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Wed Mar 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-2
+- Conflict with nginx
 * Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-1
 - Initial version.
