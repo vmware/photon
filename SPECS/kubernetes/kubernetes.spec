@@ -12,7 +12,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.23.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -27,6 +27,8 @@ Source1: https://github.com/kubernetes/contrib/archive/contrib-%{contrib_ver}.ta
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+Patch0:         CVE-2022-3294.patch
+Patch1:         CVE-2022-3162.patch
 
 BuildRequires:  go
 BuildRequires:  rsync
@@ -205,6 +207,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Mar 21 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.9-10
+- Fix CVE-2022-3294, CVE-2022-3162
 * Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.9-9
 - Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.9-8
