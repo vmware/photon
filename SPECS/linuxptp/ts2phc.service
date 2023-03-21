@@ -1,0 +1,12 @@
+[Unit]
+Description=Synchronize PHC using external timestamping
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/sysconfig/ts2phc
+ExecStart=/usr/sbin/ts2phc $OPTIONS
+
+[Install]
+WantedBy=multi-user.target
