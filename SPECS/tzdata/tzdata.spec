@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2020a
+Version:        2022g
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1    tzdata=d9f29aab03246713e6c5b792f49871846b4cfeda
+%define sha512  tzdata=7f79394295e00e3a24ebdbf9af3bc454a65f432a93b517e7e96c7f9db9949f6f5fdae9892a9d3789ff44ae0eb1bfe4744d36976b4624659af951d26414f94e65
 BuildArch:      noarch
 
 %description
@@ -26,12 +26,12 @@ cd %{blddir}
 ZONEINFO=%{buildroot}%{_datarootdir}/zoneinfo
 install -vdm 755 $ZONEINFO/{posix,right}
 for tz in etcetera southamerica northamerica europe africa antarctica  \
-    asia australasia backward pacificnew systemv; do
+    asia australasia backward; do
     zic -L /dev/null    -d $ZONEINFO        -y "sh yearistype.sh" ${tz}
     zic -L /dev/null    -d $ZONEINFO/posix  -y "sh yearistype.sh" ${tz}
     zic -L leapseconds  -d $ZONEINFO/right  -y "sh yearistype.sh" ${tz}
 done
-cp -v zone.tab iso3166.tab zone1970.tab $ZONEINFO
+cp -v zone.tab iso3166.tab zone1970.tab leap-seconds.list $ZONEINFO
 zic -d $ZONEINFO -p America/New_York
 install -vdm 755 %{buildroot}%{_sysconfdir}
 ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
@@ -42,6 +42,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2022g-1
+-   Add leap-seconds.list file
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 2020a-1
 -   Automatic Version Bump
 *   Fri Oct 18 2019 Gerrit Photon <photon-checkins@vmware.com> 2019c-1
