@@ -4,7 +4,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
@@ -30,9 +30,7 @@ cache check, dump, metadata_size, restore and repair tools to manage device-mapp
 %autosetup
 
 %build
-cp %{SOURCE1} .
-tar -xf %{SOURCE1}
-rm -f %{SOURCE1}
+tar -xf %{SOURCE1} -C .
 
 %install
 %make_install DATADIR=%{buildroot}/%{_datadir} BINDIR=%{buildroot}/%{_bindir}
@@ -46,6 +44,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+*   Mon Mar 20 2023 Srish Srinivasan <ssrish@vmware.com> 1.0.2-2
+-   Fix build error
 *   Thu Feb 16 2023 Gerrit Photon <photon-checkins@vmware.com> 1.0.2-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.0-1
