@@ -55,7 +55,7 @@ class SpecParser(object):
                             elif self._isConditionalMacroEnd(line):
                                 deep = deep - 1
                 elif self._isIfCondition(line):
-                    if not self._isConditionTrue(line):
+                    if not self._isConditionTrue(line, file):
                         # skip conditional body
                         deep = 1
                         while i < totalLines and deep != 0:
@@ -509,14 +509,28 @@ class SpecParser(object):
     def _isIfCondition(self, line):
         return line.startswith("%if ")
 
-    # Supports only %if %{}
-    def _isConditionTrue(self, line):
-        data = line.strip()
-        words = data.split()
-        # condition like %if a > b is not supported
-        if len(words) != 2:
-            return True
-        return int(self._replaceMacros(words[1]))
+    def _isConditionTrue(self, line, spec_fn):
+        words = line.strip().split()
+        if len(words) < 2:
+            raise Exception(f"Bad if condition {line} in {spec_fn}")
+
+        cond = ""
+        for w in words[1:]:
+            if w in {"==", ">", ">=", "<", "<=", "!=", "||", "&&"}:
+                if w == "||":
+                    cond = f"{cond} or "
+                elif w == "&&":
+                    cond = f"{cond} and "
+                else:
+                    cond = f"{cond} {w} "
+            else:
+                val = self._replaceMacros(w).lstrip("0")
+                if not val:
+                    val = "0"
+                cond = f"{cond} {val}"
+
+        cond = f"({cond}) != 0"
+        return eval(cond)
 
     def _isConditionalMacroStart(self, line):
         return line.startswith("%if")
@@ -527,10 +541,7 @@ class SpecParser(object):
     def _isInclude(self, line):
         return line.startswith("%include")
 
-    ########################################################################
     # SpecObject generating functions
-    ########################################################################
-
     #
     # @requiresType: "build" for BuildRequires or
     #                "install" for Requires dependencies.
