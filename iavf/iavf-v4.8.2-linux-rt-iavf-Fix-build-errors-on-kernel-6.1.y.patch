@@ -1,7 +1,7 @@
 From 41aa2a1693d249bd3771ed370a994e31cd3fc7c7 Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Thu, 12 Jan 2023 15:03:24 -0800
-Subject: [PATCH] linux-rt, iavf: Fix build errors on kernel 6.0.y
+Subject: [PATCH] linux-rt, iavf: Fix build errors on kernel 6.1.y
 
 Commit 4d213ee396a6 ("u64_stat: Remove the obsolete fetch_irq()
 variants") in upstream PREEMPT_RT kernel deprecated
@@ -28,7 +28,7 @@ index 2c658aa..2733c0e 100644
   * ring pointer is null, zero out the queue stat values and update the data
   * pointer. Otherwise safely copy the stats from the ring into the supplied
 @@ -273,12 +273,12 @@ iavf_add_queue_stats_chnl(u64 **data, struct iavf_ring *ring,
- 
+
  	/* To avoid invalid statistics values, ensure that we keep retrying
  	 * the copy until we get a consistent value according to
 -	 * u64_stats_fetch_retry_irq. But first, make sure our ring is
@@ -49,7 +49,7 @@ index 2c658aa..2733c0e 100644
 -	} while (ring && u64_stats_fetch_retry_irq(&ring->syncp, start));
 +	} while (ring && u64_stats_fetch_retry(&ring->syncp, start));
  #endif
- 
+
  	/* Once we successfully copy the stats in, update the data pointer */
 @@ -302,7 +302,7 @@ iavf_add_queue_stats_chnl(u64 **data, struct iavf_ring *ring,
   * @ring: the ring to copy
@@ -61,7 +61,7 @@ index 2c658aa..2733c0e 100644
   * ring pointer is null, zero out the queue stat values and update the data
   * pointer. Otherwise safely copy the stats from the ring into the supplied
 @@ -322,19 +322,19 @@ iavf_add_queue_stats(u64 **data, struct iavf_ring *ring)
- 
+
  	/* To avoid invalid statistics values, ensure that we keep retrying
  	 * the copy until we get a consistent value according to
 -	 * u64_stats_fetch_retry_irq. But first, make sure our ring is
@@ -81,8 +81,8 @@ index 2c658aa..2733c0e 100644
 -	} while (ring && u64_stats_fetch_retry_irq(&ring->syncp, start));
 +	} while (ring && u64_stats_fetch_retry(&ring->syncp, start));
  #endif
- 
+
  	/* Once we successfully copy the stats in, update the data pointer */
--- 
+--
 2.25.1
 
