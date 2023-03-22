@@ -1,7 +1,7 @@
-From 0a5d0dd6c61d7ea24e1c98aebbed41514b3fcb04 Mon Sep 17 00:00:00 2001
-From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+From cf6d336aa88d7eb7016cdb0699063abbacd16af0 Mon Sep 17 00:00:00 2001
+rom: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Tue, 10 Jan 2023 17:29:04 -0800
-Subject: [PATCH] linux-rt, i40e: Fix build errors on kernel 6.0.y
+Subject: [PATCH] linux-rt, i40e: Fix build errors on kernel 6.1.y
 
 Commit 4d213ee396a6 ("u64_stat: Remove the obsolete fetch_irq()
 variants") in upstream PREEMPT_RT kernel deprecated
@@ -11,15 +11,12 @@ u64_stats_fetch_retry() instead. Do the same in the i40e driver.
 
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- src/i40e_ethtool.c       | 28 ++++++++++++++++++++++++++++
  src/i40e_ethtool_stats.h | 16 ++++++++--------
  src/i40e_main.c          | 16 ++++++++--------
- src/i40e_txrx.c          |  2 +-
- src/kcompat_std_defs.h   | 12 ++++++++++++
- 5 files changed, 57 insertions(+), 17 deletions(-)
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/src/i40e_ethtool_stats.h b/src/i40e_ethtool_stats.h
-index 981b20e..8258b3d 100644
+index 5cafca3..6189f83 100644
 --- a/src/i40e_ethtool_stats.h
 +++ b/src/i40e_ethtool_stats.h
 @@ -165,7 +165,7 @@ __i40e_add_ethtool_stats(u64 **data, void *pointer,
@@ -84,10 +81,10 @@ index 981b20e..8258b3d 100644
  
  	/* Once we successfully copy the stats in, update the data pointer */
 diff --git a/src/i40e_main.c b/src/i40e_main.c
-index 366c67e..b3851fb 100644
+index ae9f802..b9c1b4e 100644
 --- a/src/i40e_main.c
 +++ b/src/i40e_main.c
-@@ -457,10 +457,10 @@ static void i40e_get_netdev_stats_struct_tx(struct i40e_ring *ring,
+@@ -482,10 +482,10 @@ static void i40e_get_netdev_stats_struct_tx(struct i40e_ring *ring,
  	unsigned int start;
  
  	do {
@@ -100,7 +97,7 @@ index 366c67e..b3851fb 100644
  
  	stats->tx_packets += packets;
  	stats->tx_bytes   += bytes;
-@@ -516,10 +516,10 @@ static struct rtnl_link_stats64 *i40e_get_netdev_stats_struct(
+@@ -541,10 +541,10 @@ static struct rtnl_link_stats64 *i40e_get_netdev_stats_struct(
  		rx_ring = &tx_ring[1];
  
  		do {
@@ -113,7 +110,7 @@ index 366c67e..b3851fb 100644
  
  		stats->rx_packets += packets;
  		stats->rx_bytes   += bytes;
-@@ -907,12 +907,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
+@@ -1011,12 +1011,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
  
  #ifdef HAVE_NDO_GET_STATS64
  		do {
@@ -128,7 +125,7 @@ index 366c67e..b3851fb 100644
  #endif
  		tx_b += bytes;
  		tx_p += packets;
-@@ -925,12 +925,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
+@@ -1030,12 +1030,12 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
  		p = &p[1];
  #ifdef HAVE_NDO_GET_STATS64
  		do {
@@ -144,5 +141,5 @@ index 366c67e..b3851fb 100644
  		rx_b += bytes;
  		rx_p += packets;
 -- 
-2.25.1
+2.39.0
 
