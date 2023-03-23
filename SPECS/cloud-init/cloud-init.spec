@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -17,6 +17,7 @@ Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
+Patch4: 0001-sources-vmware-imc-fix-missing-catch-few-negtive-sce.patch
 
 %if 0%{?with_check}
 Patch4: test_vmware.py-fix-pkg-test-failure.patch
@@ -155,6 +156,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Mar 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-2
+- sources/vmware/imc: fix missing catch few negtive scenarios
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-1
 - Upgrade to v23.1.1
 * Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 22.4.2-5
