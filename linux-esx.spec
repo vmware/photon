@@ -43,6 +43,7 @@ Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 
+%ifarch x86_64
 %define i40e_version 2.19.3
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=1cef2de8c96ef78077d7c7878080cef5df931b04e01255791a058c18945d20af2076ad4c6714540e2163a8e4595cc0c9c560580104194b2da78df2cbc49560b8
@@ -54,6 +55,7 @@ Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf
 %define ice_version 1.9.11
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+%endif
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -107,6 +109,7 @@ Patch26: initramfs-large-files-support-for-newca-format.patch
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
+%ifarch x86_64
 # VMW: [50..59]
 Patch50: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch51: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -114,6 +117,7 @@ Patch52: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch53: 6.0-x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch54: 07-vmware-only.patch
 Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+%endif
 
 # linux-esx [60..89]
 Patch60: init-do_mounts-recreate-dev-root.patch
@@ -182,6 +186,7 @@ Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
+%ifarch x86_64
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
@@ -203,6 +208,7 @@ Patch1520: ice-v1.9.11-linux-linux-esx-ice-Fix-build-errors-on-kernel-6.0.y.patc
 Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1522: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 Patch1523: ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
+%endif
 
 BuildRequires: bc
 BuildRequires: kbd

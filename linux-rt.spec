@@ -30,12 +30,17 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
 %define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
+
+%ifarch x86_64
 Source1:    config-rt
+%endif
+
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source4:    scriptlets.inc
 Source5:    check_for_config_applicability.inc
 
+%ifarch x86_64
 %define i40e_version 2.19.3
 Source6:    https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=1cef2de8c96ef78077d7c7878080cef5df931b04e01255791a058c18945d20af2076ad4c6714540e2163a8e4595cc0c9c560580104194b2da78df2cbc49560b8
@@ -47,6 +52,7 @@ Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf
 %define ice_version 1.9.11
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+%endif
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
