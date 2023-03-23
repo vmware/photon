@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.277
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -18,12 +18,15 @@ Distribution:   Photon
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha512 linux=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
 
+%ifarch x86_64
 Source1: config-rt
+%endif
 Source2: initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source4: scriptlets.inc
 Source5: check_for_config_applicability.inc
 
+%ifarch x86_64
 # Specific versions of Intel's i40e, iavf and ice drivers.
 
 %define i40e_version_2_22_18 2.22.18
@@ -69,6 +72,7 @@ Source15: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_versio
 %define ice_version_1_6_4 1.6.4
 Source16: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version_1_6_4}/ice-%{ice_version_1_6_4}.tar.gz
 %define sha512 ice-1.6.4=e88be3b416184d5c157aecda79b2580403b67c68286221ae154a92fa1d46cacd23aa55365994fa53f266d6df4ca2046cc2fcb35620345fd23e80b90a45ec173c
+%endif
 
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -661,6 +665,7 @@ Patch636: 0003-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 
 # Patch to distribute the tasks within affined cpus
 Patch637: linux-rt-sched-core-Distribute-tasks-within-affinity-masks.patch
+Patch638: 0001-sched-rt-Use-cpumask_any-_distribute.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -917,7 +922,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M637
+%autopatch -p1 -m0 -M638
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1338,6 +1343,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Mar 23 2023 Ankit Jain <ankitja@vmware.com> 4.19.277-3
+- Use cpumask_any_distribute() instead of cpumask_any()
+- This will help in distributing the RT tasks on affined cpus
 * Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
 - Patch drivers to not install aux module on modules_install_no_aux
 - Clean up driver installation code
