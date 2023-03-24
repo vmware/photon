@@ -5,7 +5,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.10
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -507,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Mar 24 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
+- Disable FIPS canister binary usage
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-5
 - Fix initramfs trigger
 * Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-4

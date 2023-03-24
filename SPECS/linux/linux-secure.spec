@@ -2,7 +2,7 @@
 %global lkcm_version 5.0.0
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -369,6 +369,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Mar 24 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-8
+- Disable FIPS canister binary usage
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-7
 - Fix initramfs trigger
 * Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
