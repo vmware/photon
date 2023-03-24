@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        23.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -64,7 +64,7 @@ Docker is an open source project to build, ship and run any application as a lig
 
 %package        engine
 Summary:        Docker Engine
-Requires:       libapparmor
+Requires:       apparmor-profiles
 Requires:       libseccomp
 Requires:       libltdl
 Requires:       device-mapper-libs
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Mar 24 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-2
+- Add apparmor-profiles as Requires, fixes apparmor profile not applied
 * Fri Mar 10 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-1
 - Update to 23.0.1
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 20.10.14-9
