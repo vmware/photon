@@ -41,6 +41,7 @@ class Chroot(Sandbox):
         self.runInChrootCommand = str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh"))
         self.runInChrootCommand += f" {constants.sourcePath} {constants.rpmPath}"
         self.chrootCmdPrefix = None
+        self.cmdUtils = CommandUtils()
 
     def getID(self):
         return self.chrootID
@@ -62,15 +63,14 @@ class Chroot(Sandbox):
 
         # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
-        cmdUtils = CommandUtils()
-        if cmdUtils.runCommandInShell(cmd):
+        if self.cmdUtils.runCommandInShell(cmd):
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
             raise Exception(f"Unable to create chroot: {chrootID}. Unknown error.")
 
         self.logger.debug(f"Created new chroot: {chrootID}")
 
         prepareChrootCmd = f"{self.prepareBuildRootCmd} {chrootID}"
-        if cmdUtils.runCommandInShell(prepareChrootCmd, logfn=self.logger.debug):
+        if self.cmdUtils.runCommandInShell(prepareChrootCmd, logfn=self.logger.debug):
             self.logger.error("Prepare build root script failed. Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
 
@@ -84,7 +84,7 @@ class Chroot(Sandbox):
             if constants.inputRPMSPath:
                 cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"
 
-            if cmdUtils.runCommandInShell(cmd):
+            if self.cmdUtils.runCommandInShell(cmd):
                 msg = f"failed to mount directories in {chrootID}"
                 self.logger.error(msg)
                 raise Exception(msg)
@@ -106,20 +106,27 @@ class Chroot(Sandbox):
     def run(self, cmd, logfile=None, logfn=None):
         self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
-        return CommandUtils.runCommandInShell(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
+        return self.cmdUtils.runCommandInShell(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
 
     def put(self, src, dest):
         shutil.copy2(src, f"{self.chrootID}{dest}")
 
+    def put_list_of_files(self, sources, dest):
+        if type(sources) == list:
+            sources = " ".join(sources)
+        cmd = f"cp -p {sources} {self.chrootID}{dest}"
+        self.logger.debug(cmd)
+        self.cmdUtils.runBashCmd(cmd)
+
     def _removeChroot(self, chrootPath):
         cmd = f"rm -rf {chrootPath}"
-        if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
+        if self.cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug):
             self.logger.debug(f"Unable to remove files from chroot {chrootPath}")
             # Some files are hold by some processes?
             # Print lsof output, wait 10 seconds and repeat
-            CommandUtils.runCommandInShell(f"lsof +D {chrootPath}", logfn=self.logger.debug)
+            self.cmdUtils.runCommandInShell(f"lsof +D {chrootPath}", logfn=self.logger.debug)
             time.sleep(10)
-            if CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug):
+            if self.cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug):
                 raise Exception(f"Unable to remove files from chroot {chrootPath}")
 
     def unmountAll(self):
@@ -242,7 +249,7 @@ class Container(Sandbox):
 
     def put(self, src, dest):
         copyCmd = f"docker cp {src} {self.containerID.short_id}:{dest}"
-        CommandUtils.runCommandInShell(copyCmd)
+        self.cmdUtils.runCommandInShell(copyCmd)
 
     def hasToolchain(self):
         return True
