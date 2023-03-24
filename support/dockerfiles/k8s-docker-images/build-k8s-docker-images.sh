@@ -48,14 +48,14 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes*.spec; do
 
   for K8S_BIN in ${K8S_BINS[*]}; do
     IMG_NAME=vmware/photon-${DIST_VER}-${K8S_BIN}-amd64:v${K8S_VER}
-    K8S_TAR_NAME=${K8S_BIN}-v${K8S_VER_REL}.tar
+    K8S_TAR_NAME=${K8S_BIN}-v${K8S_VER_REL}.${ARCH}.tar
     create_container_img_archive "${IMG_NAME}" "./Dockerfile.${K8S_BIN}" "." \
                                  "${K8S_TAR_NAME}" "${STAGE_DIR}/docker_images/"
   done
 
   # K8S Pause container
   PAUSE_IMG_NAME=vmware/photon-${DIST_VER}-pause-amd64:v${K8S_VER}
-  PAUSE_TAR_NAME=k8s-pause-v${K8S_VER_REL}.tar
+  PAUSE_TAR_NAME=k8s-pause-v${K8S_VER_REL}.${ARCH}.tar
 
   PAUSE_IMG_ID=$(docker images -q ${PAUSE_IMG_NAME} 2> /dev/null)
   if [[ ! -z "${PAUSE_IMG_ID}" ]]; then

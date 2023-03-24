@@ -1044,49 +1044,35 @@ class BuildImage:
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = f"{Build_Config.stagePath}/common/data"
         self.src_iso_path = None
-        if imgName == "iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
+        imgType = "photon"
 
-        if imgName == "minimal-iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-minimal-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
+        if imgName in ["minimal-iso", "rt-iso"]:
+            imgType = f"photon-{imgName.split('-iso')[0]}"
             self.package_list_file = (
-                f"{Build_Config.dataDir}/build_install_options_minimal.json"
+                f"{Build_Config.dataDir}/build_install_options_{imgName.split('-')[0]}.json"
             )
             self.pkg_to_be_copied_conf_file = (
-                f"{Build_Config.generatedDataPath}/build_install_options_minimal.json"
+                f"{Build_Config.generatedDataPath}/build_install_options_{imgName.split('-')[0]}.json"
             )
-
-        elif imgName == "rt-iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-rt-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
-            self.package_list_file = (
-                f"{Build_Config.dataDir}/build_install_options_rt.json"
-            )
-            self.pkg_to_be_copied_conf_file = (
-                f"{Build_Config.generatedDataPath}/build_install_options_rt.json"
-            )
-
         else:
             self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
             self.package_list_file = Build_Config.packageListFile
 
+        self.iso_path = f"{Build_Config.stagePath}/{imgType}-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.iso"
+        self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
+
+        if "SKIP_DEBUG_ISO" in os.environ:
+            self.debug_iso_path = None
+
         if imgName == "src-iso":
+            self.src_iso_path = self.iso_path.rpartition(".")[0] + ".src.iso"
             self.iso_path = None
             self.debug_iso_path = None
-            self.src_iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.src.iso"
 
     def img_present(self, img):
         build_num = constants.buildNumber
         release_ver = constants.releaseVersion
-        img_fn = f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-{build_num}"
+        img_fn = f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-{build_num}.{constants.currentArch}"
 
         if img in {"ova", "ova_uefi"}:
             img_fn = f"{img_fn}.ova"
@@ -1098,7 +1084,7 @@ class BuildImage:
             img = img.strip("-iso")
             if img:
                 img = f"-{img}"
-            img_fn = f"{Build_Config.stagePath}/photon{img}-{release_ver}-{build_num}.iso"
+            img_fn = f"{Build_Config.stagePath}/photon{img}-{release_ver}-{build_num}.{constants.currentArch}.iso"
         elif img in {"rpi", "ls1012afrwy"}:
             img_fn = f"{img_fn}.xz"
         else:
@@ -1157,7 +1143,7 @@ class BuildImage:
             return
 
         img_fname = (
-            f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.tar.gz"
+            f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.tar.gz"
         )
         if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
             check_prerequesite["photon-docker-image"] = True

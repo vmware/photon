@@ -17,7 +17,7 @@ K8S_DASH_VER=$(get_spec_ver "${fn}")
 K8S_DASH_VER_REL=${K8S_DASH_VER}-$(get_spec_rel "${fn}")
 K8S_DASH_RPM=kubernetes-dashboard-${K8S_DASH_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_DASH_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${K8S_DASH_RPM}
-K8S_DASH_TAR=kubernetes-dashboard-v${K8S_DASH_VER_REL}.tar
+K8S_DASH_TAR=kubernetes-dashboard-v${K8S_DASH_VER_REL}.${ARCH}.tar
 
 if [ ! -f ${K8S_DASH_RPM_FILE} ]; then
   echo "Kubernetes Dashboard RPM ${K8S_DASH_RPM_FILE} not found. Exiting.."

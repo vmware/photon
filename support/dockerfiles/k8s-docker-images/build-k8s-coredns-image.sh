@@ -17,7 +17,7 @@ K8S_COREDNS_VER=$(get_spec_ver "${fn}")
 K8S_COREDNS_VER_REL=${K8S_COREDNS_VER}-$(get_spec_rel "${fn}")
 K8S_COREDNS_RPM=coredns-${K8S_COREDNS_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_COREDNS_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${K8S_COREDNS_RPM}
-K8S_COREDNS_TAR=coredns-v${K8S_COREDNS_VER_REL}.tar
+K8S_COREDNS_TAR=coredns-v${K8S_COREDNS_VER_REL}.${ARCH}.tar
 
 if [ ! -f ${K8S_COREDNS_RPM_FILE} ]; then
   echo "Core DNS RPM ${K8S_COREDNS_RPM_FILE} not found. Exiting.."

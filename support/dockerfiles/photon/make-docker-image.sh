@@ -10,7 +10,7 @@ echoerr()
 echo PHOTON_RELEASE_VERSION=$PHOTON_RELEASE_VERSION
 arch="$(uname -m)"
 TEMP_CHROOT=$(pwd)/temp_chroot
-ROOTFS_TAR_FILENAME=photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.tar.gz
+ROOTFS_TAR_FILENAME=photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz
 STAGE_DIR=$(pwd)/stage
 
 rm -rf /etc/yum.repos.d/*

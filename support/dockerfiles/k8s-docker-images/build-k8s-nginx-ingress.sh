@@ -17,7 +17,7 @@ NGINX_INC_VER=$(get_spec_ver "${fn}")
 NGINX_INC_VER_REL=${NGINX_INC_VER}-$(get_spec_rel "${fn}")
 NGINX_INC_RPM=nginx-ingress-${NGINX_INC_VER_REL}${DIST_TAG}.${ARCH}.rpm
 NGINX_INC_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${NGINX_INC_RPM}
-NGINX_INC_TAR=nginx-ingress-v${NGINX_INC_VER_REL}.tar
+NGINX_INC_TAR=nginx-ingress-v${NGINX_INC_VER_REL}.${ARCH}.tar
 
 if [ ! -f ${NGINX_INC_RPM_FILE} ]; then
   echo "nginx ingress RPM ${NGINX_INC_RPM_FILE} not found. Exiting.."

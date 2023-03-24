@@ -6,13 +6,16 @@ import ctypes.util
 import json
 import collections
 import fileinput
+import platform
 import re
 import copy
 import shutil
 
 
 class Utils(object):
+
     def __init__(self):
+        self.buildArch = platform.machine()
         self.filesystems = []
         with open("/proc/filesystems") as fs:
             for line in fs:
