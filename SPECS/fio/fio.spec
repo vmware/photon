@@ -1,7 +1,7 @@
 Summary:         Multithreaded IO generation tool
 Name:            fio
 Version:         3.33
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         GPLv2
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -84,5 +84,7 @@ sh ./configure --disable-optimizations --dynamic-libengines
 %{_mandir}/man1/*
 
 %changelog
+* Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 3.33-2
+- version bump to use curl 8.0.1
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.33-1
 - Initial packaging for Photon OS.

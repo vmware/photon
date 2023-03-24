@@ -1,7 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -93,6 +93,8 @@ pip3 install pygpgme xattr
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 1.14.2-5
+- Version bump to use curl 8.0.1
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.2-4
 - Bump up to compile with python 3.10
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-3
