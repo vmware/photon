@@ -47,7 +47,6 @@ targetDict = {
         "azure",
         "rpi",
         "ova",
-        "ova_uefi",
         "all",
         "src-iso",
         "ls1012afrwy",
@@ -1015,7 +1014,7 @@ class CheckTools:
 
 
 """
-class BuildImage does the job of building all the images like iso, rpi, ami, gce, azure, ova ova_uefi and ls1012afrwy
+class BuildImage does the job of building all the images like iso, rpi, ami, gce, azure, ova and ls1012afrwy
 It uses class ImageBuilder to build different images.
 """
 
@@ -1038,7 +1037,7 @@ class BuildImage:
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
         self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
         self.ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
-        self.ova_cloud_images = ["ami", "gce", "azure", "ova_uefi", "ova"]
+        self.ova_cloud_images = ["ami", "gce", "azure", "ova"]
         self.photon_release_version = constants.releaseVersion
 
     def set_Iso_Parameters(self, imgName):
@@ -1075,7 +1074,7 @@ class BuildImage:
         release_ver = constants.releaseVersion
         img_fn = f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-{build_num}.{constants.currentArch}"
 
-        if img in {"ova", "ova_uefi"}:
+        if img == "ova":
             img_fn = f"{img_fn}.ova"
         elif img in {"ami", "gce"}:
             img_fn = f"{img_fn}.tar.gz"
