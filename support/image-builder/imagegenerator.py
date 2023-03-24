@@ -14,6 +14,7 @@ from utils import Utils
 from argparse import ArgumentParser
 from CommandUtils import CommandUtils
 
+imgUtils = Utils()
 
 def create_container_cmd(src_root, photon_docker_image, cmd):
     cmd = (
@@ -31,7 +32,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_build_num = os.environ["PHOTON_BUILD_NUM"]
 
     image_name = config.get("image_name",
-                            "photon-" + config["image_type"] + f"-{photon_release_ver}-{photon_build_num}")
+                            f"photon-{config['image_type']}-{photon_release_ver}-{photon_build_num}.{imgUtils.buildArch}")
 
     photon_docker_image = config["installer"].get("photon_docker_image", "photon:latest")
     new_name = []
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     if not options.config_path:
         raise Exception("No config file defined")
 
-    config = Utils.jsonread(options.config_path)
+    config = imgUtils.jsonread(options.config_path)
     createOutputArtifact(
         options.raw_image_path,
         config,

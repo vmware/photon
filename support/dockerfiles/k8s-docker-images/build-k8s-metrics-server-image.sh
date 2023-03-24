@@ -17,7 +17,7 @@ K8S_MET_SERV_VER=$(get_spec_ver "${fn}")
 K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-$(get_spec_rel "${fn}")
 K8S_MET_SERV_RPM=kubernetes-metrics-server-${K8S_MET_SERV_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_MET_SERV_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${K8S_MET_SERV_RPM}
-K8S_MET_SERV_TAR=kubernetes-metrics-server-v${K8S_MET_SERV_VER_REL}.tar
+K8S_MET_SERV_TAR=kubernetes-metrics-server-v${K8S_MET_SERV_VER_REL}.${ARCH}.tar
 
 if [ ! -f ${K8S_MET_SERV_RPM_FILE} ]; then
   echo "Kubernetes Metrics Server RPM ${K8S_MET_SERV_RPM_FILE} not found. Exiting.."
