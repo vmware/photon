@@ -280,12 +280,10 @@ class PackageUtils(object):
             if not sourcePath:
                 if checksum is None:
                     msg = f"No checksum found or missing source for {source}"
-                    self.logger.error(msg)
-                    raise Exception(msg)
                 else:
-                    msg = "Missing source: {source}. Cannot find sources for package: {package}"
-                    self.logger.error(msg)
-                    raise Exception(msg)
+                    msg = f"Missing source: {source}. Cannot find sources for package: {package}"
+                self.logger.error(msg)
+                raise Exception(msg)
         else:
             if checksum is None:
                 msg = f"No checksum found for {source}"
@@ -298,11 +296,14 @@ class PackageUtils(object):
         return sourcePath
 
     def _copySources(self, sandbox, listSourceFiles, package, version, destDir):
+        files_to_copy = []
         # Fetch and verify checksum if missing
         for source in listSourceFiles:
             sourcePath = self._verifyShaAndGetSourcePath(source, package, version)
-            self.logger.debug(f"Copying... Source path: {source} Source filename: {sourcePath[0]}")
-            sandbox.put(sourcePath[0], destDir)
+            files_to_copy.extend(sourcePath)
+
+        if files_to_copy:
+            sandbox.put_list_of_files(files_to_copy, destDir)
 
     def _getAdditionalBuildOptions(self, package):
         pullsources_urls = []
