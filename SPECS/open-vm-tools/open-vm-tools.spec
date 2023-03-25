@@ -25,7 +25,7 @@ Source3: vgauthd.service
 Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
 
-%if "%{_arch}" == "aarch64"
+%ifarch aarch64
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
 Patch2: ovt-unknown-ioctl.patch
 %endif
@@ -52,11 +52,11 @@ Requires: libtirpc
 Requires: xmlsec1 >= 1.2.32
 Requires: which
 
-%if "%{_arch}" == "x86_64"
+%ifarch x86_64
 Requires: systemd
 %endif
 
-%if "%{_arch}" == "aarch64"
+%ifarch aarch64
 Requires: systemd >= 239-23
 %endif
 
