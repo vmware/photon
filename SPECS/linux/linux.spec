@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -66,9 +66,9 @@ Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.10-5%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.10-8%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=3321bf7e690f9ea5d2baaa9d04b6950d80a7af71fb230bd2f687f73f6630b606522bddb56bd75e8596e6ea5faada804855a93218a67b9828d7c842028f33c13d
+%define sha512 fips-canister=b9d60d93fb86a4ff1cc39d5e3458438ce96b2e18f5773c308b6ea5b02431e5dd9fdd22babb2e2d3860a59af65092b8918e7bd23423645b3c1be7f1c9cf019e23
 %endif
 
 Source18:       spec_install_post.inc
@@ -187,7 +187,7 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.10-8-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %else
@@ -706,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Mar 26 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-8
+- Use canister version 5.0.0-6.1.10-8
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-7
 - Fix initramfs trigger
 * Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
