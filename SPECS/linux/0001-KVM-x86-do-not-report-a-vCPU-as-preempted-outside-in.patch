@@ -30,10 +30,11 @@ Reported-by: Jann Horn <jannh@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 [Ashwin: Backported for v4.19.y]
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 ---
  arch/x86/include/asm/kvm_host.h |  3 +++
  arch/x86/kvm/svm.c              |  2 ++
- arch/x86/kvm/vmx.c              |  1 +
+ arch/x86/kvm/vmx/vmx.c              |  1 +
  arch/x86/kvm/x86.c              | 22 ++++++++++++++++++++++
  4 files changed, 28 insertions(+)
 
@@ -71,10 +72,10 @@ index e1492a67e..61db9d22d 100644
  }
  
  static void svm_sched_in(struct kvm_vcpu *vcpu, int cpu)
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
 index 20ce79458..1dfbc96c9 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
 @@ -10556,6 +10556,7 @@ static void vmx_handle_external_intr(struct kvm_vcpu *vcpu)
  			[cs]"i"(__KERNEL_CS)
  			);

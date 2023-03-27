@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.272
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.277
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
+%define sha512 linux=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -509,6 +509,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
+- Update to version 4.19.277
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1

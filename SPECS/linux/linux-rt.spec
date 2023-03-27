@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.272
-Release:        4%{?kat_build:.%kat}%{?dist}
+Version:        4.19.277
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt120
+%define rt_version rt122
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
+%define sha512 linux=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
 
 Source1: config-rt
 Source2: initramfs.trigger
@@ -603,11 +603,9 @@ Patch548: 0348-timers-Prepare-support-for-PREEMPT_RT.patch
 Patch549: 0349-timers-Move-clearing-of-base-timer_running-under-bas.patch
 Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
+Patch552: 0352-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 # Keep rt_version matched up with this patch.
-Patch552: 0352-Linux-4.19.271-rt120-REBASE.patch
-
-# fix regression in RT patchset that leads to a deadlock
-Patch553: 0001-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
+Patch553: 0353-Linux-4.19.277-rt122-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -1337,6 +1335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
+- Update to version 4.19.277
 * Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-4
 - Update ice driver to 1.11.14, iavf driver to 4.8.2 and i40e to 2.22.18
 * Thu Mar 02 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3

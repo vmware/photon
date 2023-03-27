@@ -22,17 +22,13 @@ kernel/bpf/core.c:1410:3: note: in expansion of macro ‘__bpf_call_base_args’
    __bpf_call_base_args;
    ^~~~~~~~~~~~~~~~~~~~
 
-fs/ext4/sysfs.c:349:30: error: cast from function type ‘void (*)(const void *)’ to non-matching type ‘void (*)(struct kobject *)’
-  .release = (void (*)(struct kobject *))kfree,
-                              ^~~~~~~
-
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 ---
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
  drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
- fs/ext4/sysfs.c                         | 2 +-
  include/net/bond_alb.h                  | 4 ++--
- 5 files changed, 8 insertions(+), 6 deletions(-)
+ 4 files changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/nouveau/Kbuild b/drivers/gpu/drm/nouveau/Kbuild
 index b17843d..d9a83ac 100644
@@ -59,19 +55,6 @@ index b0b6428..0770683 100644
  void nv50_wndw_init(struct nv50_wndw *);
  void nv50_wndw_fini(struct nv50_wndw *);
  void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
-diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
-index b970a20..6255fe4 100644
---- a/fs/ext4/sysfs.c
-+++ b/fs/ext4/sysfs.c
-@@ -346,7 +346,7 @@ static struct kobj_type ext4_sb_ktype = {
- static struct kobj_type ext4_feat_ktype = {
- 	.default_attrs	= ext4_feat_attrs,
- 	.sysfs_ops	= &ext4_attr_ops,
--	.release	= (void (*)(struct kobject *))kfree,
-+	.release	= (void (*)(struct kobject *))((void *)kfree),
- };
- 
- static struct kobject *ext4_root;
 diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
 index 313a8d3..092e434 100644
 --- a/include/net/bond_alb.h
@@ -89,4 +72,3 @@ index 313a8d3..092e434 100644
  void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
 -- 
 2.7.4
-

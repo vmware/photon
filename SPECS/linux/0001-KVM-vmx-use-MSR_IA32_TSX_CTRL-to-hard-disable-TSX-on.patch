@@ -10,14 +10,15 @@ transactions from the guest to abort.
 
 Tested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 ---
- arch/x86/kvm/vmx.c | 42 +++++++++++++++++++++++++++++-------------
+ arch/x86/kvm/vmx/vmx.c | 42 +++++++++++++++++++++++++++++-------------
  1 file changed, 29 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
 index f6fc2f1a2..c10a0fd39 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
 @@ -2177,6 +2177,23 @@ static struct shared_msr_entry *find_msr_entry(struct vcpu_vmx *vmx, u32 msr)
  	return NULL;
  }
