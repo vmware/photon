@@ -299,7 +299,9 @@ Patch1290: 0290-font-Remove-grub_font_dup_glyph.patch
 Patch1291: 0291-font-Fix-integer-overflow-in-ensure_comb_space.patch
 Patch1292: 0292-font-Fix-integer-overflow-in-BMP-index.patch
 Patch1293: 0293-font-Fix-integer-underflow-in-binary-search-of-char-.patch
-Patch1294: 0294-kern-efi-sb-Enforce-verification-of-font-files.patch
+
+# Don't verify font files in SB. Revert this after bundling font files in memdisk.
+#Patch1294: 0294-kern-efi-sb-Enforce-verification-of-font-files.patch
 Patch1295: 0295-fbutil-Fix-integer-overflow.patch
 Patch1296: 0296-font-Fix-an-integer-underflow-in-blit_comb.patch
 Patch1297: 0297-font-Harden-grub_font_blit_glyph-and-grub_font_blit_.patch

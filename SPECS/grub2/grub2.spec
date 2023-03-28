@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -203,6 +203,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Tue Mar 28 2023 Piyush Gupta <gpiyush@vmware.com> 2.06-10
+- Remove verification for font files during secure boot.
 * Tue Mar 14 2023 Alexey Makhalov <amakhalov@vmware.com> 2.06-9
 - Fix Photon URL in sbat table.
 * Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.06-8
