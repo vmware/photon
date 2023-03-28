@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.0
-Release:        3%{?dist}
+Version:        3.5.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,10 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=99b6c791e70c7a6610a3b83ae9ade8ed09f7a83e73af819902f54a934a579fecacf62e212cb9ddf8624b679561d57183ef0ad0c378b81220290a5d5534fd67bb
-Patch0:         0001-fix-pszPersistDir-setting-for-correct-history.db-loc.patch
-Patch1:         0003-fix-segfault-when-name-isn-t-set-in-repo-similar-to-.patch
-Patch2:         0004-include-string.h-to-fix-strdup-warning.patch
+%define sha512  %{name}=889f67f3aa32402b63319960539d72e24d65deeacd9360837622bb8e8dc6f79db7e7247a9503f7032fecc891f4f5151c1cce34f727aae69fdac2d84f63963d42
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -144,6 +141,9 @@ rm -f %{buildroot}%{_bindir}/jsondumptest
 # should move into its onw package:
 rm -rf %{buildroot}%{_datadir}/tdnf
 
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
+    echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
+
 pushd %{__cmake_builddir}/python
 %py3_install
 popd
@@ -219,6 +219,7 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_libdir}/libtdnf.so.*
 %{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/protected.d/%{name}.conf
 %config %{_unitdir}/%{name}-cache-updateinfo.service
 %config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
 %config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
@@ -267,6 +268,13 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Apr 04 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-1
+- update to 3.5.2:
+- add protected feature (PR #413)
+- refactor yes/no question (PR #415)
+* Tue Mar 28 2023 Oliver Kurth <okurth@vmware.com> 3.5.1-1
+- update to 3.5.1:
+- coverity changes
 * Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-3
 - fix segfault when name isn't set in repo (similar to PR #401)
 - fix compile warning
