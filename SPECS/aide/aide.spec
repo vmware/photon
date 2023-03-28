@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.17.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/aide/aide
 License:        GPLv2+
 Group:          System Environment/Base
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Tue Mar 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.17.4-2
+- In aide.conf removed verbose option and introduced log_level option
 * Thu Sep 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-1
 - Upgrade to v0.17.4
 * Wed Jan 19 2022 Tapas Kundu <tkundu@vmware.com> 0.16.2-3
