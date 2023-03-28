@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.0
-Release:        3%{?dist}
+Version:        3.5.1
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,10 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=99b6c791e70c7a6610a3b83ae9ade8ed09f7a83e73af819902f54a934a579fecacf62e212cb9ddf8624b679561d57183ef0ad0c378b81220290a5d5534fd67bb
-Patch0:         0001-fix-pszPersistDir-setting-for-correct-history.db-loc.patch
-Patch1:         0003-fix-segfault-when-name-isn-t-set-in-repo-similar-to-.patch
-Patch2:         0004-include-string.h-to-fix-strdup-warning.patch
+%define sha512  %{name}=3c5ffd8a074002570ddcd992bb1ae9bf28230dd36210eba944a0152b2f82b234532636d30139f59f38fca1e27c500e59931f24121bdf943592d7c63f21701750
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -267,6 +264,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Mar 28 2023 Oliver Kurth <okurth@vmware.com> 3.5.1-1
+- update to 3.5.1:
+- coverity changes
 * Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-3
 - fix segfault when name isn't set in repo (similar to PR #401)
 - fix compile warning
