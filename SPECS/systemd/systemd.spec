@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -17,7 +17,9 @@ Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        %{name}.cfg
 Source4:        99-dhcp-en.network
+%ifarch x86_64
 Source5:        10-rdrand-rng.conf
+%endif
 Source6:        10-defaults.preset
 
 Source11:       macros.sysusers
@@ -28,6 +30,7 @@ Source14:       sysusers.generate-pre.sh
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
+Patch3: systemd-issue-26494.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -705,6 +708,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Mar 29 2023 Susant Sahani <ssahani@vmware.com> 253-2
+- https://github.com/systemd/systemd/pull/26494.patch.
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 253-1
 - Version bump.
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 252.4-9
