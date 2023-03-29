@@ -119,7 +119,7 @@ index cee3e7d..f284507 100644
 +  if (num_bytes && archive_format == arf_newasciialigned) {
      /* Page align file content */
      size = io_block_size - output_size;
-     if (size) {
+     if (size > 0) {
 -- 
 2.11.0
 
