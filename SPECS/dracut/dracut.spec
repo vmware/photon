@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        7%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -22,6 +22,7 @@ Patch4: 0004-fix-hostonly.patch
 Patch5: 0005-mkinitrd-verbose-fix.patch
 Patch6: 0006-dracut.sh-validate-instmods-calls.patch
 Patch7: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch8: 0008-fix-dracut-systemd-rootfs-generator-cannot-write-out.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -152,7 +153,9 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
-* Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
+* Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-9
+- fix(dracut-systemd): rootfs-generator cannot write outside of generator dir
+* Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-8
 - Fix a bug in finding installed kernel versions during mkinitrd
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
 - Code improvements in multiple conf dir support
