@@ -1,11 +1,11 @@
-Summary:	cpio archive utility
-Name:		cpio
-Version:	2.13
-Release:	8%{?dist}
-License:	GPLv3+
-URL:        http://www.gnu.org/software/cpio/
-Group:      System Environment/System utilities
-Vendor:     VMware, Inc.
+Summary:        cpio archive utility
+Name:           cpio
+Version:        2.13
+Release:        9%{?dist}
+License:        GPLv3+
+URL:            http://www.gnu.org/software/cpio/
+Group:          System Environment/System utilities
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha512  cpio=459398e69f7f48201c04d1080218c50f75edcf114ffcbb236644ff6fcade5fcc566929bdab2ebe9be5314828d6902e43b348a8adf28351df978c8989590e93a3
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 29 2023 Shivani Agarwal <shivania2@vmware.com> 2.13-9
+- Updated newca new archive format patch
 * Wed Dec 07 2022 Shivani Agarwal <shivania2@vmware.com> 2.13-8
 - newca: add make check test
 * Mon Oct 04 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-7
