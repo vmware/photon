@@ -2,8 +2,8 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT bc3805a
-%define DOCKER_CLI_GITCOMMIT a5ee5b1
+%define DOCKER_ENGINE_GITCOMMIT 219f21b
+%define DOCKER_CLI_GITCOMMIT 569dd73
 %define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
@@ -12,8 +12,8 @@
 
 Summary:        Docker
 Name:           docker
-Version:        23.0.1
-Release:        2%{?dist}
+Version:        23.0.2
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=135e312b76fbd61c425713c51b1b9622491d1d03264cd5100296fec6c00778bf7d9c2c7cb0522d0474753b797a6e87552b47dad7e05e44400561a833bc8616f0
+%define sha512 moby=dabac193e309ce170e5e2dd7bafb750172b3f2717307387d32164d0efac9756e91834903980624b1df3a853b5b332e25ae8b0d50ae0be02513b9cb3ea7bb5666
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -30,7 +30,7 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=77d30945160dc4d9c50354c57d2efed49b99c872c8782f6ad121e6dc1489899d8967ba95cca36499c1b59bc5ef71f4a6b516c635b0cf41b50722bb71597aa496
+%define sha512 docker-cli=5dd373200b4d979162d8e33c47c1124ece0298a9fc68d24b68d0ac8e8268780934d209fabcea67d4bb8ca5370cef94a54dccc29f75d5084a4e454efa43b0466f
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
@@ -64,7 +64,7 @@ Docker is an open source project to build, ship and run any application as a lig
 
 %package        engine
 Summary:        Docker Engine
-Requires:       apparmor-profiles
+Requires:       libapparmor
 Requires:       libseccomp
 Requires:       libltdl
 Requires:       device-mapper-libs
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Mar 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.2-1
+- Update to 23.0.2, Add libapparmor as requires
 * Fri Mar 24 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-2
 - Add apparmor-profiles as Requires, fixes apparmor profile not applied
 * Fri Mar 10 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-1
