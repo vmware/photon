@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -36,6 +36,8 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar
 %define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
+
+%ifarch x86_64
 %define ena_version 2.4.0
 Source3:    https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha512 ena_linux=e14b706d06444dcc832d73150a08bbdc0fc53b291d2fd233aef62d8f989f529b4aabc7865526fe27a895d43d5f8ba5993752a920601be8a1d3ed9ea973e9c6ef
@@ -43,6 +45,7 @@ Source3:    https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version
 %define sgx_version 1.8
 Source5:    https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
 %define sha512 DCAP=79d0b4aba102559bed9baf9fe20917e9781a22d742fa52b49b2c1a00c452a452796e6ce1a92bad80d6e6fc92ad71fa72ee02c1b65a59bddbb562aaaad4b2d8b2
+%endif
 
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
@@ -145,11 +148,13 @@ Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
+%ifarch x86_64
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
+%endif
 
 # CVE:
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -248,6 +253,7 @@ Patch510: 0003-FIPS-broken-kattest.patch
 Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
+%ifarch x86_64
 # SEV on VMware:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
@@ -267,6 +273,7 @@ Patch1512: no-aux-symvers.patch
 
 #Patches for ice driver
 Patch1513: ice-don-t-install-auxiliary-module-on-modul.patch
+%endif
 
 #Patches for vmci driver
 Patch1521:       001-return-correct-error-code.patch
@@ -292,7 +299,6 @@ BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  elfutils-devel
-BuildRequires:  libunwind-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
@@ -377,7 +383,7 @@ Summary:        This package contains the 'perf' performance analysis tools for 
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs
-Requires:       xz-libs libunwind slang
+Requires:       xz-libs slang
 Requires:       python3 traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
@@ -540,6 +546,9 @@ ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 
 make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+# verify perf has no dependency on libunwind
+tools/perf/perf -vv | grep libunwind | grep OFF
+tools/perf/perf -vv | grep dwarf | grep on
 
 %ifarch x86_64
 # build turbostat and cpupower
@@ -841,6 +850,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Apr 12 2023 Ajay Kaher <akaher@vmware.com> 5.10.175-4
+- perf: remove libunwind dependency
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
 - Fix for CVE-2022-39189
 * Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
