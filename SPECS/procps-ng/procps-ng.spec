@@ -1,15 +1,15 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha512  %{name}=1749375f72fdede58b394a7b64127b7ef7f432854995669c73802d5d626e611d23b0f6eca85106590a0b6cc21057c7c389c459dbff8f02ec52ed506723330541
+Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
+%define sha512 %{name}=1749375f72fdede58b394a7b64127b7ef7f432854995669c73802d5d626e611d23b0f6eca85106590a0b6cc21057c7c389c459dbff8f02ec52ed506723330541
 
 BuildRequires: ncurses-devel
 
@@ -36,7 +36,7 @@ Requires:   %{name} = %{version}-%{release}
 These are the additional language files of procps-ng
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -53,18 +53,16 @@ fi
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_bindir}
-install -vdm 755 %{buildroot}%{_lib}
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libprocps.so) %{buildroot}%{_libdir}/libprocps.so
-install -vdm 755 %{buildroot}%{_sbindir}
-ln -sfv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
-find %{buildroot} -name '*.la' -delete
+ln -srv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 %find_lang %{name}
 
 %if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
 %endif
+
+%clean
+rm -rf %{buildroot}
 
 %ldconfig_scriptlets
 
@@ -96,7 +94,6 @@ make %{?_smp_mflags} check
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/libprocps.so
 %{_libdir}/libproc-2.so
 %{_includedir}/procps/diskstats.h
 %{_includedir}/procps/meminfo.h
@@ -119,6 +116,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Mar 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-2
+- Remove invalid symlink
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-1
 - Upgrade to v4.0.0
 * Mon Dec 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.17-1
