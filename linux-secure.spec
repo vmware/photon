@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -62,7 +62,9 @@ Patch2:  6.0-9p-transport-for-9p.patch
 Patch3:  9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4:  vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
-
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch6:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch7:  0002-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
@@ -376,6 +378,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Mar 31 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Sun Mar 26 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-9
 - Use canister version 5.0.0-6.1.10-8
 * Thu Mar 23 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-8
