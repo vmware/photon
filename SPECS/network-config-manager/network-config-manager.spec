@@ -1,6 +1,6 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.6.b1
+Version:        0.6.b2
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=585df293d39b2efc96d9a067bcd5b7f05561cc0554b80a6f2b114f6293c1aece7ab5c3825752e71d4cf9abb11d9d906dbc329ed36c785844a9f00f4f560c4629
+%define sha512  %{name}-%{version}=16c5d58f92135595906b580aaafa29464c439c38e368a3ae8423920d5511c5ecf1434f8f8bbb04583b104c720580ed49f7fc7f6e8ebf0378a4be749628d55fce
 
 BuildRequires:  glib-devel
 BuildRequires:  json-c-devel
@@ -67,6 +67,7 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %doc LICENSE.txt README.md
 %{_bindir}/nmctl
 %{_libdir}/libnetwork_config_manager.so.*
+%{_sysconfdir}/network-config-manager/yaml/99-dhcp.yml.example
 %{_unitdir}/network-config-manager-generator.service
 %{_unitdir}/network-config-manager-yaml-generator.service
 
@@ -77,6 +78,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Mar 31 2023 Susant Sahani <ssahani@vmware.com> 0.6.b2-1
+- Update to v0.6.b2
 * Mon Mar 20 2023 Nitesh Kumar <kunitesh@vmware.com> 0.6.b1-1
 - Update to v0.6.b1
 * Sat Dec 17 2022 Susant Sahani <ssahani@vmware.com> 0.6.b-1
