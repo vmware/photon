@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.168
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -108,6 +108,12 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch41: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch42: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch43: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch44: 0004-linux-rt-Makefile-Add-kernel-flavor-info-to-the-gene.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -654,7 +660,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M41
+%autopatch -p1 -m0 -M44
 
 #VMW
 %autopatch -p1 -m55 -M57
@@ -910,6 +916,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-4
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Mon Mar 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.168-3
 - Update intel ethernet drivers
 - iavf: 4.8.2

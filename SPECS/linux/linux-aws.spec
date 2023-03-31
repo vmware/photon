@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.168
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -93,6 +93,12 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch41: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch42: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch43: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch44: 0004-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -296,7 +302,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M41
+%autopatch -p1 -m0 -M44
 
 # VMW
 %autopatch -p1 -m55 -M58
@@ -480,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
 - Update to version 5.10.168
 * Thu Feb 16 2023 Keerthana K <keerthanak@vmware.com> 5.10.165-3

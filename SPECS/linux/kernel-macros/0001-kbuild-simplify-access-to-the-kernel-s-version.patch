@@ -1,0 +1,119 @@
+From b9ee7be826f5897f0a23898310ee4898b5ef1dac Mon Sep 17 00:00:00 2001
+From: Sasha Levin <sashal@kernel.org>
+Date: Fri, 12 Feb 2021 11:29:24 -0500
+Subject: [PATCH 1/4] kbuild: simplify access to the kernel's version
+
+commit 88a686728b3739d3598851e729c0e81f194e5c53 upstream.
+
+Instead of storing the version in a single integer and having various
+kernel (and userspace) code how it's constructed, export individual
+(major, patchlevel, sublevel) components and simplify kernel code that
+uses it.
+
+This should also make it easier on userspace.
+
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ Makefile                                       | 5 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 4 ++--
+ drivers/usb/core/hcd.c                         | 4 ++--
+ drivers/usb/gadget/udc/aspeed-vhub/hub.c       | 4 ++--
+ include/linux/usb/composite.h                  | 4 ++--
+ kernel/sys.c                                   | 2 +-
+ 6 files changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index af3270277fd0..c8aaa961e0c1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1283,7 +1283,10 @@ define filechk_version.h
+ 		expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + $(SUBLEVEL)); \
+ 	fi;                                                              \
+ 	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) +  \
+-	((c) > 255 ? 255 : (c)))'
++	((c) > 255 ? 255 : (c)))';					 \
++	echo \#define LINUX_VERSION_MAJOR $(VERSION);			 \
++	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);		 \
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
+ endef
+ 
+ $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 112eaef186e1..669a7b0c5b23 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -236,8 +236,8 @@ static void mlx5_set_driver_version(struct mlx5_core_dev *dev)
+ 	remaining_size = max_t(int, 0, driver_ver_sz - strlen(string));
+ 
+ 	snprintf(string + strlen(string), remaining_size, "%u.%u.%u",
+-		 (u8)((LINUX_VERSION_CODE >> 16) & 0xff), (u8)((LINUX_VERSION_CODE >> 8) & 0xff),
+-		 (u16)(LINUX_VERSION_CODE & 0xffff));
++		LINUX_VERSION_MAJOR, LINUX_VERSION_PATCHLEVEL,
++		LINUX_VERSION_SUBLEVEL);
+ 
+ 	/*Send the command*/
+ 	MLX5_SET(set_driver_version_in, in, opcode,
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index ac347f9d5ef0..16a00c6fae58 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -111,8 +111,8 @@ DECLARE_WAIT_QUEUE_HEAD(usb_kill_urb_queue);
+  */
+ 
+ /*-------------------------------------------------------------------------*/
+-#define KERNEL_REL	bin2bcd(((LINUX_VERSION_CODE >> 16) & 0x0ff))
+-#define KERNEL_VER	bin2bcd(((LINUX_VERSION_CODE >> 8) & 0x0ff))
++#define KERNEL_REL	bin2bcd(LINUX_VERSION_MAJOR)
++#define KERNEL_VER	bin2bcd(LINUX_VERSION_PATCHLEVEL)
+ 
+ /* usb 3.1 root hub device descriptor */
+ static const u8 usb31_rh_dev_descriptor[18] = {
+diff --git a/drivers/usb/gadget/udc/aspeed-vhub/hub.c b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
+index 3a4ccc722db5..a5b060aed6e9 100644
+--- a/drivers/usb/gadget/udc/aspeed-vhub/hub.c
++++ b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
+@@ -46,8 +46,8 @@
+  *    - Make vid/did overridable
+  *    - make it look like usb1 if usb1 mode forced
+  */
+-#define KERNEL_REL	bin2bcd(((LINUX_VERSION_CODE >> 16) & 0x0ff))
+-#define KERNEL_VER	bin2bcd(((LINUX_VERSION_CODE >> 8) & 0x0ff))
++#define KERNEL_REL	bin2bcd(LINUX_VERSION_MAJOR)
++#define KERNEL_VER	bin2bcd(LINUX_VERSION_PATCHLEVEL)
+ 
+ enum {
+ 	AST_VHUB_STR_INDEX_MAX = 4,
+diff --git a/include/linux/usb/composite.h b/include/linux/usb/composite.h
+index a2d229ab63ba..7531ce723374 100644
+--- a/include/linux/usb/composite.h
++++ b/include/linux/usb/composite.h
+@@ -573,8 +573,8 @@ static inline u16 get_default_bcdDevice(void)
+ {
+ 	u16 bcdDevice;
+ 
+-	bcdDevice = bin2bcd((LINUX_VERSION_CODE >> 16 & 0xff)) << 8;
+-	bcdDevice |= bin2bcd((LINUX_VERSION_CODE >> 8 & 0xff));
++	bcdDevice = bin2bcd(LINUX_VERSION_MAJOR) << 8;
++	bcdDevice |= bin2bcd(LINUX_VERSION_PATCHLEVEL);
+ 	return bcdDevice;
+ }
+ 
+diff --git a/kernel/sys.c b/kernel/sys.c
+index 9f59cc8ab8f8..59bb0cdbf4d4 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -1242,7 +1242,7 @@ static int override_release(char __user *release, size_t len)
+ 				break;
+ 			rest++;
+ 		}
+-		v = ((LINUX_VERSION_CODE >> 8) & 0xff) + 60;
++		v = LINUX_VERSION_PATCHLEVEL + 60;
+ 		copy = clamp_t(size_t, len, 1, sizeof(buf));
+ 		copy = scnprintf(buf, copy, "2.6.%u%s", v, rest);
+ 		ret = copy_to_user(release, buf, copy + 1);
+-- 
+2.25.1
+
