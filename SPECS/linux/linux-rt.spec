@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.277
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -226,9 +226,11 @@ Patch129: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch130: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch131: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch132: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+Patch133: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch134: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
-Patch134: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+Patch135: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Backport netfilter patch to allow checking if dst has xfrm attached
 Patch141: 0001-netfilter-nf_tables-rt-allow-checking-if-dst-has-xfr.patch
@@ -1343,6 +1345,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-4
+- update to latest ToT vmxnet3 driver pathes
 * Thu Mar 23 2023 Ankit Jain <ankitja@vmware.com> 4.19.277-3
 - Use cpumask_any_distribute() instead of cpumask_any()
 - This will help in distributing the RT tasks on affined cpus

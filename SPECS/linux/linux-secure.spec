@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.277
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -191,12 +191,15 @@ Patch139: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch140: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch141: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch142: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+# Custom patch to compatible with HCX changes
+Patch143: 0001-hcx-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch144: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
-Patch144: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+Patch145: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Patch to distribute the tasks within affined cpus
-Patch145: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+Patch146: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -509,6 +512,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-2
+- update to latest ToT vmxnet3 driver pathes
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
 - Update to version 4.19.277
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2

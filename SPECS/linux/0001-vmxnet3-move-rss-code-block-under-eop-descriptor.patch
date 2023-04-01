@@ -1,0 +1,98 @@
+From ec76d0c2da5c6dfb6a33f1545cc15997013923da Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Wed, 8 Feb 2023 14:38:59 -0800
+Subject: [PATCH] vmxnet3: move rss code block under eop descriptor
+
+commit ec76d0c2da5c6dfb6a33f1545cc15997013923da upstream.
+
+Commit b3973bb40041 ("vmxnet3: set correct hash type based on
+rss information") added hashType information into skb. However,
+rssType field is populated for eop descriptor. This can lead
+to incorrectly reporting of hashType for packets which use
+multiple rx descriptors. Multiple rx descriptors are used
+for Jumbo frame or LRO packets, which can hit this issue.
+
+This patch moves the RSS codeblock under eop descritor.
+
+Cc: stable@vger.kernel.org
+Fixes: b3973bb40041 ("vmxnet3: set correct hash type based on rss information")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Peng Li <lpeng@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Link: https://lore.kernel.org/r/20230208223900.5794-1-doshir@vmware.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 50 +++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 16cf704ec..ff3345804 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1546,31 +1546,6 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 				rxd->len = rbi->len;
+ 			}
+ 
+-#ifdef VMXNET3_RSS
+-			if (rcd->rssType != VMXNET3_RCD_RSS_TYPE_NONE &&
+-			    (adapter->netdev->features & NETIF_F_RXHASH)) {
+-				enum pkt_hash_types hash_type;
+-
+-				switch (rcd->rssType) {
+-				case VMXNET3_RCD_RSS_TYPE_IPV4:
+-				case VMXNET3_RCD_RSS_TYPE_IPV6:
+-					hash_type = PKT_HASH_TYPE_L3;
+-					break;
+-				case VMXNET3_RCD_RSS_TYPE_TCPIPV4:
+-				case VMXNET3_RCD_RSS_TYPE_TCPIPV6:
+-				case VMXNET3_RCD_RSS_TYPE_UDPIPV4:
+-				case VMXNET3_RCD_RSS_TYPE_UDPIPV6:
+-					hash_type = PKT_HASH_TYPE_L4;
+-					break;
+-				default:
+-					hash_type = PKT_HASH_TYPE_L3;
+-					break;
+-				}
+-				skb_set_hash(ctx->skb,
+-					     le32_to_cpu(rcd->rssHash),
+-					     hash_type);
+-			}
+-#endif
+ 			skb_put(ctx->skb, rcd->len);
+ 
+ 			if (VMXNET3_VERSION_GE_2(adapter) &&
+@@ -1652,6 +1627,31 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			u32 mtu = adapter->netdev->mtu;
+ 			skb->len += skb->data_len;
+ 
++#ifdef VMXNET3_RSS
++			if (rcd->rssType != VMXNET3_RCD_RSS_TYPE_NONE &&
++			    (adapter->netdev->features & NETIF_F_RXHASH)) {
++				enum pkt_hash_types hash_type;
++
++				switch (rcd->rssType) {
++				case VMXNET3_RCD_RSS_TYPE_IPV4:
++				case VMXNET3_RCD_RSS_TYPE_IPV6:
++					hash_type = PKT_HASH_TYPE_L3;
++					break;
++				case VMXNET3_RCD_RSS_TYPE_TCPIPV4:
++				case VMXNET3_RCD_RSS_TYPE_TCPIPV6:
++				case VMXNET3_RCD_RSS_TYPE_UDPIPV4:
++				case VMXNET3_RCD_RSS_TYPE_UDPIPV6:
++					hash_type = PKT_HASH_TYPE_L4;
++					break;
++				default:
++					hash_type = PKT_HASH_TYPE_L3;
++					break;
++				}
++				skb_set_hash(skb,
++					     le32_to_cpu(rcd->rssHash),
++					     hash_type);
++			}
++#endif
+ 			vmxnet3_rx_csum(adapter, skb,
+ 					(union Vmxnet3_GenericDesc *)rcd);
+ 			skb->protocol = eth_type_trans(skb, adapter->netdev);
+-- 
+2.40.0

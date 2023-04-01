@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.277
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -480,6 +480,8 @@ Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch550: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch551: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch552: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+Patch553: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch554: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patches for i40e driver
 Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
@@ -590,7 +592,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m531 -M539
 
 # Update vmxnet3 driver to version 7
-%autopatch -p1 -m540 -M552
+%autopatch -p1 -m540 -M554
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -818,6 +820,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-3
+- update to latest ToT vmxnet3 driver pathes
 * Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
 - Patch drivers to not install aux module on modules_install_no_aux
 - Clean up driver installation code

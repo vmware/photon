@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.277
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -228,12 +228,14 @@ Patch179: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch180: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch181: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch182: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+Patch183: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch184: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
-Patch184: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+Patch191: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Patch to distribute the tasks within affined cpus
-Patch185: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+Patch192: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -329,7 +331,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m161 -M169
 
 # Update vmxnet3 driver to version 7
-%autopatch -p1 -m170 -M185
+%autopatch -p1 -m170 -M192
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -530,6 +532,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-2
+- update to latest ToT vmxnet3 driver pathes
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
 - Update to version 4.19.277
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
