@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.64.0
-Release:         7%{?dist}
+Release:         8%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -27,7 +27,8 @@ BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
 BuildRequires:   icu-devel
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:   krb5-devel
 %endif
 
@@ -76,8 +77,10 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -101,6 +104,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-8
+- Bump version as a part of httpd v2.4.56 upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-7
 - Bump version as a part of httpd v2.4.55 upgrade
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.64.0-6
