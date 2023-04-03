@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.55
-Release:        3%{?dist}
+Version:        2.4.56
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -9,8 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=94982f7a1fedac8961fc17b5a22cf763ac28cb27ee6facab2e6a15b249b927773667493fd3f7354fb13fcb34a6f1afc1bdd5cf4b7be030cba1dfb523e40d43fb
-Source1:        %{name}.sysusers
+%define sha512 %{name}=5f12cd9878d822384b1bb163fea4d8edee5e7a0dd8b2389264387971268145cccc6a5a27ddf0436c5f1f631acc5fdc4874da2a47911483e421ca40bf783e0e12
+Source1: %{name}.sysusers
+
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
 Patch0: %{name}-%{version}-blfs_layout-1.patch
@@ -197,6 +198,9 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-1
+- Upgrade to v2.4.56 to fix following CVE's:
+- CVE-2023-25690, and CVE-2023-27522
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.4.55-3
 - Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.55-2
