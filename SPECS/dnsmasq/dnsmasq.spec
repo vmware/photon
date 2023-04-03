@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.85
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -13,7 +13,7 @@ Source0:        https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
 
 Patch0:         enable_dnssec.patch
 Patch1:         CVE-2022-0934.patch
-
+Patch2:         CVE-2023-28450.patch
 BuildRequires:  systemd
 BuildRequires:  nettle-devel
 
@@ -97,6 +97,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Mon Apr 03 2023 Anmol Jain <anmolja@vmware.com> 2.85-4
+- Fix for CVE-2023-28450
 * Thu Mar 09 2023 Srish Srinivasan <ssrish@vmware.com> 2.85-3
 - fixed CVE-2022-0934
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.85-2
