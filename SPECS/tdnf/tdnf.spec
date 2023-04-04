@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.1
+Version:        3.5.2
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=3c5ffd8a074002570ddcd992bb1ae9bf28230dd36210eba944a0152b2f82b234532636d30139f59f38fca1e27c500e59931f24121bdf943592d7c63f21701750
+%define sha512  %{name}=889f67f3aa32402b63319960539d72e24d65deeacd9360837622bb8e8dc6f79db7e7247a9503f7032fecc891f4f5151c1cce34f727aae69fdac2d84f63963d42
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -141,6 +141,9 @@ rm -f %{buildroot}%{_bindir}/jsondumptest
 # should move into its onw package:
 rm -rf %{buildroot}%{_datadir}/tdnf
 
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
+    echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
+
 pushd %{__cmake_builddir}/python
 %py3_install
 popd
@@ -216,6 +219,7 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_libdir}/libtdnf.so.*
 %{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/protected.d/%{name}.conf
 %config %{_unitdir}/%{name}-cache-updateinfo.service
 %config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
 %config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
@@ -264,6 +268,10 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Apr 04 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-1
+- update to 3.5.2:
+- add protected feature (PR #413)
+- refactor yes/no question (PR #415)
 * Tue Mar 28 2023 Oliver Kurth <okurth@vmware.com> 3.5.1-1
 - update to 3.5.1:
 - coverity changes
