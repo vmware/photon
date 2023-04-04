@@ -1,6 +1,6 @@
 Name:           kapacitor
 Version:        1.5.0
-Release:        22%{?dist}
+Release:        23%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -49,6 +49,7 @@ cp -r usr/share/bash-completion/completions/kapacitor %{buildroot}%{_datadir}/ba
 cp -r scripts/kapacitor.service %{buildroot}%{_libdir}/systemd/system/
 cp -r etc/logrotate.d/kapacitor %{buildroot}%{_sysconfdir}/logrotate.d/
 cp -r etc/kapacitor/kapacitor.conf %{buildroot}%{_sysconfdir}/kapacitor
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %clean
 rm -rf %{buildroot}/*
@@ -91,6 +92,8 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.0-23
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.0-22
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.0-21

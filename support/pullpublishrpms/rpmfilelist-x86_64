@@ -31,7 +31,7 @@ x86_64/glibc-2.22-3.ph1.x86_64.rpm
 x86_64/glibc-devel-2.22-3.ph1.x86_64.rpm
 x86_64/gmp-6.0.0a-1.ph1.x86_64.rpm
 x86_64/gmp-devel-6.0.0a-1.ph1.x86_64.rpm
-x86_64/go-1.4.2-5.ph1.x86_64.rpm
+x86_64/go-1.18.8-2.ph3.x86_64.rpm
 x86_64/grep-2.21-1.ph1.x86_64.rpm
 x86_64/groff-1.22.2-1.ph1.x86_64.rpm
 x86_64/gzip-1.6-1.ph1.x86_64.rpm
