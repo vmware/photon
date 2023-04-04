@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.168
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -564,6 +564,7 @@ Patch1011: 0001-retpoline-re-introduce-alternative-for-r11.patch
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
 Patch1502: i40e-don-t-install-auxiliary-module-on.patch
+Patch1503: i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
 Patch1512: no-aux-symvers.patch
@@ -690,7 +691,7 @@ The Linux package contains the Linux kernel doc files
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1502
+%autopatch -p1 -m1500 -M1503
 popd
 
 #Patches for iavf driver
@@ -916,6 +917,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 04 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-5
+- Fix IRQ affinity of i40e driver
 * Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-4
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Mon Mar 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.168-3
