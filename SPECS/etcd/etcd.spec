@@ -55,6 +55,7 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system
 cp %{SOURCE2} %{buildroot}/etc/sysconfig/etcd
 %endif
 install -vdm700 %{buildroot}/var/lib/etcd
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %pre
 getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
