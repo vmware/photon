@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.168
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.175
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
+%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -150,8 +150,6 @@ Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2022-2196
-Patch134: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
 #Fix for CVE-2022-4379
 Patch135: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
@@ -420,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
+- Update to version 5.10.175
 * Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
