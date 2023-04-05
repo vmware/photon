@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,7 +126,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %if 0%{?canister_build}
 Patch10000:      6.1.10-10-0001-FIPS-canister-binary-usage.patch
 Patch10001:      0002-FIPS-canister-creation.patch
-Patch10003:      0004-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
+Patch10003:      0001-aesni_intel-Remove-static-call.patch
 Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
@@ -253,7 +253,7 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 %if 0%{?canister_build}
 sed -i "s/CONFIG_DEBUG_LIST=y/# CONFIG_DEBUG_LIST is not set/" .config
 sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not set/" .config
-#sed -i "/# CONFIG_DEBUG_INFO_DWARF4 is not set/a  # CONFIG_DEBUG_INFO_BTF is not set" .config
+sed -i "/# CONFIG_DEBUG_INFO_SPLIT is not set/a  # CONFIG_DEBUG_INFO_BTF is not set" .config
 sed -i "s/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/" .config
 sed -i "s/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/" .config
 sed -i "s/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/" .config
@@ -384,6 +384,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed May 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-13
+- Fix static call patch and disable RANDSTRUCT
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
 - Remove dracut & initramfs from requires
 * Thu Apr 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-11
