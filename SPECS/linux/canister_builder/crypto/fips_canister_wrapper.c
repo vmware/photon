@@ -161,23 +161,26 @@ void fcw_bug_on(int cond)
 
 int fcw_warn_on(int cond)
 {
-	if(unlikely(cond))
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
 		__WARN();
-	return unlikely(cond);
+	return unlikely(__ret_warn_on);
 }
 
 int fcw_warn_on_once(int cond)
 {
-	if(unlikely(cond))
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
 		__WARN_FLAGS(BUGFLAG_ONCE | BUGFLAG_TAINT(TAINT_WARN));
-	return unlikely(cond);
+	return unlikely(__ret_warn_on);
 }
 
 int fcw_warn(int cond, const char *fmt, ...)
 {
-	if(unlikely(cond))
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
 		__WARN_printf(TAINT_WARN, fmt);
-	return unlikely(cond);
+	return unlikely(__ret_warn_on);
 }
 
 void *fcw_memcpy(void *dst, const void *src, size_t len)
