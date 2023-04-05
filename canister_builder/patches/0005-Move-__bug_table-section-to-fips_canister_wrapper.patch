@@ -684,7 +684,7 @@ index 016f785b8..714ff4e6d 100644
 -
 -	for (i = 0; i < ndigits; i++)
 -		dest[i] = src[i];
-+	fcw_memcpy(dest, src, sizeof(u64)*ndigits);
++	fcw_memcpy(dest, src, sizeof(u64) * ndigits);
  }
  
  /* Returns sign of left - right. */
@@ -693,7 +693,7 @@ index 016f785b8..714ff4e6d 100644
  	u64 yy[ECC_MAX_DIGITS], xxx[ECC_MAX_DIGITS], w[ECC_MAX_DIGITS];
  
 -	if (WARN_ON(pk->ndigits != curve->g.ndigits))
-+	if (fcw_warn_on(!!(pk->ndigits != curve->g.ndigits)))
++	if (fcw_warn_on(pk->ndigits != curve->g.ndigits))
  		return -EINVAL;
  
  	/* Check 1: Verify key is not the zero point. */
@@ -907,7 +907,7 @@ index 826dd0833..88039140f 100644
  	int err;
  
 -	if (WARN_ON(req->dst) || WARN_ON(!digest_size) ||
-+	if (fcw_warn_on(!!(req->dst)) || fcw_warn_on(!!(!digest_size)) ||
++	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
@@ -1062,7 +1062,7 @@ index 98422b8da..592ce69c3 100644
  
  	BUILD_BUG_ON(ARRAY_SIZE(partitions) != ARRAY_SIZE(tsgl->sgl));
 -	if (WARN_ON(ndivs > ARRAY_SIZE(partitions)))
-+	if (fcw_warn_on(!!(ndivs > ARRAY_SIZE(partitions))))
++	if (fcw_warn_on(ndivs > ARRAY_SIZE(partitions)))
  		return -EINVAL;
  
  	/* Calculate the (div, length) pairs */
@@ -1071,7 +1071,7 @@ index 98422b8da..592ce69c3 100644
  		while (offset + partitions[i].length + TESTMGR_POISON_LEN >
  		       2 * PAGE_SIZE) {
 -			if (WARN_ON(offset <= 0))
-+			if (fcw_warn_on(!!(offset <= 0)))
++			if (fcw_warn_on(offset <= 0))
  				return -EINVAL;
  			offset /= 2;
  		}
@@ -1089,7 +1089,7 @@ index 98422b8da..592ce69c3 100644
 -			copied = copy_from_iter(addr, copy_len, data);
 -			if (WARN_ON(copied != copy_len))
 +			copied = fcw_copy_from_iter(addr, copy_len, data);
-+			if (fcw_warn_on(!!(copied != copy_len)))
++			if (fcw_warn_on(copied != copy_len))
  				return -EINVAL;
  			testmgr_poison(addr + copy_len, partitions[i].length +
  				       TESTMGR_POISON_LEN - copy_len);
@@ -1116,7 +1116,7 @@ index 98422b8da..592ce69c3 100644
  		expected_output += len;
  	}
 -	if (WARN_ON(len_to_check != 0))
-+	if (fcw_warn_on(!!(len_to_check != 0)))
++	if (fcw_warn_on(len_to_check != 0))
  		return -EINVAL;
  	return 0;
  }
@@ -1146,7 +1146,7 @@ index 98422b8da..592ce69c3 100644
  	}
  
 -	WARN_ON_ONCE(!valid_testvec_config(cfg));
-+	fcw_warn_on_once(!!(!valid_testvec_config(cfg)));
++	fcw_warn_on_once((!valid_testvec_config(cfg)));
  }
  
  static void crypto_disable_simd_for_test(void)
@@ -1191,7 +1191,7 @@ index 98422b8da..592ce69c3 100644
  
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
 -	if (WARN_ON(ivsize > MAX_IVLEN))
-+	if (fcw_warn_on(!!(ivsize > MAX_IVLEN)))
++	if (fcw_warn_on(ivsize > MAX_IVLEN))
  		return -EINVAL;
  	if (vec->iv)
 -		memcpy(iv, vec->iv, ivsize);
@@ -1230,7 +1230,7 @@ index 98422b8da..592ce69c3 100644
  	if (prefer_inauthentic && authsize < MIN_COLLISION_FREE_AUTHSIZE)
  		authsize = MIN_COLLISION_FREE_AUTHSIZE;
 -	if (WARN_ON(authsize > maxdatasize))
-+	if (fcw_warn_on(!!(authsize > maxdatasize)))
++	if (fcw_warn_on(authsize > maxdatasize))
  		authsize = maxdatasize;
  	maxdatasize -= authsize;
  	vec->setauthsize_error = crypto_aead_setauthsize(tfm, authsize);
@@ -1239,7 +1239,7 @@ index 98422b8da..592ce69c3 100644
  
  		ret = -EINVAL;
 -		if (WARN_ON(template[i].len > PAGE_SIZE))
-+		if (fcw_warn_on(!!(template[i].len > PAGE_SIZE)))
++		if (fcw_warn_on(template[i].len > PAGE_SIZE))
  			goto out;
  
  		data = xbuf[0];
@@ -1253,7 +1253,7 @@ index 98422b8da..592ce69c3 100644
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
  	if (ivsize) {
 -		if (WARN_ON(ivsize > MAX_IVLEN))
-+		if (fcw_warn_on(!!(ivsize > MAX_IVLEN)))
++		if (fcw_warn_on(ivsize > MAX_IVLEN))
  			return -EINVAL;
  		if (vec->generates_iv && !enc)
 -			memcpy(iv, vec->iv_out, ivsize);
@@ -1350,7 +1350,7 @@ index 98422b8da..592ce69c3 100644
  
  	err = -E2BIG;
 -	if (WARN_ON(m_size > PAGE_SIZE))
-+	if (fcw_warn_on(!!(m_size > PAGE_SIZE)))
++	if (fcw_warn_on(m_size > PAGE_SIZE))
  		goto free_all;
 -	memcpy(xbuf[0], m, m_size);
 +	fcw_memcpy(xbuf[0], m, m_size);
@@ -1362,7 +1362,7 @@ index 98422b8da..592ce69c3 100644
 +	fcw_sg_set_buf(&src_tab[1], xbuf[0] + 8, m_size - 8);
  	if (vecs->siggen_sigver_test) {
 -		if (WARN_ON(c_size > PAGE_SIZE))
-+		if (fcw_warn_on(!!(c_size > PAGE_SIZE)))
++		if (fcw_warn_on(c_size > PAGE_SIZE))
  			goto free_all;
 -		memcpy(xbuf[1], c, c_size);
 -		sg_set_buf(&src_tab[2], xbuf[1], c_size);
@@ -1376,7 +1376,7 @@ index 98422b8da..592ce69c3 100644
  	err = -E2BIG;
  	op = vecs->siggen_sigver_test ? "sign" : "decrypt";
 -	if (WARN_ON(c_size > PAGE_SIZE))
-+	if (fcw_warn_on(!!(c_size > PAGE_SIZE)))
++	if (fcw_warn_on(c_size > PAGE_SIZE))
  		goto free_all;
 -	memcpy(xbuf[0], c, c_size);
 +	fcw_memcpy(xbuf[0], c, c_size);
@@ -1388,14 +1388,14 @@ index 98422b8da..592ce69c3 100644
  				  alg_test_descs[i].alg);
  
 -		if (WARN_ON(diff > 0)) {
-+		if (fcw_warn_on(!!(diff > 0))) {
++		if (fcw_warn_on(diff > 0)) {
  			pr_warn("testmgr: alg_test_descs entries in wrong order: '%s' before '%s'\n",
  				alg_test_descs[i - 1].alg,
  				alg_test_descs[i].alg);
  		}
  
 -		if (WARN_ON(diff == 0)) {
-+		if (fcw_warn_on(!!(diff == 0))) {
++		if (fcw_warn_on(diff == 0)) {
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
@@ -1405,13 +1405,13 @@ index 98422b8da..592ce69c3 100644
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
 -		WARN_ON(!valid_testvec_config(
 -				&default_cipher_testvec_configs[i]));
-+		fcw_warn_on(!!(!valid_testvec_config(
++		fcw_warn_on((!valid_testvec_config(
 +				&default_cipher_testvec_configs[i])));
  
  	for (i = 0; i < ARRAY_SIZE(default_hash_testvec_configs); i++)
 -		WARN_ON(!valid_testvec_config(
 -				&default_hash_testvec_configs[i]));
-+		fcw_warn_on(!!(!valid_testvec_config(
++		fcw_warn_on((!valid_testvec_config(
 +				&default_hash_testvec_configs[i])));
  }
  
@@ -1421,7 +1421,7 @@ index 98422b8da..592ce69c3 100644
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
 -		WARN(rc != -ENOENT,
-+		fcw_warn(!!(rc != -ENOENT),
++		fcw_warn(rc != -ENOENT,
  		     "alg: self-tests for %s using %s failed (rc=%d)",
  		     alg, driver, rc);
  	} else {
