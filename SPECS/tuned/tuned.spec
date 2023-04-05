@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -147,6 +147,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-7
+- Fix bug setting netdev_queue_count
 * Thu Mar 09 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-6
 - Properly expand variable functions in plugin_net.py
 * Thu Jan 12 2023 Keerthana K <keerthanak@vmware.com> 2.19.0-5
