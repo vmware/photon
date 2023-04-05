@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -44,17 +44,17 @@ Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 
 %ifarch x86_64
-%define i40e_version 2.19.3
+%define i40e_version 2.22.18
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=1cef2de8c96ef78077d7c7878080cef5df931b04e01255791a058c18945d20af2076ad4c6714540e2163a8e4595cc0c9c560580104194b2da78df2cbc49560b8
+%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.5.3
+%define iavf_version 4.8.2
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
+%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
-%define ice_version 1.9.11
+%define ice_version 1.11.14
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 %endif
 
 %if 0%{?fips}
@@ -192,22 +192,14 @@ Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 
-# Patches for i40e v2.19.3 driver [1500..1509]
-Patch1500: i40e-v2.19.3-Add-support-for-gettimex64-interface.patch
-Patch1501: i40e-v2.19.3-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1502: i40e-v2.19.3-Fix-build-errors-on-6.1.y.patch
+# Patches for i40e v2.22.18 driver [1500..1509]
+Patch1500: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch1501: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
-# Patches for iavf v4.5.3 driver [1510..1519]
-Patch1510: iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1511: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
-Patch1512: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1513: iavf-v4.5.3-Fix-build-errors-on-6.1.y.patch
+# Patches for iavf v4.8.2 driver [1510..1519]
+Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 
-# Patches for ice v1.9.11 driver [1520..1529]
-Patch1520: ice-v1.9.11-linux-linux-esx-ice-Fix-build-errors-on-kernel-6.0.y.patch
-Patch1521: ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1522: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1523: ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
+# Patches for ice v1.11.14 driver [1520..1529]
 %endif
 
 BuildRequires: bc
@@ -368,19 +360,19 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build iavf module
 pushd ../iavf-%{iavf_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build ice module
 pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 %endif
 
@@ -502,6 +494,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 30 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.10-7
+- Update drivers
+- iavf: 4.8.2
+- ice: 1.11.14
+- i40e: 2.22.18
 * Fri Mar 24 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
 - Disable FIPS canister binary usage
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-5
