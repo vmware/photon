@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -87,6 +87,10 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch6: 6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch10: 0002-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
 # ttyXRUSB support
 Patch11: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -702,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Apr 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Mar 30 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.10-9
 - Update drivers
 - iavf: 4.8.2
