@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -14,6 +14,7 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha512 %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
+
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 
@@ -26,6 +27,8 @@ Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
 
 Requires:       filesystem
+
+Conflicts:      %{name}-i18n < 2.36-4
 
 %define ExtraBuildRequires bison, python3, python3-libs
 
@@ -272,7 +275,12 @@ fi
 %{_datadir}/i18n/charmaps/UTF-8.gz
 %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %{_datadir}/i18n/locales/en_US
-%{_datarootdir}/locale/locale.alias
+%{_datadir}/i18n/locales/en_GB
+%{_datadir}/i18n/locales/i18n*
+%{_datadir}/i18n/locales/iso14651_t1
+%{_datadir}/i18n/locales/iso14651_t1_common
+%{_datadir}/i18n/locales/translit_*
+%{_datadir}/locale/locale.alias
 %exclude %{_sharedstatedir}/nss_db/Makefile
 %exclude %{_bindir}/iconv
 %exclude %{_bindir}/mtrace
@@ -315,6 +323,11 @@ fi
 %exclude %{_datadir}/i18n/charmaps/UTF-8.gz
 %exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %exclude %{_datadir}/i18n/locales/en_US
+%exclude %{_datadir}/i18n/locales/en_GB
+%exclude %{_datadir}/i18n/locales/i18n*
+%exclude %{_datadir}/i18n/locales/iso14651_t1
+%exclude %{_datadir}/i18n/locales/iso14651_t1_common
+%exclude %{_datadir}/i18n/locales/translit_*
 
 %files devel
 %defattr(-,root,root)
@@ -328,6 +341,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-4
+- Fix locale generation issue by packaging files properly
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-3
 - Don't change elf permissions in glibc
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.36-2
