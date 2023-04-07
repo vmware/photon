@@ -1,0 +1,153 @@
+From bcc648a10cbcd0b96b84ff7c737d56ce70f7b501 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Mon, 10 Oct 2022 11:20:07 -0300
+Subject: [PATCH] btf_encoder: Encode DW_TAG_unspecified_type returning
+ routines as void
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Since we don´t have how to encode this info in BTF, and from what we
+saw, at least in this case:
+
+Built binutils from git://sourceware.org/git/binutils-gdb.git, then used
+gcc's -B option to point to the directory with the new as, that is built
+as as-new, so make a symlink, ending up with:
+
+  15e20ce2324a:~/git/linux # readelf -wi ./arch/x86/entry/entry.o
+  Contents of the .debug_info section:
+
+    Compilation Unit @ offset 0:
+     Length:        0x35 (32-bit)
+     Version:       5
+     Unit Type:     DW_UT_compile (1)
+     Abbrev Offset: 0
+     Pointer Size:  8
+   <0><c>: Abbrev Number: 1 (DW_TAG_compile_unit)
+      <d>   DW_AT_stmt_list   : 0
+      <11>   DW_AT_low_pc      : 0
+      <19>   DW_AT_high_pc     : 19
+      <1a>   DW_AT_name        : (indirect string, offset: 0): arch/x86/entry/entry.S
+      <1e>   DW_AT_comp_dir    : (indirect string, offset: 0x17): /root/git/linux
+      <22>   DW_AT_producer    : (indirect string, offset: 0x27): GNU AS 2.39.50
+      <26>   DW_AT_language    : 32769  (MIPS assembler)
+   <1><28>: Abbrev Number: 2 (DW_TAG_subprogram)
+      <29>   DW_AT_name        : (indirect string, offset: 0x36): entry_ibpb
+      <2d>   DW_AT_external    : 1
+      <2d>   DW_AT_type        : <0x37>
+      <2e>   DW_AT_low_pc      : 0
+      <36>   DW_AT_high_pc     : 19
+   <1><37>: Abbrev Number: 3 (DW_TAG_unspecified_type)
+   <1><38>: Abbrev Number: 0
+
+So we have that asm label encoded by GNU AS 2.39.50 as a
+DW_TAG_subprogram that has as its DW_AT_type the DW_TAG_unspecified_type
+0x37 that we convert to 0 (void):
+
+  15e20ce2324a:~/git/linux # pahole -J ./arch/x86/entry/entry.o
+  15e20ce2324a:~/git/linux # pahole -JV ./arch/x86/entry/entry.o
+  btf_encoder__new: 'entry.o' doesn't have '.data..percpu' section
+  Found 0 per-CPU variables!
+  Found 1 functions!
+  File entry.o:
+  [1] FUNC_PROTO (anon) return=0 args=(void)
+  [2] FUNC entry_ibpb type_id=1
+  15e20ce2324a:~/git/linux # pfunct -F btf ./arch/x86/entry/entry.o
+  entry_ibpb
+  15e20ce2324a:~/git/linux # pfunct --proto -F btf ./arch/x86/entry/entry.o
+  void  entry_ibpb(void);
+  15e20ce2324a:~/git/linux #
+
+  15e20ce2324a:~/git/linux # tools/bpf/bpftool/bpftool btf dump file ./arch/x86/entry/entry.o format raw
+  [1] FUNC_PROTO '(anon)' ret_type_id=0 vlen=0
+  [2] FUNC 'entry_ibpb' type_id=1 linkage=static
+  15e20ce2324a:~/git/linux #
+
+I think this is what can be done to avoid having to skip ASM DWARF when
+gets widely used, i.e. binutils gets updated.
+
+Acked-by: Yonghong Song <yhs@fb.com>
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+Cc: Martin Liška <mliska@suse.cz>
+Link: https://lore.kernel.org/all/Y0R7uu3s%2FimnvPzM@kernel.org/
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ btf_encoder.c | 33 ++++++++++++++++++++++++++++++---
+ 1 file changed, 30 insertions(+), 3 deletions(-)
+
+diff --git a/btf_encoder.c b/btf_encoder.c
+index fb2ca77..a5fa04a 100644
+--- a/btf_encoder.c
++++ b/btf_encoder.c
+@@ -593,6 +593,19 @@ static int32_t btf_encoder__add_func_param(struct btf_encoder *encoder, const ch
+ 	}
+ }
+ 
++static int32_t btf_encoder__tag_type(struct btf_encoder *encoder, uint32_t type_id_off, uint32_t tag_type)
++{
++	if (tag_type == 0)
++		return 0;
++
++	if (encoder->cu->unspecified_type.tag && tag_type == encoder->cu->unspecified_type.type) {
++		// No provision for encoding this, turn it into void.
++		return 0;
++	}
++
++	return type_id_off + tag_type;
++}
++
+ static int32_t btf_encoder__add_func_proto(struct btf_encoder *encoder, struct ftype *ftype, uint32_t type_id_off)
+ {
+ 	struct btf *btf = encoder->btf;
+@@ -603,7 +616,7 @@ static int32_t btf_encoder__add_func_proto(struct btf_encoder *encoder, struct f
+ 
+ 	/* add btf_type for func_proto */
+ 	nr_params = ftype->nr_parms + (ftype->unspec_parms ? 1 : 0);
+-	type_id = ftype->tag.type == 0 ? 0 : type_id_off + ftype->tag.type;
++	type_id = btf_encoder__tag_type(encoder, type_id_off, ftype->tag.type);
+ 
+ 	id = btf__add_func_proto(btf, type_id);
+ 	if (id > 0) {
+@@ -966,6 +979,15 @@ static int btf_encoder__encode_tag(struct btf_encoder *encoder, struct tag *tag,
+ 		return btf_encoder__add_enum_type(encoder, tag, conf_load);
+ 	case DW_TAG_subroutine_type:
+ 		return btf_encoder__add_func_proto(encoder, tag__ftype(tag), type_id_off);
++        case DW_TAG_unspecified_type:
++		/* Just don't encode this for now, converting anything with this type to void (0) instead.
++		 *
++		 * If we end up needing to encode this, one possible hack is to do as follows, as "const void".
++		 *
++		 * Returning zero means we skipped encoding a DWARF type.
++		 */
++               // btf_encoder__add_ref_type(encoder, BTF_KIND_CONST, 0, NULL, false);
++               return 0;
+ 	default:
+ 		fprintf(stderr, "Unsupported DW_TAG_%s(0x%x): type: 0x%x\n",
+ 			dwarf_tag_name(tag->tag), tag->tag, ref_type_id);
+@@ -1487,7 +1509,7 @@ int btf_encoder__encode_cu(struct btf_encoder *encoder, struct cu *cu, struct co
+ {
+ 	uint32_t type_id_off = btf__type_cnt(encoder->btf) - 1;
+ 	struct llvm_annotation *annot;
+-	int btf_type_id, tag_type_id;
++	int btf_type_id, tag_type_id, skipped_types = 0;
+ 	uint32_t core_id;
+ 	struct function *fn;
+ 	struct tag *pos;
+@@ -1510,8 +1532,13 @@ int btf_encoder__encode_cu(struct btf_encoder *encoder, struct cu *cu, struct co
+ 	cu__for_each_type(cu, core_id, pos) {
+ 		btf_type_id = btf_encoder__encode_tag(encoder, pos, type_id_off, conf_load);
+ 
++		if (btf_type_id == 0) {
++			++skipped_types;
++			continue;
++		}
++
+ 		if (btf_type_id < 0 ||
+-		    tag__check_id_drift(pos, core_id, btf_type_id, type_id_off)) {
++		    tag__check_id_drift(pos, core_id, btf_type_id + skipped_types, type_id_off)) {
+ 			err = -1;
+ 			goto out;
+ 		}
+-- 
+2.34.1
+
