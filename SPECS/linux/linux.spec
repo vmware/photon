@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -136,12 +136,14 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
-Patch41: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
-Patch42: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
-Patch43: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
-Patch44: 0004-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
+Patch43: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch46: 0004-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -423,7 +425,7 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M44
+%autopatch -p1 -m0 -M46
 
 %ifarch x86_64
 # VMW x86
@@ -836,6 +838,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
+- update to latest ToT vmxnet3 driver pathes
 * Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
 - Update to version 5.10.175
 * Tue Apr 04 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-7

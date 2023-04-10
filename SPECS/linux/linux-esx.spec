@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.175
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -104,43 +104,45 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
-Patch41: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
-Patch42: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
-Patch43: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
-Patch44: 0004-linux-esx-Makefile-Add-kernel-flavor-info-to-the-gen.patch
+Patch50: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch51: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch52: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch53: 0004-linux-esx-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
 # VMW:
-Patch45: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch46: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch47: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch48: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch49: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch54: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch55: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch57: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
-Patch50: init-do_mounts-recreate-dev-root.patch
-Patch51: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch52: 01-clear-linux.patch
-Patch53: 02-pci-probe.patch
-Patch54: poweroff-without-firmware.patch
-Patch55: 04-quiet-boot.patch
-Patch56: 05-pv-ops-clocksource.patch
+Patch60: init-do_mounts-recreate-dev-root.patch
+Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch62: 01-clear-linux.patch
+Patch63: 02-pci-probe.patch
+Patch64: poweroff-without-firmware.patch
+Patch65: 04-quiet-boot.patch
+Patch66: 05-pv-ops-clocksource.patch
 # TODO: make it working for v5.9+
-#Patch57: 06-pv-ops-boot_clock.patch
-Patch58: 07-vmware-only.patch
-Patch59: initramfs-support-for-page-aligned-format-newca.patch
-Patch60: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-Patch61: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
-Patch62: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
-Patch63: halt-on-panic.patch
-Patch64: initramfs-multiple-image-extraction-support.patch
-Patch65: initramfs-support-selective-freeing-of-initramfs-images.patch
-Patch66: initramfs-large-files-support-for-newca-format.patch
-Patch67: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+#Patch67: 06-pv-ops-boot_clock.patch
+Patch68: 07-vmware-only.patch
+Patch69: initramfs-support-for-page-aligned-format-newca.patch
+Patch70: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch71: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
+Patch72: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
+Patch73: halt-on-panic.patch
+Patch74: initramfs-multiple-image-extraction-support.patch
+Patch75: initramfs-support-selective-freeing-of-initramfs-images.patch
+Patch76: initramfs-large-files-support-for-newca-format.patch
+Patch77: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 %if 0%{?vmxnet3_sw_timestamp}
-Patch68: 0009-esx-vmxnet3-software-timestamping.patch
+Patch78: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
 
 #TARFS
@@ -353,13 +355,13 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M44
+%autopatch -p1 -m0 -M42
 
 # VMW
-%autopatch -p1 -m45 -M49
+%autopatch -p1 -m50 -M58
 
 # -esx
-%autopatch -p1 -m50 -M92
+%autopatch -p1 -m60 -M92
 
 # CVE
 %autopatch -p1 -m100 -M135
@@ -601,6 +603,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
+- update to latest ToT vmxnet3 driver pathes
 * Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
 - Update to version 5.10.175
 * Tue Apr 04 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-5
