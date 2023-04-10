@@ -445,8 +445,6 @@ def check_make_smp_flags(lines_dict, err_dict):
 
 
 def check_mentioned_but_unused_files(spec_fn, dirname):
-    global g_ignore_list
-
     parsed_spec, _, _ = CommandUtils.runBashCmd(
         f'rpmspec -D "%_sourcedir {dirname}" -P {spec_fn}', capture=True
     )
@@ -459,13 +457,11 @@ def check_mentioned_but_unused_files(spec_fn, dirname):
     parsed_spec = parsed_spec[:idx]
 
     source_patch_list = []
-    g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
 
     for line in parsed_spec:
         if re.search(source_regex, line) or re.search(patch_regex, line):
             fn = os.path.basename(line.split()[1])
-            if fn not in g_ignore_list:
-                source_patch_list.append(fn)
+            source_patch_list.append(fn)
         elif source_patch_list:
             for fn in source_patch_list[:]:
                 # there can be multiple sources mentioned in same line
@@ -477,6 +473,10 @@ def check_mentioned_but_unused_files(spec_fn, dirname):
 
 
 def check_for_unused_files(spec_fn, err_dict, dirname):
+    global g_ignore_list
+
+    g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
+
     ret = False
     sec = "unused_files"
 
@@ -525,6 +525,10 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
 
     mentioned_but_unused = check_mentioned_but_unused_files(spec_fn, dirname)
+    for fn in mentioned_but_unused[:]:
+        if fn in g_ignore_list:
+            mentioned_but_unused.remove(fn)
+
     if mentioned_but_unused:
         msg = ("\nSome mentioned but unused files found in the spec.\n"
                 "If you think it's a false positive, try the following methods:\n"
@@ -532,7 +536,11 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
                 "- If you are using any other distro, contact - 'sshedi@vmware.com'\n")
         print(msg)
 
-    fns = set(other_files) - set(source_patch_list)
+    fns = list(set(other_files) - set(source_patch_list))
+    for fn in fns[:]:
+        if fn in g_ignore_list:
+            fns.remove(fn)
+
     if not fns and not mentioned_but_unused:
         check_for_unused_files.prev_ret = ret
         return ret
