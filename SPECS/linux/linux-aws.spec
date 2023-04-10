@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.175
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -140,6 +140,9 @@ Patch125: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+#Fix for CVE-2022-39189
+Patch129: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
 
 #Fix for CVE-2022-43945
 Patch131: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -486,6 +489,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
+- Fix for CVE-2022-39189
 * Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
 - update to latest ToT vmxnet3 driver pathes
 * Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1

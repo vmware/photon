@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.175
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -154,6 +154,9 @@ Patch123: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
 Patch124: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch125: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch126: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+#Fix for CVE-2022-39189
+Patch127: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
 
 #Fix for CVE-2022-43945
 Patch129: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -918,6 +921,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
+- Fix for CVE-2022-39189
 * Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
 - update to latest ToT vmxnet3 driver pathes
 * Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
