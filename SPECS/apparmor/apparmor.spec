@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -83,7 +83,6 @@ by using the changehat abilities exposed through libapparmor.
 Summary:    AppArmor profiles that are loaded into the apparmor kernel module
 License:    GNU LGPL v2.1
 Group:      Productivity/Security
-Requires:   apparmor-parser = %{version}-%{release}
 Requires:   apparmor-abstractions = %{version}-%{release}
 
 %description profiles
@@ -95,6 +94,7 @@ License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   libapparmor = %{version}-%{release}
 Requires:   systemd
+Requires:   %{name}-profiles = %{version}-%{release}
 
 %description parser
 The AppArmor Parser is a userlevel program that is used to load in
@@ -354,6 +354,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Tue Apr 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.13-15
+- Added apparmor-parser dependency on apparmor-profiles
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.13-14
 - Bump version as a part of httpd v2.4.56 upgrade
 * Tue Jan 31 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.13-13
