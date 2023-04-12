@@ -3,8 +3,8 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.10.30
-Release:        2%{?dist}
+Version:        1.11.58
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -19,7 +19,7 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
 # tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9c3ae4ba18e76cf2aacea8412f1f808774af9bd1c3ccfc55c541833ca399775f008eec387870fa71fa067a0e3345d6e9f4486511426bfb7c40f2429a72878b4f
+%define sha512 %{name}=8a5174e091f7f81e2bb5143306dc44c20b4966689ba45a143b083058d6ba045cedf5af25b36ec95a71e4b5c0f9ad799590ed93b45fe109138bbe263b1fe39a93
 
 Requires:       openssl-devel
 Requires:       curl-devel
@@ -98,16 +98,24 @@ export CXXFLAGS="%{optflags} -Wno-stringop-truncation"
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
+pushd  %{__cmake_builddir}/src/aws-cpp-sdk-core
+%make_build
+popd
+
+cd %{__cmake_builddir}/generated/src
+for component in "kinesis" "s3"; do
   pushd aws-cpp-sdk-${component}
   %make_build
   popd
 done
 
 %install
-cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
+pushd %{__cmake_builddir}/src/aws-cpp-sdk-core
+%make_install %{?_smp_mflags}
+popd
+
+cd %{__cmake_builddir}/generated/src
+for component in "kinesis" "s3"; do
   pushd aws-cpp-sdk-${component}
   %make_install %{?_smp_mflags}
   popd
@@ -164,6 +172,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 1.11.58-1
+- version upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-2
 - Bump version as a part of zlib upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-1

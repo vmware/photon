@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.17.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/aide/aide
 License:        GPLv2+
 Group:          System Environment/Base
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 0.17.4-5
+- version bump to use curl 8.0.1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-4
 - Bump version as a part of zlib upgrade
 * Tue Mar 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.17.4-3
