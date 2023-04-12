@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p14
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -183,6 +183,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.2.8p14-5
+- Bump version as a part of libevent upgrade
 * Fri Oct 28 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p14-4
 - remove executable permission to ntp.conf
 * Thu Apr 14 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p14-3

@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        2.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io
 Group:          Applications/System
@@ -44,6 +44,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.7-3
+- Bump version as a part of libevent upgrade
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7-2
 - Exclude debug symbols properly
 * Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2.7-1
