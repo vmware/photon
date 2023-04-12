@@ -1,7 +1,7 @@
 Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:       nghttp2
 Version:    1.41.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    MIT
 URL:        https://nghttp2.org
 Group:      Applications/System
@@ -55,6 +55,8 @@ make %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.0-4
+-   Bump version as a part of libevent upgrade
 *   Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 1.41.0-3
 -   Version bump up to use c-ares
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.41.0-2
