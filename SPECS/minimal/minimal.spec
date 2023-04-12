@@ -1,55 +1,42 @@
-Name:           minimal
-Summary:        Metapackage to install minimal profile
-Version:        0.1
-Release:        7%{?dist}
-License:        Apache 2.0
-Group:          System Environment/Base
-URL:            https://vmware.github.io/photon/
-Vendor:         VMware, Inc.
+Name:       minimal
+Summary:    Metapackage to install minimal profile for cloud images
+Version:    5.0
+Release:    1%{?dist}
+License:    Apache 2.0
+Group:      System Environment/Base
+URL:        https://vmware.github.io/photon
+Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Requires:       bc
-Requires:       bridge-utils
-Requires:       bzip2
-Requires:       cloud-init
-Requires:       cpio
-Requires:       cracklib-dicts
-Requires:       dbus
-Requires:       docker
-Requires:       e2fsprogs
-Requires:       file
-Requires:       filesystem
-Requires:       findutils
-Requires:       gdbm
-Requires:       grep
-Requires:       grub2-efi-image
-Requires:       grub2-theme
-Requires:       gzip
-Requires:       iana-etc
-Requires:       iproute2
-Requires:       iptables
-Requires:       iputils
-Requires:       Linux-PAM
-Requires:       motd
-Requires:       net-tools
-Requires:       openssh
-Requires:       photon-release
-Requires:       photon-repos
-Requires:       procps-ng
-Requires:       rpm
-Requires:       rpm-plugin-systemd-inhibit
-Requires:       sed
-Requires:       systemd
-Requires:       systemd-libs
-Requires:       systemd-pam
-Requires:       systemd-rpm-macros
-Requires:       systemd-udev
-Requires:       tdnf
-Requires:       tzdata
-Requires:       util-linux
-Requires:       vim
-Requires:       which
-Requires:       open-vm-tools-gosc
+Requires: bc
+Requires: bridge-utils
+Requires: bzip2
+Requires: cloud-init
+Requires: cpio
+Requires: docker
+Requires: dracut
+Requires: e2fsprogs
+Requires: file
+Requires: gdbm
+Requires: grep
+Requires: gzip
+Requires: iana-etc
+Requires: initramfs
+Requires: iproute2
+Requires: iptables
+Requires: iputils
+Requires: basic
+Requires: motd
+Requires: net-tools
+Requires: open-vm-tools
+Requires: open-vm-tools-gosc
+Requires: procps-ng
+Requires: rpm
+Requires: rpm-plugin-systemd-inhibit
+Requires: tzdata
+Requires: util-linux
+Requires: vim
+Requires: which
 
 %description
 Metapackage to install minimal profile
@@ -57,10 +44,15 @@ Metapackage to install minimal profile
 %prep
 %build
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root,0755)
 
 %changelog
+* Sat Jul 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-1
+- Sort the require list and chop down package into basic
 * Mon Jul 18 2022 <okurth@vmware.com> 0.1-7
 - Remove pkg-config and libtool
 * Wed Oct 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.1-6

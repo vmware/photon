@@ -54,11 +54,13 @@ targetDict = {
         "k8s-docker-images",
         "all-images",
         "minimal-iso",
+        "basic-iso",
         "rt-iso",
     ],
     "rpmBuild": [
         "packages",
         "packages-minimal",
+        "packages-basic",
         "packages-rt",
         "packages-initrd",
         "packages-docker",
@@ -298,6 +300,7 @@ class Utilities:
             runBashCmd(
                 f"cp {Build_Config.dataDir}/build_install_options_all.json"
                 f" {Build_Config.dataDir}/build_install_options_minimal.json"
+                f" {Build_Config.dataDir}/build_install_options_basic.json"
                 f" {Build_Config.dataDir}/build_install_options_rt.json"
                 f" {Build_Config.generatedDataPath}"
             )
@@ -790,6 +793,24 @@ class RpmBuildTarget:
             BuildEnvironmentSetup.packages_cached()
         check_prerequesite["packages-minimal"] = True
 
+    def packages_basic(self):
+        if check_prerequesite["packages-basic"]:
+            return
+
+        if not configdict["additional-path"]["photon-cache-path"]:
+            Builder.buildPackagesInJson(
+                os.path.join(
+                    Build_Config.dataDir, "packages_basic.json"
+                ),
+                Build_Config.buildThreads,
+                Build_Config.pkgBuildType,
+                Build_Config.pkgInfoFile,
+                self.logger,
+            )
+        else:
+            BuildEnvironmentSetup.packages_cached()
+        check_prerequesite["packages-basic"] = True
+
     def packages_rt(self):
         if check_prerequesite["packages-rt"]:
             return
@@ -1145,8 +1166,8 @@ class BuildImage:
         self.src_iso_path = None
         imgType = "photon"
 
-        if imgName in ["minimal-iso", "rt-iso"]:
-            flavor = imgName.split("-iso")[0]
+        if imgName in ["minimal-iso", "rt-iso", "basic-iso"]:
+            flavor = imgName.strip("-iso").replace("-", "_")
             imgType = f"photon-{flavor}"
             self.package_list_file = (
                 f"{Build_Config.dataDir}/build_install_options_{flavor}.json"
@@ -1158,7 +1179,11 @@ class BuildImage:
             )
             self.package_list_file = Build_Config.packageListFile
 
-        self.iso_path = f"{Build_Config.stagePath}/{imgType}-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.iso"
+        self.iso_path = (
+            f"{Build_Config.stagePath}/{imgType}-"
+            f"{constants.releaseVersion}-"
+            f"{constants.buildNumber}.{constants.currentArch}.iso"
+        )
         self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
 
         if "SKIP_DEBUG_ISO" in os.environ:
@@ -1172,7 +1197,10 @@ class BuildImage:
     def img_present(self, img):
         build_num = constants.buildNumber
         release_ver = constants.releaseVersion
-        img_fn = f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-{build_num}.{constants.currentArch}"
+        img_fn = (
+            f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-"
+            f"{build_num}.{constants.currentArch}"
+        )
 
         if img == "ova":
             img_fn = f"{img_fn}.ova"
@@ -1180,11 +1208,20 @@ class BuildImage:
             img_fn = f"{img_fn}.tar.gz"
         elif img == "azure":
             img_fn = f"{img_fn}.vhd.tar.gz"
-        elif img in {"iso", "minimal-iso", "rt-iso", "src-iso"}:
+        elif img in {
+            "iso",
+            "rt-iso",
+            "src-iso",
+            "minimal-iso",
+            "basic-iso",
+        }:
             img = img.strip("-iso")
             if img:
                 img = f"-{img}"
-            img_fn = f"{Build_Config.stagePath}/photon{img}-{release_ver}-{build_num}.{constants.currentArch}.iso"
+            img_fn = (
+                f"{Build_Config.stagePath}/photon{img}-{release_ver}-"
+                f"{build_num}.{constants.currentArch}.iso"
+            )
         elif img in {"rpi", "ls1012afrwy"}:
             img_fn = f"{img_fn}.xz"
         else:
@@ -1206,15 +1243,17 @@ class BuildImage:
             rpmBuildTarget.packages()
         elif self.img_name == "rt-iso":
             rpmBuildTarget.packages_rt()
+        elif self.img_name == "basic-iso":
+            rpmBuildTarget.packages_basic()
         else:
             rpmBuildTarget.packages_minimal()
 
-        if self.img_name in ["rt-iso", "minimal-iso"]:
+        if self.img_name in ["rt-iso", "minimal-iso", "basic-iso"]:
             rpmBuildTarget.packages_initrd()
 
         RpmBuildTarget.create_repo()
 
-        if self.img_name != "minimal-iso":
+        if self.img_name not in ["minimal-iso", "basic-iso"]:
             RpmBuildTarget.ostree_repo()
         self.generated_data_path = Build_Config.generatedDataPath
 
@@ -1325,10 +1364,11 @@ class BuildImage:
             "all-images",
             "src-iso",
             "minimal-iso",
+            "basic-iso",
         ]
         for img in images:
             self.img_name = img
-            if img in ["iso", "src-iso", "minimal-iso"]:
+            if img in ["iso", "src-iso", "minimal-iso", "basic-iso"]:
                 self.set_Iso_Parameters(img)
                 self.build_iso()
             else:
@@ -1727,7 +1767,13 @@ def main():
         attr = None
         if targetName in targetDict["image"]:
             buildImage = BuildImage(targetName)
-            if targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
+            if targetName in [
+                "iso",
+                "src-iso",
+                "minimal-iso",
+                "rt-iso",
+                "basic-iso",
+            ]:
                 buildImage.set_Iso_Parameters(targetName)
                 buildImage.build_iso()
             elif targetName in buildImage.ova_cloud_images + [
