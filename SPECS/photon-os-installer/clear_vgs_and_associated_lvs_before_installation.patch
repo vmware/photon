@@ -1,0 +1,73 @@
+From aca6ec2860fbbd6aa70d660d4e1196db210f0429 Mon Sep 17 00:00:00 2001
+From: HarinadhD <hdommaraju@vmware.com>
+Date: Mon, 17 Apr 2023 11:54:09 +0000
+Subject: [PATCH] installer: clear the VG'S and associated LVM'S before clearing the disk.
+
+During re-installation there will vgs in the system , So we should
+clear vgs and associtaed lvs before clearing the disk else sgdisk comamnd
+will not clear the disk.
+
+Change-Id: I63fd7fbe796389464185912595e5258eb49e32d7
+---
+
+diff --git a/photon_installer/commandutils.py b/photon_installer/commandutils.py
+index c5a4b21..be09859 100644
+--- a/photon_installer/commandutils.py
++++ b/photon_installer/commandutils.py
+@@ -155,3 +155,21 @@
+         out,err = process.communicate()
+         retval = process.returncode
+         return retval, copy.copy(out.decode())
++
++    def get_vgnames(self):
++        vg_list=[]
++        try:
++            cmd = ['vgdisplay', '-c']
++            process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++            out,err = process.communicate()
++            retval = process.returncode
++            if retval==0:
++                vgdisplay_output=out.decode().split("\n")
++                for vg in vgdisplay_output:
++                    if vg=="":
++                        break
++                    vg_list.append(vg.split(":")[0].strip())
++        except Exception as e:
++            retval=e.args[0]
++        self.logger.info(f"VG's list {vg_list}")
++        return retval, vg_list
+\ No newline at end of file
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 6efe5b1..6c8352d 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -1474,6 +1474,18 @@
+                 if is_last_partition_ab:
+                     self.__set_ab_partition_size(l2entries, used_size, total_disk_size)
+ 
++    def _clear_vgs(self):
++        retval,vg_list=self.cmd.get_vgnames()
++        if retval==0:
++            for vg_name in vg_list:
++                retval = self.cmd.run(['vgremove', '-ff', vg_name])
++                if retval == 0:
++                    self.logger.info(f"Cleared volume group {vg_name} & its associted lv's")
++                else:
++                    self.logger.error(f"Error: Failed to remove existing VG: {vg_name} before clearing the disk")
++                    self.exit_gracefully()
++        else:
++            self.logger.warning("Error: There are no VG's/Failed to get VG names ")
+ 
+     def _partition_disks(self):
+         """
+@@ -1496,6 +1508,9 @@
+         # Partitioning disks
+         for disk, l2entries in ptv.items():
+ 
++            #clear VolumeGroups and associated LVM's if exist any before clearing the disk
++            self._clear_vgs()
++
+             # Clear the disk first
+             retval = self.cmd.run(['sgdisk', '-o', '-g', disk])
+             if retval != 0:
+
