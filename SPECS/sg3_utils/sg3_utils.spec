@@ -1,15 +1,17 @@
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
 Version:        1.46
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
-URL:            https://github.com/hreinecke/sg3_utils
+URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/hreinecke/sg3_utils/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0:        http://sg.danny.cz/sg/p/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ba447b5392b1a3fd6750649dc1a93e788780b80adff475efa350ca2787cc36ad27758772fc8bca33658b5e5e70bea8979a7d51686663ca6dd6a5c0a7d3f2e8c9
+
+Patch0:         0001-sg3_utils-Fix-issue-with-rescan-scsi-bus.sh-removing.patch
 
 Provides:       sg_utils
 
@@ -56,6 +58,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+* Thu Apr 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.46-2
+- fix issue with rescan-scsi-bus.sh removing hard disks
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 1.46-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.44-1
