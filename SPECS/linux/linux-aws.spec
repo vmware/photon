@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.175
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -154,6 +154,9 @@ Patch134: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 #Fix for CVE-2022-4379
 Patch136: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch137: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
 Patch202: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -242,6 +245,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  python3-macros
 BuildRequires:  bison
+BuildRequires:  dwarves-devel
 %if 0%{?fips}
 BuildRequires:  gdb
 %endif
@@ -313,6 +317,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 # CVE
 %autopatch -p1 -m100 -M136
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+%patch137 -p1
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -488,6 +495,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-5
+- Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
 - Fix initrd generation logic
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3

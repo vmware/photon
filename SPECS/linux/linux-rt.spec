@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.175
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -173,6 +173,9 @@ Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch201: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch202: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -614,6 +617,7 @@ BuildRequires:  audit-devel
 BuildRequires:  python3-macros
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
+BuildRequires:  dwarves-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -676,6 +680,9 @@ The Linux package contains the Linux kernel doc files
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+%patch202 -p1
 
 # RT
 %autopatch -p1 -m301 -M716
@@ -920,6 +927,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-5
+- Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
 - Fix initrd generation logic
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3

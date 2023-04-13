@@ -1,0 +1,93 @@
+From 67208692802ce3cacfa00fe586dc0cb1bef0a51c Mon Sep 17 00:00:00 2001
+From: Jiri Olsa <jolsa@kernel.org>
+Date: Wed, 6 Jan 2021 00:42:19 +0100
+Subject: [PATCH] tools/resolve_btfids: Warn when having multiple IDs for
+ single type
+
+The kernel image can contain multiple types (structs/unions)
+with the same name. This causes distinct type hierarchies in
+BTF data and makes resolve_btfids fail with error like:
+
+  BTFIDS  vmlinux
+FAILED unresolved symbol udp6_sock
+
+as reported by Qais Yousef [1].
+
+This change adds warning when multiple types of the same name
+are detected:
+
+  BTFIDS  vmlinux
+WARN: multiple IDs found for 'file': 526, 113351 - using 526
+WARN: multiple IDs found for 'sk_buff': 2744, 113958 - using 2744
+
+We keep the lower ID for the given type instance and let the
+build continue.
+
+Also changing the 'nr' variable name to 'nr_types' to avoid confusion.
+
+[1] https://lore.kernel.org/lkml/20201229151352.6hzmjvu3qh6p2qgg@e107158-lin/
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210105234219.970039-1-jolsa@kernel.org
+---
+ tools/bpf/resolve_btfids/main.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+index e3ea569ee125..7409d7860aa6 100644
+--- a/tools/bpf/resolve_btfids/main.c
++++ b/tools/bpf/resolve_btfids/main.c
+@@ -139,6 +139,8 @@ int eprintf(int level, int var, const char *fmt, ...)
+ #define pr_debug2(fmt, ...) pr_debugN(2, pr_fmt(fmt), ##__VA_ARGS__)
+ #define pr_err(fmt, ...) \
+ 	eprintf(0, verbose, pr_fmt(fmt), ##__VA_ARGS__)
++#define pr_info(fmt, ...) \
++	eprintf(0, verbose, pr_fmt(fmt), ##__VA_ARGS__)
+ 
+ static bool is_btf_id(const char *name)
+ {
+@@ -472,7 +474,7 @@ static int symbols_resolve(struct object *obj)
+ 	int nr_funcs    = obj->nr_funcs;
+ 	int err, type_id;
+ 	struct btf *btf;
+-	__u32 nr;
++	__u32 nr_types;
+ 
+ 	btf = btf__parse(obj->btf ?: obj->path, NULL);
+ 	err = libbpf_get_error(btf);
+@@ -483,12 +485,12 @@ static int symbols_resolve(struct object *obj)
+ 	}
+ 
+ 	err = -1;
+-	nr  = btf__get_nr_types(btf);
++	nr_types = btf__get_nr_types(btf);
+ 
+ 	/*
+ 	 * Iterate all the BTF types and search for collected symbol IDs.
+ 	 */
+-	for (type_id = 1; type_id <= nr; type_id++) {
++	for (type_id = 1; type_id <= nr_types; type_id++) {
+ 		const struct btf_type *type;
+ 		struct rb_root *root;
+ 		struct btf_id *id;
+@@ -526,8 +528,13 @@ static int symbols_resolve(struct object *obj)
+ 
+ 		id = btf_id__find(root, str);
+ 		if (id) {
+-			id->id = type_id;
+-			(*nr)--;
++			if (id->id) {
++				pr_info("WARN: multiple IDs found for '%s': %d, %d - using %d\n",
++					str, id->id, type_id, id->id);
++			} else {
++				id->id = type_id;
++				(*nr)--;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.25.1
+

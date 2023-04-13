@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -210,6 +210,9 @@ Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch151: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch152: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
 Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
@@ -309,6 +312,7 @@ BuildRequires:  xz-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
 BuildRequires:  bison
+BuildRequires:  dwarves-devel
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -447,6 +451,9 @@ manipulation of eBPF programs and maps.
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+%patch152 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -840,6 +847,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-7
+- Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-6
 - Fix aarch64 initrd driver list
 * Sun Apr 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-5
