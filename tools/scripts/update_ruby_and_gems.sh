@@ -38,17 +38,17 @@ if [ "$version" != "$old_ruby_ver" ]; then
 
   #test -f stage/SOURCES/ruby-$version* && echo up to date && exit 0
   $(cd stage/SOURCES && wget $tar_url)
-  sha1=`sha1sum stage/SOURCES/$ruby_tar | awk '{print $1}'`
-  echo $sha1
+  sha512=`sha512sum stage/SOURCES/$ruby_tar | awk '{print $1}'`
+  echo $sha512
   changelog_entry=$(echo "`date +"%a %b %d %Y"` `git config user.name` <`git config user.email`> $version-1")
 
   sed -i '/^Version:/ s/2.[0-9]*.[0-9]*/'$version'/' ./SPECS/ruby/ruby.spec
   sed -i '/^Release:/ s/[0-9]*%/1%/' ./SPECS/ruby/ruby.spec
-  sed -i '/^%define sha1\s*ruby/ s/=[0-9a-f]*$/='$sha1'/' ./SPECS/ruby/ruby.spec
+  sed -i '/^%define sha512\s*ruby/ s/=[0-9a-f]*$/='$sha512'/' ./SPECS/ruby/ruby.spec
   sed -i '/^%changelog/a*   '"$changelog_entry"'\n-   Update to version '"$version"'' ./SPECS/ruby/ruby.spec
 
 else
-  
+
   echo "Ruby is up to date"
 
 fi
@@ -78,13 +78,13 @@ for dir in $gem_spec_dirs; do
     echo "updating $gem_name-$new_ver"
 
     $(cd stage/SOURCES && wget $rubygem_download_url/$gem_name-$new_ver.gem)
-    gem_sha1=`sha1sum stage/SOURCES/$gem_name-$new_ver.gem | awk '{print $1}'`
-    echo "$gem_sha1"
+    gem_sha512=`sha512sum stage/SOURCES/$gem_name-$new_ver.gem | awk '{print $1}'`
+    echo "$gem_sha512"
     gem_chng_log=$(echo "`date +"%a %b %d %Y"` `git config user.name` <`git config user.email`> $new_ver-1")
 
     sed -i '/^Version:/ s/[0-9].[0-9]*.[0-9]*..$/'$new_ver'/' $file
     sed -i '/^Release:/ s/[0-9]*%/1%/' $file
-    sed -i '/^%define sha1\s*'"$gem_name"'/ s/=[0-9a-f]*$/='$gem_sha1'/' $file
+    sed -i '/^%define sha512\s*'"$gem_name"'/ s/=[0-9a-f]*$/='$gem_sha512'/' $file
     sed -i '/^%changelog/a*   '"$gem_chng_log"'\n-   Update to version '"$new_ver"'' $file
 
   else

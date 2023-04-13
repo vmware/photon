@@ -8,7 +8,7 @@ latestVersion=""                          # Package version number
 SPECSDIR=SPECS                            # Parent directory of  all SPEC files
 SOURCESDIR="stage/SOURCES"                # Directory where sources are downloaded
 latestSrcFileName=""                      # Base name of source file
-srcSha1Sum=""                             # sha1sum of the sources
+srcSha512Sum=""                           # sha512sum of the sources
 changeMsgLine1=""                         # first line of the changelog message to record
 changeMsgLine2=""                         # second line of the changelog message to record
 
@@ -95,12 +95,12 @@ function _updateSpecFile()
     local localSrcArchive="$4"
     local changeLogMsg1="$5"
     local changeLogMsg2="$6"
-    local sha1sum=""
+    local sha512sum=""
     local existingVersion=""
     local downloadUrl="$(echo $srcUrl | sed -E "s/$latestVersion/%{version}/g")"
     downloadUrl="$(echo "$downloadUrl" | sed -E 's#/#\\/#g')"
     _downloadSourceFromUrl "$srcUrl" "$localSrcArchive"
-    sha1sum="$(sha1sum $localSrcArchive | awk '{print $1}')"
+    sha512sum="$(sha512sum $localSrcArchive | awk '{print $1}')"
 
     existingVersion="$(awk '/^Version:/{print $2}' $specFile)"
 
@@ -116,12 +116,12 @@ function _updateSpecFile()
 
     # Update %release
     sed -i -e "s/^\(Release:[[:space:]]*\)[^[:space:]]*%\(.*\)$/\11%\2/" $specFile
-    
+
     # Update %Source/%Source0
     sed -i -e "s/^\(Source[0]*:[[:space:]]*\).*$/\1$downloadUrl/" $specFile
 
-    # Update sha1sum
-    sed -i -e "s/^\(%define[[:space:]]\+sha1.*\)=.*$/\1=$sha1sum/" $specFile
+    # Update sha512sum
+    sed -i -e "s/^\(%define[[:space:]]\+sha512.*\)=.*$/\1=$sha512sum/" $specFile
 
     # Update changelog
     sed -i -e "/^%changelog/a\
