@@ -71,9 +71,18 @@ start_repo_server()
   done
 }
 
+ZstdSupported=-1
 rpmSupportsZstd()
 {
-  rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'
+  [ $ZstdSupported -ge 0 ] && return $ZstdSupported
+
+  if rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'; then
+    ZstdSupported=0
+  else
+    ZstdSupported=1
+  fi
+
+  return $ZstdSupported
 }
 
 run_cmd()
