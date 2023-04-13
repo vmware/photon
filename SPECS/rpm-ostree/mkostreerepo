@@ -1,15 +1,6 @@
 #!/bin/bash
-#################################################
-#       Title:  mkostreerepo                    #
-#        Date:  2019-09-20                      #
-#     Version:  1.0                             #
-#      Author:  ankitja@vmware.com              #
-#     Options:                                  #
-#################################################
-#   Overview
-#       Create Repo Tree for RPM-OStree
-#   End
-#
+
+PHOTON_VERSION="5.0"
 
 function show-help()
 {
@@ -58,11 +49,11 @@ cat > $JSONFILE << EOF
 
         "osname": "photon",
 
-        "releasever": "5.0",
+        "releasever": "${PHOTON_VERSION}",
 
-        "ref": "photon/5.0/$(uname -m)/minimal",
+        "ref": "photon/${PHOTON_VERSION}/$(uname -m)/minimal",
 
-        "automatic_version_prefix": "5.0_minimal",
+        "automatic_version_prefix": "${PHOTON_VERSION}_minimal",
 
         "repos": ["photon", "photon-updates", "photon-extras"],
 
