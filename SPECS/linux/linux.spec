@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.41
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -239,6 +239,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 BuildRequires:  bison
+BuildRequires:  dwarves-devel
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -713,6 +714,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.41-4
+- Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-3
 - Enable Kconfig CONFIG_KEXEC_FILE for kexec signature verify
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
