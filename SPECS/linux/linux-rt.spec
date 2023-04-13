@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.41
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -237,6 +237,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
+BuildRequires:  dwarves-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -513,6 +514,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 09 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.41-3
+- Enable CONFIG_DEBUG_INFO_BTF=y
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
 - Fix: unconditional preserve CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
