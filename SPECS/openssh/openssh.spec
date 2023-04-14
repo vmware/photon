@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.1p1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -196,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-8
+- Bump version as a part of zlib upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.1p1-7
 - Use systemd-rpm-macros for user creation
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-6

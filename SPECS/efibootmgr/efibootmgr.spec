@@ -1,7 +1,7 @@
 Summary:       Tools and libraries to manipulate EFI variables
 Name:          efibootmgr
 Version:       18
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           https://github.com/rhinstaller/efibootmgr/
 Group:         System Environment/System Utilities
@@ -38,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18-2
+- Bump version as a part of zlib upgrade
 * Mon Feb 20 2023 Gerrit Photon <photon-checkins@vmware.com> 18-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 17-1

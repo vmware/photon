@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -706,6 +706,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-4
+- Bump version as a part of zlib upgrade
 * Tue Mar 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-3
 - Fix iputils provided binary path
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-2

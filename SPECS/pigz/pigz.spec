@@ -1,7 +1,7 @@
 Summary:        Parallel Implementation of GZip
 Name:           pigz
 Version:        2.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        zlib
 Group:          Application/Tools
 URL:            https://zlib.net/pigz
@@ -50,5 +50,7 @@ make test %{?_smp_mflags}
 %{_mandir}/%{name}.1
 
 %changelog
+*   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7-2
+-   Bump version as a part of zlib upgrade
 *   Wed Apr 27 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.7-1
 -   Initial addition to Photon. Modified from provided pigz source version.

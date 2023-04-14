@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -262,6 +262,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-2
+- Bump version as a part of zlib upgrade
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-1
 - Add openssl-libs subpackage
 - Upgrade to v3.0.8

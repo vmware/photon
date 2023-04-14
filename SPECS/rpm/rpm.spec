@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -306,6 +306,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-11
+- Bump version as a part of zlib upgrade
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-10
 - Require lua-libs
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-9

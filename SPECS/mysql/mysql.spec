@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/private/icudt69l
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-2
+- Bump version as a part of zlib upgrade
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-1
 - Upgrade to v8.0.32
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-2

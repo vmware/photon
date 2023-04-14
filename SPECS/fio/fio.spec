@@ -1,7 +1,7 @@
 Summary:         Multithreaded IO generation tool
 Name:            fio
 Version:         3.33
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         GPLv2
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -84,6 +84,8 @@ sh ./configure --disable-optimizations --dynamic-libengines
 %{_mandir}/man1/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.33-2
+- Bump version as a part of zlib upgrade
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.33-1
 - Automatic Version Bump
 * Mon Jun 06 2022 Piyush Gupta <gpiyush@vmware.com> 3.30-1
