@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.10
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -177,7 +177,7 @@ Patch701: 6.0-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
 #Patch to add timer padding on guest
-Patch716: 6.0-timer-padding-on-guest.patch
+Patch716: Guest-timer-Advancement-Feature.patch
 
 # Fix for a latency issue related to ktimer thread wakeup:
 Patch717: softirq-wake-up-ktimer-thread-in-softirq-context.patch
@@ -505,6 +505,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1.10-10
+- Update Guest timer advancement feature
 * Thu Apr 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-9
 - Use canister version 5.0.0-6.1.10-10
 * Thu Apr 06 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-8
