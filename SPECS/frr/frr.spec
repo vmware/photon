@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -22,6 +22,7 @@ Patch2:         fips-mode.patch
 
 %if 0%{?with_check}
 Patch4:         remove-grpc-test.patch
+Patch5:         0001-directly-link-libabsl_synchronization-for-grpc-test.patch
 %endif
 
 BuildRequires:  build-essential
@@ -245,6 +246,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-2
+- Bump version as part of libyang upgrade
 * Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 8.4.1-1
 - Automatic Version Bump
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 8.2.2-4
