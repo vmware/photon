@@ -1047,12 +1047,13 @@ class BuildImage:
         imgType = "photon"
 
         if imgName in ["minimal-iso", "rt-iso"]:
-            imgType = f"photon-{imgName.split('-iso')[0]}"
+            flavor = imgName.split("-iso")[0]
+            imgType = f"photon-{flavor}"
             self.package_list_file = (
-                f"{Build_Config.dataDir}/build_install_options_{imgName.split('-')[0]}.json"
+                f"{Build_Config.dataDir}/build_install_options_{flavor}.json"
             )
             self.pkg_to_be_copied_conf_file = (
-                f"{Build_Config.generatedDataPath}/build_install_options_{imgName.split('-')[0]}.json"
+                f"{Build_Config.generatedDataPath}/build_install_options_{flavor}.json"
             )
         else:
             self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
