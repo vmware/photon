@@ -1,7 +1,7 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
 Version:       2.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -50,6 +50,8 @@ rm -rf %{buildroot}%{_datadir}/zsh/*
 %{_datadir}/bash-completion/completions/nvme
 
 %changelog
+*  Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3-2
+-  Bump version as a part of zlib upgrade
 *  Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 2.3-1
 -  Update to v2.3
 -  Change install location from /usr/local to /usr

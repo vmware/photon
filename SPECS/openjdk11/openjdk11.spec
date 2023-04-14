@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -207,6 +207,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.18-2
+- Bump version as a part of zlib upgrade
 * Tue Feb 14 2023 Mukul Sikka <msikka@vmware.com> 11.0.18-1
 - Updating to jdk-11.0.18-ga
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-6

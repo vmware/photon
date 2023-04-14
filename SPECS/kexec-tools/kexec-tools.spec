@@ -1,7 +1,7 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
 Version:        2.0.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
@@ -36,6 +36,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %doc TODO
 
 %changelog
+*   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.25-2
+-   Bump version as a part of zlib upgrade
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.25-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.24-1

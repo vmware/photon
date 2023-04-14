@@ -4,7 +4,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -154,6 +154,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-2
+- Bump version as a part of zlib upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-1
 - Upgrade to v7.3.2
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-preview.8.1

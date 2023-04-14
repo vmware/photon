@@ -1,7 +1,7 @@
 Summary:        software font engine.
 Name:           freetype2
 Version:        2.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD/GPL
 URL:            http://www.freetype.org
 Group:          System Environment/Libraries
@@ -57,6 +57,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-2
+- Bump version as a part of zlib upgrade
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
 - Upgrade to v2.12.1
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1

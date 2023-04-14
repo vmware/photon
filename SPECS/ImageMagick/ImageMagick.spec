@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.0.47
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -172,6 +172,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-2
+-   Bump version as a part of zlib upgrade
 *   Mon Aug 29 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.47-1
 -   Upgrade version to 7.1.0.47
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0.35-1
