@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.277
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -77,8 +77,6 @@ Source16: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_versio
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
@@ -1345,6 +1343,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-5
+- Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-4
 - update to latest ToT vmxnet3 driver pathes
 * Thu Mar 23 2023 Ankit Jain <ankitja@vmware.com> 4.19.277-3

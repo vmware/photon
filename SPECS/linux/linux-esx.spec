@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.277
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,13 +40,10 @@ Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version
 %define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 
 # common
-#Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
-#Patch6: 4.18-x86-vmware-STA-support.patch
 Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8: init-do_mounts-recreate-dev-root.patch
 Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
@@ -375,7 +372,6 @@ Patch460: 0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
 Patch461: 0061-x86-sev-es-Handle-VMMCALL-Events.patch
 Patch462: 0062-x86-sev-es-Handle-AC-Events.patch
 Patch463: 0063-x86-sev-es-Handle-DB-Events.patch
-#Patch464: 0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
 Patch465: 0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
 Patch466: 0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
 Patch467: 0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
@@ -392,7 +388,6 @@ Patch477: 0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
 Patch478: 0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
 
 Patch480: 0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
-#Patch481: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch482: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484: 0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
@@ -820,6 +815,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-4
+- Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-3
 - update to latest ToT vmxnet3 driver pathes
 * Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2

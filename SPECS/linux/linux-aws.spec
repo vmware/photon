@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.277
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -33,8 +33,6 @@ Source6: genhmac.inc
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
@@ -52,8 +50,6 @@ Patch16: 0003-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch17: 0004-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch18: 0005-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
-# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28: kvm-dont-accept-wrong-gsi-values.patch
@@ -532,6 +528,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-3
+- Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-2
 - update to latest ToT vmxnet3 driver pathes
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1

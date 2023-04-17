@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.277
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -58,8 +58,6 @@ Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_versio
 
 # common
 Patch1: double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
@@ -90,9 +88,6 @@ Patch19: 0002-tools-power-turbostat-Support-Ice-Lake-server.patch
 Patch20: 0003-tools-power-turbostat-Remove-Package-C6-Retention-on.patch
 Patch21: 0004-tools-power-turbostat-Fix-DRAM-Energy-Unit-on-SKX.patch
 Patch22: 0005-tools-power-turbostat-fix-ICX-DRAM-power-numbers.patch
-
-# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
 
 Patch25: 0001-tools-perf-fix-compilation-error.patch
 Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -456,7 +451,6 @@ Patch460: 0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
 Patch461: 0061-x86-sev-es-Handle-VMMCALL-Events.patch
 Patch462: 0062-x86-sev-es-Handle-AC-Events.patch
 Patch463: 0063-x86-sev-es-Handle-DB-Events.patch
-#Patch464: 0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
 Patch465: 0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
 Patch466: 0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
 Patch467: 0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
@@ -473,10 +467,8 @@ Patch477: 0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
 Patch478: 0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
 
 Patch480: 0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
-#Patch481: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch482: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-#Patch484: 0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
 Patch485: 0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
 Patch486: 0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
 Patch487: 0001-x86-sev-es_Use_GHCB_accessor_for_setting_the_MMIO_scratch_buffer.patch
@@ -1120,6 +1112,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-4
+- Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-3
 - update to latest ToT vmxnet3 driver pathes
 * Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
