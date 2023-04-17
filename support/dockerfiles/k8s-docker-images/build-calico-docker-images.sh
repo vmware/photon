@@ -18,6 +18,15 @@ CALICO_VER_REL=${CALICO_VER}-$(get_spec_rel "${fn}")
 CALICO_RPM=calico-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_RPM}
 
+CALICO_CNI_RPM=calico-cni-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
+CALICO_CNI_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_CNI_RPM}
+
+CALICO_FELIX_RPM=calico-felix-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
+CALICO_FELIX_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_FELIX_RPM}
+
+CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
+CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_K8S_POLICY_RPM}
+
 fn="${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec"
 CALICO_BGP_VER=$(get_spec_ver "${fn}")
 CALICO_BGP_VER_REL=${CALICO_BGP_VER}-$(get_spec_rel "${fn}")
@@ -42,35 +51,17 @@ CONFD_VER_REL=${CONFD_VER}-$(get_spec_rel "${fn}")
 CONFD_RPM=confd-${CONFD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CONFD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CONFD_RPM}
 
-fn="${SPEC_DIR}/calico-felix/calico-felix.spec"
-CALICO_FELIX_VER=$(get_spec_ver "${fn}")
-CALICO_FELIX_VER_REL=${CALICO_FELIX_VER}-$(get_spec_rel "${fn}")
-CALICO_FELIX_RPM=calico-felix-${CALICO_FELIX_VER_REL}${DIST_TAG}.${ARCH}.rpm
-CALICO_FELIX_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_FELIX_RPM}
-
 fn="${SPEC_DIR}/calico-libnetwork/calico-libnetwork.spec"
 CALICO_LIBNET_VER=$(get_spec_ver "${fn}")
 CALICO_LIBNET_VER_REL=${CALICO_LIBNET_VER}-$(get_spec_rel "${fn}")
 CALICO_LIBNET_RPM=calico-libnetwork-${CALICO_LIBNET_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_LIBNET_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_LIBNET_RPM}
 
-fn="${SPEC_DIR}/calico-cni/calico-cni.spec"
-CALICO_CNI_VER=$(get_spec_ver "${fn}")
-CALICO_CNI_VER_REL=${CALICO_CNI_VER}-$(get_spec_rel "${fn}")
-CALICO_CNI_RPM=calico-cni-${CALICO_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm
-CALICO_CNI_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_CNI_RPM}
-
 fn="${SPEC_DIR}/cni/cni.spec"
 K8S_CNI_VER=$(get_spec_ver "${fn}")
 K8S_CNI_VER_REL=${K8S_CNI_VER}-$(get_spec_rel "${fn}")
 K8S_CNI_RPM=cni-${K8S_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_CNI_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${K8S_CNI_RPM}
-
-fn="${SPEC_DIR}/calico-k8s-policy/calico-k8s-policy.spec"
-CALICO_K8S_POLICY_VER=$(get_spec_ver "${fn}")
-CALICO_K8S_POLICY_VER_REL=${CALICO_K8S_POLICY_VER}-$(get_spec_rel "${fn}")
-CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_K8S_POLICY_VER_REL}${DIST_TAG}.${ARCH}.rpm
-CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_K8S_POLICY_RPM}
 
 if [ ! -f ${CALICO_RPM_FILE} ]; then
   echo "Calico RPM ${CALICO_RPM_FILE} not found. Exiting.."
@@ -123,11 +114,11 @@ if [ ! -f ${CALICO_K8S_POLICY_RPM_FILE} ]; then
 fi
 
 CALICO_NODE_IMG_NAME=vmware/photon-${DIST_VER}-calico-node:v${CALICO_VER}
-CALICO_CNI_IMG_NAME=vmware/photon-${DIST_VER}-calico-cni:v${CALICO_CNI_VER}
-CALICO_K8S_POLICY_IMG_NAME=vmware/photon-${DIST_VER}-calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
+CALICO_CNI_IMG_NAME=vmware/photon-${DIST_VER}-calico-cni:v${CALICO_VER}
+CALICO_K8S_POLICY_IMG_NAME=vmware/photon-${DIST_VER}-calico-kube-policy-controller:v${CALICO_VER}
 CALICO_NODE_TAR=calico-node-v${CALICO_VER_REL}.${ARCH}.tar
-CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER_REL}.${ARCH}.tar
-CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER_REL}.${ARCH}.tar
+CALICO_CNI_TAR=calico-cni-v${CALICO_VER_REL}.${ARCH}.tar
+CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_VER_REL}.${ARCH}.tar
 
 NODE_IMG_ID=$(docker images -q ${CALICO_NODE_IMG_NAME} 2> /dev/null)
 if [[ ! -z "${NODE_IMG_ID}" ]]; then
