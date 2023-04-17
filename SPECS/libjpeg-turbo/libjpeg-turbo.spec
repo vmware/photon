@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -61,6 +61,8 @@ find %{buildroot} -name "*.la" -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 2.1.0-2
+- Bump version as a part of nasm v2.16.01 upgrade
 * Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
 - Bump version to 2.1.0 to fix CVE-2020-17541
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.5-1
