@@ -1,14 +1,14 @@
 %global security_hardening none
 
-Summary:    Simple kernel loader which boots from a FAT filesystem
-Name:       syslinux
-Version:    6.04
-Release:    8%{?dist}
-License:    GPLv2+
-URL:        http://www.syslinux.org
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:      Simple kernel loader which boots from a FAT filesystem
+Name:         syslinux
+Version:      6.04
+Release:      9%{?dist}
+License:      GPLv2+
+URL:          http://www.syslinux.org
+Group:        Applications/System
+Vendor:       VMware, Inc.
+Distribution: Photon
 
 Source0:    https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
 %define sha512  %{name}=7927dd39be8e2dcf4138a6fea33def67d19d938379d694f15b48fdd2f5924c028b7a9e7bd71d0c7c6630c203e9e2a54296628e530632ad5e6f55b1ebefe8fc98
@@ -87,6 +87,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 6.04-9
+- Bump version as a part of nasm v2.16.01 upgrade
 * Mon Jul 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.04-8
 - Fix devel requires
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.04-7
