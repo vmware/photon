@@ -1,13 +1,13 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        2.0.3
-Release:        10%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        https://github.com/kubernetes/dashboard/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=8f2bb1aac9f78f9d9fb3388d3b89a1e24743e9c811a6ca95da3c199f954b157f85c896b9d6896b205f560ffef940269ebd5a9457e5e7a270d23b024b849e6210
+%define sha512  %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
 Source1:        dashboard-dist-%{version}.tar.gz
-%define sha512  dashboard-dist=e1d126b59f8ababe6506a1ed7d3b36c5e09cd6cdc6e7a846c95db03680461dbfe033229c59020fbc67c921314d71b8e44aa283a0faaa04bb5687985a94bdb59c
+%define sha512  dashboard-dist=a75e170f4963efec8aad625275fd352df696f55e8e5b91f9599d1e60823e2d6a064bc8085e0ae0191cc34f0530e33461340e49e26986108c7110b64d1d1520d4
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,6 +30,9 @@ Kubernetes Dashboard UI.
 
 %prep
 %autosetup -p1 -n dashboard-%{version}
+# Change the npm default registry to enterprise registry
+#sed -i 's#https://registry.npmjs.org#http://<url>#g' *.json
+#npm config set registry http://<url>
 
 %build
 export PATH=${PATH}:/usr/bin
@@ -66,6 +69,8 @@ cp -p -r ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Mon Apr 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-1
+- Update to 2.7.0
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.3-10
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 2.0.3-9

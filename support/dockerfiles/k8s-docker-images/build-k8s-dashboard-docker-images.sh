@@ -34,6 +34,7 @@ fi
 
 mkdir -p tmp/k8dash
 cp ${K8S_DASH_RPM_FILE} tmp/k8dash/
+cp ./Dockerfile.kubernetes-dashboard tmp/k8dash
 
 pushd ./tmp/k8dash
 cmd="cd '${PWD}' && rpm2cpio '${K8S_DASH_RPM}' | cpio -vid"
@@ -44,6 +45,7 @@ mkdir -p img
 cp -pr usr/bin/dashboard \
        opt/k8dashboard/* \
        img/
+cp ./Dockerfile.kubernetes-dashboard img/Dockerfile
 
 pushd img
 cat Dockerfile
