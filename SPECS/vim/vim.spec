@@ -1,10 +1,10 @@
 %define debug_package %{nil}
-%global maj_ver vim82
+%global maj_ver vim90
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.5169
-Release:        5%{?dist}
+Version:        9.0.1392
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,32 +12,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e2b85746a4cc9ce2a4deeb0a3cd0365ad3124492b2c0feb4e029c7f58a960382bc0d3f3f4611742fa7a8559204f711c831407289b113386fce1138e3c9fc3c75
+%define sha512 %{name}=cd4679d2c13f3231bc0c8a99ba53fc04b034b98b5c5ca0e0840b7770a3b2fe52e83e106dc4445ef32001e2342be75d8d7574b817908abd3e6045432a9e03b61c
 
 Source1:        vimrc
-
-Patch0:  CVE-2022-47024.patch
-Patch1:  CVE-2023-0433.patch
-Patch2:  CVE-2023-0049.patch
-Patch3:  CVE-2023-0051.patch
-Patch4:  CVE-2023-0054.patch
-Patch5:  CVE-2022-3520.patch
-Patch6:  CVE-2022-4292.patch
-Patch7:  CVE-2022-2946.patch
-Patch8:  CVE-2022-3591.patch
-Patch9:  CVE-2022-2819.patch
-Patch10: backport-for-CVE-2022-3324.patch
-Patch11: CVE-2022-3324.patch
 
 BuildRequires:  ncurses-devel
 
 %description
-The Vim package contains a powerful text editor.
+The VIM package contains a powerful text editor.
 
 %package    extra
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
+Requires:   python3
 Requires:   %{name} = %{version}-%{release}
 Conflicts:  toybox < 0.8.2-2
 
@@ -187,7 +175,9 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
-* Tue Feb 7 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-5
+* Tue Apr 18 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.1392-1
+- update to v9.0.1392 to fix multiple P2 CVEs
+* Tue Feb 07 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-5
 - fixed multiple P1 CVEs
 - CVE-2022-3520, CVE-2022-4292, CVE-2022-2946
 - CVE-2022-3591, CVE-2022-2819, CVE-2022-3324
