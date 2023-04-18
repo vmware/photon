@@ -2,16 +2,15 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.2
-Release:       3%{?dist}
+Version:       2.3
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=2f4408d0a57a7ed81760cad3c191628ce40d86eb3a048a46d9e8d55c66d6f6429ddf00c1a5852f023670157d861dc5ad32fed43506296c8d7aa3fc450f55a499
-Patch0:        clear_vgs_and_associated_lvs_before_installation.patch
+%define sha512 %{name}=69d428a5a15d36bcce886897dd4fc87cccc7644877ac5739f029176b0494fd6c13b2a506a68e3c6db4626c4ceadcd283a9421710211c9bca6cf68d2d34f32a9c
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -55,6 +54,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Apr 18 2023 Ankit Jain <ankitja@vmware.com> 2.3-1
+- Upgrade to v2.3
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 2.2-3
 - cleanup vgs if exists any before installation
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2-2
