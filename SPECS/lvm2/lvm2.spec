@@ -1,7 +1,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
 %define sha512  LVM2=084ba4080537359458db936637fc7f83bb9bfcf2de9f3660882551b5c31c7e9900c7d381b238ce1bb7629942c740c121f0dea5e404c302d31ed028b5c65efaa5
+Patch0:         0001-lvm2-add-preffered-names-for-lvm-devices.patch
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -149,7 +150,7 @@ This package contains files needed to develop applications that use
 the device-mapper event library.
 
 %prep
-%autosetup -n LVM2.%{version}
+%autosetup -p1 -n LVM2.%{version}
 
 %build
 %define _default_pid_dir /run
@@ -172,9 +173,7 @@ the device-mapper event library.
     --enable-applib \
     --enable-cmdlib \
     --enable-dmeventd \
-    --enable-use_lvmetad \
     --enable-blkid_wiping \
-    --enable-lvmetad \
     --with-udevdir=%{_udevdir} --enable-udev_sync \
     --with-thin=internal \
     --with-cache=internal \
@@ -189,23 +188,20 @@ make install_systemd_generators DESTDIR=%{buildroot} %{?_smp_mflags}
 make install_tmpfiles_configuration DESTDIR=%{buildroot} %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
 echo "disable lvm2-monitor.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmeatd.socket" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
 
 %preun
-%systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_preun lvm2-monitor.service
 
 %post
 %?ldconfig
 
-%systemd_post lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_post lvm2-monitor.service
 
 %postun
 %ldconfig_postun
 
-%systemd_postun_with_restart lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_postun_with_restart lvm2-monitor.service
 
 %files  devel
 %defattr(-,root,root,-)
@@ -297,6 +293,9 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Tue Apr 18 2023 Harinadh D <hdommaraju@vmware.com> 2.03.16-3
+-   dropped deprecated lvmetad,remove not used lvm2-activate.service
+-   Add the patch to set prefferd names
 *   Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.03.16-2
 -   Bump release as a part of readline upgrade
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.03.16-1
