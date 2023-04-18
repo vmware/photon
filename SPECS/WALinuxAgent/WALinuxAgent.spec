@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.7.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -29,6 +29,7 @@ Requires: /bin/grep
 Requires: sudo
 Requires: iptables
 Requires: systemd
+Requires: python3-distro
 
 BuildArch: noarch
 
@@ -46,13 +47,13 @@ images that are built to run in the Windows Azure environment.
 %install
 %{python3} setup.py install --skip-build install -O1 --lnx-distro='photonos' --root=%{buildroot}
 
-mkdir -p %{buildroot}%{_localstatedir}/log \
-         %{buildroot}%{_localstatedir}/opt/waagent/log \
-         %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/waagent/log \
+         %{buildroot}%{_var}/log
 
 mkdir -p -m 0700 %{buildroot}%{_sharedstatedir}/waagent
-touch %{buildroot}%{_localstatedir}/opt/waagent/log/waagent.log
-ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_localstatedir}/log/waagent.log
+touch %{buildroot}%{_var}/opt/waagent/log/waagent.log
+ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_var}/log/waagent.log
 
 %post
 %systemd_post waagent.service
@@ -73,13 +74,15 @@ rm -rf %{buildroot}
 %attr(0755,root,root) %{_bindir}/waagent
 %attr(0755,root,root) %{_bindir}/waagent2.0
 %config(noreplace) %{_sysconfdir}/waagent.conf
-%dir %{_localstatedir}/opt/waagent/log
-%{_localstatedir}/log/waagent.log
-%ghost %{_localstatedir}/opt/waagent/log/waagent.log
+%dir %{_var}/opt/waagent/log
+%{_var}/log/waagent.log
+%ghost %{_var}/opt/waagent/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-4
+- Add python3-distro to requires
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.3.0-3
 - FIx requires
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.3.0-2
