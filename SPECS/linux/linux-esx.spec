@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -500,6 +500,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 19 2023 Ankit Jain <ankitja@vmware.com> 6.1.10-13
+- tarfs: fixes buffer overflow
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-12
 - Use canister version 5.0.0-6.1.37-2
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
