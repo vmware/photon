@@ -1,4 +1,4 @@
-From 2a0b3b52f1140111e0f4ce33f8c634e44135eafa Mon Sep 17 00:00:00 2001
+From d0196e01e76746a41a923631837cb087fa9c81a9 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -21,8 +21,8 @@ allocation for file content data.
 Signed-off-by: Srinidhi Rao <srinidhir@vmware.com>
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
-Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  fs/Kconfig                    |   1 +
  fs/Makefile                   |   1 +
@@ -31,8 +31,8 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 183 +++++++++
  fs/tarfs/tarfs_file_dir_ops.c | 588 ++++++++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 717 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1587 insertions(+)
+ fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1584 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -41,10 +41,10 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  create mode 100644 fs/tarfs/tarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 2b819273bca2..e0f7208fc78f 100644
+index 055c4d5f1..4450042f0 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -320,6 +320,7 @@ source "fs/erofs/Kconfig"
+@@ -321,6 +321,7 @@ source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
  source "fs/vtar/Kconfig"
  source "fs/vtarfs/Kconfig"
@@ -53,17 +53,17 @@ index 2b819273bca2..e0f7208fc78f 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 91ba9d65aceb..a2ae3527b25c 100644
+index b675a2067..75aed184b 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -140,3 +140,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+@@ -139,3 +139,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
  obj-$(CONFIG_VTARFS)		+= vtarfs/
 +obj-$(CONFIG_TARFS)		+= tarfs/
 diff --git a/fs/tarfs/Kconfig b/fs/tarfs/Kconfig
 new file mode 100644
-index 000000000000..ff60b7e091d8
+index 000000000..ff60b7e09
 --- /dev/null
 +++ b/fs/tarfs/Kconfig
 @@ -0,0 +1,18 @@
@@ -87,7 +87,7 @@ index 000000000000..ff60b7e091d8
 +       module will be called tarfs. If unsure, say N.
 diff --git a/fs/tarfs/Makefile b/fs/tarfs/Makefile
 new file mode 100644
-index 000000000000..592e207bb3b5
+index 000000000..592e207bb
 --- /dev/null
 +++ b/fs/tarfs/Makefile
 @@ -0,0 +1,15 @@
@@ -108,7 +108,7 @@ index 000000000000..592e207bb3b5
 +	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 diff --git a/fs/tarfs/README.md b/fs/tarfs/README.md
 new file mode 100644
-index 000000000000..2a816e9ff7e1
+index 000000000..2a816e9ff
 --- /dev/null
 +++ b/fs/tarfs/README.md
 @@ -0,0 +1,64 @@
@@ -178,7 +178,7 @@ index 000000000000..2a816e9ff7e1
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000000..911bd20fbc21
+index 000000000..911bd20fb
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
 @@ -0,0 +1,183 @@
@@ -367,7 +367,7 @@ index 000000000000..911bd20fbc21
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..41fa448a041a
+index 000000000..41fa448a0
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
 @@ -0,0 +1,588 @@
@@ -961,10 +961,10 @@ index 000000000000..41fa448a041a
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..89e4a6397639
+index 000000000..4231476f3
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,717 @@
+@@ -0,0 +1,714 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Filesystem to directly mount tar archive.
@@ -1136,18 +1136,15 @@ index 000000000000..89e4a6397639
 +	} else {
 +		name_end = memchr(header->name, 0, sizeof(header->name));
 +		if (!name_end) {
-+			tarfs_err("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
-+					header->name, sizeof(header->name), strlen(header->name));
 +			/*
-+			 * Handle the case where header->name is exact 100 bytes long and
-+			 * thus there is no '\0' char and mode bytes gets appended to header->name
++			 * Handle the case where header->name is exact 100 bytes long or more
 +			 */
-+			if ((strlen(header->name) > sizeof(header->name)) &&
-+			     (memcmp(header->name + sizeof(header->name),
-+				      header->mode, sizeof(header->mode)) == 0)) {
++			if (strnlen(header->name, sizeof(header->name)) == sizeof(header->name)) {
 +				tarfs_info("Header name is exact 100 bytes long!! Handling it properly!!");
 +				name_end = header->name + sizeof(header->name);
 +			} else {
++				tarfs_err("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
++					header->name, sizeof(header->name), strnlen(header->name, sizeof(header->name)));
 +				return NULL;
 +			}
 +		}
@@ -1683,5 +1680,5 @@ index 000000000000..89e4a6397639
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ashwin Dayanand Kamat <kashwindayan@vmware.com>");
 -- 
-2.25.1
+2.23.1
 
