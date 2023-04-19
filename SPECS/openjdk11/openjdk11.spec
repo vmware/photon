@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -15,18 +15,18 @@ Source0:        https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{versio
 %define sha512 jdk-11.0=10a48066ad1d2b627cc9be5c6e06a0deef7241f3b95b917b3bf86ffeb53ea043915e0eb7784ea244332d9c3941c8c5056c154e5aff4522b95aca8c8372c19474
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
-BuildRequires:	which
-BuildRequires:	zip
-BuildRequires:	unzip
+BuildRequires:  which
+BuildRequires:  zip
+BuildRequires:  unzip
 BuildRequires:  zlib-devel
-BuildRequires:	ca-certificates
-BuildRequires:	chkconfig
+BuildRequires:  ca-certificates
+BuildRequires:  chkconfig
 BuildRequires:  freetype2
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
 Requires:       chkconfig
 Requires:       libstdc++
 Obsoletes:      openjdk <= %{version}
-AutoReqProv: 	no
+AutoReqProv:    no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjre10, openjdk10
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.11.0
@@ -34,20 +34,20 @@ AutoReqProv: 	no
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package		doc
-Summary:		Documentation and demo applications for openjdk
+%package                doc
+Summary:                Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	doc
+%description    doc
 It contains the documentation and demo applications for openjdk
 
-%package 		src
+%package                src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	src
+%description    src
 This package provides the runtime library class sources.
 
 %prep -p exit
@@ -58,13 +58,13 @@ chmod a+x ./configur*
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
 ./configur* \
-	--with-target-bits=64 \
-	--enable-headless-only \
+        --with-target-bits=64 \
+        --enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic \
+        --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+        --with-freetype-include=/usr/include/freetype2 \
+        --with-freetype-lib=/usr/lib \
+        --with-stdc++lib=dynamic \
         --disable-warnings-as-errors
 
 mkdir /usr/share/java -p
@@ -200,6 +200,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-2
+- Bump version as a part of freetype2 upgrade
 * Tue Feb 14 2023 Mukul Sikka <msikka@vmware.com> 11.0.18-1
 - Updating to jdk-11.0.18-ga
 * Mon Nov 07 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4

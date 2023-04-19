@@ -1,6 +1,6 @@
 Name:           uriparser
 Version:        0.9.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        URI parsing library - RFC 3986
 License:        BSD
 Group:          Development/Languages/Python
@@ -62,5 +62,7 @@ make %{?_smp_mflags} test
 %{_docdir}/%{name}/html
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.9.7-2
+- Bump version as a part of freetype2 upgrade
 * Fri Feb 17 2023 Harinadh D <hdommaraju@vmware.com> - 0.9.7-1
 - Initial Build

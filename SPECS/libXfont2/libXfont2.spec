@@ -1,7 +1,7 @@
 Summary:        X11 Xfont2 runtime library.
 Name:           libXfont2
 Version:        2.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -55,6 +55,8 @@ It contains the libraries and header files to create applications
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.3-2
+- Bump version as a part of freetype2 upgrade
 * Thu Jun 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.3-1
 - Version update
 * Wed Nov 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-2

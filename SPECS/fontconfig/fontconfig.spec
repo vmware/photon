@@ -1,29 +1,29 @@
-Summary:	library for configuring and customizing font access.
-Name:		fontconfig
-Version:	2.13.1
-Release:	3%{?dist}
-License:	BSD/GPL
-URL:		https://www.freedesktop.org/wiki/Software/fontconfig/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.freedesktop.org/software/fontconfig/release/%{name}-%{version}.tar.gz
-%define sha1 fontconfig=e073e1d23d9d6e83a8d2d6eafa5905a541b77975
-BuildRequires:	freetype2-devel
-BuildRequires:	libxml2
-BuildRequires:	expat-devel
-BuildRequires:	gperf
-Requires:	freetype2
-Provides:	pkgconfig(fontconfig)
+Summary:        library for configuring and customizing font access.
+Name:           fontconfig
+Version:        2.13.1
+Release:        4%{?dist}
+License:        BSD/GPL
+URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.freedesktop.org/software/fontconfig/release/%{name}-%{version}.tar.gz
+%define sha512 fontconfig=830df32e944ee21ad02a9df04787b9902af36ffc13913524acef6e38799a38c5df7a6e407cc0ff9c24455520549d53b3d85d22642a229ac654dc9269926f130b
+BuildRequires:  freetype2-devel
+BuildRequires:  libxml2
+BuildRequires:  expat-devel
+BuildRequires:  gperf
+Requires:       freetype2
+Provides:       pkgconfig(fontconfig)
 %description
 Fontconfig can discover new fonts when installed automatically, removing a common source of configuration problems, perform font name substitution, so that appropriate alternative fonts can be selected if fonts are missing, identify the set of fonts required to completely cover a set of languages.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	expat-devel
-Requires:	freetype2-devel
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       expat-devel
+Requires:       freetype2-devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -31,8 +31,8 @@ It contains the libraries and header files to create applications
 
 %build
 %configure \
-	--docdir=/usr/share/doc/%{name}-%{version} \
-	--disable-static
+        --docdir=/usr/share/doc/%{name}-%{version} \
+        --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -66,6 +66,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13.1-4
+-   Bump version as a part of freetype2 upgrade
 *   Thu Dec 16 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.1-3
 -   Fix pango -> fontconfig -> freetype2 dependency
 *   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.1-2

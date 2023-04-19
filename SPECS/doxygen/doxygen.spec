@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.8.20
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -52,6 +52,8 @@ make %{?_smp_mflags} test
 %{_bindir}/%{name}
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.20-5
+- Bump version as a part of freetype2 upgrade
 * Fri Feb 17 2023 Harinadh D <hdommaraju@vmware.com> 1.8.20-4
 - fix make test
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.20-3
