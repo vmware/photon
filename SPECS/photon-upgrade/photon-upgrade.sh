@@ -9,6 +9,8 @@ REPOS_OPT=''        # --disablerepo=* --enablerepo=repo, repo is given in --repo
 UPDATE_PKGS=y       # If 'y', update packages before upgrade. Appliances may not
                     # provide repos to update packages in currently installed OS
                     # need this skipping for appliances
+RM_PKGS_PRE=''      # Comma separated list of packages to remove before upgrade
+RM_PKGS_POST=''     # Comma separated list of packages to remove afer upgrade
 INSTALL_ALL=''      # non-empty value signifies that all packages from provided
                     # repos mentioned in --repos option needs to be installed
 
@@ -55,19 +57,21 @@ function show_help() {
   fi
 
   echo -n "
-Usage: $PROG [--repos=r1,...] [--upgrade-os] [--assume-yes] [--skip-update] [--install-all]
+Usage: $PROG [--repos=r1,...] [--upgrade-os] [--assume-yes] [--skip-update] [--install-all] [--rm-pkgs-pre=p1,p2,...] [--rm-pkgs-post=p1,p2,...]
 
 This script upgrades or updates Photon OS based upon the options provided.
 
---help        : Shows this help text
---repos       : Script will use only the specified repos which must exist
-                e.g. --repos=appliance,appliance-photon
---upgrade-os  : When option is given, Photon OS is upgraded to next release,
+--help         : Shows this help text
+--repos        : Script will use only the specified repos which must exist
+                 e.g. --repos=appliance,appliance-photon
+--upgrade-os   : When option is given, Photon OS is upgraded to next release,
                 else, all packages are updated to latest available versions
---assume-yes  : Runs the script non-interactively and assumes yes for responses
---skip-update : Skip updating tdnf & packages before upgrading (for appliances)
---install-all : Install all packages from provided repos from --repos option,
+--assume-yes   : Runs the script non-interactively and assumes yes for responses
+--skip-update  : Skip updating tdnf & packages before upgrading (for appliances)
+--install-all  : Install all packages from provided repos from --repos option,
                 --repos must be specified for --install-all
+--rm-pkgs-pre  : Comma separated list of packages to remove before upgrade
+--rm-pkgs-post : Comma separated list of packages to remove afer upgrade
 "
   exit $rc
 }
@@ -165,6 +169,7 @@ function install_replacement_packages() {
   local pkgs="${!replaced_pkgs_map[@]}"
   local replacement_pkgs=''
   local p=''
+  local rc=0
 
   for p in $pkgs; do
     ${RPM} -q $p && replacement_pkgs="$replacement_pkgs ${replaced_pkgs_map[$p]}"
@@ -174,7 +179,8 @@ function install_replacement_packages() {
     echo -ne "Installing following packages which are replacing existing" \
              "packages -\n$replacement_pkgs\n"
     if ! ${TDNF} $REPOS_OPT -y install $replacement_pkgs; then
-      abort 1 "Error installing replacement packages '$replacement_pkgs'."
+      rc=$?
+      abort $rc "Error installing replacement packages '$replacement_pkgs'."
     fi
     echo "Replacement packages '$replacement_pkgs' are successfully installed"
   fi
@@ -187,6 +193,7 @@ function remove_replaced_packages() {
   local pkgs="${!replaced_pkgs_map[@]}"
   local installed_pkgs=''
   local p=''
+  local rc=0
 
   for p in $pkgs; do
     ${RPM} -q $p && installed_pkgs="$installed_pkgs $p"
@@ -196,7 +203,8 @@ function remove_replaced_packages() {
     echo -ne "Removing following packages which were replaced by other "\
              "packages -\n$installed_pkgs\n"
     if ! ${TDNF} $REPOS_OPT -y erase $installed_pkgs; then
-      abort 1 "Error removing replaced packages '$installed_pkgs'."
+      rc=$?
+      abort $rc "Error removing replaced packages '$installed_pkgs'."
     fi
     echo "Removal of replaced packages '$installed_pkgs' succeeded."
   fi
@@ -210,7 +218,7 @@ function remove_unsupported_packages() {
     ${TDNF} -y erase $(echo -e $pkgs_to_remove)
     rc=$?
     if [ $rc -ne 0 ]; then
-      abort $rc "Could not erase all unsupported packages."
+      abort 11 "Could not erase all unsupported packages (tdnf error code: $rc)."
     else
       echo "All unsupported packages are removed successfully."
     fi
@@ -225,7 +233,7 @@ function upgrade_photon_release() {
     echo "The photon-release package upgrade successfully."
   else
     rc=$?
-    abort $rc "Could not upgrade photon-release package."
+    abort 11 "Could not upgrade photon-release package (tdnf error code: $rc)."
   fi
 }
 
@@ -245,7 +253,7 @@ function distro_upgrade() {
   else
     rc=$?
     if [ "$ver" = "$FROM_VERSION" ]; then
-      abort $rc "Error in upgrading all packages to latest versions."
+      abort 11 "Error in upgrading all packages to latest versions (tdnf error code: $rc)."
     else
       abort $rc "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION."
     fi
@@ -319,6 +327,44 @@ function install_all_from_repo()
     echo "all packages from provided repos are already installed."
   fi
   return $rc
+}
+
+# Removes those packages named in --rm-pkgs-pre option before upgrading
+function pre_upgrade_rm_pkgs()
+{
+  local pkglist=''
+  local p
+
+  for p in $(echo "$RM_PKGS_PRE" | ${TR} , ' '); do
+    if ${RPM} -q --quiet $p; then
+      if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT remove $p; then
+        pkglist="$pkglist $p"
+      fi
+    fi
+  done
+  if [ -n "$pkglist" ]; then
+     echoerr "Error removing following user named packages before upgrade:" \
+             "$pkglist"
+  fi
+}
+
+# Removes those packages named in --rm-pkgs-post after upgrade
+function post_upgrade_rm_pkgs()
+{
+  local pkglist=''
+  local p
+
+  for p in $(echo "$RM_PKGS_POST" | ${TR} , ' '); do
+    if ${RPM} -q --quiet $p; then
+      if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT remove $p; then
+        pkglist="$pkglist $p"
+      fi
+    fi
+  done
+  if [ -n "$pkglist" ]; then
+     echoerr "Error removing following user named packages post upgrade:" \
+             "$pkglist"
+  fi
 }
 
 # Backup 'rpm -qa' and RPM DB before changing RPM DB in anyway, this will help
@@ -396,7 +442,7 @@ function update_solv_to_support_complex_deps() {
     rebuilddb
   else
     rc=$?
-    abort $rc "Could not update package management software and libraries."
+    abort 11 "Could not update package management software and libraries (tdnf error code: $rc)."
   fi
 }
 
@@ -433,6 +479,7 @@ function verify_version_and_upgrade() {
         distro_upgrade $FROM_VERSION
       fi
       remove_unsupported_packages
+      pre_upgrade_rm_pkgs
       rebuilddb
       record_enabled_disabled_services
       upgrade_photon_release
@@ -447,6 +494,7 @@ function verify_version_and_upgrade() {
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
       fi
+      post_upgrade_rm_pkgs
       ask_for_reboot
       ;;
     *) cleanup_and_exit 0;;
@@ -479,7 +527,7 @@ while [ $# -gt 0 ]; do
       fi
       if [ -n "$REPOS_OPT" ]; then
         echoerr "--repos was specified more than once"
-        show_help 1
+        show_help 22
       fi
 
 
@@ -491,9 +539,35 @@ while [ $# -gt 0 ]; do
         REPOS_OPT="--disablerepo=* $REPOS_OPT"
       fi
       ;;
+    --rm-pkgs-pre=* )
+      RM_PKGS_PRE="$(echo "$1" | cut -d = -f 2)"
+      [ -z "$RM_PKGS_PRE" ] && \
+        echoerr "--rm-pkgs-pre was specified without providing any package names" && \
+          show_help 22
+      ;;
+    --rm-pkgs-pre )
+      RM_PKGS_PRE="$2"
+      [ -z "$RM_PKGS_PRE" ] && \
+        echoerr "--rm-pkgs-pre was specified without providing any package names" && \
+          show_help 22
+      shift
+      ;;
+    --rm-pkgs-post=* )
+      RM_PKGS_POST="$(echo "$1" | cut -d = -f 2)"
+      [ -z "$RM_PKGS_POST" ] && \
+        echoerr "--rm-pkgs-post was specified without providing any package names" && \
+          show_help 22
+      ;;
+    --rm-pkgs-post )
+      RM_PKGS_POST="$2"
+      [ -z "$RM_PKGS_POST" ] && \
+        echoerr "--rm-pkgs-post was specified without providing any package names" && \
+          show_help 22
+      shift
+      ;;
     * )
       echoerr "Invalid option '$1' speciied"
-      show_help 1
+      show_help 22
       ;;
   esac
   shift
@@ -504,7 +578,7 @@ done
 
 if [ -n "$INSTALL_ALL" -a -z "$REPOS_OPT" ]; then
   # --install-all is given but --repos was not specified - invalid invocation
-  show_help 1
+  show_help 22
 fi
 
 if [ -n "$TO_VERSION" ]; then
@@ -514,11 +588,12 @@ else
   # The script is run withour or --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
   backup_rpms_list_n_db
+  pre_upgrade_rm_pkgs
   distro_upgrade $FROM_VERSION
   rebuilddb
   if [ -n "$INSTALL_ALL" ]; then
     install_all_from_repo
   fi
+  post_upgrade_rm_pkgs
 fi
-
 cleanup_and_exit 0
