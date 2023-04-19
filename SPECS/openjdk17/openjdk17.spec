@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.6
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GNU General Public License V2
 URL:        https://openjdk.java.net
 Group:      Development/Tools
@@ -200,6 +200,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-3
+- Bump version as a part of freetype2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.6-2
 - Bump version as a part of zlib upgrade
 * Mon Feb 20 2023 Mukul Sikka <msikka@vmware.com> 17.0.6-1

@@ -1,7 +1,7 @@
 Summary:        library for common extensions to the X11 protocol.
 Name:           libXext
 Version:        1.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.4-2
+- Bump version as a part of freetype2 upgrade
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.4-1
 - Upgrade to 1.3.4
 * Mon May 18 2015 Alexey Makhalov <amakhalov@vmware.com> 1.3.3-1

@@ -1,7 +1,7 @@
 Summary:        software font engine.
 Name:           freetype2
-Version:        2.12.1
-Release:        2%{?dist}
+Version:        2.13.0
+Release:        1%{?dist}
 License:        BSD/GPL
 URL:            http://www.freetype.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha512  freetype=4f923c82121940e866022c1ee6afb97f447b83ab8b54188df169029f37589e3bad0768a3bfb3095982804db1eec582f05aa846dfb32639697e231af8d52676cc
+%define sha512  freetype=0d2bfc3980313e1578b69568394666e1721c11dfdb47f21cb46ced48d0afcc674e175391ee0f64ffbcee814cded2d9a8fe6273029253c1adf642078ac8c0dd73
 
 BuildRequires:  libtool
 BuildRequires:  zlib-devel
@@ -57,6 +57,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13.0-1
+- Upgrade to v2.13.0
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-2
 - Bump version as a part of zlib upgrade
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.12.1-1
