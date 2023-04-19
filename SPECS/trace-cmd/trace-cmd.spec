@@ -1,7 +1,7 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        3.1.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL-2.0 and LGPL-2.1
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/bash_completion.d/%{name}.bash
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.1.4-4
+- Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.4-3
 - Bump version as a part of zstd upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.4-2

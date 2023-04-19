@@ -1,7 +1,7 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
@@ -160,6 +160,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
+* Thu Apr 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-4
+- Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-3
 - Bump version as a part of freetype2 upgrade
 * Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.23.3-2

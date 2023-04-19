@@ -1,11 +1,11 @@
 Summary:        Docbook-xml-4.5
 Name:           docbook-xml
 Version:        4.5
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        MIT
 URL:            http://www.docbook.org
 Source0:        http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
-%define sha1    docbook-xml=b9124233b50668fb508773aa2b3ebc631d7c1620
+%define sha512  docbook-xml=1ee282fe86c9282610ee72c0e1d1acfc03f1afb9dc67166f438f2703109046479edb6329313ecb2949db27993077e077d111501c10b8769ebb20719eb6213d27
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -162,6 +162,8 @@ fi
 /etc/xml
 
 %changelog
+*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5-10
+-   Bump version as a part of libxml2 upgrade
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 4.5-9
 -   Release bump up to use libxml2 2.9.12-1.
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.5-8

@@ -1,19 +1,19 @@
-Summary:	Docbook-xsl-1.79.1
-Name:		docbook-xsl
-Version:	1.79.1
-Release:	8%{?dist}
-License:	Apache License
-URL:		http://www.docbook.org
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Docbook-xsl-1.79.1
+Name:           docbook-xsl
+Version:        1.79.1
+Release:        9%{?dist}
+License:        Apache License
+URL:            http://www.docbook.org
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
-%define sha1 docbook-xsl=7487b2acc7106253bb77fcddc7e1a9788601ad23
+Source0:        http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
+%define sha512  docbook-xsl=83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
 
-Requires:	libxml2
+Requires:       libxml2
 
-BuildRequires:	libxml2
+BuildRequires:  libxml2
 BuildRequires:  zip
 
 BuildArch:      noarch
@@ -98,6 +98,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.79.1-9
+- Bump version as a part of libxml2 upgrade
 * Mon Nov 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.79.1-8
 - Release bump up to use libxml2 2.9.12-1.
 * Fri Jan 18 2019 Tapas Kundu <tkundu@vmware.com> 1.79.1-7
