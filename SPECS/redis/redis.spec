@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    7.0.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -20,6 +20,7 @@ Patch5: CVE-2022-35977.patch
 Patch6: CVE-2023-22458.patch
 Patch7: CVE-2022-36021.patch
 Patch8: CVE-2023-25155.patch
+Patch9: CVE-2023-28856.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -96,6 +97,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-8
+- Fix CVE-2023-28856
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-7
 - Fix CVE-2023-25155, CVE-2022-36021
 * Mon Feb 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-6
