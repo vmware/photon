@@ -122,10 +122,7 @@ function reset_enabled_disabled_services() {
 
 # Remove all debuginfo packages as they may hamper during upgrade
 function remove_debuginfo_packages() {
-  local installed_debuginfo_pkgs="$( \
-      ${TDNF} '--disablerepo=*' list '*debuginfo*' | \
-      ${SED} -E 's/\.\S+\s+\S+\s+\S+$//' \
-  )"
+  local installed_debuginfo_pkgs="$(${RPM} -qa | grep -- -debuginfo-)"
   local rc=0
   [ -z "$installed_debuginfo_pkgs" ] && return 0
   echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
