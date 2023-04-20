@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/mikeroysoft/photon/issues"
   },
-  "homepage": "https://mikeroysoft.github.io/photon",
+  "homepage": "https://mikeroysoft.github.io/",
   "devDependencies": {
     "autoprefixer": "^9.8.8",
     "postcss": "^6.0.23",
