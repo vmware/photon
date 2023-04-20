@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vmware/photon.git"
+    "url": "git+https://github.com/mikeroysoft/photon.git"
   },
   "author": "The Photon OS Team",
   "license": "Apache2+MIT",
   "bugs": {
-    "url": "https://github.com/vmware/photon/issues"
+    "url": "https://github.com/mikeroysoft/photon/issues"
   },
-  "homepage": "https://vmware.github.io/photon",
+  "homepage": "https://mikeroysoft.github.io/photon",
   "devDependencies": {
     "autoprefixer": "^9.8.8",
     "postcss": "^6.0.23",
