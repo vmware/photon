@@ -1,4 +1,4 @@
-baseURL = "https://mikeroysoft.github.io"
+baseURL = "/"
 relativeURLs = "true"
 title = "Photon OS"
 
