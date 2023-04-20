@@ -17,7 +17,7 @@
   },
   "homepage": "https://vmware.github.io/photon",
   "devDependencies": {
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^9.8.8",
     "postcss": "^6.0.23",
     "postcss-cli": "^5.0.1"
   }
