@@ -51,7 +51,7 @@ anchor = "smart"
 [[menu.main]]
     name = "Home"
     weight = 10
-    url = "/"
+    url = "#"
 
 [[menu.main]]
     name = "Features"
@@ -61,7 +61,7 @@ anchor = "smart"
 [[menu.main]]
     name = "Docs"
     weight = 20
-    url = "/docs/"
+    url = "docs/"
 
 [[menu.main]]
     name = "Github"
