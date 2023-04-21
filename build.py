@@ -996,7 +996,7 @@ class CheckTools:
             return
 
         key = "SKIP_INSTALLER_UPDATE"
-        if key in os.environ and Utils.strtobool(os.environ[key]):
+        if key in os.environ and cmdUtils.strtobool(os.environ[key]):
             print("%s is enabled, not checking for updates" % key)
             return
 
@@ -1433,12 +1433,13 @@ def process_env_build_params(ph_build_param):
         if not val:
             continue
 
-        if k in {"THREADS", "BUILD_SRC_RPM", "BUILD_DBGINFO_RPM"}:
+        if k == "THREADS":
             val = int(val)
-        elif k in {"KAT_BUILD", "BUILDDEPS", "SCHEDULER_SERVER", "CANISTER_BUILD"}:
-            val = val in {"enable", "True", "yes"}
+        elif k in {"BUILD_SRC_RPM", "BUILD_DBGINFO_RPM", "KAT_BUILD",
+                   "BUILDDEPS", "SCHEDULER_SERVER", "CANISTER_BUILD"}:
+            val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
-            if val in {"enable", "enable_stop_on_error"}:
+            if val == "enable_stop_on_error" or cmdUtils.strtobool(val):
                 ph_build_param[v] = True
                 if val == "enable_stop_on_error":
                     ph_build_param["rpm-check-stop-on-error"] = True
