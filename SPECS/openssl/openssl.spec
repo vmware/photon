@@ -33,10 +33,6 @@ Source7: %{fips_provider_srcname}.tar.xz
 %define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
 %endif
 
-%if 0%{?with_check}
-Source8: dsapub_noparam.der
-%endif
-
 Patch0: openssl-cnf.patch
 
 %if 0%{?with_check}
@@ -178,7 +174,6 @@ gcc -shared -Wall -Werror -Wextra -O2 -g -fPIC \
 
 %if 0%{?with_check}
 %check
-cp %{SOURCE8} test/recipes/91-test_pkey_check_data/
 make tests %{?_smp_mflags}
 %endif
 
