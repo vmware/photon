@@ -20,12 +20,12 @@ Patch3: cloud-cfg.patch
 Patch4: 0001-sources-vmware-imc-fix-missing-catch-few-negtive-sce.patch
 
 %if 0%{?with_check}
-Patch4: test_vmware.py-fix-pkg-test-failure.patch
-Patch5: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
-Patch6: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
-Patch7: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
-Patch8: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
-Patch9: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
+Patch5: test_vmware.py-fix-pkg-test-failure.patch
+Patch6: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
+Patch7: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
+Patch8: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
+Patch9: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
+Patch10: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
 %endif
 
 BuildRequires: python3-devel
