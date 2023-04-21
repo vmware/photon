@@ -1368,6 +1368,10 @@ def initialize_constants():
     )
     constants.buildDbgInfoRpmList = configdict["photon-build-param"]["build-dbginfo-rpm-list"]
 
+
+    if configdict.get("photon-build-param", {}).get("ossl-fips-in-make-check", False):
+        constants.enable_fips_in_make_check()
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True

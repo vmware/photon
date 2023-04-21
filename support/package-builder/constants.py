@@ -529,3 +529,6 @@ class constants(object):
             constants.hostRpmIsNotUsable = 0
 
         return constants.hostRpmIsNotUsable
+
+    def enable_fips_in_make_check():
+        constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")
