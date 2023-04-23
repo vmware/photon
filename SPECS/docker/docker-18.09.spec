@@ -11,7 +11,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        26%{?dist}
+Release:        27%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -296,6 +296,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 18.09.9-27
+- Bump up version to compile with new go
 * Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 18.09.9-26
 - Bump up version to compile with new go
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.09.9-25
