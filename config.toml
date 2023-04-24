@@ -239,8 +239,16 @@ theme = "default"
 disable_toc = false
 
 [[params.versions]]
-  version = "v4 - Latest"
+  version = "latest"
   url = "/docs/"
+
+[[params.versions]]
+  version = "v5"
+  url = "/docs-v5/"
+
+[[params.versions]]
+  version = "v4"
+  url = "/docs-v4/"  
 
 [[params.versions]]
   version = "v3"
