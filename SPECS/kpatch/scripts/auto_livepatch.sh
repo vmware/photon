@@ -65,6 +65,8 @@ FAILED=0
 EXPORT_DEBUGINFO=0
 DESC_GIVEN=0
 RPM_DESC_GIVEN=0
+SRC_RPM_LOCAL_PATH=""
+DEBUGINFO_LOCAL_PATH=""
 
 # args
 #   1. string to match
@@ -80,6 +82,57 @@ match_string_in_array() {
     done
 
     return 1
+}
+
+gen_dockerfile() {
+    local dockerfile=$DOCKERFILE_DIR/$DOCKERFILE_NAME
+
+    [[ -d $DOCKERFILE_DIR ]] || mkdir -p $DOCKERFILE_DIR
+
+    # don't need to rebuild if already present
+    [[ -f "$dockerfile" ]] && return 0
+
+    local pkgs_req=( "build-essential" \
+                     "elfutils-libelf-devel" \
+                     "tar" \
+                     "findutils" \
+                     "audit-devel" \
+                     "binutils-devel" \
+                     "elfutils-devel" \
+                     "gdb" \
+                     "glib-devel" \
+                     "kmod-devel" \
+                     "libcap-devel" \
+                     "libunwind-devel" \
+                     "openssl-devel" \
+                     "pciutils-devel" \
+                     "procps-ng-devel" \
+                     "python3-devel" \
+                     "slang-devel" \
+                     "xz-devel" \
+                     "rpm-build" \
+                     "bc" \
+                     "Linux-PAM-devel" \
+                     "kbd" \
+                     "libdnet-devel" \
+                     "libmspack-devel" \
+                     "xerces-c-devel" \
+                     "xml-security-c-devel" \
+                     "coreutils" \
+                     "util-linux" \
+                     "kpatch" \
+                     "kpatch-build" \
+                     "kpatch-utils" )
+
+    echo "FROM photon:${PH_TAG//[^0-9]/}.0" > $dockerfile
+    echo "RUN tdnf install -y \\" >> $dockerfile
+    for pkg in ${pkgs_req[@]}; do
+        if [[ "$pkg" == "${pkgs_req[-1]}" ]]; then
+          echo "$pkg" >> $dockerfile
+        else
+          echo "$pkg \\" >> $dockerfile
+        fi
+    done
 }
 
 # just get what we need for this script from the arguments.
@@ -98,7 +151,7 @@ parse_args() {
     mkdir -p $PATCH_DIR
     local flag=""
     local patch_given=0
-    local flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
+    local flags=( "-s" "-v" "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
     local no_arg_flags=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" )
     while (( "$#" )); do
         arg=$1
@@ -137,11 +190,18 @@ parse_args() {
                 --rpm-desc)
                     RPM_DESC_GIVEN=1
                     cp "$1" "$AUTO_LIVEPATCH_DIR/rpm-description.txt" &> /dev/null || error "RPM description file $1 not found"
+                    ;;
+                -s)
+                    SRC_RPM_LOCAL_PATH=$1
+                    ;;
+                -v)
+                    DEBUGINFO_LOCAL_PATH=$1
+                    ;;
                 esac
         fi
 
         # pass all arguments except for output directory into docker container
-        if [[ $flag != "-o" ]] && [[ $flag != "-d" ]] && [[ $flag != "--rpm-desc" ]]; then
+        if [[ $flag != "-o" ]] && [[ $flag != "-d" ]] && [[ $flag != "--rpm-desc" ]] && [[ $flag != "-s" ]] && [[ $flag != "-v" ]]; then
             if [ -z "$ARGS" ]; then
                 ARGS="$arg"
             else
@@ -155,6 +215,14 @@ parse_args() {
 
     if [[ $patch_given -eq 0 ]]; then
         error "Please input at least one patch file"
+    fi
+
+    if [[ -n "$SRC_RPM_LOCAL_PATH" ]]; then
+        ARGS="$ARGS -s $DOCKER_BUILDDIR/$(basename $SRC_RPM_LOCAL_PATH)"
+    fi
+
+    if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
+        ARGS="$ARGS -v $DOCKER_BUILDDIR/$(basename $DEBUGINFO_LOCAL_PATH)"
     fi
 
     #make sure description file is easily accessible
@@ -184,6 +252,7 @@ parse_args() {
     DOCKER_IMAGE_NAME=livepatch-$PH_TAG-$VERSION_TAG
     DOCKER_CONTAINER_NAME=$PH_TAG-livepatch-container
     DOCKERFILE_NAME=Dockerfile.$PH_TAG
+    gen_dockerfile
 }
 
 config_container() {
@@ -218,6 +287,17 @@ config_container() {
     if [[ $RPM_DESC_GIVEN -eq 1 ]]; then
         $DOCKER cp "$AUTO_LIVEPATCH_DIR/rpm-description.txt" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
     fi
+
+    if [[ -n "$SRC_RPM_LOCAL_PATH" ]]; then
+        [[ -f "$SRC_RPM_LOCAL_PATH" ]] || error "Failed to find local src rpm at $SRC_RPM_LOCAL_PATH"
+        $DOCKER cp "$SRC_RPM_LOCAL_PATH" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
+    fi
+
+    if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
+        [[ -f "$DEBUGINFO_LOCAL_PATH" ]] || error "Failed to find local debuginfo rpm at $DEBUGINFO_LOCAL_PATH"
+        $DOCKER cp "$DEBUGINFO_LOCAL_PATH" "$DOCKER_CONTAINER_NAME":$DOCKER_BUILDDIR/ || error
+    fi
+
 }
 
 # prints error message and then exits

@@ -27,7 +27,7 @@ index 2a00b07..3184b5a 100755
 +KVER="$(uname -r)"
 +INSTALLDIR="/lib/modules/$KVER/livepatches"
  SCRIPTDIR="$(readlink -f "$(dirname "$(type -p "$0")")")"
- VERSION="0.9.7"
+ VERSION="0.9.8"
  POST_ENABLE_WAIT=15	# seconds
 @@ -76,7 +77,7 @@ __find_module () {
  	MODULE="$1"
