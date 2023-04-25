@@ -519,7 +519,7 @@ index 9a8372781..688a58b30 100644
 +	$(LD) -z noexecstack -T $(obj)/canister_markers.lds -r $(obj)/canister.o $(obj)/canister_relocs.o -o $@
 +	$(call if_changed,update_hmac)
 +
- obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper.o fips_canister.o
+ obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
  
  ifdef CONFIG_CRYPTO_FIPS
 diff --git a/crypto/algboss.c b/crypto/algboss.c
