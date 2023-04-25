@@ -18,7 +18,7 @@ The Photon OS Documentation provides information about how to install, configure
 
 **Product version: 4.0**
 
-This documentation applies to all //4.0.x releases.
+This documentation applies to all 4.0.x releases.
 
 ## Intended Audiences
 
