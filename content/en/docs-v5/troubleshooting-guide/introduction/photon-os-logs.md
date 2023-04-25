@@ -7,7 +7,7 @@ On Photon OS, all the system logs except the installation logs and the cloud-ini
 
 The installation log files and the cloud-init log files reside in `/var/log`. If Photon OS is running on a virtual machine in a VMware hypervisor, the log file for the VMware tools, `vmware-vmsvc.log`, also resides in `/var/log`. 
 
-##Journalctl
+## Journalctl  
 Journalctl is a utility to query and display logs from journald and systemd’s logging service. Since journald stores log data in a binary format instead of a plain text format, `journalctl` is the standard way of reading log messages processed by journald.
 
 Journald is a service provided by systemd. To see the staus of the daemon, run the following commands:
@@ -142,7 +142,7 @@ For better understanding/debugging, You can also look at logs from the following
 - **/var/log/cloud-init-output.log** : This log contains errors, warnings, etc..
 
 
-## Syslog
+## Syslog  
 Syslog is the general standard for logging system and program messages in the Linux environment.
 
 Photon provides the following two packages to support syslog:
@@ -150,7 +150,7 @@ Photon provides the following two packages to support syslog:
 - **syslog-ng** : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the `/etc/syslog-ng/syslog-ng.conf` file.
 - **rsyslog** : The official RSYSLOG website defines the utility as "the rocket-fast system for log processing". rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the `/etc/rsyslog.conf` file. You can configure the required TLS certificates by editing the conf file.
 
-## Logs for RPMS on Photon
+## Logs for RPMS on Photon  
 Logs for a particular RPM can be checked in the following ways:
 
 - If the RPM provides a daemon, we can see the status of daemon by running `systemctl` command and check logs using `journactl -u <service name>` command.
