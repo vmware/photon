@@ -59,8 +59,13 @@ anchor = "smart"
     url = "#features"    
 
 [[menu.main]]
-    name = "Docs"
+    name = "Contribute"
     weight = 20
+    url = "#contributing"
+
+[[menu.main]]
+    name = "Docs"
+    weight = 25
     url = "docs/"
 
 [[menu.main]]
@@ -68,10 +73,6 @@ anchor = "smart"
     weight = 30
     url = "https://github.com/vmware/photon"
 
-[[menu.main]]
-    name = "Contribute"
-    weight = 20
-    url = "#contributing"
 
 
 [services]
