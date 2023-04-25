@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -13,6 +13,8 @@ Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
 %endif
+Patch0:         CVE-2021-28235.patch
+
 BuildRequires:  go >= 1.12
 BuildRequires:  git
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -22,7 +24,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 A highly-available key value store for shared configuration and service discovery.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 go mod vendor
@@ -84,6 +86,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Wed May 10 2023 Mukul Sikka <msikka@vmware.com> 3.5.1-13
+- Fix CVE-2021-28235
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.1-12
 - Bump up version to compile with new go
 * Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.1-11
