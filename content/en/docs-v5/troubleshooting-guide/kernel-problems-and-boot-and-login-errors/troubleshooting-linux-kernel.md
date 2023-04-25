@@ -5,7 +5,7 @@ weight: 7
 
 The Linux kernel is the main component of Photon OS and is the core interface between a computer’s hardware and its processes. It communicates between the two, managing resources as efficiently as possible.
 
-##Kernel Flavours and Versions
+## Kernel Flavours and Versions  
 The following list contains the different Linux kernel flavours available:
 
 - `linux` - A generic kernel designed to run everywhere and support everything.
@@ -28,7 +28,7 @@ To see the version of the Kernel that is running currently, run the following co
 ```
 From the output, you can see that the kernel running currently doesn't match the installer. This happens when linux-* rpms were updated but was not restarted. Restart is required.
 
-##Configuration
+## Configuration  
 
 To find the configurations of the installed Kernel, check the **/boot** directory by running the following command:
 ```
@@ -37,7 +37,8 @@ config-4.9.111-1.ph2 config-4.9.111-1.ph2-esx
 ```
 To get a copy of the kernel configuration (Not all flavours support this feature), run the `zcat /proc/config.gz` command.
 
-##Boot Parameters and initrd
+## Boot Parameters and initrd  
+
 Several kernel flavors can be installed on the system, but only one is used during boot.
 **/boot/photon.cfg** symlink points to the kernel which is used for boot.
 ```
@@ -71,15 +72,15 @@ Parameters of the kernel loading currently can be found by running the `/proc/cm
 BOOT_IMAGE=/boot/vmlinuz-4.9.107-1.ph2-esx root=PARTUUID=29194d05-4a6e-4e0c-b1f4-5020e5e8472c net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
 ```
 
-##Dmesg
+## Dmesg  
 
 To view message buffer of the kernel run the `dmesg` command.
 
-##Sysctl State
+## Sysctl State  
 
 To view a list of all active units run the `systemctl list-units` command.
 
-##Kernel Statistics
+## Kernel Statistics  
 
 The kernel statistics can be found by running the following commands:
 
@@ -87,7 +88,7 @@ The kernel statistics can be found by running the following commands:
 - `sysfs`
 - `debugfs`
 
-##Kernel Modules
+## Kernel Modules  
 
 To view the kernel log buffer run the `journalctl -k` command.
 
