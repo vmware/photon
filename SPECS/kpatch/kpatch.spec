@@ -1,6 +1,6 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
-Version:        0.9.7
+Version:        0.9.8
 Release:        1%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
@@ -8,16 +8,13 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/dynup/kpatch/archive/refs/tags/%{name}-v%{version}.tar.gz
-%define sha512 %{name}=c876d9b1e5f6e6ab858fa6f302e78152beb3e50cedd93f3c61ab6f747e32199b0601ad4a36d426d43d0e9a37d9bf1d6bbfddccc86df4b31d5e3e6edead6cded3
+Source0:        https://github.com/dynup/kpatch/archive/refs/tags/%{name}-v%{version}.tar.gz
+%define sha512  %{name}=ab3a771dfcde92a9eee768afcf7fddb6f1ad5ba9e8c7f44d579d258ce9b6ee1722869b1b70c4597ae951b0faf71413efa26a5b135f50308c996b284a9dcee5b7
 
 Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh
 Source3:        scripts/README.txt
-Source4:        scripts/dockerfiles/Dockerfile.ph3
-Source5:        scripts/dockerfiles/Dockerfile.ph4
-Source6:        scripts/rpm/spec.file
-Source7:        scripts/dockerfiles/Dockerfile.ph5
+Source4:        scripts/rpm/spec.file
 
 BuildArch:      x86_64
 
@@ -25,10 +22,8 @@ Patch0:         0001-Added-support-for-Photon-OS.patch
 Patch1:         0001-adding-option-to-set-description-field-of-module.patch
 Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
 
-# Fix invalid ancestor issue in 5.0
-Patch3:         0001-kpatch-cc-Add-more-file-ignores.patch
-Patch4:         0002-kpatch-build-Add-find_kobj-short-circuit-for-OOT-mod.patch
-Patch5:         0003-kpatch-build-support-Linux-5.19-.cmd-file-format.patch
+# Bug fix
+Patch3:         kpatch-build-ignore-init-version-timestamp-o.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -88,11 +83,10 @@ Contains auto_livepatch and gen_livepatch scripts.
 
 %install
 %make_install PREFIX=%{_usr} %{?_smp_mflags}
-mkdir -p %{buildroot}%{_sysconfdir}/{auto_livepatch/dockerfiles,gen_livepatch}
-cp %{SOURCE4} %{SOURCE5} %{SOURCE7} %{buildroot}%{_sysconfdir}/auto_livepatch/dockerfiles
+mkdir -p %{buildroot}%{_sysconfdir}/{auto_livepatch,gen_livepatch}
 cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
-cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
+cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %files
 %defattr(-,root,root,-)
@@ -118,10 +112,11 @@ cp %{SOURCE6} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %doc %{_sysconfdir}/auto_livepatch/README.txt
 %{_bindir}/auto_livepatch.sh
 %{_bindir}/gen_livepatch.sh
-%{_sysconfdir}/auto_livepatch/dockerfiles/*
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Mon Apr 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.8-1
+- Update to 0.9.8, consume latest scripts
 * Wed Feb 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-1
 - Update to latest version and add patches to crossbuild for 5.0
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.6-5

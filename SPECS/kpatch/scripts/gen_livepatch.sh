@@ -38,11 +38,9 @@ LIVEPATCH_EXT="_klp"
 DEBUG_PKGNAME=""
 SRC_PKGNAME=""
 SPEC_FILENAME=""
-VMLINUX_NAME=""
 VMLINUX_PATH=""
 STARTING_DIR="$PWD"
 PH_TAG=""
-RT_PATCHSET=""
 KERNEL_RELEASE=""
 KERNEL_FLAVOR=""
 KERNEL_VERSION=""
@@ -58,7 +56,10 @@ RPM_DESCFILE=""
 PACKAGE_AS_RPM=0
 RPM_VERSION=""
 RPM_RELEASE=""
-BUILD_RPM_SPECFILE=/etc/gen_livepatch/build-rpm.spec
+BUILD_RPM_SPECFILE="/etc/gen_livepatch/build-rpm.spec"
+DEBUGINFO_LOCAL_PATH=""
+RPM_MACRO_FILE=""
+HAS_DIST_TAG=1
 patches=()
 
 # args
@@ -88,7 +89,7 @@ parse_args() {
     fi
 
     local flag=""
-    flags=( "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
+    flags=( "-s" "-p" "-v" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
     while (( "$#" )); do
         if [[ $1 = -* ]]; then
             flag=$1
@@ -127,6 +128,14 @@ parse_args() {
                     DESC_FILE=$1
                     [ -f "$DESC_FILE" ] || error "Module description file does not exist"
                     ;;
+                -s)
+                    SRC_RPM_LOCAL_PATH=$1
+                    [ -f "$SRC_RPM_LOCAL_PATH" ] || error "Unable to locate local src rpm at $SRC_RPM_LOCAL_PATH"
+                    ;;
+                -v)
+                    DEBUGINFO_LOCAL_PATH=$1
+                    [ -f "$DEBUGINFO_LOCAL_PATH" ] || error "Unable to locate local debuginfo rpm at $DEBUGINFO_LOCAL_PATH"
+                    ;;
                 --rpm-version)
                     RPM_VERSION=$1
                     ;;
@@ -155,7 +164,7 @@ parse_args() {
     if [ -z "$LIVEPATCH_NAME" ]; then
         echo "No output name specified, using default"
         # just use the first 20 characters of the patch file name
-        local first_patch_name=$(cut -d '.' -f 1 <<< "$(basename ${patches[0]})")
+        local first_patch_name=$(cut -d '.' -f 1 <<< "$(basename "${patches[0]}")")
         local cur_datetime=$(date +%d%b%Y-%H_%M_%S)
         LIVEPATCH_NAME=${first_patch_name}-${cur_datetime}${LIVEPATCH_EXT}
     fi
@@ -195,10 +204,19 @@ parse_args() {
     get_kernel_version "$VERSION_RELEASE_FLAVOR"
     get_kernel_release "$VERSION_RELEASE_FLAVOR"
     get_photon_tag "$VERSION_RELEASE_FLAVOR"
-    get_rt_patchset "$VERSION_RELEASE_FLAVOR"
 
     KERNEL_VERSION_RELEASE_TAG=${KERNEL_VERSION}-${KERNEL_RELEASE}.${PH_TAG}
     KERNEL_RELEASE_TAG=${KERNEL_RELEASE}.${PH_TAG}
+
+    # Add dist tag to rpm macros file to better handle rpmbuild of linux src rpm
+    if [ "$(rpm -E %dist)" == "%dist" ]; then
+        echo "%dist .$PH_TAG" >> "$HOME"/.rpmmacros || error "Failed to define %dist tag in $HOME/.rpmmacros"
+
+        # record RPM macro file as whatever file we edited here, so we can reverse
+        # this change at the end of the build
+        RPM_MACRO_FILE="$HOME/.rpmmacros"
+        HAS_DIST_TAG=0
+    fi
 }
 
 # takes in uname -r formatted string
@@ -212,12 +230,6 @@ get_kernel_flavor() {
         fi
     else
         KERNEL_FLAVOR=rt
-    fi
-}
-
-get_rt_patchset() {
-    if [[ $IS_RT == 1 ]]; then
-        RT_PATCHSET=$(cut -d '-' -f 2 <<< "$1")
     fi
 }
 
@@ -270,7 +282,7 @@ print_config() {
     echo -e "Photon OS Flavor: $KERNEL_FLAVOR"
     echo -e "Patch files: "
     for patch in "${patches[@]}"; do
-        echo -e "\t $(basename $patch)"
+        echo -e "\t $(basename "$patch")"
     done
 }
 
@@ -342,6 +354,8 @@ print_help() {
     echo -e "\t --export-debuginfo: Save debug files such as patched vmlinux, changed objs, etc."
     echo -e "\t -h/--help: Print help message"
     echo -e "\t -d: Use file contents as description field for livepatch module."
+    echo -e "\t -s: Specify the location of a local copy of the Linux src rpm to use"
+    echo -e "\t -v: Specify the location of a local copy of the Linux debuginfo rpm to use"
     echo -e "\t --rpm: Package the kernel module as an rpm"
     echo -e "\t --rpm-version: Specify the version number of the rpm"
     echo -e "\t --rpm-release: Specify the release number of the rpm"
@@ -356,7 +370,7 @@ install_kernel_dependencies() {
 }
 
 parse_source_rpm() {
-    echo -e "\nDownloading and processing source rpm"
+    echo -e "\nDownloading and/or processing source rpm"
     local src_rpm_url="https://packages.vmware.com/photon/${PHOTON_VERSION}/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_PKGNAME"
 
     # allow downloading/copying of source rpm from either local or custom urls. Just need these variables to be exported before
@@ -381,12 +395,12 @@ parse_source_rpm() {
 
     install_kernel_dependencies "$SRC_PKGNAME"
 
-    rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$rpmdir" &> /dev/nulll || error "Failed to extract kernel source and create linux source directory"
+    rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$rpmdir" &> /dev/null || error "Failed to extract kernel source and create linux source directory"
 
     echo "Copying source files to correct locations, if they exist"
-    cp rpmbuild/BUILD/fips-canister*/* "rpmbuild/BUILD/linux-$LINUX_VERSION/crypto"
-    cp rpmbuild/SOURCES/"$config_filename" rpmbuild/BUILD/linux-"$LINUX_VERSION"/.config
-    cp rpmbuild/SOURCES/fips_canister-kallsyms "rpmbuild/BUILD/linux-$LINUX_VERSION/crypto"
+    ls rpmbuild/BUILD/fips*canister* &> /dev/null && cp -rT rpmbuild/BUILD/fips*canister* "rpmbuild/BUILD/linux-$KERNEL_VERSION/crypto"
+    cp rpmbuild/SOURCES/"$config_filename" rpmbuild/BUILD/linux-"$LINUX_VERSION"/.config || error "Failed to locate kernel config file"
+    [[ -f rpmbuild/SOURCES/fips_canister-kallsyms ]] && cp rpmbuild/SOURCES/fips_canister-kallsyms "rpmbuild/BUILD/linux-$LINUX_VERSION/crypto"
 
     if [[ "$KERNEL_FLAVOR" == "esx" ]] || [[ "$KERNEL_FLAVOR" == "rt" ]]; then
         # change m to y for fips canister
@@ -403,12 +417,16 @@ parse_source_rpm() {
     else
         sed -i s/^CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-$KERNEL_RELEASE_TAG-$KERNEL_FLAVOR\"/g rpmbuild/BUILD/linux-"$LINUX_VERSION"/.config
     fi
-
 }
 
 parse_debuginfo_rpm() {
     echo -e "\nDownloading debug package and extracting vmlinux"
-    curl "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME" --output "$DEBUG_PKGNAME"  &> /dev/null || error
+
+    if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
+        cp "$DEBUGINFO_LOCAL_PATH" "$DEBUG_PKGNAME"
+    else
+        curl "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME" --output "$DEBUG_PKGNAME"  &> /dev/null || error
+    fi
 
     local absolute_path=$(rpm -qlp "$DEBUG_PKGNAME" | grep "vmlinux-$LINUX_VERSION")
 
@@ -429,16 +447,14 @@ set_filenames_and_paths() {
     LINUX_VERSION=$(cut -d '-' -f 1 <<< $KERNEL_VERSION_RELEASE_TAG)
 
     #set file paths based on kernel flavor
-    if [[ "$KERNEL_FLAVOR" = "generic" ]]; then
+    if [[ "$KERNEL_FLAVOR" == "generic" ]]; then
         DEBUG_PKGNAME="linux-debuginfo-$KERNEL_VERSION_RELEASE_TAG.x86_64.rpm"
         SRC_PKGNAME="linux-$KERNEL_VERSION_RELEASE_TAG.src.rpm"
         SPEC_FILENAME="linux.spec"
-        VMLINUX_NAME="vmlinux-$KERNEL_VERSION_RELEASE_TAG"
     else
         DEBUG_PKGNAME="linux-$KERNEL_FLAVOR-debuginfo-$KERNEL_VERSION_RELEASE_TAG.x86_64.rpm"
         SRC_PKGNAME="linux-$KERNEL_FLAVOR-$KERNEL_VERSION_RELEASE_TAG.src.rpm"
         SPEC_FILENAME="linux-$KERNEL_FLAVOR.spec"
-        VMLINUX_NAME="vmlinux-$KERNEL_VERSION_RELEASE_TAG-$KERNEL_FLAVOR"
     fi
 }
 
@@ -488,7 +504,7 @@ kpatch_build() {
            $SRC_DIR/linux-"$KERNEL_VERSION"/modules* \
            $SRC_DIR/linux-"$KERNEL_VERSION"/Module.symvers \
            $DEBUGINFO_DIR/patched-debuginfo
-        cp -r $KPATCH_BUILDDIR/tmp $DEBUGINFO_DIR/kpatch-tmp
+        cp -r "$KPATCH_BUILDDIR"/tmp "$DEBUGINFO_DIR"/kpatch-tmp
     fi
 }
 
@@ -518,7 +534,7 @@ package_module_in_rpm() {
     sed -i "s/@@LINUX_VERSION@@/$linux_version/g" "$spec_file" || error "Filling in linux version for spec file skeleton failed"
 
     if [ -f "$RPM_DESCFILE" ]; then
-        sed -i "s/@@DESCRIPTION@@/$(cat $RPM_DESCFILE)/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
+        sed -i "s/@@DESCRIPTION@@/$(cat "$RPM_DESCFILE")/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
     else
         sed -i "s/@@DESCRIPTION@@/Livepatch module for Linux $linux_version\n/g" "$spec_file" || error "Filling in description for spec file skeleton failed"
     fi
@@ -527,7 +543,7 @@ package_module_in_rpm() {
     rpmbuild -bb $spec_file --define "$rpmdir" > /dev/null 2>&1 || error "Packaging kernel module as rpm failed"
 
     # should only build for x86_64 arch but put a * there just in case
-    cp $TEMP_DIR/rpmbuild/RPMS/*/$LIVEPATCH_NAME*.rpm $OUTPUT_FOLDER || error "Current dir: $STARTING_DIR. Failed to save RPM to $OUTPUT_FOLDER"
+    cp "$TEMP_DIR"/rpmbuild/RPMS/*/"$LIVEPATCH_NAME"*.rpm "$OUTPUT_FOLDER" || error "Current dir: $STARTING_DIR. Failed to save RPM to $OUTPUT_FOLDER"
 
     echo "SUCCESS: Building rpm finished"
 }
@@ -536,6 +552,7 @@ cleanup() {
     if [[ $GEN_LIVEPATCH_DEBUG != 1 ]]; then
         rm -rf $TEMP_DIR || error "Failed to delete temp dir: $TEMP_DIR"
     fi
+    [[ "$HAS_DIST_TAG" -eq 0 ]] && sed -i "/%dist .$PH_TAG/d" "$RPM_MACRO_FILE"
 }
 
 #cleanup on exit
