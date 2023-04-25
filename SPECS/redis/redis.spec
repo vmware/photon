@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
 Version:    7.0.9
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -10,9 +10,11 @@ Distribution:   Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=75f812c9ed8bfbea867789ed127cb8db4bd0d34a7e4fc98bfe004cbd66ba291baa90efc42e41347af367c8e284d3655bd7ba5228bd5c3338804e53eadab75b18
+
 Source1: %{name}.sysusers
 
 Patch0: %{name}-conf.patch
+Patch1: CVE-2023-28856.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -89,6 +91,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-3
+- Fix CVE-2023-28856
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 7.0.9-2
 - Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-1
