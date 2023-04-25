@@ -24,20 +24,20 @@ These steps are described at the page linked below, so I won't repeat them, just
 
 Select the **Photon OSTree Host** option.
 
-![PhotonChooseHost](./images/rpmostree-install-options.png)
+![PhotonChooseHost](../../../images/rpmostree-install-options.png)
 
 Continue with setting up a host name like **photon1-def** and a root password, re-confirm.
 Then, select "Default OSTree Server" and continue.
 
-![PhotonChooseHostDefault](./images/rpmostree-default.png)
+![PhotonChooseHostDefault](../../../images/rpmostree-default.png)
 
-![PhotonHostDefaultFinish](./images/photon-os-finish.png)
+![PhotonHostDefaultFinish](../../../images/photon-os-finish.png)
 
 When installation is over, the VM will reboot and will show in grub VMWare Photon/Linux 5.0_minimal (ostree), which will reassure that it's booting from an OSTree image!  
 
-![PhotonHostFirstRebootGrub](./images/rpmostree-grub.png)  
+![PhotonHostFirstRebootGrub](../../../images/rpmostree-grub.png)  
 
 Boot, login and you are ready to use it.
 
-To upgrade your host, see [Host updating operations](./administration-guide/photon-rpm-ostree/host-updating-operations/).
+To upgrade your host, see [Host updating operations](../../../administration-guide/photon-rpm-ostree/host-updating-operations/).
 
