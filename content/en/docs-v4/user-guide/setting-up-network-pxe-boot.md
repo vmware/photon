@@ -1,6 +1,8 @@
 ---
 title:  Setting Up Network PXE Boot
 weight: 1
+
+aliases: ['/docs/user-guide/setting-up-network-pxe-boot/']
 ---
 
 Photon OS supports the Preboot Execution Environment, or PXE, over a network connection. This document describes how to set up a PXE boot server to install Photon OS.

@@ -1,6 +1,8 @@
 ---
 title: Installation Guide
 weight: 30
+
+aliases: ['/docs/installation-guide/']
 ---
 
 The Photon OS *Installation Guide* provides information about how administrators can install Photon OS.
