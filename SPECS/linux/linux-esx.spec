@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -226,8 +226,6 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires: dracut >= 059-3
-Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -497,6 +495,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
+- Remove dracut & initramfs from requires
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
+- Remove dracut & initramfs from requires
 * Wed Apr 19 2023 Ankit Jain <ankitja@vmware.com> 6.1.10-10
 - tarfs: fixes buffer overflow
 * Thu Apr 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-9

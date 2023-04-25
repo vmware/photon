@@ -4,11 +4,11 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
-URL:            https://dracut.wiki.kernel.org
+URL:            https://github.com/dracutdevs/dracut/wiki/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -70,16 +70,13 @@ This package contains tools to assemble the local initrd and host configuration.
 
 echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips \
-          %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
-          %{buildroot}%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips
 
 # we do not support dash in the initramfs
 rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
-          %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
           %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
           %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
@@ -92,8 +89,6 @@ mkdir -p %{buildroot}/boot/%{name} \
 
 touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
 ln -srv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
-
-rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
 ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
@@ -157,6 +152,9 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-6
+- Code improvements in multiple conf dir support
+- Update wiki link and remove obsolete references
 * Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-5
 - Add systemd-udev to requires
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-4

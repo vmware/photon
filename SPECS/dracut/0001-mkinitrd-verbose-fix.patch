@@ -1,7 +1,7 @@
-From 6e3f9daa67007723ead446098801d0e6710a806e Mon Sep 17 00:00:00 2001
+From 92e4a70f8b8f2d6bd5bda607c46d8aadb654fcc1 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 1 Mar 2023 01:23:55 +0530
-Subject: [PATCH 1/4] mkinitrd: verbose fix
+Subject: [PATCH 1/2] mkinitrd: verbose fix
 
 Add a sanity check to verify initrd post creation.
 If something is wrong with initrd, show an error on tty.
@@ -12,11 +12,11 @@ mkinitrd logs will be captured at: `/var/log/mkinitrd-<kernel>.log`
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- mkinitrd-dracut.sh | 383 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 236 insertions(+), 147 deletions(-)
+ mkinitrd-dracut.sh | 384 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 237 insertions(+), 147 deletions(-)
 
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index 0ef65bd..8732bb5 100755
+index 0ef65bd..1213d89 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
 @@ -1,6 +1,6 @@
@@ -25,22 +25,25 @@ index 0ef65bd..8732bb5 100755
 -kernel_ver_dir='/var/lib/initramfs/kernel'
 +
 +kver="$(uname -r)"
- 
+
  boot_dir="/boot"
  quiet=0
-@@ -9,144 +9,164 @@ force=0
+@@ -8,145 +8,166 @@ host_only=0
+ force=0
  set_hostonly=0
  no_hostonly=0
- 
++dracut_dbg=0
+
 -error() { echo "$@" >&2; }
-+DRACUT_DBG=0
- 
--usage () {
--    [[ $1 = '-n' ]] && cmd=echo || cmd=error
 +error() {
 +  echo "$@" >&2
 +}
- 
+
+-usage () {
+-    [[ $1 = '-n' ]] && cmd=echo || cmd=error
++usage() {
++  local cmd=""
+
 -    $cmd "usage: ${0##*/} [--version] [--help] [-v] [-f] [--preload <module>]"
 -    $cmd "       [--image-version] [--with=<module>]"
 -    $cmd "       [--nocompress]"
@@ -49,18 +52,16 @@ index 0ef65bd..8732bb5 100755
 -    $cmd "       <initrd-image> <kernel-version>"
 -    $cmd ""
 -    $cmd "       (ex: ${0##*/} /boot/initramfs-$kver.img $kver)"
-+usage() {
-+  local cmd=""
- 
++  [[ $1 = '-n' ]] && cmd=echo || cmd=error
+
 -    [[ $1 = '-n' ]] && exit 0
 -    exit 1
-+  [[ $1 = '-n' ]] && cmd=echo || cmd=error
-+
 +  $cmd "usage: ${0##*/} [--version] [--help] [-v] [-f] [--preload <module>]"
 +  $cmd "       [--image-version] [--with=<module>]"
 +  $cmd "       [--nocompress]"
 +  $cmd "       [--set-hostonly] - Generates host specific initrd.img"
 +  $cmd "       [--no-hostonly] - Generates generic initrd.img"
++  $cmd "       [--debug]"
 +  $cmd "       <initrd-image> <kernel-version>"
 +  $cmd ""
 +  $cmd "       (ex: ${0##*/} /boot/initramfs-$kver.img $kver)"
@@ -68,7 +69,7 @@ index 0ef65bd..8732bb5 100755
 +  [[ $1 = '-n' ]] && exit 0
 +  exit 1
  }
- 
+
  # Little helper function for reading args from the commandline.
  # it automatically handles -a b and -a=b variants, and returns 1 if
  # we need to shift $3.
@@ -114,12 +115,12 @@ index 0ef65bd..8732bb5 100755
 +    return $(($i - 3))
 +  fi
  }
- 
+
  # For PhotonOS
  default_kernel_images() {
 -    local kernel_version=
 +  local kernel_version=""
- 
+
 -    for kernel_version in $(ls $kernel_ver_dir); do
 -        # Take this directory as the source of truth
 -        kernels="$kernels $kernel_version"
@@ -132,7 +133,7 @@ index 0ef65bd..8732bb5 100755
 +    targets="$targets $boot_dir/initrd.img-$kernel_version"
 +  done
  }
- 
+
  while (($# > 0)); do
 -    case ${1%%=*} in
 -        --with-usb) read_arg usbmodule "$@" || shift $?
@@ -240,6 +241,7 @@ index 0ef65bd..8732bb5 100755
 +  --nocompress) dracut_args="$dracut_args --no-compress" ;;
 +  --set-hostonly) set_hostonly=1 ;;
 +  --no-hostonly) no_hostonly=1 ;;
++  --debug) dracut_dbg=1;;
 +  --help) usage -n ;;
 +  --builtin) ;;
 +  --without*) ;;
@@ -296,26 +298,26 @@ index 0ef65bd..8732bb5 100755
 +  esac
 +  shift
  done
- 
+
  [[ $targets && $kernels ]] || default_kernel_images
 -[[ $targets && $kernels ]] || (error "No Kernel Registered")
 +[[ $targets && $kernels ]] || error "No Kernel Registered"
- 
+
  # We can have several targets/kernels, transform the list to an array
 -targets=( $targets )
 -[[ $kernels ]] && kernels=( $kernels )
 +targets=($targets)
 +[[ $kernels ]] && kernels=($kernels)
- 
+
  # don't set hostonly flag if running in docker env
  # if set initrd will be incomplete
-@@ -174,38 +194,107 @@ if [ ${no_hostonly} -eq 1 ]; then
+@@ -174,38 +195,107 @@ if [ ${no_hostonly} -eq 1 ]; then
  fi
- 
+
  [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
 -[[ $force == 1 ]]     && dracut_args="${dracut_args} -f"
 +[[ $force == 1 ]] && dracut_args="${dracut_args} -f"
- 
+
 -for ((i=0 ; $i<${#targets[@]} ; i++)); do
 +initrd_sanity_check() {
 +  local ret=0
@@ -323,7 +325,7 @@ index 0ef65bd..8732bb5 100755
 +  local log_fn="$2"
 +  local target="$3"
 +  local errmsg=""
- 
+
 -    if [[ $img_vers ]];then
 -	target="${targets[$i]}-${kernels[$i]}"
 -    else
@@ -336,7 +338,7 @@ index 0ef65bd..8732bb5 100755
 +    errmsg=$(cat << EOF
 +\n\n------------------------ ERROR NOTICE ------------------------------
 +          DRACUT RETURNED NON-ZERO EXIT STATUS(${status})
- 
+
 -    if [[ -s "$kernel_ver_dir/$kernel" ]]; then
 -       readarray -t kernel_cfg < <(xargs -n1 -a $kernel_ver_dir/$kernel)
 -    else
@@ -355,19 +357,7 @@ index 0ef65bd..8732bb5 100755
 +    errmsg=$(cat << EOF
 +\n\n------------------------ ERROR NOTICE ------------------------------
 +                  lsinitrd ${target} FAILED
-+
-+PROBABLY ${target} IS FAULTY
-+SYSTEM MAY BECOME UNUSABLE POST REBOOT
-+---------------------- PROCEED WITH CAUTION -----------------------\n\n
-+EOF
-+)
-+    echo -e "${errmsg}" 1>&2 |& tee -a "${log_fn}"
-+    ret=1
-+  fi
-+
-+  return ${ret}
-+}
- 
+
 -    # Duplicate code: No way found how to redirect output based on $quiet
 -    if [[ $quiet == 1 ]];then
 -	echo "Creating $target"
@@ -384,6 +374,18 @@ index 0ef65bd..8732bb5 100755
 -	else
 -            dracut $dracut_args "${kernel_cfg[@]}" "$target" "$kernel"
 -	fi
++PROBABLY ${target} IS FAULTY
++SYSTEM MAY BECOME UNUSABLE POST REBOOT
++---------------------- PROCEED WITH CAUTION -----------------------\n\n
++EOF
++)
++    echo -e "${errmsg}" 1>&2 |& tee -a "${log_fn}"
++    ret=1
++  fi
++
++  return ${ret}
++}
++
 +# If running in non tty, enable verbose
 +# It's probably happening in some kind of build env, we need verbose.
 +if ! test -t 1; then
@@ -405,36 +407,36 @@ index 0ef65bd..8732bb5 100755
 +
 +  echo "Creating $target"
 +
-+  if [ $DRACUT_DBG -ne 0 ]; then
++  if [ $dracut_dbg -ne 0 ]; then
 +    export DRACUT_INSTALL="/usr/lib/dracut/dracut-install --verbose"
-+    dracut_cmd="dracut -L 6 $dracut_args"
++    dracut_cmd=(dracut -L 6 $dracut_args)
 +  else
-+    dracut_cmd="dracut $dracut_args"
++    dracut_cmd=(dracut $dracut_args)
 +  fi
 +
 +  # this check is for combination of newer and older kernels
 +  if [ -d "/lib/modules/${kernel}/dracut.conf.d" ]; then
-+    dracut_cmd+=" --confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\""
++    dracut_cmd+=("--confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\"")
 +  elif [ -d "/var/lib/initramfs/kernel" ]; then
 +    kernel_ver_dir="/var/lib/initramfs/kernel"
 +    if [ -s "$kernel_ver_dir/$kernel" ]; then
-+      dracut_cmd+=" $(cat $kernel_ver_dir/$kernel)"
++      dracut_cmd+=("$(cat $kernel_ver_dir/$kernel)")
      fi
 +    unset kernel_ver_dir
 +  else
-+    error "ERROR: /lib/modules/${kernel}/dracut.conf.d and /var/lib/initramfs/kernel present"
++    error "ERROR: need /lib/modules/${kernel}/dracut.conf.d or /var/lib/initramfs/kernel"
 +    exit 1
 +  fi
 +
 +  if [[ $basicmodules ]]; then
-+    dracut_cmd+=" --add-drivers \"$basicmodules\""
++    dracut_cmd+=("--add-drivers \"$basicmodules\"")
 +  fi
-+  dracut_cmd+=" \"$target\" \"$kernel\""
++  dracut_cmd+=("\"$target\" \"$kernel\"")
 +
 +  if [ ${quiet} -eq 1 ]; then
-+    eval "${dracut_cmd}" &> "${log_fn}"
++    eval "${dracut_cmd[@]}" &> "${log_fn}"
 +  else
-+    eval "${dracut_cmd}" |& tee "${log_fn}"
++    eval "${dracut_cmd[@]}" |& tee "${log_fn}"
 +  fi
 +
 +  ret=${PIPESTATUS[0]}
@@ -446,6 +448,5 @@ index 0ef65bd..8732bb5 100755
 +[ $final_ret -ne 0 ] && error "--- ERROR: mkinitrd FAILED, SOMETHING WENT WRONG ---"
 +
 +exit ${final_ret}
--- 
+--
 2.39.2
-
