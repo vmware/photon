@@ -7,7 +7,7 @@ If you rebooted to address unexpected behavior before the reboot or if you encou
 
 1. Run the following command to check the logs:
 
-	   `journalctl`
+	`journalctl`
 
 1. Run the following command to look at what happened since the penultimate reboot:
 
@@ -19,13 +19,13 @@ If you rebooted to address unexpected behavior before the reboot or if you encou
 
 1. If required, examine the logs for the kernel:
 
-	   `journalctl -k`
+	`journalctl -k`
 
 1. Check which kernel is in use:
 
 	`uname -r`
 
-    The kernel version of Photon OS in the full version is 4.4.8. The kernel version of in the OVA version is 4.4.8-esx. With the ESX version of the kernel, some services might not start. 
+    The kernel version of Photon OS in the full version is 6.1.10-8. The kernel version of in the OVA version is 6.1.10-8.ph5-esx. With the ESX version of the kernel, some services might not start. 
 
 1. Run this command to check the overall status of services:
 
@@ -43,8 +43,8 @@ If you rebooted to address unexpected behavior before the reboot or if you encou
 	
     ```
     systemd-analyze time
-    	systemd-analyze blame
-    	systemd-analyze critical-chain
+    systemd-analyze blame
+    systemd-analyze critical-chain
     ```
 
  
