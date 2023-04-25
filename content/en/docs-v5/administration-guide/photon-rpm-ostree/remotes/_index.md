@@ -92,7 +92,7 @@ photon
 
 If a host has been deployed from a specific branch and would like to switch to a different one, maybe from a different server, how would it know what branches are available? In git, you would run ```git remote show origin``` or ```git remote -a``` (although last command would not show all branches, unless you ran ```git fetch``` first).  
 
-In Photon OS, the hosts are able to query the server, if summary metadata has been generated, as we've seen in [Creating summary metadata](./administration-guide/photon-rpm-ostree/file-oriented-server-operations/#creating-summary-metadata).  This command lists all branches available for remote **photon2**.
+In Photon OS, the hosts are able to query the server, if summary metadata has been generated, as we've seen in [Creating summary metadata](../../../administration-guide/photon-rpm-ostree/file-oriented-server-operations/#creating-summary-metadata).  This command lists all branches available for remote **photon2**.
 
 ```console
 root@photon-host-cus [ ~ ]# ostree remote refs photon2 
@@ -105,4 +105,4 @@ photon2:photon/5.0/x86_64/minimal
 
 If you have an installed Photon 4.0 that you want to carry to 5.0, you need to rebase it.
 
-See [rebasing](./administration-guide/photon-rpm-ostree/install-or-rebase-to-photon-os-4/).
+See [rebasing](../../../administration-guide/photon-rpm-ostree/install-or-rebase-to-photon-os-4/).
