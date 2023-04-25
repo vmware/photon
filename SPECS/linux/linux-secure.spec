@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.175
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -101,9 +101,11 @@ Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 
 # VMW:
+%ifarch x86_64
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
+%endif
 
 #Secure:
 Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
@@ -422,6 +424,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.175-5
+- Disable strcture randomization
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
 - Fix initrd generation logic
 * Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
