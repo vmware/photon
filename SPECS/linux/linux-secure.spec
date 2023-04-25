@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.277
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.280
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
+%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -261,9 +261,6 @@ Patch199: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 #Fix for CVE-2022-3303
 Patch200: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 
-#Fix for CVE-2023-23454
-Patch201: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
-
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -342,7 +339,7 @@ pushd ..
 %patch99 -p0
 popd
 
-%autopatch -p1 -m100 -M201
+%autopatch -p1 -m100 -M200
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -510,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
+- Update to version 4.19.280
 * Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-3
 - Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-2

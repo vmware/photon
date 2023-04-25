@@ -1,0 +1,20 @@
+From d9ee5c3fff7f936e300ca53d8ebe8872429e5eb6 Mon Sep 17 00:00:00 2001
+From: Daniel Wagner <wagi@monom.org>
+Date: Mon, 24 Apr 2023 07:30:59 +0200
+Subject: [PATCH 353/353] Linux 4.19.280-rt123 REBASE
+
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..2e5c2a548290 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt123
+-- 
+2.40.0
+

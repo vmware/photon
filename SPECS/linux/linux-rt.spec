@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.277
-Release:        5%{?kat_build:.%kat}%{?dist}
+Version:        4.19.280
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt122
+%define rt_version rt123
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=bf92e4fe88a69b68c846cbc304aa399c1e4498219617cf444bb309d7003a9d01f34b5af1a5cbf75a7295329454ecb807956b23305ab468aa37c9c123650fd87b
+%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
 
 %ifarch x86_64
 Source1: config-rt
@@ -250,9 +250,6 @@ Patch157: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 
 #Fix for CVE-2022-3303
 Patch158: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
-
-#Fix for CVE-2023-23454
-Patch159: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -609,7 +606,7 @@ Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 Patch552: 0352-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 # Keep rt_version matched up with this patch.
-Patch553: 0353-Linux-4.19.277-rt122-REBASE.patch
+Patch553: 0353-Linux-4.19.280-rt123-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -1343,6 +1340,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
+- Update to version 4.19.280
 * Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-5
 - Cleanup commented patch files
 * Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-4
