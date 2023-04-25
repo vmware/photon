@@ -15,6 +15,7 @@
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/sched.h>
+#include <linux/version.h>
 #include <linux/workqueue.h>
 #include <crypto/aead.h>
 #include <crypto/hash.h>
@@ -29,6 +30,17 @@
 #ifndef CONFIG_GCC_PLUGIN_STACKLEAK
 void __used __no_caller_saved_registers noinstr stackleak_track_stack(void);
 #endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+int _printk(const char *fmt, ...);
+#endif
+
+extern u32 fcw_prandom_u32_max(u32 ep_ro);
+
+extern void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod,
+			long code);
+#define fcw_module_put_and_kthread_exit(code) __fcw_module_put_and_kthread_exit(THIS_MODULE, code)
+
 
 extern int fcw_cond_resched(void);
 

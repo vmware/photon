@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -50,10 +50,11 @@ Source21: fips_integrity.h
 Source22: update_canister_hmac.sh
 Source23: canister_combine.lds
 Source24: gen_canister_relocs.c
+Source25: fips_canister_wrapper_asm.S
 %endif
 
-Source25: spec_install_post.inc
-Source26: %{name}-dracut.conf
+Source26: spec_install_post.inc
+Source27: %{name}-dracut.conf
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -123,12 +124,14 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000:      6.1.10-8-0001-FIPS-canister-binary-usage.patch
-Patch10001:      0002-FIPS-canister-creation.patch
-Patch10002:      0003-aesni_intel-Remove-static-call.patch
-Patch10003:      0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
-Patch10004:      0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10005:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch10000: 6.1.10-14-0001-FIPS-canister-binary-usage.patch
+Patch10001: 0002-FIPS-canister-creation.patch
+Patch10002: 0003-aesni_intel-Remove-static-call.patch
+Patch10003: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10004: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10005: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch10006: 0001-crypto-Move-printk-prandom-module_kthread_exit-to-ca.patch
+Patch10007: 0001-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 %endif
 
 BuildArch:      x86_64
@@ -223,7 +226,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10005
+%autopatch -p1 -m10000 -M10007
 %endif
 
 %build
@@ -232,6 +235,7 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
@@ -245,6 +249,7 @@ cp %{SOURCE21} crypto/
 cp %{SOURCE22} crypto/
 cp %{SOURCE23} crypto/
 cp %{SOURCE24} crypto/
+cp %{SOURCE25} crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -293,6 +298,7 @@ pushd crypto/
 mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
 cp fips_canister.o \
    fips_canister-kallsyms \
+   fips_canister_wrapper_asm.S \
    fips_canister_wrapper.c \
    .fips_canister.o.cmd \
    fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
@@ -347,11 +353,11 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE26} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE27} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE3}
-%include %{SOURCE25}
+%include %{SOURCE26}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -385,6 +391,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-14
+- Add printk and others for ph4 comptaibility in fips_canister_wrapper
 * Fri May 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-13
 - Fix static call patch and disable RANDSTRUCT
 - Update fcw_warn_on, fcw_warn and fcw_warn_on_once calls in canister

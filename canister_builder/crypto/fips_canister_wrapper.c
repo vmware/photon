@@ -13,18 +13,47 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
-#include <linux/sched.h>
 #include <linux/version.h>
+#include <linux/printk.h>
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include <linux/prandom.h>
+#else
+#include <linux/random.h>
+#endif
+
+#include <linux/sched.h>
 #include <linux/workqueue.h>
 #include <linux/notifier.h>
 #include <linux/module.h>
 #include <linux/fips.h>
+#ifndef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+#include <linux/jump_label.h>
+#endif
+#include <linux/crypto.h>
 #include <crypto/algapi.h>
 #include <crypto/aead.h>
 #include <crypto/hash.h>
 #include <crypto/akcipher.h>
 #include <crypto/skcipher.h>
 #include <crypto/kpp.h>
+#include <crypto/aes.h>
+#include <crypto/des.h>
+#include <crypto/ecdh.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include <crypto/sha.h>
+#else
+#include <crypto/sha1.h>
+#include <crypto/sha2.h>
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include "ecc.h"
+#else
+#include <crypto/internal/ecc.h>
+#endif
+#include <crypto/internal/rsa.h>
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
 #include <crypto/internal/hash.h>
 #endif
@@ -135,6 +164,23 @@ struct kpp_request *fcw_kpp_request_alloc(
 	return kpp_request_alloc(tfm, gfp);
 }
 
+u32 fcw_prandom_u32_max(u32 ep_ro)
+{
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+	return prandom_u32_max(ep_ro);
+#else
+	return get_random_u32_below(ep_ro);
+#endif
+}
+
+void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod, long code)
+{
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+	__module_put_and_exit(mod, code);
+#else
+	__module_put_and_kthread_exit(mod, code);
+#endif
+}
 
 void fcw_kernel_fpu_begin(void)
 {
@@ -367,3 +413,72 @@ static int __init alg_request_report_setup(char *__unused)
 	return 1;
 }
 __setup("alg_request_report", alg_request_report_setup);
+
+
+#ifndef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+DEFINE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
+EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+#endif
+
+/* Export Canister Symbols */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
+EXPORT_SYMBOL(ecc_get_curve25519);
+EXPORT_SYMBOL(ecc_get_curve);
+EXPORT_SYMBOL(ecc_alloc_point);
+EXPORT_SYMBOL(ecc_free_point);
+EXPORT_SYMBOL(vli_num_bits);
+EXPORT_SYMBOL(ecc_point_is_zero);
+#endif
+EXPORT_SYMBOL_GPL(crypto_ft_tab);
+EXPORT_SYMBOL_GPL(crypto_it_tab);
+EXPORT_SYMBOL_GPL(crypto_aes_set_key);
+EXPORT_SYMBOL(vli_is_zero);
+EXPORT_SYMBOL(vli_from_be64);
+EXPORT_SYMBOL(vli_from_le64);
+EXPORT_SYMBOL(vli_cmp);
+EXPORT_SYMBOL(vli_sub);
+EXPORT_SYMBOL(vli_mod_mult_slow);
+EXPORT_SYMBOL(vli_mod_inv);
+EXPORT_SYMBOL(ecc_point_mult_shamir);
+EXPORT_SYMBOL(ecc_is_key_valid);
+EXPORT_SYMBOL(ecc_gen_privkey);
+EXPORT_SYMBOL(ecc_make_pub_key);
+EXPORT_SYMBOL(ecc_is_pubkey_valid_partial);
+EXPORT_SYMBOL(ecc_is_pubkey_valid_full);
+EXPORT_SYMBOL(crypto_ecdh_shared_secret);
+EXPORT_SYMBOL_GPL(crypto_ecdh_key_len);
+EXPORT_SYMBOL_GPL(crypto_ecdh_encode_key);
+EXPORT_SYMBOL_GPL(crypto_ecdh_decode_key);
+EXPORT_SYMBOL_GPL(rsa_parse_pub_key);
+EXPORT_SYMBOL_GPL(rsa_parse_priv_key);
+EXPORT_SYMBOL_GPL(sha1_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha1_update);
+EXPORT_SYMBOL(crypto_sha1_finup);
+EXPORT_SYMBOL_GPL(sha224_zero_message_hash);
+EXPORT_SYMBOL_GPL(sha256_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha256_update);
+EXPORT_SYMBOL(crypto_sha256_finup);
+EXPORT_SYMBOL_GPL(sha384_zero_message_hash);
+EXPORT_SYMBOL_GPL(sha512_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha512_update);
+EXPORT_SYMBOL(crypto_sha512_finup);
+EXPORT_SYMBOL_GPL(alg_test);
+EXPORT_SYMBOL(crypto_aes_sbox);
+EXPORT_SYMBOL(crypto_aes_inv_sbox);
+EXPORT_SYMBOL(aes_expandkey);
+EXPORT_SYMBOL(aes_encrypt);
+EXPORT_SYMBOL(aes_decrypt);
+EXPORT_SYMBOL_GPL(des_expand_key);
+EXPORT_SYMBOL_GPL(des_encrypt);
+EXPORT_SYMBOL_GPL(des_decrypt);
+EXPORT_SYMBOL_GPL(des3_ede_expand_key);
+EXPORT_SYMBOL_GPL(des3_ede_encrypt);
+EXPORT_SYMBOL_GPL(des3_ede_decrypt);
+EXPORT_SYMBOL(sha1_transform);
+EXPORT_SYMBOL(sha1_init);
+EXPORT_SYMBOL(sha256_update);
+EXPORT_SYMBOL(sha224_update);
+EXPORT_SYMBOL(sha256_final);
+EXPORT_SYMBOL(sha224_final);
+EXPORT_SYMBOL(sha256);
+/* End of Exports */
