@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -148,8 +148,6 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires: dracut >= 059-3
-Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -378,6 +376,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
+- Remove dracut & initramfs from requires
 * Fri Mar 31 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Sun Mar 26 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-9

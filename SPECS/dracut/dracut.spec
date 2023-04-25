@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -152,6 +152,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
+- Code improvements in multiple conf dir support
 * Sat Apr 1 2023 Laszlo Gombos <laszlo.gombos@gmail.com> 059-6
 - Update wiki link and remove obsolete references
 * Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-5

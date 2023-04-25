@@ -14,7 +14,7 @@ index bbb3469..76998a6 100755
 --- a/dracut.sh
 +++ b/dracut.sh
 @@ -2104,11 +2104,17 @@ if [[ $no_kernel != yes ]]; then
- 
+
      if [[ -n ${add_drivers// /} ]]; then
          # shellcheck disable=SC2086
 -        hostonly='' instmods -c $add_drivers
@@ -43,7 +43,7 @@ index bbb3469..76998a6 100755
 +            exit 1
 +        fi
      fi
- 
+
      dinfo "*** Installing kernel module dependencies ***"
 diff --git a/modules.d/01fips/module-setup.sh b/modules.d/01fips/module-setup.sh
 index a3e5602..0b759f9 100755
@@ -51,7 +51,7 @@ index a3e5602..0b759f9 100755
 +++ b/modules.d/01fips/module-setup.sh
 @@ -43,10 +43,12 @@ installkernel() {
      mkdir -m 0755 -p "${initdir}/etc/modprobe.d"
- 
+
      for _mod in $_fipsmodules; do
 -        if hostonly='' instmods -c -s "$_mod"; then
 -            echo "$_mod" >> "${initdir}/etc/fipsmodules"
@@ -63,8 +63,7 @@ index a3e5602..0b759f9 100755
 +        echo "$_mod" >> "${initdir}/etc/fipsmodules"
 +        echo "blacklist $_mod" >> "${initdir}/etc/modprobe.d/fips.conf"
      done
- 
-     # with hostonly_default_device fs module for /boot is not installed by default
--- 
-2.39.2
 
+     # with hostonly_default_device fs module for /boot is not installed by default
+--
+2.39.2

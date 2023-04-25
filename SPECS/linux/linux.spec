@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -247,8 +247,6 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires: dracut >= 059-3
-Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -706,6 +704,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Apr 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-13
+- Remove dracut & initramfs from requires
 * Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
 - Remove rpi fan driver patch
 * Wed Apr 05 2023 Ajay Kaher <akaher@vmware.com> 6.1.10-11
