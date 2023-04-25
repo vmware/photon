@@ -37,7 +37,7 @@ Connect to the Photon instance by using SSH and to launch a web server by runnin
 
     On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:
     
-    ![Nginx](./installation-guide/images/Nginx.jpg)
+    ![Nginx](../../images/Nginx.jpg)
     
     Stop the Docker container by typing `Ctrl+c` in the SSH console through which you are connected to EC2. 
     

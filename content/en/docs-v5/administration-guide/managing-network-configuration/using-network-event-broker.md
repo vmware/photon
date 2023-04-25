@@ -66,14 +66,7 @@ Specifies whether you want to send the DNS domain details to `systemd-resolved`.
 `UseHostname=`  
 Specifies whether you want to send the host name to `systemd-hostnamed`. The key takes one of the following values: `true`, `false`. When set to `true`, the host name is sent to `systemd-hostnamed` via DBus. This is applicable only to the DHClient. Default is false.
 
-<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
-<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
 The following example shows a sample configuration of the key values in the `network-broker.toml` file:
-=======
->>>>>>> 4944dd62b (New Topic added (Network Event)):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
-=======
-The following example shows a sample configuration of the key values in the `network-broker.toml` file:
->>>>>>> 4740bd238 (Fixed comments from @ssahani):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
 
 	❯ sudo cat /etc/network-broker/network-broker.toml 
 	[System]
@@ -85,52 +78,3 @@ The following example shows a sample configuration of the key values in the `net
 	RoutingPolicyRules="ens33 ens37"
 	UseDNS="true"
 	UseDomain="true"
-<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
-<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
-=======
-
-<br />
-
-	❯ systemctl status network-broker.service
-	● network-broker.service - A daemon configures network upon events
-	     Loaded: loaded (/usr/lib/systemd/system/network-broker.service; disabled; vendor preset: disabled)
-	     Active: active (running) since Thu 2021-06-03 22:22:38 CEST; 3h 13min ago
-	       Docs: man:networkd-broker.conf(5)
-	   Main PID: 572392 (network-broker)
-	      Tasks: 7 (limit: 9287)
-	     Memory: 6.2M
-	        CPU: 319ms
-	     CGroup: /system.slice/network-broker.service
-	             └─572392 /usr/bin/network-broker
-
-	Jun 04 01:36:04 Zeus network-broker[572392]: [info] 2021/06/04 01:36:04 Link='ens33' 	ifindex='2' changed state 'OperationalState'="carrier"
-	Jun 04 01:36:04 Zeus network-broker[572392]: [info] 2021/06/04 01:36:04 Link='' ifindex='1' changed state 'OperationalState'="carrier"
-
-
-`systemd-networkd` generates DBus signals as shown in the following sample:
-	
-	&{:1.683 /org/freedesktop/network1/link/_32 org.freedesktop.DBus.Properties.PropertiesChanged [org.freedesktop.network1.Link map[AdministrativeState:"configured"] []] 10}
-
-<br />
-
-	‣ Type=signal  Endian=l  Flags=1  Version=1 Cookie=24  Timestamp="Sun 2021-05-16 08:06:05.905781 UTC"
- 	  Sender=:1.292  Path=/org/freedesktop/network1  Interface=org.freedesktop.DBus.Properties  Member=PropertiesChanged
- 	  UniqueName=:1.292
- 	  MESSAGE "sa{sv}as" {
- 	          STRING "org.freedesktop.network1.Manager";
- 	          ARRAY "{sv}" {
- 	                  DICT_ENTRY "sv" {
- 	                          STRING "OperationalState";
- 	                          VARIANT "s" {
-  	                                 STRING "degraded";
- 	                          };
- 	                  };
- 	          };
- 	          ARRAY "s" {
- 	          };
- 	  };
-
-
->>>>>>> 4944dd62b (New Topic added (Network Event)):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
-=======
->>>>>>> ceb7fbbd9 (Update using-network-event-broker.md):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md

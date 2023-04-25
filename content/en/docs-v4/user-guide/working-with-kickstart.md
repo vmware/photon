@@ -434,34 +434,13 @@ In above example **rootfs**,**root** and **swap** are logical volumes in volume 
 
 ## Unattended Installation Through Kickstart
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are three options: 
 
 1. Provide it in the ISO through a CD-ROM attached to the host.
 2. Provide it in the ISO through a specified secondary device.
 3. Serving it from an HTTP server. 
-<<<<<<< HEAD
 
 The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:
-=======
-For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: 
-=======
-For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are three options: 
->>>>>>> 6a10f2602 (Changes related to the installer)
-
-1. Provide it in the ISO through a CD-ROM attached to the host.
-2. Provide it in the ISO through a specified secondary device.
-3.  Serving it from an HTTP server. 
-=======
->>>>>>> 18c8f4a6f (Update working-with-kickstart.md)
-
-<<<<<<< HEAD
-The syntax to pass the configuration file to the kernel through the ISO takes the following form: 
->>>>>>> bdeea4277 (Update Packer Examples)
-=======
-The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:
->>>>>>> 6a10f2602 (Changes related to the installer)
 
 ```console
 ks=cdrom:/<config_file_path>
@@ -473,10 +452,6 @@ For example:
 ks=cdrom:/isolinux/ks.cfg
 ```
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6a10f2602 (Changes related to the installer)
 The syntax to pass the configuration file to the kernel through a secondary device takes the following form:
 
 ```console
@@ -489,11 +464,6 @@ For example:
 ks=/dev/sr1:/isolinux/sample_ks.cfg
 ```
 
-<<<<<<< HEAD
-=======
->>>>>>> bdeea4277 (Update Packer Examples)
-=======
->>>>>>> 6a10f2602 (Changes related to the installer)
 The syntax to serve the configuration file to the kernel from a HTTPS server takes the following form: 
 
 ```console
@@ -544,15 +514,7 @@ nano isolinux/my_ks.cfg
 
 With a copy of the sample kickstart config file open in nano, make the changes that you want. 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `boot/grub2/grub.cfg`:
-=======
-Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `/boot/grub2/grub.cfg`:
->>>>>>> 2ee5fcd8b (kickstart  Option Added)
-=======
-Now add a new item to the installation menu by modifying `isolinux/menu.cfg` and `boot/grub2/grub.cfg`:
->>>>>>> af8820998 (Doc Feedback Changes)
 
 ```console
 cat >> isolinux/menu.cfg << EOF
@@ -564,15 +526,7 @@ label my_unattended
 EOF
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 cat >> boot/grub2/grub.cfg << EOF
-=======
-cat >> /boot/grub2/grub.cfg << EOF
->>>>>>> 2ee5fcd8b (kickstart  Option Added)
-=======
-cat >> boot/grub2/grub.cfg << EOF
->>>>>>> af8820998 (Doc Feedback Changes)
 set default=0
 set timeout=3
 loadfont ascii
@@ -587,18 +541,6 @@ menuentry "Install" {
     initrd /isolinux/initrd.img
 }
 EOF 
-<<<<<<< HEAD
-```
-Following is an example of the ks path:
-
-	`ks_path=cdrom:/isolinux`
-
-**Note:** You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the `photon.media` field. You can specify the path as shown in the following syntax:
-
-```console
-photon.media=/dev/<path of the Photon OS ISO>
-=======
->>>>>>> 2ee5fcd8b (kickstart  Option Added)
 ```
 Following is an example of the ks path:
 

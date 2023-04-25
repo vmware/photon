@@ -13,20 +13,20 @@ Installing a Photon RPM-OSTree host that will pull from a server repository of y
 
 We will follow the same steps, selecting "Photon OSTree Host", and after assigning a host name like **photon-host** and a root password, this time we will click on "Custom RPM-OSTree Server".  
 
-![PhotonHostCustom](./images/rpmostree-custom.png)
+![PhotonHostCustom](../../../images/rpmostree-custom.png)
 
-An additional screen will ask for the URL of server repo - just enter the IP address or fully qualified domain name of the [server installed in the previous step](./administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/).  
+An additional screen will ask for the URL of server repo - just enter the IP address or fully qualified domain name of the [server installed in the previous step](../../../administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/).  
 
-![PhotonHostCustomURL](./images/rpmostree-url.png)
+![PhotonHostCustomURL](../../../images/rpmostree-url.png)
 
 Once this is done and the installation finished, reboot and you are ready to use it.
-You may verify - just like in [this document](./administration-guide/photon-rpm-ostree/concepts-in-action/#querying-the-deployed-filetrees) - that you can get an rpm-ostree status. The value for the CommitID should be identical to the [host that installed from default repo](./administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/), if the [server](./administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/) has been installed fresh, from the same ISO.  
+You may verify - just like in [this document](../../../administration-guide/photon-rpm-ostree/concepts-in-action/#querying-the-deployed-filetrees) - that you can get an rpm-ostree status. The value for the CommitID should be identical to the [host that installed from default repo](../../../administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/), if the [server](../../../administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/) has been installed fresh, from the same ISO.  
 
 ## Automated install of a custom host via kickstart
 
 Photon supports automated install that will not interact with the user, in other words installer will display its progress, but will not prompt for any keys to be clicked, and will boot at the end of installation.  
 
-If not familiar with the way kickstart works, visit [Kickstart Support in Photon OS](./user-guide/working-with-kickstart/). The kickstart json config for OSTree is similar to minimal or full, except for these settings that should sound familiar: 
+If not familiar with the way kickstart works, visit [Kickstart Support in Photon OS](../../../user-guide/working-with-kickstart/). The kickstart json config for OSTree is similar to minimal or full, except for these settings that should sound familiar: 
 
 ```
     ...
