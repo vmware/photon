@@ -96,8 +96,8 @@ Perform the following steps to create one VProbe script and use for all the VMs 
     Add `vprobe.enable = "TRUE"` to the VM's `.vmx` configuration file. See the instructions above.
 
 1. Power on the VM, connect to it with SSH, and run the following command as root:
-	
-	   `echo 0 > /proc/sys/kernel/kptr_restrict`
+
+	`echo 0 > /proc/sys/kernel/kptr_restrict`
 
 1. Connect to the ESXi host with SSH to create the following VProbes script and save it as `/tmp/console.emt`:
 
@@ -111,11 +111,11 @@ Perform the following steps to create one VProbe script and use for all the VMs 
 
 1. From the ESXi host, run the following command to copy the VM's `kallysms` file to the `tmp` directory on the ESXi host:
 
-	   `scp root@<vm ip address>:/proc/kallsyms /tmp`
+	`scp root@<vm ip address>:/proc/kallsyms /tmp`
 
     While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot: 
     
-    	`vim-cmd vmsvc/getallvms`
+	`vim-cmd vmsvc/getallvms`
     
     This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID. 
 
