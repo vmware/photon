@@ -1,12 +1,23 @@
 ---
-title: Upgrading to Photon OS 5.0
-linkTitle: Upgrading to Photon OS 5.0
+title: Upgrading Photon OS 4.0 system to Photon OS 5.0
+linkTitle: Upgrading Photon OS 4.0 system to Photon OS 5.0
 weight: 2
 ---
 
-You can upgrade your existing Photon OS VMs to take advantage of the functionality enhancements in Photon OS 5.0. For details, see [What's New in Photon OS 5.0](./whats-new/).
+You can upgrade the existing Photon OS 4.0 systems to Photon OS 5.0, and take advantage of the functionality enhancements in Photon OS 5.0. For details, see [What's New in Photon OS 5.0](./whats-new/).
 
-Photon OS 5.0 provides a seamless upgrade. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 4.0 customizations in your new Photon OS 5.0 VM.
+The  `photon-upgrade` package provides a seamless upgrade for Photon OS. To use the package, you need to perform the following steps:
+
+1.  Install the `photon-upgrade` package on the Photon OS 4.0 system.
+2. Run the following script:
+	```
+	/bin/photon-upgrade.sh
+	```   
+3. Follow the interactions with that script. 
+
+Please note that the script also supports a non-interactive invocation using the `--assume-yes` option. The `- --help` option of the `photon-upgrade.sh` script provides online help.
+
+The `photon-upgrade.sh` script updates packages to the latest available versions in Photon OS 5.0. Also, the upgrade retains your 4.0 customizations in your new Photon OS 5.0 system.
 
 **Note**: If your 4.0 VM is a full install, then you will have a 5.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.
 
