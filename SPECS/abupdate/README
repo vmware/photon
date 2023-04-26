@@ -14,7 +14,7 @@ Design:
 
     This tool allows for various utilities to support this design:
         - mounting/unmounting shadow partitions, so that they can be easily modified
-        - updating packages on B set
+        - updating/installing packages on B set
         - check for capabilities
         - clean out the shadow partitions
         - deploy an OS image from a tarball into the B set
@@ -84,6 +84,14 @@ Script usage:
                 If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
                 If no args, updates all packages on the B partition set.
                 If AUTO_SWITCH is set, automatically switches into B partition set
+                To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+          install <packages>
+               Accepts a list of packages to install to the shadow (B) partition set
+               If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
+               To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+          uninstall <packages>
+               Accepts a list of packages to uninstall from the shadow (B) partition set.
+               To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
           switch
                 Executes a kexec boot into the B partition set.
                 If AUTO_FINISH is set, automatically finalizes the switch with the finish command
@@ -92,5 +100,3 @@ Script usage:
                 Finalizes the switch by updating the bootloader. Ensures that the next reboot will be into the current partition set.
           check
                 Runs various checks to verify A/B partition sets are good to go.
-          help
-                Print help menu
