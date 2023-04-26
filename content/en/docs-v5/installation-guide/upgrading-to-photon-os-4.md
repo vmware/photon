@@ -15,7 +15,7 @@ The  `photon-upgrade` package provides a seamless upgrade for Photon OS. To use 
 	```   
 3. Follow the interactions with that script. 
 
-Please note that the script also supports a non-interactive invocation using the `--assume-yes` option. The `- --help` option of the `photon-upgrade.sh` script provides online help.
+Please note that the script also supports a non-interactive invocation using the `--assume-yes` option. The `--help` option of the `photon-upgrade.sh` script provides online help.
 
 The `photon-upgrade.sh` script updates packages to the latest available versions in Photon OS 5.0. Also, the upgrade retains your 4.0 customizations in your new Photon OS 5.0 system.
 
