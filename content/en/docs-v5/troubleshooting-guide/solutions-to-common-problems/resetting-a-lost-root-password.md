@@ -15,7 +15,7 @@ Second, in the GNU GRUB edit menu, go to the end of the line that starts with `l
 
 After you add this code, the GNU GRUB edit menu should look exactly like this:
 
-![The modified GNU GRUB edit menu](../../images/grub-edit-menu-changepw.png) 
+![The modified GNU GRUB edit menu](../../images/grub2.06-edit-menu-changepw.png) 
 
 Now type `F10`.
 
@@ -42,4 +42,4 @@ You will know if this is the case, if you see `Account locked due to X failed lo
 
 To reset the count, before you unmount the filesystem, run the following...
 
-	/sbin/pam_tally2 --reset --user root
+	/sbin/faillock --user root reset
