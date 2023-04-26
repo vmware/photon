@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.175
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -840,6 +840,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-6
+- Fix aarch64 initrd driver list
 * Sun Apr 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-5
 - Fix initrd generation logic
 * Wed Apr 12 2023 Ajay Kaher <akaher@vmware.com> 5.10.175-4
