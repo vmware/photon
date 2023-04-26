@@ -21,40 +21,40 @@ Before you run it, specify the following settings:
 ````
 #!/bin/bash
 vm_name=$1
-resource_group=&quot;&quot;
-account_name=&quot;&quot;
-account_key=&quot;&quot;
-container_name=&quot;mydisks&quot;
-url=&quot;https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd&quot;
-public_key_file=&quot;/root/azure_new/jenkins.pub&quot;
+resource_group=""
+account_name=""
+account_key=""
+container_name="mydisks"
+url="https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd"
+public_key_file="/root/azure_new/jenkins.pub"
 exit_code=0
-echo &quot;##################&quot;
-echo &quot;#   Delete vm    #&quot;
-echo &quot;##################&quot;
-echo &quot;az vm list  --resource-group ${resource_group} ... ...&quot;
+echo "##################"
+echo "#   Delete vm    #"
+echo "##################"
+echo "az vm list  --resource-group ${resource_group} ... ..."
 /root/azure_new/bin/az vm list  --resource-group ${resource_group}
-echo &quot;az vm delete --resource-group ${resource_group} --name ${vm_name} --yes ... ...&quot;
+echo "az vm delete --resource-group ${resource_group} --name ${vm_name} --yes ... ..."
 /root/azure_new/bin/az vm delete --resource-group ${resource_group} --name ${vm_name} --yes
 if [$? -ne 0];then
    exit_code=1
 fi
-echo &quot;az vm list  --resource-group ${resource_group} ... ...&quot;
+echo "az vm list  --resource-group ${resource_group} ... ..."
 /root/azure_new/bin/az vm list  --resource-group ${resource_group}
-echo &quot;##############$####&quot;
-echo &quot;#   Delete vhd    #&quot;
-echo &quot;###############$###&quot;
-echo &quot;az storage blob list --account-name ${account_name} --container-name ${container_name} ... ...&quot;
+echo "##############$####"
+echo "#   Delete vhd    #"
+echo "###############$###"
+echo "az storage blob list --account-name ${account_name} --container-name ${container_name} ... ..."
 /root/azure_new/bin/az storage blob list --account-name ${account_name} --container-name ${container_name}
-echo &quot;az storage blob delete --account-name ${account_name} --container-name ${container_name} --name ${vm_name}.vhd ... ...&quot;
+echo "az storage blob delete --account-name ${account_name} --container-name ${container_name} --name ${vm_name}.vhd ... ..."
 /root/azure_new/bin/az storage blob delete --account-name ${account_name} --container-name ${container_name} --name ${vm_name}.vhd
 if [$? -ne 0];then
    exit_code=1
 fi
-echo &quot;az storage blob list --account-name ${account_name} --container-name ${container_name} ... ...&quot;
+echo "az storage blob list --account-name ${account_name} --container-name ${container_name} ... ..."
 /root/azure_new/bin/az storage blob list --account-name ${account_name} --container-name ${container_name}
-echo &quot;########################&quot;
-echo &quot;#   Delete container   #&quot;
-echo &quot;########################&quot;
+echo "########################"
+echo "#   Delete container   #"
+echo "########################"
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name ${container_name}
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name vhds
 exit ${exit_code}
