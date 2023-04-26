@@ -274,7 +274,7 @@ To list enabled repositories, run the following command:
 	Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
 	Metadata cache created.
 
-**mark install|remove pkg_spec**: You can use these commands to specify and mark a package. Use the `mark install` command to mark a package that is not auto-installed. Use the `mark remove` command to mark a package that is auto-installed.
+**mark install|remove pkg_spec**: Mark one or more packages as auto installed (remove) or unmark as auto installed (install), which means it is user-installed. This is used to determine if this package gets removed on autoinstall.
 
 **provides**: This command finds the packages that provide the package that you supply as an argument. The following is an example: 
 

@@ -54,3 +54,9 @@ and confirm that the change has been made:
     System Locale: LANG=de_CH.UTF-8
        VC Keymap: de_CH-latin1
       X11 Layout: n/a
+
+**Note**: Photon OS comes with a minimal set of locales by default. If you need a full set of locales, you need to install the `glibc-i18n` package using the following command: 
+
+```
+tdnf install -y glibc-i18n
+```

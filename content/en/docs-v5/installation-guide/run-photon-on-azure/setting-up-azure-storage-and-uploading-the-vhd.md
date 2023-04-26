@@ -28,9 +28,9 @@ You can use the Azure CLI to set up Photon OS.
 
     From the Azure CLI, create a resource group.
 
-    ````console
+	````console
     az group create \
-     --name &lt;your_resource_group&gt; \
+     --name <your_resource_group> \
      --location westus
     ````
 
@@ -40,9 +40,9 @@ You can use the Azure CLI to set up Photon OS.
 
     ````console
     az storage account create \
-        --resource-group &lt;your_resource_group&gt; \
+        --resource-group <your_resource_group> \
         --location westus \
-        --name &lt;your_account_name&gt; \
+        --name <your_account_name> \
         --kind Storage \
         --sku Standard_LRS
     ````
@@ -53,8 +53,8 @@ You can use the Azure CLI to set up Photon OS.
 
     ````console
     az storage account keys list \
-        --resource-group &lt;your_resource_group&gt; \
-        --account-name &lt;your_account_name&gt;
+        --resource-group <your_resource_group> \
+        --account-name <your_account_name>
     ````
     
 1. Create the Storage Container
@@ -65,8 +65,8 @@ You can use the Azure CLI to set up Photon OS.
 
     ````console
     az storage container create \
-        --account-name &lt;your_account_name&gt; \
-        --name &lt;your_container_name&gt;
+        --account-name <your_account_name> \
+        --name <your_container_name>
     ````
 
 1. Verify Your Setup in the Azure Portal
@@ -82,12 +82,12 @@ You can use the Azure CLI to set up Photon OS.
     
     ````
     az storage blob upload \
-        --account-name &lt;your_account_name&gt; \
-        --account-key &lt;your_account_key&gt; \
-        --container-name &lt;your_container_name&gt; \
+        --account-name <your_account_name> \
+        --account-key <your_account_key> \
+        --container-name <your_container_name> \
         --type page \
-        --file &lt;vhd_path&gt; \
-        --name &lt;vm_name&gt;.vhd
+        --file <vhd_path> \
+        --name <vm_name>.vhd
     ````
 
 ### Example Setup Script
@@ -109,28 +109,28 @@ vhd_path=$1
 vm_name=$2
 export PATH=$PATH:/root/azure_new/bin/az
 echo PATH=$PATH
-resource_group=&quot;&quot;
-account_name=&quot;&quot;
-account_key=&quot;&quot;
-container_name=&quot;mydisks&quot;
-url=&quot;https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd&quot;
-public_key_file=&quot;/root/azure_new/jenkins.pub&quot;
-echo &quot;########################&quot;
-echo &quot;#   Create container   #&quot;
-echo &quot;########################&quot;
+resource_group=""
+account_name=""
+account_key=""
+container_name="mydisks"
+url="https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd"
+public_key_file="/root/azure_new/jenkins.pub"
+echo "########################"
+echo "#   Create container   #"
+echo "########################"
 /root/azure_new/bin/az storage container create --account-name ${account_name} --name ${container_name}
-echo &quot;##################&quot;
-echo &quot;#   Upload vhd   #&quot;
-echo &quot;##################&quot;
+echo "##################"
+echo "#   Upload vhd   #"
+echo "##################"
 /root/azure_new/bin/az storage blob upload --account-name ${account_name} \
     --account-key ${account_key} \
     --container-name ${container_name} \
     --type page \
     --file ${vhd_path} \
     --name ${vm_name}.vhd
-echo &quot;##################&quot;
-echo &quot;#   Create vm    #&quot;
-echo &quot;##################&quot;
-echo &quot;az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk ... ...&quot;
+echo "##################"
+echo "#   Create vm    #"
+echo "##################"
+echo "az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk ... ..."
 /root/azure_new/bin/az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk
 ````

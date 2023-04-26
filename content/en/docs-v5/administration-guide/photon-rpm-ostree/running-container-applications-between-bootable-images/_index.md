@@ -230,8 +230,8 @@ Copying /etc changes: 5 modified, 0 removed, 19 added
 Transaction complete; bootconfig swap: yes deployment count change: 0
 Freed objects: 16.2 MB
 Added:
-  git-2.1.2-1.ph3tp2.x86_64
-  perl-YAML-1.14-1.ph3tp2.noarch
+  git-2.1.2-1.ph5tp2.x86_64
+  perl-YAML-1.14-1.ph5tp2.noarch
 Upgrade prepared for next boot; run "systemctl reboot" to start a reboot
 
 root@photon-host-cus1 [ ~ ]# rpm-ostree status

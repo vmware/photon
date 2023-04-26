@@ -25,9 +25,9 @@ Photon OS supports the following cloud-init capabilities:
 * install package: install additional packages on first boot.
 * configure networking: update /etc/hosts, hostname, etc.
 * write files: write arbitrary files to disk.
-* add yum repository: add a yum repository to /etc/yum.repos.d.
+* add tdnf repository: add a tdnf repository to /etc/yum.repos.d.
 * create groups and users: add groups and users to the system and set properties for them. 
-* run yum upgrade: upgrade all packages.
+* run tdnf upgrade: upgrade all packages.
 * reboot: reboot or power off when done with cloud-init.
 
 

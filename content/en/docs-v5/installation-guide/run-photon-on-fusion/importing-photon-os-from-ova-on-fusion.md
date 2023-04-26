@@ -6,7 +6,7 @@ weight: 2
 
 Using the OVA is a fast and easy way to create a Photon OS VM on Fusion.
 
-After you have downloaded the Photon OS OVA image (OVA with Hardware Version 11) into a folder of your choice, open VMware Fusion and perform the following steps:
+After you have downloaded the Photon OS OVA image (OVA with Hardware Version 15) into a folder of your choice, open VMware Fusion and perform the following steps:
 
 1. Start the Import Process
 
@@ -56,7 +56,7 @@ After you have downloaded the Photon OS OVA image (OVA with Hardware Version 11)
     
     ![Upgrade VM](../../images/fs-ova-upgrade.png)
     
-    How you respond depends on which hardware version (13 or 11) that you want to use. Upgrade if you need to use devices supported only in hardware version 13. Don't upgrade if you want to be compatible with older tools that are supported in hardware version 11.
+    How you respond depends on which hardware version (15 or 20) that you want to use. Upgrade if you need to use devices supported only in hardware version 20. Don't upgrade if you want to be compatible with older tools that are supported in hardware version 15.
 
 1. Update Login Credentials
  

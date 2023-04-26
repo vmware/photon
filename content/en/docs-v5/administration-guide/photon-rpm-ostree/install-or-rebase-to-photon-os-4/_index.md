@@ -31,7 +31,7 @@ If kickstart sounds too complicated and we still want to go the UI way there is 
 Practically, the OSTree repo will switch to a different branch on a different server, following the new server's branch versioning scheme. The net result is that the lots of packages will get changed to newer versions listed in the newer OSTree repo, which has been composed from a newer Photon OS 5.0 RPMS repo. Again, we didn't say "upgraded", neither the rebase command output, that lists "changed" packages. Some obsolete packages will be removed, new packages will be added, either because they didn't exist in older repo, or because the new config file includes them.  
 The OS name is the same (Photon), so the content in /var and /etc will be transferred over.
 
-1. To install fresh, deploy a Photon OS host default, as described in the section [Installing A Host Against the Default Server Repository](./administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/). Of course, if you already have an existing Photon OS 3.0 host that you want to move to 5.0, skip this step.
+1. To install fresh, deploy a Photon OS host default, as described in the section [Installing A Host Against the Default Server Repository](./administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/). Of course, if you already have an existing Photon OS 4.0 host that you want to move to 5.0, skip this step.
 
 2. Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS RPM-OSTree server installed above. This was explained in the "Switching Repositories" section of the [Remotes](./administration-guide/photon-rpm-ostree/remotes/#switching-repositories) document.  
 Ostree should confirm that is the updated server IP for the "photon" remote.
@@ -52,20 +52,20 @@ Rebasing to photon-5:photon/5.0/x86_64/minimal
 Receiving objects: 99% (1541/1549) 478.3 kB/s 107.1 MB... done
 Staging deployment... done
 Upgraded:
-  docker 18.06.2-3.ph3 -> 18.06.2-4.ph3
-  gmp 6.1.2-2.ph3 -> 6.1.2-3.ph3
-  gobject-introspection 1.58.0-2.ph3 -> 1.58.0-3.ph3
-  gzip 1.9-1.ph3 -> 1.9-2.ph3
-  linux 4.19.65-3.ph3 -> 4.19.69-1.ph3
-  mpfr 4.0.1-1.ph3 -> 4.0.1-2.ph3
-  ostree 2019.2-1.ph3 -> 2019.2-2.ph3
-  ostree-grub2 2019.2-1.ph3 -> 2019.2-2.ph3
-  ostree-libs 2019.2-1.ph3 -> 2019.2-2.ph3
-  zlib 1.2.11-1.ph3 -> 1.2.11-2.ph3
+  docker 18.06.2-3.ph5 -> 18.06.2-4.ph5
+  gmp 6.1.2-2.ph5 -> 6.1.2-3.ph5
+  gobject-introspection 1.58.0-2.ph5 -> 1.58.0-3.ph5
+  gzip 1.9-1.ph5 -> 1.9-2.ph5
+  linux 4.19.65-3.ph5 -> 4.19.69-1.ph5
+  mpfr 4.0.1-1.ph5 -> 4.0.1-2.ph5
+  ostree 2019.2-1.ph5 -> 2019.2-2.ph5
+  ostree-grub2 2019.2-1.ph5 -> 2019.2-2.ph5
+  ostree-libs 2019.2-1.ph5 -> 2019.2-2.ph5
+  zlib 1.2.11-1.ph5 -> 1.2.11-2.ph5
 Added:
-  efibootmgr-15-1.ph3.x86_64
-  efivar-36-1.ph3.x86_64
-  tar-1.30-3.ph3.x86_64
+  efibootmgr-15-1.ph5.x86_64
+  efivar-36-1.ph5.x86_64
+  tar-1.30-3.ph5.x86_64
 Run "systemctl reboot" to start a reboot
 ```
 
@@ -81,8 +81,8 @@ Deployments:
             BaseCommit: c8f2b116b067d7695f9033bf2a99505198269354e157c0f2d5b78266cb874239
         LayeredPackages: createrepo_c rpm wget
 
-  ostree://photon:photon/3.0/x86_64/minimal
-                Version: 3.0_minimal.1 (2017-01-11T02:18:42)
+  ostree://photon:photon/5.0/x86_64/minimal
+                Version: 5.0_minimal.1 (2017-01-11T02:18:42)
             BaseCommit: 28dc49ecb4604c0bc349e4445adc659491a1874c01198e6253a261f4d59708b7
         LayeredPackages: createrepo_c rpm wget
 ```
