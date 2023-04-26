@@ -87,7 +87,7 @@ The URL can contain the variables `$releasever` and `$basearch`, which refers to
     ```
 
     
-  In the metalink file, provide the preference for each url, so `tdnf` first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, `tdnf` syncs to the next mirror url with the lower preference than before one.
+  In the metalink file, provide the preference for each url, so `tdnf` first tries to sync the repository data from the mirror which has the highest preference. If it fails for any reason, tdnf will use the next mirror URL.
 
   Note: Ensure that the shasum for `respomd.xml` in all the mirrors should be same.
 

@@ -86,7 +86,7 @@ This configuration can be achieved using a combination of kernel command-line op
         clocksource=tsc
         tsc=reliable
 
-The full list of kernel command-line parameters and their descriptions are available at [https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html](https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html)
+The full list of kernel command-line parameters and their descriptions are available at [https://www.kernel.org/doc/html/v6.1/admin-guide/kernel-parameters.html](https://www.kernel.org/doc/html/v6.1/admin-guide/kernel-parameters.html)
 
 
 ### Tuned configuration ###
