@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -144,9 +144,6 @@ Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
-
-# TODO: rebase to 6.0:
-#Patch220: 0001-Add-rpi-poe-fan-driver.patch
 %endif
 
 %ifarch x86_64
@@ -709,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
+- Remove rpi fan driver patch
 * Wed Apr 05 2023 Ajay Kaher <akaher@vmware.com> 6.1.10-11
 - perf: remove libunwind dependency
 * Fri Mar 31 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
