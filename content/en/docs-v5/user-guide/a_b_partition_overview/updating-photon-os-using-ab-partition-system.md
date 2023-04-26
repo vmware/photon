@@ -16,6 +16,6 @@ To modify or rollback Photon OS updates using A/B partition system, perform the 
 	**Note**: Once you execute the `abupdate finish` command, a reboot does not roll back to the previous partition set. 
 
 
-To know more about the commands for various operations, visit the following topic: [Commands for Operations](./commands-for-operations/)
+To know more about the commands for various operations, visit the following topic: [Commands for Operations](../commands-for-operations/)
 
 
