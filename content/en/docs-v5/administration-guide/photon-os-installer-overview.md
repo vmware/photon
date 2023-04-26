@@ -12,14 +12,14 @@ You can use the Photon OS Installer to perform the following tasks:
 
 - Generate Photon Installer executable
 - Create Photon Images (ISO, GCE, AMI, AZURE, OVA, and so on)
-- Make Photon Installer Source code installable through  the pip interface and use it as a python library.
+- Make Photon Installer Source code installable through the pip interface and use it as a python library.
 
 
 ## Dependencies
 
 The Photon OS installer has the following dependencies:
 
-**Build Dependecies:**
+**Build Dependencies:**
 
 - python3
 - python3-pyinstaller 
@@ -30,7 +30,7 @@ The Photon OS installer has the following dependencies:
 - python3-curses
 
 
-**Run time dependecies:**
+**Run time dependencies:**
 
 - dosfstools
 - efibootmgr
