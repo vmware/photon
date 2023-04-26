@@ -35,6 +35,8 @@ If not familiar with the way kickstart works, visit [Kickstart Support in Photon
     "ostree_repo_ref": "photon/5.0/x86_64/minimal",
     ...
 ```
+See sample kickstart configuration in [sample_ks_ostree_client_from_server](https://github.com/vmware/photon-os-installer/blob/master/sample_ks/sample_ks_ostree_client_from_server.cfg) file for ostree deployement from official photon-os ostree server.
+
 Or, for default installation
 
 ```
@@ -43,6 +45,7 @@ Or, for default installation
     "default_repo": true,
     ....
 ```
+See sample kickstart configuration in [sample_ks_ostree_client_from_default](https://github.com/vmware/photon-os-installer/blob/master/sample_ks/sample_ks_ostree_client_from_default.cfg) file for ostree deployment.
 
 If the server is a future version of Photon OS, say Photon OS 5.0, and the administrator composed trees for the included json files, the ostree_repo_ref will take either value: **photon/5.0/x86_64/base**, **photon/5.0/x86_64/minimal**, or **photon/5.0/x86_64/full**.
 
