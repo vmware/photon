@@ -102,7 +102,7 @@ Some tdnf commands can help you troubleshoot problems with packages:
     Repo     : @System
     ```
 
-    For more commands see the [Photon OS Administration Guide](../administration-guide/).
+    For more commands see the [Photon OS Administration Guide](../../administration-guide/).
     
 - `tdnf reinstall`
     
