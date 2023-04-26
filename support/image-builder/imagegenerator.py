@@ -106,7 +106,9 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             os.remove(raw_image[0])
             raw_image = f"{img_path}/{vhdname}"
     elif config["artifacttype"] == "ova":
-        ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
+        ovagenerator.create_ova(raw_image, config,
+                image_name=image_name,
+                eulafile=os.path.join(src_root, "EULA.txt"))
     elif config["artifacttype"] == "raw":
         pass
     else:

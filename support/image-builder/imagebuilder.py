@@ -207,8 +207,8 @@ def createImage(options):
     if not validImage:
         raise Exception("Image type/config not supported")
 
-    if "ova" in config["artifacttype"] and shutil.which("ovftool") is None:
-        raise Exception("ovftool is not available")
+    if "ova" in config["artifacttype"] and shutil.which("ova-compose") is None:
+        raise Exception("ova-compose is not available - download and install open-vmdk")
 
     install_config = config["installer"]
 

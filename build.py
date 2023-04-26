@@ -113,11 +113,6 @@ curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
 
 
-def build_vixdiskutil():
-    if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-        runBashCmd(f"bash {photonDir}/tools/src/vixDiskUtil/make.sh")
-
-
 def url_validator(url):
     try:
         res = urlparse(url)
@@ -814,8 +809,6 @@ class RpmBuildTarget:
         # TODO: should be moved to top
         import DistributedBuilder
 
-        build_vixdiskutil()
-
         print("Distributed Building using kubernetes ...")
         with open(Build_Config.distributedBuildFile, "r") as configFile:
             distributedBuildConfig = json.load(configFile)
@@ -890,6 +883,7 @@ class CheckTools:
         CheckTools.check_docker()
         CheckTools.create_ph_builder_img()
         CheckTools.check_photon_installer()
+        CheckTools.check_open_vmdk()
         CheckTools.check_contain()
         CheckTools.check_git_hooks()
         check_prerequesite["check-pre-reqs"] = True
@@ -1013,6 +1007,15 @@ class CheckTools:
             install_from_url(install_cmd)
 
 
+    def check_open_vmdk():
+        url = "https://github.com/vmware/open-vmdk.git"
+        branch = "master"
+
+        if shutil.which("ova-compose") is None:
+            runBashCmd(f"rm -rf open-vmdk && git clone --single-branch --branch {branch} {url}")
+            runBashCmd(f"cd open-vmdk && make && sudo make install")
+
+
 """
 class BuildImage does the job of building all the images like iso, rpi, ami, gce, azure, ova and ls1012afrwy
 It uses class ImageBuilder to build different images.
@@ -1128,8 +1131,6 @@ class BuildImage:
         BuildEnvironmentSetup.photon_stage()
 
         local_build = not configdict["photon-build-param"]["start-scheduler-server"]
-        if constants.buildArch == "x86_64" and local_build:
-            build_vixdiskutil()
 
         if local_build:
             RpmBuildTarget.ostree_repo()

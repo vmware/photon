@@ -1,6 +1,5 @@
 {
     "installer": {
-        "bootmode": "dualboot",
         "hostname": "photon-machine",
         "packagelist_file": "packages_ova.json",
         "postinstallscripts": [
@@ -17,5 +16,6 @@
     "image_type": "ova",
     "size": 16384,
     "artifacttype": "ova",
+    "ova_config": "photon.yaml",
     "keeprawdisk": false
 }
