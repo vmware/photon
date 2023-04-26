@@ -18,13 +18,9 @@ sys.path.append(
     f"{os.path.dirname(os.path.realpath(__file__))}/support/package-builder"
 )
 sys.path.append(
-    f"{os.path.dirname(os.path.realpath(__file__))}/support/image-builder",
-)
-sys.path.append(
     f"{os.path.dirname(os.path.realpath(__file__))}/support/spec-checker",
 )
 
-import imagebuilder
 import GenerateOSSFiles
 import PullSources as downloader
 
@@ -37,7 +33,7 @@ from StringUtils import StringUtils
 from SpecDeps import SpecDependencyGenerator
 from SpecData import SPECS
 from check_spec import check_specs
-from utils import Utils
+
 
 targetDict = {
     "image": [
@@ -112,11 +108,6 @@ runBashCmd = cmdUtils.runBashCmd
 
 curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
-
-
-def build_vixdiskutil():
-    if not os.path.exists(f"{photonDir}/tools/bin/vixdiskutil"):
-        runBashCmd(f"bash {photonDir}/tools/src/vixDiskUtil/make.sh")
 
 
 def url_validator(url):
@@ -831,8 +822,6 @@ class RpmBuildTarget:
         # TODO: should be moved to top
         import DistributedBuilder
 
-        build_vixdiskutil()
-
         print("Distributed Building using kubernetes ...")
         with open(Build_Config.distributedBuildFile, "r") as configFile:
             distributedBuildConfig = json.load(configFile)
@@ -906,7 +895,6 @@ class CheckTools:
         CheckTools.check_sanity()
         CheckTools.check_docker()
         CheckTools.create_ph_builder_img()
-        CheckTools.check_photon_installer()
         CheckTools.check_contain()
         CheckTools.check_git_hooks()
         check_prerequesite["check-pre-reqs"] = True
@@ -998,37 +986,6 @@ class CheckTools:
 
         check_prerequesite["check-spec-files"] = True
 
-    def check_photon_installer():
-        url = "https://github.com/vmware/photon-os-installer.git"
-        install_cmd = f"pip3 install git+{url}"
-
-        def install_from_url(cmd):
-            runBashCmd(cmd)
-
-        try:
-            import photon_installer
-        except Exception as e:
-            print("Warning: %s" % e)
-            install_from_url(install_cmd)
-            return
-
-        key = "SKIP_INSTALLER_UPDATE"
-        if key in os.environ and cmdUtils.strtobool(os.environ[key]):
-            print("%s is enabled, not checking for updates" % key)
-            return
-
-        if hasattr(photon_installer, "__version__"):
-            local_hash = photon_installer.__version__.split("+")[1]
-
-            cmd = f"git ls-remote {url} HEAD | cut -f1"
-            remote_hash, _, _ = runBashCmd(cmd, capture=True)
-
-            if not remote_hash.startswith(local_hash):
-                print("Upstream photon-installer is updated, updating local copy ..")
-                install_from_url(install_cmd)
-        else:
-            install_from_url(install_cmd)
-
 
 """
 class BuildImage does the job of building all the images like iso, rpi, ami, gce, azure, ova and ls1012afrwy
@@ -1047,13 +1004,25 @@ class BuildImage:
         self.stage_path = Build_Config.stagePath
         self.log_path = constants.logPath
         self.log_level = constants.logLevel
-        self.config_file = configdict["additional-path"]["conf-file"]
+
+        self.config_file = None
+        if configdict["additional-path"]["conf-file"] is not None:
+            self.config_file = os.path.abspath(configdict["additional-path"]["conf-file"])
+
         self.img_name = imgName
         self.rpm_path = constants.rpmPath
         self.srpm_path = constants.sourceRpmPath
-        self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
-        self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
-        self.ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
+        self.pkg_to_rpm_map_file = os.path.join(
+            Build_Config.stagePath, "pkg_info.json"
+        )
+        self.ph_docker_image = configdict["photon-build-param"][
+            "photon-docker-image"
+        ]
+        self.ph_builder_tag = configdict["photon-build-param"][
+            "ph-builder-tag"
+        ]
+        self.poi_image = configdict["photon-build-param"].get("poi-image", None)
+
         self.ova_cloud_images = ["ami", "gce", "azure", "ova"]
         self.photon_release_version = constants.releaseVersion
 
@@ -1113,6 +1082,17 @@ class BuildImage:
 
         return retval
 
+    def run_poi(self):
+        args = []
+        if self.config_file is not None:
+            args.append(f"--config={self.config_file}")
+        if self.poi_image is not None:
+            args.append(f"--docker-image={self.poi_image}")
+        args = " ".join(args)
+        cmd = f"cd {photonDir}/support/poi && ./poi.py {args} {self.img_name}"
+        print(f"running {cmd}")
+        runBashCmd(cmd)
+
     def build_iso(self):
         if self.img_present(self.img_name):
            return
@@ -1136,7 +1116,10 @@ class BuildImage:
         self.generated_data_path = Build_Config.generatedDataPath
 
         print("Building Full ISO...")
-        imagebuilder.createIso(self)
+        self.run_poi()
+        # poi puts the image into stage/iso/, build expects it in stage/
+        for iso in glob.glob(os.path.join(Build_Config.stagePath, "iso", "*.iso")):
+            shutil.move(iso, Build_Config.stagePath)
 
     def build_image(self):
         if self.img_present(self.img_name):
@@ -1145,14 +1128,12 @@ class BuildImage:
         BuildEnvironmentSetup.photon_stage()
 
         local_build = not configdict["photon-build-param"]["start-scheduler-server"]
-        if constants.buildArch == "x86_64" and local_build:
-            build_vixdiskutil()
 
         if local_build:
             RpmBuildTarget.ostree_repo()
 
         print(f"Building {self.img_name} image")
-        imagebuilder.createImage(self)
+        self.run_poi()
 
     @staticmethod
     def photon_docker_image():
@@ -1446,6 +1427,7 @@ def process_env_build_params(ph_build_param):
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
         "RESUME_BUILD": "resume-build",
+        "POI_IMAGE": "poi-image",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1558,7 +1540,8 @@ def main():
         configdict["additional-path"]["conf-file"] = os.path.abspath(
             os.environ["CONFIG"]
         )
-        jsonData = Utils.jsonread(os.environ["CONFIG"])
+        with open(os.environ["CONFIG"], "rt") as f:
+            jsonData = json.load(f)
         targetName = jsonData["image_type"]
 
     if "IMG_NAME" in os.environ:
@@ -1599,7 +1582,9 @@ def main():
             if targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
                 buildImage.set_Iso_Parameters(targetName)
                 buildImage.build_iso()
-            elif targetName in buildImage.ova_cloud_images + ["rpi", "ls1012afrwy"]:
+            elif targetName in buildImage.ova_cloud_images + [
+                "rpi",
+            ]:
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])

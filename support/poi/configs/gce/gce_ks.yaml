@@ -1,0 +1,19 @@
+live: false
+
+hostname: photon-machine
+
+disks:
+    default:
+        filename: !param imgfile=photon-gce.img
+        size: 16384
+
+postinstallscripts:
+- gce-patch.sh
+
+additional_files:
+- cloud-photon.cfg: /etc/cloud/cloud.cfg
+- ntpd.service: /usr/lib/systemd/system/ntpd.service
+
+packagelist_file: packages_gce.json
+
+linux_flavor: linux

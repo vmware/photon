@@ -1,11 +1,7 @@
 {
     "installer": {
-        "bootmode": "dualboot",
         "hostname": "photon-machine",
         "packagelist_file": "packages_ova.json",
-        "postinstallscripts": [
-            "../relocate-rpmdb.sh"
-        ],
         "password": {
             "age": 0,
             "crypted": false,
@@ -17,5 +13,6 @@
     "image_type": "ova",
     "size": 16384,
     "artifacttype": "ova",
+    "ova_config": "photon.yaml",
     "keeprawdisk": false
 }
