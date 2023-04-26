@@ -6,7 +6,7 @@ weight: 1
 
 `autoremove` without any arguments removes all automatically installed packages that are no longer required.
 
-**check**: Checks for problems in installed and available packages for all enabled repositories. The command has no arguments. You can use ``--enablerepo`` and ``--disablerepo`` to control the repos used. Supported in Photon OS 2.0 (only).
+**check**: Checks for problems in installed and available packages for all enabled repositories. The command has no arguments. You can use ``--enablerepo`` and ``--disablerepo`` to control the repos used. Supported in Photon OS 2.0 (and above).
 
 **check-local**: This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not recursively parse directories. It checks the RPMs only in the directory that you specify. For example, after creating a directory named `/tmp/myrpms` and placing your RPMs in it, you can run the following command to check them:  
 
@@ -24,8 +24,13 @@ weight: 1
 **clean**: This command cleans up temporary files, data, and metadata. It takes the argument `all`. Example: 
 
 	tdnf clean all
-	Cleaning repos: photon photon-extras photon-updates
-	Cleaning up everything
+	cleaning photon: metadata dbcache packages keys expire-cache
+	cleaning photon-release: metadata dbcache packages keys expire-cache
+	cleaning photon-srpms: metadata dbcache packages keys expire-cache
+	cleaning photon-updates: metadata dbcache packages keys expire-cache
+	cleaning photon-iso: metadata dbcache packages keys expire-cache
+	cleaning photon-debuginfo: metadata dbcache packages keys expire-cache
+	Done.
 
 You can use this command to clean all configured repositories.
 
@@ -350,7 +355,7 @@ You can use the following options with the command:
 
 `--delete`: Use this option to remove old packages that are not part of the repository any more.
 
-`--download-metadata`: Use this option to download the metadata. After you download the the metadata, you can use the directory as a repository.
+`--download-metadata`: Use this option to download the metadata. After you download the metadata, you can use the directory as a repository.
 
 `--gpgcheck`: Use this option to check the gpg signature. If invalid, the package is deleted.
 
