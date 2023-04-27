@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -18,14 +18,15 @@ Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
 Patch4: 0001-sources-vmware-imc-fix-missing-catch-few-negtive-sce.patch
+Patch5: CVE-2023-1786.patch
 
 %if 0%{?with_check}
-Patch5: test_vmware.py-fix-pkg-test-failure.patch
-Patch6: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
-Patch7: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
-Patch8: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
-Patch9: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
-Patch10: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
+Patch6: test_vmware.py-fix-pkg-test-failure.patch
+Patch7: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
+Patch8: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
+Patch9: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
+Patch10: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
+Patch11: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
 %endif
 
 BuildRequires: python3-devel
@@ -156,6 +157,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Apr 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-3
+- Fix CVE-2023-1786
 * Thu Mar 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-2
 - sources/vmware/imc: fix missing catch few negtive scenarios
 * Tue Mar 14 2023 Shivani Agarwal <shivania2@vmware.com> 23.1.1-1
