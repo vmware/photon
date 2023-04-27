@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        7.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Group:          Virtualization/Libraries
@@ -195,6 +195,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
+* Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 7.10.0-2
+- Version Bump to use libssh2 1.10.0
 * Mon Dec 13 2021 Susant Sahani <ssahani@vmware.com> 7.10.0-1
 - Version Bump
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 7.5.0-3

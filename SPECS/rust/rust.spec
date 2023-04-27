@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.58.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 1.58.1-3
+- Version bump to use libssh2 1.10.0
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.58.1-2
 - Reduce build time
 * Sat Jan 22 2022 Ankit Jain <ankitja@vmware.com> 1.58.1-1

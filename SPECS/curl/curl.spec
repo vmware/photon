@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-2
+- version bump to use libssh2 1.10.0
 * Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-1
 - Fix CVE's CVE-2023-27533,CVE-2023-27534,CVE-2022-27735
 - CVE-2022-27736,CVE-2022-27738
