@@ -49,7 +49,7 @@ expected_pkg_list=(
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc krb5
   libcap libgcc libsolv libssh2 libxml2 lua ncurses-libs nspr nss-libs
   openssl photon-release photon-repos popt readline rpm-libs sqlite-libs
-  tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
+  tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs pkg-config
 )
 
 actual_pkg_count=${#actual_pkg_list[@]}
