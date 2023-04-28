@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.8
-Release:        2%{?dist}
+Version:        3.3.9
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=173ff9aa3cd0f9dcfb7026416cf5868f18d07e71fb504fae4902387773cf259d54b60e42b2d169fab1b459275ef895adbe55e7cd4ee4df73e179b21735f6a914
+%define sha512  %{name}=86e9bf81b8e9e7a7cf219b52ae1bffcc7dbf53a295d8c96b7f83064ba817567bc44e0fc1ab7c435dd280aec28c34d09bdbce6abe21d3f85b99f99cf867b615e6
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -228,16 +228,19 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.co> 3.3.8-2
+* Fri Apr 28 2023 Oliver Kurth <okurth@vmware.com> 3.3.9-1
+- update to 3.3.9
+- fix segfault when invalid arguments are given to repoquery or reposync
+* Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.com> 3.3.8-2
 - version bump to use curl 8.0.1
-* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.co> 3.3.8-1
+* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.3.8-1
 - update to 3.3.8
 - segfault caused due to missing name param PR #401
 - ensure tdnf lock file is removed on application exit PR #403
-* Fri Feb 24 2023 Oliver Kurth <okurth@vmware.co> 3.3.7-1
+* Fri Feb 24 2023 Oliver Kurth <okurth@vmware.com> 3.3.7-1
 - update to 3.3.7
 - fix reinstall on distro-sync (PR 408)
-* Wed Feb 15 2023 Oliver Kurth <okurth@vmware.co> 3.3.6-1
+* Wed Feb 15 2023 Oliver Kurth <okurth@vmware.com> 3.3.6-1
 - update to 3.3.6
 - local package cache optimization (PR 392)
 - ulimit fix (PR 393/391)
