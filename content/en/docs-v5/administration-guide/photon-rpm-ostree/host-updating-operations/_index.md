@@ -187,7 +187,7 @@ Commit: 965c1abeb048e1a8ff77e9cd34ffccc5e3356176cda3332b4ff0e7a6c66b661f
 
 Now let's type `reboot`. Grub will list the new filetree as the first image, marked with a star, as the default bootable image. If the keyboard is not touched and order is not changed, grub will timeout and will boot into that image.
 
-![Grub-dual-boot-1-0](./images/rpmostree-grub.png)
+![Grub-dual-boot-1-0](../../../images/rpmostree-grub.png)
 
 Let's look again at the status. It's identical, just that the star is next to the newer image, to show it's the current image it has booted from.
 
