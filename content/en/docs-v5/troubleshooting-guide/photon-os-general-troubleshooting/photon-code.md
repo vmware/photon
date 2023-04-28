@@ -55,7 +55,7 @@ root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
 ```
 
-Check if there are security updates for libssh2. note this is relative to what is installed in local
+Check if there are security updates for libssh2. Note this is relative to what is installed in local.
 
 ```console
 root@photon[ ~ ]# tdnf updateinfo list libssh2
@@ -65,7 +65,7 @@ patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
 ```
 
-Show details of all the libssh2 updates
+Show details of all the libssh2 updates.
 
 ```console
 root@photon [ ~ ]# tdnf updateinfo info libssh2
@@ -95,7 +95,7 @@ Needs Reboot: 0
 Description : Security fixes for {'CVE-2019-3855'}
 ``` 
  
-install all security updates >= score 9.0 (CVSS_v3.0_Severity)
+Install all security updates >= score 9.0 (CVSS_v3.0_Severity).
 
 ```console
 root@photon [ ~ ]# tdnf update --sec-severity 9.0
