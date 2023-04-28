@@ -2,37 +2,39 @@
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.1.4
+%define RUNC_VERSION 1.1.7
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.1.4
-Release:             3%{?dist}
+Version:             1.1.7
+Release:             1%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
-Source0:             https://github.com/opencontainers/runc/archive/%{name}-%{version}.tar.gz
-%define sha512       %{name}=c8e79ad839964680d29ab56a4de255f91192741951673025da6889c544a232d4d392db2da8005d8e22999a37bfbc9c9fe7f6043b165bc4edc2f2a29261d8a3d6
-BuildRequires:       go
-BuildRequires:       which
-BuildRequires:       go-md2man
-BuildRequires:       pkg-config
-BuildRequires:       libseccomp
-BuildRequires:       libseccomp-devel
+
+Source0: https://github.com/opencontainers/runc/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e3a18f04ac2c3553a815074ca64e04cfd71af54d78edbd4a13819f187476f96d7311c23bb63fb5c311b91865db4540985a6f9daa84819b0bac5f023b3b2a832c
+
+BuildRequires: go
+BuildRequires: which
+BuildRequires: go-md2man
+BuildRequires: pkg-config
+BuildRequires: libseccomp
+BuildRequires: libseccomp-devel
 
 %description
 runC is a CLI tool for spawning and running containers according to the OCI specification.
 Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
 
-%package             doc
-Summary:             Documentation for runc
-Requires:            %{name} = %{version}-%{release}
+%package     doc
+Summary:     Documentation for runc
+Requires:    %{name} = %{version}-%{release}
 
-%description         doc
+%description doc
 Documentation for runc
 
 %prep
@@ -62,6 +64,9 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Fri Apr 28 2023 Nitesh Kumar <kunitesh@vmware.com> 1.1.7-1
+- Version upgrade to v1.1.7 to fix following issue:
+- 1461 (broken NVidia device support)
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.4-3
 - Bump up version to compile with new go
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.4-2

@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -24,20 +24,20 @@ Source2: disable-%{name}-by-default.preset
 Patch0: %{name}-service.patch
 Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
 
-BuildRequires:  btrfs-progs
-BuildRequires:  btrfs-progs-devel
-BuildRequires:  libseccomp
-BuildRequires:  libseccomp-devel
+BuildRequires: btrfs-progs
+BuildRequires: btrfs-progs-devel
+BuildRequires: libseccomp
+BuildRequires: libseccomp-devel
 # Upstream is unhappy with 1.14. 1.13 or 1.15+ is OK
-BuildRequires:  go >= 1.16
-BuildRequires:  go-md2man
-BuildRequires:  systemd-devel
+BuildRequires: go >= 1.16
+BuildRequires: go-md2man
+BuildRequires: systemd-devel
 
-Requires:       libseccomp
-Requires:       systemd
+Requires: libseccomp
+Requires: systemd
 # containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
 # refer to v1.4.5/RUNC.md
-Requires:       runc
+Requires: runc
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -48,14 +48,14 @@ Summary:        Extra binaries for containerd
 Group:          Applications/File
 Requires:       %{name} = %{version}-%{release}
 
-%description    extras
+%description extras
 Extra binaries for containerd
 
 %package        doc
 Summary:        containerd
 Requires:       %{name} = %{version}-%{release}
 
-%description    doc
+%description doc
 Documentation for containerd.
 
 %prep
@@ -135,6 +135,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri Apr 28 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.17-3
+- Version bump up to use latest runc v1.1.7
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-2
 - Bump up version to compile with new go
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.6.17-1
