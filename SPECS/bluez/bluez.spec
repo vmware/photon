@@ -1,31 +1,24 @@
 Summary:        Bluetooth utilities
 Name:           bluez
-Version:        5.58
-Release:        6%{?dist}
+Version:        5.65
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha512 %{name}=159b554e0afd56af5da6f8333383f2fdf96d77a0e82d762bf4b37786e7312b7e61fbbae0f18b26442a606e0a232f48e0f45a4b38b95de36c7daf384f582315a3
+Source0: http://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
+%define sha512  %{name}=c20c09a1a75053c77d73b3ce15ac7fd321eb6df5ca1646d57c6848b87c0c9957908bc17dd928da4ef2aacfc8667877cbc7511c1ba43db839bfa9bf1fb8269907
 
-Patch0:         bluez-CVE-2021-41229.patch
-Patch1:         bluez-CVE-2021-3658.patch
-Patch2:         bluez-CVE-2022-0204.patch
-Patch3:         bluez-CVE-2022-39176_39177-1.patch
-Patch4:         bluez-CVE-2022-39176_39177-2.patch
-Patch5:         bluez-CVE-2022-39176_39177-3.patch
+BuildRequires: libical-devel
+BuildRequires: glib-devel
+BuildRequires: dbus-devel
+BuildRequires: systemd-devel
 
-BuildRequires:  libical-devel
-BuildRequires:  glib-devel
-BuildRequires:  dbus-devel
-BuildRequires:  systemd-devel
-
-Requires:       dbus
-Requires:       glib
-Requires:       libical
-Requires:       systemd
+Requires: dbus
+Requires: glib
+Requires: libical
+Requires: systemd
 
 %description
 Utilities for use in Bluetooth applications.
@@ -54,12 +47,13 @@ use in Bluetooth applications.
     --enable-systemd \
     --enable-experimental \
     --enable-deprecated \
-    --disable-cups
+    --disable-cups \
+    --disable-manpages
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
@@ -77,17 +71,20 @@ make %{?_smp_mflags} -k check
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
-%{_libdir}/systemd/system/bluetooth.service
+%{_unitdir}/bluetooth.service
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
 %doc COPYING TODO
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/bluetooth/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_datadir}/man/*
 
 %changelog
+* Tue Apr 18 2023 Nitesh Kumar <kunitesh@vmware.com> 5.65-1
+- Upgrade to v5.65 to fix following CVE's:
+- CVE-2021-43400, CVE-2022-3637 and CVE-2022-3563
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.58-6
 - Remove .la files
 * Mon Sep 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.58-5

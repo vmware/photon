@@ -1,11 +1,11 @@
 Summary:	Logrotate
 Name:		logrotate
-Version:	3.18.0
+Version:	3.21.0
 Release:	1%{?dist}
 License:	GPLv2
 URL:		https://github.com/logrotate/logrotate/
 Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
-%define sha1 logrotate=bbd38ce35cba68d8e20da83cb41a1195324ad4e4
+%define sha512 logrotate=f7a58204cd9741de325de18d654ca084ee803d65ee514e34cff7e01ada55adbbdd5863d8d4ad706cf385709a3cdebc4505428f8ba60e195ebf9847de66f2d229
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -22,7 +22,7 @@ be set to handle a log file daily, weekly, monthly or when the log file gets to
 a certain size.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./autogen.sh
@@ -31,7 +31,7 @@ a certain size.
 make %{?_smp_mflags} CFLAGS="-Wno-error=misleading-indentation -g -O2"
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 mkdir -p %{buildroot}%{_unitdir}
 install -vd %{buildroot}%{_sysconfdir}/logrotate.d
 install -p -m 644 examples/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.conf
@@ -65,6 +65,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_localstatedir}/lib/logrotate/logrotate.status
 
 %changelog
+*       Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 3.21.0-1
+-       Update to version 3.21.0
 *       Wed Mar 24 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.18.0-1
 -       Update to version 3.18.0
 *       Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.17.0-1
@@ -85,4 +87,3 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 -	GA - Bump release of all rpms
 *	Wed Jun 24 2015 Divya Thaluru <dthaluru@vmware.com> 3.9.1-1
 -	Initial build. First version
-

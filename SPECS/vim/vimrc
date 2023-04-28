@@ -1,6 +1,5 @@
 " Begin /etc/vimrc
 
-let skip_defaults_vim=1
 set shell=/bin/bash
 set nocompatible
 set backspace=2

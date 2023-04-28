@@ -1,7 +1,7 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        7.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
@@ -17,11 +17,11 @@ Requires:       glib
 %description
 HarfBuzz is an implementation of the OpenType Layout engine.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	glib-devel
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       glib-devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -57,6 +57,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/cmake/harfbuzz/harfbuzz-config.cmake
 
 %changelog
+*       Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0.1-2
+-       Bump version as a part of freetype2 upgrade
 *       Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 7.0.1-1
 -       Update version 7.0.1 to fix CVE-2023-25193
 *       Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.7-1

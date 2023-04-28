@@ -1,7 +1,7 @@
 Summary:        A library that provides compression and decompression of file formats used by Microsoft
 Name:           libmspack
 Version:        0.10.1alpha
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://www.cabextract.org.uk/libmspack/libmspack-0.5alpha.tar.gz
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: http://www.cabextract.org.uk/libmspack/%{name}-%{version}.tar.gz
 %define sha512  %{name}=a7b5f7caa49190c5021f3e768b92f2e51cc0ce685c9ab6ed6fb36de885c73231b58d47a8a3b5c5aa5c9ac56c25c500eb683d84dbf11f09f97f6cb4fff5adc245
+
+Patch0:         CVE-2017-6419.patch
 
 %description
 A library that provides compression and decompression of file formats used by Microsoft
@@ -47,6 +49,8 @@ cd test && ./cabd_test
 %{_libdir}/*.so
 
 %changelog
+* Fri Mar 31 2023 Shivani Agarwal <shivania2@vmware.com> 0.10.1alpha-3
+- Fix CVE-2017-6419
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.10.1alpha-2
 - Remove .la files
 * Mon Apr 13 2020 Sujay G <gsujay@vmware.com> 0.10.1alpha-1

@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 %ifarch aarch64
 %global gohostarch      arm64
 %else
@@ -6,22 +8,21 @@
 
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
-Version:        0.2.1
-Release:        8%{?dist}
+Version:        0.2.2
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        cloud-network-setup-%{version}.tar.gz
-%define sha512  %{name}=dc610c2fc491ee4d5e40fd7097c25d9b0f8a03fd88066bf57d1483a2dfa7b322d75dc10bd7a269fbabb36cbe056c2f222c464fd4a57296cc7331292d224f43e8
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
+
+Source0:        %{name}-%{version}.tar.gz
+%define sha512  %{name}=bf1e917dc016e46dbb3012dc3603f8e24696ce26e9a671bcc98d8d248312bcbb7f5711c4344f230bda374b3c00c8f63121e420ea75110f032acdd43b4ff47882
 
 BuildRequires:  go
 BuildRequires:  systemd-rpm-macros
 
 Requires:  systemd
-
-%global debug_package %{nil}
 
 %description
 cloud-network configures network in cloud environment. In cloud environment
@@ -29,6 +30,7 @@ instances are set public IPs and private IPs. If more than one private IP is
 configured then except the IP which is provided by DHCP others can't be fetched
 and configured. This project is adopting towards cloud network environment such
 as Azure, GCP and Amazon EC2.
+
 %prep -p exit
 %autosetup -p1 -n %{name}-%{version}
 
@@ -95,6 +97,10 @@ fi
 %systemd_postun_with_restart cloud-network.service
 
 %changelog
+* Thu Mar 23 2023 Nitesh Kumar <kunitesh@vmware.com> 0.2.2-1
+- Version upgrade to v0.2.2
+* Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.1-9
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-8
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-7

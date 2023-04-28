@@ -1,37 +1,37 @@
-Summary:	Round Robin Database Tool to store and display time-series data
-Name:		rrdtool
-Version:	1.7.2
-Release:	1%{?dist}
-License:	LGPLv2 or MPLv1.1
-URL:		http://oss.oetiker.ch/rrdtool/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Round Robin Database Tool to store and display time-series data
+Name:           rrdtool
+Version:        1.7.2
+Release:        2%{?dist}
+License:        LGPLv2 or MPLv1.1
+URL:            http://oss.oetiker.ch/rrdtool/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-Source0:	https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
-%define sha1 rrdtool=f0e54258b0f871099623e3a866751928abbb47af
+Source0:        https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
+%define sha512 rrdtool=453230efc68aeb4a12842d20a9d246ba478a79c2f6bfd9693a91837c1c1136abe8af177be64fe29aa40bf84ccfce7f2f15296aefe095e89b8b62aef5a7623e29
 
-BuildRequires:	pkg-config
-BuildRequires:	libpng-devel
-BuildRequires:	pango-devel
-BuildRequires:	libxml2-devel
-BuildRequires:	pixman-devel
-BuildRequires:	freetype2-devel
-BuildRequires:	fontconfig-devel
-BuildRequires:	cairo-devel
-BuildRequires:	glib-devel
-BuildRequires:	systemd
+BuildRequires:  pkg-config
+BuildRequires:  libpng-devel
+BuildRequires:  pango-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  pixman-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  cairo-devel
+BuildRequires:  glib-devel
+BuildRequires:  systemd
 
-Requires:	systemd
+Requires:       systemd
 
 %description
 RRD is the Acronym for Round Robin Database. RRD is a system to store and
 display time-series data.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -39,14 +39,14 @@ It contains the libraries and header files to create applications
 
 %build
 %configure \
-	--disable-tcl		\
-	--disable-python 	\
-	--disable-perl		\
-	--disable-lua		\
-	--disable-examples	\
+        --disable-tcl           \
+        --disable-python        \
+        --disable-perl          \
+        --disable-lua           \
+        --disable-examples      \
     --with-systemdsystemunitdir=%{_unitdir} \
-    --disable-docs 		\
-	--disable-static
+    --disable-docs              \
+        --disable-static
 
 make %{?_smp_mflags}
 
@@ -83,6 +83,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.2-2
+- Bump version as a part of freetype2 upgrade
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1
 - Automatic Version Bump
 * Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 1.7.0-1

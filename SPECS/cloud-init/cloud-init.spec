@@ -1,5 +1,7 @@
+%define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
+
 Name:           cloud-init
-Version:        22.4.2
+Version:        23.1.1
 Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -9,12 +11,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b7d4629205ef2b184786908a3f922d635c811fed8f468649b1a892e93fbcbd54bc9eb366a49ceefb33acd32de1fc8d1a9a34c577c3b9d77825deb5f24e4fe18e
+%define sha512 %{name}=387d11d09e4c6443125216617893d72c9a060bbd086316a3101076206409f315e50ba580eb445e125179fbcf7bd97c264d3c3b7ebe970d9c536e71f3362e1c66
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
+Patch4: 0001-sources-vmware-imc-fix-missing-catch-few-negtive-sce.patch
+Patch5: CVE-2023-1786.patch
+
+%if 0%{?with_check}
+Patch6: test_vmware.py-fix-pkg-test-failure.patch
+Patch7: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
+Patch8: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
+Patch9: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
+Patch10: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
+Patch11: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
+%endif
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -68,6 +81,7 @@ Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
+Requires: btrfs-progs
 
 BuildArch: noarch
 
@@ -83,7 +97,7 @@ find systemd -name "cloud*.service*" | \
     xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
-%py3_build
+%{py3_build}
 
 %install
 %py3_install -- --init-system=systemd
@@ -103,34 +117,23 @@ mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %if 0%{?with_check}
 %check
-touch vd ud
+%define pkglist pytest-metadata unittest2 responses pytest-mock
 
-mkdir -p %{_datadir}/ca-certificates/
-crt_file='%{_datadir}/ca-certificates/cloud-init-ca-certs.crt'
-echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
-
-conf_file='%{_sysconfdir}/ca-certificates.conf'
-
-%define pkglist1 pytest-metadata unittest2
-%define pkglist2 httpretty responses pytest-mock
-
-pip3 install --upgrade %{pkglist1} %{pkglist2}
+pip3 install --upgrade %{pkglist}
 make check %{?_smp_mflags}
 %endif
 
 %clean
 rm -rf %{buildroot}
 
-%define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
-
 %post
-%systemd_post %cl_services
+%systemd_post %{cl_services}
 
 %preun
-%systemd_preun %cl_services
+%systemd_preun %{cl_services}
 
 %postun
-%systemd_postun %cl_services
+%systemd_postun %{cl_services}
 
 %files
 %defattr(-,root,root)
@@ -154,6 +157,14 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Apr 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-3
+- Fix CVE-2023-1786
+* Thu Mar 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-2
+- sources/vmware/imc: fix missing catch few negtive scenarios
+* Tue Mar 14 2023 Shivani Agarwal <shivania2@vmware.com> 23.1.1-1
+- Upgrade to v23.1.1
+* Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 22.4.2-4
+- Add btrfs-progs to requires
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-3
 - Add mount_default_fields in cloud.cfg
 * Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-2

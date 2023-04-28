@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.9.0
-Release:          5%{?dist}
+Version:          5.9.8
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -9,20 +9,24 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=b982ce7c3e940ad75ab71b02ce3e2813b41c6b098cde5b6f3f3513d095f409fe989ae6e38a31eff51c57423bf452c3610cd5cd8cd7f45ff932581d9859df1821
+%define sha512 %{name}=16d3afc80704f896f3f97addf452b4bb29fc1911c54e980f76ac48bdbe2340ce3bd4e79024848cb7961bbe9ad5458d93389343878ca042af658d51b11219666b
 
 %if 0%{?with_check}
 Patch0: strongswan-fix-make-check.patch
 %endif
 
-Patch1: CVE-2021-41990.patch
-Patch2: CVE-2021-41991.patch
-Patch3: CVE-2021-45079.patch
-Patch4: CVE-2022-40617.patch
+Patch1: 0001-HCX-custom-remote-natt-port.patch
+Patch2: 0002-ipsec-Add-clear_df-flag.patch
+Patch3: 0003-reiniate-conn-on-failure.patch
+Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
+
+# CVE fixes
+Patch5: CVE-2023-26463.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
+BuildRequires:    gperf
 %{?systemd_requires}
 
 Requires: systemd
@@ -36,13 +40,19 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 
 %build
 %configure \
-    --enable-systemd
+    --enable-systemd \
+%ifarch x86_64
+    --enable-aesni \
+%endif
+    --enable-openssl \
+    --enable-socket-dynamic \
+    --enable-vici \
+    --enable-swanctl
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.a' -delete
 
 %if 0%{?with_check}
 %check
@@ -81,6 +91,10 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Tue Mar 21 2023 Srish Srinivasan <ssrish@vmware.com> 5.9.8-2
+- fix CVE-2023-26463
+* Wed Feb 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.9.8-1
+- Version update to 5.9.8 along with HCX patches
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9.0-5
 - Fix CVE-2022-40617
 * Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.9.0-4

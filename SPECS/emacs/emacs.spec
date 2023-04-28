@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        27.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -12,8 +12,10 @@ Source0:        %{name}-%{version}.tar.xz
 %define sha512  emacs=dfb26531d2c19cf9fb56505f03d799654b45e5f9528e777900e8280ed2c1d21e04c52f510528e31e015977c471ae63164cedee6174b7439ebcf479a21fc18064
 
 # CVE:
-# Fix for CVE-2022-45939
-Patch0: Fix-CVE-2022-45939.patch
+Patch0: CVE-2022-45939.patch
+Patch1: CVE-2022-48338.patch
+Patch2: CVE-2022-48339.patch
+Patch3: CVE-2022-48337.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -77,6 +79,8 @@ rm %{buildroot}%{_datadir}/applications/emacs.desktop
 %{_datadir}/metainfo/emacs.appdata.xml
 
 %changelog
+*  Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 27.1-4
+-  Fix CVE-2022-48338, CVE-2022-48339, CVE-2022-48337
 *  Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 27.1-3
 -  Fix for CVE-2022-45939
 *  Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 27.1-2

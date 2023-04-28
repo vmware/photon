@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        3.1b
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io
 Group:          Applications/System
@@ -47,6 +47,8 @@ make %{?_smp_mflags} check
 %exclude %{_usrsrc}
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.1b-5
+- Bump version as a part of libevent upgrade
 * Wed Feb 01 2023 Harinadh D <hdommaraju@vmware.com> 3.1b-4
 - fix CVE-2022-47016
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1b-3

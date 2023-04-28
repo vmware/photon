@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.35.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -12,19 +12,14 @@ Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.t
 %define sha512  %{name}=c4bcd95dc64a78080c6d761604ead6074e5e77eee9b66ee60c9b9fe44d138504a8dc52e1665dedb60bff75b44421730d098050dc920aec12d1aee7f1ee54c15b
 
 BuildRequires:  curl-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  openssl-devel >= 1.1.1
+BuildRequires:  openssl-devel
 
-Requires:       openssl >= 1.1.1
-Requires:       curl
-Requires:       expat
-Requires:       perl
-Requires:       perl-YAML
-Requires:       perl-DBI
-Requires:       perl-CGI
-Requires:       subversion-perl
-Requires:       python3
+Requires:   expat
+Requires:   curl
+Requires:   openssl
+# Conflict is needed because of spliting the package git into git(core) and git-extras
+Conflicts: %{name} < %{version}-%{release}
 
 %description
 Git is a free and open source, distributed version control system
@@ -39,9 +34,25 @@ Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server.
 %package lang
 Summary:    Additional language files for git
 Group:      System Environment/Programming
-Requires:   git >= 2.1.2
+Requires:   %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of git.
+
+%package extras
+Summary:    Git extra files to support perl, svn, gui, bash etc.
+Group:      System Environment/Programming
+Requires:   %{name} = %{version}-%{release}
+Requires:   perl
+Requires:   perl-CGI
+Requires:   perl-DBI
+Requires:   perl-YAML
+Requires:   subversion-perl
+Requires:   python3
+
+%description extras
+These are the supported files for perl interface to the git, core package of git,
+graphical interface to git,git tools for interacting with subversion repositories
+and git bash completion files.
 
 %prep
 %autosetup -p1
@@ -52,10 +63,9 @@ These are the additional language files of git.
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_datarootdir}/bash-completion/completions
-install -m 0644 contrib/completion/git-completion.bash %{buildroot}%{_datarootdir}/bash-completion/completions/git
+%make_install DESTDIR=%{buildroot} %{?_smp_mflags}
+install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
+install -m 0644 contrib/completion/git-completion.bash %{buildroot}%{_datadir}/bash-completion/completions/git
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 
@@ -78,23 +88,55 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_datarootdir}/perl5/*
+%{_datadir}/git-core/templates
 %{_libexecdir}/git-core/*
-%{_datarootdir}/git-core/*
-%{_datarootdir}/git-gui/*
-%{_datarootdir}/gitk/*
-%{_datarootdir}/gitweb/*
-%{_datarootdir}/bash-completion/
-#excluding git svn files
-%exclude %{_libexecdir}/git-core/*svn*
-%exclude %{perl_sitelib}/Git/SVN
-%exclude %{perl_sitelib}/Git/SVN.pm
-%exclude %{_libdir}/perl5/*/*/perllocal.pod
+%exclude %{_libexecdir}/git-core/git-svn
+%exclude %{_libexecdir}/git-core/git-send-email
+%exclude %{_libexecdir}/git-core/git-request-pull
+%exclude %{_libexecdir}/git-core/git-p4
+%exclude %{_libexecdir}/git-core/git-instaweb
+%exclude %{_libexecdir}/git-core/git-filter-branch
+%exclude %{_libexecdir}/git-core/git-archimport
+%exclude %{_libexecdir}/git-core/git-add--interactive
+%exclude %{_libexecdir}/git-core/git-gui--askpass
+%exclude %{_libexecdir}/git-core/git-gui
+%exclude %{_libexecdir}/git-core/git-citool
+%exclude %{_libexecdir}/git-core/git-cvsexportcommit
+%exclude %{_libexecdir}/git-core/git-cvsimport
+%exclude %{_libexecdir}/git-core/git-cvsserver
+%exclude %{_bindir}/git-cvsserver
+%exclude %{_datadir}/git-core/templates/hooks/*.sample
+
+%files extras
+%defattr(-,root,root)
+%{_bindir}/git-cvsserver
+%{_libexecdir}/git-core/git-svn
+%{_libexecdir}/git-core/git-send-email
+%{_libexecdir}/git-core/git-request-pull
+%{_libexecdir}/git-core/git-p4
+%{_libexecdir}/git-core/git-instaweb
+%{_libexecdir}/git-core/git-filter-branch
+%{_libexecdir}/git-core/git-archimport
+%{_libexecdir}/git-core/git-add--interactive
+%{_libexecdir}/git-core/git-gui--askpass
+%{_libexecdir}/git-core/git-gui
+%{_libexecdir}/git-core/git-citool
+%{_libexecdir}/git-core/git-cvsexportcommit
+%{_libexecdir}/git-core/git-cvsimport
+%{_libexecdir}/git-core/git-cvsserver
+%{_datadir}/perl5/*
+%{_datadir}/git-gui/*
+%{_datadir}/gitk/*
+%{_datadir}/gitweb/*
+%{_datadir}/bash-completion/
+%{_datadir}/git-core/templates/hooks/*.sample
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-2
+- Adding subpackage to minimize git dependencies
 * Wed Feb 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-1
 - Upgrade version to 2.35.6 to fix following CVE's:
 - CVE-2022-23521, CVE-2022-41903

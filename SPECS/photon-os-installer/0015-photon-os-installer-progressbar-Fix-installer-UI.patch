@@ -1,0 +1,44 @@
+From 76713b3536a106c7b92338946a51f974919a1c3e Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Tue, 7 Mar 2023 16:24:41 +0000
+Subject: [PATCH 15/16] photon-os-installer: progressbar: Fix installer UI
+
+commit https://github.com/vmware/photon/commit/b4d48c6729bf15076220871bb63b156661a8fe32
+enabled dracut logs which produces dracut logs longer than
+window.width causes issue in progress bar.
+- Fixed it by showing truncated messages
+  because user anyways can't make much sense
+  from the logs getting displayed on UI
+  and user can always refer to /var/log/installer.log
+  for complete logs.
+
+Change-Id: I8b0f07793ef40625eec108852771a4edbadcf303
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ photon_installer/progressbar.py | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/photon_installer/progressbar.py b/photon_installer/progressbar.py
+index 9451f83..1c23ce4 100755
+--- a/photon_installer/progressbar.py
++++ b/photon_installer/progressbar.py
+@@ -82,7 +82,15 @@ class ProgressBar(object):
+         self.render_time()
+ 
+     def render_message(self):
+-        text = self.message + (' ' * (self.width - len(self.message)))
++        self.message = self.message.strip()
++        space_required = self.width - len(self.message)
++        if space_required < 0:
++            # truncate the message and display
++            # complete message will be present
++            # inside /var/log/installer.log
++            text = self.message[:self.width]
++        else:
++            text = self.message + (' ' * space_required)
+         self.window.addstr(2, 0, text)
+         self.window.refresh()
+ 
+-- 
+2.23.1
+

@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.168
-Release:        1%{?dist}
+Version:        5.10.175
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
+%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -45,6 +45,9 @@ Source18:       fips_canister-kallsyms
 Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
 %endif
+
+Source21:       spec_install_post.inc
+Source22:       %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -91,6 +94,14 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch45: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch46: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch47: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch48: 0004-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
 # VMW:
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -131,14 +142,15 @@ Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
+#Fix for CVE-2022-39189
+Patch129: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
+
 #Fix for CVE-2022-43945
 Patch131: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch132: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch133: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch134: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2022-2196
-Patch135: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
 #Fix for CVE-2022-4379
 Patch136: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
@@ -236,10 +248,10 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post): (coreutils or toybox)
-Requires(postun): (coreutils or toybox)
+Requires(pre): (coreutils or coreutils-selinux)
+Requires(preun): (coreutils or coreutils-selinux)
+Requires(post): (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 The Linux package contains the Linux kernel.
@@ -294,7 +306,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M41
+%autopatch -p1 -m0 -M48
 
 # VMW
 %autopatch -p1 -m55 -M58
@@ -347,23 +359,6 @@ make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
 %include %{SOURCE9}
 %endif
 
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-  xz $MODULE \
-done \
-%{nil}
-
-# We want to compress modules after stripping. Extra step is added to
-# the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -407,12 +402,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "xen-scsifront xen-blkfront xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon dm-mod nvme nvme-core"
-EOF
-
 # Cleanup dangling symlinks
 rm -rf %{buildroot}%{_modulesdir}/source \
        %{buildroot}%{_modulesdir}/build
@@ -431,12 +420,16 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manual
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+%include %{SOURCE21}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -459,7 +452,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
@@ -468,6 +460,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %ifarch x86_64
 %exclude %{_modulesdir}/kernel/arch/x86/oprofile/
 %endif
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -494,6 +488,16 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
+- Fix initrd generation logic
+* Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
+- Fix for CVE-2022-39189
+* Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
+- update to latest ToT vmxnet3 driver pathes
+* Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
+- Update to version 5.10.175
+* Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
 - Update to version 5.10.168
 * Thu Feb 16 2023 Keerthana K <keerthanak@vmware.com> 5.10.165-3

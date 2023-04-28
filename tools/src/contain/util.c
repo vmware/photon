@@ -10,7 +10,7 @@
 #include "contain.h"
 
 char *append(char **destination, const char *format, ...) {
-  char *extra, *result;
+  char *extra = NULL, *result = NULL;
   va_list args;
 
   va_start(args, format);
@@ -32,7 +32,7 @@ char *append(char **destination, const char *format, ...) {
 }
 
 char *string(const char *format, ...) {
-  char *result;
+  char *result = NULL;
   va_list args;
 
   va_start(args, format);
@@ -53,7 +53,7 @@ char *tmpdir(void) {
 }
 
 void waitforexit(pid_t child) {
-  int status;
+  int status = 0;
 
   if (waitpid(child, &status, 0) < 0)
     error(1, errno, "waitpid");
@@ -62,7 +62,7 @@ void waitforexit(pid_t child) {
 }
 
 void waitforstop(pid_t child) {
-  int status;
+  int status = 0;
 
   if (waitpid(child, &status, WUNTRACED) < 0)
     error(1, errno, "waitpid");

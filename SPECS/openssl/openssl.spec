@@ -1,6 +1,6 @@
 # once certified fips-provider rpm is published, with_certified_fips switch should be turned off
 # with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
-%define with_certified_fips     1
+%define with_certified_fips     0
 %define with_latest_fips        0
 %define fips_provider_version   3.0.0
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
@@ -141,13 +141,16 @@ exit 1
 %endif
 
 %build
-%if 0%{?with_certified_fips}
-  %undefine with_latest_fips
-%elif 0%{?with_latest_fips}
-  %undefine with_certified_fips
+# rpm 4.14.x doesn't understand elif, so keep it basic
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
+  %if 0%{?with_certified_fips}
+    %undefine with_latest_fips
+  %else
+    %undefine with_certified_fips
+  %endif
 %else
-  %undefine with_latest_fips
   %undefine with_certified_fips
+  %undefine with_latest_fips
 %endif
 
 if [ %{_host} != %{_build} ]; then

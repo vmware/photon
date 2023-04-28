@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -72,8 +72,13 @@ This package contains ICU data files needed by MySQL regular expressions.
 
 %if 0%{?with_check}
 %check
-cd %{__cmake_builddir}
-make test %{?_smp_mflags}
+pushd %{__cmake_builddir}/mysql-test
+./mysql-test-run.pl --parallel=$(nproc) \
+                    --force --retry=2 \
+                    --max-test-fail=9999 \
+                    --summary-report=test-summary.log ||:
+[ $(grep -w "Completed:" var/test-summary.log | cut -d ' ' -f5 | cut -d '.' -f1) -gt 95 ]
+popd
 %endif
 
 %files
@@ -102,6 +107,8 @@ make test %{?_smp_mflags}
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.0.32-2
+- Bump version as a part of libevent upgrade
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-1
 - Upgrade to v8.0.32
 * Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.31-1

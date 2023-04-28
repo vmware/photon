@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.168
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.175
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,25 +22,26 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
+%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
-%define i40e_version 2.15.9
+%ifarch x86_64
+%define i40e_version 2.22.18
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=891723116fca72c51851d7edab0add28c2a0b4c4768a7646794c8b3bc4d44a1786115e67f05cfa5bb3bc484a4e07145fc4640a621f3bc755cc07257b1b531dd5
+%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.4.2
+%define iavf_version 4.8.2
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=6eb5123cee389dd4af71a7e151b6a9fd9f8c47d91b9e0e930ef792d2e9bea6efd01d7599fbc9355bb1a3f86e56d17d037307d7759a13c9f1a8f3e007534709e5
+%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
-%define ice_version 1.8.3
+%define ice_version 1.11.14
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-
-%define sha512 ice=b5fa544998b72b65c365489ddaf67dbb64e1b5127dace333573fc95a146a13147f13c5593afb4b9b3ce227bbd6757e3f3827fdf19c3cc1ba1f74057309c7d37b
+%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
+%endif
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -55,6 +56,9 @@ Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
 Source21:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
+
+Source22:       spec_install_post.inc
+Source23:       %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -101,37 +105,45 @@ Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
+
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch50: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch51: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch52: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch53: 0004-linux-esx-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
 # VMW:
-Patch45: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch46: x86-vmware-Log-kmsg-dump-on-panic-510.patch
-Patch47: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch48: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch49: 0001-x86-vmware-avoid-TSC-recalibration.patch
+Patch54: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch55: x86-vmware-Log-kmsg-dump-on-panic-510.patch
+Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch57: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # -esx
-Patch50: init-do_mounts-recreate-dev-root.patch
-Patch51: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch52: 01-clear-linux.patch
-Patch53: 02-pci-probe.patch
-Patch54: poweroff-without-firmware.patch
-Patch55: 04-quiet-boot.patch
-Patch56: 05-pv-ops-clocksource.patch
+Patch60: init-do_mounts-recreate-dev-root.patch
+Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch62: 01-clear-linux.patch
+Patch63: 02-pci-probe.patch
+Patch64: poweroff-without-firmware.patch
+Patch65: 04-quiet-boot.patch
+Patch66: 05-pv-ops-clocksource.patch
 # TODO: make it working for v5.9+
-#Patch57: 06-pv-ops-boot_clock.patch
-Patch58: 07-vmware-only.patch
-Patch59: initramfs-support-for-page-aligned-format-newca.patch
-Patch60: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-Patch61: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
-Patch62: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
-Patch63: halt-on-panic.patch
-Patch64: initramfs-multiple-image-extraction-support.patch
-Patch65: initramfs-support-selective-freeing-of-initramfs-images.patch
-Patch66: initramfs-large-files-support-for-newca-format.patch
-Patch67: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+#Patch67: 06-pv-ops-boot_clock.patch
+Patch68: 07-vmware-only.patch
+Patch69: initramfs-support-for-page-aligned-format-newca.patch
+Patch70: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch71: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
+Patch72: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
+Patch73: halt-on-panic.patch
+Patch74: initramfs-multiple-image-extraction-support.patch
+Patch75: initramfs-support-selective-freeing-of-initramfs-images.patch
+Patch76: initramfs-large-files-support-for-newca-format.patch
+Patch77: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 %if 0%{?vmxnet3_sw_timestamp}
-Patch68: 0009-esx-vmxnet3-software-timestamping.patch
+Patch78: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
 
 #TARFS
@@ -185,14 +197,15 @@ Patch125: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
+#Fix for CVE-2022-39189
+Patch128: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
+
 #Fix for CVE-2022-43945
 Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2022-2196
-Patch134: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
 #Fix for CVE-2022-4379
 Patch135: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
@@ -242,17 +255,19 @@ Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 
+%ifarch x86_64
 #Patches for i40e driver
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
+Patch1502: i40e-don-t-install-auxiliary-module-on.patch
+Patch1503: i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
 #Patches for iavf driver
-Patch1511: 0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 Patch1512: no-aux-symvers.patch
 
 # Patches for ice driver
-Patch1513: 0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
-Patch1514: no-aux-bus.patch
+Patch1513: ice-don-t-install-auxiliary-module-on-modul.patch
+%endif
 
 #Patches for vmci driver
 Patch1521:       001-return-correct-error-code.patch
@@ -297,10 +312,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires(pre): (coreutils or coreutils-selinux)
+Requires(preun): (coreutils or coreutils-selinux)
+Requires(post): (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -344,13 +359,13 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M41
+%autopatch -p1 -m0 -M42
 
 # VMW
-%autopatch -p1 -m45 -M49
+%autopatch -p1 -m50 -M58
 
 # -esx
-%autopatch -p1 -m50 -M92
+%autopatch -p1 -m60 -M92
 
 # CVE
 %autopatch -p1 -m100 -M135
@@ -382,19 +397,17 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1501
+%autopatch -p1 -m1500 -M1503
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%patch1511 -p1
 %patch1512 -p1
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
 %patch1513 -p1
-%patch1514 -p1
 popd
 
 %endif
@@ -458,41 +471,22 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build iavf module
 pushd ../iavf-%{iavf_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 # build ice module
 pushd ../ice-%{ice_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
+make -C src KSRC=${bldroot} %{?_smp_mflags}
 popd
 
 %endif
-
-# Do not compress modules which will be loaded at boot time
-# to speed up boot process
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -type d -name "crypto" -exec find {} -name *.ko ';'); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-done \
-  find %{buildroot}%{_modulesdir} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
-%{nil}
-
-# We want to compress modules after stripping. Extra step is added to
-# the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
 
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -502,32 +496,32 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
+# The auxiliary.ko kernel module is a common dependency for i40e, iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice and i40e drivers.
 
 # install i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux mandocs_install
 popd
 
-# install iavf module
+# install iavf module (with aux module)
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
-    INSTALL_AUX_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+    INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} modules_install \
+    mandocs_install %{?_smp_mflags}
 install -Dvm 644 src/linux/auxiliary_bus.h \
        %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
+make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
+            mandocs_install %{?_smp_mflags}
 make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+    INSTALL_MOD_DIR=extra modules_install_no_aux
 popd
 %endif
 
@@ -549,11 +543,8 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "dm-mod"
-EOF
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
@@ -578,6 +569,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+%include %{SOURCE22}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -589,7 +581,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude %{_modulesdir}/build
 # iavf.conf is used to just blacklist the deprecated i40evf
@@ -600,6 +591,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude %{_sysconfdir}/modprobe.d/iavf.conf
 # ICE driver firmware files are packaged in linux-firmware
 %exclude /lib/firmware/updates/intel/ice
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -612,6 +605,23 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
+- Fix initrd generation logic
+* Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
+- Fix for CVE-2022-39189
+* Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
+- update to latest ToT vmxnet3 driver pathes
+* Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
+- Update to version 5.10.175
+* Tue Apr 04 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-5
+- Fix IRQ affinity of i40e driver
+* Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-4
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
+* Mon Mar 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.168-3
+- Update intel ethernet driver versions:
+- iavf: 4.8.2
+- i40e: 2.22.18
+- ice: 1.11.14
 * Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 5.10.168-2
 - Exclude iavf.conf
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1

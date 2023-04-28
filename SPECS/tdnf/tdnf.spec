@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.7
-Release:        1%{?dist}
+Version:        3.3.8
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=024a555e66a464721fb46ac5911fa3803b32d6b714156b2531ca78a411191744137ac617ab8e7b2df193f2ec8739d66738ebafde62dcb20af2a6546c41677067
+%define sha512  %{name}=173ff9aa3cd0f9dcfb7026416cf5868f18d07e71fb504fae4902387773cf259d54b60e42b2d169fab1b459275ef895adbe55e7cd4ee4df73e179b21735f6a914
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -228,6 +228,12 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.co> 3.3.8-2
+- version bump to use curl 8.0.1
+* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.co> 3.3.8-1
+- update to 3.3.8
+- segfault caused due to missing name param PR #401
+- ensure tdnf lock file is removed on application exit PR #403
 * Fri Feb 24 2023 Oliver Kurth <okurth@vmware.co> 3.3.7-1
 - update to 3.3.7
 - fix reinstall on distro-sync (PR 408)

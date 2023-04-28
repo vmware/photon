@@ -4,22 +4,25 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
-URL:            https://dracut.wiki.kernel.org
+URL:            https://github.com/dracutdevs/dracut/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/utils/boot/dracut/%{name}-%{version}.tar.xz
 %define sha512 %{name}=eba046cf1c8013369a398e585e0bff233daa8595d469ce9acc8bbc6a32d55c6a5429d4219db19abbf6001104be05b357f0961f9e66b7f926039a5d3ee7c2b850
 
-Patch0:         disable-xattr.patch
-Patch1:         fix-initrd-naming-for-photon.patch
-Patch2:         lvm-no-read-only-locking.patch
-Patch3:         fix-hostonly.patch
+Patch0: disable-xattr.patch
+Patch1: fix-initrd-naming-for-photon.patch
+Patch2: lvm-no-read-only-locking.patch
+Patch3: fix-hostonly.patch
+Patch4: 0001-mkinitrd-verbose-fix.patch
+Patch5: 0002-dracut.sh-validate-instmods-calls.patch
+Patch6: 0003-feat-dracut.sh-support-multiple-config-dirs.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -37,7 +40,6 @@ Requires:       /bin/sed
 Requires:       /bin/grep
 Requires:       findutils
 Requires:       cpio
-Requires:       systemd
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -54,7 +56,7 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -66,20 +68,17 @@ This package contains tools to assemble the local initrd and host configuration.
 %make_build
 
 %install
-%make_install %{?_smp_mflags} libdir=%{_prefix}/lib
+%make_install %{?_smp_mflags} libdir=%{_libdir}
 
 echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips \
-          %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
-          %{buildroot}%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips
 
 # we do not support dash in the initramfs
 rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
-          %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
           %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
           %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
@@ -91,9 +90,7 @@ mkdir -p %{buildroot}/boot/%{name} \
          %{buildroot}%{_sbindir}
 
 touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
-ln -sfrv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
-
-rm -f %{buildroot}%{_mandir}/man?/*suse*
+ln -srv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 # create compat symlink
 ln -sr %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
@@ -155,6 +152,9 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Mon Apr 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-10
+- Add /etc/dracut.conf.d to conf dirs list during initrd creation
+- Update wiki link and remove obsolete references
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-9
 - Fix requires
 * Mon Dec 06 2021 Ankit Jain <ankitja@vmware.com> 050-8

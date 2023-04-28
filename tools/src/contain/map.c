@@ -26,8 +26,8 @@ void denysetgroups(pid_t pid) {
 
 static char *getmap(pid_t pid, int type) {
   char *line = NULL, *result = NULL, *path;
-  size_t size;
-  unsigned count, first, lower;
+  size_t size = 0;
+  unsigned int count = 0, first = 0, lower = 0;
   FILE *file;
 
   if (pid == -1)
@@ -54,7 +54,7 @@ static char *getmap(pid_t pid, int type) {
 
 static char *mapitem(char *map, unsigned *first, unsigned *lower,
     unsigned *count) {
-  ssize_t skip;
+  ssize_t skip = 0;
 
   while (map && *map && strchr(",;", *map))
     map++;
@@ -66,7 +66,7 @@ static char *mapitem(char *map, unsigned *first, unsigned *lower,
 }
 
 static char *rangeitem(char *range, unsigned *start, unsigned *length) {
-  ssize_t skip;
+  ssize_t skip = 0;
 
   while (range && *range && strchr(",;", *range))
     range++;
@@ -79,9 +79,9 @@ static char *rangeitem(char *range, unsigned *start, unsigned *length) {
 
 static char *readranges(int type) {
   char *line = NULL, *range, *user;
-  size_t end, size;
-  struct passwd *passwd;
-  unsigned length, start;
+  size_t end = 0, size = 0;
+  struct passwd *passwd = NULL;
+  unsigned int length = 0, start = 0;
   FILE *file;
 
   range = string("%u:1", getid(type));
@@ -113,8 +113,8 @@ static char *readranges(int type) {
 }
 
 static char *rootdefault(int type) {
-  char *cursor, *map, *result;
-  unsigned count, first, last = INVALID, lower;
+  char *cursor = NULL, *map = NULL, *result = NULL;
+  unsigned int count = 0, first = 0, last = INVALID, lower = 0;
 
   cursor = map = getmap(-1, type);
   while ((cursor = mapitem(cursor, &first, &lower, &count)))
@@ -142,8 +142,8 @@ static char *rootdefault(int type) {
 }
 
 static char *userdefault(int type) {
-  char *cursor, *map, *range, *result = NULL;
-  unsigned count, first, index = 0, length, lower, start;
+  char *cursor = NULL, *map = NULL, *range = NULL, *result = NULL;
+  unsigned int count = 0, first = 0, index = 0, length = 0, lower = 0, start = 0;
 
   if (geteuid() != 0)
     return string("0:%u:1", getid(type));
@@ -174,7 +174,7 @@ static char *userdefault(int type) {
 }
 
 static void validate(char *range, unsigned first, unsigned count) {
-  unsigned length, start;
+  unsigned int length = 0, start = 0;
 
   while ((range = rangeitem(range, &start, &length)))
     if (first < start + length && start < first + count) {
@@ -188,16 +188,16 @@ static void validate(char *range, unsigned first, unsigned count) {
 }
 
 static void verifymap(char *map, char *range) {
-  unsigned count, first, lower;
+  unsigned int count = 0, first = 0, lower = 0;
 
   while ((map = mapitem(map, &first, &lower, &count)))
     validate(range, lower, count);
 }
 
 void writemap(pid_t pid, int type, char *map) {
-  char *path, *range, *text = NULL;
+  char *path = NULL, *range= NULL, *text = NULL;
   int fd;
-  unsigned count, first, lower;
+  unsigned int count = 0, first = 0, lower = 0;
 
   if (!map) {
     map = (getuid() == 0 ? rootdefault : userdefault)(type);

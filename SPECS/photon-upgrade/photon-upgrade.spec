@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        2%{?dist}
+Release:        4%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source0:        photon-upgrade.sh
@@ -36,6 +36,10 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Thu Apr 20 2023 Dweep Advani <dadvani@vmware.com> 1.0-4
+- Fixed issue caused by change in behaviour of tdnf list command
+* Thu Mar 16 2023 Dweep Advani <dadvani@vmware.com> 1.0-3
+- Added support for OS upgrade to 5.0 release
 * Thu Sep 08 2022 Dweep Advani <dadvani@vmware.com> 1.0-2
 - Added feature to install all packages from provided repo
 * Mon Aug 29 2022 Dweep Advani <dadvani@vmware.com> 1.0-1

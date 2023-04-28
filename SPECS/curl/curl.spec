@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.86.0
-Release:        3%{?dist}
+Version:        8.0.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,13 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
-Patch0:         proxy-match-with-adjacent-comma.patch
-Patch1:         fix-tail-matching-regression.patch
-Patch2:         noproxy-tailmatch-revert-before-7.85.patch
-Patch3:         curl-CVE-2022-43551.patch
-Patch4:         curl-CVE-2022-43552.patch
-
+%define sha512  %{name}=87d945e65176613c6296f8b130bd6c5355e3ca3c62ee4010edd481950cad9760482fd3be8a84e51501c118c29ebc284b8f87c49b06f9d248e9da5819fda38f8f
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -61,10 +55,9 @@ This package contains minimal set of shared curl libraries.
     --with-libssh2 \
     --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -97,6 +90,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-1
+- Fix CVE's CVE-2023-27533,CVE-2023-27534,CVE-2022-27735
+- CVE-2022-27736,CVE-2022-27738
+- version upgrade
+* Fri Feb 17 2023 Dweep Advani <dadvani@vmware.com> 7.86.0-4
+- Fixed CVE-2023-23914, CVE-2023-23915 and CVE-2023-23916
 * Tue Dec 20 2022 Dweep Advani <dadvani@vmware.com> 7.86.0-3
 - Fixed CVE-2022-43551 and CVE-2022-43552
 * Fri Dec 09 2022 Harinadh D <hdommaraju@vmware.com> 7.86.0-2

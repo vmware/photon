@@ -1,7 +1,7 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
 Version:        3.21.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
@@ -75,6 +75,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+* Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 3.21.0-11
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 3.21.0-10
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 3.21.0-9

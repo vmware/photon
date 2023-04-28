@@ -13,6 +13,7 @@ crypto canister can work seamless with the new changes in
 random driver.
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 ---
  drivers/char/random.c  | 62 ++++++++++++++++++++++++++++++++++++++++--
  include/linux/random.h | 11 +++++++-
@@ -148,9 +149,7 @@ index 917470c4490a..9eef16a7a87e 100644
  void add_device_randomness(const void *buf, size_t len);
  void add_bootloader_randomness(const void *buf, size_t len);
  void add_input_randomness(unsigned int type, unsigned int code,
-@@ -28,7 +37,7 @@ static inline void add_latent_entropy(void)
- static inline void add_latent_entropy(void) { }
- #endif
+@@ -28,5 +37,5 @@ static inline void add_latent_entropy(void)
  
 -void get_random_bytes(void *buf, size_t len);
 +void get_random_bytes(void *buf, int len);

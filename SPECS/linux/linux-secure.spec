@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.168
-Release:        1%{?kat_build:.kat}%{?dist}
+Version:        5.10.175
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=c941cf2b03d1a7fb404a2de698394d449f1384e8033053640fdb1899f693d91b01b4cb1eea43a23b09b96793c7a801d858e9feffa165a2da1aebe8b4485e0e6d
+%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -39,6 +39,9 @@ Source18:       fips_canister-kallsyms
 Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
 %endif
+
+Source21:       spec_install_post.inc
+Source22:       %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -84,15 +87,25 @@ Patch35: 0007-vmxnet3-use-ext1-field-to-indicate-encapsulated-pack.patch
 Patch36: 0008-vmxnet3-update-to-version-7.patch
 Patch37: 0001-vmxnet3-disable-overlay-offloads-if-UPT-device-does-.patch
 Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
-Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch39: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
+Patch40: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch41: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch42: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch43: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
+Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
+Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
+
 # VMW:
+%ifarch x86_64
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
+%endif
 
 #Secure:
 Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
@@ -136,14 +149,15 @@ Patch125: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
+#Fix for CVE-2022-39189
+Patch128: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
+
 #Fix for CVE-2022-43945
 Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2022-2196
-Patch134: 0001-KVM-VMX-Execute-IBPB-on-emulated-VM-exit-when-guest-.patch
 #Fix for CVE-2022-4379
 Patch135: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
@@ -218,12 +232,12 @@ BuildRequires:  bison
 BuildRequires: gdb
 %endif
 
-Requires:       kmod
-Requires:       filesystem
-Requires(pre): (coreutils or toybox)
-Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires: kmod
+Requires: filesystem
+Requires(pre): (coreutils or coreutils-selinux)
+Requires(preun): (coreutils or coreutils-selinux)
+Requires(post): (coreutils or coreutils-selinux)
+Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 Security hardened Linux kernel.
@@ -255,7 +269,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M42
+%autopatch -p1 -m0 -M46
 
 %ifarch x86_64
 # VMW x86
@@ -331,23 +345,6 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" \
 %include %{SOURCE9}
 %endif
 
-%define __modules_install_post \
-for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
-  ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-  rm -f $MODULE.{sig,dig} \
-  xz $MODULE \
-done \
-%{nil}
-
-# __os_install_post strips signature from modules. We need to resign it again
-# and then compress. Extra step is added to the default __spec_install_post.
-%define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
-%{nil}
-
 %install
 install -vdm 755 %{buildroot}/%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -374,11 +371,8 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod"
-EOF
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
@@ -402,6 +396,7 @@ ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+%include %{SOURCE21}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -413,10 +408,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %exclude %{_usrsrc}
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -428,6 +424,18 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.175-5
+- Disable strcture randomization
+* Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
+- Fix initrd generation logic
+* Tue Apr 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-3
+- Fix for CVE-2022-39189
+* Mon Apr 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.175-2
+- update to latest ToT vmxnet3 driver pathes
+* Tue Apr 04 2023 Roye Eshed <eshedr@vmware.com> 5.10.175-1
+- Update to version 5.10.175
+* Thu Mar 30 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.168-2
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.168-1
 - Update to version 5.10.168
 * Tue Feb 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.165-2

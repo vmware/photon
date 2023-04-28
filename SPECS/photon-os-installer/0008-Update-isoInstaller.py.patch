@@ -1,0 +1,28 @@
+From edf2252a37f87b7ab6bcffe898592fae7ad21969 Mon Sep 17 00:00:00 2001
+From: spyroot <spyroot@gmail.com>
+Date: Sat, 11 Feb 2023 01:03:48 +0400
+Subject: [PATCH 08/16] Update isoInstaller.py
+
+I think it makes more sense actually to tell.    I have an issue with UUID match and can mount, but the installer never mount.
+
+Change-Id: I4aee8f5f210883ad6fe105d9aef775cbdf8a8c40
+---
+ photon_installer/isoInstaller.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index 39dd415..8e05861 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -169,7 +169,7 @@ class IsoInstaller(object):
+             time.sleep(5)
+         print("Failed to mount the device, exiting the installer")
+         print("check the logs for more details")
+-        raise Exception("Can not mount the device")
++        raise Exception(f"Cannot mount the device {str(photon_media)}")
+ 
+ 
+ if __name__ == '__main__':
+-- 
+2.23.1
+

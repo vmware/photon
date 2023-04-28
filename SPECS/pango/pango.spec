@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.41.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_datadir}/man/*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.1-3
+- Bump version as a part of freetype2 upgrade
 * Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 1.41.1-2
 - upgrade to build with new harfbuzz
 * Thu Sep 08 2022 Shivani Agarwal <shivania2@vmware.com> 1.41.1-1

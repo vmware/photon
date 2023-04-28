@@ -1,31 +1,27 @@
 Summary:        software font engine.
 Name:           freetype2
-Version:        2.10.2
-Release:        4%{?dist}
+Version:        2.13.0
+Release:        1%{?dist}
 License:        BSD/GPL
 URL:            http://www.freetype.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha512  freetype=cbb1b6bb7f99f6ecb473ce6027ec5f2868af939f793dd7b083b23e9823e18c4bcbac0b92483ebe70804ad7f4ef5bf4ea5c6b476e7f631a3e6a1b3e904a41e1a5
-Patch0:         CVE-2020-15999.patch
-Patch1:         CVE-2022-27404.patch
-Patch2:         CVE-2022-27405.patch
-Patch3:         CVE-2022-27406.patch
-BuildRequires:	libtool
-BuildRequires:	zlib-devel
-BuildRequires:	glibc
-BuildRequires:	pkg-config
-BuildRequires:	bash
+%define sha512  freetype=0d2bfc3980313e1578b69568394666e1721c11dfdb47f21cb46ced48d0afcc674e175391ee0f64ffbcee814cded2d9a8fe6273029253c1adf642078ac8c0dd73
+BuildRequires:  libtool
+BuildRequires:  zlib-devel
+BuildRequires:  glibc
+BuildRequires:  pkg-config
+BuildRequires:  bash
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.
 
-%package	devel
-Summary:	Header and development files
-Requires:	freetype2 = %{version}-%{release}
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       freetype2 = %{version}-%{release}
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -61,6 +57,8 @@ make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13.0-1
+- Upgrade to v2.13.0
 * Fri May 06 2022 Tapas Kundu <tkundu@vmware.com> 2.10.2-4
 - Fix CVE-2022-27404, CVE-2022-27405 and CVE-2022-27406
 * Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.10.2-3

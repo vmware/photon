@@ -1,0 +1,31 @@
+From 40c4065248af30bb19ee20edaf4ea3e1da710e9b Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Thu, 30 Mar 2023 17:56:15 -0700
+Subject: [PATCH 4/4] linux-aws, Makefile: Add kernel flavor info to the
+ generated version.h file
+
+Add "PHOTON_KERNEL_FLAVOR_AWS" macro definition to the generated file
+include/generated/uapi/linux/version.h to identify Photon's linux-aws
+kernel flavor.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 5ec4197713b0..18c2cdb51576 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1305,7 +1305,7 @@ define filechk_version.h
+ 	echo '#define PHOTON_KERNEL';                                                   \
+ 	echo '#define PHOTON_KERNEL_RELEASE                                             \
+ 	$(shell echo -n "$(KERNELRELEASE)" | cut -d'-' -f2 | cut -d'.' -f1)';           \
+-	echo '#define PHOTON_KERNEL_FLAVOR_'
++	echo '#define PHOTON_KERNEL_FLAVOR_AWS'
+ endef
+ 
+ $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+-- 
+2.25.1
+

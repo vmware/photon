@@ -1,0 +1,89 @@
+From 866885aa74cde08f90d3ada9de6a1e8def7126e7 Mon Sep 17 00:00:00 2001
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Fri, 11 Feb 2022 14:14:11 +0900
+Subject: [PATCH 2/4] kbuild: replace $(if A,A,B) with $(or A,B)
+
+commit 5c8166419acf468b5bc3e48f928a040485d3e0c2 upstream.
+
+[ Srivatsa: linux-secure build used to fail with a strange error like
+shown below:
+
+make
+INSTALL_MOD_PATH=/usr/src/photon/BUILDROOT/linux-secure-4.19.272-2.ph3.x86_64
+modules_install -j32
+ln: target '272-2.ph3-secure/source' is not a directory
+make: *** [Makefile:1313: _modinst_] Error 1
+
+The issue here is that it is trying to link to a target directory name
+that is space separated: "4. 19. 272-2.ph3-secure" instead of
+"4.19.272-2.ph3-secure". (This string is read from the generated file
+include/config/kernel.release).
+
+It turns out that CONFIG_HEADERS_CHECK is enabled in the .config only
+in linux-secure kernel flavor, which ends up executing 'make
+__headers', which regenerates the (previously correct) contents of the
+include/config/kernel.release file with whitespace damage.
+
+'make __headers' invokes the PATCHLEVEL and SUBLEVEL computation under
+the Makefile target "$(version_h)", which ends up retaining the space
+character before the value for both PATCHLEVEL and SUBLEVEL, which is
+why it ends up getting populated in include/config/kernel.release,
+leading to cascading errors at the module install time (error message
+above).
+
+So fix this issue by backporting an upstream patch that
+(unintentionally) fixes the whitespace issue in PATCHLEVEL and
+SUBLEVEL computation.
+
+Although this fix is strictly needed only for linux-secure, let us
+apply this patch to all kernel flavors to prevent any issues if other
+flavors end up enabling CONFIG_HEADERS_CHECK in the future.
+
+The original commit message of the upstream commit follows.
+- Srivatsa ]
+
+$(or ...) is available since GNU Make 3.81, and useful to shorten the
+code in some places.
+
+Covert as follows:
+
+  $(if A,A,B)  -->  $(or A,B)
+
+This patch also converts:
+
+  $(if A, A, B) --> $(or A, B)
+
+Strictly speaking, the latter is not an equivalent conversion because
+GNU Make keeps spaces after commas; if A is not empty, $(if A, A, B)
+expands to " A", while $(or A, B) expands to "A".
+
+Anyway, preceding spaces are not significant in the code hunks I touched.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+[ Srivatsa: Backported only the fix for PATCHLEVEL and SUBLEVEL in
+Makefile, because having the space *does* matter and in fact causes
+incorrect results in include/config/kernel.release with `make__headers` ].
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index c8aaa961e0c1..182277c8d682 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1289,8 +1289,8 @@ define filechk_version.h
+ 	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
+ endef
+ 
+-$(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
+-$(version_h): SUBLEVEL := $(if $(SUBLEVEL), $(SUBLEVEL), 0)
++$(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
++$(version_h): SUBLEVEL := $(or $(SUBLEVEL), 0)
+ $(version_h): FORCE
+ 	$(call filechk,version.h)
+ 	$(Q)rm -f $(old_version_h)
+-- 
+2.25.1
+

@@ -1,0 +1,103 @@
+From 54270a73f5ead00141223009f2ba326027b031ef Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sat, 18 Feb 2023 18:11:51 +0530
+Subject: [PATCH 3/3] feat(dracut.sh): support multiple config dirs
+
+Configuration can come from many places, users should not be restricted
+to keep all configuration files in one directory.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ dracut.sh          | 29 ++++++++++++++++++++---------
+ mkinitrd-dracut.sh |  6 +++---
+ 2 files changed, 23 insertions(+), 12 deletions(-)
+
+diff --git a/dracut.sh b/dracut.sh
+index 4ba6953..36a649f 100755
+--- a/dracut.sh
++++ b/dracut.sh
+@@ -137,8 +137,9 @@ Creates initial ramdisk images for preloading modules
+   -q, --quiet           Decrease verbosity level
+   -c, --conf [FILE]     Specify configuration file to use.
+                          Default: /etc/dracut.conf
+-  --confdir [DIR]       Specify configuration directory to use *.conf files
+-                         from. Default: /etc/dracut.conf.d
++  --confdir [LIST]      Specify a space separated list of configuration
++                         directories to use *.conf files from.
++                         Default: /etc/dracut.conf.d
+   --tmpdir [DIR]        Temporary directory to be used instead of default
+                          /var/tmp.
+   -r, --sysroot [DIR]   Specify sysroot directory to collect files from.
+@@ -518,7 +519,7 @@ while :; do
+         --ro-mnt)      ro_mnt_l="yes";;
+         -k|--kmoddir)  drivers_dir_l="$2";             PARMS_TO_STORE+=" '$2'"; shift;;
+         -c|--conf)     conffile="$2";                  PARMS_TO_STORE+=" '$2'"; shift;;
+-        --confdir)     confdir="$2";                   PARMS_TO_STORE+=" '$2'"; shift;;
++        --confdir)     confdirs_l=("$2");              PARMS_TO_STORE+=" '$2'"; shift;;
+         --tmpdir)      tmpdir_l="$2";                  PARMS_TO_STORE+=" '$2'"; shift;;
+         -r|--sysroot)  sysroot_l="$2";                 PARMS_TO_STORE+=" '$2'"; shift;;
+         -L|--stdlog)   stdloglvl_l="$2";               PARMS_TO_STORE+=" '$2'"; shift;;
+@@ -694,20 +695,30 @@ if [[ ! -f $conffile ]]; then
+     fi
+ fi
+
+-if [[ ! -d $confdir ]]; then
++if [ ${#confdirs_l[@]} -eq 0 ]; then
+     if [[ $allowlocal ]]; then
+-        confdir="$dracutbasedir/dracut.conf.d"
++        confdirs_l=("$dracutbasedir/dracut.conf.d")
+     else
+-        confdir="$dracutsysrootdir/etc/dracut.conf.d"
++        confdirs_l=("$dracutsysrootdir/etc/dracut.conf.d")
+     fi
++else
++    # shellcheck disable=SC2068
++    for d in ${confdirs_l[@]}; do
++        if [[ ! -d $d ]]; then
++            printf "%s\n" "dracut: Configuration directory '$d' not found." >&2
++            exit 1
++        fi
++    done
+ fi
+
+ # source our config file
+ [[ -f $conffile ]] && . "$conffile"
+
+-# source our config dir
+-for f in $(dropindirs_sort ".conf" "$confdir" "$dracutbasedir/dracut.conf.d"); do
+-    [[ -e $f ]] && . "$f"
++# source config files from all config dirs
++# shellcheck disable=SC2086
++for f in $(dropindirs_sort ".conf" ${confdirs_l[@]} "$dracutbasedir/dracut.conf.d"); do
++    # shellcheck disable=SC1090
++    [[ -e "$f" ]] && . "$f"
+ done
+
+ DRACUT_PATH=${DRACUT_PATH:-/sbin /bin /usr/sbin /usr/bin}
+diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
+index deacb69..803e1ff 100755
+--- a/mkinitrd-dracut.sh
++++ b/mkinitrd-dracut.sh
+@@ -253,7 +253,7 @@ for ((i = 0; i < ${#targets[@]}; i++)); do
+
+   # this check is for combination of newer and older kernels
+   if [ -d "/lib/modules/${kernel}/dracut.conf.d" ]; then
+-    dracut_cmd+=("--confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\"")
++    dracut_cmd+=(--confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\")
+   elif [ -d "/var/lib/initramfs/kernel" ]; then
+     kernel_ver_dir="/var/lib/initramfs/kernel"
+     if [ -s "$kernel_ver_dir/$kernel" ]; then
+@@ -266,9 +266,9 @@ for ((i = 0; i < ${#targets[@]}; i++)); do
+   fi
+
+   if [[ $basicmodules ]]; then
+-    dracut_cmd+=("--add-drivers \"$basicmodules\"")
++    dracut_cmd+=(--add-drivers "$basicmodules")
+   fi
+-  dracut_cmd+=("\"$target\" \"$kernel\"")
++  dracut_cmd+=("$target" "$kernel")
+
+   if [ ${quiet} -eq 1 ]; then
+     eval "${dracut_cmd[@]}" &> "${log_fn}"
+--
+2.25.1

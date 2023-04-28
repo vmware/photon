@@ -1,14 +1,14 @@
 Name:           pycurl3
 Version:        7.43.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha1    pycurl=b9ba304bb5b6f1cb3a90a264aa31d000ff7065a2
+%define sha512  pycurl=ea0160794d30758c8163f1f82fc6315c27f2cfd1b9981a7c349a48cee892fc2307e3edd25456378f1a780bc134fca199d8d6431310fd47b2ca6126a8822fea40
 Patch0:         add_convert_docstring.patch
-%if %{with_check}
+%if 0%{?with_check}
 Patch1:         Fix_makecheck.patch
 %endif
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-setuptools, vsftpd, curl-libs
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
@@ -48,7 +48,7 @@ rm -r pycurl-*
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 %patch0 -p1
-%if %{with_check}
+%if 0%{?with_check}
 %patch1 -p1
 %endif
 # removing prebuilt-binaries
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 7.43.0.6-6
+-   version bump to use curl 8.0.1
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 7.43.0.6-5
 -   Update release to compile with python 3.10
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-4

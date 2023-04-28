@@ -1,6 +1,6 @@
 Name:           bpftrace
 Version:        0.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -76,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Fri Apr 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.16.0-2
+- Bump version as a part of libbpf upgrade
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-1
 - Upgrade to v0.16.0
 * Mon Feb 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.4-1

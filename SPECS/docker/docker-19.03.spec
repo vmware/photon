@@ -12,7 +12,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -100,14 +100,12 @@ mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
 tar -C tini -xf %{SOURCE1}
 
 pushd tini
-%patch97 -p1
+%autopatch -p1 -m97 -M97
 popd
 
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 cd %{name}-ce-%{version}
-%patch99 -p1
-%patch98 -p1
-%patch100 -p1
+%autopatch -p1 -m98
 mv components/engine ../src/%{gopath_comp_engine}
 mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
@@ -304,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Thu Mar 16 2023 Piyush Gupta <gpiyush@vmware.com> 19.03.15-20
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-19
 - Bump up version to compile with new go
 * Sat Nov 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-18

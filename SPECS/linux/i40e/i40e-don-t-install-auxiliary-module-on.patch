@@ -1,0 +1,37 @@
+From 98f941c6b25414e7c9f47a369e69ed3de9336dd6 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 18:37:23 +0000
+Subject: [PATCH] i40e-v2.22.18: don't install auxiliary module on 
+ modules_install_no_aux
+
+modules_install_no_aux inconveniently installs the auxiliary module
+despite what the name would suggest.
+
+This happens because the auxiliary module is saved to the same location
+as the normal driver module, so when the driver Makefile calls
+modules_install with the Linux kernel Makefile, both modules are installed.
+
+The Linux kernel modules_install reads the modules.order file generated
+during the build process to find the modules to install. modules.order
+only contains text - a few lines holding the locations of the modules.
+Delete intel_auxiliary.ko from modules.order during modules_install_no_aux,
+so that it won't be installed.
+---
+ src/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index ac4e0ca..ee3ae1b 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -125,6 +125,7 @@ modules_install: default
+ # files outside of the build root. Thus, it must not update initramfs, or run depmod.
+ modules_install_no_aux:
+ 	@echo "Installing modules..."
++	@+sed -i "/intel_auxiliary/d" modules.order
+ 	@+$(call kernelbuild,modules_install)
+ 
+ # After installing all the files, perform necessary work to ensure the system
+-- 
+2.35.6
+

@@ -1,6 +1,6 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.9.6
+Version:        0.10.4
 Release:        1%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
@@ -8,8 +8,8 @@ Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
-Source0: https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4040ec4af937e95be2e41313ef6d4db60b46b8d4dea10c09402398127c1d1ca8843392d207088aeee3c7ef631c6ae7b66861327dcebf78ed3af0723777619fd1
+Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
+%define sha512 %{name}=01ee52d480201d9886c15e81137c185334b404d1c8e8b743ddf58e95fe8619c8c013616a49807bd1111fde72fa177cd35f3c22b66cbf5d720b5abfacdf7601ed
 
 Source1:        libssh_client.config
 Source2:        libssh_server.config
@@ -91,7 +91,7 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS BSD ChangeLog README
+%doc AUTHORS BSD README
 %license COPYING
 %{_libdir}/libssh.so.4*
 
@@ -110,5 +110,7 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_server.config
 
 %changelog
+* Wed Apr 19 2023 Harinadh D <hdommaraju@vmware.com> - 0.10.4-1
+- Version upgrade
 * Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> - 0.9.6-1
 - Initial packaging to photon distro

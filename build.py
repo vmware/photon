@@ -16,15 +16,14 @@ from subprocess import PIPE, Popen
 from urllib.parse import urlparse
 
 # photon imports
-sys.path.insert(
-    0,
-    os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "support/package-builder"
-    ),
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/support/package-builder"
 )
-sys.path.insert(
-    1,
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "support/image-builder"),
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/support/image-builder",
+)
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/support/spec-checker",
 )
 
 import imagebuilder
@@ -39,7 +38,7 @@ from PackageManager import PackageManager
 from StringUtils import StringUtils
 from SpecDeps import SpecDependencyGenerator
 from SpecData import SPECS
-from support.check_spec import check_specs
+from check_spec import check_specs
 from utils import Utils
 
 targetDict = {
@@ -897,6 +896,7 @@ class CheckTools:
         CheckTools.create_ph_builder_img()
         CheckTools.check_photon_installer()
         CheckTools.check_contain()
+        CheckTools.check_git_hooks()
         check_prerequesite["check-pre-reqs"] = True
 
     def create_ph_builder_img():
@@ -911,6 +911,19 @@ class CheckTools:
             f" {ph_docker_img} {ph_builder_tag}"
         )
         runShellCmd(cmd)
+
+    def check_git_hooks():
+        if not os.path.exists(f"{photonDir}/.git"):
+            print("Not building Photon from a git repo, return ...")
+            return
+
+        git_hooks_path = f"{photonDir}/.git/hooks"
+        hook_scripts_path = f"{photonDir}/tools/scripts"
+
+        for fn in {"commit-msg", "pre-push"}:
+            if not os.path.exists(f"{git_hooks_path}/{fn}"):
+                print(f"{hook_scripts_path}/{fn} doesn't exist, create ...")
+                runShellCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
 
     def check_contain():
         if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
@@ -958,17 +971,15 @@ class CheckTools:
         if check_prerequesite["check-spec-files"]:
             return
 
-        command = (
-            '[ -z "$(git diff --name-only HEAD --)" ] && '
-            "git diff --name-only @~ || git diff --name-only"
-        )
+        command = f"{photonDir}/tools/scripts/get_modified_files.sh"
 
         if "base-commit" in configdict["photon-build-param"]:
             commit_id = str(configdict["photon-build-param"].get("base-commit"))
             if commit_id:
-                command = "git diff --name-only %s" % commit_id
+                command = f"git diff --name-only {commit_id}"
 
-        with Popen(command, stdout=PIPE, stderr=None,
+        with Popen(command,
+                   stdout=PIPE, stderr=None,
                    shell=True, executable="/bin/bash") as process:
             files = process.communicate()[0].decode("utf-8").splitlines()
             if process.returncode:

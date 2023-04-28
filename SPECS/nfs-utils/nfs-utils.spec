@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.5.1
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -135,6 +135,8 @@ fi
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.5.1-5
+- Bump version as a part of libevent upgrade
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.5.1-4
 - Bump version as a part of sqlite upgrade
 * Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.5.1-3

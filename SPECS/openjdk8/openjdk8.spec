@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk8
 Version:        1.8.0.322
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU GPL
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -19,55 +19,55 @@ Patch1:         check-system-ca-certs-x86.patch
 Patch2:         allow_using_system_installed_libjpeg.patch
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
-BuildRequires:	which
-BuildRequires:	zip
-BuildRequires:	unzip
+BuildRequires:  which
+BuildRequires:  zip
+BuildRequires:  unzip
 BuildRequires:  zlib-devel
-BuildRequires:	ca-certificates
-BuildRequires:	chkconfig
+BuildRequires:  ca-certificates
+BuildRequires:  chkconfig
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
-AutoReqProv: 	no
+AutoReqProv:    no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package	-n openjre8
-Summary:	Java runtime environment
-AutoReqProv: 	no
+%package        -n openjre8
+Summary:        Java runtime environment
+AutoReqProv:    no
 Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
-Requires:	libstdc++
-%description	-n openjre8
+Requires:       libstdc++
+%description    -n openjre8
 It contains the libraries files for Java runtime environment
 
-%package	sample
-Summary:	Sample java applications.
+%package        sample
+Summary:        Sample java applications.
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-sample <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	sample
+%description    sample
 It contains the Sample java applications.
 
-%package		doc
-Summary:		Documentation and demo applications for openjdk
+%package                doc
+Summary:                Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	doc
+%description    doc
 It contains the documentation and demo applications for openjdk
 
-%package 		src
+%package                src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	src
+%description    src
 This package provides the runtime library class sources.
 
 %prep -p exit
@@ -84,17 +84,17 @@ popd
 chmod a+x ./configur*
 unset JAVA_HOME &&
 ./configur* \
-	CUPS_NOT_NEEDED=yes \
-	--with-target-bits=64 \
-	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
-	--disable-headful \
-	--with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
-	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic \
-	--disable-zip-debug-info \
+        CUPS_NOT_NEEDED=yes \
+        --with-target-bits=64 \
+        --with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
+        --disable-headful \
+        --with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
+        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+        --with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
+        --with-freetype-include=/usr/include/freetype2 \
+        --with-freetype-lib=/usr/lib \
+        --with-stdc++lib=dynamic \
+        --disable-zip-debug-info \
         --with-libjpeg=system
 
 export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
@@ -119,10 +119,10 @@ export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
         JOBS=${NUM_PROC} \
-	BUILD_HEADLESS_ONLY=yes \
-	OPENJDK_TARGET_OS=linux \
-	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-	CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
+        BUILD_HEADLESS_ONLY=yes \
+        OPENJDK_TARGET_OS=linux \
+        DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
+        CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -239,7 +239,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
 %exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/*.debuginfo
 
-%files	-n openjre8
+%files  -n openjre8
 %defattr(-,root,root)
 %dir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/
@@ -269,6 +269,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.322-3
+-   Bump version as a part of freetype2 upgrade
 *   Thu Dec 22 2022 Mukul Sikka <msikka@vmware.com> 1.8.0.322-2
 -   fix post install script error “--slave: command not found”
 *   Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1

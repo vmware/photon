@@ -1,18 +1,19 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.85
-Release:        2%{?dist}
+Release:        4%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:         https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha1    %{name}=256ec628587ab2b20bba3fc2773046dab8f2874c
+Source0:        https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
+%define sha512  %{name}=8beefe76b46f7d561f40d0900ba68b260a199cb62ab5b653746e3a1104c04fb8899b9e7a160a1be4fe8782bfb1607b556e9ffb9c25c4e99653e4bc74fcc03b09
 
 Patch0:         enable_dnssec.patch
-
+Patch1:         CVE-2022-0934.patch
+Patch2:         CVE-2023-28450.patch
 BuildRequires:  nettle-devel
 BuildRequires:  systemd-rpm-macros
 
@@ -97,6 +98,10 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Mon Apr 03 2023 Anmol Jain <anmolja@vmware.com> 2.85-4
+- Fix for CVE-2023-28450
+* Thu Mar 09 2023 Srish Srinivasan <ssrish@vmware.com> 2.85-3
+- fixed CVE-2022-0934
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.85-2
 - Exclude debug symbols properly
 * Mon Aug 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.85-1

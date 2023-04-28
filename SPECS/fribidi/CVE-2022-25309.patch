@@ -1,0 +1,27 @@
+From f22593b82b5d1668d1997dbccd10a9c31ffea3b3 Mon Sep 17 00:00:00 2001
+From: Dov Grobgeld <dov.grobgeld@gmail.com>
+Date: Fri, 25 Mar 2022 09:09:49 +0300
+Subject: [PATCH] Protected against garbage in the CapRTL encoder
+
+---
+ lib/fribidi-char-sets-cap-rtl.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/fribidi-char-sets-cap-rtl.c b/lib/fribidi-char-sets-cap-rtl.c
+index b0c0e4a..f74e010 100644
+--- a/lib/fribidi-char-sets-cap-rtl.c
++++ b/lib/fribidi-char-sets-cap-rtl.c
+@@ -232,7 +232,12 @@ fribidi_cap_rtl_to_unicode (
+ 	    }
+ 	}
+       else
+-	us[j++] = caprtl_to_unicode[(int) s[i]];
++      {
++        if ((int)s[i] < 0)
++          us[j++] = '?';
++        else
++          us[j++] = caprtl_to_unicode[(int) s[i]];
++      }
+     }
+ 
+   return j;

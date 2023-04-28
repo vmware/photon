@@ -1,27 +1,15 @@
 #!/bin/bash
 
-source /etc/os-release
 PROG="$(basename $0)"
-FROM_VERSION="$VERSION_ID"
+FROM_VERSION="$(/usr/bin/lsb_release -s -r)"
 TO_VERSION=''       # non-blank value indicates an os-upgrade, otherwise, update
 ASSUME_YES_OPT=''   # value '-y' denotes non-interactive invocation
-REPOS_OPT=''        # --disablerepo=* --enablerepo=repo, repo is given in --repo
+REPOS_OPT=''        # --disablerepo=* --enablerepo=repo, repo is given in --repos
 UPDATE_PKGS=y       # If 'y', update packages before upgrade. Appliances may not
                     # provide repos to update packages in currently installed OS
-                    # need this skipping for appliances
+                    # thus, need this skipping for appliances
 INSTALL_ALL=''      # non-empty value signifies that all packages from provided
                     # repos mentioned in --repos option needs to be installed
-
-deprecated_packages=''
-
-declare -A replaced_pkgs_map=(      # This hashtable maps package name changes
-)
-
-enabled_services=''     # list of enabled services
-disabled_services=''    # list of disabled serfices
-
-pkgs_to_remove=''
-
 TDNF=/usr/bin/tdnf
 RPM=/usr/bin/rpm
 SYSTEMCTL=/usr/bin/systemctl
@@ -29,9 +17,39 @@ TR=/usr/bin/tr
 AWK=/usr/bin/awk
 SED=/usr/bin/sed
 CP=/usr/bin/cp
+PRINTF=/usr/bin/printf
+WC=/usr/bin/wc
 
-RPM_DB_LOC=/var/lib/rpm
+OLD_RPM_DB_LOC=/var/lib/rpm
 TMP_BACKUP_LOC=''                   # temp location for 'rpm -qa' & rpm db copy
+NEW_RPMDB_PATH=/usr/lib/sysimage
+
+# Error Codes for which upgrade can be retried
+ERETRY_EAGAIN=11
+ERETRY_EINVAL=22
+
+declare -a deprecated_packages_arr=(
+  c-rest-engine c-rest-engine-devel cgroup-utils dcerpc dcerpc-devel
+  fcgi fcgi-devel glib-doc glib-networking-lang gmock-static gtest-static
+  json_spirit json_spirit-devel libnss-ato lightstep-tracer-cpp lightwave
+  lightwave-client lightwave-client-libs lightwave-devel lightwave-post
+  lightwave-samples lightwave-server likewise-open likewise-open-devel linux-aws
+  linux-aws-devel linux-aws-docs linux-aws-drivers-gpu linux-aws-oprofile
+  linux-aws-sound linux-drivers-intel-sgx linux-oprofile ndsend netmgmt
+  netmgmt-cli-devel netmgmt-devel openjdk8 openjdk8-doc openjdk8-sample
+  openjdk8-src openjre8 openjre8 pmd pmd-cli pmd-devel pmd-gssapi-unix pmd-libs
+  pmd-python3 postgresql10-libs postgresql10-devel postgresql10
+  python3-backports_abc sqlite2 sqlite2-devel sshfs tiptop ulogd ulogd-mysql
+  ulogd-pcap ulogd-sqlite
+) # end of initialization of $deprecated_packages_arr
+
+declare -A replaced_pkgs_map=(      # This hashtable maps package name changes
+)
+
+declare -a enabled_services_arr=()     # list of enabled services
+declare -a disabled_services_arr=()    # list of disabled serfices
+
+declare -a deprecated_pkgs_to_remove_arr=()
 
 function show_help() {
   local rc
@@ -43,7 +61,7 @@ function show_help() {
   fi
 
   echo -n "
-Usage: $PROG [--repos=r1,...] [--upgrade-os] [--assume-yes] [--skip-update] [--install-all]
+Usage: $PROG [--help | -h] [--repos=r1,...] [--upgrade-os] [--assume-yes] [--skip-update] [--install-all]
 
 This script upgrades or updates Photon OS based upon the options provided.
 
@@ -68,9 +86,9 @@ function echoerr() {
 # to help debugging
 function abort() {
   local rc=$1
-  shift
+  local msg="$*"
 
-  echoerr "$*\nOriginal list of RPMs and RPM DB are stored in $TMP_BACKUP_LOC,"\
+  echoerr "$msg\nOriginal list of RPMs and RPM DB are stored in $TMP_BACKUP_LOC,"\
           " please provide contents of that folder along with system journal "\
           " logs for analysis; these logs can be captured using command-\n"\
           "# /usr/bin/journalctl -xa > $TMP_BACKUP_LOC/journal.log\n" \
@@ -82,7 +100,7 @@ function abort() {
 # provided state
 # e.g. get_services_by_state(enabled) - will return space separated list of
 # enabled services
-function get_services_by_state(){
+function get_services_by_state() {
   local state=$1
 
   ${SYSTEMCTL} list-unit-files |\
@@ -92,14 +110,28 @@ function get_services_by_state(){
 
 # Remember what services are enabled or disabled before upgrade
 function record_enabled_disabled_services() {
-  enabled_services=$(get_services_by_state enabled)
-  disabled_services=$(get_services_by_state disabled)
+  enabled_services_arr+=( $(get_services_by_state enabled) )
+  disabled_services_arr+=( $(get_services_by_state disabled) )
 }
 
 # Reset states of services where they were before upgrade
 function reset_enabled_disabled_services() {
-  ${SYSTEMCTL} enable $enabled_services
-  ${SYSTEMCTL} disable $disabled_services
+  ${SYSTEMCTL} enable ${enabled_services_arr[@]}
+  ${SYSTEMCTL} disable ${disabled_services_arr[@]}
+}
+
+# Remove all debuginfo packages as they may hamper during upgrade
+function remove_debuginfo_packages() {
+  local installed_debuginfo_pkgs="$(${RPM} -qa | grep -- -debuginfo-)"
+  local rc=0
+  [ -z "$installed_debuginfo_pkgs" ] && return 0
+  echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
+  if ! ${TDNF} -q '--disablerepo=*' $ASSUME_YES_OPT \
+         erase $installed_debuginfo_pkgs; then
+    rc=$?
+    abort $ERETRY_EAGAIN "Error removing debuginfo packages"
+  fi
+  echo "All debuginfo packages were successfully removed."
 }
 
 # The packages replacing any of the existing already installed packages will
@@ -108,52 +140,56 @@ function install_replacement_packages() {
   local pkgs="${!replaced_pkgs_map[@]}"
   local replacement_pkgs=''
   local p=''
+  local rc=0
 
   for p in $pkgs; do
-    ${RPM} -q $p && replacement_pkgs="$replacement_pkgs ${replaced_pkgs_map[$p]}"
+    ${RPM} -q --quiet $p && replacement_pkgs="$replacement_pkgs ${replaced_pkgs_map[$p]}"
   done
 
   if [ -n "$replacement_pkgs" ]; then
     echo -ne "Installing following packages which are replacing existing" \
              "packages -\n$replacement_pkgs\n"
-    if ! ${TDNF} $REPOS_OPT -y install $replacement_pkgs; then
-      abort 1 "Error installing replacement packages '$replacement_pkgs'."
+    if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install $replacement_pkgs; then
+      rc=$?
+      abort $rc "Error installing replacement packages '$replacement_pkgs' (tdnf error code: $rc)."
     fi
     echo "Replacement packages '$replacement_pkgs' are successfully installed"
   fi
 }
 
 # Installed packges which were replaced by other packages or installed packages
-# which were renamed were removed by this method. The replacing package gets
+# which were renamed get removed by this method. The replacing package gets
 # installed in install_replacement_packages()
 function remove_replaced_packages() {
   local pkgs="${!replaced_pkgs_map[@]}"
   local installed_pkgs=''
   local p=''
+  local rc=0
 
   for p in $pkgs; do
-    ${RPM} -q $p && installed_pkgs="$installed_pkgs $p"
+    ${RPM} -q --quiet $p && installed_pkgs="$installed_pkgs $p"
   done
 
   if [ -n "$installed_pkgs" ]; then
     echo -ne "Removing following packages which were replaced by other "\
              "packages -\n$installed_pkgs\n"
-    if ! ${TDNF} $REPOS_OPT -y erase $installed_pkgs; then
-      abort 1 "Error removing replaced packages '$installed_pkgs'."
+    if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $installed_pkgs; then
+      rc=$?
+      abort $rc "Error removing replaced packages $installed_pkgs (tdnf error code: $rc)."
     fi
     echo "Removal of replaced packages '$installed_pkgs' succeeded."
   fi
 }
 
-#Some packages are deprecaed in 4.0, lets remove them before upgrading
+#Some packages are deprecaed in 5.0, lets remove them before upgrading
 function remove_unsupported_packages() {
   local rc=0
 
-  if [ -n "$pkgs_to_remove" ]; then
-    ${TDNF} -y erase $(echo -e $pkgs_to_remove)
+  if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
+    ${TDNF} $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
-      abort $rc "Could not erase all unsupported packages."
+      abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
     else
       echo "All unsupported packages are removed successfully."
     fi
@@ -164,11 +200,12 @@ function upgrade_photon_release() {
   local rc=0
 
   echo "Upgrading the photon-release package"
-  if ${TDNF} $REPOS_OPT -y update photon-release --releasever=$TO_VERSION --refresh; then
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT update photon-release \
+    --releasever=$TO_VERSION --refresh; then
     echo "The photon-release package upgrade successfully."
   else
     rc=$?
-    abort $rc "Could not upgrade photon-release package."
+    abort $ERETRY_EAGAIN "Could not upgrade photon-release package (tdnf error code: $rc)."
   fi
 }
 
@@ -188,7 +225,7 @@ function distro_upgrade() {
   else
     rc=$?
     if [ "$ver" = "$FROM_VERSION" ]; then
-      abort $rc "Error in upgrading all packages to latest versions."
+      abort $ERETRY_EAGAIN "Error in upgrading all packages to latest versions (tdnf error code: $rc)."
     else
       abort $rc "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION."
     fi
@@ -198,20 +235,45 @@ function distro_upgrade() {
 function rebuilddb() {
   local rc=0
 
-  if ! rpm --rebuilddb; then
+  if ! $RPM --rebuilddb; then
     rc=$?
     abort $rc "Failed rebuilding installed package database."
   fi
 }
 
+function relocate_rpmdb() {
+  local nold=$(${RPM} -qa | ${WC} -l)
+  local nnew=0
+  local rc=0
+
+  mkdir -p $NEW_RPMDB_PATH
+  if ! ${CP} -pr "$OLD_RPM_DB_LOC" "$NEW_RPMDB_PATH"; then
+    rc=$?
+    abort $rc "Error making rpmdb immutable"
+  fi
+  if ! ${TDNF} $ASSUME_YES_OPT upgrade rpm; then
+    abort $rc "Error making rpmdb immutable"
+  fi
+  rebuilddb
+  nnew=$(${RPM} -qa | ${WC} -l)
+  if [ $nnew -ge $nold ]; then
+    # RPMDB relocated successfully thus cleanup the old location
+    rm -rf $OLD_RPM_DB_LOC
+    echo "rpmdb relocation succeeded."
+  else
+    rc=$?
+    abort $rc "Error: Relocated rpmdb is corrupt ($nnew RPMs found < expected $nold RPMs)"
+  fi
+}
+
 function post_upgrade_remove_pkgs() {
-  local pkgs=''
+  local pkgs="$*"
   local err_rm_pkg_list=''
   local rc=0
   local p=''
 
   for p in $pkgs; do
-    if rpm -q --quiet $p; then
+    if $RPM -q --quiet $p; then
       if ! ${TDNF} -q '--disablerepo=*' -y remove $p; then
         rc=$?
         err_rm_pkg_list="$err_rm_pkg_list $p"
@@ -227,13 +289,17 @@ function post_upgrade_remove_pkgs() {
 
 # Take care of post upgrade config changes
 function fix_post_upgrade_config() {
+  local FSTAB=/etc/fstab
+  # noacl option is no longer supported for ext4, hence remove them from fstab
+  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+)noacl,(.*)$/\1\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
   return
 }
 
 # If user specifies --install-all and --repos then install all packages
 # from the provided repos which are not installed
-function install_all_from_repo()
-{
+function install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
         ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
@@ -267,7 +333,7 @@ function backup_rpms_list_n_db() {
   echo "Recording list of all installed RPMs on this machine to $rpmqa_file."
   ${RPM} -qa > $rpmqa_file
   echo "Creating back of RPM DB."
-  ${CP} -a $RPM_DB_LOC $TMP_BACKUP_LOC
+  ${CP} -a $OLD_RPM_DB_LOC $TMP_BACKUP_LOC
 }
 
 # This will cleanup the backup created by backup_rpms_list_n_db()
@@ -301,28 +367,25 @@ function find_installed_deprecated_packages() {
   local pkg=''
   local yn=''
 
-  for pkg in ${deprecated_packages}; do
-    if rpm -q $pkg; then
-      pkgs_to_remove="${pkgs_to_remove}${pkg}\n"
+  for pkg in ${deprecated_packages_arr[@]}; do
+    if $RPM -q --quiet $pkg; then
+      deprecated_pkgs_to_remove_arr+=( $pkg )
     fi
   done
-  if [ -n "$pkgs_to_remove" ]; then
+  if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
+    echo "The following deprecated packages will be removed before upgrade -"
+    $PRINTF "    %s\n" ${deprecated_pkgs_to_remove_arr[@]}
     if [ -z "$ASSUME_YES_OPT" ]; then
       # This is interactive invocation of the script
-      echo "The following packages are deprecated and must be removed before upgrade."
-      echo -e "$pkgs_to_remove"
       read -p "Proceed(y/n)?" yn
       case $yn in
         [Nn]* ) cleanup_and_exit 0 ;;
       esac
-    else
-      echo -ne "Removing following deprecated packages - \n$pkgs_to_remove\n"
     fi
   fi
 }
 
-#next version of photon uses specs with dependencies
-#of the form x or y. update tdnf, libsolv and rpm to support it.
+# Update package managers
 function update_solv_to_support_complex_deps() {
   local rc=0
 
@@ -332,7 +395,7 @@ function update_solv_to_support_complex_deps() {
     rebuilddb
   else
     rc=$?
-    abort $rc "Could not update package management software and libraries."
+    abort $ERETRY_EAGAIN "Could not update package management software and libraries (tdnf error code: $rc)."
   fi
 }
 
@@ -370,6 +433,7 @@ function verify_version_and_upgrade() {
       remove_unsupported_packages
       rebuilddb
       upgrade_photon_release
+      relocate_rpmdb
       install_replacement_packages
       remove_replaced_packages
       distro_upgrade $TO_VERSION
@@ -388,13 +452,11 @@ function verify_version_and_upgrade() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --help )
+    --help | -h )
       show_help 0
       ;;
     --upgrade-os )
       TO_VERSION=5.0
-      echo "Photon OS 5.0 is not released yet, exiting."
-      exit 0
       ;;
     --assume-yes )
       ASSUME_YES_OPT='-y'
@@ -403,7 +465,6 @@ while [ $# -gt 0 ]; do
       UPDATE_PKGS='n'  # Any value other than 'y' would not update packages
       ;;
     --install-all)
-      INSTALL_ALL='y' # install all packages from provided repos by --repos
       ;;
     --repos=* | --repos )
       if echo "$1" | grep -q -- '^--repos='; then
@@ -414,7 +475,7 @@ while [ $# -gt 0 ]; do
       fi
       if [ -n "$REPOS_OPT" ]; then
         echoerr "--repos was specified more than once"
-        show_help 1
+        show_help $ERETRY_EINVAL
       fi
 
 
@@ -428,7 +489,7 @@ while [ $# -gt 0 ]; do
       ;;
     * )
       echoerr "Invalid option '$1' speciied"
-      show_help 1
+      show_help $ERETRY_EINVAL
       ;;
   esac
   shift
@@ -439,9 +500,10 @@ done
 
 if [ -n "$INSTALL_ALL" -a -z "$REPOS_OPT" ]; then
   # --install-all is given but --repos was not specified - invalid invocation
-  show_help 1
+  show_help $ERETRY_EINVAL
 fi
 
+remove_debuginfo_packages
 if [ -n "$TO_VERSION" ]; then
   # The script is run with --upgrade-os option, upgrading Photon OS
   verify_version_and_upgrade

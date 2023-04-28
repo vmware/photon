@@ -5,70 +5,70 @@
 %define _repo_ver aarch64-shenandoah-jdk8u%{_jdk_update}-%{_jdk_build}
 %define _url_src https://github.com/AdoptOpenJDK/openjdk-aarch64-jdk8u/
 
-Summary:	OpenJDK
-Name:		openjdk8
-Version:	1.8.0.312
-Release:	1%{?dist}
-License:	GNU GPL
-URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u-shenandoah/
-Group:		Development/Tools
-Vendor:		VMware, Inc.
+Summary:        OpenJDK
+Name:           openjdk8
+Version:        1.8.0.312
+Release:        2%{?dist}
+License:        GNU GPL
+URL:            http://hg.openjdk.java.net/aarch64-port/jdk8u-shenandoah/
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:	%{_url_src}/archive/%{_repo_ver}.tar.gz
+Source0:        %{_url_src}/archive/%{_repo_ver}.tar.gz
 %define sha512  %{_repo_ver}=30d2e0b9014da99b35fd4f1ee00db04032e6772e2feff3ba0180095a3c68f15e60b4da9393f34c02d9a16d482db2a5cc555e61a59996269c1c4dafb94de63854
-Patch0:		Awt_build_headless_only.patch
-Patch1:		check-system-ca-certs.patch
-Patch2:		sysctl-fix.patch
+Patch0:         Awt_build_headless_only.patch
+Patch1:         check-system-ca-certs.patch
+Patch2:         sysctl-fix.patch
 BuildArch:      aarch64
 BuildRequires:  pcre-devel
-BuildRequires:	which
-BuildRequires:	zip
-BuildRequires:	unzip
+BuildRequires:  which
+BuildRequires:  zip
+BuildRequires:  unzip
 BuildRequires:  zlib-devel
-BuildRequires:	ca-certificates
-BuildRequires:	chkconfig
+BuildRequires:  ca-certificates
+BuildRequires:  chkconfig
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
-AutoReqProv: 	no
+AutoReqProv:    no
 %define ExtraBuildRequires icu-devel, openjdk8, openjre8, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdk /usr/lib/jvm/OpenJDK-1.8.0.151
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package	-n openjre8
-Summary:	Java runtime environment
-AutoReqProv: 	no
+%package        -n openjre8
+Summary:        Java runtime environment
+AutoReqProv:    no
 Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
-Requires:	libstdc++
-%description	-n openjre8
+Requires:       libstdc++
+%description    -n openjre8
 It contains the libraries files for Java runtime environment
 
-%package	sample
-Summary:	Sample java applications.
+%package        sample
+Summary:        Sample java applications.
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-sample <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	sample
+%description    sample
 It contains the Sample java applications.
 
-%package		doc
-Summary:		Documentation and demo applications for openjdk
+%package                doc
+Summary:                Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	doc
+%description    doc
 It contains the documentation and demo applications for openjdk
 
-%package 		src
+%package                src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	src
+%description    src
 This package provides the runtime library class sources.
 
 %prep -p exit
@@ -80,17 +80,18 @@ sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJ
 %build
 unset JAVA_HOME &&
 sh configure \
-	CUPS_NOT_NEEDED=yes \
-	--with-target-bits=64 \
-	--with-boot-jdk=%{bootstrapjdk} \
-	--disable-headful \
-	--with-cacerts-file=%{bootstrapjdk}/jre/lib/security/cacerts \
-	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic
+        CUPS_NOT_NEEDED=yes \
+        --with-target-bits=64 \
+        --with-boot-jdk=%{bootstrapjdk} \
+        --disable-headful \
+        --with-cacerts-file=%{bootstrapjdk}/jre/lib/security/cacerts \
+        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+        --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+        --with-freetype-include=/usr/include/freetype2 \
+        --with-freetype-lib=/usr/lib \
+        --with-stdc++lib=dynamic
 
+# make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
     BUILD_HEADLESS_ONLY=1 \
@@ -104,11 +105,12 @@ make \
     SCTP_WERROR=
 
 %install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
-	BUILD_HEADLESS_ONLY=yes \
-	OPENJDK_TARGET_OS=linux \
-	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-	CLASSPATH=%{bootstrapjdk}/jre
+        BUILD_HEADLESS_ONLY=yes \
+        OPENJDK_TARGET_OS=linux \
+        DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
+        CLASSPATH=%{bootstrapjdk}/jre
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
@@ -216,7 +218,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/wsimport
 %{_libdir}/jvm/OpenJDK-%{version}/bin/xjc
 
-%files	-n openjre8
+%files  -n openjre8
 %defattr(-,root,root)
 %dir %{_libdir}/jvm/OpenJDK-%{version}
 %{_libdir}/jvm/OpenJDK-%{version}/jre/
@@ -245,6 +247,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.312-2
+-   Bump version as a part of freetype2 upgrade
 *   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
 -   Upgrade to version 1.8.0.312 (aarch64-shenandoah-jdk8u312-b07)
 *   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.282-1

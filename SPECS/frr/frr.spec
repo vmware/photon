@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.2.2
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -246,6 +246,10 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.2.2-3
+- Version bump for libyang update
+* Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 8.2.2-2
+- Version bump up to use c-ares
 * Wed Apr 20 2022 Roye Eshed <eshedr@vmware.com> 8.2.2-1
 - First Version created. Based off the frrouting Redhat spec file and modified for photon.
 - [sshedi: fix the spec file]
