@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -10,9 +10,6 @@ Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 %define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
-
-Source1: user/%{name}.service
-Source2: user/%{name}.socket
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -49,7 +46,8 @@ simple interprocess messaging system (systemd --user integration)
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --enable-libaudit=no \
     --enable-selinux=no \
-    --with-console-auth-dir=/run/console
+    --with-console-auth-dir=/run/console \
+    --enable-user-session
 
 %make_build
 
@@ -61,7 +59,7 @@ rm -f %{buildroot}%{_libdir}/*.la
 
 mkdir -p %{buildroot}%{_userunitdir}
 
-cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_userunitdir}
+rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 
 %if 0%{?with_check}
 %check
@@ -79,7 +77,7 @@ make %{?_smp_mflags} check
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
 
-%files  devel
+%files devel
 %defattr(-,root,root)
 %{_docdir}/*
 %{_includedir}/*
@@ -97,6 +95,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-2
+- Enable user-session config flag
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 1.15.4-1
 - Version bump
 * Thu Jan 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.2-3

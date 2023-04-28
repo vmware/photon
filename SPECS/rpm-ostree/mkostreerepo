@@ -60,7 +60,7 @@ cat > $JSONFILE << EOF
 
         "releasever": "5.0",
 
-        "ref": "photon/5.0/x86_64/minimal",
+        "ref": "photon/5.0/$(uname -m)/minimal",
 
         "automatic_version_prefix": "5.0_minimal",
 
@@ -73,6 +73,8 @@ cat > $JSONFILE << EOF
         "bootstrap_packages": ["filesystem"],
 
         "documentation": false,
+
+        "tmp-is-dir": true,
 
         "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
                      "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",

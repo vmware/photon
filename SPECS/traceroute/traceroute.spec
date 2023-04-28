@@ -1,7 +1,7 @@
 Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
 Version:        2.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
@@ -40,10 +40,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc COPYING README TODO CREDITS
 %{_bindir}/*
-%{_bindir}/*
 %{_mandir}/*/*
 
 %changelog
+* Fri Mar 10 2023 Michelle Wang <michellew@vmware.com> 2.1.0-5
+- remove duplicate _bindir in files
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.0-4
 - Fix binary path
 * Fri Nov 30 2018 Ashwin H <ashwinh@vmware.com> 2.1.0-3

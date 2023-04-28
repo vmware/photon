@@ -104,6 +104,13 @@ class Chroot(Sandbox):
     def put(self, src, dest):
         shutil.copy2(src, f"{self.chrootID}{dest}")
 
+    def put_list_of_files(self, sources, dest):
+        if type(sources) == list:
+            sources = " ".join(sources)
+        cmd = f"cp -p {sources} {self.chrootID}{dest}"
+        self.logger.debug(cmd)
+        self.cmdUtils.runBashCmd(cmd)
+
     def _removeChroot(self, chrootPath):
         cmd = f"rm -rf {chrootPath}"
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)

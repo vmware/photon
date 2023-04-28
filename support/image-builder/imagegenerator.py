@@ -14,6 +14,7 @@ from utils import Utils
 from argparse import ArgumentParser
 from CommandUtils import CommandUtils
 
+imgUtils = Utils()
 
 def create_container_cmd(src_root, photon_docker_image, cmd):
     cmd = (
@@ -31,7 +32,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_build_num = os.environ["PHOTON_BUILD_NUM"]
 
     image_name = config.get("image_name",
-                            "photon-" + config["image_type"] + f"-{photon_release_ver}-{photon_build_num}")
+                            f"photon-{config['image_type']}-{photon_release_ver}-{photon_build_num}.{imgUtils.buildArch}")
 
     photon_docker_image = config["installer"].get("photon_docker_image", "photon:latest")
     new_name = []
@@ -43,7 +44,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         new_name.append(f"{img_path}/disk.raw")
     else:
         for img_num in range(len(raw_image_path)):
-            new_name.append(f"{img_path}/{image_name}" + str(img_num) + ".raw")
+            new_name.append(f"{img_path}/{image_name}.raw")
     for img_num, raw_img in enumerate(raw_image_path):
         shutil.move(raw_img, new_name[img_num])
     raw_image = new_name
@@ -129,7 +130,7 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
             in_file = open(inputfile, "rb")
             in_data = in_file.read()
 
-            out_file = open(f"{inputfile}.xz", "wb")
+            out_file = open(outputfile, "wb")
             out_file.write(xz.compress(in_data))
             in_file.close()
             out_file.close()
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     if not options.config_path:
         raise Exception("No config file defined")
 
-    config = Utils.jsonread(options.config_path)
+    config = imgUtils.jsonread(options.config_path)
     createOutputArtifact(
         options.raw_image_path,
         config,

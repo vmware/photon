@@ -15,6 +15,8 @@ Options:
 -o: Output directory. Will be default if not specified.
 -R: Disable replace flag (replace flag is on by default)
 -d: Use file contents as description field for livepatch module.
+-s: Specify the path to a local source rpm
+-v: Specify the path to a local debuginfo rpm
 --export-debuginfo: Saves debug files after module is built.
 --rpm: Package the module inside of an rpm.
 --rpm-version: Set the version number for the rpm.
@@ -58,7 +60,7 @@ Photon 4.0 rt flavor - All options set
 
 ****** gen_livepatch.sh ******
 
-gen_livepatch builds a livepatch on your machine. This will work for building different flavors of the same Photon OS version (4.0, 3.0, etc) as your machine, but there will likely be issues with cross compiling between 4.0 and 3.0, since gcc versions don't match.
+gen_livepatch builds a livepatch on your machine. This will work for building different flavors of the same Photon OS version (3.0 and above) as your machine, but there will likely be issues with cross compiling between different versions of Photon, as the core toolchain packages differ.
 
 gen_livepatch [options] -p [list of patch files]
 
@@ -70,6 +72,8 @@ Options:
 -o: Output directory. Will be default if not specified.
 -R: Disable replace flag (replace flag is on by default)
 -d: Use file contents as description field for livepatch module.
+-s: Specify the path to a local source rpm
+-v: Specify the path to a local debuginfo rpm
 --export-debuginfo: Saves debug files after module is built.
 --rpm: Package the module inside of an rpm.
 --rpm-version: Set the version number for the rpm.

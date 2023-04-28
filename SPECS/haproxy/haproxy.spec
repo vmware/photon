@@ -1,22 +1,27 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.7.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha512  %{name}=cc2eb49c6055cca1d4744cb715d43048621e3078b2621cc104b3e54671f6b9a0a530c0c044c23e4cbd276f3d792bfa46d88bf034c777a671dc49ace0777829ad
 
-BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
-BuildRequires:  lua-devel
-BuildRequires:  pkg-config
-BuildRequires:  zlib-devel
-BuildRequires:  systemd-devel
-Requires:       systemd
+Source0: http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=cc2eb49c6055cca1d4744cb715d43048621e3078b2621cc104b3e54671f6b9a0a530c0c044c23e4cbd276f3d792bfa46d88bf034c777a671dc49ace0777829ad
+
+Patch0: %{name}-CVE-2023-0056.patch
+Patch1: %{name}-CVE-2023-0836.patch
+
+BuildRequires: openssl-devel
+BuildRequires: pcre-devel
+BuildRequires: lua-devel
+BuildRequires: pkg-config
+BuildRequires: zlib-devel
+BuildRequires: systemd-devel
+
+Requires: systemd
 
 %description
 HAProxy is a fast and reliable solution offering high availability, load
@@ -60,6 +65,10 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-3
+- Bump version as a part of zlib upgrade
+* Wed Apr 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.0-2
+- Fix CVE-2023-0056, CVE-2023-0836
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.0-1
 - Automatic Version Bump
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.6.6-1

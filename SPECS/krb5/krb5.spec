@@ -1,19 +1,23 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
-URL:            http://web.mit.edu/kerberos/
+URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6f57479f13f107cd84f30de5c758eb6b9fc59171329c13e5da6073b806755f8d163eb7bd84767ea861ad6458ea0c9eeb00ee044d3bcad01ef136e9888564b6a2
-Requires:       openssl
+
+Source0: http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
+%define sha512 %{name}=6f57479f13f107cd84f30de5c758eb6b9fc59171329c13e5da6073b806755f8d163eb7bd84767ea861ad6458ea0c9eeb00ee044d3bcad01ef136e9888564b6a2
+
+Requires:       openssl-libs
 Requires:       e2fsprogs-libs
+
 BuildRequires:  bison
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
+
 Provides:       pkgconfig(mit-krb5)
 Provides:       pkgconfig(mit-krb5-gssapi)
 
@@ -121,49 +125,51 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
-*   Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2
--   Add Bison in buildrequires
-*   Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.20.1-1
--   Upgrade to version 1.20.1
-*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17.2-2
--   Bump up release for openssl
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
--   Downgrade to 1.17 since PMD RPC call getting failed.
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.18.3-1
--   Automatic Version Bump
-*   Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
--   Fix krb5 build.
-*   Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
--   krb5 v1.18.2 is not stable, creating panic for PMD-Client, so downgrading to v1.17.
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-3
--   openssl 1.1.1
-*   Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.17-2
--   Cross compilation support
-*   Thu Oct 03 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-1
--   Update to version 1.17
-*   Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
--   Update to version 1.16.1
-*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
--   Update to version 1.16 to address CVE-2017-15088
-*   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
--   Update to version 1.15.2
-*   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
--   Fix make check: add /etc/hosts entry, deactivate parallel check
-*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
--   Updated to version 1.51.1
-*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
--   Added -lang and -devel subpackages
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
--   Use e2fsprogs-libs as runtime deps
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
--   GA - Bump release of all rpms
-*   Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
--   Add patch to never unload gssapi mechanisms
-*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
--   Add patch for skipping unnecessary mech calls in gss_inquire_cred
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
--   Upgrade version
-*   Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
--   Initial build. First version
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3
+- Require openssl-libs
+* Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2
+- Add Bison in buildrequires
+* Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.20.1-1
+- Upgrade to version 1.20.1
+* Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17.2-2
+- Bump up release for openssl
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
+- Downgrade to 1.17 since PMD RPC call getting failed.
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.18.3-1
+- Automatic Version Bump
+* Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
+- Fix krb5 build.
+* Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
+- krb5 v1.18.2 is not stable, creating panic for PMD-Client, so downgrading to v1.17.
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-3
+- openssl 1.1.1
+* Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.17-2
+- Cross compilation support
+* Thu Oct 03 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-1
+- Update to version 1.17
+* Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
+- Update to version 1.16.1
+* Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
+- Update to version 1.16 to address CVE-2017-15088
+* Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
+- Update to version 1.15.2
+* Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
+- Fix make check: add /etc/hosts entry, deactivate parallel check
+* Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
+- Updated to version 1.51.1
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
+- Added -lang and -devel subpackages
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
+- Use e2fsprogs-libs as runtime deps
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
+- GA - Bump release of all rpms
+* Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
+- Add patch to never unload gssapi mechanisms
+* Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
+- Add patch for skipping unnecessary mech calls in gss_inquire_cred
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
+- Upgrade version
+* Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
+- Initial build. First version

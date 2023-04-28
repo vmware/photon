@@ -1,7 +1,7 @@
 Summary:        Tool for static C/C++ code analysis
 Name:           cppcheck
 Version:        2.9.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://cppcheck.sourceforge.io
 Group:          Applications/System
@@ -65,5 +65,7 @@ make checkcfg %{?_smp_mflags}
 %{_datadir}/%{name}/addons/*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-2
+- Bump version as a part of libxml2 upgrade
 * Fri Nov 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-1
 - Initial version

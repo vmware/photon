@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          1%{?dist}
+Release:          4%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -10,6 +10,7 @@ Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
+Source1:          %{name}.sysusers
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -22,6 +23,7 @@ BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
 BuildRequires:    libaio-devel
 BuildRequires:    gnutls-devel
+BuildRequires:    systemd-devel
 
 Conflicts:        mysql
 
@@ -34,6 +36,7 @@ Requires: gnutls
 Requires: libxml2
 Requires: curl
 Requires: Linux-PAM
+Requires(pre): systemd-rpm-macros
 
 %description
 MariaDB is a community developed fork from MySQL - a multi-user, multi-threaded
@@ -115,7 +118,7 @@ mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb-extra@.socket \
     %{buildroot}%{_datadir}/systemd/mariadb@.socket \
     %{buildroot}%{_unitdir}
-
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
@@ -131,8 +134,7 @@ make test %{?_smp_mflags}
 
 %pre server
 if [ $1 -eq 1 ]; then
-  getent group mysql >/dev/null || groupadd -r mysql
-  getent passwd mysql >/dev/null || useradd -c "mysql" -s /bin/false -g mysql -M -r mysql
+  %sysusers_create_compat %{SOURCE1}
 fi
 
 %post server
@@ -271,6 +273,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/s3.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/spider.cnf
 %doc COPYING CREDITS
+%{_sysusersdir}/%{name}.sysusers
 %exclude %{_datadir}/mysql/bench
 %exclude %{_datadir}/mysql/test
 %exclude %{_datadir}/doc/mariadb-%{version}/*
@@ -454,6 +457,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.9.4-4
+- Bump version as a part of libxml2 upgrade
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-3
+- Bump version as a part of zlib upgrade
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 10.9.4-2
+- Use systemd-rpm-macros for user creation
 * Thu Feb 02 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-1
 - Upgrade to v10.9.4 to fix CVE-2022-47015
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.9.2-3

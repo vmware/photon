@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 %ifarch aarch64
 %global gohostarch      arm64
 %else
@@ -6,22 +8,23 @@
 
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
-Version:        0.2.1
-Release:        4%{?dist}
+Version:        0.2.2
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dc610c2fc491ee4d5e40fd7097c25d9b0f8a03fd88066bf57d1483a2dfa7b322d75dc10bd7a269fbabb36cbe056c2f222c464fd4a57296cc7331292d224f43e8
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
+
+Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=bf1e917dc016e46dbb3012dc3603f8e24696ce26e9a671bcc98d8d248312bcbb7f5711c4344f230bda374b3c00c8f63121e420ea75110f032acdd43b4ff47882
+Source1:        %{name}.sysusers
 
 BuildRequires:  go
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  systemd-devel
 
+Requires(pre): systemd-rpm-macros
 Requires:  systemd
-
-%global debug_package %{nil}
 
 %description
 cloud-network configures network in cloud environment. In cloud environment
@@ -65,18 +68,13 @@ install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{nam
 
 install -pm 755 -t %{buildroot}%{_sysconfdir}/cloud-network ${GOPATH}/src/github.com/%{name}/%{name}/distribution/cloud-network.toml
 install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{name}/distribution/cloud-network.service
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}/*
 
 %pre
-if ! getent group cloud-network >/dev/null 2>&1; then
-    /usr/sbin/groupadd -g 89 cloud-network
-fi
-
-if ! getent passwd cloud-network >/dev/null 2>&1 ; then
-    /usr/sbin/useradd -g 89 -u 89 -r -s /sbin/nologin cloud-network >/dev/null 2>&1 || exit 1
-fi
+%sysusers_create_compat %{SOURCE1}
 
 %post
 %systemd_post cloud-network.service
@@ -92,9 +90,16 @@ fi
 %{_bindir}/cloud-network
 %{_bindir}/cnctl
 %{_sysconfdir}/cloud-network/cloud-network.toml
+%{_sysusersdir}/%{name}.sysusers
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Mon Mar 20 2023 Nitesh Kumar <kunitesh@vmware.com> 0.2.2-1
+- Version upgrade to v0.2.2
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.1-6
+- Bump up version to compile with new go
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.2.1-5
+- Use systemd-rpm-macros for user creation
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4
 - Bump up version to compile with new go
 * Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-3

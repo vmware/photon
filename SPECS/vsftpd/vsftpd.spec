@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha512  %{name}=9e9f9bde8c460fbc6b1d29ca531327fb2e40e336358f1cc19e1da205ef81b553719a148ad4613ceead25499d1ac3f03301a0ecd3776e5c228acccb7f9461a7ee
-
+Source1: %{name}.sysusers
 Patch0: add-debug-symbols-to-build.patch
 Patch1: fix-libssl-link.patch
 
@@ -18,11 +18,13 @@ BuildRequires: libcap-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: libnsl-devel
+BuildRequires: systemd-devel
 
 Requires: libcap
 Requires: Linux-PAM
 Requires: openssl
 Requires: libnsl
+Requires: systemd-rpm-macros
 
 %description
 Very secure and very small FTP daemon.
@@ -42,6 +44,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vm 755 %{name} %{buildroot}%{_sbindir}/%{name}
 install -vm 644 %{name}.8 %{buildroot}%{_mandir}/man8/
 install -vm 644 %{name}.conf.5 %{buildroot}%{_mandir}/man5/
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 cat >> %{buildroot}%{_sysconfdir}/%{name}.conf << "EOF"
 background=YES
@@ -62,34 +65,7 @@ EOF
 if [ $1 -ge 1 ]; then
   install -vdm 0755 %{_datadir}/%{name}/empty
   install -vdm 0755 /home/ftp
-  if ! getent group %{name} >/dev/null; then
-    groupadd -g 47 %{name}
-  fi
-  if ! getent group ftp >/dev/null; then
-    groupadd -g 45 ftp
-  fi
-  if ! getent passwd %{name} >/dev/null; then
-    useradd -c "%{name} User"  -d /dev/null -g %{name} -s /bin/false -u 47 %{name}
-  fi
-  if ! getent passwd ftp >/dev/null; then
-    useradd -c anonymous_user -d /home/ftp -g ftp -s /bin/false -u 45 ftp
-  fi
-fi
-
-%postun
-if [ $1 -eq 0 ]; then
-  if getent passwd %{name} >/dev/null; then
-    userdel %{name}
-  fi
-  if getent passwd ftp >/dev/null; then
-    userdel ftp
-  fi
-  if getent group %{name} >/dev/null; then
-    groupdel %{name}
-  fi
-  if getent group ftp >/dev/null; then
-    groupdel ftp
-  fi
+  %sysusers_create_compat %{SOURCE1}
 fi
 
 %files
@@ -98,8 +74,11 @@ fi
 %{_sysconfdir}/*
 %{_sbindir}/*
 %{_datadir}/*
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.0.5-4
+- Use systemd-rpm-macros for user creation
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-3
 - Bump version as a part of libnsl upgrade
 * Wed Apr 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-2

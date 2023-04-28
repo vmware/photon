@@ -6,8 +6,17 @@
         "packagelist_file": "packages_rpi.json",
         "partition_type": "msdos",
         "partitions": [
-            {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat", "type": "0c01"},
-            {"mountpoint": "/", "size": 0, "filesystem": "ext4"}
+            {
+                "mountpoint": "/boot/efi",
+                "size": 30,
+                "filesystem": "vfat",
+                "type": "0c01"
+            },
+            {
+                "mountpoint": "/",
+                "size": 0,
+                "filesystem": "ext4"
+            }
         ],
         "password": {
             "age": 0,
@@ -15,10 +24,17 @@
             "text": "changeme"
         },
         "additional_files": [
-                            {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
-                            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
+            {
+                "resizefs.sh": "/usr/local/bin/resizefs.sh"
+            },
+            {
+                "resizefs.service": "/lib/systemd/system/resizefs.service"
+            }
         ],
-        "postinstallscripts": [ "rpi-custom-patch.sh", "../relocate-rpmdb.sh" ],
+        "postinstallscripts": [
+            "rpi-custom-patch.sh",
+            "../relocate-rpmdb.sh"
+        ],
         "linux_flavor": "linux"
     },
     "image_type": "rpi",
@@ -26,4 +42,3 @@
     "artifacttype": "xz",
     "keeprawdisk": true
 }
-

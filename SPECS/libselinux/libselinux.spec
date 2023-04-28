@@ -1,7 +1,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.4
-Release:        3%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=7ffa6d2159d2333d836bde3f75dfc78a278283b66ae1e441c178371adb6f463aa6f2d62439079e2068d1135c39dd2b367b001d917c0bdc6871a73630919ef81e
+%define sha512  %{name}=4e13261a5821018a5f3cdce676f180bb62e5bc225981ca8a498ece0d1c88d9ba8eaa0ce4099dd0849309a8a7c5a9a0953df841a9922f2c284e5a109e5d937ba7
 
 Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
 
@@ -17,6 +17,8 @@ BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -122,6 +124,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
+- Automatic Version Bump
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3
 - Bump up version no. as part of swig upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2

@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        4%{?dist}
+Release:        6%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -19,7 +19,7 @@ Source2:        %{name}.pam
 Source3:        %{name}.service
 Source4:        cache_swap.sh
 Source5:        %{name}.logrotate
-
+Source6:        %{name}.sysusers
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  ed
 BuildRequires:  expat-devel
@@ -47,6 +47,7 @@ Requires:       perl
 Requires:       Linux-PAM
 Requires:       cyrus-sasl
 Requires:       openldap
+Requires(pre): systemd-rpm-macros
 
 %description
 Squid is a high-performance proxy caching server for Web clients,
@@ -143,6 +144,7 @@ install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
 install -m 644 %{SOURCE3} %{buildroot}%{_unitdir}
 install -m 755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}
 install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/logrotate.d/
+install -p -D -m 0644 %{SOURCE6} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 mkdir -p %{buildroot}%{_localstatedir}/log/%{name} \
          %{buildroot}%{_localstatedir}/spool/%{name} \
@@ -158,13 +160,7 @@ d /run/%{name} 0755 %{name} %{name} - -
 EOF
 
 %pre
-if ! getent group %{name} &> /dev/null; then
-  groupadd -g 53 %{name} &> /dev/null
-fi
-
-if ! getent passwd %{name} &> /dev/null; then
-  useradd -g 53 -u 53 -d %{_var}/spool/%{name} -r -s /sbin/nologin %{name} &>/dev/null || exit 1
-fi
+%sysusers_create_compat %{SOURCE6}
 
 for i in %{_var}/log/%{name} %{_var}/spool/%{name}; do
   if [ -d $i ]; then
@@ -212,6 +208,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{name}/mime.conf
 %{_sysconfdir}/%{name}/%{name}.conf
 %{_sysconfdir}/sysconfig/%{name}
+%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/%{name}/mib.txt
 
 %dir %{_datadir}/%{name}
@@ -223,6 +220,10 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-6
+- Bump version as a part of libxml2 upgrade
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 5.7-5
+- Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-4
 - Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-3

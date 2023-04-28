@@ -5,6 +5,7 @@ Subject: [PATCH] fix deliverables path
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Harinadh D <hdommaraju@vmware.com>
 ---
  toys/lsb/pidof.c         |  2 +-
  toys/other/blkid.c       |  4 ++--
@@ -19,7 +20,6 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  toys/other/vconfig.c     |  2 +-
  toys/other/vmstat.c      |  2 +-
  toys/other/watchdog.c    |  2 +-
- toys/posix/df.c          |  2 +-
  toys/posix/kill.c        |  4 ++--
  toys/posix/ps.c          | 14 +++++++-------
  toys/posix/test.c        |  2 +-
@@ -95,7 +95,7 @@ index e155b60..3d73251 100644
  config FSYNC
    bool "fsync"
 diff --git a/toys/other/help.c b/toys/other/help.c
-index 1cdbe7e..ab8d880 100644
+index 5a61f68..6ebab3f 100644
 --- a/toys/other/help.c
 +++ b/toys/other/help.c
 @@ -4,7 +4,7 @@
@@ -108,7 +108,7 @@ index 1cdbe7e..ab8d880 100644
  config HELP
    bool "help"
 diff --git a/toys/other/lsusb.c b/toys/other/lsusb.c
-index 836c4f6..1470b0e 100644
+index 3ca7703..52b0a4b 100644
 --- a/toys/other/lsusb.c
 +++ b/toys/other/lsusb.c
 @@ -4,7 +4,7 @@
@@ -188,31 +188,18 @@ index d5cf569..6463cd1 100644
  config VMSTAT
    bool "vmstat"
 diff --git a/toys/other/watchdog.c b/toys/other/watchdog.c
-index 0402d3e..b8627bc 100644
+index c3268a1..b8627bc 100644
 --- a/toys/other/watchdog.c
 +++ b/toys/other/watchdog.c
 @@ -4,7 +4,7 @@
   *
   * See kernel.org/doc/Documentation/watchdog/watchdog-api.txt
  
--USE_WATCHDOG(NEWTOY(watchdog, "<1>1Ft#=4<1T#=60<1", TOYFLAG_NEEDROOT|TOYFLAG_BIN))
+-USE_WATCHDOG(NEWTOY(watchdog, "<1>1Ft#=4<1T#=60<1", TOYFLAG_NEEDROOT|TOYFLAG_SBIN))
 +USE_WATCHDOG(NEWTOY(watchdog, "<1>1Ft#=4<1T#=60<1", TOYFLAG_NEEDROOT|TOYFLAG_BIN|TOYFLAG_USR))
  
  config WATCHDOG
    bool "watchdog"
-diff --git a/toys/posix/df.c b/toys/posix/df.c
-index caf8cf8..9e3adba 100644
---- a/toys/posix/df.c
-+++ b/toys/posix/df.c
-@@ -4,7 +4,7 @@
-  *
-  * See http://opengroup.org/onlinepubs/9699919799/utilities/df.html
- 
--USE_DF(NEWTOY(df, "HPkhit*a[-HPh]", TOYFLAG_SBIN))
-+USE_DF(NEWTOY(df, "HPkhit*a[-HPh]", TOYFLAG_BIN))
- 
- config DF
-   bool "df"
 diff --git a/toys/posix/kill.c b/toys/posix/kill.c
 index 2f47f60..d94964d 100644
 --- a/toys/posix/kill.c
@@ -236,7 +223,7 @@ index 2f47f60..d94964d 100644
        if (count != ocount) continue;
  
 diff --git a/toys/posix/ps.c b/toys/posix/ps.c
-index d6a3fce..22a4c11 100644
+index 1fdfc17..59b0a42 100644
 --- a/toys/posix/ps.c
 +++ b/toys/posix/ps.c
 @@ -45,12 +45,12 @@
@@ -300,7 +287,7 @@ index d6a3fce..22a4c11 100644
    }
  }
 diff --git a/toys/posix/test.c b/toys/posix/test.c
-index e6ea508..86beb9e 100644
+index f9a2bbb..12e18a0 100644
 --- a/toys/posix/test.c
 +++ b/toys/posix/test.c
 @@ -7,7 +7,7 @@
@@ -312,6 +299,3 @@ index e6ea508..86beb9e 100644
  USE_SH(OLDTOY([[, test, TOYFLAG_NOFORK|TOYFLAG_NOHELP))
  
  config TEST
--- 
-2.37.2
-

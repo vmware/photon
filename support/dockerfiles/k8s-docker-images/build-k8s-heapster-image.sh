@@ -39,7 +39,7 @@ popd
 
 start_repo_server
 
-K8S_TAR_NAME=k8s-heapster-${K8S_HEAPSTER_VER_REL}.tar
+K8S_TAR_NAME=k8s-heapster-${K8S_HEAPSTER_VER_REL}.${ARCH}.tar
 create_container_img_archive "${IMG_NAME}" "./Dockerfile.heapster" "." \
                              "${K8S_TAR_NAME}" "${STAGE_DIR}/docker_images/"
 

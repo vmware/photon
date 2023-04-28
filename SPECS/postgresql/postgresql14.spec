@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.7
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -658,6 +658,10 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.7-3
+- Bump version as a part of libxml2 upgrade
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-2
+- Bump version as a part of zlib upgrade
 * Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 14.7-1
 - Upgraded to version  14.7.
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.5-13

@@ -7,21 +7,22 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
+Source1:        %{name}.sysusers
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 BuildRequires:  go
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  systemd-devel
 
 Requires:         systemd
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %global debug_package %{nil}
 
@@ -56,7 +57,7 @@ popd
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}%{_sysconfdir}/network-broker
 install -m 755 -d %{buildroot}%{_unitdir}
-
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/bin/network-broker
 
 install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker ${GOPATH}/src/github.com/%{name}/%{name}/distribution/network-broker.toml
@@ -65,21 +66,8 @@ install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{n
 %clean
 rm -rf %{buildroot}/*
 
-%files
-%defattr(-,root,root)
-%{_bindir}/network-broker
-
-%{_sysconfdir}/network-broker/network-broker.toml
-%{_unitdir}/network-broker.service
-
 %pre
-if ! getent group network-broker >/dev/null; then
-    /sbin/groupadd -r network-broker
-fi
-
-if ! getent passwd network-broker >/dev/null; then
-    /sbin/useradd -g network-broker network-broker -s /sbin/nologin
-fi
+%sysusers_create_compat %{SOURCE1}
 
 %post
 %systemd_post network-broker.service
@@ -90,16 +78,18 @@ fi
 %postun
 %systemd_postun_with_restart network-broker.service
 
-if [ $1 -eq 0 ] ; then
-    if getent passwd network-broker >/dev/null; then
-        /sbin/userdel network-broker
-    fi
-    if getent group network-broker >/dev/null; then
-        /sbin/groupdel network-broker
-    fi
-fi
+%files
+%defattr(-,root,root)
+%{_bindir}/network-broker
+%{_sysusersdir}/%{name}.sysusers
+%{_sysconfdir}/network-broker/network-broker.toml
+%{_unitdir}/network-broker.service
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.3-3
+- Use systemd-rpm-macros for user creation
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-2
+- Bump up version to compile with new go
 * Wed Jan 11 2023 Nitesh Kumar <kunitesh@vmware.com> 0.3-1
 - Version upgrade to v0.3
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-4

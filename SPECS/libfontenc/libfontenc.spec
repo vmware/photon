@@ -1,7 +1,7 @@
 Summary:        X11 Fontenc runtime library.
 Name:           libfontenc
 Version:        1.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -54,5 +54,7 @@ It contains the libraries and header files to create applications
 %{_libdir}/*.a
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.2-2
+- Bump version as a part of zlib upgrade
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.1.2-1
 - initial version

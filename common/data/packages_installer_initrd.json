@@ -68,8 +68,9 @@
         "lvm2",
         "btrfs-progs",
         "xfsprogs",
-        "photon-os-installer"],
-
-    "packages_x86_64": ["grub2-pc"]
-
+        "photon-os-installer"
+    ],
+    "packages_x86_64": [
+        "grub2-pc"
+    ]
 }

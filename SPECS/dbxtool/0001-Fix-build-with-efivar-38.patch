@@ -1,0 +1,29 @@
+From 11ecd2ab55f320e5f81a19abe38f8750b65e0def Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Wed, 22 Feb 2023 13:26:33 +0530
+Subject: [PATCH] Fix build with efivar 38
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ src/esl.h | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/src/esl.h b/src/esl.h
+index 456f748..fc77024 100644
+--- a/src/esl.h
++++ b/src/esl.h
+@@ -47,11 +47,6 @@ typedef struct {
+ 	uint8_t		pad2;
+ } __attribute__((aligned (1))) EFI_TIME;
+ 
+-#define EFI_TIME_ADJUST_DAYLIGHT	0x01
+-#define EFI_TIME_IN_DAYLIGHT		0x02
+-
+-#define EFI_UNSPECIFIED_TIMEZONE	0x07ff
+-
+ typedef struct _EFI_CERT_BLOCK_RSA_2048_SHA256 {
+ 	efi_guid_t	HashType;
+ 	uint8_t		PublicKey[256];
+-- 
+2.39.2
+

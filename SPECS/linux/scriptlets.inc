@@ -26,6 +26,12 @@ if [ ! -e /boot/photon.cfg ]; then
   test -n "$list" && ln -sf "$list" /boot/photon.cfg
 fi
 
+if [ ! -s /boot/linux-%{uname_r}.cfg ]; then
+  rm -f %{_sharedstatedir}/rpm-state/initramfs/pending/%{uname_r} \
+        /boot/initrd.img-%{uname_r}
+  echo "initrd of kernel %{uname_r} removed" >&2
+fi
+
 if [ -d "%{modules_backup_loc}" ]; then
   if [ ! -s /boot/linux-%{running_kernel_ver}.cfg ]; then
 

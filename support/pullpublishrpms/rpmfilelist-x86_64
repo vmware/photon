@@ -56,8 +56,9 @@ x86_64/libpipeline-1.5.6-1.ph5.x86_64.rpm
 x86_64/libstdc++-12.2.0-1.ph5.x86_64.rpm
 x86_64/libstdc++-devel-12.2.0-1.ph5.x86_64.rpm
 x86_64/libtool-2.4.7-1.ph5.x86_64.rpm
-x86_64/lua-5.4.4-4.ph5.x86_64.rpm
-x86_64/lua-devel-5.4.4-4.ph5.x86_64.rpm
+x86_64/lua-5.4.4-5.ph5.x86_64.rpm
+x86_64/lua-devel-5.4.4-5.ph5.x86_64.rpm
+x86_64/lua-libs-5.4.4-5.ph5.x86_64.rpm
 x86_64/m4-1.4.19-1.ph5.x86_64.rpm
 x86_64/make-4.3-2.ph5.x86_64.rpm
 x86_64/man-db-2.11.1-1.ph5.x86_64.rpm
@@ -73,8 +74,9 @@ x86_64/nspr-devel-4.33-1.ph5.x86_64.rpm
 x86_64/nss-3.78-3.ph5.x86_64.rpm
 x86_64/nss-devel-3.78-3.ph5.x86_64.rpm
 x86_64/nss-libs-3.78-3.ph5.x86_64.rpm
-x86_64/openssl-3.0.7-2.ph5.x86_64.rpm
-x86_64/openssl-devel-3.0.7-2.ph5.x86_64.rpm
+x86_64/openssl-3.0.8-1.ph5.x86_64.rpm
+x86_64/openssl-libs-3.0.8-1.ph5.x86_64.rpm
+x86_64/openssl-devel-3.0.8-1.ph5.x86_64.rpm
 x86_64/patch-2.7.6-5.ph5.x86_64.rpm
 x86_64/pcre-libs-8.45-3.ph5.x86_64.rpm
 x86_64/perl-5.36.0-1.ph5.x86_64.rpm

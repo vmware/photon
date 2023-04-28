@@ -213,7 +213,7 @@ if (defined $upgrade_to) {
         }
     }
     $source_tarball = "stage/SOURCES/".$file;
-    $source_sha = `sha1sum $source_tarball`;
+    $source_sha = `sha512sum $source_tarball`;
     $source_sha =~ s/^(\w+)\s.*/$1/;
     print("Source tarball sha: $source_sha\n");
 }
@@ -450,8 +450,8 @@ sub spec_add_patch {
                     $lines->[$i] =~ s/^(Release:\s+)(\d+)(.*)$/${1}1${3}/;
                     $rl_done = 1;
                 }
-                if (/^%define\s+sha1\s+$name=/) {
-                    $lines->[$i] =~ s/^(%define\s+sha1\s+$name=).*$/$1$source_sha/;
+                if (/^%define\s+sha512\s+$name=/) {
+                    $lines->[$i] =~ s/^(%define\s+sha512\s+$name=).*$/$1$source_sha/;
                     $sha_done = 1;
                 }
                 next unless($vr_done and $rl_done and $sha_done);

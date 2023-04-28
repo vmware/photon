@@ -25,6 +25,13 @@ PHOTON_DOCKER_IMAGE=$9
 PH_BUILDER_TAG=${10}
 PH_VERSION=${11}
 ARCH="$(uname -m)"
+LICENSE_TEXT="VMWARE $PH_VERSION"
+
+if ! eval "$(grep -m 1 -w 'BETA LICENSE AGREEMENT' $STAGE_PATH/EULA.txt)"; then
+  LICENSE_TEXT+=" BETA"
+fi
+
+LICENSE_TEXT+=" LICENSE AGREEMENT"
 
 rm -rf $WORKINGDIR/*
 mkdir -m 755 -p $INITRD
@@ -150,7 +157,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "VMWARE ${PH_VERSION} BETA LICENSE AGREEMENT" -v $PHOTON_RELEASE_VER && shutdown -r now
+  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "$LICENSE_TEXT" -v $PHOTON_RELEASE_VER && shutdown -r now
 }
 
 try_run_installer() {

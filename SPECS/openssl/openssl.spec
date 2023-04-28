@@ -7,8 +7,8 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.7
-Release:        3%{?dist}
+Version:        3.0.8
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,7 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
+%define sha512 %{name}=8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -33,39 +33,7 @@ Source7: %{fips_provider_srcname}.tar.xz
 %define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
 %endif
 
-%if 0%{?with_check}
-Source8: dsapub_noparam.der
-%endif
-
 Patch0: openssl-cnf.patch
-Patch1: 0001-x509-fix-double-locking-problem.patch
-
-# Fix for multiple security issues
-Patch2: 0001-Fix-type-confusion-in-nc_match_single.patch
-Patch3: 0002-Add-testcase-for-nc_match_single-type-confusion.patch
-
-Patch4: 0001-Fix-Timing-Oracle-in-RSA-decryption.patch
-
-Patch5: 0001-Avoid-dangling-ptrs-in-header-and-data-params-for-PE.patch
-Patch6: 0002-Add-a-test-for-CVE-2022-4450.patch
-
-Patch7: 0001-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
-Patch8: 0002-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
-Patch9: 0003-squash-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDE.patch
-Patch10: 0004-fixup-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
-
-Patch11: 0001-Do-not-dereference-PKCS7-object-data-if-not-set.patch
-Patch12: 0002-Add-test-for-d2i_PKCS7-NULL-dereference.patch
-
-Patch13: 0001-Fix-NULL-deference-when-validating-FFC-public-key.patch
-Patch14: 0002-Prevent-creating-DSA-and-DH-keys-without-parameters-.patch
-Patch15: 0003-Do-not-create-DSA-keys-without-parameters-by-decoder.patch
-Patch16: 0004-Add-test-for-DSA-pubkey-without-param-import-and-che.patch
-
-Patch17: 0001-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-3.patch
-
-Patch18: 0001-pk7_doit.c-Check-return-of-BIO_set_md-calls.patch
-Patch19: 0002-Add-testcase-for-missing-return-check-of-BIO_set_md-.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -74,12 +42,20 @@ BuildRequires: zlib-devel
 Requires: bash
 Requires: glibc
 Requires: libgcc
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 The OpenSSL package contains management tools and libraries relating
 to cryptography. These are useful for providing cryptography
 functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
+
+%package libs
+Summary: Core libraries and other files needed by openssl.
+Conflicts: %{name} < 3.0.8-1
+
+%description libs
+%{summary}
 
 %package devel
 Summary:    Development Libraries for openssl
@@ -142,13 +118,16 @@ exit 1
 %endif
 
 %build
-%if 0%{?with_certified_fips}
-  %undefine with_latest_fips
-%elif 0%{?with_latest_fips}
-  %undefine with_certified_fips
+# rpm 4.14.x doesn't understand elif, so keep it basic
+%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
+  %if 0%{?with_certified_fips}
+    %undefine with_latest_fips
+  %else
+    %undefine with_certified_fips
+  %endif
 %else
-  %undefine with_latest_fips
   %undefine with_certified_fips
+  %undefine with_latest_fips
 %endif
 
 if [ %{_host} != %{_build} ]; then
@@ -195,11 +174,10 @@ gcc -shared -Wall -Werror -Wextra -O2 -g -fPIC \
 
 %if 0%{?with_check}
 %check
-cp %{SOURCE8} test/recipes/91-test_pkey_check_data/
 make tests %{?_smp_mflags}
 %endif
 
-%ldconfig_scriptlets
+%ldconfig_scriptlets libs
 
 %if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %post fips-provider
@@ -223,19 +201,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/ssl/certs
-%{_sysconfdir}/ssl/ct_log_list.cnf
-%{_sysconfdir}/ssl/ct_log_list.cnf.dist
-%{_sysconfdir}/ssl/openssl.cnf.dist
-%config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
-%config(noreplace) %{_sysconfdir}/ssl/user.cnf
-%{_sysconfdir}/ssl/provider_default.cnf
-%{_sysconfdir}/ssl/distro.cnf
-%{_sysconfdir}/ssl/private
 %{_bindir}/%{name}
-%{_libdir}/*.so.*
-%{_libdir}/engines*/*
-%{_libdir}/ossl-modules/legacy.so
 
 %if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 %files fips-provider
@@ -248,6 +214,21 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 %endif
 %endif
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/*.so.*
+%{_libdir}/engines*/*
+%{_libdir}/ossl-modules/legacy.so
+%{_sysconfdir}/ssl/openssl.cnf.dist
+%config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
+%config(noreplace) %{_sysconfdir}/ssl/user.cnf
+%{_sysconfdir}/ssl/provider_default.cnf
+%{_sysconfdir}/ssl/distro.cnf
+%{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/ct_log_list.cnf
+%{_sysconfdir}/ssl/ct_log_list.cnf.dist
+%{_sysconfdir}/ssl/private
 
 %files devel
 %defattr(-,root,root)
@@ -276,6 +257,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-2
+- Bump version as a part of zlib upgrade
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-1
+- Add openssl-libs subpackage
+- Upgrade to v3.0.8
 * Tue Feb 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-3
 - Package fips certified fips.so in openssl-fips-provider
 - Fix various security issues

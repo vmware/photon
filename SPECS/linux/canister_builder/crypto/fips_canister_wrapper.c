@@ -16,12 +16,10 @@
 #include <linux/sched.h>
 #include <linux/version.h>
 #include <linux/workqueue.h>
-#ifdef DES3_IS_NOT_ALLOWED
 #include <linux/notifier.h>
 #include <linux/module.h>
 #include <linux/fips.h>
 #include <crypto/algapi.h>
-#endif
 #include <crypto/aead.h>
 #include <crypto/hash.h>
 #include <crypto/akcipher.h>
@@ -31,7 +29,9 @@
 #include <crypto/internal/hash.h>
 #endif
 #include <asm/fpu/api.h>
+#include "internal.h"
 
+static __ro_after_init bool alg_request_report = false;
 
 /*
  * Replicate a no-op stackleak_track_stack() function for other linux flavours
@@ -141,25 +141,113 @@ void fcw_kernel_fpu_end(void)
 	kernel_fpu_end();
 }
 
-int fcw_fips_not_allowed_alg(char *alg_name)
+static char *canister_algs[] = {
+	"cipher_null-generic",
+	"ecb-cipher_null",
+	"rsa-generic",
+	"sha1-generic",
+	"sha256-generic",
+	"sha224-generic",
+	"sha512-generic",
+	"sha384-generic",
+	"des3_ede-generic",
+	"aes-generic",
+	"ctr(aes-generic)",
+	"drbg_pr_ctr_aes128",
+	"drbg_pr_ctr_aes192",
+	"drbg_pr_ctr_aes256",
+	"drbg_pr_sha1",
+	"drbg_pr_sha384",
+	"drbg_pr_sha512",
+	"drbg_pr_sha256",
+	"hmac(sha1-generic)",
+	"drbg_pr_hmac_sha1",
+	"hmac(sha384-generic)",
+	"drbg_pr_hmac_sha384",
+	"hmac(sha512-generic)",
+	"drbg_pr_hmac_sha512",
+	"hmac(sha256-generic)",
+	"drbg_pr_hmac_sha256",
+	"drbg_nopr_ctr_aes128",
+	"drbg_nopr_ctr_aes192",
+	"drbg_nopr_ctr_aes256",
+	"drbg_nopr_sha1",
+	"drbg_nopr_sha384",
+	"drbg_nopr_sha512",
+	"drbg_nopr_sha256",
+	"drbg_nopr_hmac_sha1",
+	"drbg_nopr_hmac_sha384",
+	"drbg_nopr_hmac_sha512",
+	"drbg_nopr_hmac_sha256",
+	"jitterentropy_rng",
+	"ecdh-generic",
+	"cbc(aes-generic)",
+	"cbc(des3_ede-generic)",
+	"ctr(des3_ede-generic)",
+	"ecb(aes-generic)",
+	"ecb(des3_ede-generic)",
+	"hmac(sha224-generic)",
+	"pkcs1pad(rsa-generic,sha256)",
+	"pkcs1pad(rsa-generic,sha512)",
+	"xts(ecb(aes-generic))",
+	"aes-aesni",
+	"__ecb-aes-aesni",
+	"__cbc-aes-aesni",
+	"__ctr-aes-aesni",
+	"__xts-aes-aesni",
+	"cryptd(__ecb-aes-aesni)",
+	"ecb-aes-aesni",
+	"cryptd(__cbc-aes-aesni)",
+	"cbc-aes-aesni",
+	"cryptd(__ctr-aes-aesni)",
+	"ctr-aes-aesni",
+	"cryptd(__xts-aes-aesni)",
+	"xts-aes-aesni",
+	// no certification require
+	"crc32c-generic",
+	"crct10dif-generic",
+};
+
+int fcw_fips_not_allowed_alg(char *name)
 {
 #ifdef DES3_IS_NOT_ALLOWED
-	if (strstr(alg_name, "des3_ede"))
+	if (strstr(name, "des3_ede"))
 		return 1;
 #endif
+	if (fips_enabled == 2) {
+		int i;
+		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
+			if (strcmp(name, canister_algs[i]) == 0)
+				return 0;
+		}
+		return 1;
+	}
+
 	return 0;
 }
 
-#ifdef DES3_IS_NOT_ALLOWED
 static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
 			    void *data)
 {
-	if (msg == CRYPTO_MSG_ALG_REGISTER)
-	{
+	struct crypto_alg *alg = (struct crypto_alg *)data;
+
+	if (msg == CRYPTO_MSG_ALG_REQUEST && alg_request_report) {
+		pr_notice("alg request: %s (%s) by %s(%d)",
+			   alg->cra_driver_name, alg->cra_name,
+			   current->comm, current->pid);
+	}
+
+	if (msg == CRYPTO_MSG_ALG_REGISTER) {
 		struct crypto_alg *alg = (struct crypto_alg *)data;
 		/* Disable non FIPS approved algos */
 		if (fcw_fips_not_allowed_alg(alg->cra_name))
 			return NOTIFY_OK;
+		if (fcw_fips_not_allowed_alg(alg->cra_driver_name)) {
+			pr_err("alg: %s (%s) not certified", alg->cra_driver_name, alg->cra_name);
+			crypto_alg_tested(alg->cra_driver_name, -EINVAL);
+			return NOTIFY_STOP;
+
+		}
 	}
 
 	return NOTIFY_DONE;
@@ -171,10 +259,13 @@ static struct notifier_block crypto_msg_notifier = {
 
 static int __init wrapper_init(void)
 {
-	if (!fips_enabled)
-		return 0;
-
 	return crypto_register_notifier(&crypto_msg_notifier);
 }
 arch_initcall(wrapper_init);
-#endif
+
+static int __init alg_request_report_setup(char *__unused)
+{
+	alg_request_report = true;
+	return 1;
+}
+__setup("alg_request_report", alg_request_report_setup);

@@ -1,6 +1,6 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    7.0.8
+Version:    7.0.11
 Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
@@ -9,7 +9,9 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ff9f702a13c28e8be1b8aebb423efc99fd24f8c9dc3bd38ae82932f7cb6412bb26218a2fc06c56b194614e839d669d89ad6f1e3c444124c234c5073a659f25a1
+%define sha512 %{name}=5c5bd4047cca111570bb25139eb31af3f8a194a3f818a595b679813b20274caec323fb4e0b0f4a045d7de87063c874e2a1c3616d7b906a5f30f05c0771df5a47
+
+Source1: %{name}.sysusers
 
 Patch0: %{name}-conf.patch
 
@@ -21,6 +23,7 @@ BuildRequires: which
 
 Requires: systemd
 Requires: openssl
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -58,6 +61,7 @@ Group=%{name}
 [Install]
 WantedBy=multi-user.target
 EOF
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %check
 %if 0%{?with_check}
@@ -65,11 +69,7 @@ make check %{?_smp_mflags}
 %endif
 
 %pre
-getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null
-
-getent passwd %{name} &> /dev/null || \
-useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
-    -c 'Redis Database Server' %{name} &> /dev/null
+%sysusers_create_compat %{SOURCE1}
 
 %post
 /sbin/ldconfig
@@ -87,8 +87,15 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %{_bindir}/*
 %{_libdir}/systemd/*
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.11-1
+- Upgrade to v7.0.11
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 7.0.9-2
+- Use systemd-rpm-macros for user creation
+* Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-1
+- Upgrade to v7.0.9
 * Mon Feb 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.8-1
 - Upgrade to v7.0.8
 * Fri Oct 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.5-2

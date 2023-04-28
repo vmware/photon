@@ -16,14 +16,14 @@ index 667c489..52b81cc 100644
 --- a/arch/arm/boot/dts/overlays/Makefile
 +++ b/arch/arm/boot/dts/overlays/Makefile
 @@ -152,6 +152,8 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
- 	rpi-proto.dtbo \
  	rpi-sense.dtbo \
+ 	rpi-sense-v2.dtbo \
  	rpi-tv.dtbo \
 +	rpi-enable-spi0.dtbo \
 +	rpi-disable-spi0.dtbo \
- 	rpivid-v4l2.dtbo \
  	rra-digidac1-wm8741-audio.dtbo \
  	sainsmart18.dtbo \
+ 	sc16is750-i2c.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/rpi-disable-spi0-overlay.dts b/arch/arm/boot/dts/overlays/rpi-disable-spi0-overlay.dts
 new file mode 100644
 index 0000000..1c47d05

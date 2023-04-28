@@ -2,7 +2,7 @@
 %global lkcm_version 5.0.0
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,11 +37,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 4.0.1-5.10.21-3-secure
+%define fips_canister_version 5.0.0-6.1.10-8%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
-
-Source17:       fips_canister-kallsyms
+%define sha512 fips-canister=b9d60d93fb86a4ff1cc39d5e3458438ce96b2e18f5773c308b6ea5b02431e5dd9fdd22babb2e2d3860a59af65092b8918e7bd23423645b3c1be7f1c9cf019e23
 %endif
 
 %if 0%{?canister_build}
@@ -55,6 +53,7 @@ Source24: gen_canister_relocs.c
 %endif
 
 Source25: spec_install_post.inc
+Source26: %{name}-dracut.conf
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -63,7 +62,9 @@ Patch2:  6.0-9p-transport-for-9p.patch
 Patch3:  9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4:  vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
-
+# Expose Photon kernel macros to identify kernel flavor and version
+Patch6:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
+Patch7:  0002-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
@@ -110,16 +111,17 @@ Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.10-8-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 %if 0%{?kat_build}
-Patch510: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch511: 0003-FIPS-broken-kattest.patch
+Patch511: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000:      6.1-0001-FIPS-canister-binary-usage.patch
+Patch10000:      6.1.10-8-0001-FIPS-canister-binary-usage.patch
 Patch10001:      0002-FIPS-canister-creation.patch
 Patch10003:      0004-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
 Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
@@ -146,6 +148,8 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
+Requires: dracut >= 059-3
+Requires: initramfs >= 2.0-8
 Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
@@ -153,7 +157,8 @@ Requires(postun): (coreutils or coreutils-selinux)
 
 %description
 Security hardened Linux kernel.
-%if 0%{?fips}
+# Enable post FIPS certification
+%if 0
 This kernel is FIPS certified.
 %endif
 
@@ -209,10 +214,10 @@ The kernel fips-canister
 %autopatch -p1 -m500 -M506
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %endif
 %if 0%{?kat_build}
-%autopatch -p1 -m510 -M511
+%autopatch -p1 -m511 -M512
 %endif
 
 %if 0%{?canister_build}
@@ -225,8 +230,9 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE17} crypto/
 %endif
 
 %if 0%{?canister_build}
@@ -248,6 +254,13 @@ sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not
 sed -i "s/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/" .config
 sed -i "s/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/" .config
 sed -i "s/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/" .config
+sed -i "s/CONFIG_CRYPTO_CMAC=m/CONFIG_CRYPTO_CMAC=y/" .config
+sed -i "s/CONFIG_CRYPTO_CTS=m/CONFIG_CRYPTO_CTS=y/" .config
+sed -i "s/CONFIG_CRYPTO_CCM=m/CONFIG_CRYPTO_CCM=y/" .config
+sed -i "s/CONFIG_CRYPTO_GHASH=m/CONFIG_CRYPTO_GHASH=y/" .config
+sed -i "s/CONFIG_CRYPTO_GF128MUL=m/CONFIG_CRYPTO_GF128MUL=y/" .config
+sed -i "s/CONFIG_CRYPTO_NULL=m/CONFIG_CRYPTO_NULL=y/" .config
+sed -i "s/CONFIG_CRYPTO_GCM=m/CONFIG_CRYPTO_GCM=y/" .config
 
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
@@ -306,12 +319,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod"
-EOF
-
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
       %{buildroot}%{_modulesdir}/build
@@ -332,6 +339,9 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 # symling to the build folder
 ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
+mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
+cp -p %{SOURCE26} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+
 %include %{SOURCE2}
 %include %{SOURCE3}
 %include %{SOURCE25}
@@ -346,10 +356,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude %{_modulesdir}/build
 %exclude %{_usrsrc}
+
+%config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
@@ -367,6 +378,22 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Mar 31 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
+- Expose Photon kernel macros to simplify building out-of-tree drivers.
+* Sun Mar 26 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-9
+- Use canister version 5.0.0-6.1.10-8
+* Thu Mar 23 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-8
+- Add new algorithms to canister.
+- cfb, cmac, cts, ecdsa, ccm, gcm
+* Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-7
+- Fix initramfs trigger
+* Thu Mar 16 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-6
+- Build with fips canister binary
+* Wed Mar 15 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-5
+- Add fips=2 and alg_request_report support
+* Thu Mar 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-4
+- Fix initrd generation logic
+- Add dracut, initramfs to requires
 * Thu Feb 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-3
 - Add stackleak_track_stack() in fips_canister_wrapper
 * Fri Feb 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-2

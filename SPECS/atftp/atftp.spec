@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
@@ -11,19 +11,20 @@ Distribution:     Photon
 Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
 
+Source1:          %{name}.sysusers
+
 BuildRequires:    systemd-devel
 BuildRequires:    readline-devel
 BuildRequires:    pcre2-devel
+BuildRequires:    systemd-devel
 
 Requires:         systemd
 Requires:         pcre2-libs
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):    systemd-rpm-macros
 
 Provides:         tftp-server
-Obsoletes:        tftp-server
 
 Provides:         tftp
-Obsoletes:        tftp
 
 %description
 Multithreaded TFTP server implementing all options (option extension and
@@ -53,8 +54,10 @@ sh ./autogen.sh
 
 mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
          %{buildroot}%{_unitdir} \
-         %{buildroot}%{_sysconfdir}/sysconfig
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{_sysusersdir}
 
+install -p -m 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/
 cat << EOF >> %{buildroot}%{_unitdir}/atftpd.service
 [Unit]
 Description=The tftp server serves files using the trivial file transfer protocol.
@@ -95,8 +98,7 @@ make %{?_smp_mflags} check
 
 %pre
 if [ $1 -eq 1 ] ; then
-  getent group  tftp  >/dev/null || groupadd -r tftp
-  getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
+  %sysusers_create_compat %{SOURCE1}
 fi
 
 %preun
@@ -123,6 +125,7 @@ rm -rf %{buildroot}
 %{_unitdir}/atftpd.service
 %{_unitdir}/atftpd.socket
 %{_sysconfdir}/sysconfig/atftpd
+%{_sysusersdir}/%{name}.sysusers
 
 %files client
 %defattr(-,root,root)
@@ -130,6 +133,8 @@ rm -rf %{buildroot}
 %{_bindir}/atftp
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.8.0-3
+- Use systemd-rpm-macros for user creation
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-2
 - Bump version as a part of readline upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-1

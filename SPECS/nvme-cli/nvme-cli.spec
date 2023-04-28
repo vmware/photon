@@ -1,17 +1,24 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
-Version:       2.2.1
-Release:       1%{?dist}
+Version:       2.3
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       GPLv2
 URL:           https://github.com/linux-nvme/nvme-cli
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 nvme-cli=8efa94d49a4d443cdb0310386733e88117f17719b05044f11e63e2a09143fce55918171b457a467371263ebb2e36552558aad249ae4dbd27941af79fe9722e26
+%define sha512 nvme-cli=9ef654e782ba737d3858fb11f24caf27aea820480179d07d32599731be204e52693062cdb86786ab5cdd1d94fe32ae9028baa0a58693d2eaee5a2b71155e3db2
 BuildRequires: meson
-BuildRequires: cmake git
+BuildRequires: cmake
+BuildRequires: libnvme-devel
+BuildRequires: json-c-devel
 BuildRequires: pkg-config
+Requires: zlib
+Requires: json-c
+Requires: libnvme
+
+Patch0: 0001-change-install-location-to-usr.patch
 
 %description
 NVM-Express user space tooling for Linux
@@ -20,61 +27,34 @@ NVM-Express user space tooling for Linux
 %autosetup
 
 %build
-make %{?_smp_mflags}
+%meson
+%meson_build
 
 %install
-make install PREFIX=%{_prefix} DESTDIR=%{buildroot} %{?_smp_mflags}
+%meson_install
+rm -rf %{buildroot}%{_datadir}/zsh/*
+
+%if 0%{?with_check}
+%check
+%meson_test
+%endif
 
 %files
 %defattr(-,root,root)
-%doc README.md
-%{_includedir}/json-c/json.h
-%{_includedir}/libnvme-mi.h
-%{_includedir}/nvme/api-types.h
-%{_includedir}/nvme/mi.h
-%{_includedir}/json-c/arraylist.h
-%{_includedir}/json-c/debug.h
-%{_includedir}/json-c/json_c_version.h
-%{_includedir}/json-c/json_config.h
-%{_includedir}/json-c/json_inttypes.h
-%{_includedir}/json-c/json_object.h
-%{_includedir}/json-c/json_pointer.h
-%{_includedir}/json-c/json_tokener.h
-%{_includedir}/json-c/json_util.h
-%{_includedir}/json-c/linkhash.h
-%{_includedir}/json-c/printbuf.h
-%{_includedir}/libnvme.h
-%{_includedir}/nvme/fabrics.h
-%{_includedir}/nvme/filters.h
-%{_includedir}/nvme/ioctl.h
-%{_includedir}/nvme/linux.h
-%{_includedir}/nvme/log.h
-%{_includedir}/nvme/tree.h
-%{_includedir}/nvme/types.h
-%{_includedir}/nvme/util.h
+%config(noreplace) %{_sysconfdir}/nvme/discovery.conf
 %{_libdir}/dracut/dracut.conf.d/70-nvmf-autoconnect.conf
-%{_libdir}/libjson-c.so
-%{_libdir}/libnvme.so
-%{_libdir}/libnvme.so.*
-%{_libdir}/libnvme-mi.so
-%{_libdir}/libnvme-mi.so.1
-%{_libdir}/libnvme-mi.so.1.2.0
-%{_libdir}/pkgconfig/libnvme-mi.pc
-%{_libdir}/pkgconfig/json-c.pc
-%{_libdir}/pkgconfig/libnvme.pc
-%{_libdir}/systemd/system/nvmefc-boot-connections.service
-%{_libdir}/systemd/system/nvmf-autoconnect.service
-%{_libdir}/systemd/system/nvmf-connect.target
-%{_libdir}/systemd/system/nvmf-connect@.service
-%{_libdir}/udev/rules.d/70-nvmf-autoconnect.rules
-%{_libdir}/udev/rules.d/71-nvmf-iopolicy-netapp.rules
+%{_unitdir}/*.service
+%{_unitdir}/*.target
+%{_udevrulesdir}/*.rules
 %{_sbindir}/nvme
 %{_datadir}/bash-completion/completions/nvme
-%{_datadir}/zsh/site-functions/_nvme
-%dir %{_sysconfdir}/nvme
-%{_sysconfdir}/nvme/*
 
 %changelog
+*  Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3-2
+-  Bump version as a part of zlib upgrade
+*  Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 2.3-1
+-  Update to v2.3
+-  Change install location from /usr/local to /usr
 *  Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.1-1
 -  Automatic Version Bump
 *  Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.2-1

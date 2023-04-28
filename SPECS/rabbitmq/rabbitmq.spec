@@ -12,7 +12,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.11.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -24,12 +24,13 @@ Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{versio
 %define sha512 rabbitmq=6f010a9b7286ce3960435f201c771cc317c9b97f733649eae43ca4db2f839904aad08e7285bccf889a295cfcdc9b34b169d00f90118c75c11850c375ac2bb8a9
 
 Source1: %{name}.tmpfiles
-
+Source2: rabbitmq.sysusers
 Requires:      erlang
 Requires:      erlang-sd_notify
 Requires:      socat
 Requires:      systemd
 Requires:      /bin/sed
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 BuildRequires: erlang
@@ -41,7 +42,7 @@ BuildRequires: xmlto
 BuildRequires: python3-xml
 BuildRequires: python3-devel
 BuildRequires: elixir
-BuildRequires: systemd-rpm-macros
+BuildRequires: systemd-devel
 BuildRequires: which
 
 BuildArch:     noarch
@@ -98,6 +99,7 @@ install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
             %{buildroot}%{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %if 0%{?with_check}
 %check
@@ -108,14 +110,7 @@ make %{?_smp_mflags} tests
 rm -rf %{buildroot}
 
 %pre
-if ! getent group %{_rabbit_user} >/dev/null; then
-  groupadd -r %{_rabbit_user}
-fi
-
-if ! getent passwd %{_rabbit_user} >/dev/null; then
-  useradd -r -g %{_rabbit_user} -d %{_sharedstatedir}/rabbitmq %{_rabbit_user} \
-      -s /sbin/nologin -c "RabbitMQ messaging server"
-fi
+%sysusers_create_compat %{SOURCE2}
 
 %post
 /sbin/ldconfig
@@ -140,8 +135,11 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %{_tmpfilesdir}/%{name}.conf
 %{_sharedstatedir}/*
 %config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.11.3-3
+- Use systemd-rpm-macros for user creation
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.3-2
 - Update release to compile with python 3.11
 * Wed Nov 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.11.3-1

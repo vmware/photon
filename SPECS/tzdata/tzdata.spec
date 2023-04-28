@@ -1,7 +1,7 @@
 Summary:        Time zone data
 Name:           tzdata
 Version:        2022g
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
@@ -32,7 +32,7 @@ for tz in etcetera southamerica northamerica europe africa antarctica  \
     zic -L /dev/null    -d $ZONEINFO/posix  -y "sh yearistype.sh" ${tz}
     zic -L leapseconds  -d $ZONEINFO/right  -y "sh yearistype.sh" ${tz}
 done
-cp -v zone.tab iso3166.tab zone1970.tab $ZONEINFO
+cp -v zone.tab iso3166.tab zone1970.tab leap-seconds.list $ZONEINFO
 zic -d $ZONEINFO -p America/New_York
 install -vdm 755 %{buildroot}%{_sysconfdir}
 ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
@@ -43,6 +43,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2022g-2
+-   Add leap-seconds.list file
 *   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 2022g-1
 -   Automatic Version Bump
 *   Thu Aug 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2022c-1

@@ -1,7 +1,7 @@
 Summary:        A streaming media framework
 Name:           gstreamer
 Version:        1.21.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
@@ -79,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21.3-2
+-   Bump version as a part of libxml2 upgrade
 *   Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.3-1
 -   Automatic Version Bump
 *   Tue Sep 06 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.1-1

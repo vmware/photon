@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-2
+- Bump version as a part of zlib upgrade
 * Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 5.3.3-1
 - Automatic Version Bump
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3

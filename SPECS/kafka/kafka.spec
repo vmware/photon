@@ -3,23 +3,26 @@
 %define _log_dir      %{_var}/log/%{name}
 %define _data_dir     %{_sharedstatedir}/%{name}
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
-Name: 	       kafka
+Name:          kafka
 Version:       3.3.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Source0:       %{name}-%{version}-src.tgz
 %define sha512 kafka=1c9386ee7ab98d41d22afa3d1c985d36eed8bb2874f1c12959234c21b08b504f3c0bee8e38fdbb82f45a7b6c300de585fb6728ffc1fa65ce532b7d2cdcaaf1f3
 Source1:       %{name}.service
-Vendor:	       VMware, Inc.
+Source2:       %{name}.sysusers
+Vendor:        VMware, Inc.
 Distribution:  Photon
 Provides:      kafka kafka-server
 BuildRequires: systemd
+BuildRequires: systemd-devel
 BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
 Requires:      zookeeper
+Requires:      systemd-rpm-macros
 
 %systemd_requires
 
@@ -70,14 +73,13 @@ install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/
 install -p -D -m 644 streams/examples/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/upgrade-system-tests-0100/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}
 
 %pre
-/usr/bin/getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
-/usr/bin/getent passwd %{name} >/dev/null || /usr/sbin/useradd -r \
-  -g %{name} -d %{_prefix}/%{name} -s /bin/bash -c "Kafka" %{name}
+%sysusers_create_compat %{SOURCE2}
 
 %post
 %systemd_post %{name}.service
@@ -100,10 +102,13 @@ fi
 %{_prefix}/%{name}
 %attr(0755,kafka,kafka) %dir %{_log_dir}
 %attr(0700,kafka,kafka) %dir %{_data_dir}
+%{_sysusersdir}/%{name}.sysusers
 %doc NOTICE
 %doc LICENSE
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-2
+- Use systemd-rpm-macros for user creation
 * Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1
 - Automatic Version Bump
 * Wed Sep 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.3-1

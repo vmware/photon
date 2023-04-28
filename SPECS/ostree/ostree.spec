@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2022.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -168,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-6
+- Bump version as a part of zlib upgrade
 * Tue Jan 17 2023 Oliver Kurth <okurth@vmware.com> 2022.5-5
 - Use libsoup 2.72 as libostree is not compatible with libsoup-3.x
 - Skip rebuild selinux policy.

@@ -1,7 +1,7 @@
 Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://sourceforge.net/projects/trousers
 Group:          System Environment/Security
@@ -10,7 +10,9 @@ Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/trousers/files/trousers/0.3.15/%{name}-%{version}.tar.gz
 %define sha512  %{name}=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
-
+Source1:        %{name}.sysusers
+BuildRequires:  systemd-devel
+Requires:       systemd-rpm-macros
 Requires:       libtspi = %{version}-%{release}
 
 %description
@@ -41,18 +43,12 @@ sh bootstrap.sh
 
 %install
 %make_install %{?_smp_mflags}
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %post
+%sysusers_create_compat %{SOURCE1}
 mkdir -p %{_sharedstatedir}/tpm
-if [ $1 -eq 1 ]; then
-  # this is initial installation
-  if ! getent group tss >/dev/null; then
-    groupadd tss
-  fi
-  if ! getent passwd tss >/dev/null; then
-    useradd -c "TCG Software Stack" -d /var/lib/tpm -g tss -s /bin/false tss
-  fi
-fi
+chown -R tss:tss %{_sharedstatedir}/tpm
 
 %post -n libtspi -p /sbin/ldconfig
 %postun -n libtspi -p /sbin/ldconfig
@@ -63,6 +59,7 @@ fi
 %{_sbindir}/*
 %{_mandir}/man5
 %{_mandir}/man8
+%{_sysusersdir}/%{name}.sysusers
 %exclude %dir /var
 
 %files devel
@@ -79,6 +76,8 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.3.15-4
+- Use systemd-rpm-macros for user creation
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-3
 - Remove .la files
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-2

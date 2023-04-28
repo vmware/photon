@@ -1,6 +1,6 @@
 Summary:        SELinux policy compiler
 Name:           checkpolicy
-Version:        3.4
+Version:        3.5
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e7f7a4e987af473fd7cda0e47539061a8cb2e65a6b930f4736c538eb319129b260a3f03d2f50863e73a275ee3d58c441c33f95c80ea2bff6157e37226be54b92
+%define sha512  %{name}=fcd490d865af3b4350c32c5dd9916f8406219841e1e255d8945c6dcc958535247aa27af5597a6988e19f11faea7beeabcb46e8ba2431112bb4aa5c7697bca529
 
 BuildRequires:  libsemanage-devel = %{version}
 BuildRequires:  bison
@@ -38,6 +38,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/checkmodule.8.gz
 
 %changelog
+* Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
+- Automatic Version Bump
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
 - Upgrade v3.4
 * Fri Apr 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-1

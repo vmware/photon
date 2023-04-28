@@ -1,7 +1,7 @@
 Summary:        Library to find geographical and network information of an IP address
 Name:           geoip-api-c
 Version:        1.6.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/maxmind/geoip-api-c
 Group:          Development/Libraries
@@ -24,10 +24,10 @@ Requires: glibc
 The GeoIP Legacy C library enables the user to find geographical and network information of an IP address using Geolite Legacy country or city databases.
 
 %package devel
-Summary:	Development headers and libraries for GeoIP
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-Provides:	geoip-devel = %{version}-%{release}
+Summary:    Development headers and libraries for GeoIP
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Provides:   geoip-devel = %{version}-%{release}
 
 %description devel
 Development headers and static libraries for building GeoIP applications.
@@ -70,6 +70,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/geoip.pc
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.12-3
+- Bump version as a part of zlib upgrade
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.12-2
 - Fix build requires
 * Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.6.12-1

@@ -1,0 +1,2 @@
+g influxdb -
+u influxdb - "InfluxDB" /var/lib/influxdb /sbin/nologin

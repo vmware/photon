@@ -1,4 +1,4 @@
-From e9cb47b562de5e923b3b4212fe3978a14a7b7fe0 Mon Sep 17 00:00:00 2001
+From 28a832cca78dfe870f5f62f7b8f588972c44fa3a Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 20 May 2020 00:33:07 -0700
 Subject: [PATCH] newca: new archive format
@@ -9,16 +9,16 @@ starts at page aligned boundary. By default it is
 io block size.
 Extraction requires to specify -C option (e.g. -C 4096)
 ---
- src/copyin.c  | 49 ++++++++++++++++++++++++++++++++++++++++++++-----
+ src/copyin.c  | 53 ++++++++++++++++++++++++++++++++++++++++++++++-----
  src/copyout.c | 11 +++++++++--
  src/extern.h  |  3 ++-
  src/global.c  |  2 +-
- src/main.c    |  6 ++++++
+ src/main.c    | 13 +++++++++++++
  src/util.c    |  8 ++++++++
- 6 files changed, 70 insertions(+), 9 deletions(-)
+ 6 files changed, 81 insertions(+), 9 deletions(-)
 
 diff --git a/src/copyin.c b/src/copyin.c
-index b29f348..c9ded92 100644
+index b29f348..7688baf 100644
 --- a/src/copyin.c
 +++ b/src/copyin.c
 @@ -91,7 +91,8 @@ tape_skip_padding (int in_file_des, off_t offset)
@@ -66,7 +66,15 @@ index b29f348..c9ded92 100644
      {
        /* (see comment above for how the newc and crc formats 
  	 store multiple links).  Now that we have the data 
-@@ -905,6 +916,8 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
+@@ -884,6 +895,7 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
+     struct old_cpio_header old_header;
+   } magic;
+   long bytes_skipped = 0;	/* Bytes of junk found before magic number.  */
++  bool existing_dir = false;
+ 
+   /* Search for a valid magic number.  */
+ 
+@@ -905,6 +917,8 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
  
  	  if (!strncmp (tmpbuf.s, "070701", 6))
  	    archive_format = arf_newascii;
@@ -75,7 +83,7 @@ index b29f348..c9ded92 100644
  	  else if (!strncmp (tmpbuf.s, "070707", 6))
  	    archive_format = arf_oldascii;
  	  else if (!strncmp (tmpbuf.s, "070702", 6))
-@@ -960,6 +973,30 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
+@@ -960,6 +974,33 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
  	  read_in_new_ascii (file_hdr, in_des);
  	  break;
  	}
@@ -84,9 +92,12 @@ index b29f348..c9ded92 100644
 +	{
 +	  if (bytes_skipped > 0)
 +	    {
-+	      error (0, 0, _("warning: skipped %ld byte of junk. Page aligned "
-+	        "(newca) format detected. Try \"-C <PAGE SIZE>\" option "
-+		"(e.g. -C 4096)"), bytes_skipped);
++              if (!table_flag && try_existing_file (file_hdr, in_des, &existing_dir) == 0)
++                {
++	          error (0, 0, _("warning: skipped %ld byte of junk. Page aligned "
++	            "(newca) format detected. Current io_size is %ld, try different io_size"
++		    "(e.g. -C 4096)"), bytes_skipped, io_block_size);
++                }
 +	    }
 +	  /*
 +	   * We cannot represent "0707ca" string in octal format.
@@ -106,7 +117,7 @@ index b29f348..c9ded92 100644
        if (archive_format == arf_crcascii
  	  && !strncmp (magic.str, "070702", 6))
  	{
-@@ -1334,7 +1371,8 @@ process_copy_in ()
+@@ -1334,7 +1375,8 @@ process_copy_in ()
  	     data for the links.  If it does, we'll copy in the data
  	     to the links, but not to this file.  */
  	  if (file_hdr.c_nlink > 1 && (archive_format == arf_newascii
@@ -116,7 +127,7 @@ index b29f348..c9ded92 100644
  	    {
  	      if (create_defered_links_to_skipped(&file_hdr, in_file_des) < 0)
  	        {
-@@ -1423,7 +1461,8 @@ process_copy_in ()
+@@ -1423,7 +1465,8 @@ process_copy_in ()
    if (append_flag)
      return;
  
@@ -194,7 +205,7 @@ index fb3abe9..bb6cf55 100644
  /* The header format to recognize and produce.  */
  enum archive_format archive_format = arf_unknown;
 diff --git a/src/main.c b/src/main.c
-index b1bc70a..530c0ca 100644
+index b1bc70a..123b27f 100644
 --- a/src/main.c
 +++ b/src/main.c
 @@ -368,6 +368,8 @@ parse_opt (int key, char *arg, struct argp_state *state)
@@ -206,19 +217,40 @@ index b1bc70a..530c0ca 100644
        else if (!strcasecmp (arg, "odc"))
  	archive_format = arf_oldascii;
        else if (!strcasecmp (arg, "bin"))
-@@ -668,6 +670,10 @@ process_args (int argc, char *argv[])
+@@ -574,6 +576,15 @@ usage (int status)
+   exit (status);
+ }
+ 
++static inline void
++set_io_block_size()
++{
++  /* Set io_block_size to page size if not defined */
++  if (archive_format == arf_newasciialigned &&
++      io_block_size == IO_BLOCK_SIZE_DEFAULT)
++    io_block_size = sysconf(_SC_PAGESIZE);
++}
++
+ /* Process the arguments.  Set all options and set up the copy pass
+    directory or the copy in patterns.  */
+ 
+@@ -629,6 +640,7 @@ process_args (int argc, char *argv[])
+       save_patterns = &argv[index];
+       if (input_archive_name)
+ 	archive_name = input_archive_name;
++      set_io_block_size();
+     }
+   else if (copy_function == process_copy_out)
+     {
+@@ -668,6 +680,7 @@ process_args (int argc, char *argv[])
  
        if (!arf_stores_inode_p (archive_format))
  	renumber_inodes_option = ignore_devno_option = 0;
-+      /* Set io_block_size to page size if not defined */
-+      if (archive_format == arf_newasciialigned &&
-+	  io_block_size == IO_BLOCK_SIZE_DEFAULT)
-+	io_block_size = 4096;
++      set_io_block_size();
      }
    else
      {
 diff --git a/src/util.c b/src/util.c
-index 4421b20..cee3e7d 100644
+index 4421b20..96f5ffa 100644
 --- a/src/util.c
 +++ b/src/util.c
 @@ -479,6 +479,14 @@ copy_files_disk_to_tape (int in_des, int out_des, off_t num_bytes,
@@ -228,7 +260,7 @@ index 4421b20..cee3e7d 100644
 +  if (archive_format == arf_newasciialigned) {
 +    /* Page align file content */
 +    size = io_block_size - output_size;
-+    if (size) {
++    if (size > 0) {
 +      write_nuls_to_file (size, out_des, tape_buffered_write);
 +    }
 +  }
@@ -237,5 +269,5 @@ index 4421b20..cee3e7d 100644
  
    while (num_bytes > 0)
 -- 
-2.11.0
+2.39.0
 
