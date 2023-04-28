@@ -5,12 +5,11 @@ weight: 1
 
 Photon is an RPM based Linux distribution similar to variants like CentOS and Fedora. With RPM based distributions granular updates as opposed to updating the whole OS image is possible.
 
-##SPEC File
+## SPEC File  
 The "Recipe" for creating an RPM package is a spec file. The Photon code base's **SPECS** folder hast the following directory structure:
 
 ```
 SourceRoot
-
        SPECS
             linux
                 patch1
@@ -18,36 +17,38 @@ SourceRoot
                 linux.spec
 ```
 
-## Check if a package is signed
+## Check if a package is signed  
 Run the following commands to check if the package is signed:
 
 ```sh
 #check if a package is signed
 rpm -q linux --qf '%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n'
-linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+linux-6.1.10-8.ph5 RSA/SHA256, Thu 30 Mar 2023 12:44:39 AM UTC, Key ID c0b5e0ab66fd4949 (none)
  
 #or
 rpm -qi linux | grep "Signature"
-Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+Signature   : RSA/SHA256, Thu 30 Mar 2023 12:44:39 AM UTC, Key ID c0b5e0ab66fd4949
  
 #Last 8 chars of Key ID: 66fd4949
 #See if it matches the version of any of the gpg keys installed.
 rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat "%{NAME} %{VERSION} %{PACKAGER}\n"
-gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
-gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
+gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.com>
+gpg-pubkey 8a6a826d VMware, Inc. (Linux Packaging Key) <linux-packages@vmware.com>
 ```
 
-## Check if an image has vulnerabilities
+## Check if an image has vulnerabilities  
 Use the security scanners to find security issues. Alternatively The `tdnf updateinfo info` command displays all the applicable security updates the host needs.
 
-## Check if a CVE is Fixed
+## Check if a CVE is Fixed  
 The Photon team fixes vulnerabilities and publishes advisories to [https://github.com/vmware/photon/wiki/Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
 
-## To Check if Security Updates are Available
+## To Check if Security Updates are Available  
 Use the `tdnf updateinfo info`, `tdnf update --security` or `tdnf update ---sec-severity <level>` commands to check if security updates are available. For example:
 
 
-Check if there are any security updates
+The tdnf commands for analyzing security updates, see the following examples on Photon OS 3.0, are the same on Photon OS 5.0.
+
+Check if there are any security updates. 
 
 ```console
 root@photon [ ~ ]# tdnf updateinfo
@@ -65,6 +66,8 @@ patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
 ```
 
 Show details of all the libssh2 updates
+
+```console
 root@photon [ ~ ]# tdnf updateinfo info libssh2
        Name : libssh2-1.9.0-2.ph3.x86_64.rpm
   Update ID : patch:PHSA-2020-3.0-0047
