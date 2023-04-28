@@ -3,8 +3,6 @@ title: Photon OS Documentation
 weight: 1
 lastmod: "2021-02-10"
 
-aliases: ['/docs/']
-
 cascade:
 - type: "docs"
   exclude_search: true
