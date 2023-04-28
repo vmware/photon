@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.8
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -15,9 +15,15 @@ Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
 Patch0: strongswan-fix-make-check.patch
 %endif
 
+Patch1: 0001-HCX-custom-remote-natt-port.patch
+Patch2: 0002-ipsec-Add-clear_df-flag.patch
+Patch3: 0003-reiniate-conn-on-failure.patch
+Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
+
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
+BuildRequires:    gperf
 %{?systemd_requires}
 
 Requires: systemd
@@ -31,7 +37,14 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 
 %build
 %configure \
-    --enable-systemd
+    --enable-systemd \
+%ifarch x86_64
+    --enable-aesni \
+%endif
+    --enable-openssl \
+    --enable-socket-dynamic \
+    --enable-vici \
+    --enable-swanctl
 
 %make_build
 
@@ -76,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Thu Mar 09 2023 Srish Srinivasan <ssrish@vmware.com> 5.9.8-2
+- Added HCX patches
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9.8-1
 - Upgrade to v5.9.8
 * Thu Aug 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.9.7-1

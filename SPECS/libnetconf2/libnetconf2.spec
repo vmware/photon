@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        2.1.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
@@ -61,7 +61,7 @@ Headers of libnetconf library.
 %if 0%{?with_check}
 %check
 echo $'\n[SAN]\nsubjectAltName=IP:127.0.0.1' >> /etc/ssl/openssl.cnf
-pushd %{__cmake_builddir}/tests/data
+pushd tests/data
 openssl req \
     -out server.csr \
     -key server.key \
@@ -78,7 +78,6 @@ openssl x509 \
     -extensions SAN \
     -extfile /etc/ssl/openssl.cnf
 popd
-cd build
 %ctest
 %endif
 
@@ -100,6 +99,8 @@ cd build
 %dir %{_includedir}/%{name}
 
 %changelog
+* Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.18-2
+- Bump version as part of libyang upgrade
 * Mon Oct 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.18-1
 - Automatic Version Bump
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.7-3

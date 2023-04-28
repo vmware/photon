@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.36.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -107,6 +107,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.36.0-2
+- Bump version as a part of zlib upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.36.0-1
 - Automatic Version Bump
 * Thu Feb 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.30.1-4

@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -29,6 +29,7 @@ Patch6: 0001-stalld-Add-debug-print-for-starving-tasks.patch
 Patch7: 0001-stalld-change-default-config_granularity-value-to-2s.patch
 Patch8: 0001-stalld-Include-FF-and-CG-config-params-in-service-fi.patch
 Patch9: 0001-stalld-fix-bin-bash.patch
+Patch10: 0001-stalld-utils-Fix-freeing-of-invalid-pointer.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Mar 06 2023 Ankit Jain <ankitja@vmware.com> 1.17.1-3
+- Fix freeing of invalid pointer
 * Tue Nov 29 2022 Keerthana K <keerthanak@vmware.com> 1.17.1-2
 - Fix service file and update stalld-tca.conf
 * Wed Nov 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.17.1-1

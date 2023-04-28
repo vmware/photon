@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          7%{?dist}
+Release:          8%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -10,7 +10,7 @@ Distribution:     Photon
 
 Source0: https://ftp.sendmail.org/sendmail.%{version}.tar.gz
 %define sha512 %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
-
+Source1: %{name}.sysusers
 Patch0: fix-compatibility-with-openssl-3.0.patch
 
 BuildRequires:    systemd-devel
@@ -26,6 +26,7 @@ Requires:         (coreutils or coreutils-selinux)
 Requires:         systemd
 Requires:         m4
 Requires:         openldap
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires:         /bin/sed
 Requires:         net-tools
@@ -60,8 +61,8 @@ cp generic-linux.mc %{name}.mc
 sh Build %{name}.cf
 
 %install
-groupadd -g 26 smmsp
-useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+%sysusers_create_compat %{SOURCE1}
 
 pushd cf/cf
 install -v -d -m755 %{buildroot}%{_sysconfdir}/mail
@@ -125,12 +126,7 @@ make -C test check %{?_smp_mflags}
 %endif
 
 %pre
-if ! getent group smmsp >/dev/null; then
-  groupadd -g 26 smmsp
-fi
-if ! getent passwd smmsp >/dev/null; then
-  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
-fi
+%sysusers_create_compat %{SOURCE1}
 
 chmod -v 1775 %{_var}/mail
 install -v -m700 -d %{_var}/spool/mqueue
@@ -180,6 +176,7 @@ fi
 %{_sysconfdir}/mail/helpfile
 %{_sysconfdir}/mail/%{name}.schema
 %{_sysconfdir}/mail/statistics
+%{_sysusersdir}/%{name}.sysusers
 %{_bindir}/*
 %{_sbindir}/*
 %{_datadir}/*
@@ -193,6 +190,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 8.17.1-8
+- Use systemd-rpm-macros for user creation
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-7
 - Fix requires
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-6

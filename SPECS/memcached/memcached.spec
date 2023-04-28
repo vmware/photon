@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 License:        BSD
 Group:          Applications/System
@@ -9,6 +9,8 @@ Distribution:   Photon
 URL:            https://www.memcached.org/
 Source0:        https://www.memcached.org/files/%{name}-%{version}.tar.gz
 %define sha512  %{name}=00ee15eb7932420a25f3ce973bc7fcc5ba77a514091883f8b4e58ea861073caa91c676c0020f03c768077e20c76f34bca96616be104af3fbc8e7e78303958f3d
+Source1:        %{name}.sysusers
+
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  libevent-devel
@@ -18,6 +20,7 @@ Requires:       perl
 Requires:       systemd
 Requires:       libevent
 Requires(pre):  shadow-tools
+Requires(pre): systemd-rpm-macros
 
 %description
 %{name} is a high-performance, distributed memory object caching
@@ -45,6 +48,7 @@ install -Dp -m0755 scripts/%{name}-tool %{buildroot}%{_bindir}/%{name}-tool
 install -Dp -m0644 scripts/%{name}-tool.1 %{buildroot}%{_mandir}/man1/%{name}-tool.1
 install -Dp -m0644 scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -Dp -m0644 scripts/%{name}.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %if 0%{?with_check}
 %check
@@ -52,9 +56,7 @@ make test %{?_smp_mflags}
 %endif
 
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || \
-useradd -r -g %{name} -d /run/%{name} -s /sbin/nologin -c "Memcached daemon" %{name}
+%sysusers_create_compat %{SOURCE1}
 
 %post
 %systemd_post %{name}.service
@@ -74,12 +76,15 @@ useradd -r -g %{name} -d /run/%{name} -s /sbin/nologin -c "Memcached daemon" %{n
 %{_mandir}/man1/%{name}-tool.1*
 %{_mandir}/man1/%{name}.1*
 %{_unitdir}/%{name}.service
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.6.15-3
+- Use systemd-rpm-macros for user creation
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.6.15-2
 - Rebuild for perl version upgrade to 5.36.0
 * Tue Jun 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.15-1

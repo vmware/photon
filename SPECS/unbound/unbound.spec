@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.17.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -10,9 +10,12 @@ URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
 %define sha512  unbound=f6b9f279330fb19b5feca09524959940aad8c4e064528aa82b369c726d77e9e8e5ca23f366f6e9edcf2c061b96f482ed7a2c26ac70fc15ae5762b3d7e36a5284
 Source1:        %{name}.service
+Source2:        %{name}.sysusers
 Requires:       systemd
 BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  expat-devel
+Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
@@ -47,15 +50,13 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -vdm755 %{buildroot}%{_unitdir}
 install -pm 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %check
 make check %{?_smp_mflags}
 
 %pre
-getent group unbound >/dev/null || groupadd -r unbound
-getent passwd unbound >/dev/null || \
-useradd -r -g unbound -d %{_sysconfdir}/unbound -s /sbin/nologin \
--c "Unbound DNS resolver" unbound
+%sysusers_create_compat %{SOURCE2}
 
 %post
 /sbin/ldconfig
@@ -69,6 +70,7 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_sysconfdir}/*
 %{_unitdir}/%{name}.service
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %{_includedir}/*
@@ -79,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
+- Use systemd-rpm-macros for user creation
 *  Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
 -  Automatic Version Bump
 *  Tue Sep 27 2022 Gerrit Photon <photon-checkins@vmware.com> 1.16.3-1

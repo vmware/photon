@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         6%{?dist}
+Release:         8%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -113,6 +113,10 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.72.0-8
+- Bump version as a part of libxml2 upgrade
+* Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-7
+- Bump version as a part of httpd v2.4.56 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.72.0-6
 - Bump version as a part of krb5 upgrade
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-5

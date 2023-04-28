@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -11,12 +11,14 @@ Source:           %{name}-%{version}.tar.gz
 %define sha512    zookeeper=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
 Source1:          zookeeper.service
 Source2:          zkEnv.sh
+Source3:          %{name}.sysusers
 Patch0:           zkSever_remove_cygwin_cypath.patch
 BuildRequires:    systemd
+BuildRequires:    systemd-devel
 Requires:         systemd
 Requires:         openjdk11
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming,
@@ -58,10 +60,10 @@ cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
 
 install -vdm755 %{buildroot}/lib/systemd/system-preset
 echo "disable zookeeper.service" > %{buildroot}/lib/systemd/system-preset/50-zookeeper.preset
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
-getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
+%sysusers_create_compat %{SOURCE3}
 
 %post
 %{_sbindir}/ldconfig
@@ -72,10 +74,6 @@ getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --
 
 %postun
 %systemd_postun_with_restart zookeeper.service
-if [ $1 -eq 0 ] ; then
-    /usr/sbin/userdel zookeeper
-    /usr/sbin/groupdel hadoop
-fi
 /sbin/ldconfig
 
 %files
@@ -84,9 +82,12 @@ fi
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
 /lib/systemd/system-preset/50-zookeeper.preset
+%{_sysusersdir}/%{name}.sysusers
 %{_prefix}
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.8.0-3
+- Use systemd-rpm-macros for user creation
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.8.0-2
 - Use openjdk11
 * Fri Apr 22 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1

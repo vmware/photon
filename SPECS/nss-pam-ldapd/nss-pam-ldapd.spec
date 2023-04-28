@@ -2,7 +2,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        nsswitch module which uses directory servers
 License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
@@ -15,18 +15,20 @@ Source0: http://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-%{version}.tar.gz
 
 Source1:        nslcd.tmpfiles
 Source2:        nslcd.service
-
+Source3:        %{name}.sysusers
 BuildRequires:  openldap-devel
 BuildRequires:  krb5-devel
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  systemd-devel
 %{?systemd_requires}
 
 Requires:       systemd
 Requires:       openldap
 Requires:       krb5
 Requires:       Linux-PAM
+Requires:       systemd-rpm-macros
 
 %description
 The nss-pam-ldapd daemon, nslcd, uses a directory server to look up name
@@ -58,6 +60,7 @@ sed -i -e 's,^uid.*,uid nslcd,g' -e 's,^gid.*,gid ldap,g' \
         %{buildroot}%{_sysconfdir}/nslcd.conf
 
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %if 0%{?with_check}
 %check
@@ -65,9 +68,7 @@ make check %{?_smp_mflags}
 %endif
 
 %pre
-getent group ldap >/dev/null || groupadd -r ldap
-getent passwd nslcd >/dev/null || \
-  useradd -r -g ldap -d / -s %{_sbindir}/nologin -c "nslcd ldap user" nslcd
+%sysusers_create_compat %{SOURCE3}
 
 %post
 /sbin/ldconfig
@@ -88,12 +89,15 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_libdir}/*.so*
 %{pamdir}/pam_ldap.so
+%{_sysusersdir}/%{name}.sysusers
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/nslcd.conf
 %attr(0644,root,root) %config(noreplace) %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/nslcd.service
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.9.12-4
+- Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.12-3
 - Bump version as a part of openldap upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.9.12-2

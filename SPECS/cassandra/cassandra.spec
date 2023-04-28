@@ -4,7 +4,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -14,17 +14,19 @@ Distribution:   Photon
 Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
 %define sha512  apache-%{name}=c34a23940ea7e935a6ba629f30614a700b0d58ddbe3257b918fe1da0c666eb75820961b9f8cb9b315614bb98c3f536565402027efa17a142a57a3c404dda1077
 Source1:        %{name}.service
+Source2:        %{name}.sysusers
 
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk11
 BuildRequires:  wget
 BuildRequires:  git
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  systemd-devel
 
 Requires:       openjdk11
 Requires:       gawk
 Requires:       shadow
+Requires(pre): systemd-rpm-macros
 Requires(post): /usr/bin/chown
 %{?systemd_requires}
 
@@ -68,6 +70,7 @@ cp -r lib build %{buildroot}%{_localstatedir}/opt/%{name}/
 cp -p build/tools/lib/stress.jar build/apache-%{name}-%{version}.jar %{buildroot}%{_localstatedir}/opt/%{name}/lib
 
 install -p -D -m 644 %{SOURCE1}  %{buildroot}%{_unitdir}/%{name}.service
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 cat >> %{buildroot}%{_sysconfdir}/sysconfig/%{name} <<- "EOF"
 CASSANDRA_HOME=%{_localstatedir}/opt/%{name}/
@@ -80,8 +83,7 @@ export CASSANDRA_CONF=%{_sysconfdir}/%{name}/
 EOF
 
 %pre
-getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
-getent passwd %{name} >/dev/null || /usr/sbin/useradd --comment "Cassandra" --shell /bin/bash -M -r --groups %{name} --home %{_localstatedir}/opt/%{name}/data %{name}
+%sysusers_create_compat %{SOURCE2}
 
 %post
 %{_sbindir}/ldconfig
@@ -112,9 +114,12 @@ fi
 %{_sysconfdir}/sysconfig/%{name}
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_unitdir}/%{name}.service
+%{_sysusersdir}/%{name}.sysusers
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-2
+- Use systemd-rpm-macros for user creation
 * Tue Feb 21 2023 Ankit Jain <ankitja@vmware.com> 4.0.8-1
 - Updated to v4.0.8. This version added support for python-3.11
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 4.0.7-1

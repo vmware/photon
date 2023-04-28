@@ -1,6 +1,6 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.5.6
+Version:        3.5.7
 Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd
@@ -8,15 +8,16 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 etcd=68b5c2210735240d3386e06aea783365f3cacbdf92cd389df1e65c45ddb5ddf646eaceb3085e40fbb65956e4292654050f78f240ee85fd389278375053861a38
+%define sha512 etcd=d865f23bd7dc664a73e3fbb78f812d73aba2437aa1430a1ebbfe665d8e2bdee0e4784c4e36f12c58e3407273e0e6c0ac12fa65b1f268beda86e54a359fd0d372
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
 %endif
-BuildRequires:  go >= 1.16
+Source3:        etcd.sysusers
+BuildRequires:  go
 BuildRequires:  git
-BuildRequires:  systemd-rpm-macros
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+BuildRequires:  systemd-devel
+Requires(pre):  systemd-rpm-macros
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
@@ -38,6 +39,7 @@ install -vdm 0755 %{buildroot}%{_sysconfdir}/sysconfig
 %endif
 install -vdm 0755 %{buildroot}%{_sysconfdir}/etcd
 install -vpm 0755 -T etcd.conf.yml.sample %{buildroot}%{_sysconfdir}/etcd/etcd-default-conf.yml
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 chown -R root:root %{buildroot}%{_bindir}
 chown -R root:root %{buildroot}/%{_docdir}/%{name}-%{version}
@@ -60,8 +62,7 @@ cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/etcd
 install -vdm755 %{buildroot}%{_sharedstatedir}/etcd
 
 %pre
-getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
-getent passwd %{name} >/dev/null || /usr/sbin/useradd --comment "etcd Daemon User" --shell /bin/bash -M -r --groups %{name} --home %{_sharedstatedir}/%{name} %{name}
+%sysusers_create_compat %{SOURCE3}
 
 %post -p /sbin/ldconfig
 
@@ -82,11 +83,18 @@ rm -rf %{buildroot}/*
 %{_presetdir}/50-etcd.preset
 %attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/etcd
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
+%{_sysusersdir}/%{name}.sysusers
 %ifarch aarch64
 %config(noreplace) %{_sysconfdir}/sysconfig/etcd
 %endif
 
 %changelog
+* Sun Mar 12 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.7-1
+- Update to 3.5.7
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.6-3
+- Bump up version to compile with new go
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.5.6-2
+- Use systemd-rpm-macros for user creation
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.5.6-1
 - Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.5.1-3

@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -18,6 +18,7 @@ Source4:          rpc-statd-notify.service
 Source5:          %{name}.defaults
 Source6:          nfs-server.service
 Source7:          nfs-mountd.service
+Source8:          %{name}.sysusers
 
 BuildRequires:    libtool
 BuildRequires:    krb5-devel
@@ -38,8 +39,8 @@ Requires:         libtirpc
 Requires:         rpcbind
 Requires:         shadow
 Requires:         python3-libs
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 The %{name} package contains simple nfs client service.
@@ -92,6 +93,7 @@ install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
 install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
 install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
 install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
+install -p -D -m 0644 %{SOURCE8} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable nfs-server.service" > %{buildroot}%{_presetdir}/50-nfs-server.preset
 
@@ -106,12 +108,7 @@ make check %{?_smp_mflags}
 %endif
 
 %pre
-if ! getent group nobody >/dev/null; then
-  groupadd -r nobody
-fi
-if ! getent passwd nobody >/dev/null; then
-  useradd -g named -s /bin/false -M -r nobody
-fi
+%sysusers_create_compat %{SOURCE8}
 
 %post
 /sbin/ldconfig
@@ -139,6 +136,7 @@ rm -rf %{buildroot}/*
 %{_presetdir}/50-nfs-server.preset
 %{_udevrulesdir}/99-nfs.rules
 %attr(0600,root,root) %config(noreplace) %{_libdir}/modprobe.d/50-nfs.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root)
@@ -149,6 +147,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.6.2-5
+- Use systemd-rpm-macros for user creation
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.6.2-4
 - Bump version as a part of krb5 upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 2.6.2-3

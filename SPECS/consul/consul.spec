@@ -2,7 +2,7 @@
 
 Name:           consul
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -12,11 +12,13 @@ URL:            https://github.com/hashicorp/consul
 Source0:        https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}-%{version}=58052afc7cc6536099b0bfe2ceca7ef4d0cb76cd08df67508b77b7c58719fd9617919228ccd5a5c150fcbbaca550299baa5e26586d6ca1296f7b84f5760ae11f
 Source1:        %{name}.service
+Source2:        %{name}.sysusers
 
 BuildRequires:  systemd-devel
 BuildRequires:  go
 BuildRequires:  ca-certificates
 
+Requires(pre):  systemd-rpm-macros
 Requires:       systemd
 
 %description
@@ -47,14 +49,10 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}.d
 install -vdm 755 %{buildroot}%{_unitdir}
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -vdm 755 %{buildroot}%{_sharedstatedir}/%{name}
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-if ! getent group %{name} >/dev/null; then
-  groupadd %{name}
-fi
-if ! getent passwd %{name} >/dev/null; then
-  useradd -c "Consul Agent" -d %{_sharedstatedir}/%{name} -g %{name} -s /bin/false %{name}
-fi
+%sysusers_create_compat %{SOURCE2}
 
 %post
 /sbin/ldconfig
@@ -89,8 +87,13 @@ rm -rf %{buildroot}
 %{_unitdir}/%{name}.service
 %dir %{_sysconfdir}/%{name}.d
 %dir %{_sharedstatedir}/%{name}
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-3
+- Bump up version to compile with new go
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.14.2-2
+- Use systemd-rpm-macros for user creation
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
 - Automatic Version Bump
 * Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.11.4-4

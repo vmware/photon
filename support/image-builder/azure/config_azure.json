@@ -1,9 +1,14 @@
 {
     "installer": {
         "hostname": "photon-machine",
-        "postinstallscripts": [ "azure-patch.sh", "../relocate-rpmdb.sh" ],
+        "postinstallscripts": [
+            "azure-patch.sh",
+            "../relocate-rpmdb.sh"
+        ],
         "additional_files": [
-            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
+            {
+                "cloud-photon.cfg": "/etc/cloud/cloud.cfg"
+            }
         ],
         "packagelist_file": "packages_azure.json",
         "linux_flavor": "linux"
@@ -13,4 +18,3 @@
     "artifacttype": "vhd.gz",
     "keeprawdisk": false
 }
-

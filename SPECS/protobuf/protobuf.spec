@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.14.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -127,6 +127,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 3.14.0-5
+- bump release as part of apache-maven update
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-4
 - Update release to compile with python 3.11
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.14.0-3

@@ -127,7 +127,7 @@ class constants(object):
         "texinfo",
         "autoconf",
         "automake",
-        "openssl",
+        "openssl-libs",
         "zstd",
         "rpm",
         "dwz",
@@ -222,12 +222,14 @@ class constants(object):
         "autoconf",
         "automake",
         "openssl",
+        "openssl-libs",
         "openssl-devel",
         "libcap",
         "zstd",
         "zstd-libs",
         "zstd-devel",
         "lua",
+        "lua-libs",
         "lua-devel",
         "rpm",
         "rpm-build",
@@ -268,6 +270,7 @@ class constants(object):
         "pkg-config",
         "git",
         "openssl",
+        "openssl-libs",
         "openssl-devel",
         "net-tools",
         "less",
@@ -526,3 +529,6 @@ class constants(object):
             constants.hostRpmIsNotUsable = 0
 
         return constants.hostRpmIsNotUsable
+
+    def enable_fips_in_make_check():
+        constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")

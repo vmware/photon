@@ -6,13 +6,16 @@ import ctypes.util
 import json
 import collections
 import fileinput
+import platform
 import re
 import copy
 import shutil
 
 
 class Utils(object):
+
     def __init__(self):
+        self.buildArch = platform.machine()
         self.filesystems = []
         with open("/proc/filesystems") as fs:
             for line in fs:
@@ -89,15 +92,3 @@ class Utils(object):
             filename = os.path.join(src, file)
             if os.path.isfile(filename):
                 shutil.copy(filename, target)
-
-    @staticmethod
-    def strtobool(val):
-        val = val.lower()
-
-        if val in ("y", "yes", "t", "true", "on", "1"):
-            return 1
-
-        if val in ("n", "no", "f", "false", "off", "0"):
-            return 0
-
-        raise ValueError("invalid truth value {!r}".format(val))

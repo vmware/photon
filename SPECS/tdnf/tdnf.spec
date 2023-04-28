@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.4.9
-Release:        1%{?dist}
+Version:        3.5.2
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,15 +9,14 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=704d10292b585cbc481f7cee292b4f91768049ce4d0a889c25c3d7cefe488c6b17160fac4a25bbeea066fce133523f36e729b9ad99e53d1a49b289c1bff3c91a
-
-Patch0:         pool_flag_noinstalledobsoletes.patch
+%define sha512  %{name}=889f67f3aa32402b63319960539d72e24d65deeacd9360837622bb8e8dc6f79db7e7247a9503f7032fecc891f4f5151c1cce34f727aae69fdac2d84f63963d42
 
 Requires:       rpm-libs
 Requires:       curl-libs
 Requires:       %{name}-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       zlib
+Requires:       openssl-libs
 
 BuildRequires:  curl-devel
 BuildRequires:  libsolv-devel
@@ -138,6 +137,12 @@ mkdir -p %{buildroot}%{_tdnf_history_db_dir}
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
+rm -f %{buildroot}%{_bindir}/jsondumptest
+# should move into its onw package:
+rm -rf %{buildroot}%{_datadir}/tdnf
+
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
+    echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
 
 pushd %{__cmake_builddir}/python
 %py3_install
@@ -209,10 +214,12 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_bindir}/tyum
 %{_bindir}/yum
 %{_bindir}/tdnfj
+%{_bindir}/tdnf-config
 %{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
 %{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/protected.d/%{name}.conf
 %config %{_unitdir}/%{name}-cache-updateinfo.service
 %config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
 %config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
@@ -261,6 +268,24 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-3
+- Bump version as a part of libxml2 upgrade
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.2-2
+- Bump version as a part of zlib upgrade
+* Tue Apr 04 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-1
+- update to 3.5.2:
+- add protected feature (PR #413)
+- refactor yes/no question (PR #415)
+* Tue Mar 28 2023 Oliver Kurth <okurth@vmware.com> 3.5.1-1
+- update to 3.5.1:
+- coverity changes
+* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-3
+- fix segfault when name isn't set in repo (similar to PR #401)
+- fix compile warning
+* Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.0-2
+- Require openssl-libs
+* Thu Mar 09 2023 Oliver Kurth <okurth@vmware.com> 3.5.0-1
+- update to 3.5.0
 * Tue Jan 31 2023 Oliver Kurth <okurth@vmware.com> 3.4.9-1
 - update to 3.4.9:
 - limit the number of open files for rpm transactions

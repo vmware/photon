@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        5%{?dist}
+Release:        7%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -16,6 +16,7 @@ Patch1:         tuned-fix-bug-in-sysctl-verify.patch
 Patch2:         bootloader-plugin-support-for-photon.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
+Patch5:         0001-tuned-expand-functions-for-variables-in-plugin_net.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
@@ -146,6 +147,10 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-7
+- Fix bug setting netdev_queue_count
+* Thu Mar 09 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-6
+- Properly expand variable functions in plugin_net.py
 * Thu Jan 12 2023 Keerthana K <keerthanak@vmware.com> 2.19.0-5
 - Forward port patches from ph4
 - Add /var/lib/tuned to rpm

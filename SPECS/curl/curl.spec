@@ -1,23 +1,26 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.86.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  curl=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
+
+Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
+
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
 BuildRequires:  libssh2-devel
+
 Requires:       ca-certificates
-Requires:       openssl
+Requires:       openssl-libs
 Requires:       krb5
 Requires:       libssh2
-Requires:       curl-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 The cURL package contains an utility and a library used for
@@ -55,14 +58,13 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
-make %{?_smp_mflags}
+    --with-ca-bundle=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
+
+%make_build
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-%make_install
+%make_install %{?_smp_mflags}
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -89,9 +91,12 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %files libs
+%defattr(-,root,root)
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.86.0-3
+- Require openssl-libs
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.86.0-2
 - Bump version as a part of krb5 upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 7.86.0-1

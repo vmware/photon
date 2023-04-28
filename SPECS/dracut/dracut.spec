@@ -4,21 +4,24 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        2%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
-URL:            https://dracut.wiki.kernel.org
+URL:            https://github.com/dracutdevs/dracut/wiki/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
 
-Patch0:         Add-mkinitrd-support-to-dracut.patch
-Patch1:         disable-xattr.patch
-Patch2:         fix-initrd-naming-for-photon.patch
-Patch4:         fix-hostonly.patch
+Patch0: Add-mkinitrd-support-to-dracut.patch
+Patch1: disable-xattr.patch
+Patch2: fix-initrd-naming-for-photon.patch
+Patch4: fix-hostonly.patch
+Patch5: 0001-mkinitrd-verbose-fix.patch
+Patch6: 0002-dracut.sh-validate-instmods-calls.patch
+Patch7: 0003-feat-dracut.sh-support-multiple-config-dirs.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -31,6 +34,7 @@ Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
 Requires:       util-linux
 Requires:       systemd
+Requires:       systemd-udev
 Requires:       /bin/sed
 Requires:       /bin/grep
 Requires:       findutils
@@ -66,30 +70,25 @@ This package contains tools to assemble the local initrd and host configuration.
 
 echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}%{dracutlibdir}/%{name}-version.sh
 
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips \
-          %{buildroot}%{dracutlibdir}/modules.d/02fips-aesni \
-          %{buildroot}%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/01fips
 
 # we do not support dash in the initramfs
 rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/50gensplash \
-          %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
+rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
           %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
           %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
 mkdir -p %{buildroot}/boot/%{name} \
          %{buildroot}%{_sharedstatedir}/%{name}/overlay \
-         %{buildroot}%{_localstatedir}/log \
-         %{buildroot}%{_localstatedir}/opt/%{name}/log \
+         %{buildroot}%{_var}/log \
+         %{buildroot}%{_var}/opt/%{name}/log \
          %{buildroot}%{_sharedstatedir}/initramfs \
          %{buildroot}%{_sbindir}
 
-touch %{buildroot}%{_localstatedir}/opt/%{name}/log/%{name}.log
-ln -sfv %{_localstatedir}/opt/%{name}/log/%{name}.log %{buildroot}%{_localstatedir}/log/
-
-rm -f %{buildroot}%{_mandir}/man?/*suse*
+touch %{buildroot}%{_var}/opt/%{name}/log/%{name}.log
+ln -srv %{buildroot}%{_var}/opt/%{name}/log/%{name}.log %{buildroot}%{_var}/log/
 
 # create compat symlink
 ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
@@ -123,9 +122,9 @@ rm -rf -- %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}.conf.d
 %dir %{dracutlibdir}/%{name}.conf.d
-%dir %{_localstatedir}/opt/%{name}/log
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/%{name}/log/%{name}.log
-%{_localstatedir}/log/%{name}.log
+%dir %{_var}/opt/%{name}/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_var}/opt/%{name}/log/%{name}.log
+%{_var}/log/%{name}.log
 %dir %{_sharedstatedir}/initramfs
 %{_unitdir}/%{name}-shutdown.service
 %{_unitdir}/sysinit.target.wants/%{name}-shutdown.service
@@ -153,6 +152,15 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Sat Apr 1 2023 Laszlo Gombos <laszlo.gombos@gmail.com> 059-6
+- Update wiki link and remove obsolete references
+* Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-5
+- Add systemd-udev to requires
+* Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-4
+- Add /etc/dracut.conf.d to conf dirs list during initrd creation
+- Drop multiple conf file support
+* Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-3
+- Fix mkinitrd verbose & add a sanity check
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-2
 - Fix requires
 * Mon Jan 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-1

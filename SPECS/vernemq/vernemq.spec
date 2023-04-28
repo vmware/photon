@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.6.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -16,7 +16,7 @@ Source1: %{name}_vendor-%{version}.tar.gz
 
 Source2:    vars.config
 Source3:    %{name}.service
-
+Source4:    %{name}.sysusers
 Patch0: local_version.patch
 
 # leveldb(core dependency) build on aarch64 is currently not supported
@@ -35,8 +35,8 @@ Requires:         libstdc++
 Requires:         systemd
 Requires:         openssl
 Requires:         ncurses
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A high-performance, distributed MQTT message broker.
@@ -88,13 +88,10 @@ install -vdm 0755 %{buildroot}%{_sbindir}
 ln -sfv %{_lib64dir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
 ln -sfv %{_lib64dir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
 ln -sfv %{_lib64dir}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
-
-getent passwd %{name} >/dev/null || \
-  /usr/sbin/useradd --comment "VerneMQ" --shell \
-    /bin/bash -M -r --groups %{name} --home %{_sharedstatedir}/%{name} %{name}
+%sysusers_create_compat %{SOURCE4}
 
 %preun
 %systemd_preun %{name}.service
@@ -120,8 +117,11 @@ rm -rf %{buildroot}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.12.6.2-2
+- Use systemd-rpm-macros for user creation
 * Fri Dec 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12.6.2-1
 - Upgrade to v1.12.6.2
 * Wed Nov 09 2022 Harinadh D <hdommaraju@vmware.com> 1.12.5-2

@@ -1,19 +1,18 @@
-Summary:	Tools and libraries to manipulate EFI variables
-Name:		efivar
-Version:	37
-Release:	2%{?dist}
-License:	GPLv2
-URL:		https://github.com/rhboot/efivar
-Group:		System Environment/System Utilities
-Vendor:		VMware, Inc.
-Distribution: Photon
+Summary:       Tools and libraries to manipulate EFI variables
+Name:          efivar
+Version:       38
+Release:       1%{?dist}
+License:       GPLv2
+URL:           https://github.com/rhboot/efivar
+Group:         System Environment/System Utilities
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
-Source0:	https://github.com/rhboot/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 %{name}=1ef24e0a06e1a42d7a93ba7a76b2970659c7c0c0
-
-Patch0:         util-h-add-unlikely-and-likely-macros.patch
-Patch1:         dp-h-make-format_guid-handle-misaligned-guid-pointers-safely.patch
-Patch2:         Fix-all-the-places-Werror-address-of-packed-member-catches.patch
+Source0:       https://github.com/rhboot/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=c2f17297c863ece134a9dd758d237fd2df8c8d072f87af1d0bf2bcf9acfc7a53c25597f03fd4fb8cc664b205743d4ffa0ef1b068d0f73c58fa573d40993f3155
+# Generated using mandoc
+# mandoc -mdoc -Tman -Ios=Linux efisecdb.1.mdoc > efisecdb.1
+Source1:       efisecdb.1
 
 BuildRequires: popt-devel
 
@@ -23,26 +22,27 @@ efivar provides a simle CLI to the UEFI variable facility
 %package    devel
 Summary:    Header and development files for efivar
 Requires:   %{name} = %{version}-%{release}
-%description    devel
+%description devel
 It contains the libraries and header files to create applications
 
 %prep
 %autosetup -p1
+cp %{SOURCE1} docs
+touch docs/efisecdb.1
 
 %build
 # This package implements symbol versioning with toplevel ASM statments which is
 # incompatible with LTO.  Disable LTO by overiding OPTIMIZE=
 
-make %{?_smp_mflags} PREFIX=%{_prefix} OPTIMIZE="-O2 -Wno-error=stringop-truncation"\
-    libdir=%{_libdir} \
-    bindir=%{_bindir}
+%make_build OPTIMIZE="-O2 -Wno-error=stringop-truncation"
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} install %{?_smp_mflags}
+%make_install %{?_smp_mflags} LIBDIR=%{_libdir} BINDIR=%{_bindir}
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} test
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -50,17 +50,20 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_lib64dir}/*.so.*
+%{_libdir}/*.so.*
 %{_mandir}/man1/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_lib64dir}/*.so
-%{_lib64dir}/pkgconfig/*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 38-1
+- Automatic Version Bump
+- Use pre generated man page for efisecdb.
 * Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 37-2
 - GCC-10 support.
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 37-1
@@ -76,4 +79,4 @@ rm -rf %{buildroot}/*
 * Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
 - Fix build for linux 4.4.
 * Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1
-- Initial build.	First version
+- Initial build.    First version

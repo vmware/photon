@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        10.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -29,6 +29,14 @@ Requires:       apache-ant
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
+
+%package        webapps
+Summary:        Web application for Apache Tomcat
+Group:          Applications/System
+Requires:       apache-tomcat = %{version}-%{release}
+
+%description    webapps
+The web application for Apache Tomcat.
 
 %prep
 %autosetup -n %{name}-%{version}-src -p1
@@ -77,7 +85,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
-%dir %{_webappsdir}
+%dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
@@ -92,13 +100,22 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
-%{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
 %{_logsdir}/catalina.out
 
+%files webapps
+%defattr(-,root,root)
+%dir %{_webappsdir}/manager
+%dir %{_webappsdir}/host-manager
+%{_webappsdir}/ROOT/*
+%{_webappsdir}/manager/*
+%{_webappsdir}/host-manager/*
+
 %changelog
+* Thu Feb 16 2023 Prashant <psinghchauha@vmware.com> 10.1.1-2
+- Package webapps as a subpackage
 * Thu Nov 10 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.1-1
 - Upgrade to 10.1.1
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 8.5.78-2

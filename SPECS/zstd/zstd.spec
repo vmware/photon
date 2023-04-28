@@ -1,6 +1,6 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
-Version:        1.5.2
+Version:        1.5.5
 Release:        1%{?dist}
 License:        BSD and GPLv2
 URL:            https://github.com/facebook/zstd
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/facebook/zstd/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=e107508a41fca50845cc2494e64adaba93efb95a2fa486fc962510a8ba4b2180d93067cae9870f119e88e5e8b28a046bc2240b0b23cdd8933d1fb1a6a9668c1e
+%define sha512 %{name}-%{version}=356994e0d8188ce97590bf86b602eb50cbcb2f951594afb9c2d6e03cc68f966862505afc4a50e76efd55e4cfb11dbc9b15c7837b7827a961a1311ef72cd23505
 
 Requires:       zstd-libs = %{version}-%{release}
 
@@ -54,7 +54,6 @@ make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root,-)
-%doc CHANGELOG README.md
 %{_bindir}/zstd
 %{_bindir}/zstdcat
 %{_bindir}/zstdgrep
@@ -66,7 +65,6 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/zstdcat.1*
 %{_mandir}/man1/zstdgrep.1.*
 %{_mandir}/man1/zstdless.1.*
-%doc LICENSE
 
 %files libs
 %defattr(-,root,root,-)
@@ -82,6 +80,8 @@ make check %{?_smp_mflags}
 %exclude %{_libdir}/libzstd.a
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com>  1.5.5-1
+- Upgrade to v1.5.5
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-1
 - Upgrade to v1.5.2
 * Thu Oct 15 2020 Anisha Kumari <kanisha@vmware.com> 1.4.5-2

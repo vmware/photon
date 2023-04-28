@@ -1,7 +1,7 @@
 Summary:         RPC program number mapper
 Name:            rpcbind
 Version:         1.2.6
-Release:         3%{?dist}
+Release:         4%{?dist}
 License:         BSD
 URL:             http://nfsv4.bullopensource.org
 Group:           Applications/Daemons
@@ -14,14 +14,14 @@ Source0: http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
 Source1:         %{name}.service
 Source2:         %{name}.socket
 Source3:         %{name}.sysconfig
-
+Source4:         %{name}.sysusers
 BuildRequires:   libtirpc-devel
 BuildRequires:   systemd-devel
 
 Requires:        libtirpc
 Requires:        systemd
-Requires(pre):   /usr/sbin/useradd /usr/sbin/userdel /usr/sbin/groupadd /usr/sbin/groupdel /usr/bin/false
-Requires(preun): /usr/sbin/userdel /usr/sbin/groupdel
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):   systemd-rpm-macros
 Requires(post):  /usr/bin/chown
 
 %description
@@ -57,6 +57,7 @@ cat > %{buildroot}%{_presetdir}/50-%{name}.preset << EOF
 disable %{name}.socket
 disable %{name}.service
 EOF
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %if 0%{?with_check}
 %check
@@ -67,21 +68,10 @@ make %{?_smp_mflags} check
 rm -rf %{buildroot}/*
 
 %pre
-getent group rpc >/dev/null || groupadd -f -g 31 -r rpc
-if ! getent passwd rpc >/dev/null ; then
-  if ! getent passwd 31 >/dev/null ; then
-    useradd -d %{_sharedstatedir}/%{name} -g rpc -s /bin/false -u 31 rpc > /dev/null 2>&1
-  else
-    useradd -d %{_sharedstatedir}/%{name} -g rpc -s /bin/false rpc > /dev/null 2>&1
-  fi
-fi
+%sysusers_create_compat %{SOURCE4}
 
 %preun
 %systemd_preun %{name}.service %{name}.socket
-if [ $1 -eq 0 ]; then
-  userdel  rpc 2>/dev/null || :
-  groupdel rpc 2>/dev/null || :
-fi
 
 %post
 /sbin/ldconfig
@@ -103,8 +93,11 @@ fi
 %dir %{_localstatedir}/lib/%{name}
 %{_unitdir}/*
 %{_presetdir}/50-%{name}.preset
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.2.6-4
+- Use systemd-rpm-macros for user creation
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6-3
 - Bump version as a part of libtirpc upgrade
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6-2

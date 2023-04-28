@@ -1,7 +1,7 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        7.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
@@ -70,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0.1-2
+- Bump version as a part of freetype2 upgrade
 * Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 7.0.1-1
 - Update version 7.0.1
 * Wed Nov 23 2022 Shivani Agarwal <shivania2@vmware.com> 2.6.7-3

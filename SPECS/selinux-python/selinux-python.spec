@@ -1,6 +1,6 @@
 Summary:        SELinux policy core utilities
 Name:           selinux-python
-Version:        3.4
+Version:        3.5
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
@@ -9,11 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d601ce2628c4876dc4f2dfccd6db8ff45f68c5eb1b14cec3328644b71959107546469b27dfd90488fc669019b341d0cba708a1797f427ac7f86a0f05e86c0948
+%define sha512 %{name}=2ac176a9f078f2b2721e5871ba21e92041eed54fc692fd8d809ff14327beee6de63b3084d0f1053a640b9e40bcc6461498915bb9b038a658cd772f77d80fd217
 
 BuildRequires:  python3-devel
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  libselinux-devel = %{version}
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 
 Requires: python3
 Requires: libsemanage-python3 = %{version}
@@ -51,6 +53,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
+- Automatic Version Bump
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1
 - Upgrade v3.4
 * Fri Jul 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-3

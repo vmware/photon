@@ -1,7 +1,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          12.1
-Release:          1%{?dist}
+Release:          3%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
@@ -9,14 +9,15 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
 %define sha512    wavefront=64b88266da47e468c26b7009f5027f71d2ce15bf6a0630102db951632fb8d285af2ebbc78fa18cce2fed273a286bdce9d2925e6a09752d49c3d63582725b4b66
+Source1:          %{name}.sysusers
 BuildRequires:    apache-maven
 BuildRequires:    openjdk11
 BuildRequires:    systemd-devel
 Requires:         systemd
 Requires:         openjdk11
 Requires:         commons-daemon
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 BuildArch:        noarch
 
 %description
@@ -58,13 +59,12 @@ install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/c
 install -m 755 -D proxy/target/proxy-%{version}-spring-boot.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
 user="wavefront"
 group="wavefront"
-getent group $group >/dev/null || groupadd -r $group
-getent passwd $user >/dev/null || useradd -c "Wavefront Proxy Server" -d /opt/wavefront -g $group \
-        -s /sbin/nologin -M -r $user
+%sysusers_create_compat %{SOURCE1}
 spool_dir="/var/spool/%{name}"
 log_dir="/var/log/wavefront"
 [[ -d $spool_dir ]] || mkdir -p $spool_dir && chown $user:$group $spool_dir
@@ -83,10 +83,6 @@ chown -R wavefront:wavefront /etc/wavefront
 %systemd_preun %{name}.service
 
 %postun
-if [ $1 -eq 0 ] ; then
-    getent passwd wavefront >/dev/null && userdel wavefront
-    getent group wavefront >/dev/null && groupdel wavefront
-fi
 %systemd_postun_with_restart %{name}.service
 
 %clean
@@ -101,8 +97,13 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/wavefront/%{name}/log4j2.xml
 %{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
 %{_unitdir}/%{name}.service
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 12.1-3
+- Use systemd-rpm-macros for user creation
+* Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 12.1-2
+- bump release as part of apache-maven update
 * Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 12.1-1
 - Update to version 12.1
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 11.0-2

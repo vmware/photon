@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        18.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -76,6 +76,8 @@ make %{?_smp_mflags} cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-4
+- Bump version as a part of zlib upgrade
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-3
 - Fix requires
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 18.10.0-2

@@ -1,6 +1,6 @@
 Summary:        YANG data modeling language library
 Name:           libyang
-Version:        2.0.231
+Version:        2.1.55
 Release:        1%{?dist}
 Url:            https://github.com/CESNET/libyang
 License:        BSD-3-Clause
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libyang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e706eb2cf5f90e5d82221b4608edec743d61eaf48b1250acd9015919aee875e15323126549542889db902b5e871a070cd446804595055f2e95bb9321ae3c92c8
+%define sha512 %{name}=dd0b58aec7e2d84f62636c62c9e7f67f0b4819e8d5ce9236874a3531607aa6fb58ccdcf537534eae8bfa700c37b8e3524be659929f4e7e03f8f67968bc352cb4
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -18,7 +18,6 @@ BuildRequires:  pcre2-devel
 
 %if 0%{?with_check}
 BuildRequires:   cmocka-devel
-BuildRequires:   valgrind
 %endif
 
 Requires:   pcre2
@@ -48,7 +47,8 @@ YANG validator tools.
 %cmake \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DENABLE_TESTS=ON
+    -DENABLE_TESTS=ON \
+    -DENABLE_VALGRIND_TESTS=OFF
 
 %cmake_build
 
@@ -57,8 +57,7 @@ YANG validator tools.
 
 %if 0%{?with_check}
 %check
-cd %{__cmake_builddir}
-make test %{?_smp_mflags}
+%ctest
 %endif
 
 %post   -p /sbin/ldconfig
@@ -85,6 +84,9 @@ make test %{?_smp_mflags}
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.55-1
+- Update to latest version to resolve CVE-2023-26917 and
+- CVE-2023-26916
 * Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.231-1
 - Upgrade to v2.0.231
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.164-3

@@ -1,7 +1,7 @@
 Summary:        cpio archive utility
 Name:           cpio
 Version:        2.13
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/cpio
 Group:          System Environment/System utilities
@@ -72,6 +72,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 29 2023 Shivani Agarwal <shivania2@vmware.com> 2.13-7
+- Updated newca new archive format patch
 * Mon Oct 04 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-6
 - newca: large files support
 - conflict toybox is not needed for next Photon OS release

@@ -4,7 +4,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.10.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -164,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-2
+- Bump version as a part of zlib upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-1
 - Upgrade to v1.10.30
 * Thu Dec 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.20-1

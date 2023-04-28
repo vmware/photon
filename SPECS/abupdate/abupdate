@@ -27,6 +27,10 @@ CONFIG_BOOT_TYPE="" # used to preserve config file value of BOOT_TYPE
 CONFIG_FILE="/etc/abupdate.conf"
 PHOTON_CFG="/boot/photon.cfg"
 
+TDNF_CONFIG=""
+PKG_LIST=""
+
+ARCH=$(uname -m) # e.g aarch64, x86_64
 
 # wrapper for umount
 # arg 1 - directory/device/partition to unmount
@@ -117,6 +121,11 @@ parse_cmdline_args() {
             shift
             update "$@"
         ;;
+        # install/uninstall specific package into shadow partition
+        install|uninstall)
+            read_cfg 1
+            package_wrapper "$@"
+        ;;
         # switches to B partition and kexec boots from there
         switch)
             read_cfg 1
@@ -144,6 +153,68 @@ parse_cmdline_args() {
             help_menu 1
         ;;
     esac
+}
+
+# Parse package list given to update/(un)install commands, and
+# extract the TDNF config file if it is included (with a -c flag)
+# arg 1 - package list passed to install/uninstall/update commands
+parse_pkg_list() {
+    if [[ $PACKAGE_MANAGER == "RPM" ]]; then
+        PKG_LIST="$@"
+        return
+    fi
+
+    # remove references to -c /path/to/config if TDNF_CONFIG is specified
+    if [[ -n "$TDNF_CONFIG" ]]; then
+        while (( "$#" )); do
+            if [[ "$1" == "-c" ]]; then
+                TDNF_CONFIG="$2"
+                shift
+            else
+                PKG_LIST="$PKG_LIST $1"
+            fi
+            shift
+        done
+    else
+        PKG_LIST="$@"
+    fi
+}
+
+# wrapper function to handle update/remove/install of packages to shadow partition set
+# arg 1: base command given to abupdate - install/uninstall/update
+# arg 2: rest of arguments passed to abupdate
+package_wrapper() {
+    # first opt should be the base command - ex) install, remove, update
+    local pkg_manager_opts=$1
+    [[ "$1" == "uninstall" ]] && pkg_manager_opts="remove"
+    shift
+
+    mount_b_partition
+
+    echo "Running update/install sanity checks..."
+    update_sanity_checks
+    echo "Looks good."
+
+    parse_pkg_list "$@"
+
+    if [[ "$PACKAGE_MANAGER" == "TDNF" ]]; then
+        pkg_manager_opts="$pkg_manager_opts -y --installroot $MNTPT_ROOT"
+        [[ -n "$TDNF_CONFIG" ]] && pkg_manager_opts="$pkg_manager_opts -c $TDNF_CONFIG"
+        tdnf $pkg_manager_opts $PKG_LIST || error
+    else
+        case "$pkg_manager_opts" in
+            install|update)
+                pkg_manager_opts="-Uv"
+            ;;
+            uninstall|remove)
+                pkg_manager_opts="-ev"
+            ;;
+        esac
+        pkg_manager_opts="$pkg_manager_opts --root=$MNTPT_ROOT"
+        rpm $pkg_manager_opts $PKG_LIST || error
+    fi
+
+    echo "Package operation completed successfully"
 }
 
 # deploy whole OS image to shadow partition set
@@ -285,7 +356,7 @@ update() {
     echo "Looks good."
 
     # update packages in partition B
-    update_packages "$@"
+    package_wrapper "update" "$@"
 
     unmount_b_partition
 
@@ -346,6 +417,14 @@ cat << EOF >&2
             If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
             If no args, updates all packages on the B partition set.
             If AUTO_SWITCH is set, automatically switches into B partition set
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+      install <packages>
+            Accepts a list of packages to install to the shadow (B) partition set
+            If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+      uninstall <packages>
+            Accepts a list of packages to uninstall from the shadow (B) partition set.
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
       switch
             Executes a kexec boot into the B partition set.
             If AUTO_FINISH is set, automatically finalizes the switch with the finish command
@@ -369,7 +448,6 @@ switch_sanity_checks() {
 
 update_sanity_checks() {
     fs_type_check
-    size_check
 }
 
 bootable_check() {
@@ -401,9 +479,14 @@ bootable_check() {
         # just check to make sure that the efi files are present
         # if not, probably it is not bootable
         # filesystem type check should also occur previously
-        [[ -f "$MNTPT_EFI/EFI/BOOT/bootx64.efi" ]] || error "EFI/BOOT/bootx64.efi not found in EFI partition B"
-        [[ -f "$MNTPT_EFI/EFI/BOOT/grubx64.efi" ]] || error "EFI/BOOT/grubx64.efi not found in EFI partition B"
-        [[ -f "$MNTPT_EFI/boot/grub2/grub.cfg" ]] || error "/boot/grub2/grub.cfg not found in ROOT partition B"
+        if [[ "$ARCH" == "x86_64" ]]; then
+            [[ -f "$MNTPT_EFI/EFI/BOOT/bootx64.efi" ]] || error "EFI/BOOT/bootx64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/EFI/BOOT/grubx64.efi" ]] || error "EFI/BOOT/grubx64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/boot/grub2/grub.cfg" ]] || error "/boot/grub2/grub.cfg not found in ROOT partition B"
+        elif [[ "$ARCH" == "aarch64" ]]; then
+            [[ -f "$MNTPT_EFI/EFI/BOOT/BOOTAA64.efi" ]] || error "EFI/BOOT/BOOTAA64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/boot/grub2/grub.cfg" ]] || error "/boot/grub2/grub.cfg not found in ROOT partition B"
+        fi
     fi
 }
 
@@ -450,7 +533,7 @@ update_b_config() {
         local A_partuuid="${elem}[0]"
         local B_partuuid="${elem}[1]"
         local mnt_pt="${elem}[2]"
-        sed -i "s/\"\(${!A_partuuid}\)\" \"\(${!B_partuuid}\)\"/\"\2\" \"\1\"/" "$MNTPT_ROOT/$CONFIG_FILE" || error "Failed to update $CONFIG_FILE in B partition set"
+        sed -i -E "s/(\"?${!A_partuuid}\"?\,?) (\"?${!B_partuuid}\"?\,?)/\2 \1/" "$MNTPT_ROOT/$CONFIG_FILE" || error "Failed to update $CONFIG_FILE in B partition set"
     done
 }
 
@@ -489,6 +572,16 @@ read_cfg() {
     BOOT_TYPE="${BOOT_TYPE^^}"
     AUTO_SWITCH="${AUTO_SWITCH^^}"
     PACKAGE_MANAGER="${PACKAGE_MANAGER^^}"
+
+    # remove any trailing commas from sets (easy mistake to make)
+    for usr_set in "${SETS[@]}"; do
+        local A_partuuid="${usr_set}[0]"
+        local B_partuuid="${usr_set}[1]"
+        local mnt_pt="${usr_set}[2]"
+        # new_set can't be local, otherwise doesn't work
+        declare -n new_set=$usr_set
+        new_set=( "${!A_partuuid%,}" "${!B_partuuid%,}" "${!mnt_pt%,}" )
+    done
 
     # get UUIDs from PARTUUIDs
     if [[ -n "${_ROOT[0]}" ]]; then
@@ -690,7 +783,7 @@ mount_b_partition() {
     for elem in "${SETS[@]}"; do
         local B_partuuid="${elem}[1]"
         local mnt_pt="${elem}[2]"
-        if [[ ! "$elem" == "ROOT" ]] && [[ ! "$elem" == "EFI" ]] && ! check_if_mntpt "${MNTPT_ROOT}/${!mnt_pt}"; then
+        if [[ ! "$elem" == "_ROOT" ]] && [[ ! "$elem" == "EFI" ]] && ! check_if_mntpt "${MNTPT_ROOT}/${!mnt_pt}"; then
             mkdir -p "${MNTPT_ROOT}/${!mnt_pt}"
             mount PARTUUID="${!B_partuuid}" "${MNTPT_ROOT}/${!mnt_pt}" || error "Failed to mount shadow ${!mnt_pt} partition (partuuid = ${!B_partuuid})"
         fi
@@ -799,19 +892,6 @@ update_config_files() {
     fi
     sed -i "s/${_ROOT[0]}/${_ROOT[1]}/g" "$MNTPT_ROOT/$GRUB_CFG" || error "Failed to update grub.cfg in rootfs partition"
     sed -i "s/$A_UUID_ROOT/$B_UUID_ROOT/g" "$MNTPT_ROOT/$GRUB_CFG" || error "Failed to update grub.cfg in rootfs partition"
-}
-
-# upgrades the packages in the B partition
-# accepts a list of packages
-update_packages() {
-    # update to new package versions - by default use tdnf
-    echo "Upgrading packages on second partition..."
-    if [[ "$PACKAGE_MANAGER" == "TDNF" ]]; then
-        tdnf upgrade -y "$@" --installroot $MNTPT_ROOT || error
-    elif [[ "$PACKAGE_MANAGER" == "RPM" ]]; then
-        # since we are mirroring the partitions anyways, just use the local rpm files
-        rpm -Uv "$@" --root="$MNTPT_ROOT"
-    fi
 }
 
 # uses kexec -l to load the new kernel into memory
@@ -927,6 +1007,18 @@ detect_efi_partitions() {
 # finalize the switch
 finalize() {
     local disk_name
+    local bootloader_efi
+    local grub_bootloader_efi
+
+    if [[ "$ARCH" == "aarch64" ]]; then
+        grub_bootloader_efi="\EFI\grub\grubaa64.efi"
+        bootloader_efi="\EFI\BOOT\BOOTAA64.EFI"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        grub_bootloader_efi="\EFI\grub\grubx64.efi"
+        bootloader_efi="\EFI\BOOT\grubx64.efi"
+    else
+        error "$ARCH not supported"
+    fi
 
     # if BIOS, update MBR by installing grub
     # if EFI, update efi boot entries
@@ -952,12 +1044,25 @@ finalize() {
         # overwrite MBR by grub2-install
         grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to update MBR. Is grub2-pc package installed?"
 
-    fi
-
-    if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+    elif [[ $BOOT_TYPE == "EFI" ]]; then
+        # install grub into this partition, otherwise it will use same bootloader as other partition set
+        # and that will just boot into the other partition set (in some situations)
         disk_name=$(blkid -t PARTUUID="${EFI[0]}" | cut -d ":" -f 1) || error
         disk_name=${disk_name//[0-9]/}
 
+        rpm -q --quiet grub2-efi || error "grub2-efi not installed. Install with \"tdnf install grub2-efi\""
+
+        if [[ -z "$PLATFORM" && $(find /usr/lib/grub/* -prune -name "*" | wc -l) -gt 1 ]]; then
+            error "Multiple platforms detected in /usr/lib/grub. Please specify correct platform for grub by setting PLATFORM in /etc/abupdate.conf"
+        elif [[ -z "$PLATFORM" ]]; then
+            PLATFORM=$(ls /usr/lib/grub) || error
+        fi
+
+        # install new grub bootloader for this partition set
+        grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to install new grub bootloader. Is grub2-efi package installed?"
+    fi
+
+    if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
         # update efi grub cfg in current partition to point to this partition (after switch, it will still point to previous)
         sed -i "s/$B_UUID_ROOT/$A_UUID_ROOT/g" "/boot/efi/$GRUB_CFG" || error "Failed to update grub.cfg in EFI partition"
 
@@ -976,7 +1081,7 @@ finalize() {
             partition_num="${partition_num//[!0-9]/}"
 
             # create new efi boot entry
-            efibootmgr -c -d "$disk_name" -p "$partition_num" -L grub -l \\EFI\\grub\\grubx64.efi &> /dev/null || error "Failed to create new efi boot entry (Grub)"
+            efibootmgr -c -d "$disk_name" -p "$partition_num" -L grub -l "$grub_bootloader_efi" &> /dev/null || error "Failed to create new efi boot entry (Grub)"
 
             # delete existing entry for grub
             # modifying existing doesn't seem to work
@@ -990,7 +1095,7 @@ finalize() {
             # create new Photon boot entry
             bootnum=$(efibootmgr | grep -E "(^|\s)Photon(\s|$)")
             bootnum="${bootnum//[!0-9]/}"
-            efibootmgr -c -d "$disk_name" -p "$partition_num" -L Photon -l \\EFI\\BOOT\\grubx64.efi &> /dev/null || error "Failed to create new efi boot entry (Photon)"
+            efibootmgr -c -d "$disk_name" -p "$partition_num" -L Photon -l "$bootloader_efi"  &> /dev/null || error "Failed to create new efi boot entry (Photon)"
             [[ -n $bootnum ]] && (efibootmgr -b "$bootnum" -B &> /dev/null || error "Failed to delete existing Photon boot entry")
         fi
     fi

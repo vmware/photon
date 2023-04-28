@@ -1,7 +1,7 @@
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.4
-Release:        3%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=831dc789545bb9a0b009bdb4f7fe52f6197ad8325946640f886a960d08e40b8a69eccd5a70cce51466bb5cb7f742feb78d19a9ec63383fbd03aa451508677e73
+%define sha512  %{name}=959fbd0d6bc6849da6caa13dc41c3f8818cbbd29f04b5d2ac7246c4b395b4f370f113a04cc9cfcb52be2afebfa636013ac4ad4011384c58c7ce066a45cae2751
 
 BuildRequires:  libselinux-devel = %{version}
 BuildRequires:  libsepol-devel = %{version}
@@ -96,6 +96,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
+- Automatic Version Bump
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3
 - Bump up version no. as part of swig upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2

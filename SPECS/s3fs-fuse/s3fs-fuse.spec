@@ -1,7 +1,7 @@
 Summary:        s3fs allows Linux, macOS, and FreeBSD to mount an S3 bucket via FUSE
 Name:           s3fs-fuse
 Version:        1.91
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0
 Group:          Development/Tools
 URL:            https://github.com/s3fs-fuse/s3fs-fuse
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-v%{version}.tar.gz
 %define sha512  s3fs-fuse=5b57af18395f34885b4b8a98e93b0e3f9043c9af78e415a0a6c15489611d7e21ae619e69655737de369edee15762d8726b82bc2651b5b7f5c20e26fe866a96bc
-%if %{with_check}
+%if 0%{?with_check}
 Patch0:         0001-test-Stop-failing-tests-from-running.patch
 %endif
 
@@ -20,7 +20,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pkg-config
 BuildRequires:  fuse-devel >= 2.8.4
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  openjdk11
 BuildRequires:  python3-pip
 BuildRequires:  attr
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %doc COPYING AUTHORS README.md ChangeLog
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.91-3
+- Bump version as a part of libxml2 upgrade
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.91-2
 - Use openjdk11
 * Thu Sep 08 2022 Sharan Turlapati <sturlapati@vmware.com> 1.91-1

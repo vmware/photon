@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        8.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -203,6 +203,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/libvirt/schemas/*.rng
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.10.0-2
+- Bump version as a part of libxml2 upgrade
 * Sat Jan 07 2023 Susant Sahani <ssahani@vmware.com> 8.10.0-1
 - Version Bump
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.8.0-4

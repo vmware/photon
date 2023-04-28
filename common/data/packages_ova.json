@@ -1,6 +1,6 @@
 {
     "packages": [
-                 "minimal",
-                 "linux-esx"
-                 ]
+        "minimal",
+        "linux-esx"
+    ]
 }

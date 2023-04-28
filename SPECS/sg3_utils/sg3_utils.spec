@@ -1,15 +1,17 @@
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
-Version:        1.46
+Version:        1.47
 Release:        1%{?dist}
 License:        BSD
-URL:            https://github.com/hreinecke/sg3_utils
+URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/hreinecke/sg3_utils/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ba447b5392b1a3fd6750649dc1a93e788780b80adff475efa350ca2787cc36ad27758772fc8bca33658b5e5e70bea8979a7d51686663ca6dd6a5c0a7d3f2e8c9
+Source0: http://sg.danny.cz/sg/p/%{name}-%{version}.tar.xz
+%define sha512 %{name}=ef072b8f0012d0944e21d2134aff7125e24ea24d1cbbb1aa79160e844f9a60236f1e244437a3bc08a22a7e99f613adad4a05ae5cc3916ded5a72d162cd3aa163
+
+Patch0:         0001-sg3_utils-Fix-issue-with-rescan-scsi-bus.sh-removing.patch
 
 Provides:       sg_utils
 
@@ -30,15 +32,12 @@ Package containing static library object for development.
 %autosetup -p1
 
 %build
-#make some fixes required by glibc-2.28:
-sed -i '/unistd/a #include <sys/sysmacros.h>' src/sg_dd.c src/sg_map26.c src/sg_xcopy.c
-
 %configure
 
 %install
 %make_install %{?_smp_mflags}
-install -m 755 scripts/scsi_logging_level %{buildroot}/%{_bindir}
-install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
+install -m 755 scripts/scsi_logging_level %{buildroot}%{_bindir}
+install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}%{_bindir}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -56,6 +55,10 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-1
+- Upgrade to v1.47
+* Thu Apr 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.46-2
+- fix issue with rescan-scsi-bus.sh removing hard disks
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 1.46-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.44-1

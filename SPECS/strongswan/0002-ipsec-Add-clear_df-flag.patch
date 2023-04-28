@@ -1,0 +1,548 @@
+From 1d4ca409708e2ab30ebc9c1cb01c67173363ad1d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 5 Jul 2022 11:05:41 +0000
+Subject: [PATCH 2/4] ipsec: Add clear_df flag
+
+If clear_df flag set, DF bit in Outer IP is cleared
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/charon-cmd/cmd/cmd_connection.c           |  1 +
+ src/charon-nm/nm/nm_service.c                 |  1 +
+ src/conftest/config.c                         |  1 +
+ src/libcharon/config/child_cfg.c              | 14 ++++++++++++-
+ src/libcharon/config/child_cfg.h              | 10 +++++++++
+ src/libcharon/kernel/kernel_interface.c       |  4 ++--
+ src/libcharon/kernel/kernel_interface.h       |  2 +-
+ src/libcharon/kernel/kernel_ipsec.h           |  2 +-
+ .../plugins/bypass_lan/bypass_lan_listener.c  |  1 +
+ src/libcharon/plugins/ha/ha_tunnel.c          |  1 +
+ .../kernel_netlink/kernel_netlink_ipsec.c     | 10 +++++++--
+ .../plugins/kernel_pfkey/kernel_pfkey_ipsec.c |  2 +-
+ .../plugins/load_tester/load_tester_config.c  |  1 +
+ src/libcharon/plugins/medcli/medcli_config.c  |  2 ++
+ src/libcharon/plugins/sql/sql_config.c        |  1 +
+ src/libcharon/plugins/stroke/stroke_config.c  |  4 ++++
+ src/libcharon/plugins/uci/uci_config.c        |  1 +
+ src/libcharon/plugins/unity/unity_handler.c   |  1 +
+ src/libcharon/plugins/vici/vici_config.c      |  2 ++
+ src/libcharon/sa/child_sa.c                   | 21 ++++++++++++++++++-
+ src/libcharon/sa/child_sa.h                   |  5 +++++
+ src/starter/args.c                            |  1 +
+ src/starter/confread.c                        | 12 +++++++++++
+ src/starter/confread.h                        |  1 +
+ src/starter/keywords.h.in                     |  1 +
+ src/starter/keywords.txt                      |  1 +
+ src/starter/starterstroke.c                   |  1 +
+ src/stroke/stroke_msg.h                       |  1 +
+ 28 files changed, 96 insertions(+), 9 deletions(-)
+
+diff --git a/src/charon-cmd/cmd/cmd_connection.c b/src/charon-cmd/cmd/cmd_connection.c
+index e1023cc..e712a06 100644
+--- a/src/charon-cmd/cmd/cmd_connection.c
++++ b/src/charon-cmd/cmd/cmd_connection.c
+@@ -354,6 +354,7 @@ static child_cfg_t* create_child_cfg(private_cmd_connection_t *this,
+ 			}
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 	};
+ 
+ 	child_cfg = child_cfg_create("cmd", &child);
+diff --git a/src/charon-nm/nm/nm_service.c b/src/charon-nm/nm/nm_service.c
+index 5d6d329..cf57960 100644
+--- a/src/charon-nm/nm/nm_service.c
++++ b/src/charon-nm/nm/nm_service.c
+@@ -634,6 +634,7 @@ static gboolean connect_(NMVpnServicePlugin *plugin, NMConnection *connection,
+ 			},
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 		.dpd_action = ACTION_START,
+ 		.close_action = ACTION_START,
+ 	};
+diff --git a/src/conftest/config.c b/src/conftest/config.c
+index a6dc61f..ab7e84a 100644
+--- a/src/conftest/config.c
++++ b/src/conftest/config.c
+@@ -170,6 +170,7 @@ static child_cfg_t *load_child_config(private_config_t *this,
+ 	}
+ 	data.tfc = settings->get_int(settings, "configs.%s.%s.tfc_padding",
+ 								  0, config, child);
++	data.clear_df = false;
+ 	child_cfg = child_cfg_create(child, &data);
+ 
+ 	token = settings->get_str(settings, "configs.%s.%s.proposal",
+diff --git a/src/libcharon/config/child_cfg.c b/src/libcharon/config/child_cfg.c
+index bc9cff7..33e1439 100644
+--- a/src/libcharon/config/child_cfg.c
++++ b/src/libcharon/config/child_cfg.c
+@@ -183,6 +183,11 @@ struct private_child_cfg_t {
+ 	 * DS header field copy mode
+ 	 */
+ 	dscp_copy_t copy_dscp;
++
++	/**
++	 * clear DF flag in outer IP header
++	 */
++	bool clear_df;
+ };
+ 
+ METHOD(child_cfg_t, get_name, char*,
+@@ -727,6 +732,12 @@ METHOD(child_cfg_t, get_ref, child_cfg_t*,
+ 	return &this->public;
+ }
+ 
++METHOD(child_cfg_t, is_clear_df, bool,
++	private_child_cfg_t *this)
++{
++	return this->clear_df;
++}
++
+ METHOD(child_cfg_t, destroy, void,
+ 	private_child_cfg_t *this)
+ {
+@@ -781,6 +792,7 @@ child_cfg_t *child_cfg_create(char *name, child_cfg_create_t *data)
+ 			.has_option = _has_option,
+ 			.equals = _equals,
+ 			.get_ref = _get_ref,
++			.is_clear_df = _is_clear_df,
+ 			.destroy = _destroy,
+ 			.get_hw_offload = _get_hw_offload,
+ 			.get_copy_dscp = _get_copy_dscp,
+@@ -816,6 +828,6 @@ child_cfg_t *child_cfg_create(char *name, child_cfg_create_t *data)
+ 		.hw_offload = data->hw_offload,
+ 		.copy_dscp = data->copy_dscp,
+ 	);
+-
++	this->clear_df = data->clear_df;
+ 	return &this->public;
+ }
+diff --git a/src/libcharon/config/child_cfg.h b/src/libcharon/config/child_cfg.h
+index 9c44252..26fa897 100644
+--- a/src/libcharon/config/child_cfg.h
++++ b/src/libcharon/config/child_cfg.h
+@@ -346,6 +346,14 @@ struct child_cfg_t {
+ 	 */
+ 	child_cfg_t* (*get_ref) (child_cfg_t *this);
+ 
++	/**
++	 * Check whether DF bit has to be cleared in Outer IP
++	 *
++	 * @return				TRUE, if DF bit should be cleared
++	 *						FALSE, otherwise
++	 */
++	bool (*is_clear_df)(child_cfg_t *this);
++
+ 	/**
+ 	 * Destroys the child_cfg object.
+ 	 *
+@@ -436,6 +444,8 @@ struct child_cfg_create_t {
+ 	hw_offload_t hw_offload;
+ 	/** How to handle the DS header field in tunnel mode */
+ 	dscp_copy_t copy_dscp;
++	/** DF clear bit */
++	bool clear_df;
+ };
+ 
+ /**
+diff --git a/src/libcharon/kernel/kernel_interface.c b/src/libcharon/kernel/kernel_interface.c
+index 4f4a997..207cb8e 100644
+--- a/src/libcharon/kernel/kernel_interface.c
++++ b/src/libcharon/kernel/kernel_interface.c
+@@ -472,13 +472,13 @@ METHOD(kernel_interface_t, release_reqid, status_t,
+ 
+ METHOD(kernel_interface_t, add_sa, status_t,
+ 	private_kernel_interface_t *this, kernel_ipsec_sa_id_t *id,
+-	kernel_ipsec_add_sa_t *data)
++	kernel_ipsec_add_sa_t *data, bool clear_df)
+ {
+ 	if (!this->ipsec)
+ 	{
+ 		return NOT_SUPPORTED;
+ 	}
+-	return this->ipsec->add_sa(this->ipsec, id, data);
++	return this->ipsec->add_sa(this->ipsec, id, data, clear_df);
+ }
+ 
+ METHOD(kernel_interface_t, update_sa, status_t,
+diff --git a/src/libcharon/kernel/kernel_interface.h b/src/libcharon/kernel/kernel_interface.h
+index 21b777a..657afd8 100644
+--- a/src/libcharon/kernel/kernel_interface.h
++++ b/src/libcharon/kernel/kernel_interface.h
+@@ -182,7 +182,7 @@ struct kernel_interface_t {
+ 	 * @return				SUCCESS if operation completed
+ 	 */
+ 	status_t (*add_sa)(kernel_interface_t *this, kernel_ipsec_sa_id_t *id,
+-					   kernel_ipsec_add_sa_t *data);
++					   kernel_ipsec_add_sa_t *data, bool clear_df);
+ 
+ 	/**
+ 	 * Update the hosts on an installed SA.
+diff --git a/src/libcharon/kernel/kernel_ipsec.h b/src/libcharon/kernel/kernel_ipsec.h
+index ae8b82a..6c60850 100644
+--- a/src/libcharon/kernel/kernel_ipsec.h
++++ b/src/libcharon/kernel/kernel_ipsec.h
+@@ -248,7 +248,7 @@ struct kernel_ipsec_t {
+ 	 * @return				SUCCESS if operation completed
+ 	 */
+ 	status_t (*add_sa)(kernel_ipsec_t *this, kernel_ipsec_sa_id_t *id,
+-					   kernel_ipsec_add_sa_t *data);
++					   kernel_ipsec_add_sa_t *data, bool clear_df);
+ 
+ 	/**
+ 	 * Update the hosts on an installed SA.
+diff --git a/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c b/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c
+index db7abd8..7375cb9 100644
+--- a/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c
++++ b/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c
+@@ -163,6 +163,7 @@ static job_requeue_t update_bypass(private_bypass_lan_listener_t *this)
+ 		{
+ 			child_cfg_create_t child = {
+ 				.mode = MODE_PASS,
++				.clear_df = false,
+ 			};
+ 			child_cfg_t *cfg;
+ 			char name[128];
+diff --git a/src/libcharon/plugins/ha/ha_tunnel.c b/src/libcharon/plugins/ha/ha_tunnel.c
+index d7e83a0..05d7c77 100644
+--- a/src/libcharon/plugins/ha/ha_tunnel.c
++++ b/src/libcharon/plugins/ha/ha_tunnel.c
+@@ -215,6 +215,7 @@ static void setup_tunnel(private_ha_tunnel_t *this,
+ 			},
+ 		},
+ 		.mode = MODE_TRANSPORT,
++		.clear_df = false,
+ 	};
+ 
+ 	/* setup credentials */
+diff --git a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
+index 6f7b50f..78df0da 100644
+--- a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
++++ b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
+@@ -1580,7 +1580,7 @@ out:
+ 
+ METHOD(kernel_ipsec_t, add_sa, status_t,
+ 	private_kernel_netlink_ipsec_t *this, kernel_ipsec_sa_id_t *id,
+-	kernel_ipsec_add_sa_t *data)
++	kernel_ipsec_add_sa_t *data, bool clear_df)
+ {
+ 	netlink_buf_t request;
+ 	const char *alg_name;
+@@ -1591,6 +1591,7 @@ METHOD(kernel_ipsec_t, add_sa, status_t,
+ 	ipsec_mode_t mode = data->mode, original_mode = data->mode;
+ 	traffic_selector_t *first_src_ts, *first_dst_ts;
+ 	status_t status = FAILED;
++	bool is_hcx_enabled = false;
+ 
+ 	/* if IPComp is used, we install an additional IPComp SA. if the cpi is 0
+ 	 * we are in the recursive call below */
+@@ -1619,7 +1620,7 @@ METHOD(kernel_ipsec_t, add_sa, status_t,
+ 			.inbound = data->inbound,
+ 			.update = data->update,
+ 		};
+-		add_sa(this, &ipcomp_id, &ipcomp_sa);
++		add_sa(this, &ipcomp_id, &ipcomp_sa, clear_df);
+ 		ipcomp = IPCOMP_NONE;
+ 		/* use transport mode ESP SA, IPComp uses tunnel mode */
+ 		mode = MODE_TRANSPORT;
+@@ -1642,6 +1643,11 @@ METHOD(kernel_ipsec_t, add_sa, status_t,
+ 	sa->id.spi = id->spi;
+ 	sa->id.proto = id->proto;
+ 	sa->family = id->src->get_family(id->src);
++	is_hcx_enabled = lib->settings->get_bool(lib->settings,
++				"%s.is_hcx_enabled", FALSE, lib->ns);
++	if (is_hcx_enabled && clear_df) {
++		sa->flags |= XFRM_STATE_NOPMTUDISC;
++	}
+ 	sa->mode = mode2kernel(mode);
+ 
+ 	if (!data->copy_df)
+diff --git a/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c b/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
+index e73767d..74265ec 100644
+--- a/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
++++ b/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
+@@ -1704,7 +1704,7 @@ METHOD(kernel_ipsec_t, get_cpi, status_t,
+ 
+ METHOD(kernel_ipsec_t, add_sa, status_t,
+ 	private_kernel_pfkey_ipsec_t *this, kernel_ipsec_sa_id_t *id,
+-	kernel_ipsec_add_sa_t *data)
++	kernel_ipsec_add_sa_t *data, bool clear_df)
+ {
+ 	unsigned char request[PFKEY_BUFFER_SIZE];
+ 	struct sadb_msg *msg, *out = NULL;
+diff --git a/src/libcharon/plugins/load_tester/load_tester_config.c b/src/libcharon/plugins/load_tester/load_tester_config.c
+index 58e1cd9..cd037a9 100644
+--- a/src/libcharon/plugins/load_tester/load_tester_config.c
++++ b/src/libcharon/plugins/load_tester/load_tester_config.c
+@@ -713,6 +713,7 @@ static peer_cfg_t* generate_config(private_load_tester_config_t *this, u_int num
+ 			},
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 	};
+ 
+ 	if (num)
+diff --git a/src/libcharon/plugins/medcli/medcli_config.c b/src/libcharon/plugins/medcli/medcli_config.c
+index f50f79d..edff21f 100644
+--- a/src/libcharon/plugins/medcli/medcli_config.c
++++ b/src/libcharon/plugins/medcli/medcli_config.c
+@@ -158,6 +158,7 @@ METHOD(backend_t, get_peer_cfg_by_name, peer_cfg_t*,
+ 			},
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 	};
+ 
+ 	if (streq(name, "medcli-mediation"))
+@@ -253,6 +254,7 @@ METHOD(enumerator_t, peer_enumerator_enumerate, bool,
+ 			},
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 	};
+ 
+ 	VA_ARGS_VGET(args, cfg);
+diff --git a/src/libcharon/plugins/sql/sql_config.c b/src/libcharon/plugins/sql/sql_config.c
+index aef1e1c..583a70d 100644
+--- a/src/libcharon/plugins/sql/sql_config.c
++++ b/src/libcharon/plugins/sql/sql_config.c
+@@ -186,6 +186,7 @@ static child_cfg_t *build_child_cfg(private_sql_config_t *this, enumerator_t *e)
+ 			.dpd_action = dpd,
+ 			.close_action = close,
+ 			.updown = updown,
++			.clear_df = false,
+ 		};
+ 		child_cfg = child_cfg_create(name, &child);
+ 		add_esp_proposals(this, child_cfg, id);
+diff --git a/src/libcharon/plugins/stroke/stroke_config.c b/src/libcharon/plugins/stroke/stroke_config.c
+index 55db379..e271b3a 100644
+--- a/src/libcharon/plugins/stroke/stroke_config.c
++++ b/src/libcharon/plugins/stroke/stroke_config.c
+@@ -1097,8 +1097,12 @@ static child_cfg_t *build_child_cfg(private_stroke_config_t *this,
+ 		.dpd_action = map_action(msg->add_conn.dpd.action),
+ 		.close_action = map_action(msg->add_conn.close_action),
+ 		.updown = msg->add_conn.me.updown,
++		.clear_df = msg->add_conn.clear_df != 0,
+ 	};
+ 
++	DBG1(DBG_CFG, "build_child_cfg: conn %s, clear_df %d",
++					msg->add_conn.name, msg->add_conn.clear_df);
++
+ 	child_cfg = child_cfg_create(msg->add_conn.name, &child);
+ 	if (msg->add_conn.replay_window != -1)
+ 	{
+diff --git a/src/libcharon/plugins/uci/uci_config.c b/src/libcharon/plugins/uci/uci_config.c
+index 3a7fc7a..ecd0c51 100644
+--- a/src/libcharon/plugins/uci/uci_config.c
++++ b/src/libcharon/plugins/uci/uci_config.c
+@@ -152,6 +152,7 @@ METHOD(enumerator_t, peer_enumerator_enumerate, bool,
+ 			},
+ 		},
+ 		.mode = MODE_TUNNEL,
++		.clear_df = false,
+ 	};
+ 
+ 	VA_ARGS_VGET(args, cfg);
+diff --git a/src/libcharon/plugins/unity/unity_handler.c b/src/libcharon/plugins/unity/unity_handler.c
+index 9a45275..a83bfed 100644
+--- a/src/libcharon/plugins/unity/unity_handler.c
++++ b/src/libcharon/plugins/unity/unity_handler.c
+@@ -207,6 +207,7 @@ static job_requeue_t add_exclude_async(entry_t *entry)
+ 	child_cfg_t *child_cfg;
+ 	child_cfg_create_t child = {
+ 		.mode = MODE_PASS,
++		.clear_df = false,
+ 	};
+ 	ike_sa_t *ike_sa;
+ 	char name[128];
+diff --git a/src/libcharon/plugins/vici/vici_config.c b/src/libcharon/plugins/vici/vici_config.c
+index 0c061d4..87e93ed 100644
+--- a/src/libcharon/plugins/vici/vici_config.c
++++ b/src/libcharon/plugins/vici/vici_config.c
+@@ -2081,6 +2081,8 @@ CALLBACK(children_sn, bool,
+ 
+ 	log_child_data(&child, name);
+ 
++	child.cfg.clear_df = false;
++
+ 	cfg = child_cfg_create(name, &child.cfg);
+ 
+ 	if (child.replay_window != REPLAY_UNDEFINED)
+diff --git a/src/libcharon/sa/child_sa.c b/src/libcharon/sa/child_sa.c
+index 2c77ee2..ab5a3d0 100644
+--- a/src/libcharon/sa/child_sa.c
++++ b/src/libcharon/sa/child_sa.c
+@@ -279,6 +279,11 @@ struct private_child_sa_t {
+ 	 * last number of outbound bytes
+ 	 */
+ 	uint64_t other_usepackets;
++
++	/**
++	 * clear DF bit in outer IP
++	 */
++	bool clear_df;
+ };
+ 
+ /**
+@@ -499,6 +504,13 @@ METHOD(child_sa_t, create_ts_enumerator, enumerator_t*,
+ 	return array_create_enumerator(this->other_ts);
+ }
+ 
++METHOD(child_sa_t, is_clear_df, bool,
++	   private_child_sa_t *this)
++{
++	return this->clear_df;
++}
++
++
+ typedef struct policy_enumerator_t policy_enumerator_t;
+ 
+ /**
+@@ -1001,7 +1013,7 @@ static status_t install_internal(private_child_sa_t *this, chunk_t encr,
+ 		sa.mark.value = inbound ? this->mark_in.value : this->mark_out.value;
+ 	}
+ 
+-	status = charon->kernel->add_sa(charon->kernel, &id, &sa);
++	status = charon->kernel->add_sa(charon->kernel, &id, &sa, this->clear_df);
+ 
+ 	my_ts->destroy(my_ts);
+ 	other_ts->destroy(other_ts);
+@@ -2054,6 +2066,7 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
+ 			.create_ts_enumerator = _create_ts_enumerator,
+ 			.create_policy_enumerator = _create_policy_enumerator,
+ 			.destroy = _destroy,
++			.is_clear_df = _is_clear_df,
+ 		},
+ 		.encap = data->encap,
+ 		.ipcomp = IPCOMP_NONE,
+@@ -2078,6 +2091,12 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
+ 	this->config = config;
+ 	config->get_ref(config);
+ 
++	if (config != NULL && config->is_clear_df != NULL) {
++		this->clear_df = config->is_clear_df(config);
++	} else {
++		this->clear_df = false;
++	}
++
+ 	if (data->mark_in)
+ 	{
+ 		this->mark_in.value = data->mark_in;
+diff --git a/src/libcharon/sa/child_sa.h b/src/libcharon/sa/child_sa.h
+index 37f0027..742fa86 100644
+--- a/src/libcharon/sa/child_sa.h
++++ b/src/libcharon/sa/child_sa.h
+@@ -522,6 +522,11 @@ struct child_sa_t {
+ 	 * Destroys a child_sa.
+ 	 */
+ 	void (*destroy) (child_sa_t *this);
++
++	/**
++	 * Clear DF bit in outer IP
++	 */
++	bool (*is_clear_df) (child_sa_t *this);
+ };
+ 
+ /**
+diff --git a/src/starter/args.c b/src/starter/args.c
+index b71a216..cd72730 100644
+--- a/src/starter/args.c
++++ b/src/starter/args.c
+@@ -178,6 +178,7 @@ static const token_info_t token_info[] =
+ 	{ ARG_MISC, 0, NULL  /* KW_MARK_IN */                                          },
+ 	{ ARG_MISC, 0, NULL  /* KW_MARK_OUT */                                         },
+ 	{ ARG_MISC, 0, NULL  /* KW_TFC */                                              },
++	{ ARG_MISC, 0, NULL  /* KW_CLEAR_DF */                                         },
+ 	{ ARG_MISC, 0, NULL  /* KW_PFS_DEPRECATED */                                   },
+ 	{ ARG_MISC, 0, NULL  /* KW_CONN_DEPRECATED */                                  },
+ 
+diff --git a/src/starter/confread.c b/src/starter/confread.c
+index 5065bc3..1aa7ccc 100644
+--- a/src/starter/confread.c
++++ b/src/starter/confread.c
+@@ -212,6 +212,7 @@ static void conn_defaults(starter_conn_t *conn)
+ 	conn->dpd_delay             =  30; /* seconds */
+ 	conn->dpd_timeout           = 150; /* seconds */
+ 	conn->replay_window         = SA_REPLAY_WINDOW_DEFAULT;
++	conn->clear_df              = false;
+ 	conn->fragmentation         = FRAGMENTATION_YES;
+ 
+ 	conn->left.sendcert = CERT_SEND_IF_ASKED;
+@@ -514,6 +515,17 @@ static void handle_keyword(kw_token_t token, starter_conn_t *conn, char *key,
+ 		case KW_XAUTH:
+ 			KW_SA_OPTION_FLAG("server", "client", SA_OPTION_XAUTH_SERVER)
+ 			break;
++		case KW_CLEAR_DF:
++			DBG1(DBG_APP, "handle_keyword: %s=%s", key, value);
++			if (streq(value, "yes"))
++			{
++				conn->clear_df = true;
++			}
++            else if (streq(value, "no"))
++			{
++				conn->clear_df = false;
++			}
++			break;
+ 		default:
+ 			break;
+ 	}
+diff --git a/src/starter/confread.h b/src/starter/confread.h
+index 0c22481..fbbe85e 100644
+--- a/src/starter/confread.h
++++ b/src/starter/confread.h
+@@ -147,6 +147,7 @@ struct starter_conn {
+ 		uint32_t       tfc;
+ 		bool            install_policy;
+ 		bool            aggressive;
++		bool            clear_df;
+ 		starter_end_t   left, right;
+ 
+ 		unsigned long   id;
+diff --git a/src/starter/keywords.h.in b/src/starter/keywords.h.in
+index 258dc2b..071e344 100644
+--- a/src/starter/keywords.h.in
++++ b/src/starter/keywords.h.in
+@@ -77,6 +77,7 @@ enum kw_token_t {
+ 	KW_MARK_IN,
+ 	KW_MARK_OUT,
+ 	KW_TFC,
++	KW_CLEAR_DF,
+ 	KW_PFS_DEPRECATED,
+ 	KW_CONN_DEPRECATED,
+ 
+diff --git a/src/starter/keywords.txt b/src/starter/keywords.txt
+index 52845f3..c0005ba 100644
+--- a/src/starter/keywords.txt
++++ b/src/starter/keywords.txt
+@@ -166,3 +166,4 @@ pfsgroup,          KW_PFS_DEPRECATED
+ eap,               KW_CONN_DEPRECATED
+ leftnexthop,       KW_LEFT_DEPRECATED
+ rightnexthop,      KW_RIGHT_DEPRECATED
++cleardf,           KW_CLEAR_DF
+diff --git a/src/starter/starterstroke.c b/src/starter/starterstroke.c
+index f4cfc15..147a32e 100644
+--- a/src/starter/starterstroke.c
++++ b/src/starter/starterstroke.c
+@@ -231,6 +231,7 @@ int starter_stroke_add_conn(starter_config_t *cfg, starter_conn_t *conn)
+ 	msg->add_conn.mark_out.value = conn->mark_out.value;
+ 	msg->add_conn.mark_out.mask = conn->mark_out.mask;
+ 	msg->add_conn.tfc = conn->tfc;
++	msg->add_conn.clear_df = conn->clear_df ? 1 : 0;
+ 
+ 	add_end(&msg, offsetof(stroke_msg_t, add_conn.me), &conn->left);
+ 	add_end(&msg, offsetof(stroke_msg_t, add_conn.other), &conn->right);
+diff --git a/src/stroke/stroke_msg.h b/src/stroke/stroke_msg.h
+index 8ec08ad..f5aa63b 100644
+--- a/src/stroke/stroke_msg.h
++++ b/src/stroke/stroke_msg.h
+@@ -304,6 +304,7 @@ struct stroke_msg_t {
+ 			stroke_end_t me, other;
+ 			uint32_t replay_window;
+ 			bool sha256_96;
++			int clear_df;
+ 		} add_conn;
+ 
+ 		/* data for STR_ADD_CA */
+-- 
+2.35.6
+

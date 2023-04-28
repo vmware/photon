@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        5%{?dist}
+Release:        8%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
 Source1:        photon.ini
 Source2:        %{name}.service
 Source3:        %{name}.ini
-
+Source4:        %{name}.sysusers
 BuildRequires:  python3-devel
 BuildRequires:  jansson-devel
 BuildRequires:  libxml2-devel
@@ -39,6 +39,7 @@ BuildRequires:  systemd-devel
 BuildRequires:  tcp_wrappers-devel
 BuildRequires:  ruby
 
+Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       jansson
 Requires:       libstdc++
@@ -115,12 +116,10 @@ mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
 d /run/%{name} 0775 %{name} %{name}
 EOF
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
-getent group %{name} &> /dev/null || groupadd -r %{name} &> /dev/null || exit 1
-getent passwd %{name} &> /dev/null || \
-    useradd -c "uWSGI daemon user" -d /run/%{name} -g %{name} \
-        -s /sbin/nologin -M -r %{name} &> /dev/null || exit 1
+%sysusers_create_compat %{SOURCE4}
 
 %post
 %systemd_post %{name}.service
@@ -141,6 +140,7 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 %{_tmpfilesdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}.d
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root,-)
@@ -234,6 +234,12 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.21-8
+- Bump version as a part of libxml2 upgrade
+* Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-7
+- Bump version as a part of httpd v2.4.56 upgrade
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.0.21-6
+- Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.21-5
 - Bump version as a part of openldap upgrade
 * Tue Jan 31 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.21-4

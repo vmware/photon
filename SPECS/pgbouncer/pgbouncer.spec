@@ -1,23 +1,25 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
 %define sha512    pgbouncer=5913ce542f0f694f114db8a2f339e536fb2b5887efb160b7ce3c708ae3d638bee95943104eafb9fbc4fc225649bd5625da2ccf1b56489afe33ebf8aacac48863
 Source1:          pgbouncer.service
+Source2:          %{name}.sysusers
 Group:            Application/Databases.
 Vendor:           VMware, Inc.
 Distribution:     Photon
 BuildRequires:    libevent-devel
 BuildRequires:    openssl-devel
 BuildRequires:    systemd
+BuildRequires:    systemd-devel
 BuildRequires:    pkg-config
 Requires:         libevent
 Requires:         openssl
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
@@ -39,6 +41,7 @@ install -p -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}/etc/systemd/system/
 install -m 0644 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %check
 pushd test
@@ -46,12 +49,7 @@ make all %{?_smp_mflags}
 popd
 
 %pre
-if ! getent group %{name} >/dev/null; then
-    /sbin/groupadd -r %{name}
-fi
-if ! getent passwd %{name} >/dev/null; then
-    /sbin/useradd -g %{name} %{name}
-fi
+%sysusers_create_compat %{SOURCE2}
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -61,12 +59,6 @@ fi
 
 %postun
 if [ $1 -eq 0 ] ; then
-    if getent passwd %{name} >/dev/null; then
-        /sbin/userdel %{name}
-    fi
-    if getent group %{name} >/dev/null; then
-        /sbin/groupdel %{name}
-    fi
     rm -rf /var/log/%{name}
     rm -rf /var/run/%{name}
 fi
@@ -79,8 +71,11 @@ fi
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
 /usr/share/doc/pgbouncer/*
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
+- Use systemd-rpm-macros for user creation
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
 -   Automatic Version Bump
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2

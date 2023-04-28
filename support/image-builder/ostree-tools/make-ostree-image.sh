@@ -37,6 +37,8 @@ cat > ${SCRIPT_PATH}/photon-base.json << EOF
 
     "documentation": false,
 
+    "tmp-is-dir": true,
+
     "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
                  "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",
                  "file", "findutils", "gdbm", "grep", "gzip", "iana-etc",
@@ -59,16 +61,6 @@ cat > ${SCRIPT_PATH}/mk-ostree-server.sh << EOF
 
 ROOT=$1
 
-cat > /etc/yum.repos.d/photon-ostree.repo << EOT
-[photon-ostree]
-name=VMware Photon OSTree Linux ${PH_VERSION}($ARCHITECTURE)
-gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
-gpgcheck=0
-enabled=1
-skip_if_unavailable=True
-baseurl=file:///RPMS
-EOT
-
 cat > photon-ostree.repo << EOT
 [photon-ostree]
 name=VMware Photon OSTree Linux ${PH_VERSION}($ARCHITECTURE)
@@ -78,6 +70,8 @@ enabled=1
 skip_if_unavailable=True
 baseurl=file:///RPMS
 EOT
+
+cp photon-ostree.repo /etc/yum.repos.d
 
 if ! tdnf install -y rpm ostree rpm-ostree --disablerepo=* --enablerepo=photon-ostree; then
   echo "ERROR: failed to install packages while preparing ostree server" 1>&2
@@ -96,6 +90,8 @@ if ! rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json
 fi
 ostree summary --repo=${ROOT}/srv/rpm-ostree/repo --update
 ostree summary -v --repo=${ROOT}/srv/rpm-ostree/repo
+
+rm -f photon-ostree.repo
 EOF
 
 chmod +x ${SCRIPT_PATH}/mk-ostree-server.sh

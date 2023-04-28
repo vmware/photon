@@ -71,9 +71,18 @@ start_repo_server()
   done
 }
 
+ZstdSupported=-1
 rpmSupportsZstd()
 {
-  rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'
+  [ $ZstdSupported -ge 0 ] && return $ZstdSupported
+
+  if rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'; then
+    ZstdSupported=0
+  else
+    ZstdSupported=1
+  fi
+
+  return $ZstdSupported
 }
 
 run_cmd()
@@ -112,6 +121,7 @@ create_container_img_archive()
   docker_build "${img_name}" "${docker_fn}" "${path}"
 
   docker save -o "${tar_name}" "${img_name}"
+  docker rmi -f "${img_name}"
 
   gzip -9 "${tar_name}"
   mv -f "${tar_name}.gz" "${dest_path}"

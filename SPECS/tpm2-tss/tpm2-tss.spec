@@ -1,7 +1,7 @@
 Summary:    OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:       tpm2-tss
 Version:    3.2.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD 2-Clause
 URL:        https://github.com/tpm2-software/tpm2-tss
 Group:      System Environment/Security
@@ -10,11 +10,13 @@ Distribution:   Photon
 
 Source0: https://github.com/tpm2-software/tpm2-tss/releases/download/3.2.0/%{name}-%{version}.tar.gz
 %define sha512 %{name}=cabb411f074dfa94919ba914849aac77a0ac2f50622e28a1406cf575369148774748e0e2b7a7c566ec83561a96d4b883bac5a3b1763f4cf48668a0c5d68c0a23
-
+Source1: %{name}.sysusers
 BuildRequires:  openssl-devel
+BuildRequires:  systemd-devel
 BuildRequires:  shadow
 
 Requires: openssl
+Requires: systemd-rpm-macros
 
 %description
 OSS implementation of the TCG TPM2 Software Stack (TSS2)
@@ -40,28 +42,19 @@ The libraries and header files needed for TSS2 development.
 
 %install
 %make_install %{?_smp_mflags}
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %post
-/sbin/ldconfig
+%sysusers_create_compat %{SOURCE1}
 mkdir -p /var/lib/tpm
-if [ $1 -eq 1 ]; then
-  # this is initial installation
-  if ! getent group tss >/dev/null; then
-    groupadd tss
-  fi
-  if ! getent passwd tss >/dev/null; then
-    useradd -c "TCG Software Stack" -d /var/lib/tpm -g tss \
-      -s /bin/false tss
-  fi
-fi
-
-%postun
+chown -R tss:tss /var/lib/tpm
 /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/udev/rules.d/tpm-udev.rules
 %{_libdir}/*.so.*
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root)
@@ -72,6 +65,8 @@ fi
 %{_mandir}/man7
 
 %changelog
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.2.0-4
+- Use systemd-rpm-macros for user creation
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-3
 - Fix library files packaging
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-2
