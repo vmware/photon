@@ -47,14 +47,14 @@ The Photon team fixes vulnerabilities and publishes advisories to [https://githu
 Use the `tdnf updateinfo info`, `tdnf update --security` or `tdnf update ---sec-severity <level>` commands to check if security updates are available. For example:
 
 
-Check if there are any security updates
+Check if there are any security updates.
 
 ```console
 root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
 ```
 
-Check if there are security updates for libssh2. note this is relative to what is installed in local
+Check if there are security updates for libssh2. Note this is relative to what is installed in local.
 
 ```console
 root@photon[ ~ ]# tdnf updateinfo list libssh2
@@ -93,7 +93,7 @@ Needs Reboot: 0
 Description : Security fixes for {'CVE-2019-3855'}
 ``` 
  
-install all security updates >= score 9.0 (CVSS_v3.0_Severity)
+Install all security updates >= score 9.0 (CVSS_v3.0_Severity).
 
 ```console
 root@photon [ ~ ]# tdnf update --sec-severity 9.0
