@@ -1,11 +1,11 @@
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
-Version:        0.9.71
-Release:        2%{?dist}
+Version:        0.9.76
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha1    libmicrohttpd=84db6412fb1cb44da69b07494b594b97c2ee80b9
+%define sha512  %{name}=9ff8a837892142376eaeaf50c0b0dba76697d0ff44b908434cba8db4324c57dfb8bbcc1a922b97d825891ac10f50693dee9388531856e0fa81fa2cfeac538581
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,6 @@ Requires:       gnutls
 %description
 GNU libmicrohttpd is a small C library that is supposed to make it
 easy to run an HTTP server as part of another application.
-Key features that distinguish libmicrohttpd from other projects are:
 
 %package devel
 Summary:        Development files for libmicrohttpd
@@ -27,15 +26,14 @@ Requires:       gnutls-devel
 Development files for libmicrohttpd
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-autoreconf --install
 %configure --disable-static --with-gnutls --enable-https=yes
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 rm -f %{buildroot}%{_libdir}/*.la
 rm -f %{buildroot}%{_infodir}/dir
@@ -45,9 +43,11 @@ rm -f %{buildroot}%{_bindir}/demo
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %{_libdir}/libmicrohttpd.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/microhttpd.h
 %{_libdir}/libmicrohttpd.so
 %{_libdir}/pkgconfig/libmicrohttpd.pc
@@ -58,6 +58,8 @@ rm -f %{buildroot}%{_bindir}/demo
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Fri Apr 28 2023 Ankit Jain <ankitja@vmware.com> 0.9.76-1
+- Updated to v0.9.76
 * Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.9.71-2
 - Requires gnutls-devel for installation
 * Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.71-1
