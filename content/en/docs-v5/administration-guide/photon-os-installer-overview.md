@@ -10,16 +10,16 @@ The Photon OS Installer is an initiative that aims to separate out installer sou
 
 You can use the Photon OS Installer to perform the following tasks:
 
-- Generate Photon Installer executable
-- Create Photon Images (ISO, GCE, AMI, AZURE, OVA, and so on)
-- Make Photon Installer Source code installable through  the pip interface and use it as a python library.
+- Generate Photon OS Installer executable
+- Create Photon OS Images (ISO, GCE, AMI, AZURE, OVA, and so on)
+- Make Photon OS Installer Source code installable through the pip interface and use it as a python library.
 
 
 ## Dependencies
 
 The Photon OS installer has the following dependencies:
 
-**Build Dependecies:**
+**Build Dependencies:**
 
 - python3
 - python3-pyinstaller 
@@ -30,7 +30,7 @@ The Photon OS installer has the following dependencies:
 - python3-curses
 
 
-**Run time dependecies:**
+**Run time dependencies:**
 
 - dosfstools
 - efibootmgr
@@ -57,7 +57,7 @@ To build the Photon OS Installer executable on Photon OS, run the following comm
 ➜  ~ pyinstaller --onefile photon-installer.spec
 ```   
 
-To build the Photon Installer executable on other distros, run the following commands:
+To build the Photon OS Installer executable on other distros, run the following commands:
 
 ```
 ➜  ~ pip3 install setuptools pyinstaller
@@ -82,7 +82,7 @@ azure	|	|	|
 rpi3	|	|	|
 
 
-To build Photon Cloud images using Photon OS Installer, run the following commands:
+To build Photon OS Cloud images using Photon OS Installer, run the following commands:
 
 ```
 ➜  ~ pip3 install git+https://github.com/vmware/photon-os-installer.git
@@ -108,4 +108,4 @@ installer.execute()
 You can refer to the sample installation configuration files on the following page: [Sample Kickstart Files](https://github.com/vmware/photon-os-installer/blob/master/sample_ks/sample_ks.cfg)
 
 
-Developers or contributors can refer to the Photon OS Installer project here: [Photo OS Installer](https://github.com/vmware/photon-os-installer/tree/master)
+Developers or contributors can refer to the Photon OS Installer project here: [Photon OS Installer](https://github.com/vmware/photon-os-installer/tree/master)
