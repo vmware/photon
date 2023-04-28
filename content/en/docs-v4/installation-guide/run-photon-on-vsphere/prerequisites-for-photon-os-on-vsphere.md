@@ -21,7 +21,7 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
 	</tr>
 	<tr>
 	<td>Memory</td>
-	<td>ESXi host with at least 1GB of free RAM (minimum)</td>
+	<td>ESXi host with at least 768MB of free RAM (minimum)</td>
 	</tr>
 	<tr>
 	<td>Storage</td>
