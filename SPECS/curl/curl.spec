@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.86.0
-Release:        3%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -15,6 +15,10 @@ Patch1:         fix-tail-matching-regression.patch
 Patch2:         noproxy-tailmatch-revert-before-7.85.patch
 Patch3:         curl-CVE-2022-43551.patch
 Patch4:         curl-CVE-2022-43552.patch
+Patch5:         curl-CVE-2023-23914-5.patch
+Patch6:         curl-CVE-2023-23916.patch
+Patch7:         curl-CVE-2023-27535.patch
+Patch8:         curl-CVE-2023-27536.patch
 
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -99,6 +103,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.com> 7.86.0-5
+- Fixed CVE-2023-27535,CVE-2023-27536
+* Fri Feb 17 2023 Dweep Advani <dadvani@vmware.com> 7.86.0-4
+- Fixed CVE-2023-23914, CVE-2023-23915 and CVE-2023-23916
 * Tue Dec 20 2022 Dweep Advani <dadvani@vmware.com> 7.86.0-3
 - Fixed CVE-2022-43551 and CVE-2022-43552
 * Fri Dec 09 2022 Harinadh D <hdommaraju@vmware.com> 7.86.0-2

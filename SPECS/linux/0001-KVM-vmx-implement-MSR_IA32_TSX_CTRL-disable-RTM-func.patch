@@ -20,15 +20,16 @@ the host kernel need not protect itself from TSX-based side-channels.
 
 Tested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 ---
- arch/x86/kvm/vmx.c | 37 ++++++++++++++++++++++++++++++++++---
+ arch/x86/kvm/vmx/vmx.c | 37 ++++++++++++++++++++++++++++++++++---
  arch/x86/kvm/x86.c | 23 +++++------------------
  2 files changed, 39 insertions(+), 21 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
 index 77b9ed5223f3..0b9090474a74 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
 @@ -1375,6 +1375,7 @@ static const u32 vmx_msr_index[] = {
  	MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
  #endif

@@ -1,3 +1,6 @@
+%global _rabbit_libdir  %{_libdir}/rabbitmq
+%global _rabbit_user    rabbitmq
+
 # Be careful while doing major version upgrades of this package
 # Refer https://www.rabbitmq.com/upgrade.html
 # The above page captures upgrade compatibiltiy of rabbitmq versions
@@ -8,8 +11,8 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.10.7
-Release:       5%{?dist}
+Version:       3.11.0
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -18,7 +21,7 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=34b7d0cbc8dafe8d7394aa3f6002f19bceea30266dc19d00bff367ec526fa528c9a3eb4a6da5e6054454d361e7bf14adc6a88e4178dc2fa9bcd6425819cdeccb
+%define sha512 rabbitmq=2cbdeb9288dd5b18ab97ba941075e96c51c258bc6ffb49a97b7bf5dee9e8ebd033d449c94b7ce305976478d1a142c82d1aaf0a2b64a14f802ac4c21b72858e4d
 
 Source1: %{name}.tmpfiles
 
@@ -58,16 +61,16 @@ export DIST_AS_EZS=1
 
 %install
 export PROJECT_VERSION="%{version}"
-export RMQ_ROOTDIR="%{_libdir}/rabbitmq"
+export RMQ_ROOTDIR="%{_rabbit_libdir}"
 export DIST_AS_EZS=1
 %make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
 install -vdm755 %{buildroot}%{_sysconfdir}/rabbitmq
-install -vdm755 %{buildroot}%{_unitdir}
 
 mkdir -p %{buildroot}%{_var}/log \
-         %{buildroot}%{_var}/opt/rabbitmq/log
+         %{buildroot}%{_var}/opt/rabbitmq/log \
+         %{buildroot}%{_unitdir}
 
 ln -sfv %{_var}/opt/rabbitmq/log %{buildroot}%{_var}/log/rabbitmq
 
@@ -79,13 +82,13 @@ Wants=network.target epmd@0.0.0.0.socket
 
 [Service]
 Type=notify
-User=rabbitmq
-Group=rabbitmq
+User=%{_rabbit_user}
+Group=%{_rabbit_user}
 NotifyAccess=all
 TimeoutStartSec=3600
 WorkingDirectory=%{_sharedstatedir}/rabbitmq
-ExecStart=%{_libdir}/rabbitmq/lib/rabbitmq_server-%{version}/sbin/%{name}
-ExecStop=%{_libdir}/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
+ExecStart=%{_rabbit_libdir}/lib/rabbitmq_server-%{version}/sbin/%{name}
+ExecStop=%{_rabbit_libdir}/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
 
 [Install]
 WantedBy=multi-user.target
@@ -102,19 +105,19 @@ make %{?_smp_mflags} tests
 %endif
 
 %pre
-if ! getent group rabbitmq >/dev/null; then
-  groupadd -r rabbitmq
+if ! getent group %{_rabbit_user} >/dev/null; then
+  groupadd -r %{_rabbit_user}
 fi
 
-if ! getent passwd rabbitmq >/dev/null; then
-  useradd -r -g rabbitmq -d %{_sharedstatedir}/rabbitmq rabbitmq \
+if ! getent passwd %{_rabbit_user} >/dev/null; then
+  useradd -r -g %{_rabbit_user} -d %{_sharedstatedir}/rabbitmq %{_rabbit_user} \
       -s /sbin/nologin -c "RabbitMQ messaging server"
 fi
 
 %post
 /sbin/ldconfig
-chown -R rabbitmq:rabbitmq %{_sharedstatedir}/rabbitmq
-chown -R rabbitmq:rabbitmq %{_sysconfdir}/rabbitmq
+chown -R %{_rabbit_user}:%{_rabbit_user} %{_sharedstatedir}/rabbitmq
+chown -R %{_rabbit_user}:%{_rabbit_user} %{_sysconfdir}/rabbitmq
 chmod g+s %{_sysconfdir}/rabbitmq
 %systemd_post %{name}.service
 
@@ -130,15 +133,17 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, rabbitmq, rabbitmq) %{_var}/opt/rabbitmq/log
+%dir %attr(0750, %{_rabbit_user}, %{_rabbit_user}) %{_var}/opt/rabbitmq/log
 %{_var}/log/rabbitmq
-%{_libdir}/*
-%{_unitdir}/*.service
+%{_rabbit_libdir}/*
+%{_unitdir}/*
 %{_tmpfilesdir}/%{name}.conf
 %{_sharedstatedir}/*
-%config(noreplace) %attr(0644, rabbitmq, rabbitmq) %{_sysconfdir}/rabbitmq/rabbitmq.conf
+%config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 %changelog
+* Sat Apr 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
+- Upgrade to v3.11.0
 * Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-5
 - Spec improvements & create conf file properly
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-4

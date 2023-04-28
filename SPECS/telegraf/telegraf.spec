@@ -1,11 +1,11 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.25.2
+Version:         1.26.1
 Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512   telegraf=5ed242b70f19af865a6ea1625a3e600d4bf8f3bb5de56ae18470cfe586f5e8c9998e80e3ca5cf032b41ba513e368005db46bdef8dc089e1fe4c2ac4f4ee9f9fb
+%define sha512   telegraf=5e7cb45fb7268ad45556a6802ed9e2d58d376144c5fb27d2f95fde5aa702e7485b4331e67b01211b9e7943679e4d65a304f171c4989a26b08a331c3a47d48099
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512   telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -67,6 +67,7 @@ install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} %{buildroo
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %clean
 rm -rf %{buildroot}/*
@@ -99,6 +100,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-1
+- Upgrade to 1.26.1.
 * Tue Feb 21 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.25.2-1
 - Update to 1.25.2
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.3-6

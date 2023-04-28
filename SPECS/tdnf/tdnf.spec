@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.13
+Version:        3.1.14
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,7 +11,7 @@ URL:            https://github.com/vmware/tdnf
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=4cfab5fbcb4bec06ce8c421cc5b0bd325374c406bf896f22881f71f9a744adc2eb0936a6352a6c31cb6e45214e13b835026f046d78cbb7d99837f97706509021
+%define sha512  %{name}=ba9bfc361859b25b70a54496d7743fe124d02aed2800ffde9950ad992d37eaca6a33a2ffe7522080e9a1bf5d6166f647300c747d0e005968855863916fb82e43
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -232,19 +232,22 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Thu Feb 23 2023 Oliver Kurth <okurth@vmware.co> 3.1.13-1
+* Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.1.14-1
+- update to 3.1.14
+- segfault caused due to missing name param PR #401
+* Thu Feb 23 2023 Oliver Kurth <okurth@vmware.com> 3.1.13-1
 - update to 3.1.13
 - fix reinstall on distro-sync (PR 405)
-* Wed Feb 15 2023 Oliver Kurth <okurth@vmware.co> 3.1.12-1
+* Wed Feb 15 2023 Oliver Kurth <okurth@vmware.com> 3.1.12-1
 - update to 3.1.12
 - local package cache optimization (PR 392)
 - ulimit fix (PR 393/391)
 - reinstall fix (PR 388)
-* Fri Jan 06 2023 Oliver Kurth <okurth@vmware.co> 3.1.11-1
+* Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 3.1.11-1
 - update to 3.1.11
-* Wed Sep 14 2022 Oliver Kurth <okurth@vmware.co> 3.1.10-1
+* Wed Sep 14 2022 Oliver Kurth <okurth@vmware.com> 3.1.10-1
 - update to 3.1.10 (add --alldeps option)
-* Tue Jun 14 2022 Oliver Kurth <okurth@vmware.co> 3.1.9-1
+* Tue Jun 14 2022 Oliver Kurth <okurth@vmware.com> 3.1.9-1
 - update to 3.1.9 (Check file from command line for "*.rpm" extension)
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.8-2
 - Exclude debug symbols properly

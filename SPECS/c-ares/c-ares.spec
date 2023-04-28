@@ -1,16 +1,14 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.16.1
-Release:        2%{?dist}
+Version:        1.19.0
+Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    c-ares=1111250ae1bf9adea1afc278ada1136091531d72
-Patch0:         CVE-2020-8277.patch
-Patch1:         CVE-2021-3672.patch
+%define sha512  c-ares=a7f5988bef393afec08a225be92f6eee54a3e67170fb26cbe00dcc5c5a457b27037bbcfeccc39fb855ed72f100196958d6cbbe251bf1ccfbdd353be18f098359
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -31,10 +29,8 @@ This package contains the header files and libraries needed to
 compile applications or shared objects that use c-ares.
 
 %prep
-%setup -q
+%autosetup -p1
 f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
-%patch0 -p1
-%patch1 -p1
 
 %build
 autoreconf -if
@@ -43,22 +39,19 @@ autoreconf -if
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
-rm -f $RPM_BUILD_ROOT/%{_libdir}/libcares.la
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-, root, root)
-%doc README.md README.msvc README.cares CHANGES NEWS
 %{_libdir}/*.so.*
 
 %files devel
@@ -68,11 +61,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/ares_dns.h
 %{_includedir}/ares_rules.h
 %{_includedir}/ares_version.h
+%{_includedir}/ares_nameser.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libcares.pc
 %{_mandir}/man3/ares_*
+%doc README.md README.msvc README.cares CHANGES NEWS
 
 %changelog
+*   Sat Mar 11 2023 Anmol Jain <anmolja@vmware.com> 1.19.0-1
+-   Fix for CVE-2022-4904
 *   Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2
 -   Fix CVE-2021-3672
 *   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-1

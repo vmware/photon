@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.3
-Release:        8%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -26,6 +26,7 @@ Patch7: 0001-When-doing-the-same-thing-more-than-once-use-a-loop.patch
 Patch8: 0001-Introduce-patch_nums-and-source_nums-Lua-variables-i.patch
 Patch9: 0001-Add-limits-to-autopatch-macro.patch
 Patch10: setup-macro-fix.patch
+Patch11: move-patch-uncompress-logic-from-spec-parse-to-build.patch
 
 Requires: bash
 Requires: libdb
@@ -265,6 +266,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-10
+- Fix patch parsing logic
+* Sat Mar 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-9
+- Further fix to setup macro parsing issue
 * Sun Feb 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-8
 - Fix setup macro parsing issue in rpmspec
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-7

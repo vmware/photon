@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This is triggered by pre-push git hook
+
+SCRIPT_DIR="$(dirname "$(realpath $0)")"
+
+bash ${SCRIPT_DIR}/check_spec_files.sh
+exit $?

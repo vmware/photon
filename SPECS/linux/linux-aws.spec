@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.272
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.280
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,9 +14,11 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
+%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
 
+%ifarch x86_64
 Source1: config-aws
+%endif
 Source2: initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3: scriptlets.inc
@@ -31,8 +33,6 @@ Source6: genhmac.inc
 # common
 Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
@@ -50,8 +50,6 @@ Patch16: 0003-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch17: 0004-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch18: 0005-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
-# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23: 0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28: kvm-dont-accept-wrong-gsi-values.patch
@@ -192,9 +190,6 @@ Patch154: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 #Fix for CVE-2022-3303
 Patch155: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 
-#Fix for CVE-2023-23454
-Patch156: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
-
 # CVE-2022-1789
 Patch159: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
@@ -226,12 +221,14 @@ Patch179: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch180: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch181: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch182: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+Patch183: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch184: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patch to fix Panic due to nested priority inheritance in sched_deadline
-Patch184: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
+Patch191: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Patch to distribute the tasks within affined cpus
-Patch185: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+Patch192: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -327,7 +324,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m161 -M169
 
 # Update vmxnet3 driver to version 7
-%autopatch -p1 -m170 -M185
+%autopatch -p1 -m170 -M192
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -528,6 +525,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
+- Update to version 4.19.280
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-3
+- Cleanup commented patch files
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-2
+- update to latest ToT vmxnet3 driver pathes
+* Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
+- Update to version 4.19.277
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2
 - Expose Photon kernel macros to simplify building out-of-tree drivers.
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1

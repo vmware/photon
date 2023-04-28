@@ -1,14 +1,16 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha1    libjpeg-turbo=6bf63c869105d341011cd4915816de888338231a
+%define sha512  %{name}=6632a2a71cb3a350fe4f850fe84e51e361755c373babf2b47fb164c3a9fc3fd66705639bebedd8c1b40cf6c15fd702e814425b0be5919048987bbec357828605
+
 %ifarch x86_64
 BuildRequires:  nasm
 %endif
@@ -58,26 +60,28 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.1.0-2
--   Version Bump to build with new version of cmake
-*   Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
--   Bump version to 2.1.0 to fix CVE-2020-17541
-*   Mon Jun 08 2020 Sujay G <gsujay@vmware.com> 2.0.0-5
--   Fix CVE-2020-13790
-*   Tue Feb 25 2020 Sujay G <gsujay@vmware.com> 2.0.0-4
--   Fix CVE-2018-19664
-*   Mon Mar 04 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-3
--   Update BuildRequires nasm only for x86_64.
-*   Thu Jan 10 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
--   Added patch to fix CVE-2018-20330
-*   Thu Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
--   Update to 2.0.0
--   cmake build system
-*   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
--   Fix CVE-2017-15232
-*   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.2-1
--   Updated to version 1.5.2
-*   Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
--   Updated to version 1.5.1
-*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
--   Initial version
+* Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 2.1.0-3
+- Bump version as a part of nasm v2.16.01 upgrade
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.1.0-2
+- Version Bump to build with new version of cmake
+* Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
+- Bump version to 2.1.0 to fix CVE-2020-17541
+* Mon Jun 08 2020 Sujay G <gsujay@vmware.com> 2.0.0-5
+- Fix CVE-2020-13790
+* Tue Feb 25 2020 Sujay G <gsujay@vmware.com> 2.0.0-4
+- Fix CVE-2018-19664
+* Mon Mar 04 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-3
+- Update BuildRequires nasm only for x86_64.
+* Thu Jan 10 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
+- Added patch to fix CVE-2018-20330
+* Thu Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
+- Update to 2.0.0
+- cmake build system
+* Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
+- Fix CVE-2017-15232
+* Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.2-1
+- Updated to version 1.5.2
+* Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
+- Updated to version 1.5.1
+* Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+- Initial version

@@ -1,20 +1,21 @@
-Summary:	cpio archive utility
-Name:		cpio
-Version:	2.13
-Release:	4%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/cpio/
-Group:		System Environment/System utilities
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
-%define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
+Summary:        cpio archive utility
+Name:           cpio
+Version:        2.13
+Release:        5%{?dist}
+License:        GPLv3+
+URL:            http://www.gnu.org/software/cpio/
+Group:          System Environment/System utilities
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=459398e69f7f48201c04d1080218c50f75edcf114ffcbb236644ff6fcade5fcc566929bdab2ebe9be5314828d6902e43b348a8adf28351df978c8989590e93a3
 Conflicts:      toybox < 0.8.2-2
 Patch0:         newca-new-archive-format.patch
 Patch1:         newca-large-files-support.patch
 Patch2:         cpio-CVE-2021-38185.patch
 Patch3:         cpio-CVE-2021-38185_2.patch
 Patch4:         cpio-CVE-2021-38185_3.patch
+
 %description
 The cpio package contains tools for archiving.
 
@@ -63,6 +64,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 29 2023 Shivani Agarwal <shivania2@vmware.com> 2.13-5
+- Updated newca new archive format patch
 * Mon Oct 04 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-4
 - newca: large files support
 * Wed Sep 01 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-3

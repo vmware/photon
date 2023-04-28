@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       3.20.2
-Release:       7%{?dist}
+Release:       8%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -20,19 +20,22 @@ A per-host daemon for Calico.
 
 %build
 mkdir -p bin
-GO111MODULE=auto go build -v -i -o bin/calico-felix -v \
+GO111MODULE=auto go build -v  -o bin/calico-felix -v \
      -ldflags " -X github.com/projectcalico/felix/buildinfo.GitVersion=<unknown>" \
                ./cmd/calico-felix
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
 install bin/calico-felix %{buildroot}%{_bindir}/
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-felix
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 3.20.2-8
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 3.20.2-7
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 3.20.2-6

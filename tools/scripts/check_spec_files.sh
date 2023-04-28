@@ -1,9 +1,13 @@
 #!/bin/bash
 
-if [ -z "$(git diff --name-only $1 HEAD --)" ]; then
-  SPECS=($(git diff --name-only $1 @~ | grep -e "SPECS/.*.spec$"))
+# get @~ file list if there are no files in git diff or HEAD is ahead
+if [ -z "$(git diff --name-only HEAD --)" ]; then
+  SPECS=($(git diff --name-only @~ | grep -e "SPECS/.*.spec$"))
+elif [ -n "$(git status 2>&1 | grep -iw 'ahead of')" ]; then
+  ahead_by="$(git status | sed -n -e 's/^.*ahead.* by //p' |  cut -d' ' -f1)"
+  SPECS=($(git diff --name-only @~${ahead_by} @ | grep -e "SPECS/.*.spec$"))
 else
-  SPECS=($(git diff --name-only $1 | grep -e "SPECS/.*.spec$"))
+  SPECS=($(git diff --name-only | grep -e "SPECS/.*.spec$"))
 fi
 
 if [ ${#SPECS[@]} -eq 0 ]; then
@@ -11,4 +15,5 @@ if [ ${#SPECS[@]} -eq 0 ]; then
   exit 0
 fi
 
-python3 support/check_spec.py ${SPECS[@]}
+python3 support/spec-checker/check_spec.py ${SPECS[@]}
+exit $?

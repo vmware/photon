@@ -604,15 +604,15 @@ clean-chroot:
 		$(PHOTON_CHROOT_CLEANER) $(PHOTON_CHROOT_PATH); \
 	fi
 
-#==================================================================
-
 # Targets to check for tools support in build environment
-#__________________________________________________________________________________
-check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker check-pyopenssl ph3-docker-img-import
+check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker check-pyopenssl ph3-docker-img-import check-git-hooks
 
 ph3-docker-img-import: check-docker
 	@echo ""
 	@$(SRCROOT)/tools/scripts/ph3-docker-img-import.sh $(PH3_DOCKER_IMG_URL) $(PHOTON_DOCKER_IMAGE) $(PHOTON_BUILDER_TAG) || exit 1
+
+check-git-hooks:
+	@$(SRCROOT)/tools/scripts/check_git_hooks.sh "$(SRCROOT)"
 
 check-docker:
 ifeq (,$(wildcard $(DOCKER_ENV)))

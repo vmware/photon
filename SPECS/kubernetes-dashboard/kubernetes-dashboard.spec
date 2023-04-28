@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -47,6 +47,7 @@ cp -p -r ./dist/amd64/dashboard %{buildroot}%{_bindir}/
 cp -p -r ./dist/amd64/locale_conf.json %{buildroot}/opt/k8dashboard/
 cp -p -r ./dist/amd64/public %{buildroot}/opt/k8dashboard/
 cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %check
 # dashboard unit tests require chrome browser binary not present in PhotonOS
@@ -59,6 +60,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-22
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-21
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.1-20

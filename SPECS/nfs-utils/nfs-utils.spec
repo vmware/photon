@@ -1,12 +1,12 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.3.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
 Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
-%define sha1    nfs-utils=a60aa17b057734c63bf7ce1598898e83f2132644
+%define sha512  nfs-utils=5025ccd7699ac1a0fdbd8b18ed8b33ea89230158320d809ec51e73f831100db75dceaddde481d911eeca9059caa521d155c2d14d014d75f091f432aad92a9716
 Source1:        nfs-client.service
 Source2:        nfs-client.target
 Source3:        rpc-statd.service
@@ -51,7 +51,7 @@ sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 %configure --enable-libmount-mount     \
            --without-tcp-wrappers      \
            --enable-gss                \
-	   --enable-svcgss             \
+           --enable-svcgss             \
            --enable-nfsv4              \
            --with-rpcgen=internal      \
            --disable-static
@@ -126,6 +126,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-6
+-   Bump version as a part of libevent upgrade
 *   Fri Mar 18 2022 Harinadh D <hdommaraju@vmware.com> 2.3.3-5
 -   enable svcgss
 *   Tue Nov 17 2020 Tapas Kundu <tkundu@vmware.com> 2.3.3-4

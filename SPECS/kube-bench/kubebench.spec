@@ -1,7 +1,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.0.34
-Release:        18%{?dist}
+Release:        19%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
@@ -24,6 +24,7 @@ KUBEBENCH_VERSION=v%{version} make %{?_smp_mflags}
 %install
 mkdir -p %{buildroot}%{_bindir}
 cp kube-bench %{buildroot}%{_bindir}
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/kube-bench
 
 %check
 make tests %{?_smp_mflags}
@@ -33,6 +34,8 @@ make tests %{?_smp_mflags}
     %{_bindir}/kube-bench
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 0.0.34-19
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-18
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 0.0.34-17

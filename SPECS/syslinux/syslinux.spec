@@ -1,31 +1,30 @@
 %global security_hardening none
 
-Summary:    Simple kernel loader which boots from a FAT filesystem
-Name:       syslinux
-Version:    6.04
-Release:    6%{?dist}
-License:    GPLv2+
-URL:        http://www.syslinux.org
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:      Simple kernel loader which boots from a FAT filesystem
+Name:         syslinux
+Version:      6.04
+Release:      7%{?dist}
+License:      GPLv2+
+URL:          http://www.syslinux.org
+Group:        Applications/System
+Vendor:       VMware, Inc.
+Distribution: Photon
 
-Source0:    https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
-%define sha1 %{name}=599b7a85d522b1b6658a1fe290e4d23dc64b1470
-Source1:        http://downloads.sourceforge.net/libpng/libpng-1.2.59.tar.xz
-%define sha1 libpng=4376e9ae6cf23efe63975067c4f135ff1777671a
-Source2:        http://www.zlib.net/zlib-1.2.11.tar.xz
-%define sha1    zlib=e1cb0d5c92da8e9a8c2635dfa249c341dfd00322
+Source0: https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
+%define sha512 %{name}=7927dd39be8e2dcf4138a6fea33def67d19d938379d694f15b48fdd2f5924c028b7a9e7bd71d0c7c6630c203e9e2a54296628e530632ad5e6f55b1ebefe8fc98
+Source1: http://downloads.sourceforge.net/libpng/libpng-1.2.59.tar.xz
+%define sha512 libpng=bfdc51eca72a76697f1396611a08aa4ce6a169837197699c55d845fdef17850e8f7665b7b81ba815c277453737f12eeb41409ff9c7eca1ac0c0d134c44492a6e
+Source2: http://www.zlib.net/zlib-1.2.11.tar.xz
+%define sha512 zlib=b7f50ada138c7f93eb7eb1631efccd1d9f03a5e77b6c13c8b757017b2d462e19d2d3e01c50fad60a4ae1bc86d431f6f94c72c11ff410c25121e571953017cb67
 
-Patch0:     0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch
+Patch0: 0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch
 
-BuildArch:      x86_64
+BuildArch: x86_64
 
-BuildRequires:  nasm
+BuildRequires: nasm
+BuildRequires: util-linux-devel
 
-BuildRequires:  util-linux-devel
-
-Requires:   util-linux
+Requires: util-linux
 
 %description
 SYSLINUX is a suite of bootloaders, currently supporting DOS FAT
@@ -83,6 +82,8 @@ rm %{buildroot}/%{_bindir}/sha1pass
 %{_datadir}/syslinux/com32/*
 
 %changelog
+* Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 6.04-7
+- Bump version as a part of nasm v2.16.01 upgrade
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.04-6
 - Exclude debug symbols properly
 * Tue Jun 04 2019 Ajay Kaher <akaher@vmware.com> 6.04-5

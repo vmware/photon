@@ -1,22 +1,22 @@
-Summary:	Linux API header files
-Name:		linux-api-headers
-Version:	4.19.272
-Release:	1%{?dist}
-License:	GPLv2
-URL:		http://www.kernel.org/
-Group:		System Environment/Kernel
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Linux API header files
+Name:           linux-api-headers
+Version:        4.19.280
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
+%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
-Patch0:		0001-ptp-reorder-declarations-in-ptp_ioctl.patch
-Patch1:		0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
-Patch2:		0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
-Patch3:		0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
+Patch0:         0001-ptp-reorder-declarations-in-ptp_ioctl.patch
+Patch1:         0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
+Patch2:         0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch3:         0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
-BuildArch:	noarch
+BuildArch:      noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
@@ -42,6 +42,10 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+* Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
+- Update to version 4.19.280
+* Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
+- Update to version 4.19.277
 * Thu Feb 16 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.272-1
 - Update to version 4.19.272
 * Wed Feb 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.271-1

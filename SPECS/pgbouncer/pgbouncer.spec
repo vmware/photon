@@ -1,12 +1,12 @@
-Summary:	Connection pooler for PostgreSQL.
-Name:		pgbouncer
-Version:	1.9.0
-Release:	2%{?dist}
-License:	BSD
-URL:		https://wiki.postgresql.org/wiki/PgBouncer
-Group:		Application/Databases.
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Connection pooler for PostgreSQL.
+Name:           pgbouncer
+Version:        1.9.0
+Release:        3%{?dist}
+License:        BSD
+URL:            https://wiki.postgresql.org/wiki/PgBouncer
+Group:          Application/Databases.
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 Source0:        https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b127f4cb60ca5cdf339da76727918f0a3797a3e0a89f8ed6fdcaa80f3391d2c5bb51e19731915775210c0e5070dd611ee2e410c9a947624e45b5cf11aecdacf9
@@ -17,8 +17,8 @@ BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  pkg-config
 
-Requires:	libevent
-Requires:	openssl
+Requires:       libevent
+Requires:       openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -87,6 +87,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.9.0-3
+- Bump version as a part of libevent upgrade
 * Tue Oct 18 2022 Ankit Jain <ankitja@vmware.com> 1.9.0-2
 - Fixes CVE-2021-3935
 * Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.9.0-1

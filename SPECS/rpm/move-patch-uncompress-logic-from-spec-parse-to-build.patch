@@ -1,0 +1,104 @@
+From c533a7998205d75c105c1ab36c52e8e585f41d59 Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Fri, 25 Mar 2022 15:30:52 +0200
+Subject: [PATCH] Move %patch uncompress logic from spec parse to build time,
+ sort of
+
+The rationale is the same as with %setup, see previous commit.
+However as commit 6845efae0dcc005f3bbb4cd4179a3ccce9d9638c pointed out,
+most patches are not compressed and invoking an extra helper just in
+case gets expensive for no good reason when you have zillions of patches.
+Preserve the optimization from that commit by silently looking up the
+file IFF it's there, and omitting the uncompressor if we can determine
+it uncompressed. Otherwise we'll just postpone the uncompress decision
+to build-time, where rpmuncompress will do the right thing regardless
+of whether it's compressed or not.
+
+[sshedi]
+- ported to v4.16.x
+- Also took a portion of https://github.com/rpm-software-management/rpm/commit/cd5d667e99f931504a512b591fcde7ed92cee344
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ build/parsePrep.c | 31 ++++++++++++-------------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
+
+diff --git a/build/parsePrep.c b/build/parsePrep.c
+index fd83916..2fdb425 100644
+--- a/build/parsePrep.c
++++ b/build/parsePrep.c
+@@ -23,21 +23,19 @@ static void appendBuf(rpmSpec spec, const char *s, int nl)
+ }
+ 
+ /**
+- * Check that file owner and group are known.
++ * Check if file can be determined non-compressed
+  * @param urlfn		file url
+- * @return		RPMRC_OK on success
++ * @return		1 if known uncompressed, 0 otherwise
+  */
+-static rpmRC checkOwners(const char * urlfn)
++static int notCompressed(const char * fn)
+ {
++    rpmCompressedMagic compressed = -1;
+     struct stat sb;
+ 
+-    if (lstat(urlfn, &sb)) {
+-	rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
+-		urlfn, strerror(errno));
+-	return RPMRC_FAIL;
+-    }
++    if (lstat(fn, &sb) == 0)
++        rpmFileIsCompressed(fn, &compressed);
+ 
+-    return RPMRC_OK;
++    return (compressed == COMPRESSED_NOT);
+ }
+ 
+ /**
+@@ -68,7 +66,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+     char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
+     struct Source *sp;
+     char *patchcmd;
+-    rpmCompressedMagic compressed = COMPRESSED_NOT;
+ 
+     for (sp = spec->sources; sp != NULL; sp = sp->next) {
+ 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
+@@ -86,9 +83,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+ 
+     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+ 
+-    /* On non-build parse's, file cannot be stat'd or read. */
+-    if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
+-
+     if (db) {
+ 	rasprintf(&arg_backup,
+ #if HAVE_OLDPATCH_21 == 0
+@@ -114,11 +108,11 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+ 		removeEmpties ? " -E" : "");
+ 
+     /* Avoid the extra cost of fork and pipe for uncompressed patches */
+-    if (compressed != COMPRESSED_NOT) {
++    if (notCompressed(fn)) {
++	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
++    } else {
+ 	patchcmd = rpmExpand("{ %{uncompress: ", fn, "} || echo patch_fail ; } | "
+                              "%{__patch} ", args, NULL);
+-    } else {
+-	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
+     }
+ 
+     free(arg_fuzz);
+@@ -176,9 +170,8 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
+ 
+     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+ 
+-    /* XXX On non-build parse's, file cannot be stat'd or read */
+-    if (!(spec->flags & RPMSPEC_FORCE) && (checkOwners(fn) || rpmFileIsCompressed(fn, &compressed))) {
+-	goto exit;
++    if (notCompressed(fn) == 0) {
++        rpmFileIsCompressed(fn, &compressed);
+     }
+ 
+     tar = rpmGetPath("%{__tar}", NULL);
+-- 
+2.39.2

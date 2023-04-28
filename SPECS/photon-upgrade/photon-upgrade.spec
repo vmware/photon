@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source0:        photon-upgrade.sh
@@ -35,6 +35,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Wed Apr 19 2023 Dweep Advani <dadvani@vmware.com> 1.0-7
+- Changed few exit codes and support for removing named packages pre and post upgrade
 * Wed Nov 23 2022 Dweep Advani <dadvani@vmware.com> 1.0-6
 - Fix PAM configuration and explicitly enable networkd and resolved
 * Thu Sep 08 2022 Dweep Advani <dadvani@vmware.com> 1.0-5

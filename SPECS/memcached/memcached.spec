@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 License:        BSD
 Group:          Applications/System
@@ -80,5 +80,7 @@ getent passwd %{name} >/dev/null || \
 %{_includedir}/%{name}/*
 
 %changelog
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.15-2
+- Bump version as a part of libevent upgrade
 * Tue Jun 07 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.15-1
 - Initial packaging for Photon OS.

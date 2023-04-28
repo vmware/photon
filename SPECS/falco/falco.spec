@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.30.0
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    falco=5e06986ef51fe3223b64482b73fa908db65c31e8
+%define sha512 falco=54410dc7dbbde99e82150a4d0186312a5b352740175157b1e2641a85e989fd3c2717d42380c6d80e2b07181fbdd215b08e88312943ae22267228415a3ec2cc4a
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
@@ -28,11 +28,11 @@ BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  wget
-BuildRequires:	which
-BuildRequires:	grpc-devel
-BuildRequires:	c-ares-devel
-BuildRequires:	protobuf-devel
-%if %{with_check}
+BuildRequires:  which
+BuildRequires:  grpc-devel
+BuildRequires:  c-ares-devel
+BuildRequires:  protobuf-devel
+%if 0%{?with_check}
 BuildRequires:  dkms
 BuildRequires:  xz-devel
 BuildRequires:  jq
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Tue Mar 14 2023 Anmol Jain <anmolja@vmware.com> 0.30.0-3
+- Version bump up to use c-ares
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.30.0-2
 - Version Bump to build with new version of cmake
 * Tue Nov 23 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.30.0-1

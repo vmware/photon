@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.6.3
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -37,7 +37,9 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 
 %build
 %configure \
-    --enable-systemd
+    --enable-systemd \
+    --enable-openssl \
+    --enable-gcm
 
 %make_build
 
@@ -82,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Tue Apr 18 2023 Srish Srinivasan <ssrish@vmware.com> 5.6.3-8
+- enable OpenSSL and GCM plugin
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6.3-7
 - Fix CVE-2022-40617
 * Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.6.3-6

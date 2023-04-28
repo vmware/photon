@@ -78,7 +78,15 @@ class ProgressBar(object):
         self.render_time()
 
     def render_message(self):
-        text = self.message + (' ' * (self.width - len(self.message)))
+        self.message = self.message.strip()
+        space_required = self.width - len(self.message)
+        if space_required < 0:
+            # truncate the message and display
+            # complete message will be present
+            # inside /var/log/installer.log
+            text = self.message[:self.width]
+        else:
+            text = self.message + (' ' * space_required)
         self.window.addstr(2, 0, text)
         self.window.refresh()
 

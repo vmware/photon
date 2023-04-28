@@ -1,7 +1,7 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.2.1
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -23,8 +23,7 @@ in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 %setup -qn metrics-server-%{version}
 
 pushd vendor/golang.org/x/net
-%patch0 -p1
-%patch1 -p1
+%autopatch -p1
 popd
 
 %build
@@ -56,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.1-22
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-21
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-20

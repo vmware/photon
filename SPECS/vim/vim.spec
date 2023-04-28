@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.5169
-Release:        4%{?dist}
+Release:        6%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -15,11 +15,65 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=e2b85746a4cc9ce2a4deeb0a3cd0365ad3124492b2c0feb4e029c7f58a960382bc0d3f3f4611742fa7a8559204f711c831407289b113386fce1138e3c9fc3c75
 Source1:        vimrc
 
-Patch0: CVE-2022-47024.patch
-Patch1: CVE-2023-0433.patch
-Patch2: CVE-2023-0049.patch
-Patch3: CVE-2023-0051.patch
-Patch4: CVE-2023-0054.patch
+Patch0:  CVE-2022-47024.patch
+Patch1:  CVE-2023-0433.patch
+Patch2:  CVE-2023-0049.patch
+Patch3:  CVE-2023-0051.patch
+Patch4:  CVE-2023-0054.patch
+Patch5:  CVE-2022-3520.patch
+Patch6:  CVE-2022-4292.patch
+Patch7:  CVE-2022-2946.patch
+Patch8:  CVE-2022-3591.patch
+Patch9:  CVE-2022-2819.patch
+Patch10: backport-for-CVE-2022-3324.patch
+Patch11: CVE-2022-3324.patch
+Patch12: CVE-2023-1264.patch
+Patch13: CVE-2023-1175.patch
+Patch14: CVE-2023-1170.patch
+Patch15: CVE-2022-3352.patch
+Patch16: CVE-2022-3256.patch
+Patch17: CVE-2022-3235.patch
+Patch18: CVE-2022-4141.patch
+Patch19: CVE-2022-3099.patch
+Patch20: CVE-2022-2874.patch
+Patch21: CVE-2022-2343.patch
+Patch22: CVE-2022-3134.patch
+Patch23: CVE-2022-2849.patch
+Patch24: CVE-2022-2285.patch
+Patch25: CVE-2022-3234.patch
+Patch26: CVE-2022-3297.patch
+Patch27: CVE-2022-2286.patch
+Patch28: CVE-2022-2345.patch
+Patch29: CVE-2022-2581.patch
+Patch30: CVE-2022-2522.patch
+Patch31: CVE-2022-2889.patch
+Patch32: CVE-2022-3296.patch
+Patch33: CVE-2022-2598.patch
+Patch34: CVE-2022-2982.patch
+Patch35: CVE-2022-2845.patch
+Patch36: CVE-2022-2571.patch
+Patch37: CVE-2022-3016.patch
+Patch38: CVE-2022-2289.patch
+Patch39: CVE-2022-2344.patch
+Patch40: CVE-2022-3037.patch
+Patch41: CVE-2022-2287.patch
+Patch42: CVE-2022-2257.patch
+Patch43: CVE-2022-2284.patch
+Patch44: CVE-2022-2264.patch
+Patch45: CVE-2022-2980.patch
+Patch46: CVE-2022-2817.patch
+Patch47: CVE-2022-2580.patch
+Patch48: CVE-2022-2288.patch
+Patch49: CVE-2022-2816.patch
+Patch50: CVE-2022-2862.patch
+Patch51: CVE-2022-2923.patch
+Patch52: CVE-2022-2304.patch
+Patch53: CVE-2022-3491.patch
+Patch54: backport-for-CVE-2022-4293.patch
+Patch55: CVE-2022-4293.patch
+Patch56: CVE-2022-3705.patch
+Patch57: CVE-2022-3153.patch
+Patch58: CVE-2022-3278.patch
 
 BuildRequires:  ncurses-devel >= 6.1-4
 Requires:       ncurses-libs >= 6.1-4
@@ -181,6 +235,24 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Mar 27 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-6
+- fixed multiple P2 CVEs
+- CVE-2023-1264, CVE-2023-1175, CVE-2023-1170, CVE-2022-3352
+- CVE-2022-3256, CVE-2022-3235, CVE-2022-4141, CVE-2022-3099
+- CVE-2022-2874, CVE-2022-2343, CVE-2022-3134, CVE-2022-2849
+- CVE-2022-2285, CVE-2022-3234, CVE-2022-3297, CVE-2022-2286
+- CVE-2022-2345, CVE-2022-2581, CVE-2022-2522, CVE-2022-2889
+- CVE-2022-3296, CVE-2022-2598, CVE-2022-2982, CVE-2022-2845
+- CVE-2022-2571, CVE-2022-3016, CVE-2022-2289, CVE-2022-2344
+- CVE-2022-3037, CVE-2022-2287, CVE-2022-2257, CVE-2022-2284
+- CVE-2022-2264, CVE-2022-2980, CVE-2022-2817, CVE-2022-2580
+- CVE-2022-2288, CVE-2022-2816, CVE-2022-2862, CVE-2022-2923
+- CVE-2022-2304, CVE-2022-3491, CVE-2022-4293, CVE-2022-3705
+- CVE-2022-3153, CVE-2022-3278
+* Tue Feb 7 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-5
+- fixed multiple P1 CVEs
+- CVE-2022-3520, CVE-2022-4292, CVE-2022-2946
+- CVE-2022-3591, CVE-2022-2819, CVE-2022-3324
 * Tue Feb 7 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-4
 - fix CVE-2023-0433.patch, CVE-2023-0049.patch, CVE-2023-0051.patch, and CVE-2023-0054.patch
 * Mon Jan 30 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-3

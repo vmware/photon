@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          46%{?dist}
+Release:          47%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -74,6 +74,7 @@ Patch52:          systemd-239-CVE--2022-3821-time-util-fix-buffer-over-run.patch
 Patch53:          CVE-2022-4415-1.patch
 Patch54:          CVE-2022-4415-2.patch
 Patch55:          CVE-2022-4415-3.patch
+Patch56:          timedated-add-back-support-for-ntp-units.d.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -293,6 +294,7 @@ rm -rf %{buildroot}/*
 /lib/systemd/resolv.conf
 /lib/systemd/portablectl
 %config(noreplace) /lib/systemd/network/99-default.link
+%config(noreplace) /lib/systemd/ntp-units.d/80-%{name}-timesync.list
 %config(noreplace) /lib/systemd/portable/profile/default/service.conf
 %config(noreplace) /lib/systemd/portable/profile/nonetwork/service.conf
 %config(noreplace) /lib/systemd/portable/profile/strict/service.conf
@@ -339,6 +341,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Wed Mar 01 2023 Shivani Agarwal <shivania2@vmware.com> 239-47
+- Add timedated back support for ntp units directory
 * Mon Feb 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 239-46
 - Fix CVE-2022-4415
 * Mon Nov 14 2022 Susant Sahani <ssahani@vmware.com> 239-45

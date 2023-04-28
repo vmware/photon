@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.272
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.280
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=cdf7c5c6c6d8a88dc360db790a0151718560d1fe92dfadddaa3ff1f09a151e4fb6984e43acb810aace3242ecb0baee1582664f0c6abac4eeddc4ee6f86ebfeb7
+%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -27,26 +27,23 @@ Source5: https://github.com/vmware/photon-checksum-generator/releases/photon-che
 %define sha512 photon-checksum-generator=bc0e3fc039cffc7bbd019da0573a89ed4cf227fd51f85d1941de060cb2a595ea1ef45914419e3238a8ebcc23cdd83193be4f1a294806f954ef8c74cdede8886b
 Source6: genhmac.inc
 
-%define i40e_version 2.16.11
+%define i40e_version 2.22.18
 Source7: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=004ec7da665cde30142807c51e4351d041a6df906325ad9e97a01868d1b019e1c9178ea58901e0c2dbbec69a9e00b897a9ecfd116a6d4acf3c7ab87962e2a0aa
+%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.5.3
+%define iavf_version 4.8.2
 Source8: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
+%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
-%define ice_version 1.9.11
+%define ice_version 1.11.14
 Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 
 # common
-#Patch0: linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1: double-tcp_mem-limits.patch
-#Patch2: linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3: SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5: vsock-transport-for-9p.patch
-#Patch6: 4.18-x86-vmware-STA-support.patch
 Patch7: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8: init-do_mounts-recreate-dev-root.patch
 Patch9: vsock-delay-detach-of-QP-with-outgoing-data.patch
@@ -167,9 +164,6 @@ Patch92: 0001-memcg-enable-accounting-for-file-lock-caches.patch
 
 #Fix for CVE-2022-3303
 Patch93: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
-
-#Fix for CVE-2023-23454
-Patch94: 0001-net-sched-cbq-dont-intepret-cls-results-when-asked-t.patch
 
 # inherit tcp_limit_output_bytes
 Patch97: tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -375,7 +369,6 @@ Patch460: 0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
 Patch461: 0061-x86-sev-es-Handle-VMMCALL-Events.patch
 Patch462: 0062-x86-sev-es-Handle-AC-Events.patch
 Patch463: 0063-x86-sev-es-Handle-DB-Events.patch
-#Patch464: 0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
 Patch465: 0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
 Patch466: 0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
 Patch467: 0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
@@ -392,7 +385,6 @@ Patch477: 0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
 Patch478: 0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
 
 Patch480: 0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
-#Patch481: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch482: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484: 0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
@@ -480,23 +472,23 @@ Patch549: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch550: 0001-vmxnet3-correctly-report-encapsulated-LRO-packet.patch
 Patch551: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch552: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
+Patch553: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
+Patch554: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
 # Patches for i40e driver
-Patch801: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch802: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch803: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch804: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch803: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch804: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch805: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
-Patch811: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch812: iavf-v4.5.3-no-aux-symvers.patch
-Patch813: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch814: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch811: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch812: iavf-v4.8.2-no-aux-symvers.patch
+Patch813: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice driver
-Patch821: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch822: ice-v1.9.11-no-aux-bus.patch
-Patch823: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch821: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch822: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 
 # ptp_vmw
 Patch831: 0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
@@ -592,21 +584,21 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m531 -M539
 
 # Update vmxnet3 driver to version 7
-%autopatch -p1 -m540 -M552
+%autopatch -p1 -m540 -M554
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m801 -M804
+%autopatch -p1 -m802 -M805
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m811 -M814
+%autopatch -p1 -m811 -M813
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-%autopatch -p1 -m821 -M823
+%autopatch -p1 -m821 -M822
 popd
 
 # Patches for ptp_vmw driver
@@ -700,21 +692,22 @@ cp -v vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 
 bldroot="${PWD}"
 
+# The intel_auxiliary.ko kernel module is a common dependency for i40e, iavf
+# and ice drivers.  Install it only once, along with the iavf driver
+# and re-use it in the ice and i40e drivers.
+
 # install i40e module
 pushd ../i40e-%{i40e_version}
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install \
+        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux \
         mandocs_install %{?_smp_mflags}
 popd
 
 # install iavf module
 pushd ../iavf-%{iavf_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
         INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install \
-        mandocs_install %{?_smp_mflags}
+        INSTALL_AUX_DIR=extra/auxiliary mandocs_install %{?_smp_mflags}
 
 install -Dvm 644 src/linux/auxiliary_bus.h \
         %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
@@ -722,11 +715,10 @@ popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-# The auxiliary.ko kernel module is a common dependency for both iavf
-# and ice drivers.  Install it only once, along with the iavf driver
-# and re-use it in the ice driver.
 make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-        INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install \
+        INSTALL_MOD_DIR=extra modules_install_no_aux %{?_smp_mflags}
+
+make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
         mandocs_install %{?_smp_mflags}
 popd
 
@@ -820,6 +812,21 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
+- Update to version 4.19.280
+* Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-4
+- Cleanup commented patch files
+* Wed Mar 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.277-3
+- update to latest ToT vmxnet3 driver pathes
+* Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.277-2
+- Patch drivers to not install aux module on modules_install_no_aux
+- Clean up driver installation code
+* Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1
+- Update to version 4.19.277
+* Thu Mar 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.272-4
+- Upgrade ice driver to 1.11.14
+- Upgrade iavf driver to 4.8.2
+- Upgrade i40e driver to 2.22.18
 * Thu Mar 02 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-3
 - Use Photon kernel macros to simplify building i40e, iavf and ice drivers
 * Tue Feb 28 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.272-2

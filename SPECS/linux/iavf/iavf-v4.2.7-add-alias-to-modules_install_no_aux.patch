@@ -1,0 +1,27 @@
+From 9c2612c662d81f4ba7b683ca07981700662267d4 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 19:47:44 +0000
+Subject: [PATCH] add alias to modules_install_no_aux
+
+The linux spec files use modules_install_no_aux for all driver versions,
+so just add an alias here to be compatiable, even though
+modules_install in this case does not install any auxiliary modules.
+---
+ src/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index 4f618e7..6cccc88 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -104,6 +104,8 @@ modules_install: default
+ 	echo "blacklist i40evf"  >  "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
+ 	echo "alias i40evf iavf" >> "${INSTALL_MOD_PATH}/etc/modprobe.d/iavf.conf"
+ 
++modules_install_no_aux: modules_install
++
+ # After installing all the files, perform necessary work to ensure the system
+ # will use the new modules. This includes running depmod to update module
+ # dependencies and updating the initramfs image in case the module is loaded
+-- 
+2.35.6

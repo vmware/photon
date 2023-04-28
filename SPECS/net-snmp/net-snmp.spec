@@ -1,27 +1,33 @@
 %global __requires_exclude perl\\(.*\\)
+
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512 net-snmp=27895a583b23f3e14c48562bc32f3ba83513d81aa848e878be9a3650f0458d45950635c937ef627135f80b757b663e71fab9a3bde4fd91889153998ae3468fe7
-Source1:        snmpd.service
-Source2:        snmptrapd.service
-Patch0:         net-snmp-CVE-2019-20892.patch
-Patch1:         net-snmp-5.8-CVE-2020-15861.patch
-Patch2:         net-snmp-5.8-CVE-2020-15862.patch
-Patch3:         net-snmp-5.8-flood-messages.patch
 
-BuildRequires:  openssl-devel
-BuildRequires:  perl
-BuildRequires:  systemd
-Requires:       perl
-Requires:       systemd
+Source0: http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=27895a583b23f3e14c48562bc32f3ba83513d81aa848e878be9a3650f0458d45950635c937ef627135f80b757b663e71fab9a3bde4fd91889153998ae3468fe7
+Source1: snmpd.service
+Source2: snmptrapd.service
+
+Patch0: net-snmp-CVE-2019-20892.patch
+Patch1: net-snmp-5.8-CVE-2020-15861.patch
+Patch2: net-snmp-5.8-CVE-2020-15862.patch
+Patch3: net-snmp-5.8-flood-messages.patch
+Patch4: net-snmp-CVE-2022-44792-44793.patch
+
+BuildRequires: openssl-devel
+BuildRequires: perl
+BuildRequires: systemd
+
+Requires: perl
+Requires: systemd
+
 %description
 Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 
@@ -127,6 +133,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+* Mon Apr 24 2023 Nitesh Kumar <kunitesh@vmware.com> 5.8-10
+- Patched for CVE-2022-44792 and CVE-2022-44793
 * Thu Oct 13 2022 Susant Sahani <ssahani@vmware.com> 5.8-9
 - Fix excessive logging when IPv6 is disabled on Linux
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.8-8

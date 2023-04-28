@@ -53,7 +53,7 @@ class SpecParser(object):
                             elif self._isConditionalMacroEnd(line):
                                 deep = deep - 1
                 elif self._isIfCondition(line):
-                    if not self._isConditionTrue(line):
+                    if not self._isConditionTrue(line, self.specfile):
                         # skip conditional body
                         deep = 1
                         while i < totalLines and deep != 0:
@@ -273,9 +273,10 @@ class SpecParser(object):
         return False
 
     def _isChecksum(self, line):
-        if re.search('^%define *sha*=*', line, flags=re.IGNORECASE):
-            return True
-        return False
+        w = line.split()
+        if len(w) != 3 or w[0] != "%define" or w[1] not in {"sha1", "sha512"}:
+            return False
+        return re.match(".*=[a-z0-9]+$", w[2])
 
     def _isDefinition(self, line):
         if line.startswith(('%define', '%global')):
@@ -446,11 +447,11 @@ class SpecParser(object):
         words = data.split()
         nrWords = len(words)
         if nrWords != 3:
-            print("Error: Unable to parse line: " + line)
+            print(f"Error: Unable to parse line: {line}")
             return False
         value = words[2].split("=")
         if len(value) != 2:
-            print("Error: Unable to parse line: "+line)
+            print(f"Error: Unable to parse line: {line}")
             return False
         matchedSources = []
         for source in pkg.sources:
@@ -479,14 +480,28 @@ class SpecParser(object):
     def _isIfCondition(self, line):
         return line.startswith("%if ")
 
-    # Supports only %if %{}
-    def _isConditionTrue(self, line):
-        data = line.strip()
-        words = data.split()
-        # condition like %if a > b is not supported
-        if len(words) != 2:
-            return True
-        return int(self._replaceMacros(words[1]))
+    def _isConditionTrue(self, line, spec_fn):
+        words = line.strip().split()
+        if len(words) < 2:
+            raise Exception(f"Bad if condition {line} in {spec_fn}")
+
+        cond = ""
+        for w in words[1:]:
+            if w in {"==", ">", ">=", "<", "<=", "!=", "||", "&&"}:
+                if w == "||":
+                    cond = f"{cond} or "
+                elif w == "&&":
+                    cond = f"{cond} and "
+                else:
+                    cond = f"{cond} {w} "
+            else:
+                val = self._replaceMacros(w).lstrip("0")
+                if not val:
+                    val = "0"
+                cond = f"{cond} {val}"
+
+        cond = f"({cond}) != 0"
+        return eval(cond)
 
     def _isConditionalMacroStart(self, line):
         return line.startswith("%if")
@@ -494,10 +509,7 @@ class SpecParser(object):
     def _isConditionalMacroEnd(self, line):
         return line.strip() == "%endif"
 
-    ########################################################################
     # SpecObject generating functions
-    ########################################################################
-
     #
     # @requiresType: "build" for BuildRequires or
     #                "install" for Requires dependencies.

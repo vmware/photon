@@ -1,7 +1,7 @@
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
 Version:        0.28.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Languages
 License:        Apache License 2.0
 Vendor:         VMware, Inc.
@@ -44,6 +44,7 @@ go install
 mkdir -p %{buildroot}%{_bindir}
 cp -r ../build/bin/govc %{buildroot}%{_bindir}
 cp -r ../build/bin/vcsim  %{buildroot}%{_bindir}
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %clean
 rm -rf %{buildroot}/*
@@ -54,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vcsim
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 0.28.0-7
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 0.28.0-6
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 0.28.0-5

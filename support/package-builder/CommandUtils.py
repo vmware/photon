@@ -36,3 +36,36 @@ class CommandUtils:
                 process = subprocess.Popen("%s" %cmd, shell=True, stdout=f, stderr=f)
 
         return process.wait()
+
+    @staticmethod
+    def runBashCmd(cmd, logfile=None, logfn=None, capture=False, ignore_rc=False):
+        fp = None
+        if logfile:
+            fp = open(logfile, "w")
+        elif capture or logfn:
+            fp = subprocess.PIPE
+
+        stdout = fp
+        stderr = fp
+
+        sp = subprocess.Popen(cmd,
+                              shell=True, executable="/bin/bash",
+                              stdout=stdout, stderr=stdout)
+
+        out, err = sp.communicate()
+        rc = sp.wait()
+
+        out = out.decode() if out else ""
+        err = err.decode() if err else ""
+
+        if logfn:
+            logfn(out)
+
+        if logfile:
+            fp.close()
+
+        if rc and not ignore_rc:
+            print(f"Stdout: {out}\nStderr: {err}")
+            raise Exception(f"Error while running:\n{cmd}")
+
+        return out, err, rc

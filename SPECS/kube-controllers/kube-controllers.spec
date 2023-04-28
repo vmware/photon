@@ -1,7 +1,7 @@
 Summary:        Collection of kubernetes controllers for Calico
 Name:           kube-controllers
 Version:        3.6.1
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/kube-controllers
 Source0:        %{name}-%{version}.zip
@@ -35,8 +35,8 @@ patch -p1 < %{SOURCE2}
 popd
 mkdir -p dist
 mkdir -p .go-pkg-cache
-CGO_ENABLED=0 GO111MODULE=auto go build -v -i -o dist/kube-controllers cmd/kube-controllers/main.go
-CGO_ENABLED=0 GO111MODULE=auto go build -v -i -o dist/check-status cmd/check-status/main.go
+CGO_ENABLED=0 GO111MODULE=auto go build -v -o dist/kube-controllers cmd/kube-controllers/main.go
+CGO_ENABLED=0 GO111MODULE=auto go build -v -o dist/check-status cmd/check-status/main.go
 popd
 
 %install
@@ -44,6 +44,7 @@ pushd ${GOPATH}/src/github.com/projectcalico
 install -vdm 755 %{buildroot}%{_bindir}
 install kube-controllers/dist/kube-controllers %{buildroot}%{_bindir}/
 install kube-controllers/dist/check-status %{buildroot}%{_bindir}/
+eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %files
 %defattr(-,root,root)
@@ -51,6 +52,8 @@ install kube-controllers/dist/check-status %{buildroot}%{_bindir}/
 %{_bindir}/check-status
 
 %changelog
+* Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 3.6.1-22
+- Bump up version to compile with new go
 * Tue Dec 20 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-21
 - Bump up version to compile with new go
 * Sun Nov 13 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-20
