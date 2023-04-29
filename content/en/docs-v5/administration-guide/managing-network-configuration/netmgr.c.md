@@ -1008,7 +1008,7 @@ Delete a server from the DNS servers list associated with an interface.
 
 **Description**
 
-Get the the DNS servers list for the interface.
+Get the DNS servers list for the interface.
 
 **Declaration**
 ~~~~
