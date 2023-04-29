@@ -5,7 +5,7 @@ weight: 8
 
 You can change the locale if the default locale does not meet your requirements. 
 
-To find the locale, run the the `localectl` command:  
+To find the locale, run the `localectl` command:  
 
     localectl
     System Locale: LANG=en_US.UTF-8
