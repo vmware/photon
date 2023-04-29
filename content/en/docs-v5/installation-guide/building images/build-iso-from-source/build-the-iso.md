@@ -30,24 +30,22 @@ Perform the following steps to install the packages on Ubuntu:
     export LC_ALL="en_US.UTF-8"
     export LC_CTYPE="en_US.UTF-8"
     ```
-4. The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location:
-    ```
-    [https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
+    
+4. The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location: [https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
 
-5. Clone`the Photon project:
+5. Clone the Photon project:
    
-    `git clone https://github.com/vmware/photon.git`
-     `cd $HOME/workspaces/photon`
+    `git clone https://github.com/vmware/photon.git`  
+    `cd $HOME/workspaces/photon`
     
 
 6. Make ISO as follows:
     
-   ` sudo make iso`
+   `sudo make iso`
 
 
 5. Make Minimal ISO as follows:
-    
-    
+     
     `sudo make minimal-iso`
     
 
