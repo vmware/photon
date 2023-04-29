@@ -169,7 +169,7 @@ You can get the group details using commands in `pmctl` tools. The following sec
 
 #### Get all Group Details ####
 
-To fetch all the group details, use the following command in the the `pmctl` tool.
+To fetch all the group details, use the following command in the `pmctl` tool.
 
 
 	>pmctl status group
