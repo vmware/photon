@@ -5,6 +5,14 @@ weight: 2
 
 You can upgrade your existing Photon OS 2.0 VMs to take advantage of the functionality enhancements in Photon OS 3.0. For details, see [What's New in Photon OS 3.0](../../overview/whats-new/).
 
+For Photon OS older than Photon OS 3.0 Revision 3, Photon OS repositories changed. Because of this for any existing deployments, manual changes are required. Update Photon OS repos to packages.vmware.com.
+```console
+if [ `cat /etc/yum.repos.d/photon.repo | grep -o "packages.vmware.com/photon" | wc -l` -eq 0 ]; then
+   cd /etc/yum.repos.d/
+   sed -i 's/dl.bintray.com\/vmware/packages.vmware.com\/photon\/$releasever/g' photon.repo photon-updates.repo photon-extras.repo photon-debuginfo.repo
+fi
+```
+
 Photon OS 3.0 provides a seamless upgrade for Photon OS 2.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 2.0 customizations in your new OS 3.0 VM.
 
 **Note**: If your 2.0 VM is a full install, then you will have a 3.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.
