@@ -13,11 +13,11 @@ Run the `networkctl` command without options to default to the list command:
 
 ```console
 networkctl
-IDX LINK             TYPE               OPERATIONAL SETUP
-  1 lo               loopback           carrier     unmanaged
-  2 eth0             ether              routable    configured
-  3 docker0          ether              routable    unmanaged
-  11 vethb0aa7a6      ether              degraded    unmanaged
+IDX LINK             TYPE               OPERATIONAL  SETUP
+  1 lo               loopback           carrier      unmanaged
+  2 eth0             ether              routable     configured
+  3 docker0          ether              routable     unmanaged
+  11 vethb0aa7a6     ether              degraded     unmanaged
   4 links listed.
 ```
 
@@ -77,10 +77,10 @@ You can add a network link, such as the Ethernet connection, as the argument of 
                            DNS: 172.16.85.2                                                                   
                DHCP4 Client ID: IAID:0x2b9434c1/DUID                                                          
              DHCP6 Client DUID: DUID-EN/Vendor:0000ab11d258482fc7eee6510000                                   
-Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Link UP
-Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Gained carrier
-Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.225/24 via 172.16.85.2
-Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
+Feb 26 10:19:44 photon systemd-networkd[650]: ens33: Link UP
+Feb 26 10:19:44 photon systemd-networkd[650]: ens33: Gained carrier
+Feb 26 10:19:45 photon systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.225/24 via 172.16.85.2
+Feb 26 10:19:46 photon systemd-networkd[650]: ens33: Gained IPv6LL
 ```
 
 ### 'networkctl status' Command With Docker Option
