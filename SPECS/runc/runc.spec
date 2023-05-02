@@ -9,7 +9,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.7
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -64,6 +64,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.7-2
+- Bump up version to compile with new go
 * Fri Apr 28 2023 Nitesh Kumar <kunitesh@vmware.com> 1.1.7-1
 - Version upgrade to v1.1.7 to fix following issue:
 - 1461 (broken NVidia device support)
