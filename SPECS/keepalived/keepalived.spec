@@ -1,15 +1,18 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
-URL:            http://www.keepalived.org/
+URL:            http://www.keepalived.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/acassen/keepalived/archive/keepalived-%{version}.tar.gz
-%define sha512  %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
-Source1:        %{name}.service
+
+Source0: https://github.com/acassen/keepalived/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
+
+Source1: %{name}.service
+
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
 BuildRequires:  libmnl-devel
@@ -17,10 +20,14 @@ BuildRequires:  ipset-devel
 BuildRequires:  libnl-devel
 BuildRequires:  libnfnetlink-devel
 BuildRequires:  net-snmp-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  unzip
+
 Requires:       systemd
-Requires:       libnl-devel
+Requires:       libnl
+Requires:       net-snmp
+Requires:       openssl
+Requires:       iptables
 
 %description
 The main goal of the keepalived project is to add a strong & robust keepalive
@@ -43,10 +50,11 @@ autoreconf -f -i
     --with-systemdsystemunitdir=%{_unitdir} \
     --enable-snmp       \
     --enable-snmp-rfc
-make %{?_smp_mflags} STRIP=/bin/true
+
+%make_build STRIP=/bin/true
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 
@@ -54,20 +62,20 @@ rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 # A build could silently have LVS support deactivated if the kernel includes can't
 # be properly found, we need to avoid that.
 if ! grep -q "#define _WITH_LVS_ *1" lib/config.h; then
-    %{__echo} "ERROR: We do not want keepalived lacking LVS support."
-    exit 1
+  echo "ERROR: We do not want keepalived lacking LVS support."
+  exit 1
 fi
 
 %post
 /sbin/ldconfig
-%systemd_post keepalived.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun keepalived.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart keepalived.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -85,25 +93,27 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
-*   Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
--   Automatic Version Bump
-*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.2-2
--   Bump up release for openssl
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.5-2
--   openssl 1.1.1
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.5-1
--   Automatic Version Bump
-*   Thu Jun 25 2020 Ajay Kaher <akaher@vmware.com> 2.1.3-2
--   Corrected sha1
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.3-1
--   Automatic Version Bump
-*   Fri Feb 15 2019 Ashwin H <ashwinh@vmware.com> 2.0.10-1
--   Updated to version 2.0.10
-*   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 2.0.7-1
--   Updated to version 2.0.7
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.3.5-2
--   Add iptables-devel to BuildRequires
-*   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.5-1
--   Initial build.  First version
+* Tue May 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-2
+- Fix requires
+* Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
+- Automatic Version Bump
+* Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.2-2
+- Bump up release for openssl
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.5-2
+- openssl 1.1.1
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.5-1
+- Automatic Version Bump
+* Thu Jun 25 2020 Ajay Kaher <akaher@vmware.com> 2.1.3-2
+- Corrected sha1
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.3-1
+- Automatic Version Bump
+* Fri Feb 15 2019 Ashwin H <ashwinh@vmware.com> 2.0.10-1
+- Updated to version 2.0.10
+* Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 2.0.7-1
+- Updated to version 2.0.7
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.3.5-2
+- Add iptables-devel to BuildRequires
+* Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.5-1
+- Initial build.  First version
