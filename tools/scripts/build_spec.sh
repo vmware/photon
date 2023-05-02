@@ -3,7 +3,7 @@
 BUILD_SCRIPT_VERSION=1.1
 
 # Target to Photon OS version
-VERSION=4
+VERSION=5
 
 # Keep running container instance alive?
 KEEP_SANDBOX_AFTER_FAILURE=1
