@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        23.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -126,7 +126,7 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%patch0 -p1
+%autopatch -p1 -M0
 popd
 
 %build
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-2
+- Bump up version to compile with new go
 * Thu Mar 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.2-1
 - Update to 23.0.2, Add libapparmor as requires
 * Fri Mar 24 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-2
