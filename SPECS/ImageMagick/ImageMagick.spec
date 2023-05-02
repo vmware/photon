@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.0.19
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -23,7 +23,10 @@ Patch5:         CVE-2022-0284.patch
 Patch6:         CVE-2022-1115.patch
 Patch7:         CVE-2022-3213.patch
 Patch8:         CVE-2022-44268.patch
-Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+Patch9:         recursion_detection.patch
+Patch10:        CVE-2023-1289.patch
+Patch11:        CVE-2022-28463.patch
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
@@ -75,7 +78,7 @@ http://www.imagemagick.org/
 
 %package c++
 Summary:        ImageMagick Magick++ library (C++ bindings)
-Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libstdc++
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -90,8 +93,8 @@ Install ImageMagick-c++ if you want to use any applications that use Magick++.
 
 %package c++-devel
 Summary:        C++ bindings for the ImageMagick library
-Requires:       %{name}-c++%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}-devel%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-c++ = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 Requires:       pkg-config
 
 %description c++-devel
@@ -108,7 +111,6 @@ however.
 
 %prep
 %autosetup -n %{name}-%{VER}-%{Patchlevel} -p1
-
 # for %%doc
 mkdir Magick++/examples
 cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
@@ -118,7 +120,7 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 rm -rf %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/*.a
 
@@ -131,17 +133,14 @@ rm PerlMagick/demo/Generic.ttf
 %postun -p /sbin/ldconfig
 
 %files
-%doc README.txt LICENSE NOTICE AUTHORS.txt NEWS.txt ChangeLog
 %{_bindir}/[a-z]*
 %{_mandir}/man[145]/[a-z]*
 %{_mandir}/man1/%{name}.*
 
 %files doc
 %doc %{_datadir}/doc/%{name}-%{major_version}/*
-%doc %{_datadir}/doc/%{name}-%{VER}.%{Patchlevel}/*
 
 %files libs
-%doc LICENSE NOTICE AUTHORS.txt QuickStart.txt
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/%{name}-%{VER}
@@ -150,7 +149,6 @@ rm PerlMagick/demo/Generic.ttf
 %config(noreplace) %{_sysconfdir}/%{name}-%{major_version}/*.xml
 
 %files c++-devel
-%doc Magick++/examples
 %{_bindir}/Magick++-config
 %{_includedir}/%{name}-%{major_version}/Magick++
 %{_includedir}/%{name}-%{major_version}/Magick++.h
@@ -177,11 +175,11 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/MagickWand-config.*
 
 %files c++
-%doc Magick++/AUTHORS Magick++/ChangeLog Magick++/NEWS Magick++/README
-%doc www/Magick++/COPYING
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Tue May 02 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-9
+-   Fix for CVE-2023-1289, CVE-2022-28463
 *   Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-8
 -   Fix for CVE-2022-44268, CVE-2022-44267
 *   Tue Sep 27 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-7

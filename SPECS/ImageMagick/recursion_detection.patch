@@ -1,0 +1,140 @@
+From 9d3dd9192f6710ec8e10f5edda9b7bf67caeb232 Mon Sep 17 00:00:00 2001
+From: Cristy <urban-warrior@imagemagick.org>
+Date: Mon, 6 Mar 2023 14:14:36 -0500
+Subject: [PATCH] recursion detection framework
+
+[anmolja: resolved hunk failures]
+[This patch introduces the variable recursion_depth, which is utilized by CVE-2023-1289]
+Signed-off-by: Anmol Jain <anmolja@vmware.com>
+
+---
+ MagickCore/constitute.c | 12 ++++++++++++
+ MagickCore/draw.c       | 13 +++++++++++--
+ MagickCore/draw.h       |  3 +++
+ MagickCore/image.c      |  4 +++-
+ MagickCore/image.h      |  3 +++
+ 5 files changed, 32 insertions(+), 3 deletions(-)
+
+diff --git a/MagickCore/constitute.c b/MagickCore/constitute.c
+index 05c8084..d3fc43b 100644
+--- a/MagickCore/constitute.c
++++ b/MagickCore/constitute.c
+@@ -130,6 +130,11 @@
+ %    o exception: return any errors or warnings in this structure.
+ %
+ */
++/*
++  Define declarations.
++*/
++#define MaxReadRecursionDepth  100
++
+ MagickExport Image *ConstituteImage(const size_t columns,const size_t rows,
+   const char *map,const StorageType storage,const void *pixels,
+   ExceptionInfo *exception)
+@@ -558,9 +563,16 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
+       if (GetMagickDecoderThreadSupport(magick_info) == MagickFalse)
+         LockSemaphoreInfo(magick_info->semaphore);
+       status=IsCoderAuthorized(read_info->magick,ReadPolicyRights,exception);
++      if (((ImageInfo *) image_info)->recursion_depth++ > MaxReadRecursionDepth)
++        {
++          (void) ThrowMagickException(exception,GetMagickModule(),CoderError,
++            "NumberOfImagesIsNotSupported","`%s'",read_info->magick);
++          status=MagickFalse;
++        }
+       image=(Image *) NULL;
+       if (status != MagickFalse)
+         image=decoder(read_info,exception);
++      ((ImageInfo *) image_info)->recursion_depth--;
+       if (GetMagickDecoderThreadSupport(magick_info) == MagickFalse)
+         UnlockSemaphoreInfo(magick_info->semaphore);
+     }
+diff --git a/MagickCore/draw.c b/MagickCore/draw.c
+index a11110b..87ebfa1 100644
+--- a/MagickCore/draw.c
++++ b/MagickCore/draw.c
+@@ -5525,7 +5525,7 @@ MagickExport MagickBooleanType DrawPrimitive(Image *image,
+
+       if (primitive_info->text == (char *) NULL)
+         break;
+-      clone_info=AcquireImageInfo();
++      clone_info=CloneImageInfo(draw_info->image_info);
+       composite_images=(Image *) NULL;
+       if (LocaleNCompare(primitive_info->text,"data:",5) == 0)
+         composite_images=ReadInlineImage(clone_info,primitive_info->text,
+@@ -5533,6 +5533,14 @@ MagickExport MagickBooleanType DrawPrimitive(Image *image,
+       else
+         if (*primitive_info->text != '\0')
+           {
++            MagickBooleanType
++              path_status;
++
++            struct stat
++              attributes;
++            /*
++              Read composite image.
++            */
+             (void) CopyMagickString(clone_info->filename,primitive_info->text,
+               MagickPathExtent);
+             status&=SetImageInfo(clone_info,1,exception);
+@@ -5917,7 +5925,8 @@ MagickExport void GetDrawInfo(const ImageInfo *image_info,DrawInfo *draw_info)
+   (void) LogMagickEvent(TraceEvent,GetMagickModule(),"...");
+   assert(draw_info != (DrawInfo *) NULL);
+   (void) memset(draw_info,0,sizeof(*draw_info));
+-  clone_info=CloneImageInfo(image_info);
++  draw_info->image_info=image_info;
++  clone_info=CloneImageInfo(draw_info->image_info);
+   GetAffineMatrix(&draw_info->affine);
+   exception=AcquireExceptionInfo();
+   (void) QueryColorCompliance("#000F",AllCompliance,&draw_info->fill,
+diff --git a/MagickCore/draw.h b/MagickCore/draw.h
+index 4fe9e54..c342e40 100644
+--- a/MagickCore/draw.h
++++ b/MagickCore/draw.h
+@@ -340,6 +340,9 @@ typedef struct _DrawInfo
+
+   char
+     *id;
++
++  const ImageInfo
++    *image_info;
+ } DrawInfo;
+
+ typedef struct _PrimitiveInfo
+diff --git a/MagickCore/image.c b/MagickCore/image.c
+index c57e654..0b0b2b0 100644
+--- a/MagickCore/image.c
++++ b/MagickCore/image.c
+@@ -1006,7 +1006,8 @@ MagickExport ImageInfo *CloneImageInfo(const ImageInfo *image_info)
+     MagickPathExtent);
+   clone_info->channel=image_info->channel;
+   (void) CloneImageOptions(clone_info,image_info);
+-  clone_info->debug=IsEventLogging();
++  clone_info->recursion_depth=image_info->recursion_depth;
++  clone_info->debug=image_info->debug;
+   clone_info->signature=image_info->signature;
+   return(clone_info);
+ }
+@@ -1360,6 +1361,7 @@ MagickExport void GetImageInfo(ImageInfo *image_info)
+   image_info->quality=UndefinedCompressionQuality;
+   image_info->antialias=MagickTrue;
+   image_info->dither=MagickTrue;
++  image_info->depth=0;
+   synchronize=GetEnvironmentValue("MAGICK_SYNCHRONIZE");
+   if (synchronize != (const char *) NULL)
+     {
+diff --git a/MagickCore/image.h b/MagickCore/image.h
+index fa71feb..796311c 100644
+--- a/MagickCore/image.h
++++ b/MagickCore/image.h
+@@ -492,6 +492,9 @@ struct _ImageInfo
+
+   PixelInfo
+     matte_color;        /* matte (frame) color */
++
++  size_t
++    recursion_depth;  /* recursion detection */
+ };
+
+ extern MagickExport ChannelType
+--
+2.35.6
