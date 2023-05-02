@@ -1,33 +1,23 @@
-%global VER 7.1.0
-%global Patchlevel 19
+%global VER 7.1.1
+%global Patchlevel 11
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.0.19
-Release:        8%{?dist}
+Version:        7.1.1.11
+Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org/
-Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha512  %{name}=92fb6bcee50686330b01f3fc2db8584c78138fca7a3d0c7e375a65005d2fa7e8c4991d5554aa80dc9058c758b5d90449da06fbdf892673e8825a840bdacc61a8
-Patch0:         CVE-2022-1114.patch
-Patch1:         CVE-2022-32545.patch
-Patch2:         CVE-2022-32546.patch
-Patch3:         CVE-2022-32547.patch
-Patch4:         CVE-2022-2719.patch
-Patch5:         CVE-2022-0284.patch
-Patch6:         CVE-2022-1115.patch
-Patch7:         CVE-2022-3213.patch
-Patch8:         CVE-2022-44268.patch
-Requires:       %{name}-libs%{?_isa}
+Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
+%define sha512  %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
 Requires:       zlib
-
 %description
 ImageMagick is an image display and manipulation tool for the X
 Window System. ImageMagick can read and write JPEG, TIFF, PNM, GIF,
@@ -43,11 +33,11 @@ and display images. If you want to develop your own applications
 which use ImageMagick code or APIs, you need to install
 ImageMagick-devel as well.
 
-%package devel
+%package        devel
 Summary:        Library links and header files for ImageMagick app development
 Requires:       pkg-config
 
-%description devel
+%description    devel
 ImageMagick-devel contains the library links and header files you'll
 need to develop ImageMagick applications. ImageMagick is an image
 manipulation program.
@@ -57,43 +47,43 @@ APIs, you need to install ImageMagick-devel as well as ImageMagick.
 You do not need to install it if you just want to use ImageMagick,
 however.
 
-%package libs
+%package        libs
 Summary:        ImageMagick libraries to link with
 
-%description libs
+%description    libs
 This packages contains a shared libraries to use within other applications.
 
-%package doc
+%package        doc
 Summary:        ImageMagick html documentation
 
-%description doc
+%description    doc
 ImageMagick documentation, this package contains usage (for the
 commandline tools) and API (for the libraries) documentation in html format.
 Note this documentation can also be found on the ImageMagick website:
 http://www.imagemagick.org/
 
-%package c++
+%package        c++
 Summary:        ImageMagick Magick++ library (C++ bindings)
-Requires:       %{name}-libs%{?_isa}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libstdc++
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
 Requires:       zlib
 
-%description c++
+%description    c++
 This package contains the Magick++ library, a C++ binding to the ImageMagick
 graphics manipulation library.
 
 Install ImageMagick-c++ if you want to use any applications that use Magick++.
 
-%package c++-devel
+%package        c++-devel
 Summary:        C++ bindings for the ImageMagick library
-Requires:       %{name}-c++%{?_isa}
-Requires:       %{name}-devel%{?_isa}
+Requires:       %{name}-c++ = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 Requires:       pkg-config
 
-%description c++-devel
+%description    c++-devel
 ImageMagick-devel contains the static libraries and header files you'll
 need to develop ImageMagick applications using the Magick++ C++ bindings.
 ImageMagick is an image manipulation program.
@@ -106,8 +96,7 @@ want to develop/compile applications using the ImageMagick C interface,
 however.
 
 %prep
-%autosetup -n %{name}-%{VER}-%{Patchlevel} -p1
-
+%autosetup -n %{name}-%{VER}-%{Patchlevel}
 # for %%doc
 mkdir Magick++/examples
 cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
@@ -117,7 +106,7 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 rm -rf %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/*.a
 
@@ -130,17 +119,14 @@ rm PerlMagick/demo/Generic.ttf
 %postun -p /sbin/ldconfig
 
 %files
-%doc README.txt LICENSE NOTICE AUTHORS.txt NEWS.txt ChangeLog
 %{_bindir}/[a-z]*
 %{_mandir}/man[145]/[a-z]*
 %{_mandir}/man1/%{name}.*
 
 %files doc
 %doc %{_datadir}/doc/%{name}-%{major_version}/*
-%doc %{_datadir}/doc/%{name}-%{VER}.%{Patchlevel}/*
 
 %files libs
-%doc LICENSE NOTICE AUTHORS.txt QuickStart.txt
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/%{name}-%{VER}
@@ -149,7 +135,6 @@ rm PerlMagick/demo/Generic.ttf
 %config(noreplace) %{_sysconfdir}/%{name}-%{major_version}/*.xml
 
 %files c++-devel
-%doc Magick++/examples
 %{_bindir}/Magick++-config
 %{_includedir}/%{name}-%{major_version}/Magick++
 %{_includedir}/%{name}-%{major_version}/Magick++.h
@@ -176,11 +161,11 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/MagickWand-config.*
 
 %files c++
-%doc Magick++/AUTHORS Magick++/ChangeLog Magick++/NEWS Magick++/README
-%doc www/Magick++/COPYING
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Fri Jun 02 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-1
+-   Version update
 *   Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-8
 -   Fix for CVE-2022-44268
 *   Tue Sep 27 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-7
