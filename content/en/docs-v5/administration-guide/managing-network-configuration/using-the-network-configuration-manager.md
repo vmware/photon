@@ -20,7 +20,7 @@ LLDP, Link Local Addressing, IPv4LLRoute, LLMNR
 
 You can use `nmctl` to generate network configurations from the following:
 
-- YAML file: `nmctl` can generate configurations for required network links from YAML description. Configuration written to disk under `/etc/systemd/network` will persist between reboots. When `netmgr-yaml-generator.service` is enabled it reads YAML files from `/etc/network-config-manager/yaml` and generates `systemd-networkd` configuration files.
+- YAML file: `nmctl` can generate configurations for required network links from YAML description. Configuration written to disk under `/etc/systemd/network` will persist between reboots. When `network-config-manager-yaml-generator.service` is enabled it reads YAML files from `/etc/network-config-manager/yaml` and generates `systemd-networkd` configuration files.
 
     `nmctl` uses similar format as defined by different YAML format.
 
