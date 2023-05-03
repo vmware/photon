@@ -11,7 +11,7 @@ You can find the YAML network configuration files at the following location:
 
 	/etc/network-config-manager/yaml/ 
 
-When you install network-configuration-manager, it generates the network-config-manager configuration file for systemd-networkd named `99-dhcp.yml.example`.
+When you install network-configuration-manager, it generates the network-config-manager configuration file for systemd-networkd named `99-dhcp.yaml.example`.
 
 
 Perform the following steps to configure static or dynamic IP addressing in Photon OS:
@@ -80,11 +80,11 @@ Note the name of the interface that you want to configure using network-config-m
 
 	|Properties		| Description|
 	|---------------|------------|
-	|device: 		|Name of the interface.
-	|dhcp4: 		|yes or no depending upon dynamic or static IP addressing
-	|addresses: 	|IP address of the device in prefix notation.
-	|routes: to: destination via: |gateway IP address to connect to an outside network
-	|nameservers:	| Address of DNS name servers
+	| device: 		| Name of the interface.
+	| dhcp4: 		| yes or no depending upon dynamic or static IP addressing
+	| addresses: 	| IP address of the device in prefix notation.
+	| routes: to: destination via: | gateway IP address to connect to an outside network
+	| nameservers:	| Address of DNS name servers
 
 
  

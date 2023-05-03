@@ -60,11 +60,11 @@ d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=y
 ```
 ❯ nmctl        
          System Name: Zeus
-              Kernel: Linux (6.1.0-0.rc7.20221130git01f856ae6d0c.53.fc38.x86_64)
-     systemd version: 252.2-591.fc38
+              Kernel: Linux (6.1.10-8.ph5)
+     systemd version: v253-1
         Architecture: x86-64
       Virtualization: vmware
-    Operating System: Fedora Linux 38 (Workstation Edition Prerelease)
+    Operating System: VMware Photon OS/Linux
           Machine ID: d4f740d7e70d423cb46c8b1def547701
         System State: routable
         Online State: partial
