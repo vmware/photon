@@ -80,10 +80,10 @@ Note the name of the interface that you want to configure using network-config-m
 
 	|Properties		| Description|
 	|---------------|------------|
-	| device: 		|Name of the interface.
-	| dhcp4: 		|yes or no depending upon dynamic or static IP addressing
-	| addresses: 	|IP address of the device in prefix notation.
-	| routes: to: destination via: |gateway IP address to connect to an outside network
+	| device: 		| Name of the interface.
+	| dhcp4: 		| yes or no depending upon dynamic or static IP addressing
+	| addresses: 	| IP address of the device in prefix notation.
+	| routes: to: destination via: | gateway IP address to connect to an outside network
 	| nameservers:	| Address of DNS name servers
 
 
