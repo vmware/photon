@@ -72,11 +72,3 @@ systemctl enable network-config-manager-generator.service
 ```
 
 It creates symlink `/etc/systemd/system/network.target.wants/network-config-manager-generator.service → /usr/lib/systemd/system/network-config-manager-generator.service`.
-
-
-
-For more information, see:
-
-- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](./command-line-reference/command-line-interfaces/photon-management-daemon-cli/)
-- **C APIs** - [Network Configuration Manager - C API](./administration-guide/managing-network-configuration/netmgr.c/)
-- **Python APIs** - [Network Configuration Manager - Python API](./administration-guide/managing-network-configuration/netmgr.python/)
