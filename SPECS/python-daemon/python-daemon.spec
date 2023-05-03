@@ -21,6 +21,10 @@ BuildRequires: python3-xml
 BuildRequires: curl-devel
 BuildRequires: libffi-devel
 
+%if 0%{?with_check}
+BuildRequires: python3-pip
+%endif
+
 Requires: libffi
 Requires: python3
 Requires: python3-lockfile
@@ -34,7 +38,6 @@ A well-behaved Unix daemon process is tricky to get right, but the required step
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
-sed -i 's/distclass=version.ChangelogAwareDistribution,/ /g' setup.py
 
 %build
 %py3_build
