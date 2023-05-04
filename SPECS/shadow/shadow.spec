@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.8.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -21,6 +21,8 @@ Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
 Patch0:         shadow-4.8.1-goodname.patch
+Patch1:         CVE-2023-29383.patch
+Patch2:         CVE-2023-29383.1.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -171,6 +173,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon May 22 2023 Anmol Jain <anmolja@vmware.com> 4.8.1-5
+-   Fix for CVE-2023-29383.patch
 *   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.8.1-4
 -   Fix for requires
 *   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
