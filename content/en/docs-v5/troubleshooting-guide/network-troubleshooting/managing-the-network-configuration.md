@@ -3,7 +3,7 @@ title:  Managing the Network Configuration
 weight: 1
 ---
 
-The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as `systemd-networkd`, `systemd-resolvd`, and `networkctl`. 
+The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as `systemd-networkd`, `systemd-resolved`, and `networkctl`. 
 
 You can check the status of the network service by running the following command: 
 

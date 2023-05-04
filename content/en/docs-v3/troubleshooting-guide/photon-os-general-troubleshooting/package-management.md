@@ -54,7 +54,7 @@ drwxr-x--- 4 root root 4096 Feb 4 14:31 rpms
 drwxr-x--- 2 root root 4096 Apr 3 22:34 solvcache
 ```
 
-##Usage
+## Usage  
 The `tdnf` command can be used in the following ways:
 
 `#tdnf repolist --refresh` : This command is used to refresh the repolist. Generally there is a cache of the repo data stored in the local VM.
@@ -107,7 +107,7 @@ To upgrade/downgrade RPMs run the following commands:
 ```
 After upgrade/downgrade the dependent packages must be manually upgraded/downgraded as well. Use the `#tdnf remove <pkg-name>` command to remove packages and `# tdnf clean all` to clear cached packages, metadata, dbcache, plugins and expire-cache.
 
-#RPM
+# RPM  
 RPM is an open source package management system capable of building software from source into easily distributable packages. It is used for installing, updating and uninstalling packaged software.
 RPM can also be used to query detailed information about the packaged software and to check if a particular package is installed or not.
 
@@ -121,7 +121,7 @@ You can do the following operation using the RPM binaries:
 
 To find the package that contains a particular binary, run `rpm -q —whatprovides <binary/file path>` command.
 
-##Usage
+## Usage  
 The `rpm` command can be used in the following ways:
 
 - `rpm -ivh <rpm file path>` : This command installs the RPM in a virtual machine.

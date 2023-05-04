@@ -1,0 +1,91 @@
+---
+title:  Support of GPU-Accelerated Video Processing Applications
+weight: 18
+---
+
+Photon OS supports GPU-accelerated video processing, machine-learning and computer vision applications.
+
+# PCIUtils
+Install pciutils and check which GPU is listed, use lspci.
+```console
+tdnf install -y pciutils
+lspci
+```
+
+lspci-Output
+```console
+# lspci
+0000:00:00.0 Host bridge: Intel Corporation 440BX/ZX/DX - 82443BX/ZX/DX Host bridge (AGP disabled) (rev 03)
+0000:00:07.0 ISA bridge: Intel Corporation 82371AB/EB/MB PIIX4 ISA (rev 01)
+0000:00:07.1 IDE interface: Intel Corporation 82371AB/EB/MB PIIX4 IDE (rev 01)
+0000:00:07.3 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 02)
+0000:00:08.0 VGA compatible controller: Microsoft Corporation Hyper-V virtual VGA
+0001:00:00.0 VGA compatible controller: NVIDIA Corporation GM204GL [Tesla M60] (rev a1)
+```
+
+# NVidia GPU drivers
+
+Install the NVidia GPU drivers.
+
+This section describes how to install the NVidia GPU drivers using the Runfile installer method.
+
+1. Consult the [Software Matrix](https://docs.nvidia.com/datacenter/tesla/drivers/index.html#software-matrix) for GPU architecture and required driver support.
+
+1.  Update packages with impact to NVidia components or for installation helper purpose.
+
+    ```console
+    tdnf update -y docker
+    tdnf install -y build-essential wget tar
+    
+    if [ `uname -r | grep -o "-esx" | wc -l` -eq 0 ]; then
+      tdnf install -y linux-devel; else
+      tdnf install -y linux-esx-devel
+    fi
+    
+    reboot
+    ```
+   
+1.  Download and install the NVidia Runfile installer  
+
+    Obtain the latest version of Runfile installers from the NVIDIA [Linux driver downloads](https://www.nvidia.com/en-us/drivers/unix/) site.
+
+    ```console
+    wget https://us.download.nvidia.com/tesla/470.141.03/NVIDIA-Linux-x86_64-470.141.03.run
+    chmod a+x ./NVIDIA-Linux-x86_64-470.141.03.run
+    ./NVIDIA-Linux-x86_64-470.141.03.run --kernel-source-path=/usr/lib/modules/`uname -r`/build --ui=none --no-questions --accept-license
+    ```
+
+1.  Check if the GPU is detected. Sample output:  
+
+    ```console
+    nvidia-smi
+    root@NVidia01 [ / ]# nvidia-smi
+    Wed Aug 24 07:02:55 2022       
+    +-----------------------------------------------------------------------------+
+    | NVIDIA-SMI 470.141.03   Driver Version: 470.141.03   CUDA Version: 11.4     |
+    |-------------------------------+----------------------+----------------------+
+    | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+    | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+    |                               |                      |               MIG M. |
+    |===============================+======================+======================|
+    |   0  Tesla M60           Off  | 00003130:00:00.0 Off |                  Off |
+    | N/A   34C    P0    36W / 150W |      0MiB /  8129MiB |      0%      Default |
+    |                               |                      |                  N/A |
+    +-------------------------------+----------------------+----------------------+
+                                                                               
+    +-----------------------------------------------------------------------------+
+    | Processes:                                                                  |
+    |  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+    |        ID   ID                                                   Usage      |
+    |=============================================================================|
+    |  No running processes found                                                 |
+    +-----------------------------------------------------------------------------+
+    ```
+
+For containerized drivers and additional installer format information, see [NVidia Cloud Native Documentation](https://docs.nvidia.com/datacenter/cloud-native/).
+
+
+
+# Intel GPU drivers
+
+For Intel GPUs, consult [Intel® software for general purpose GPU capabilities](https://dgpu-docs.intel.com).

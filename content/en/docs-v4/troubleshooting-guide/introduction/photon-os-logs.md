@@ -7,7 +7,7 @@ On Photon OS, all the system logs except the installation logs and the cloud-ini
 
 The installation log files and the cloud-init log files reside in `/var/log`. If Photon OS is running on a virtual machine in a VMware hypervisor, the log file for the VMware tools, `vmware-vmsvc.log`, also resides in `/var/log`. 
 
-##Journalctl
+## Journalctl  
 Journalctl is a utility to query and display logs from journald and systemd’s logging service. Since journald stores log data in a binary format instead of a plain text format, `journalctl` is the standard way of reading log messages processed by journald.
 
 Journald is a service provided by systemd. To see the staus of the daemon, run the following commands:

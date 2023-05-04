@@ -5,50 +5,48 @@ weight: 2
 
 Using the OVA is the easiest way to create a Photon OS VM on VMware Workstation. 
 
-After you have downloaded the the OVA file (OVA with Hardware Version 11), perform the following steps:
+After you have downloaded the OVA file (for example, OVA UEFI with Hardware Version 13), perform the following steps:
 
 1. Start the Import Process
 
     - Double-click it to start the import process, or
     - Start VMware Workstation and, from the File menu, choose **Open**.
 
-    ![OVA file](../../images/ws-ova-import.png)
+1.  License
+
+    ![License](../../images/ws17-ova-license.png)
+    
+    Review the License Agreement and choose **Accept**.
 
 1. Specify the Name and Storage Location
 
     Change the name and storage location, if you want.
     
-    ![Name and Storage Location](../../images/ws-ova-path.png)
+    ![Name and Storage Location](../../images/ws17-ova-uefi-vhw13-import.png)
     
     Choose **Import**.
-    
-    ![License](../../images/ws-ova-license.png)
-    
-    Review the License Agreement and choose **Accept**.
 
 1. Configure VM Settings
 
     Once the OVA is imported, Workstation displays a summary of the settings for your Photon OS VM.
     
-    ![Settings](../../images/ws-ova-settings.png)
+    ![Settings](../../images/ws17-ova-uefi-vhw13-settings.png)
     
     Choose **Edit virtual machine settings**. Workstation displays the Virtual Machine settings. You can either accept the defaults or change settings as needed.
     
-    ![OVA settings](../../images/ws-ova-settings-edit.png)
+    ![OVA settings](../../images/ws17-ova-uefi-vhw13-settings-hardware.png)
     
     Select the Options tab.
     
-    ![Options](../../images/ws-ova-settings-options.png)
+    ![Options](../../images/ws17-ova-uefi-vhw13-settings-options.png)
 
-    Under Guest operating system, select **Linux**.
+    Under Guest operating system,  **Linux** is preselected.
     
-    For Version, click the list and select **VMWare Photon 64-bit**.
+    For Version, **VMWare Photon 64-bit** is preselected.
     
-    ![Version](../../images/ws-ova-os.png)
+    For the UEFI OVA, **UEFI** as firmware type is preconfigured. UEFI ensures that the ISO/OVA content is signed by VMware and that the entire stack is secure.
     
-    **Note:**  If you want to configure a secure boot for the Photon OS VM, select **Advanced**  and select (check) **Boot with EFI instead of BIOS**. The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.
-    
-    ![EFI boot](../../images/ws-ova-settings-efi.png)
+    ![UEFI boot](../../images/ws17-ova-uefi-vhw13-settings-uefi.png)
     
     Choose **OK**.
 
@@ -56,7 +54,7 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
 
     From the tab, choose  **Power on this virtual machine**.
     
-     ![Login prompt](../../images/splashscreen23.png)
+    ![OVA splash](../../images/Photon-4-bootsplash.png)
     
     After the splash screen, Workstation will prompt you to log in.
 
@@ -69,6 +67,6 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
     
     After you provide these credentials, Workstation prompts you to create a new password and type it a second time to verify it. For security, Photon OS forbids common dictionary words for the root password. Once logged in, you will see the shell prompt.
     
-   
+    ![OVA password](../../images/ws17-ova-uefi-vhw13-password.png)
     
-    Once complete, proceed to [Deploying a Containerized Application in Photon OS](../../deploying-a-containerized-application-in-photon-os/).
+    Once complete, proceed to [Deploying a Containerized Application in Photon OS](../deploying-a-containerized-application-in-photon-os/).
