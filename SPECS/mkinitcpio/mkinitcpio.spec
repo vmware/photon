@@ -3,52 +3,57 @@ Name:       mkinitcpio
 Version:    28
 Release:    2%{?dist}
 License:    GPLv2
-URL:        https://projects.archlinux.org/mkinitcpio.git/
+URL:        https://projects.archlinux.org/mkinitcpio.git
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=a52d7d20995a08192d8cde8cbb953cf1987bd3c9
+
+Source0: https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
+%define sha512 %{name}=53f6db0507ecad1d2ee4cbc18642de9bb2443995c526d6065291547a49c8e37917e632df1b3579808f718385d2604af0e9719fb7fa6459d286993814c4ff76c8
+
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
+
 BuildRequires: asciidoc3
 BuildRequires: git
 BuildRequires: python3
 BuildRequires: python3-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
+
 BuildArch:     noarch
 
 %description
 Multi-format archive and compression library
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-%patch0 -p0
+%autosetup -p0
 
 %build
 
-for i in "hooks/*" ; do sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i; done
-sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
-sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
+for i in "hooks/*" init shutdown; do
+  sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i
+done
+
 sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-/usr/lib/*
-/usr/bin/*
-/etc/*
-/usr/share/*
+%{_libdir}/*
+%{_bindir}/*
+%{_sysconfdir}/*
+%{_datadir}/*
 
 %changelog
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 28-2

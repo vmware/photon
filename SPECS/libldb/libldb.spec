@@ -1,28 +1,28 @@
-%global cmocka_version 1.1.5
-%global talloc_version 2.4.0
-%global tdb_version 1.4.8
-%global tevent_version 0.14.1
+%global cmocka_version  1.1.5
+%global talloc_version  2.4.0
+%global tdb_version     1.4.8
+%global tevent_version  0.14.1
 
 Name:           libldb
 Version:        2.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
 Distribution:   Photon
 Vendor:         VMware, Inc.
 Group:          Development/Libraries
-URL:            http://ldb.samba.org/
+URL:            http://ldb.samba.org
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
 %define sha512 ldb=beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
 
-BuildRequires: cmocka-devel >= %{cmocka_version}
+BuildRequires: cmocka-devel
 BuildRequires: gcc
-BuildRequires: libtalloc-devel >= %{talloc_version}
-BuildRequires: libtdb-devel >= %{tdb_version}
-BuildRequires: libtevent-devel >= %{tevent_version}
+BuildRequires: libtalloc-devel
+BuildRequires: libtdb-devel
+BuildRequires: libtevent-devel
 BuildRequires: popt-devel
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: openldap
 BuildRequires: make
@@ -33,10 +33,10 @@ BuildRequires: python3-tdb
 BuildRequires: python3-talloc-devel
 BuildRequires: python3-tevent
 
-Requires:   cmocka >= %{cmocka_version}
-Requires:   libtalloc >= %{talloc_version}
-Requires:   libtdb >= %{tdb_version}
-Requires:   libtevent >= %{tevent_version}
+Requires: cmocka >= %{cmocka_version}
+Requires: libtalloc >= %{talloc_version}
+Requires: libtdb >= %{tdb_version}
+Requires: libtevent >= %{tevent_version}
 
 Provides: bundled(libreplace)
 
@@ -46,7 +46,7 @@ servers, or use local tdb databases.
 
 %package -n ldb-tools
 Summary: Tools to manage LDB files
-Requires: libldb%{?_isa} = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description -n ldb-tools
 Tools to manage LDB files
@@ -82,21 +82,22 @@ Development files for the Python bindings for the LDB library
 %autosetup -n ldb-%{version} -p1
 
 %build
-%configure --disable-rpath \
-           --disable-rpath-install \
-           --builtin-libraries=replace \
-           --with-modulesdir=%{_libdir}/ldb/modules \
-           --with-privatelibdir=%{_libdir}/ldb \
-           --without-ldb-lmdb \
-           --enable-debug
+%configure \
+   --disable-rpath \
+   --disable-rpath-install \
+   --builtin-libraries=replace \
+   --with-modulesdir=%{_libdir}/ldb/modules \
+   --with-privatelibdir=%{_libdir}/ldb \
+   --without-ldb-lmdb \
+   --enable-debug
 
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
-%check
 %if 0%{?with_check}
+%check
 %make_build check
 %endif
 
@@ -154,6 +155,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Mon Jul 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2
+- Remove _isa entry
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 2.7.2-1
 - update to 2.7.2 - required by samba 4.18.3
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1

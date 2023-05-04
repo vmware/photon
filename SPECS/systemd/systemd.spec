@@ -68,7 +68,7 @@ BuildRequires:  libgcrypt-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  libselinux-devel
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  lz4-devel
 BuildRequires:  meson

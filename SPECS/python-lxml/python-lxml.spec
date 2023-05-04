@@ -5,22 +5,24 @@ Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
-Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
-%define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  libxslt
+
+Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
+%define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
+
 BuildRequires:  libxslt-devel
+BuildRequires:  libxml2-devel
 BuildRequires:  cython3
-BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-xml
 BuildRequires:  python3-setuptools
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       libxslt
 Requires:       python3-xml
+Requires:       libxml2
 
 %description
 The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
@@ -29,15 +31,17 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 %autosetup -p1 -n lxml-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 make %{?_smp_mflags} test
+%endif
 
 %clean
 rm -rf %{buildroot}

@@ -13,7 +13,7 @@ Source0: http://samba.org/ftp/tdb/tdb-%{version}.tar.gz
 
 BuildRequires: make
 BuildRequires: gcc
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: docbook-xml
 BuildRequires: which
@@ -64,6 +64,9 @@ Python3 bindings for libtdb
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)

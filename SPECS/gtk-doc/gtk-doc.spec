@@ -11,10 +11,10 @@ Distribution:   Photon
 Source0: http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
 %define sha512 %{name}=734440b61edc4101fbb34397036ddafa4003aa31f0a2258e0a855a563460d8e626588cb513b1a7850f6f843bbeb0a626ed33266a4dead5c10a4930fe688cfec9
 
-BuildRequires:  docbook-xml >= 4.5
-BuildRequires:  docbook-xsl >= 1.78.1
-BuildRequires:  itstool >= 2.0.2
-BuildRequires:  libxslt >= 1.1.28
+BuildRequires:  docbook-xml
+BuildRequires:  docbook-xsl
+BuildRequires:  itstool
+BuildRequires:  libxslt-devel
 BuildRequires:  itstool
 BuildRequires:  which
 BuildRequires:  check-devel
@@ -46,6 +46,9 @@ sh ./autogen.sh
 
 %check
 cd tests && make check-TESTS %{?_smp_mflags}
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)

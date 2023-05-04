@@ -21,7 +21,7 @@ BuildRequires:  pkg-config
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 
 %if 0%{?with_check}
 BuildRequires:  dbus-devel
@@ -65,6 +65,9 @@ make %{?_smp_mflags} check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)

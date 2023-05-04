@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.8.20
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -14,9 +14,11 @@ Source0: http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
 BuildRequires:  cmake
 BuildRequires:  python3
 BuildRequires:  python3-xml
-BuildRequires:  libxml2
+BuildRequires:  libxml2-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  bison
+
+Requires: libgcc
 
 %description
 Doxygen is the de facto standard tool for generating documentation from annotated C++ sources,
@@ -41,6 +43,9 @@ but it also supports other popular programming languages such as C, Objective-C,
 %install
 %cmake_install
 
+%clean
+rm -rf %{buildroot}/*
+
 %if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
@@ -52,6 +57,8 @@ make %{?_smp_mflags} test
 %{_bindir}/%{name}
 
 %changelog
+* Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.20-6
+- Fix requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.20-5
 - Bump version as a part of freetype2 upgrade
 * Fri Feb 17 2023 Harinadh D <hdommaraju@vmware.com> 1.8.20-4

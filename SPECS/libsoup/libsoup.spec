@@ -3,19 +3,19 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         7%{?dist}
+Release:         8%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/%{maj_ver}/%{name}-%{version}.tar.xz
-%define sha512   %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/%{maj_ver}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
 
 %if 0%{?with_check}
-Patch0:          libsoup-fix-make-check.patch
-Patch1:          libsoup-issue-120.patch
+Patch0: libsoup-fix-make-check.patch
+Patch1: libsoup-issue-120.patch
 %endif
 
 BuildRequires:   glib-devel
@@ -35,6 +35,7 @@ BuildRequires:   httpd
 BuildRequires:   meson >= 0.50
 BuildRequires:   ninja-build
 BuildRequires:   gtk-doc
+BuildRequires:   cmake
 
 Requires:        libxml2
 Requires:        glib-networking
@@ -77,20 +78,19 @@ These are the additional language files of libsoup.
 %autosetup -p1
 
 %build
-mkdir build && cd build
-meson --prefix=%{_usr} -Dvapi=disabled -Dgtk_doc=true ..
-ninja
+%meson \
+    --auto-features=auto
+
+%meson_build
 
 %install
-pushd build
-DESTDIR=%{buildroot} ninja install
-popd
+%meson_install
+
 %find_lang %{name}
 
 %if 0%{?with_check}
 %check
-cd build
-ninja test
+%meson_test
 %endif
 
 %ldconfig_scriptlets
@@ -105,14 +105,15 @@ ninja test
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
-%files doc
-%defattr(-,root,root)
-%{_datadir}/gtk-doc/html/*
-
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files doc
+%defattr(-,root,root)
+
 %changelog
+* Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-8
+- Use meson macros for building
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-7
 - Bump version as a part of httpd v2.4.56 upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-6

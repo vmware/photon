@@ -7,9 +7,11 @@ URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
+
+Source0: https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
 %define sha512 talloc=810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
-BuildRequires: libxslt
+
+BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: python3-devel
 BuildRequires: which
@@ -31,7 +33,7 @@ Summary: Python bindings for the Talloc library
 Requires: libtalloc = %{version}-%{release}
 Requires: python3
 %description -n python3-talloc
-Python 2 libraries for creating bindings using talloc
+Python 3 libraries for creating bindings using talloc
 
 %package -n python3-talloc-devel
 Group: Development/Libraries
@@ -42,17 +44,17 @@ Requires: python3-talloc = %{version}-%{release}
 Development libraries for python-talloc
 
 %prep
-%autosetup -n talloc-%{version}
+%autosetup -p1 -n talloc-%{version}
 
 %build
 %configure --bundled-libraries=NONE \
            --builtin-libraries=replace \
            --disable-silent-rules
-make %{?_smp_mflags} V=1
+
+%make_build
 
 %install
 %make_install
-rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %if 0%{?with_check}
 %check
@@ -61,6 +63,9 @@ rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -75,47 +80,34 @@ rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %files -n python3-talloc
 %defattr(-,root,root)
-%{_libdir}/python%{python3_version}/site-packages/*
-%ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2.4.0
-%endif
-%ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2.4.0
-%endif
+%{python3_sitelib}/*
+%{_libdir}/libpytalloc*.cpython*.so.*
 
 %files -n python3-talloc-devel
 %defattr(-,root,root)
 %{_includedir}/pytalloc.h
-%ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-310-x86_64-linux-gnu.pc
-%endif
-%ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-310-aarch64-linux-gnu.pc
-%endif
+%{_libdir}/libpytalloc*.cpython*.so
+%{_libdir}/pkgconfig/pytalloc*.cpython*.pc
 
 %changelog
-*   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.4.0-1
--   Version upgrade for SSSD.
-*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.1-5
--   Update release to compile with python 3.10
-*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4
--   Build with python 3.9
-*   Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-3
--   Build with python3
-*   Fri Jul 24 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-2
--   Added pkg files for aarch64 and x86.
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
--   Update to 2.3.1
--   Mass removal python2 and build with python3
-*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.14-2
--   Added BuildRequires python2-devel
-*   Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1
--   Update to 2.1.14
-*   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2
--   Copy libraries and add a patch for path regarding %check
-*   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 2.1.9-1
--   Initial packaging
+* Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.4.0-1
+- Version upgrade for SSSD.
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.1-5
+- Update release to compile with python 3.10
+* Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4
+- Build with python 3.9
+* Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-3
+- Build with python3
+* Fri Jul 24 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-2
+- Added pkg files for aarch64 and x86.
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
+- Update to 2.3.1
+- Mass removal python2 and build with python3
+* Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.14-2
+- Added BuildRequires python2-devel
+* Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1
+- Update to 2.1.14
+* Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2
+- Copy libraries and add a patch for path regarding %check
+* Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 2.1.9-1
+- Initial packaging

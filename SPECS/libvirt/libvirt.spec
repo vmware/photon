@@ -3,7 +3,7 @@ Name:           libvirt
 Version:        7.10.0
 Release:        4%{?dist}
 License:        LGPL
-URL:            http://libvirt.org/
+URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -27,7 +27,7 @@ BuildRequires:  libssh2-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
 BuildRequires:  lvm2
 BuildRequires:  meson
 BuildRequires:  ninja-build
@@ -156,8 +156,6 @@ CONFIGURE_OPTS=(
 %install
 %meson_install
 
-find %{buildroot} -name '*.la' -delete
-
 %check
 %meson_test
 
@@ -165,37 +163,37 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
-%{_libdir}/libvirt*.so.*
-%{_libdir}/libvirt/connection-driver/*
-%{_libdir}/libvirt/lock-driver/lockd.so
-%{_libdir}/libvirt/storage-backend/*
-%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
+%{_libdir}/%{name}*.so.*
+%{_libdir}/%{name}/connection-driver/*
+%{_libdir}/%{name}/lock-driver/lockd.so
+%{_libdir}/%{name}/storage-backend/*
+%{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
-%{_libdir}/systemd/system/*
-%{_libexecdir}/libvirt*
+%{_unitdir}/*
+%{_libexecdir}/%{name}*
 %{_libexecdir}/virt-login-shell-helper
-%{_sysconfdir}/libvirt/nwfilter/
-%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
-%{_sysconfdir}/libvirt/qemu/networks/default.xml
+%{_sysconfdir}/%{name}/nwfilter/
+%{_sysconfdir}/%{name}/qemu/networks/autostart/default.xml
+%{_sysconfdir}/%{name}/qemu/networks/default.xml
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/sysconfig/*
 
-%config(noreplace)%{_sysconfdir}/libvirt/*.conf
-%config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
+%config(noreplace)%{_sysconfdir}/%{name}/*.conf
+%config(noreplace)%{_sysconfdir}/sasl2/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/libvirt/*
-%{_libdir}/libvirt*.so
-%{_libdir}/pkgconfig/libvirt*
+%{_includedir}/%{name}/*
+%{_libdir}/%{name}*.so
+%{_libdir}/pkgconfig/%{name}*
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/libvirt/*
+%{_docdir}/%{name}/*
 %{_datadir}/locale/*
-%{_datadir}/libvirt/test-screenshot.png
+%{_datadir}/%{name}/test-screenshot.png
 %{_datadir}/augeas/*
-%{_datadir}/libvirt/cpu_map/*
+%{_datadir}/%{name}/cpu_map/*
 %{_datadir}/polkit-1/*
 
 %changelog

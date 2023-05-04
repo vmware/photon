@@ -37,7 +37,6 @@ BuildRequires:  python3-setuptools
 %if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
-BuildRequires:  libxml2
 BuildRequires:  python3-pip
 BuildRequires:  photon-release
 BuildRequires:  photon-repos

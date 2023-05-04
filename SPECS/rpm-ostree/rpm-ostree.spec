@@ -32,7 +32,8 @@ BuildRequires:  cppunit-devel
 BuildRequires:  polkit-devel
 BuildRequires:  ostree-devel
 BuildRequires:  docbook-xsl
-BuildRequires:  libxslt
+BuildRequires:  libxslt-devel
+BuildRequires:  libxml2-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  openssl-devel
 BuildRequires:  rpm-devel

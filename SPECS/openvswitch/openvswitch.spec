@@ -8,68 +8,69 @@ Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha512 openvswitch=5fe377f9b2857e238e3d40e4452e8b36c80283230f1d0f4b983324532beba725913da817e545c8d7630762f170bb5b0dfe810fd1b8b559994d5eae828beb8ec1
-Patch0:         openvswitch-CVE-2020-35498.patch
-Patch1:         openvswitch-CVE-2020-27827.patch
-Patch2:         openvswitch-CVE-2021-36980.patch
-Patch3:         openvswitch-CVE-2021-3905.patch
-Patch4:         openvswitch-CVE-2022-4337-CVE-2022-4338.patch
-Patch5:         CVE-2023-1668.patch
-BuildRequires:  gcc >= 4.0.0
-BuildRequires:  libcap-ng
-BuildRequires:  libcap-ng-devel
-BuildRequires:  make
-BuildRequires:  openssl
-BuildRequires:  openssl-devel
-BuildRequires:  systemd
-BuildRequires:  python3 >= 3.4.0
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-xml
+Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=5fe377f9b2857e238e3d40e4452e8b36c80283230f1d0f4b983324532beba725913da817e545c8d7630762f170bb5b0dfe810fd1b8b559994d5eae828beb8ec1
+
+Patch0: openvswitch-CVE-2020-35498.patch
+Patch1: openvswitch-CVE-2020-27827.patch
+Patch2: openvswitch-CVE-2021-36980.patch
+Patch3: openvswitch-CVE-2021-3905.patch
+Patch4: openvswitch-CVE-2022-4337-CVE-2022-4338.patch
+Patch5: CVE-2023-1668.patch
+
+BuildRequires: gcc
+BuildRequires: libcap-ng
+BuildRequires: libcap-ng-devel
+BuildRequires: make
+BuildRequires: openssl-devel
+BuildRequires: systemd-devel
+BuildRequires: python3-devel
+BuildRequires: python3-six
+BuildRequires: python3-xml
 
 %if 0%{?with_check}
-BuildRequires:  python3-sortedcontainers
+BuildRequires: python3-sortedcontainers
 %endif
 
-Requires:       libgcc-atomic
-Requires:       libcap-ng
-Requires:       openssl
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-six
-Requires:       python3-xml
-Requires:       gawk
+Requires: libgcc-atomic
+Requires: libcap-ng
+Requires: openssl
+Requires: python3
+Requires: python3-six
+Requires: python3-xml
+Requires: gawk
 
 %description
 Open vSwitch provides standard network bridging functions and
 support for the OpenFlow protocol for remote per-flow control of
 traffic.
 
-%package -n     python3-openvswitch
-Summary:        python3-openvswitch
+%package -n     python3-%{name}
+Summary:        python3-%{name}
 Requires:       python3
-Requires:       python3-libs
+Requires:       %{name} = %{version}
 
-%description -n python3-openvswitch
+%description -n python3-%{name}
 Python 3 version.
 
 %package        devel
 Summary:        Header and development files for openvswitch
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 openvswitch-devel package contains header files and libs.
 
 %package        devel-static
 Summary:        Static libs for openvswitch
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel-static
 openvswitch-devel-static package contains static libs.
 
 %package        doc
 Summary:        Documentation for openvswitch
 Requires:       %{name} = %{version}-%{release}
+
 %description    doc
 It contains the documentation and manpages for openvswitch.
 
@@ -78,31 +79,42 @@ It contains the documentation and manpages for openvswitch.
 
 %build
 export PYTHON2=no
-%configure --enable-ssl --enable-shared
+%configure \
+    --enable-ssl \
+    --enable-shared
 
 %make_build
 
 %install
-%make_install
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-mkdir -p %{buildroot}/%{python3_sitelib}
-cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs %{buildroot}/%{python3_sitelib}
+%make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{python3_sitelib}
 
-mkdir -p %{buildroot}/%{_libdir}/systemd/system
-install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
+cp -a %{buildroot}%{_datadir}/%{name}/python/ovs \
+       %{buildroot}%{python3_sitelib}
 
-/usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
-for service in openvswitch ovsdb-server ovs-vswitchd; do
-       install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
+mkdir -p %{buildroot}%{_unitdir}
+install -p -D -m 0644 \
+    rhel/usr_share_%{name}_scripts_systemd_sysconfig.template \
+    %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+
+%{python3} build-aux/dpdkstrip.py --nodpdk < \
+        rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > \
+        rhel/usr_lib_systemd_system_ovs-vswitchd.service
+
+for service in %{name} ovsdb-server ovs-vswitchd; do
+  install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service \
+      %{buildroot}%{_unitdir}/${service}.service
 done
 
-mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
-install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
-sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+install -p -D -m 0644 rhel/etc_%{name}_default.conf \
+            %{buildroot}%{_sysconfdir}/%{name}/default.conf
 
-%check
+sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}%{_sysconfdir}/%{name}/default.conf
+
 %if 0%{?with_check}
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%check
+%make_build check
 %endif
 
 %preun
@@ -121,31 +133,35 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/vtep-ctl
 %{_sbindir}/ovs-*
 %{_sbindir}/ovsdb-server
-%{_unitdir}/openvswitch.service
+%{_unitdir}/%{name}.service
 %{_unitdir}/ovs-vswitchd.service
 %{_unitdir}/ovsdb-server.service
-%exclude %{_libdir}/lib*.a
-%{_libdir}/lib*
-%{_sysconfdir}/openvswitch/default.conf
+%{_libdir}/*.so.*
+%{_sysconfdir}/%{name}/default.conf
 %{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
-%{_datadir}/openvswitch/*.ovsschema
-%{_datadir}/openvswitch/python/*
-%{_datadir}/openvswitch/scripts/ovs-*
-%{_datadir}/openvswitch/bugtool-plugins/*
-%config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
+%{_datadir}/%{name}/*.ovsschema
+%{_datadir}/%{name}/python/*
+%{_datadir}/%{name}/scripts/ovs-*
+%{_datadir}/%{name}/bugtool-plugins/*
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 
-%files -n python3-openvswitch
+%files -n python3-%{name}
+%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
 %{_includedir}/openflow/*.h
-%{_includedir}/openvswitch/*.h
+%{_includedir}/%{name}/*.h
 %{_libdir}/pkgconfig/*.pc
 
 %files devel-static
+%defattr(-,root,root)
 %{_libdir}/*.a
 
 %files doc
+%defattr(-,root,root)
 %{_mandir}/man1/ovs-*.1.gz
 %{_mandir}/man1/ovsdb-*.1.gz
 %{_mandir}/man5/ovs-vswitchd.conf.db.5.gz

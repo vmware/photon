@@ -3,20 +3,22 @@ Name:                   wayland
 Version:                1.20.0
 Release:                3%{?dist}
 License:                MIT
-URL:                    http://wayland.freedesktop.org/
+URL:                    http://wayland.freedesktop.org
 Group:                  System Environment/Libraries
-Source0:                https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
-%define sha512          wayland=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
-Patch0:                 CVE-2021-3782.patch
 Vendor:                 VMware, Inc.
 Distribution:           Photon
+
+Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
+%define sha512 %{name}=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
+
+Patch0:                 CVE-2021-3782.patch
 
 BuildRequires:          libxml2-devel
 BuildRequires:          meson
 BuildRequires:          ninja-build
 BuildRequires:          libffi-devel
 BuildRequires:          expat-devel
-BuildRequires:          libxslt
+BuildRequires:          libxslt-devel
 
 %description
 Wayland is a protocol for a compositor to talk to its clients as well as a C library implementation of that protocol. The compositor can be a standalone display server running on Linux kernel modesetting and evdev input devices, an X application, or a Wayland client itself. The clients can be traditional applications, X servers (rootless or fullscreen) or other display servers.
@@ -70,7 +72,6 @@ CONFIGURE_OPTS=(
 
 %install
 %meson_install
-find %{buildroot} -name \*.la -delete
 
 %ldconfig_scriptlets
 
@@ -82,6 +83,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%license COPYING
 
 %files devel
 %defattr(-,root,root)
@@ -97,22 +99,18 @@ rm -rf %{buildroot}/*
 
 %files -n libwayland-client
 %defattr(-,root,root)
-%license COPYING
 %{_libdir}/libwayland-client.so.0*
 
 %files -n libwayland-cursor
 %defattr(-,root,root)
-%license COPYING
 %{_libdir}/libwayland-cursor.so.0*
 
 %files -n libwayland-egl
 %defattr(-,root,root)
-%license COPYING
 %{_libdir}/libwayland-egl.so.1*
 
 %files -n libwayland-server
 %defattr(-,root,root)
-%license COPYING
 %{_libdir}/libwayland-server.so.0*
 
 %changelog

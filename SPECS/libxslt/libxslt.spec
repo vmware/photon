@@ -1,19 +1,19 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.34
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
-URL:            http:/http://xmlsoft.org/libxslt/
+URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
-
 Distribution:   Photon
-Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha512  libxslt=1516a11ad608b04740674060d2c5d733b88889de5e413b9a4e8bf8d1a90d712149df6d2b1345b615f529d7c7d3fa6dae12e544da828b39c7d415e54c0ee0776b
+
+Source0: http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1516a11ad608b04740674060d2c5d733b88889de5e413b9a4e8bf8d1a90d712149df6d2b1345b615f529d7c7d3fa6dae12e544da828b39c7d415e54c0ee0776b
 
 Patch0:         libxslt-CVE-2021-30560.patch
 
-Requires:       libxml2-devel
+Requires:       libxml2
 Requires:       libgcrypt
 
 BuildRequires:  libxml2-devel
@@ -25,28 +25,34 @@ The libxslt package contains XSLT libraries used for extending libxml2 libraries
 %package devel
 Summary:        Development Libraries for libxslt
 Group:          Development/Libraries
-Requires:       libxslt = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       libgpg-error-devel
+
 %description devel
 Header files for doing development with libxslt.
 
 %prep
 %autosetup -p1
-sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
+sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' %{name}/transform.c
 
 %build
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
     --without-python
-make %{?_smp_mflags}
+
+%make_build
+
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
+find %{buildroot}%{_libdir} -name '*.la' -delete
+
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build tests
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -58,7 +64,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/*.sh
-%{_libdir}/libxslt-plugins
+%{_libdir}/%{name}-plugins
 %{_bindir}/*
 %{_mandir}/man1/*
 
@@ -72,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.34-7
+- Fix requires
 * Tue Jun 14 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-6
 - Bump up the release to fix CVE-2022-29824
 * Tue May 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-5

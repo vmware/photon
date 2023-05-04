@@ -1,21 +1,24 @@
+%global _samba_pdb_modules  pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
+%global _samba_modules      %{_samba_pdb_modules}
+
+%define maj_ver     4.0
+
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.18.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
-Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=b0980291ca124641bd03ba51d4b4e2e492facb3939f8edf491133be83a82beed66f68f00442cb02c211a9e76eb6ba08387136e30eb7df756c3c90c76034689c4
-%define samba_ver %{version}-%{release}
-Source1:        smb.conf.vendor
 
-Patch1:         0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
+Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
+%define sha512 samba=b0980291ca124641bd03ba51d4b4e2e492facb3939f8edf491133be83a82beed66f68f00442cb02c211a9e76eb6ba08387136e30eb7df756c3c90c76034689c4
 
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Source1: smb.conf.vendor
+
+Patch0: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -26,11 +29,11 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: xmlto
 BuildRequires: python3-defusedxml
 BuildRequires: libxslt-devel
-BuildRequires: libxslt
+BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: docbook-xml
 BuildRequires: gcc
-BuildRequires: gnutls-devel >= 3.4.7
+BuildRequires: gnutls-devel
 BuildRequires: jansson-devel
 BuildRequires: libxml2-devel
 BuildRequires: lmdb
@@ -38,37 +41,40 @@ BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
-BuildRequires: libtdb-devel >= 1.4.8
-BuildRequires: libtalloc-devel >= 2.4.0
-BuildRequires: libldb-devel >= 2.7.2
-BuildRequires: libtevent-devel >= 0.14.1
+BuildRequires: libtdb-devel
+BuildRequires: libtalloc-devel
+BuildRequires: libldb-devel
+BuildRequires: libtevent-devel
 BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
 
-Requires:      samba-client-libs = %{samba_ver}
-Requires:      libtirpc
-Requires:      python3
-Requires:      libarchive
-Requires:      Linux-PAM
-Requires:      libxslt
-Requires:      gnutls
-Requires:      jansson
-Requires:      libxml2
-Requires:      lmdb
-Requires:      openldap
-Requires:      perl-Parse-Yapp
-Requires:      dbus
-Requires:      bindutils
-Requires:      libtdb >= 1.4.8
-Requires:      libldb >= 2.7.2
-Requires:      libtalloc >= 2.4.0
-Requires:      libtevent >= 0.14.1
-Requires:      zlib
-Requires:      ncurses
+Requires: %{name}-libs = %{version}-%{release}
+Requires: libtirpc
+Requires: python3
+Requires: libarchive
+Requires: Linux-PAM
+Requires: libxslt
+Requires: gnutls
+Requires: jansson
+Requires: libxml2
+Requires: lmdb
+Requires: openldap
+Requires: perl-Parse-Yapp
+Requires: dbus
+Requires: bindutils
+Requires: libtdb >= 1.4.8
+Requires: libldb >= 2.7.2
+Requires: libtalloc >= 2.4.0
+Requires: libtevent >= 0.14.1
+Requires: zlib
+Requires: ncurses
 
-Provides:      samba4-client = %{samba_ver}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+Provides: samba4-client = %{version}-%{release}
 
 # Samba Client
 %description
@@ -78,23 +84,23 @@ and Windows networking to Linux clients.
 For a more detailed description of Samba, check the Web page https://www.Samba.org/
 
 # Samba Client Libaries
-%package -n samba-client-libs
+%package libs
 Summary: Samba client libraries
 Requires:   libtdb
 Requires:   libldb
 Requires:   libtalloc
 Requires:   libtevent
 
-%description -n samba-client-libs
+%description libs
 The samba-client-libs package contains internal libraries needed by the
 SMB/CIFS clients.
 
 # Samba Client Devel
-%package -n samba-client-devel
+%package devel
 Summary: Developer tools for Samba-Client libraries
-Requires: samba-client = %{samba_ver}
+Requires: %{name} = %{version}-%{release}
 
-%description -n samba-client-devel
+%description devel
 The samba-client-devel package contains the header files and libraries needed
 to develop programs.
 
@@ -110,7 +116,7 @@ This package includes the wbclient library.
 %package -n libwbclient-devel
 Summary:        Libraries and Header Files to Develop Programs with wbclient Support
 Group:          Development/Libraries/C and C++
-Requires:       libwbclient = %{version}
+Requires:       libwbclient = %{version}-%{release}
 
 %description -n libwbclient-devel
 This package contains the static libraries and header files needed to
@@ -122,36 +128,33 @@ develop programs which make use of the wbclient programming interface.
 %build
 echo "^samba4.rpc.echo.*on.*ncacn_np.*with.*object.*nt4_dc" >> selftest/knownfail
 
-%global _samba_pdb_modules pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
-%global _samba_modules %{_samba_pdb_modules}
-
 export CFLAGS="-I/usr/include/tirpc"
 export LDFLAGS="-ltirpc"
 
 %configure \
-        --enable-fhs \
-        --with-piddir=/run \
-        --with-sockets-dir=/run/samba \
-        --with-modulesdir=%{_libdir}/samba \
-        --with-pammodulesdir=%{_libdir}/security \
-        --with-lockdir=/var/lib/samba/lock \
-        --with-statedir=/var/lib/samba \
-        --with-cachedir=/var/lib/samba \
-        --without-gettext \
-        --without-ldb-lmdb \
-        --without-lttng \
-        --without-ad-dc \
-        --without-systemd  \
-        --without-acl-support \
-        --with-shared-modules=%{_samba_modules} \
-        --disable-python \
-        --bundled-libraries=cmocka,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!tdb,!pytdb,!ldb,!pyldb,!pldb-util \
-        --enable-debug &&
+    --enable-fhs \
+    --with-piddir=/run \
+    --with-sockets-dir=/run/samba \
+    --with-modulesdir=%{_libdir}/samba \
+    --with-pammodulesdir=%{_libdir}/security \
+    --with-lockdir=%{_sharedstatedir}/samba/lock \
+    --with-statedir=%{_sharedstatedir}/samba \
+    --with-cachedir=%{_sharedstatedir}/samba \
+    --without-gettext \
+    --without-ldb-lmdb \
+    --without-lttng \
+    --without-ad-dc \
+    --without-systemd  \
+    --without-acl-support \
+    --with-shared-modules=%{_samba_modules} \
+    --disable-python \
+    --bundled-libraries=cmocka,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!tdb,!pytdb,!ldb,!pyldb,!pldb-util \
+    --enable-debug
+
 make bin/smbclient %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 # Install other stuff
 install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/samba/smb.conf
@@ -227,8 +230,8 @@ for file_dir in \
    %{_sbindir}/samba-gpupdate \
    %{_sbindir}/smbd \
    %{_sbindir}/winbindd \
-   /etc/openldap/schema/samba.schema \
-   /etc/pam.d/samba \
+   %{_sysconfdir}/openldap/schema/samba.schema \
+   %{_sysconfdir}/pam.d/samba \
    %{_bindir}/async_connect_send_test \
    %{_bindir}/dns_lookuptest \
    %{_bindir}/gentest \
@@ -267,37 +270,37 @@ for file_dir in \
    %{_bindir}/vfstest \
    %{_bindir}/vlp \
    %{_bindir}/wbinfo \
-   %{_includedir}/samba-4.0/util/attr.h \
-   %{_includedir}/samba-4.0/util/blocking.h \
-   %{_includedir}/samba-4.0/util/debug.h \
-   %{_includedir}/samba-4.0/util/fault.h \
-   %{_includedir}/samba-4.0/util/genrand.h \
-   %{_includedir}/samba-4.0/util/idtree.h \
-   %{_includedir}/samba-4.0/util/idtree_random.h \
-   %{_includedir}/samba-4.0/util/signal.h \
-   %{_includedir}/samba-4.0/util/substitute.h \
-   %{_includedir}/samba-4.0/util/tevent_ntstatus.h \
-   %{_includedir}/samba-4.0/util/tevent_unix.h \
-   %{_includedir}/samba-4.0/util/tevent_werror.h \
-   %{_includedir}/samba-4.0/util/tfork.h \
-   %{_includedir}/samba-4.0/credentials.h \
-   %{_includedir}/samba-4.0/dcerpc.h \
-   %{_includedir}/samba-4.0/dcesrv_core.h \
-   %{_includedir}/samba-4.0/domain_credentials.h \
-   %{_includedir}/samba-4.0/ldb_wrap.h \
-   %{_includedir}/samba-4.0/lookup_sid.h \
-   %{_includedir}/samba-4.0/machine_sid.h \
-   %{_includedir}/samba-4.0/netapi.h \
-   %{_includedir}/samba-4.0/param.h \
-   %{_includedir}/samba-4.0/passdb.h \
-   %{_includedir}/samba-4.0/rpc_common.h \
-   %{_includedir}/samba-4.0/samba/session.h \
-   %{_includedir}/samba-4.0/share.h \
-   %{_includedir}/samba-4.0/smb* \
-   %{_includedir}/samba-4.0/tdr.h \
-   %{_includedir}/samba-4.0/tsocket.h \
-   %{_includedir}/samba-4.0/tsocket_internal.h \
-   %{_includedir}/samba-4.0/util_ldb.h \
+   %{_includedir}/samba-%{maj_ver}/util/attr.h \
+   %{_includedir}/samba-%{maj_ver}/util/blocking.h \
+   %{_includedir}/samba-%{maj_ver}/util/debug.h \
+   %{_includedir}/samba-%{maj_ver}/util/fault.h \
+   %{_includedir}/samba-%{maj_ver}/util/genrand.h \
+   %{_includedir}/samba-%{maj_ver}/util/idtree.h \
+   %{_includedir}/samba-%{maj_ver}/util/idtree_random.h \
+   %{_includedir}/samba-%{maj_ver}/util/signal.h \
+   %{_includedir}/samba-%{maj_ver}/util/substitute.h \
+   %{_includedir}/samba-%{maj_ver}/util/tevent_ntstatus.h \
+   %{_includedir}/samba-%{maj_ver}/util/tevent_unix.h \
+   %{_includedir}/samba-%{maj_ver}/util/tevent_werror.h \
+   %{_includedir}/samba-%{maj_ver}/util/tfork.h \
+   %{_includedir}/samba-%{maj_ver}/credentials.h \
+   %{_includedir}/samba-%{maj_ver}/dcerpc.h \
+   %{_includedir}/samba-%{maj_ver}/dcesrv_core.h \
+   %{_includedir}/samba-%{maj_ver}/domain_credentials.h \
+   %{_includedir}/samba-%{maj_ver}/ldb_wrap.h \
+   %{_includedir}/samba-%{maj_ver}/lookup_sid.h \
+   %{_includedir}/samba-%{maj_ver}/machine_sid.h \
+   %{_includedir}/samba-%{maj_ver}/netapi.h \
+   %{_includedir}/samba-%{maj_ver}/param.h \
+   %{_includedir}/samba-%{maj_ver}/passdb.h \
+   %{_includedir}/samba-%{maj_ver}/rpc_common.h \
+   %{_includedir}/samba-%{maj_ver}/samba/session.h \
+   %{_includedir}/samba-%{maj_ver}/share.h \
+   %{_includedir}/samba-%{maj_ver}/smb* \
+   %{_includedir}/samba-%{maj_ver}/tdr.h \
+   %{_includedir}/samba-%{maj_ver}/tsocket.h \
+   %{_includedir}/samba-%{maj_ver}/tsocket_internal.h \
+   %{_includedir}/samba-%{maj_ver}/util_ldb.h \
    %{_mandir}/man1/gentest.1.gz \
    %{_mandir}/man1/ldb* \
    %{_mandir}/man1/locktest.1.gz \
@@ -365,7 +368,9 @@ done
 %postun libs
 /sbin/ldconfig
 
-# Samba Client
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root,-)
 %doc source3/client/README.smbspool
@@ -396,9 +401,9 @@ done
 %attr(0700,root,root) %dir /var/log/samba
 %ghost %dir /run/samba
 %ghost %dir /run/winbindd
-%dir /var/lib/samba
-%attr(700,root,root) %dir /var/lib/samba/private
-%dir /var/lib/samba/lock
+%dir %{_sharedstatedir}/samba
+%attr(700,root,root) %dir %{_sharedstatedir}/samba/private
+%dir %{_sharedstatedir}/samba/lock
 %attr(755,root,root) %dir %{_sysconfdir}/samba
 %config(noreplace) %{_sysconfdir}/samba/smb.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/samba
@@ -407,8 +412,7 @@ done
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 
-# Client libraries
-%files -n samba-client-libs
+%files libs
 %defattr(-,root,root,-)
 %{_libdir}/libdcerpc-binding.so.*
 %{_libdir}/libndr.so.*
@@ -532,18 +536,18 @@ done
 %{_libdir}/samba/pdb/tdbsam.so
 %{_libdir}/libdcerpc-server-core.*
 
-# Devel
-%files -n samba-client-devel
-%{_includedir}/samba-4.0/libsmbclient.h
-%{_includedir}/samba-4.0/core/*.h
-%{_includedir}/samba-4.0/samba/version.h
-%{_includedir}/samba-4.0/ndr.h
-%{_includedir}/samba-4.0/util/discard.h
-%{_includedir}/samba-4.0/util/data_blob.h
-%{_includedir}/samba-4.0/util/time.h
-%{_includedir}/samba-4.0/charset.h
-%{_includedir}/samba-4.0/gen_ndr/*
-%{_includedir}/samba-4.0/ndr/*
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/samba-%{maj_ver}/libsmbclient.h
+%{_includedir}/samba-%{maj_ver}/core/*.h
+%{_includedir}/samba-%{maj_ver}/samba/version.h
+%{_includedir}/samba-%{maj_ver}/ndr.h
+%{_includedir}/samba-%{maj_ver}/util/discard.h
+%{_includedir}/samba-%{maj_ver}/util/data_blob.h
+%{_includedir}/samba-%{maj_ver}/util/time.h
+%{_includedir}/samba-%{maj_ver}/charset.h
+%{_includedir}/samba-%{maj_ver}/gen_ndr/*
+%{_includedir}/samba-%{maj_ver}/ndr/*
 %{_libdir}/libsmbclient.so
 %{_libdir}/libsmbdcerpc.so
 %{_libdir}/libdcerpc-binding.so
@@ -567,35 +571,36 @@ done
 %{_libdir}/pkgconfig/smbclient.pc
 %{_mandir}/man7/libsmbclient.7*
 
-# Winbind Client
 %files -n libwbclient
 %defattr(-,root,root,-)
 %{_libdir}/libwbclient.so.*
 
 %files -n libwbclient-devel
 %defattr(-,root,root,-)
-%dir %_includedir/samba-4.0/
-%{_includedir}/samba-4.0/wbclient.h
+%dir %{_includedir}/samba-%{maj_ver}/
+%{_includedir}/samba-%{maj_ver}/wbclient.h
 %{_libdir}/libwbclient.so
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
-*   Mon Jul 17 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 4.18.3-2
--   Bump version as a part of bindutils upgrade
-*   Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.3-1
--   update to 4.18.3 including various CVE fixes
-*   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.5-1
--   Version bump for SSSD. Include some additional libraries needed.
-*   Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
--   Upgrade to version 4.14.12
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.14.4-3
--   Bump up to compile with python 3.10
-*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
--   Release bump up to use libxml2 2.9.12-1.
-*   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
--   Split libwclient from samba-client and create separate package.
--   Upgrade to version 4.14.4
-*   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
--   Upgrade to version 4.13.4
-*   Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
--   Initial version of samba spec.
+* Fri Jul 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.3-3
+- Spec fixes
+* Mon Jul 17 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 4.18.3-2
+- Bump version as a part of bindutils upgrade
+* Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.3-1
+- update to 4.18.3 including various CVE fixes
+* Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.5-1
+- Version bump for SSSD. Include some additional libraries needed.
+* Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
+- Upgrade to version 4.14.12
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.14.4-3
+- Bump up to compile with python 3.10
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
+- Release bump up to use libxml2 2.9.12-1.
+* Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
+- Split libwclient from samba-client and create separate package.
+- Upgrade to version 4.14.4
+* Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
+- Upgrade to version 4.13.4
+* Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
+- Initial version of samba spec.
