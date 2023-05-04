@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/shadow-maint
 License:        BSD
 Group:          Applications/System
@@ -25,7 +25,8 @@ Source11:       system-session
 
 Patch0:         chkname-allowcase.patch
 Patch1:         fix-segfault-PR2430117.patch
-
+Patch2:         CVE-2023-29383.patch
+Patch3:         CVE-2023-29383.1.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -178,6 +179,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu May 04 2023 Anmol Jain <anmolja@vmware.com> 4.6-7
+- Fix for CVE-2023-29383.patch
 * Fri Jul 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.6-6
 - Disable account-tools-setuid option during configure
 * Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.6-5
