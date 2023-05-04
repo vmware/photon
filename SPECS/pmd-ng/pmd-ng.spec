@@ -12,7 +12,6 @@ License:        Apache-2.0
 URL:            https://github.com/vmware/pmd-next-gen/archive/refs/tags/v%{version}.tar.gz
 Source0:        pmd-ng-%{version}.tar.gz
 %define sha512  %{name}=44a2813c8e454515a0a161203ce6a5f2d5ff72fb14b0456a5b19ca386ea9d2e1c002a34faced1fb883cc60ba53a9ebcb7c86da00e19aba5ab1630866a6b153ba
-Source1:        %{name}.sysusers
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,7 +53,6 @@ install bin/photon-mgmtd %{buildroot}%{_bindir}
 install bin/pmctl %{buildroot}%{_bindir}
 install -m 755 distribution/mgmt.toml %{buildroot}%{_sysconfdir}/photon-mgmt
 install -m 0644 distribution/photon-mgmtd.service %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}/*
@@ -66,10 +64,15 @@ rm -rf %{buildroot}/*
 
 %{_sysconfdir}/photon-mgmt/mgmt.toml
 %{_unitdir}/photon-mgmtd.service
-%{_sysusersdir}/%{name}.sysusers
 
 %pre
-%sysusers_create_compat %{SOURCE1}
+if ! getent group photon-mgmt >/dev/null; then
+    /sbin/groupadd -r photon-mgmt
+fi
+
+if ! getent passwd photon-mgmt >/dev/null; then
+    /sbin/useradd -g photon-mgmt photon-mgmt -s /sbin/nologin
+fi
 
 %post
 %systemd_post photon-mgmtd.service
