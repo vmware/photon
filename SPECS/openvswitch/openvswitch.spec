@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -15,6 +15,7 @@ Patch1:         openvswitch-CVE-2020-27827.patch
 Patch2:         openvswitch-CVE-2021-36980.patch
 Patch3:         openvswitch-CVE-2021-3905.patch
 Patch4:         openvswitch-CVE-2022-4337-CVE-2022-4338.patch
+Patch5:         CVE-2023-1668.patch
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -92,7 +93,7 @@ install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.templ
 
 /usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
 for service in openvswitch ovsdb-server ovs-vswitchd; do
-	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
+       install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
 
 mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
@@ -156,6 +157,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Thu May 04 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-13
+- Fix for CVE-2023-1668
 * Tue Jan 17 2023 Dweep Advani <dadvani@vmware.com> 2.14.0-12
 - Fixed CVE-2022-4337 and CVE-2022-4338
 * Tue Oct 18 2022 Harinadh D <hdommaraju@vmware.com> 2.14.0-11
