@@ -9,7 +9,7 @@ weight: 4
 
 To add a group, execute a POST request in the following format:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/add
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request POST --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/add
 
 The following table lists the parameter:
 
@@ -20,7 +20,7 @@ The following table lists the parameter:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/add
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request POST --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/add
 
 **Response:**  
     
@@ -35,7 +35,7 @@ Example:
 
 To add a user, execute a POST request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/add
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request POST --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/add
 
 The following table lists the parameter:
 
@@ -46,7 +46,7 @@ The following table lists the parameter:
 
 Example: 
 	
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request POST --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/add
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request POST --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/add
 
 
 ## DELETE Method ##
@@ -55,7 +55,7 @@ Example:
 
 To remove a group, execute a DELETE request in the following format:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/remove
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request DELETE --data '{"Name":"photon","Gid":"1125"}' http://localhost/api/v1/system/group/remove
 
 The following table lists the parameters:
 
@@ -67,7 +67,7 @@ The following table lists the parameters:
 
 Example:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{"Name":"photon22"}' http://localhost/api/v1/system/group/remove
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request DELETE --data '{"Name":"photon22"}' http://localhost/api/v1/system/group/remove
 
 **Response:**  
 	
@@ -83,7 +83,7 @@ Example:
 
 To remove a user, execute a DELETE request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request DELETE --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/remove
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request DELETE --data '{"Name":"photon1"}' http://localhost/api/v1/system/user/remove
 
 **Response**
 
@@ -100,12 +100,12 @@ To remove a user, execute a DELETE request in the following format:
 
 To modify the name of a group, execute a PUT request in the following format:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{"Name":"photon6","NewName":"photon33"}' http://localhost/api/v1/system/group/modify
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request PUT --data '{"Name":"photon6","NewName":"photon33"}' http://localhost/api/v1/system/group/modify
 
 
 Example:
 
-    curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request PUT --data '{"Name":"photon6","NewName":"photon33"}' http://localhost/api/v1/system/group/modify
+    curl --unix-socket /run/photon-mgmt/mgmt.sock --request PUT --data '{"Name":"photon6","NewName":"photon33"}' http://localhost/api/v1/system/group/modify
 
 
 ## GET Method ##
@@ -114,12 +114,12 @@ Example:
 
 To fetch the details of the host, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe
 
 
 Example: 
 	
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478
 
 
 ## Login Status ##
@@ -239,13 +239,13 @@ The following section list the cURL commands that you can use to fetch the group
 
 To fetch the group details, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/group/view
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request GET http://localhost/api/v1/system/group/view
 
 #### Get particuller Group information.
 
 To fetch a specific group details, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/group/view/<GroupName>
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request GET http://localhost/api/v1/system/group/view/<GroupName>
 
 
 
@@ -319,4 +319,4 @@ or
 
 To fetch user details, execute a GET request in the following format:
 
-	curl --unix-socket /run/photon-mgmt/photon-mgmt.sock --request GET http://localhost/api/v1/system/user/view
+	curl --unix-socket /run/photon-mgmt/mgmt.sock --request GET http://localhost/api/v1/system/user/view
