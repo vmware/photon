@@ -4,13 +4,13 @@
 
 Name:           libldb
 Version:        2.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
 Distribution:   Photon
 Vendor:         VMware, Inc.
 Group:          Development/Libraries
-URL:            http://ldb.samba.org/
+URL:            http://ldb.samba.org
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
 %define sha512 ldb=7b920c5ec1252446584caeedf9ec18aeb5c1b689c2ecc8ae65c0d5b64bf0bca0cbaa887c07fca90b36b16904e3a08534fc513fec6bac288e80f94d2980c36211
@@ -43,7 +43,7 @@ servers, or use local tdb databases.
 
 %package -n ldb-tools
 Summary: Tools to manage LDB files
-Requires: libldb%{?_isa} = %{version}-%{release}
+Requires: libldb = %{version}-%{release}
 
 %description -n ldb-tools
 Tools to manage LDB files
@@ -152,5 +152,7 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Fri May 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-2
+- Remove _isa entries
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1
 - Initial addition to Photon. Needed for SSSD.

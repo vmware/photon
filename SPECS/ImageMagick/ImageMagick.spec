@@ -4,16 +4,18 @@
 
 Name:           ImageMagick
 Version:        7.1.0.47
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
-Url:            http://www.imagemagick.org/
-Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
-%define sha512  %{name}=dae53c80b1fec69e8a570e82553197e2a9f3b1d0dd9b7cdf30e2731e044a83bef82912a5d339c0470d1e41bdf343f2cbd97376d2ef986d33c05bc6c87a705d0d
-Requires:       %{name}-libs%{?_isa}
+Url:            http://www.imagemagick.org
+
+Source0: https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
+%define sha512 %{name}=dae53c80b1fec69e8a570e82553197e2a9f3b1d0dd9b7cdf30e2731e044a83bef82912a5d339c0470d1e41bdf343f2cbd97376d2ef986d33c05bc6c87a705d0d
+
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
@@ -65,7 +67,7 @@ http://www.imagemagick.org/
 
 %package        c++
 Summary:        ImageMagick Magick++ library (C++ bindings)
-Requires:       %{name}-libs%{?_isa}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libstdc++
 Requires:       libgomp
 Requires:       bzip2-libs
@@ -80,8 +82,8 @@ Install ImageMagick-c++ if you want to use any applications that use Magick++.
 
 %package        c++-devel
 Summary:        C++ bindings for the ImageMagick library
-Requires:       %{name}-c++%{?_isa}
-Requires:       %{name}-devel%{?_isa}
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 Requires:       pkg-config
 
 %description    c++-devel
@@ -97,7 +99,7 @@ want to develop/compile applications using the ImageMagick C interface,
 however.
 
 %prep
-%autosetup -n %{name}-%{VER}-%{Patchlevel}
+%autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
 # for %%doc
 mkdir Magick++/examples
@@ -108,30 +110,32 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
-rm -rf %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/*.a
+rm %{buildroot}%{_libdir}/*.a
 
+%if 0%{?with_check}
 %check
 export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %make_build check
 rm PerlMagick/demo/Generic.ttf
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%doc README.txt LICENSE NOTICE AUTHORS.txt NEWS.txt
+%defattr(-,root,root)
 %{_bindir}/[a-z]*
 %{_mandir}/man[145]/[a-z]*
 %{_mandir}/man1/%{name}.*
 
 %files doc
+%defattr(-,root,root)
 %doc %{_datadir}/doc/%{name}-%{major_version}/*
-%doc %{_datadir}/doc/%{name}-%{VER}.%{Patchlevel}/*
 
 %files libs
-%doc LICENSE NOTICE AUTHORS.txt QuickStart.txt
+%defattr(-,root,root)
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/%{name}-%{VER}
@@ -140,7 +144,7 @@ rm PerlMagick/demo/Generic.ttf
 %config(noreplace) %{_sysconfdir}/%{name}-%{major_version}/*.xml
 
 %files c++-devel
-%doc Magick++/examples
+%defattr(-,root,root)
 %{_bindir}/Magick++-config
 %{_includedir}/%{name}-%{major_version}/Magick++
 %{_includedir}/%{name}-%{major_version}/Magick++.h
@@ -150,6 +154,7 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/Magick++-config.*
 
 %files devel
+%defattr(-,root,root)
 %{_bindir}/MagickCore-config
 %{_bindir}/MagickWand-config
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so
@@ -167,18 +172,19 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/MagickWand-config.*
 
 %files c++
-%doc Magick++/AUTHORS Magick++/ChangeLog Magick++/NEWS Magick++/README
-%doc www/Magick++/COPYING
+%defattr(-,root,root)
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
-*   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-2
--   Bump version as a part of zlib upgrade
-*   Mon Aug 29 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.47-1
--   Upgrade version to 7.1.0.47
-*   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0.35-1
--   Automatic Version Bump
-*   Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
--   Fix for CVE-2022-1114
-*   Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
--   Initial build for Photon.
+* Fri May 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-3
+- Remove _isa entries
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-2
+- Bump version as a part of zlib upgrade
+* Mon Aug 29 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.47-1
+- Upgrade version to 7.1.0.47
+* Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.0.35-1
+- Automatic Version Bump
+* Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
+- Fix for CVE-2022-1114
+* Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
+- Initial build for Photon.
