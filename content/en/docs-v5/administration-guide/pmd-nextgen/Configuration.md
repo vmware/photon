@@ -26,7 +26,7 @@ When enabled, the default is `127.0.0.1:5208`.
 
 
 `ListenUnixSocket=`
-Specifies whether you want the server to listen on a unix domain socket `/run/photon-mgmt/photon-mgmt.sock`. This is a boolean key and takes the following values: `true`, `false`.
+Specifies whether you want the server to listen on a unix domain socket `/run/photon-mgmt/mgmt.sock`. This is a boolean key and takes the following values: `true`, `false`.
 Default is `true`.
 
 **Note:** When you enable both `ListenUnixSocket=` and `Listen=`, server listens on the unix domain socket by default.
@@ -59,7 +59,7 @@ Default is `true`.
 	Jan 06 16:32:19 Zeus systemd[1]: Started photon-mgmtd.service - A REST API based configuration management microservice gateway.
 	Jan 06 16:32:19 Zeus systemd[230041]: photon-mgmtd.service: Executing: /usr/bin/photon-mgmtd
 	Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time="2022-01-06T16:32:19+05:30" level=info msg="photon-mgmtd: v0.1 (built go1.18beta1)"
-	Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time="2022-01-06T16:32:19+05:30" level=info msg="Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmt/photon-mgmt.sock' in HTTP mode pid=103575">
+	Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time="2022-01-06T16:32:19+05:30" level=info msg="Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmt/mgmt.sock' in HTTP mode pid=103575">
 
 
 ## How to Configure Users?
