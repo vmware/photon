@@ -38,36 +38,49 @@ You can also check the status of a specific interface:
 networkctl status <interface_name>/<index_number>
 ```
 
-(`ens33 `is an example)
+(`eth0 `is an example)
 
 ```console
-    2: ens33
-     Link File: /usr/lib/systemd/network/99-default.link  
-      Network File: /usr/lib/systemd/network/10-eth.network   
-      Type: ether 
-     State: routable (configured)   
-     Alternative Names: enp2s1
-      Path: pci-0000:02:01.0  
-    Driver: e1000 
-    Vendor: Intel Corporation 
-     Model: 82545EM Gigabit Ethernet Controller (Copper) (PRO/1000 MT Single Port Adapter)
-    HW Address: 00:0c:29:5f:d1:39 (VMware, Inc.)  
-       MTU: 1500 (min: 46, max: 16110)
-     QDisc: fq_codel  
-      IPv6 Address Generation Mode: eui64 
-      Queue Length (Tx/Rx): 1/1   
-      Auto negotiation: yes   
-     Speed: 1Gbps 
-    Duplex: full  
-      Port: tp
-       Address: 172.16.85.225 (DHCP4 via 172.16.85.254)   
-    fe80::20c:29ff:fe5f:d139  
-       Gateway: 172.16.85.2 (VMware, Inc.)
-       DNS: 172.16.85.2   
-       DHCP4 Client ID: IAID:0x2b9434c1/DUID  
-     DHCP6 Client DUID: DUID-EN/Vendor:0000ab11d258482fc7eee6510000   
-    Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Link UP
-    Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Gained carrier
-    Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.225/24 via 172.16.85.2
-    Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
+❯ networkctl status eth0
+● 2: eth0
+                     Link File: /usr/lib/systemd/network/99-default.link
+                  Network File: /etc/systemd/network/50-dhcp-en.network
+                         State: routable (configured)
+                  Online state: online
+                          Type: ether
+                          Path: pci-0000:0b:00.0
+                        Driver: vmxnet3
+                        Vendor: VMware
+                         Model: VMXNET3 Ethernet Controller
+             Alternative Names: eno1
+                                enp11s0
+                                ens192
+              Hardware Address: 00:50:56:ba:43:98 (VMware, Inc.)
+                           MTU: 1500 (min: 60, max: 9000)
+                         QDisc: fq_codel
+  IPv6 Address Generation Mode: eui64
+      Number of Queues (Tx/Rx): 1/1
+              Auto negotiation: no
+                         Speed: 10Gbps
+                        Duplex: full
+                          Port: tp
+                       Address: 192.168.1.8/24 (DHCPv4 via 192.168.1.1)
+                                fe80::250:56ff:feba:4398
+                       Gateway: 192.168.1.1
+                           DNS: 192.168.1.1
+                                192.168.1.2
+                                192.168.1.3
+                           NTP: 192.168.1.1
+                                192.168.1.2
+                                192.168.1.3
+                                192.168.1.4
+             Activation Policy: up
+           Required For Online: yes
+               DHCP4 Client ID: IAID:0xb6220feb/DUID
+
+May 04 10:37:14 photon systemd-networkd[625]: eth0: found matching network '/etc/systemd/network/50-dhcp-en.network', based on potentially unpredictable interface name.
+May 04 10:37:14 photon systemd-networkd[625]: eth0: Configuring with /etc/systemd/network/50-dhcp-en.network.
+May 04 10:37:14 photon systemd-networkd[625]: eth0: Link UP
+May 04 10:37:14 photon systemd-networkd[625]: eth0: Gained carrier
+May 04 10:37:14 photon systemd-networkd[625]: eth0: found matching network '/etc/systemd/network/50-dhcp-en.network', based on potentially unpredictable interface name.
 ```    
