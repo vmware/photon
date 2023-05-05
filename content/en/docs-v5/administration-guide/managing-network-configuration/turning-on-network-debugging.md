@@ -12,16 +12,14 @@ You can turn on network debugging by adding a drop-in file in `/etc/systemd` to 
 1. Run the following command as root to create a directory with the name `systemd-networkd.service.d`, including the `.d` extension:
 	
 	```console
-	mkdir -p /etc/systemd/system/systemd-networkd.service.d/
+	systemctl edit systemd-networkd.service
 	```
 
-1. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service:
+1. Add following configuration in the file `override.conf` to establish a `systemd` drop-in unit with a debugging configuration for the network service:
 
 	```console
-	cat > /etc/systemd/system/systemd-networkd.service.d/override.conf
 		[Service]
 		Environment=SYSTEMD_LOG_LEVEL=debug
-		EOF
 	```
 
 1. Reload the `systemctl` daemon and restart the `systemd-networkd` service for the changes to take effect: 
