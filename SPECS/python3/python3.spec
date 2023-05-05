@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.10.0
-Release:        11%{?dist}
+Version:        3.10.11
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,19 +12,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=82b2729afc7d72a80882f199970667dce7d971a2e5ecfe6cf84f7b68612ab2caf6ed6d7a8cb81f24ea85cb0816464bb2e8b2e6884eda62fa40742edc674193bd
+%define sha512 Python=fa113b4b635d271a1412999587ec64654d337db263851a6a9d88b3cab4ed66dba76fe03e65c4d341f0a83fd8182d35e245bfd9827465d7aebcb4deb71af4d047
 
 Source1:        macros.python
 
 Patch0:         cgi3.patch
-Patch1:         mailcap_deprecation_warning.patch
-Patch2:         CVE-2015-20107.patch
-Patch3:         Handle-the-EPERM-error-gracefully-in-crypt.patch
-Patch4:         CVE-2021-28861.patch
-Patch5:         CVE-2022-42919.patch
-Patch6:         CVE-2022-45061.patch
-Patch7:         support-non-fips-algorithms.patch
-Patch8:         CVE-2020-10735.patch
+Patch1:         CVE-2023-27043.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -127,28 +120,6 @@ Requires:       %{name} = %{version}-%{release}
 The Python package includes several development tools that are used
 to build python programs.
 
-%package        pip
-Summary:        The PyPA recommended tool for installing Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-xml = %{version}-%{release}
-
-%description    pip
-The PyPA recommended tool for installing Python packages.
-
-%package        setuptools
-Summary:        Download, build, install, upgrade, and uninstall Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-xml = %{version}-%{release}
-
-Provides:       python%{VER}dist(setuptools)
-
-%description    setuptools
-setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
-
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
@@ -248,6 +219,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/site-packages/README.txt
 %{_libdir}/libpython3.so
 %{_libdir}/libpython%{VER}.so.1.0
+%exclude %{_bindir}/pip3
+%exclude %{_bindir}/pip%{VER}
 %exclude %{_libdir}/python%{VER}/ctypes/test
 %exclude %{_libdir}/python%{VER}/distutils/tests
 %exclude %{_libdir}/python%{VER}/sqlite3/test
@@ -301,20 +274,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
-%files pip
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/site-packages/pip/*
-%{_bindir}/pip*
-%exclude %{_libdir}/python%{VER}/site-packages/pip/_vendor/distlib/*.exe
-
-%files setuptools
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/site-packages/pkg_resources/*
-%{_libdir}/python%{VER}/site-packages/setuptools/*
-%{_libdir}/python%{VER}/site-packages/setuptools-57.4.0.dist-info/*
-%{_libdir}/python%{VER}/site-packages/_distutils_hack/*
-%exclude %{_libdir}/python%{VER}/site-packages/setuptools/*.exe
-
 %files test
 %defattr(-, root, root, 755)
 %{_libdir}/python%{VER}/test/*
@@ -324,6 +283,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Jun 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-1
+- Update to version 3.10.11, separate pip & setuptools
+- Fix CVE-2023-27043
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 3.10.0-11
 - Fix for requires
 * Mon Feb 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-10

@@ -1,7 +1,7 @@
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD or GPLv2+
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
@@ -45,10 +45,10 @@ for the libpwquality library.
 
 %build
 %configure \
-	--with-securedir=%{_libdir}/security \
-	--with-pythonsitedir=%{python3_sitearch} \
-	--with-python-binary=%{__python3} \
-	--disable-static
+        --with-securedir=%{_libdir}/security \
+        --with-pythonsitedir=%{python3_sitearch} \
+        --with-python-binary=%{__python3} \
+        --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -82,10 +82,11 @@ find %{buildroot} -name '*.la' -delete
 
 %files -n python3-pwquality
 %defattr(-,root,root)
-%{python3_sitearch}/*.so
-%{python3_sitearch}/*.egg-info
+%{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Wed Jul 12 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.2-3
+- Bump up to compile with python 3.10.11 & setuptools 65.5.1
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.2-2
 - Bump up to compile with python 3.10
 * Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
