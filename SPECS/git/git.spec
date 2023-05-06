@@ -7,8 +7,9 @@ URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
+
+Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha512 %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
 
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
@@ -61,11 +62,12 @@ and git bash completion files.
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --libexec=%{_libexecdir} \
-    --with-gitconfig=/etc/gitconfig
-make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+    --with-gitconfig=%{_sysconfdir}/gitconfig
+
+%make_build CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 
 %install
-%make_install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}%{_datadir}/bash-completion/completions/git
 %find_lang %{name}
@@ -79,9 +81,9 @@ sudo -u test make %{?_smp_mflags} test
 
 %post
 if [ $1 -eq 1 ];then
-    # This is first installation.
-    git config --system http.sslCAPath /etc/ssl/certs
-    exit 0
+  # This is first installation.
+  git config --system http.sslCAPath %{_sysconfdir}/ssl/certs
+  exit 0
 fi
 
 %clean

@@ -19,7 +19,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
 BuildRequires:  gmock-devel
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 
 Requires:       ninja-build
 Requires:       python3

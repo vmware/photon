@@ -1,8 +1,8 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21.1
-Release:        1%{?dist}
-License:        GPLv3
+Release:        2%{?dist}
+License:        GPL-3.0-or-later and LGPL-2.0-or-later and GFDL-1.2-or-later
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,10 +11,40 @@ Distribution:   Photon
 Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha512 %{name}=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
 
+Requires: libgcc
+Requires: libstdc++
+Requires: %{name}-libs = %{version}-%{release}
+
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
 messages in the user's native language.
+
+%package devel
+Summary: Development files for %{name}
+# autopoint is GPLv3+
+# libasprintf is LGPLv2+
+# libgettextpo is GPLv3+
+License: LGPL-2.0-or-later and GPL-3.0-or-later and GFDL-1.2-or-later
+Requires: %{name} = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
+Requires: xz
+Requires: diffutils
+
+%description devel
+This package contains all development related files necessary for
+developing or compiling applications/libraries that needs
+internationalization capability. You also need this package if you
+want to add gettext support for your project.
+
+%package libs
+Summary: Libraries for %{name}
+# libasprintf is LGPLv2+
+# libgettextpo is GPLv3+
+License: LGPL-2.0-or-later and GPL-3.0-or-later
+
+%description libs
+This package contains libraries used internationalization support.
 
 %prep
 %autosetup -p1
@@ -30,30 +60,48 @@ messages in the user's native language.
 %make_install
 rm -rf %{buildroot}%{_docdir}/gettext-%{version}/examples \
        %{buildroot}%{_infodir}
+
 %find_lang %{name} --all-name
 
+%if 0%{?with_check}
 %check
 sed -i 's/test-term-ostream-xterm.sh//1' ./libtextstyle/tests/Makefile
 make %{?_smp_mflags} check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/*
-%{_libdir}/gettext/*
-%{_libdir}/*.so.*
-%{_libdir}/*.so
-%{_libdir}/*.a
-%{_datadir}/aclocal/*
-%{_datadir}/*
+%{_libdir}/%{name}/*
 %{_datadir}/%{name}/*
-%{_docdir}/%{name}-%{version}/*
+%{_datadir}/%{name}-%{version}/*
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/*.so.*
+%{_libdir}/libgettextlib-0.*.so
+%{_libdir}/libgettextsrc-0.*.so
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
+%exclude %{_libdir}/libgettextlib-0.*.so
+%exclude %{_libdir}/libgettextsrc-0.*.so
+%{_libdir}/*.a
+%{_includedir}/*
+%{_datadir}/aclocal/*
 %{_mandir}/*
+%{_docdir}/*
 
 %changelog
+* Mon May 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-2
+- Introduce deve & libs sub packages
 * Thu Jan 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21.1-1
 - Update to version 0.21.1
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2

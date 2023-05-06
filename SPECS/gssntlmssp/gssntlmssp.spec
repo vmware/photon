@@ -27,7 +27,7 @@ BuildRequires: m4
 BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: doxygen
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: pkg-config
 BuildRequires: krb5-devel
 BuildRequires: libunistring-devel

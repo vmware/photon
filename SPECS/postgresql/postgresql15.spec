@@ -25,7 +25,7 @@ Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.
 BuildRequires:  clang-devel
 BuildRequires:  diffutils
 BuildRequires:  gcc
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  krb5-devel
 BuildRequires:  icu-devel
 BuildRequires:  libedit-devel

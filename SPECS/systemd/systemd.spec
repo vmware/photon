@@ -60,7 +60,7 @@ BuildRequires:  gnu-efi
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  glib-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  gperf

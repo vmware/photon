@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
 %define sha512  %{name}=a3ddccdea1129038420d933f1e9ae8f9e75b3ad59fd0fe4c61b7a4dc6145f47b4262f68aefc3216d37cc33ee5643cd6f260ec83cd39d6b61a1cd046c03674ad8
 
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: inih-devel
 BuildRequires: readline-devel
 BuildRequires: userspace-rcu-devel
@@ -55,12 +55,13 @@ make DEBUG=-DNDEBUG \
 
 %install
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install %{?_smp_mflags}
+             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} \
+             install %{?_smp_mflags}
 
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install-dev %{?_smp_mflags}
+             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} \
+             install-dev %{?_smp_mflags}
 
-find %{buildroot}%{_lib64dir} -name '*.la' -delete
 find %{buildroot}%{_lib64dir} -name '*.a' -delete
 
 %find_lang %{name}

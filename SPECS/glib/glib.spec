@@ -3,13 +3,13 @@ Name:         glib
 Version:      2.75.2
 Release:      1%{?dist}
 License:      LGPLv2+
-URL:          https://developer.gnome.org/glib/
+URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/{version}/glib-%{version}.tar.xz
-%define sha512  %{name}=f8e34d112c720e17fbc2325e5091f55d120cc82aa2a9012c6e9e3b81a969af97e501910f3f986fa305ab1abfbd77e69ee9c71bcdda33c6795c3b087e684272f6
+Source0: https://gitlab.gnome.org/GNOME/glib/-/releases/{version}/glib-%{version}.tar.xz
+%define sha512 %{name}=f8e34d112c720e17fbc2325e5091f55d120cc82aa2a9012c6e9e3b81a969af97e501910f3f986fa305ab1abfbd77e69ee9c71bcdda33c6795c3b087e684272f6
 
 BuildRequires:  pcre-devel
 BuildRequires:  libffi-devel

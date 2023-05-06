@@ -8,19 +8,23 @@ Release:        3%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
-Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha512  thin-provisioning-tools=f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
-Source1:        thin-provisioning-tools-deps-%{version}.tar.xz
-%define sha512  thin-provisioning-tools-deps-%{version}=68a8ec1dcfd5b55ca6fafd932816cccd8a0decdaf9d5e9359c3e08e81890bfa164a0069710b57e3623928b01bb3ad4836798529a47db739b55e3bfebfee88c08
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
+
+Source1: %{name}-deps-%{version}.tar.xz
+%define sha512 %{name}-deps-%{version}=68a8ec1dcfd5b55ca6fafd932816cccd8a0decdaf9d5e9359c3e08e81890bfa164a0069710b57e3623928b01bb3ad4836798529a47db739b55e3bfebfee88c08
+
 BuildRequires:  expat-devel
 BuildRequires:  libaio-devel
 BuildRequires:  boost-devel
 BuildRequires:  rust
+
 Requires:       expat
 Requires:       libaio
 Requires:       libgcc
-Vendor:         VMware, Inc.
-Distribution:   Photon
 
 %description
 thin-provisioning-tools contains check,dump, restore, repair, rmap and metadata_size tools to manage device-mapper thin provisioning target metadata devices;

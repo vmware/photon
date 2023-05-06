@@ -14,7 +14,7 @@ Source0: http://releases.pagure.org/mlocate/%{name}-%{version}.tar.xz
 BuildRequires:  sed
 BuildRequires:  grep
 BuildRequires:  xz
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 
 %description
 mlocate is a locate/updatedb implementation.  The 'm' stands for "merging":
@@ -33,10 +33,10 @@ much.
 %make_build
 
 %install
-%make_install DESTDIR=%{buildroot}
-mv %{buildroot}/%{_bindir}/locate %{buildroot}/%{_bindir}/%{name}
-mv %{buildroot}/%{_bindir}/updatedb %{buildroot}/%{_bindir}/updatedb.%{name}
-mv %{buildroot}/%{_mandir}/man1/locate.1 %{buildroot}/%{_mandir}/man1/%{name}.1
+%make_install %{?_smp_mflags}
+mv %{buildroot}%{_bindir}/locate %{buildroot}%{_bindir}/%{name}
+mv %{buildroot}%{_bindir}/updatedb %{buildroot}%{_bindir}/updatedb.%{name}
+mv %{buildroot}%{_mandir}/man1/locate.1 %{buildroot}%{_mandir}/man1/%{name}.1
 
 %check
 make %{?_smp_mflags} check

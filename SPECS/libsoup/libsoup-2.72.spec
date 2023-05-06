@@ -10,12 +10,12 @@ Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/%{maj_ver}/%{name}-%{version}.tar.xz
-%define sha512   %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/%{maj_ver}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=ca16772d0d318c4be0c4859db1e32baffa2231b4732f3bf9814aa405febde86395a0fb8bfa1635d70a7b5853d2567403920b9b0d0f5c3c179294352af27e91de
 
 %if 0%{?with_check}
-Patch0:          libsoup-fix-make-check.patch
-Patch1:          libsoup-issue-120.patch
+Patch0: libsoup-fix-make-check.patch
+Patch1: libsoup-issue-120.patch
 %endif
 
 BuildRequires:   glib-devel

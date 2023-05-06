@@ -38,6 +38,7 @@ BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
+
 %if 0%{?with_boost}
 BuildRequires: boost-devel
 %endif
@@ -191,15 +192,14 @@ mv %{buildroot}%{_datadir}/%{name}/SystemTap_Beginners_Guide docs.installed/
 %endif
 
 install -m 755 initscript/stap-server %{buildroot}%{_sysconfdir}/rc.d/init.d/
-mkdir -p %{buildroot}%{_sysconfdir}/stap-server
-mkdir -p %{buildroot}%{_sysconfdir}/stap-server/conf.d
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+mkdir -p %{buildroot}%{_sysconfdir}/stap-server/conf.d \
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{_localstatedir}/opt/stap-server/log \
+         %{buildroot}%{_sysconfdir}/logrotate.d \
+         %{buildroot}%{_localstatedir}/log
 install -m 644 initscript/config.stap-server %{buildroot}%{_sysconfdir}/sysconfig/stap-server
-mkdir -p %{buildroot}%{_localstatedir}/log
-mkdir -p %{buildroot}%{_localstatedir}/opt/stap-server/log
 ln -sfv %{_localstatedir}/opt/stap-server/log %{buildroot}%{_localstatedir}/log/stap-server
 touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
-mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.sysusers
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.sysusers
@@ -216,7 +216,8 @@ make %{?_smp_mflags} check
 rm -rf %{buildroot}
 
 %pre
-getent group stap-server >/dev/null || groupadd -g 155 -r stap-server || groupadd -r stap-server
+getent group stap-server >/dev/null || \
+    groupadd -g 155 -r stap-server || groupadd -r stap-server
 
 %pre runtime
 %sysusers_create_compat %{SOURCE1}

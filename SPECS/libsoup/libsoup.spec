@@ -22,7 +22,7 @@ BuildRequires:   sqlite-devel
 BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
-BuildRequires:   meson >= 0.50
+BuildRequires:   meson
 BuildRequires:   cmake
 BuildRequires:   nghttp2-devel
 BuildRequires:   gobject-introspection-devel

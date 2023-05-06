@@ -25,7 +25,7 @@ BuildRequires: build-essential
 BuildRequires: m4
 BuildRequires: pkg-config
 BuildRequires: check
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: readline-devel
 
 %description

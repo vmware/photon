@@ -34,11 +34,13 @@ x86_64/flex-devel-2.6.4-3.ph5.x86_64.rpm
 x86_64/gawk-5.1.1-2.ph5.x86_64.rpm
 x86_64/gcc-12.2.0-1.ph5.x86_64.rpm
 x86_64/gdbm-1.23-2.ph5.x86_64.rpm
-x86_64/gettext-0.21.1-1.ph5.x86_64.rpm
+x86_64/gettext-0.21.1-2.ph5.x86_64.rpm
+x86_64/gettext-devel-0.21.1-2.ph5.x86_64.rpm
+x86_64/gettext-libs-0.21.1-2.ph5.x86_64.rpm
 x86_64/glibc-2.36-5.ph5.x86_64.rpm
-x86_64/glibc-libs-2.36-5.ph5.x86_64.rpm
 x86_64/glibc-devel-2.36-5.ph5.x86_64.rpm
 x86_64/glibc-iconv-2.36-5.ph5.x86_64.rpm
+x86_64/glibc-libs-2.36-5.ph5.x86_64.rpm
 x86_64/glibc-tools-2.36-5.ph5.x86_64.rpm
 x86_64/gmp-6.2.1-1.ph5.x86_64.rpm
 x86_64/gmp-devel-6.2.1-1.ph5.x86_64.rpm
@@ -76,8 +78,8 @@ x86_64/nss-3.78-3.ph5.x86_64.rpm
 x86_64/nss-devel-3.78-3.ph5.x86_64.rpm
 x86_64/nss-libs-3.78-3.ph5.x86_64.rpm
 x86_64/openssl-3.0.8-1.ph5.x86_64.rpm
-x86_64/openssl-libs-3.0.8-1.ph5.x86_64.rpm
 x86_64/openssl-devel-3.0.8-1.ph5.x86_64.rpm
+x86_64/openssl-libs-3.0.8-1.ph5.x86_64.rpm
 x86_64/patch-2.7.6-5.ph5.x86_64.rpm
 x86_64/pcre-libs-8.45-3.ph5.x86_64.rpm
 x86_64/perl-5.36.0-1.ph5.x86_64.rpm

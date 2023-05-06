@@ -13,7 +13,7 @@ Source0: https://nmap.org/dist/%{name}-%{version}.tar.bz2
 
 BuildRequires:  build-essential
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  gnupg
 BuildRequires:  gpgme-devel
 BuildRequires:  krb5-devel

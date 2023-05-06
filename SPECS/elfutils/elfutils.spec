@@ -22,12 +22,12 @@ Requires:       curl
 Requires:       libarchive
 Requires:       zstd
 
-BuildRequires:  gcc >= 4.1.2-33
-BuildRequires:  glibc >= 2.7
-BuildRequires:  bison >= 1.875
-BuildRequires:  flex >= 2.5.4a
+BuildRequires:  gcc
+BuildRequires:  glibc
+BuildRequires:  bison
+BuildRequires:  flex
 BuildRequires:  m4
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  curl-devel

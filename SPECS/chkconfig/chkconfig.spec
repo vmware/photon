@@ -1,29 +1,34 @@
-Summary: A system tool for maintaining the /etc/rc*.d hierarchy
-Name: chkconfig
-Version: 1.21
-Release: 2%{?dist}
-License: GPLv2
-Vendor: VMware, Inc.
+Summary:    A system tool for maintaining the /etc/rc*.d hierarchy
+Name:       chkconfig
+Version:    1.21
+Release:    2%{?dist}
+License:    GPLv2
+Vendor:     VMware, Inc.
+URL:        https://git.fedorahosted.org/git/chkconfig.git
+Group:      System Environment/Base
 Distribution: Photon
-Group: System Environment/Base
-URL: https://git.fedorahosted.org/git/chkconfig.git
-Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
+
+Source0: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
+%define sha512 %{name}=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+
 Patch0: chkconfig-shortopt.patch
 Patch1: ignore-priorities.patch
 Patch2: chkconfig-runlevel.patch
 Patch3: print-service-on-off.patch
-%define sha512 chkconfig=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+
 Requires: libselinux
 Requires: libsepol
 Requires: newt
 Requires: popt
 Requires: slang
 Requires: systemd
+
 BuildRequires: systemd-devel
 BuildRequires: newt-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: popt-devel
 BuildRequires: libselinux-devel
+
 Conflicts: initscripts <= 5.30-1
 
 %description
@@ -51,7 +56,6 @@ page), ntsysv configures the current runlevel (5 if you're using X).
 %{make_build} RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS"
 
 %install
-rm -rf %{buildroot}
 %{make_install} MANDIR=%{_mandir} SBINDIR=%{_sbindir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d
@@ -81,11 +85,11 @@ rm -rf %{buildroot}
 %{_sysconfdir}/rc.d/init.d
 %{_sysconfdir}/rc[0-6].d
 %{_sysconfdir}/rc.d/rc[0-6].d
-%dir /var/lib/alternatives
+%dir %{_sharedstatedir}/alternatives
 %{_mandir}/*/chkconfig*
 %{_mandir}/*/update-alternatives*
 %{_mandir}/*/alternatives*
-%{_lib}/systemd/systemd-sysv-install
+%{_libdir}/systemd/systemd-sysv-install
 
 %files -n ntsysv
 %defattr(-,root,root)

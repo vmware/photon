@@ -8,11 +8,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Tools
 
-Source0:        https://waterlan.home.xs4all.nl/dos2unix/%{name}-%{version}.tar.gz
-%define sha512    %{name}=1c6d81348de8aca451174794141d0802685487cf6847fa91f7de745d89bcf2af864fc2ec549b9af72031891d4efcb9731fe823ce05da36d1f9e9890ff2cb60fb
+Source0: https://waterlan.home.xs4all.nl/dos2unix/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1c6d81348de8aca451174794141d0802685487cf6847fa91f7de745d89bcf2af864fc2ec549b9af72031891d4efcb9731fe823ce05da36d1f9e9890ff2cb60fb
 
 BuildRequires:  gcc
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  make
 
 Provides:       unix2dos
@@ -30,7 +30,7 @@ vice versa.
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_docdir}
 %find_lang %{name} --with-man --all-name
 
@@ -44,7 +44,7 @@ rm -rf %{buildroot}
 %license COPYING.txt
 %doc man/man1/dos2unix.htm ChangeLog.txt
 %doc NEWS.txt README.txt TODO.txt
-%{_bindir}/dos2unix
+%{_bindir}/%{name}
 %{_bindir}/mac2unix
 %{_bindir}/unix2dos
 %{_bindir}/unix2mac
