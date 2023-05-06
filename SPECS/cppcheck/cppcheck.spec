@@ -14,7 +14,7 @@ Source0: https://github.com/danmar/cppcheck/archive/%{name}-%{version}.tar.gz
 BuildRequires: build-essential
 
 %if 0%{?with_check}
-BuildRequires: libxml2
+BuildRequires: libxml2-devel
 BuildRequires: xmlstarlet
 %endif
 

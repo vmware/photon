@@ -25,7 +25,6 @@ BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: m4
 BuildRequires: libxslt-devel
-BuildRequires: libxml2
 BuildRequires: docbook-xsl
 BuildRequires: doxygen
 BuildRequires: gettext

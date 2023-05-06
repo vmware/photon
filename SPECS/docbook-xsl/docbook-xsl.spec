@@ -1,4 +1,4 @@
-Summary:        Docbook-xsl-1.79.1
+Summary:        Docbook-xsl-%{name}
 Name:           docbook-xsl
 Version:        1.79.1
 Release:        9%{?dist}
@@ -8,12 +8,11 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
-%define sha512  docbook-xsl=83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
+Source0: http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
 
 Requires:       libxml2
 
-BuildRequires:  libxml2
 BuildRequires:  zip
 
 BuildArch:      noarch
@@ -32,15 +31,15 @@ zip -d tools/lib/jython.jar Lib/distutils/command/wininst-6.exe
 zip -d tools/lib/jython.jar Lib/distutils/command/wininst-7.1.exe
 
 %install
-install -v -m755 -d %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1 &&
+install -v -m755 -d %{buildroot}%{_datadir}/xml/docbook/xsl-stylesheets-%{version}
 
 cp -v -R VERSION common eclipse epub extensions fo highlighting html \
          htmlhelp images javahelp lib manpages params profiling \
          roundtrip slides template tests tools webhelp website \
          xhtml xhtml-1_1 \
-    %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
+    %{buildroot}%{_datadir}/xml/docbook/xsl-stylesheets-%{version}
 
-pushd %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
+pushd %{buildroot}%{_datadir}/xml/docbook/xsl-stylesheets-%{version}
 rm extensions/saxon65.jar \
    tools/lib/saxon.jar \
    tools/lib/saxon9-ant.jar \
@@ -49,52 +48,51 @@ ln -s VERSION VERSION.xsl
 popd
 
 install -v -m644 -D README \
-                    %{buildroot}%{_docdir}/%{name}-%{version}/README.txt &&
-install -v -m644    RELEASE-NOTES* NEWS* \
-                    %{buildroot}%{_docdir}/%{name}-%{version}
+            %{buildroot}%{_docdir}/%{name}-%{version}/README.txt
 
-#There is no source code for make check
-#%%check
-#chmod 777 tests -R
-#make %{?_smp_mflags} check
+install -v -m644 RELEASE-NOTES* NEWS* \
+            %{buildroot}%{_docdir}/%{name}-%{version}
 
 %post
-if [ ! -d /etc/xml ]; then install -v -m755 -d /etc/xml; fi &&
-if [ ! -f /etc/xml/catalog ]; then
-    xmlcatalog --noout --create /etc/xml/catalog
-fi &&
+if [ ! -d %{_sysconfdir}/xml ]; then
+  install -v -m755 -d %{_sysconfdir}/xml
+fi
+if [ ! -f %{_sysconfdir}/xml/catalog ]; then
+  xmlcatalog --noout --create %{_sysconfdir}/xml/catalog
+fi
 
 xmlcatalog --noout --add "rewriteSystem" \
-           "http://docbook.sourceforge.net/release/xsl/1.79.1" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
-    /etc/xml/catalog &&
+           "http://docbook.sourceforge.net/release/xsl/%{version}" \
+           "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
+           %{_sysconfdir}/xml/catalog
 
 xmlcatalog --noout --add "rewriteURI" \
-           "http://docbook.sourceforge.net/release/xsl/1.79.1" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
-    /etc/xml/catalog &&
+           "http://docbook.sourceforge.net/release/xsl/%{version}" \
+           "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
+           %{_sysconfdir}/xml/catalog
 
 xmlcatalog --noout --add "rewriteSystem" \
            "http://docbook.sourceforge.net/release/xsl/current" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
-    /etc/xml/catalog &&
+           "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
+           %{_sysconfdir}/xml/catalog
 
 xmlcatalog --noout --add "rewriteURI" \
            "http://docbook.sourceforge.net/release/xsl/current" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
-    /etc/xml/catalog
+           "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
+           %{_sysconfdir}/xml/catalog
 
 %postun
-if [ $1 -eq 0 ] ; then
-    if [ -f /etc/xml/catalog ]; then
-        xmlcatalog --noout --del \
-        "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" /etc/xml/catalog
-    fi
+if [ $1 -eq 0 ] then
+  if [ -f %{_sysconfdir}/xml/catalog ]; then
+    xmlcatalog --noout --del \
+        "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
+        %{_sysconfdir}/xml/catalog
+  fi
 fi
 
 %files
 %defattr(-,root,root)
-/usr/share/xml/docbook/*
+%{_datadir}/xml/docbook/*
 %{_docdir}/*
 
 %changelog
