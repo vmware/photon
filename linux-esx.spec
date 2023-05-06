@@ -484,7 +484,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/linux-%{uname_r}/*
+%{_docdir}/linux-%{uname_r}/*
 %ifarch x86_64
 %{_mandir}/*
 %endif
