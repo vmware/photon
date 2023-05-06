@@ -40,7 +40,7 @@ make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
-%{_datarootdir}/autoconf/*
+%{_datadir}/autoconf/*
 
 %changelog
 * Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 2.71-2

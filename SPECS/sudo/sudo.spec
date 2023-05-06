@@ -3,16 +3,21 @@ Name:           sudo
 Version:        1.9.12p1
 Release:        2%{?dist}
 License:        ISC
-URL:            https://www.sudo.ws/
+URL:            https://www.sudo.ws
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6f564112aa1e0e9cd223adb280bd430d513109c031e52deca308501234dedc0d7418f13cbb9b4249ac58d997cfdae1908c280c26733acbc55dbf9db45dff239a
+
+Source0: http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
+%define sha512 %{name}=6f564112aa1e0e9cd223adb280bd430d513109c031e52deca308501234dedc0d7418f13cbb9b4249ac58d997cfdae1908c280c26733acbc55dbf9db45dff239a
+
 Patch0:         CVE-2023-22809.patch
+
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
+BuildRequires:  systemd-rpm-macros
+
 Requires:       Linux-PAM
 Requires:       shadow
 
@@ -21,7 +26,7 @@ The Sudo package allows a system administrator to give certain users (or groups 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup -n sudo-%{version} -p1
+%autosetup -p1
 
 %build
 %configure --host=%{_host} --build=%{_build} \
@@ -37,19 +42,18 @@ the ability to run some (or all) commands as root or another user while logging 
     --with-env-editor \
     --with-pam \
     --with-passprompt="[sudo] password for %p"
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-find %{buildroot}/%{_libdir} -name '*.so~' -delete
+%make_install %{?_smp_mflags}
+install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
+find %{buildroot}%{_libdir} -name '*.so~' -delete
 sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
-%sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
-install -vdm755 %{buildroot}/etc/pam.d
-cat > %{buildroot}/etc/pam.d/sudo << EOF
+%sudo   ALL=(ALL) ALL' %{buildroot}%{_sysconfdir}/sudoers
+install -vdm755 %{buildroot}%{_sysconfdir}/pam.d
+cat > %{buildroot}%{_sysconfdir}/pam.d/sudo << EOF
 #%%PAM-1.0
 auth       include      system-auth
 account    include      system-account
@@ -57,8 +61,8 @@ password   include      system-password
 session    include      system-session
 session    required     pam_env.so
 EOF
-mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
-touch %{buildroot}%{_libdir}/tmpfiles.d/sudo.conf
+mkdir -p %{buildroot}%{_tmpfilesdir}
+touch %{buildroot}%{_tmpfilesdir}/sudo.conf
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 
@@ -67,7 +71,7 @@ make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
-if [ $1 -eq 1 ] ; then
+if [ $1 -eq 1 ]; then
   getent group wheel > /dev/null || groupadd wheel
 fi
 
@@ -79,23 +83,22 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
-%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
-%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
+%{_datadir}/locale/*
 %{_includedir}/*
 %{_sbindir}/*
-%{_prefix}/libexec/sudo/*.so
-%{_prefix}/libexec/sudo/*.so.*
+%{_libexecdir}/sudo/*.so
+%{_libexecdir}/sudo/*.so.*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
-%{_datarootdir}/locale/*
-%attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
-%exclude  /etc/sudoers.dist
-%exclude %{_prefix}/libexec/sudo/*.la
+%attr(0644,root,root) %{_tmpfilesdir}/sudo.conf
+%exclude %{_sysconfdir}/sudoers.dist
 
 %changelog
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.12p1-2

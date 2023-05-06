@@ -37,7 +37,6 @@ The Gawk package contains programs for manipulating text files.
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
@@ -55,7 +54,7 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/*
 %{_includedir}/*
 %{_libexecdir}/*
-%{_datarootdir}/awk/*
+%{_datadir}/awk/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_sysconfdir}/profile.d/gawk.csh

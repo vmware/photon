@@ -7,8 +7,9 @@ URL:            http://ftp.mozilla.org/pub/mozilla.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha512  nspr=8064f826c977f1302a341ca7a7aaf7977b5d10102062c030b1d42b856638e3408ab262447e8c7cfd5a98879b9b1043d17ceae66fbb1e5ed86d6bc3531f26667e
+
+Source0: http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8064f826c977f1302a341ca7a7aaf7977b5d10102062c030b1d42b856638e3408ab262447e8c7cfd5a98879b9b1043d17ceae66fbb1e5ed86d6bc3531f26667e
 
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
@@ -34,11 +35,11 @@ cd nspr
     $([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
     --disable-silent-rules
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd nspr
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -52,7 +53,7 @@ make DESTDIR=%{buildroot} %{?_smp_mflags} install
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
-%{_datarootdir}/aclocal/*
+%{_datadir}/aclocal/*
 
 %changelog
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.33-1

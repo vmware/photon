@@ -49,10 +49,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_defaultdocdir}/%{name}-%{version}/*
-%{_datarootdir}/consolefonts/*
-%{_datarootdir}/consoletrans/*
-%{_datarootdir}/keymaps/*
-%{_datarootdir}/unimaps/*
+%{_datadir}/consolefonts/*
+%{_datadir}/consoletrans/*
+%{_datadir}/keymaps/*
+%{_datadir}/unimaps/*
 %{_mandir}/*/*
 
 %changelog

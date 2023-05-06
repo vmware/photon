@@ -35,8 +35,8 @@ rm -rf %{buildroot}%{_infodir}
 sed -i 's/test-term-ostream-xterm.sh//1' ./libtextstyle/tests/Makefile
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -46,10 +46,10 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_datarootdir}/aclocal/*
+%{_datadir}/aclocal/*
 %{_datadir}/*
 %{_defaultdocdir}/%{name}-%{version}/*
-%{_datarootdir}/%{name}/*
+%{_datadir}/%{name}/*
 %{_mandir}/*
 
 %changelog

@@ -22,7 +22,7 @@ Requires:   glibc
 This package contains a parser generator
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %configure \
@@ -42,10 +42,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.a
-%{_datarootdir}/%{name}/*
-%{_datarootdir}/aclocal/*
+%{_datadir}/%{name}/*
+%{_datadir}/aclocal/*
 %{_mandir}/*/*
-%{_docdir}/bison/*
+%{_docdir}/%{name}/*
 
 %changelog
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.8.2-3

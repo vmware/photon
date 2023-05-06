@@ -1,3 +1,5 @@
+%define maj_ver 1.16
+
 Summary:    Programs for generating Makefiles
 Name:       automake
 Version:    1.16.5
@@ -44,9 +46,9 @@ make %{?_smp_mflags} check
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_datarootdir}/aclocal/README
-%{_datarootdir}/%{name}-1.16/*
-%{_datarootdir}/aclocal-1.16/*
+%{_datadir}/aclocal/README
+%{_datadir}/%{name}-%{maj_ver}/*
+%{_datadir}/aclocal-%{maj_ver}/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 

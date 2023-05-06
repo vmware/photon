@@ -152,7 +152,7 @@ EOF
 diff -sr install-for-efi/sbin install-for-pc/sbin
 diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir}
 diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir}
-diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
+diff -sr install-for-efi%{_datadir} install-for-pc%{_datadir}
 %endif
 %endif
 
@@ -172,8 +172,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_sysconfdir}/grub.d/README
 %{_sbindir}/*
 %{_bindir}/*
-%{_datarootdir}/bash-completion/completions/grub
-%{_datarootdir}/grub/*
+%{_datadir}/bash-completion/completions/grub
+%{_datadir}/grub/*
 %{_sysconfdir}/sysconfig/grub
 %{_sysconfdir}/default/grub
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
@@ -200,7 +200,7 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 
 %files lang
 %defattr(-,root,root)
-%{_datarootdir}/locale/*
+%{_datadir}/locale/*
 
 %changelog
 * Tue Mar 28 2023 Piyush Gupta <gpiyush@vmware.com> 2.06-10

@@ -107,7 +107,7 @@ rm -rf %{buildroot}%{_lib64dir}
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_datarootdir}/%{name}
+%{_datadir}/%{name}
 
 %files devel
 %defattr(-,root,root,-)

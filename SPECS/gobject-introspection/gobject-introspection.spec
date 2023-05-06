@@ -16,7 +16,7 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  which
-BuildRequires:  glib-devel >= 2.58.0
+BuildRequires:  glib-devel
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
@@ -72,7 +72,7 @@ Libraries and headers for gobject-introspection.
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}%{python3_sitelib}
 mv %{buildroot}%{_libdir}/%{name}/giscanner %{buildroot}%{python3_sitelib}
-rm -rf %{buildroot}%{_datarootdir}/gtk-doc/html
+rm -rf %{buildroot}%{_datadir}/gtk-doc/html
 
 %check
 %if 0%{?with_check}

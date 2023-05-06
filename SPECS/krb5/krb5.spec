@@ -43,9 +43,7 @@ These are the additional language files of krb5.
 %autosetup -p1
 
 %build
-cd src &&
-sed -e 's@\^u}@^u cols 300}@' \
-    -i tests/dejagnu/config/default.exp &&
+cd src
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf
 if [ %{_host} != %{_build} ]; then
@@ -56,33 +54,32 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__etc_TIMEZONE=no
 fi
 %configure \
-        --with-system-et         \
-        --with-system-ss         \
-        --with-system-verto=no   \
-        --enable-dns-for-realm   \
-        --enable-pkinit          \
-        --enable-shared          \
+        --with-system-et \
+        --with-system-ss \
+        --with-system-verto=no \
+        --enable-dns-for-realm \
+        --enable-pkinit \
+        --enable-shared \
         --without-tcl
-make %{?_smp_mflags}
+
+%make_build
 
 %install
 cd src
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
-               kdb5 krad krb5 krb5support verto ; do
-    chmod -v 755 %{buildroot}/%{_libdir}/lib$LIBRARY.so
+               kdb5 krad krb5 krb5support verto; do
+    chmod -v 755 %{buildroot}%{_libdir}/lib$LIBRARY.so
 done
 
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5.so.3.3        /usr/lib/libkrb5.so
-ln -v -sf %{buildroot}/%{_libdir}/libk5crypto.so.3.1    /usr/lib/libk5crypto.so
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5support.so.0.1 /usr/lib/libkrb5support.so
+ln -v -sf %{buildroot}%{_libdir}/libkrb5.so.3.3 %{_libdir}/libkrb5.so
+ln -v -sf %{buildroot}%{_libdir}/libk5crypto.so.3.1 %{_libdir}/libk5crypto.so
+ln -v -sf %{buildroot}%{_libdir}/libkrb5support.so.0.1 %{_libdir}/libkrb5support.so
 
-mv -v %{buildroot}/%{_bindir}/ksu /bin
+mv -v %{buildroot}%{_bindir}/ksu /bin
 chmod -v 755 /bin/ksu
 
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
+install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
 
 unset LIBRARY
 %{_fixperms} %{buildroot}/*
@@ -110,19 +107,19 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_mandir}/man7/*
-%{_datarootdir}/man/man5/.k5identity.5.gz
-%{_datarootdir}/man/man5/.k5login.5.gz
+%{_datadir}/man/man5/.k5identity.5.gz
+%{_datadir}/man/man5/.k5login.5.gz
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
-%{_datarootdir}/examples/*
+%{_datadir}/examples/*
 %{_docdir}/*
 
 %files lang
 %defattr(-,root,root)
-%{_datarootdir}/locale/*
+%{_datadir}/locale/*
 
 %changelog
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3

@@ -124,8 +124,8 @@ test %{_host} != %{_build} && export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-o
 install -vdm 755 %{buildroot}%{_lib}
 ln -sv %{_bindir}/cpp %{buildroot}%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
-install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
-mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+install -vdm 755 %{buildroot}%{_datadir}/gdb/auto-load%{_lib}
+mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datadir}/gdb/auto-load%{_lib}
 chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
@@ -218,8 +218,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %files -n libstdc++
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so.*
-%dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
-%{_datarootdir}/gcc-%{version}/python/libstdcxx/*
+%dir %{_datadir}/gcc-%{version}/python/libstdcxx
+%{_datadir}/gcc-%{version}/python/libstdcxx/*
 
 %files -n libstdc++-devel
 %defattr(-,root,root)

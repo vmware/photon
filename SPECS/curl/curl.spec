@@ -64,7 +64,7 @@ This package contains minimal set of shared curl libraries.
 
 %install
 %make_install %{?_smp_mflags}
-install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
+install -v -d -m755 %{buildroot}%{_docdir}/%{name}-%{version}
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -87,7 +87,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_mandir}/man3/*
-%{_datarootdir}/aclocal/libcurl.m4
+%{_datadir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 
 %files libs
