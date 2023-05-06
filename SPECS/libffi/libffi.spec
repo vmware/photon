@@ -1,17 +1,19 @@
-Summary:	A portable, high level programming interface to various calling conventions
-Name:		libffi
-Version:	3.4.2
-Release:	1%{?dist}
-License:	BSD
-URL:		http://sourceware.org/libffi/
-Group:		System Environment/GeneralLibraries
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
-%define sha512  %{name}=31bad35251bf5c0adb998c88ff065085ca6105cf22071b9bd4b5d5d69db4fadf16cadeec9baca944c4bb97b619b035bb8279de8794b922531fddeb0779eb7fb1
-Provides:	pkgconfig(libffi)
+Summary:    A portable, high level programming interface to various calling conventions
+Name:       libffi
+Version:    3.4.2
+Release:    2%{?dist}
+License:    BSD
+URL:        http://sourceware.org/libffi
+Group:      System Environment/GeneralLibraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-%if %{with_check}
+Source0: http://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
+%define sha512 %{name}=31bad35251bf5c0adb998c88ff065085ca6105cf22071b9bd4b5d5d69db4fadf16cadeec9baca944c4bb97b619b035bb8279de8794b922531fddeb0779eb7fb1
+
+Provides:   pkgconfig(libffi)
+
+%if 0%{?with_check}
 BuildRequires:  dejagnu
 %endif
 
@@ -28,24 +30,17 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
-    -i include/Makefile.in &&
-sed -e '/^includedir/ s:${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:@includedir@:' \
-    -e 's/^Cflags: -I${includedir}/Cflags:/' \
-    -i libffi.pc.in        &&
 %configure \
-	--disable-static
-make %{?_smp_mflags}
+    --disable-static
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -D -m644 LICENSE %{buildroot}/usr/share/licenses/%{name}/LICENSE
-find %{buildroot}/%{_lib64dir} -name '*.la' -delete
-rm -rf %{buildroot}/%{_infodir}
+%make_install %{?_smp_mflags}
+rm -rf %{buildroot}%{_infodir}
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -58,16 +53,18 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_lib64dir}/*.so*
+%{_lib64dir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
+%{_lib64dir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
-%{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
 
 %changelog
+* Sat May 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.2-2
+- Fix file packaging
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.2-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
