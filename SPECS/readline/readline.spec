@@ -83,9 +83,9 @@ pushd %{name}-%{major_version}
 %make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so) %{buildroot}%{_libdir}/libhistory.so
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
+install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_docdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 popd
 

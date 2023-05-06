@@ -46,7 +46,7 @@ It contains the header files to create applications
         CFLAGS="%{optflags}" \
         CXXFLAGS="%{optflags}"
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 make %{?_smp_mflags} install BUILDROOT=%{buildroot}
@@ -81,7 +81,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/cups/*
 
 %doc %{_mandir}/*
-%doc %{_defaultdocdir}/cups
+%doc %{_docdir}/cups
 %{_datadir}/cups/
 %{_datadir}/locale/
 

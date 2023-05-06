@@ -34,8 +34,8 @@ The Gawk package contains programs for manipulating text files.
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
+cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_docdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name}
@@ -55,7 +55,7 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 %{_libexecdir}/*
 %{_datadir}/awk/*
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_sysconfdir}/profile.d/gawk.csh
 %{_sysconfdir}/profile.d/gawk.sh

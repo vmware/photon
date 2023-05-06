@@ -43,7 +43,7 @@ simple interprocess messaging system (systemd --user integration)
 
 %build
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --enable-libaudit=no \
     --enable-selinux=no \
     --with-console-auth-dir=/run/console \

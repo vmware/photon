@@ -69,7 +69,7 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %config(noreplace) %{_sysconfdir}/fonts/*
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 
 %files devel
 %defattr(-,root,root)

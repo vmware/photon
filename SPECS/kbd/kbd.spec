@@ -34,9 +34,9 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ*
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
+cp -R -v docs/doc/* %{buildroot}%{_docdir}/%{name}-%{version}
+rm -f %{buildroot}%{_docdir}/%{name}-%{version}/kbd.FAQ*
 %find_lang %{name}
 
 %check
@@ -48,11 +48,11 @@ make %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
-%{_defaultdocdir}/%{name}-%{version}/*
 %{_datadir}/consolefonts/*
 %{_datadir}/consoletrans/*
 %{_datadir}/keymaps/*
 %{_datadir}/unimaps/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 
 %changelog

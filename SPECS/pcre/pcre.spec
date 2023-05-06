@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
+Source0: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=91bff52eed4a2dfc3f3bfdc9c672b88e7e2ffcf3c4b121540af8a4ae8c1ce05178430aa6b8000658b9bb7b4252239357250890e20ceb84b79cdfcde05154061a
 
 BuildRequires:  bzip2-devel
@@ -46,20 +46,20 @@ This package contains minimal set of shared pcre libraries.
 
 %build
 %configure \
-            --docdir=%{_docdir}/%{name}-%{version} \
-            --enable-unicode-properties \
-            --enable-pcre16 \
-            --enable-pcre32 \
-            --enable-pcregrep-libz \
-            --enable-pcregrep-libbz2 \
-            --enable-pcretest-libreadline \
-            --with-match-limit-recursion=16000 \
-            --disable-static
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-unicode-properties \
+    --enable-pcre16 \
+    --enable-pcre32 \
+    --enable-pcregrep-libz \
+    --enable-pcregrep-libbz2 \
+    --enable-pcretest-libreadline \
+    --with-match-limit-recursion=16000 \
+    --disable-static
 
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libpcre.so) %{buildroot}%{_libdir}/libpcre.so
 ln -sfv $(readlink %{buildroot}%{_libdir}/libpcre.so) %{buildroot}%{_libdir}/libpcre.so.0
 
@@ -85,7 +85,7 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %exclude %{_bindir}/pcregrep
 %exclude %{_bindir}/pcretest
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc

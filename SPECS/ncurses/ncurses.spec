@@ -80,7 +80,7 @@ ln -s ../configure .
     --with-mmask-t='long' \
     --disable-silent-rules \
     --with-termlib=tinfo
-make %{?_smp_mflags}
+%make_build
 popd
 
 mkdir v5
@@ -98,12 +98,12 @@ ln -s ../configure .
     --disable-silent-rules \
     --with-termlib=tinfo \
     --with-abi-version=5
-make %{?_smp_mflags}
+%make_build
 popd
 
 %install
-make %{?_smp_mflags} -C v5 DESTDIR=%{buildroot} install.libs
-make %{?_smp_mflags} -C v6 DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags} -C v5 install.libs
+%make_install %{?_smp_mflags} -C v6
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
 
@@ -126,10 +126,10 @@ echo "INPUT(-lncursesw)" > %{buildroot}%{_libdir}/libcursesw.so
 ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
 ln -sfv libncursesw.a %{buildroot}%{_libdir}/libcursesw.a
 ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
-install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -vdm 755  %{buildroot}%{_docdir}/%{name}-%{version}
 ln -sv libncursesw.so.6.2 %{buildroot}%{_libdir}/libncurses.so.6
 ln -sv libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
-cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+cp -v -R doc/* %{buildroot}%{_docdir}/%{name}-%{version}
 
 %check
 %if 0%{?with_check}
@@ -161,16 +161,19 @@ make %{?_smp_mflags}
 %{_mandir}/man5/*
 
 %files libs
+%defattr(-,root,root)
 %{_datadir}/terminfo/l/linux
 %{_datadir}/tabset/*
 %{_libdir}/terminfo
 %{_libdir}/lib*.so.6*
 
 %files compat
+%defattr(-,root,root)
 %{_libdir}/lib*.so.5*
 %{_bindir}/ncursesw5-config
 
 %files devel
+%defattr(-,root,root)
 %{_bindir}/ncursesw6-config
 %{_includedir}/*.h
 %{_libdir}/libncurses.a

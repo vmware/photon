@@ -41,17 +41,16 @@ This package contains minimal set of shared xz libraries.
 
 %build
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules
 
 %make_build
 
 %install
-make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install %{?_smp_mflags}
+%make_install pkgconfigdir=%{_libdir}/pkgconfig %{?_smp_mflags}
 install -vdm 755 %{buildroot}/{%{_bindir},%{_lib}}
 ln -svf "../..%{_lib}/$(readlink %{buildroot}%{_libdir}/liblzma.so)" %{buildroot}%{_libdir}/liblzma.so
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
@@ -96,7 +95,7 @@ make %{?_smp_mflags} check
 %{_includedir}/lzma/*.h
 %{_libdir}/pkgconfig/liblzma.pc
 %{_libdir}/liblzma.so
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 
 %files libs
 %{_libdir}/liblzma.so.*

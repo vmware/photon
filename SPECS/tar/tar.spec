@@ -8,8 +8,8 @@ Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    %{name}-%{version}.tar.xz
-%define sha512  %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+Source0: https://ftp.gnu.org/gnu/tar/%{name}-%{version}.tar.xz
+%define sha512 %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
 
 %description
 Contains GNU archiving program
@@ -26,7 +26,7 @@ export FORCE_UNSAFE_CONFIGURE=1
 %install
 install -vdm 755 %{buildroot}%{_sbindir}
 %make_install %{?_smp_mflags}
-make DESTDIR=%{buildroot} -C doc install-html docdir=%{_defaultdocdir}/%{name}-%{version} %{?_smp_mflags}
+make DESTDIR=%{buildroot} -C doc install-html docdir=%{_docdir}/%{name}-%{version} %{?_smp_mflags}
 install -vdm 755 %{buildroot}/usr/share/man/man1
 rm -rf %{buildroot}%{_infodir}
 
@@ -41,7 +41,7 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/tar
 %{_libexecdir}/rmt
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 
 %changelog

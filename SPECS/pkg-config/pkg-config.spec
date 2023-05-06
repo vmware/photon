@@ -1,14 +1,16 @@
-Summary:	Build tool
-Name:		pkg-config
-Version:	0.29.2
-Release:	3%{?dist}
-License:	GPLv2+
-URL:		http://www.freedesktop.org/wiki/Software/pkg-config
-Group:		Development/Tools
-Vendor:		VMware, Inc.
+Summary:    Build tool
+Name:       pkg-config
+Version:    0.29.2
+Release:    3%{?dist}
+License:    GPLv2+
+URL:        http://www.freedesktop.org/wiki/Software/pkg-config
+Group:      Development/Tools
+Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
-%define sha1 pkg-config=76e501663b29cb7580245720edfb6106164fad2b
+
+Source0: http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4861ec6428fead416f5cbbbb0bbad10b9152967e481d4b0ff2eb396a9f297f552984c9bb72f6864a37dcd8fca1d9ccceda3ef18d8f121938dbe4fdf2b870fe75
+
 Patch0:         pkg-config-glib-CVE-2018-16428.patch
 Patch1:         pkg-config-glib-CVE-2018-16429.patch
 
@@ -17,31 +19,33 @@ Contains a tool for passing the include path and/or library paths
 to build tools during the configure and make file execution.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
-cd glib  # patches need to apply to internal glib
+pushd glib  # patches need to apply to internal glib
 %patch0 -p1
 %patch1 -p1
-cd ..
+popd
 
 %build
 if [ %{_host} != %{_build} ]; then
 # configure unable to run tests for cross compilation
 # preset values
-    export glib_cv_stack_grows=no
-    export ac_cv_func_posix_getpwuid_r=yes
-    export ac_cv_func_posix_getgrgid_r=yes
-    export glib_cv_uscore=yes
+  export glib_cv_stack_grows=no
+  export ac_cv_func_posix_getpwuid_r=yes
+  export ac_cv_func_posix_getgrgid_r=yes
+  export glib_cv_uscore=yes
 fi
 %configure \
     --target=%{_host} \
     --with-internal-glib \
     --disable-host-tool \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --disable-silent-rules
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -52,6 +56,7 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/pkg.m4
 %{_docdir}/pkg-config-*/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
+
 %changelog
 * Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 0.29.2-3
 - Cross compilation support

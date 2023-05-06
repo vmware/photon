@@ -26,7 +26,7 @@ Contains programs for generating Makefiles for use with Autoconf.
 %build
 sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --disable-silent-rules
 
 %make_build
@@ -49,7 +49,7 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/README
 %{_datadir}/%{name}-%{maj_ver}/*
 %{_datadir}/aclocal-%{maj_ver}/*
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 
 %changelog

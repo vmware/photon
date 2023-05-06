@@ -55,7 +55,7 @@ The package contains bash doc files.
 %build
 %configure \
     "CFLAGS=-fPIC" \
-    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
+    --htmldir=%{_docdir}/%{name}-%{version} \
     --without-bash-malloc \
     --with-installed-readline
 
@@ -337,8 +337,8 @@ fi
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_defaultdocdir}/%{name}/*
+%{_docdir}/%{name}-%{version}/*
+%{_docdir}/%{name}/*
 %{_mandir}/*/*
 
 %changelog

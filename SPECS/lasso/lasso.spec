@@ -33,21 +33,20 @@ This package contains the header files, static libraries and development
 documentation for Lasso
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-./autogen.sh --disable-java \
+sh ./autogen.sh --disable-java \
              --disable-perl \
              --enable-php5=no \
              --disable-python \
              --disable-gtk-doc \
              --prefix=%{_prefix}
 
-%make_build %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
 
 %check
@@ -57,16 +56,15 @@ find %{buildroot} -name '*.a' -delete
 %postun -p /sbin/ldconfig
 
 %files
-%{_libdir}/liblasso.so.3*
-%doc AUTHORS NEWS README
-%license COPYING
+%defattr(-,root,root)
+%{_libdir}/liblasso.so.*
 
 %files devel
-
+%defattr(-,root,root)
 %{_libdir}/liblasso.so
 %{_libdir}/pkgconfig/lasso.pc
 %{_includedir}/%{name}
-%{_defaultdocdir}/%{name}
+%{_docdir}/%{name}
 
 %changelog
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4

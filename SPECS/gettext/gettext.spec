@@ -7,8 +7,9 @@ URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha512  gettext=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
+
+Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define sha512 %{name}=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
 
 %description
 These allow programs to be compiled with NLS
@@ -20,15 +21,15 @@ messages in the user's native language.
 
 %build
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --disable-silent-rules
+
 %make_build
 
 %install
 %make_install
-find %{buildroot}%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
-rm -rf %{buildroot}%{_infodir}
+rm -rf %{buildroot}%{_docdir}/gettext-%{version}/examples \
+       %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
 %check
@@ -48,8 +49,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.a
 %{_datadir}/aclocal/*
 %{_datadir}/*
-%{_defaultdocdir}/%{name}-%{version}/*
 %{_datadir}/%{name}/*
+%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*
 
 %changelog

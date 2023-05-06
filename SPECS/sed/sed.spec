@@ -31,7 +31,7 @@ These are the additional language files of sed.
 
 %build
 %configure \
-    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
+    --htmldir=%{_docdir}/%{name}-%{version} \
     --disable-silent-rules
 
 %make_build

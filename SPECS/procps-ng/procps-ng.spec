@@ -44,7 +44,7 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_func_realloc_0_nonnull=yes
 fi
 
-%configure --docdir=%{_defaultdocdir}/%{name}-%{version} \
+%configure --docdir=%{_docdir}/%{name}-%{version} \
            --disable-static \
            --disable-kill \
            --disable-silent-rules
