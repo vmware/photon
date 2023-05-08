@@ -1,18 +1,19 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
+%define         sha512 tuned=67acdf10ecccd7910c4dcfd737610b4cb7651c7bf937bc0ed9c51869262d9f3a46f262d0b7636bc7a86a8abf579542a46f551e4f6c7561a061d8d58459be4589
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         0001-bootloader-plugin-support-for-photon.patch
 Patch2:         0001-tuned-fix-bug-in-sysctl-verify.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
+Patch5:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -32,7 +33,7 @@ Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
 Requires:       virt-what
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
@@ -142,6 +143,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Mon May 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-4
+-   Skip verification of irq 0 on x86
 *   Thu Oct 21 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-3
 -   realtime: modified hung_task detection sysctl param
 -   to log D-state tasks
