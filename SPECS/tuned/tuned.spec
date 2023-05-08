@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.15.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -12,6 +12,7 @@ Patch1:         bootloader-plugin-support-for-photon.patch
 Patch2:         tuned-fix-bug-in-sysctl-verify.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
+Patch5:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -31,7 +32,7 @@ Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
 Requires:       virt-what
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
@@ -143,6 +144,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Mon May 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-7
+-   Skip verification of irq 0 on x86
 *   Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-6
 -   Fix tuned daemon startup failure by moving tuned's dbus config file
 -   to the correct location
