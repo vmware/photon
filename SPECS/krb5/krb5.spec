@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -27,15 +27,17 @@ which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
 
 %package devel
-Summary:        Libraries and header files for krb5
+Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 Static libraries and header files for the support library for krb5
 
 %package lang
 Summary:    Additional language files for krb5
 Group:      System Environment/Security
-Requires: %{name} = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of krb5.
 
@@ -44,7 +46,7 @@ These are the additional language files of krb5.
 
 %build
 cd src
-CPPFLAGS="-D_GNU_SOURCE" \
+export CPPFLAGS="-D_GNU_SOURCE"
 autoconf
 if [ %{_host} != %{_build} ]; then
   export krb5_cv_attr_constructor_destructor=yes,yes
@@ -53,42 +55,29 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__etc_environment=no
   export ac_cv_file__etc_TIMEZONE=no
 fi
+
 %configure \
         --with-system-et \
         --with-system-ss \
         --with-system-verto=no \
         --enable-dns-for-realm \
         --enable-pkinit \
-        --enable-shared \
-        --without-tcl
+        --enable-shared
 
 %make_build
 
 %install
 cd src
 %make_install %{?_smp_mflags}
-for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
-               kdb5 krad krb5 krb5support verto; do
-    chmod -v 755 %{buildroot}%{_libdir}/lib$LIBRARY.so
-done
-
-ln -v -sf %{buildroot}%{_libdir}/libkrb5.so.3.3 %{_libdir}/libkrb5.so
-ln -v -sf %{buildroot}%{_libdir}/libk5crypto.so.3.1 %{_libdir}/libk5crypto.so
-ln -v -sf %{buildroot}%{_libdir}/libkrb5support.so.0.1 %{_libdir}/libkrb5support.so
-
-mv -v %{buildroot}%{_bindir}/ksu /bin
-chmod -v 755 /bin/ksu
-
-install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
-
-unset LIBRARY
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 # krb5 tests require hostname resolve
-echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
+echo "127.0.0.1 $HOSTNAME" >> %{_sysconfdir}/hosts
 cd src
 make check %{?_smp_mflags}
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -99,7 +88,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/krb5/plugins/*
 %{_sbindir}/*
@@ -112,16 +100,18 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_datadir}/examples/*
-%{_docdir}/*
 
 %files lang
 %defattr(-,root,root)
 %{_datadir}/locale/*
 
 %changelog
+* Sun May 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-4
+- Fix spec issues
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3
 - Require openssl-libs
 * Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2
