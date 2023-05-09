@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        22.4.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -19,6 +19,7 @@ Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
+Patch4: CVE-2023-1786.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -103,15 +104,6 @@ mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %if 0%{?with_check}
 %check
-touch vd ud
-
-mkdir -p %{_datadir}/ca-certificates/
-crt_file='%{_datadir}/ca-certificates/cloud-init-ca-certs.crt'
-echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
-
-conf_file='%{_sysconfdir}/ca-certificates.conf'
-echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
-
 %define pkglist1 pytest-metadata unittest2 mock iniconfig
 %define pkglist2 httpretty responses pytest-mock
 
@@ -155,6 +147,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-5
+- Fix CVE-2023-1786
 * Sun Feb 12 2023 Prashant S Chauhan <psinghchuha@vmware.com> 22.4.2-4
 - Bump up as part of python3-PyYAML update
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.4.2-3
