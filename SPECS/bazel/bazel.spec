@@ -3,20 +3,19 @@
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
-Version:        3.5.0
-Release:        3%{?dist}
+Version:        6.1.2
+Release:        1%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://bazel.build/
 Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
-%define sha1    bazel=e6e54df26a327255749e5425d5ebc8555bc14290
-Patch0:         bazel-gcc-10.patch
-BuildRequires:  openjdk8 zlib-devel which findutils tar gzip zip unzip
+%define sha512  bazel=3b84139d383f47607db92f3f59504b2e07409140ebfad7d540a81638619ba67eb870285c9b9c6db8dd50a8971ba871365d583bdf9754ff0038d5b6c39af9d013
+BuildRequires:  openjdk11 zlib-devel which findutils tar gzip zip unzip
 BuildRequires:  gcc
 BuildRequires:  python3
-Requires:       openjdk8
+Requires:       openjdk11
 
 %description
 Bazel is Google's own build tool, now publicly available in Beta. Bazel has
@@ -40,12 +39,13 @@ popd
 mkdir -p %{buildroot}%{_bindir}
 cp output/bazel %{buildroot}%{_bindir}
 
-
 %files
 %defattr(-,root,root)
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Tue May 09 2023 Harinadh D <hdommaraju@vmware.com> 6.1.2-1
+- Version upgrade
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.0-3
 - Bump up to compile with python 3.10
 * Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-2
