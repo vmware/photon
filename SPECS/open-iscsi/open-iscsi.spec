@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        https://github.com/open-iscsi/open-iscsi/archive/refs/tags/%{nam
 %define sha512  open=88dbea433fe5266714c5c73ce4b60dfb8ddeffcaad4ff77abbdda2a865d29d4307ca51b8f45376f54542b19baed30d5f2f1836a8c136eb0af840f489f47e4fb3
 Patch0:         CVE-2020-13987.patch
 Patch1:         CVE-2020-17437.patch
+Patch2:         CVE-2020-13988.patch
 BuildRequires:  open-isns-devel
 BuildRequires:  nxtgn-openssl-devel
 BuildRequires:  kmod-devel
@@ -87,6 +88,8 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Tue May 09 2023 Harinadh D <hdommaraju@vmware.com> 2.1.1-3
+- Fix CVE-2020-13988
 * Tue Aug 09 2022 Harinadh D <hdommaraju@vmware.com> 2.1.1-2
 - Fix CVE-2020-13987,CVE-2020-17437
 * Wed Jun 24 2020 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-1
