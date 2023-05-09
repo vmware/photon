@@ -1,18 +1,20 @@
 Summary:        Security client
 Name:           nss
 Version:        3.72
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MPLv2.0
 URL:            https://wiki.mozilla.org/NSS
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_72_RTM/src/%{name}-%{version}.tar.gz
-%define sha512  %{name}=1d818d2ef85735837275059fecf68d57e48152f0348ea54887c29171cf029b6944e94d99a8cd96e580a81edb678b79c55515ac0516e27daf6b290c34baed9ebb
+Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_72_RTM/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1d818d2ef85735837275059fecf68d57e48152f0348ea54887c29171cf029b6944e94d99a8cd96e580a81edb678b79c55515ac0516e27daf6b290c34baed9ebb
 
-Patch0:         nss-%{version}-standalone-1.patch
-Patch1:         nss-CVE-2021-43527.patch
+Patch0: nss-%{version}-standalone-1.patch
+Patch1: nss-CVE-2021-43527.patch
+Patch2: CVE-2022-36320-1.patch
+Patch3: CVE-2022-36320-2.patch
 
 Requires:       nspr
 Requires:       nss-libs = %{version}-%{release}
@@ -99,6 +101,7 @@ sudo -u test ./all.sh && userdel test -r -f
 %endif
 
 %post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -128,6 +131,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.72-3
+- Fix CVE-2022-36320
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.72-2
 - Bump version as a part of sqlite upgrade
 * Thu Dec 02 2021 Alexey Makhalov <amakhalov@vmware.com> 3.72-1
