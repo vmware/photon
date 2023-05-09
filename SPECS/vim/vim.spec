@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.0.1392
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -15,6 +15,8 @@ Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=cd4679d2c13f3231bc0c8a99ba53fc04b034b98b5c5ca0e0840b7770a3b2fe52e83e106dc4445ef32001e2342be75d8d7574b817908abd3e6045432a9e03b61c
 
 Source1:        vimrc
+
+Patch0:         CVE-2023-2426.patch
 
 BuildRequires:  ncurses-devel
 
@@ -175,6 +177,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue May 09 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.1392-2
+- fix CVE-2023-2426
 * Tue Apr 18 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.1392-1
 - update to v9.0.1392 to fix multiple P2 CVEs
 * Tue Feb 07 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-5
