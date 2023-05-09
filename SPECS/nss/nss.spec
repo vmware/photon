@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
-Version:        3.78
-Release:        3%{?dist}
+Version:        3.89.1
+Release:        1%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
+%define sha512 %{name}=aeece4e8bc28113fc53997b29c89d40b4be74fee4f5d27c4e065d2fa6701038442f4eeeb1fcf98befedb03537a5a48a4701fe270f56197da57946529f9fa02dd
 
 Patch0: %{name}-%{version}-standalone-1.patch
 
@@ -65,8 +65,7 @@ make %{?_smp_mflags} VERBOSE=1 BUILD_OPT=1 \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 
 %install
-cd %{name}
-cd ../dist
+cd dist
 install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_includedir}/%{name}
 install -vdm 755 %{buildroot}%{_libdir}
@@ -129,6 +128,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.89.1-1
+- Upgrade to v3.89.1
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.78-3
 - bump release as part of sqlite update
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.78-2

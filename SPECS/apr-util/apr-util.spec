@@ -3,7 +3,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org
 Group:      System Environment/Libraries
@@ -126,6 +126,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-11
+- Bump version as a part of nss upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-10
 - Bump version as a part of openldap upgrade
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-9

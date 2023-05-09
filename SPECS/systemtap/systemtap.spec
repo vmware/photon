@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       10%{?dist}
+Release:       11%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -18,8 +18,10 @@ License:       GPLv2+
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
+
 Source1: systemtap-runtime.sysusers
 Source2: systemtap-server.sysusers
+
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
 BuildRequires: elfutils-libelf-devel
@@ -32,7 +34,6 @@ BuildRequires: libtirpc-devel
 BuildRequires: libxml2-devel
 BuildRequires: perl
 BuildRequires: python3-setuptools
-BuildRequires: nss
 BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-devel
@@ -387,6 +388,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-11
+- Bump version as a part of nss upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-10
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-9
