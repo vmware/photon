@@ -35,10 +35,11 @@ x86_64/gawk-5.1.1-2.ph5.x86_64.rpm
 x86_64/gcc-12.2.0-1.ph5.x86_64.rpm
 x86_64/gdbm-1.23-2.ph5.x86_64.rpm
 x86_64/gettext-0.21.1-1.ph5.x86_64.rpm
-x86_64/glibc-2.36-3.ph5.x86_64.rpm
-x86_64/glibc-devel-2.36-3.ph5.x86_64.rpm
-x86_64/glibc-iconv-2.36-3.ph5.x86_64.rpm
-x86_64/glibc-tools-2.36-3.ph5.x86_64.rpm
+x86_64/glibc-2.36-5.ph5.x86_64.rpm
+x86_64/glibc-libs-2.36-5.ph5.x86_64.rpm
+x86_64/glibc-devel-2.36-5.ph5.x86_64.rpm
+x86_64/glibc-iconv-2.36-5.ph5.x86_64.rpm
+x86_64/glibc-tools-2.36-5.ph5.x86_64.rpm
 x86_64/gmp-6.2.1-1.ph5.x86_64.rpm
 x86_64/gmp-devel-6.2.1-1.ph5.x86_64.rpm
 x86_64/go-1.19.3-2.ph5.x86_64.rpm
