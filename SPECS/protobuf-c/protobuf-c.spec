@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.3.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +10,9 @@ URL:            https://github.com/google/protobuf-c/
 
 Source0: %{name}-%{version}.tar.gz
 %define sha512 %{name}=237b6e6df6ebf4e62a1d402053182f1224c0f35656f30d8fb55ac79945d3d1acf264a7da9f100c1836b90c4acfc1fd96e9a5a95cb47a77d0ddf043aacc99f359
+
+Patch0:         CVE-2022-33070.patch
+Patch1:         CVE-2022-48468.patch
 
 BuildRequires:  protobuf >= 2.6.0
 BuildRequires:  protobuf-devel >= 2.6.0
@@ -74,6 +77,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Wed May 10 2023 Mukul Sikka <msikka@vmware.com> 1.3.3-5
+- Fix CVE-2022-33070 and CVE-2022-48468
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-4
 - Remove .la files
 * Mon Mar 21 2022 Harinadh D <hdommaraju@vmware.com> 1.3.3-3
