@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.32
-Release:        2%{?dist}
+Version:        8.0.33
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 mysql-boost=937e0d0350cb583bb4de15b080f08ed92b253a6d7c09f13a028855dae154fc84f0c95fb082b818b2fa6fa792cd2d9db8d7dc7a20a2a0d3d2b6839fbd2c821b44
+%define sha512 %{name}-boost=47f76819004c7c545d1b0b6b6646d8816899976f92d35c5564b1255b144b597ff7d3e674c721a45bcbb13cc0da3f4474fb29221c0e21d2ff91a1892cd42c636c
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -107,6 +107,8 @@ popd
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+* Wed May 10 2023 Oliver Kurth <okurth@vmware.com> 8.0.33-1
+- Upgrade to v8.0.33, fixing CVE-2023-21980 and others
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.0.32-2
 - Bump version as a part of libevent upgrade
 * Fri Jan 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-1
