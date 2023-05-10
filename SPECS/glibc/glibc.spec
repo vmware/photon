@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -27,6 +27,7 @@ Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
 
 Requires:       filesystem
+Requires:       %{name}-libs = %{version}-%{release}
 
 Conflicts:      %{name}-i18n < 2.36-4
 
@@ -38,10 +39,18 @@ searching directories, opening and closing files, reading and
 writing files, string handling, pattern matching, arithmetic,
 and so on.
 
+%package libs
+Summary:    glibc shared library
+Group:      System/Libraries
+
+%description libs
+This subpackage contains the implementation as a shared library.
+
 %package    devel
 Summary:    Header files for glibc
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 These are the header files of glibc.
 
@@ -49,6 +58,7 @@ These are the header files of glibc.
 Summary:    Additional language files for glibc
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of glibc.
 
@@ -56,6 +66,7 @@ These are the additional language files of glibc.
 Summary:    Additional internationalization files for glibc
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description i18n
 These are the additional internationalization files of glibc.
 
@@ -63,6 +74,7 @@ These are the additional internationalization files of glibc.
 Summary:    gconv modules for glibc
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description iconv
 These is gconv modules for iconv() and iconv tools.
 
@@ -70,6 +82,7 @@ These is gconv modules for iconv() and iconv tools.
 Summary:    tools for glibc
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description tools
 Extra tools for glibc.
 
@@ -77,6 +90,7 @@ Extra tools for glibc.
 Summary:    Name Service Cache Daemon
 Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description nscd
 Name Service Cache Daemon
 
@@ -206,10 +220,6 @@ mv %{buildroot}%{_libdir}/locale/en_US.utf8 %{buildroot}%{_libdir}/locale/en_US.
 
 popd
 
-# to do not depend on /bin/bash
-sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}%{_bindir}/ldd
-sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}%{_bindir}/tzselect
-
 mv %{buildroot}/sbin/* %{buildroot}/%{_sbindir}
 rmdir %{buildroot}/sbin
 
@@ -247,6 +257,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
+
 %posttrans iconv
 %{_sbindir}/iconvconfig
 
@@ -264,10 +277,6 @@ fi
 %config(noreplace) %{_sysconfdir}/rpc
 %attr(0644,root,root) %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
-
-%exclude %{_libdir}/libpcprofile.so
-%{_libdir}/*.so
-%{_libdir}/*.so.*
 %{_sbindir}/ldconfig
 %{_sbindir}/locale-gen.sh
 %{_bindir}/*
@@ -289,6 +298,12 @@ fi
 %exclude %{_bindir}/sotruss
 %exclude %{_bindir}/sprof
 %exclude %{_bindir}/xtrace
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/*.so
+%{_libdir}/*.so.*
+%exclude %{_libdir}/libpcprofile.so
 
 %files iconv
 %defattr(-,root,root)
@@ -331,8 +346,6 @@ fi
 
 %files devel
 %defattr(-,root,root)
-# TODO: Excluding for now to remove dependency on PERL
-#%%{_bindir}/mtrace
 %{_libdir}/*.a
 %{_libdir}/*.o
 %{_includedir}/*
@@ -341,6 +354,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-5
+- Add libs sub package
 * Fri Apr 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-4
 - Fix locale generation issue by packaging files properly
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-3

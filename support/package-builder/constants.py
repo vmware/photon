@@ -66,6 +66,7 @@ class constants(object):
         "filesystem",
         "linux-api-headers",
         "glibc",
+        "glibc-libs",
         "zlib",
         "file",
         "binutils",
@@ -84,6 +85,7 @@ class constants(object):
         "filesystem",
         "linux-api-headers",
         "glibc",
+        "glibc-libs",
         "zlib",
         "file",
         "binutils",
@@ -144,6 +146,7 @@ class constants(object):
         "filesystem",
         "linux-api-headers",
         "glibc",
+        "glibc-libs",
         "glibc-devel",
         "glibc-iconv",
         "glibc-tools",
@@ -293,6 +296,7 @@ class constants(object):
         "elfutils", # SYS_PTRACE
         "gdb",
         "glibc",
+        "glibc-libs",
         "tar"]
 
     # List of Packages which causes "Makecheck" job
