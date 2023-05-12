@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -116,10 +116,12 @@ Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
+%ifarch x86_64
 # VMW: [50..59]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
+%endif
 
 # CVE: [100..129]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -132,9 +134,7 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
 Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
-# Rpi fan driver
 # arm64 hypervisor detection and kmsg dumper
-%ifarch aarch64
 Patch205: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
 Patch206: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
 Patch207: 6.0-0003-arm64-VMware-hypervisor-detection.patch
@@ -143,10 +143,6 @@ Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
-%endif
-
-# TODO: rebase to 6.0:
-Patch220: 0001-Add-rpi-poe-fan-driver.patch
 %endif
 
 %ifarch x86_64
@@ -202,10 +198,12 @@ Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
+%ifarch x86_64
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+%endif
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -225,7 +223,6 @@ BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  elfutils-devel
-BuildRequires:  libunwind-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
@@ -298,7 +295,6 @@ Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs
 Requires:       xz-libs
-Requires:       libunwind
 Requires:       slang
 Requires:       python3
 Requires:       traceevent-plugins
@@ -443,6 +439,9 @@ ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+# verify perf has no dependency on libunwind
+tools/perf/perf -vv | grep libunwind | grep OFF
+tools/perf/perf -vv | grep dwarf | grep on
 
 %ifarch x86_64
 #build turbostat and cpupower
@@ -704,6 +703,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri May 12 2023 Ajay Kaher <akaher@vmware.com> 6.1.10-13
+- perf: remove libunwind dependency
+- Remove rpi fan driver patch
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
 - Remove dracut & initramfs from requires
 * Thu Apr 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-11
