@@ -42,6 +42,7 @@ and so on.
 %package libs
 Summary:    glibc shared library
 Group:      System/Libraries
+Conflicts:  %{name} < 2.36-5
 
 %description libs
 This subpackage contains the implementation as a shared library.
