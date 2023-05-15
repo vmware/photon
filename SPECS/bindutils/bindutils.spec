@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -77,7 +77,7 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %posttrans
 if [ $1 -eq 1 ]; then
-  %{_sysusersdir}/%{name}.sysusers
+  %sysusers_create_compat %{SOURCE1}
 fi
 
 %post
@@ -135,6 +135,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Mon May 15 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-4
+- Resolving systemd user creation issue
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-3
 - Use systemd-rpm-macros for user creation
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.19.7-2
