@@ -1,7 +1,7 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/tklauser/libtar
 License:        MIT
 Group:          System Environment/Libraries
@@ -13,6 +13,8 @@ Source0: https://github.com/tklauser/libtar/archive/refs/tags/%{name}-%{version}
 
 Patch0:         libtar-gen-debuginfo.patch
 Patch1:         libtar-CVE-2013-4420.patch
+Patch2:         libtar-CVE-2021-33643-CVE-2021-33644.patch
+Patch3:         libtar-CVE-2021-33645-CVE-2021-33646.patch
 
 Provides:       libtar.so.0()(64bit)
 
@@ -33,6 +35,9 @@ developing applications that use libtar.
 %setup
 %patch0
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
 autoreconf -iv
 
 %build
@@ -57,6 +62,8 @@ autoreconf -iv
 %{_libdir}/libtar.so
 
 %changelog
+* Tue May 16 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.20-7
+- Fix CVE-2021-33643, CVE-2021-33644, CVE-2021-33645, CVE-2021-33646
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.20-6
 - Remove .la files
 * Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-5
