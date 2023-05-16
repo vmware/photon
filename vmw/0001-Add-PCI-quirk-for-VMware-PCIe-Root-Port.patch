@@ -14,11 +14,11 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 5d2acebc3e96..4bce6c163f12 100644
+index 8d32a3834..15789cf85 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4781,6 +4781,19 @@ static int pci_quirk_brcm_acs(struct pci_dev *dev, u16 acs_flags)
- 		PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF);
+@@ -4868,6 +4868,19 @@ static int  pci_quirk_wangxun_nic_acs(struct pci_dev *dev, u16 acs_flags)
+ 	return false;
  }
  
 +static int pci_quirk_vmw_rp_acs(struct pci_dev *dev, u16 acs_flags)
@@ -37,15 +37,12 @@ index 5d2acebc3e96..4bce6c163f12 100644
  static const struct pci_dev_acs_enabled {
  	u16 vendor;
  	u16 device;
-@@ -4923,6 +4936,8 @@ static const struct pci_dev_acs_enabled {
- 	{ PCI_VENDOR_ID_NXP, 0x8d9b, pci_quirk_nxp_rp_acs },
- 	/* Zhaoxin Root/Downstream Ports */
+@@ -5015,6 +5028,8 @@ static const struct pci_dev_acs_enabled {
  	{ PCI_VENDOR_ID_ZHAOXIN, PCI_ANY_ID, pci_quirk_zhaoxin_pcie_ports_acs },
+ 	/* Wangxun nics */
+ 	{ PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID, pci_quirk_wangxun_nic_acs },
 +	/* VMware PCIe Root Port */
 +	{ PCI_VENDOR_ID_VMWARE, 0x07a0, pci_quirk_vmw_rp_acs },
  	{ 0 }
  };
  
--- 
-2.25.1
-

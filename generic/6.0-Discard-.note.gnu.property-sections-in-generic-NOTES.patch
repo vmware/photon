@@ -1,4 +1,4 @@
-From f20a4a59dd4e080e871802e1b2a4f318cba5e614 Mon Sep 17 00:00:00 2001
+From f3bdb6da9af1d55c9a8db95d0427708b5e4fc078 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Tue, 28 Apr 2020 06:21:05 -0700
 Subject: [PATCH] Discard .note.gnu.property sections in generic NOTES
@@ -54,28 +54,30 @@ before kernel NOTE segment in generic NOTES.
 Signed-off-by: H.J. Lu <hjl.tools@gmail.com>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- include/asm-generic/vmlinux.lds.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/asm-generic/vmlinux.lds.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 7c90b1ab3e00..33e26d05dd3a 100644
+index 7ad6f51b3..7d4e4c46c 100644
 --- a/include/asm-generic/vmlinux.lds.h
 +++ b/include/asm-generic/vmlinux.lds.h
-@@ -908,7 +908,14 @@
- #define PRINTK_INDEX
+@@ -930,10 +930,16 @@
  #endif
  
-+/*
+ /*
 + * Discard .note.gnu.property sections which are unused and have
 + * different alignment requirement from kernel note sections.
-+ */
++ *
+  * Discard .note.GNU-stack, which is emitted as PROGBITS by the compiler.
+  * Otherwise, the type of .notes section would become PROGBITS instead of NOTES.
+  */
  #define NOTES								\
 +	/DISCARD/ : {							\
 +		*(.note.gnu.property)					\
 +	}								\
+ 	/DISCARD/ : { *(.note.GNU-stack) }				\
  	.notes : AT(ADDR(.notes) - LOAD_OFFSET) {			\
  		__start_notes = .;					\
- 		KEEP(*(.note.*))					\
 -- 
-2.25.1
+2.23.1
 
