@@ -1,23 +1,34 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        10.1.1
-Release:        2%{?dist}
+Version:        10.1.6
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      noarch
-Source0:        https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512  apache-tomcat=417415001ff5d20c5c9fbc70c90df492f04d4b86c594da190202c439fd9e75d4cd4a51c5dcc57e525026363a8cbb89826219509ee41a4f05f8ef58a469bfe14c
+
+Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha512  apache-tomcat=54df5784fbbe9c29b5569783c836e1490a6c08610ffe3c98123cc8bee8b483fcb73f46a15487dc5a6c9c7926ba63bab79e1794b07c00c22798ea0984e56f12f5
 # base-for-apache-tomcat is a cached -Dbase.path folder
-Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha512  base=418eff060eecc02ec55e4fcc961b8e7ad44db8163d2dc2c937255d34b0f953aa4f802f584f2368ca86f12c22ef8a40dac0fbf1b1263d2ae5a116cef1e08d106b
-Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-BuildRequires:  openjdk11
-BuildRequires:  apache-ant
-Requires:       openjdk11
-Requires:       apache-ant
+# generate base-for-apache-tomcat code with following steps:
+# 1. tar -xvzf Source0 to $HOME
+# 2. cd %{name}-%{version}-src && ant deploy dist-prepare dist-source
+# 3. generated code will be exist to default location $HOME/tomcat-build-libs
+# 4. mv tomcat-build-libs base-for-%{name}-%{version}
+# 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
+Source1: base-for-%{name}-%{version}.tar.gz
+%define sha512  base=35f2a6553e60c33d7662eef8c779933b8704e760e30609e2f1855d728a1f680e7fba05ad8174577df6e8933854bd12cc653474a62088fd48fec5f74c7e898900
+
+Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
+
+BuildArch: noarch
+
+BuildRequires: openjdk11
+BuildRequires: apache-ant
+
+Requires: openjdk11
+Requires: apache-ant
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -114,6 +125,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.6-1
+- Upgrade to v10.1.6 to address CVE-2023-28708
 * Thu Feb 16 2023 Prashant <psinghchauha@vmware.com> 10.1.1-2
 - Package webapps as a subpackage
 * Thu Nov 10 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.1-1
