@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.10
-Release:        13%{?kat_build:.kat}%{?dist}
+Version:        6.1.28
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
+%define sha512 linux=7215e62df10847e8bce432880e0756e8a5f56eb8b8abb54f9e1eb8871ce7bd56d765be0f9a40a8dae4d135b2f9a0dab7f6b3d2691d73b0c47f05811194dee8bd
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -703,6 +703,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue May 16 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
+- Update to version 6.1.28
 * Fri May 12 2023 Ajay Kaher <akaher@vmware.com> 6.1.10-13
 - perf: remove libunwind dependency
 - Remove rpi fan driver patch

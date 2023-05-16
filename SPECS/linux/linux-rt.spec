@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.10
-Release:        11%{?kat_build:.kat}%{?dist}
+Version:        6.1.28
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -24,12 +24,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt5
+%define rt_version rt10
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d
+%define sha512 linux=7215e62df10847e8bce432880e0756e8a5f56eb8b8abb54f9e1eb8871ce7bd56d765be0f9a40a8dae4d135b2f9a0dab7f6b3d2691d73b0c47f05811194dee8bd
 
 %ifarch x86_64
 Source1:    config-rt
@@ -112,57 +112,58 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
-Patch301: vduse-Remove-include-of-rwlock.h.patch
-Patch302: signal-Don-t-disable-preemption-in-ptrace_stop-on-PR.patch
-Patch303: sched-Consider-task_struct-saved_state-in-wait_task_.patch
-Patch304: 0001-spi-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
-Patch305: 0002-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-d.patch
-Patch306: 0003-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-n.patch
-Patch307: 0004-bpf-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
-Patch308: u64_stat-Remove-the-obsolete-fetch_irq-variants.patch
-Patch309: net-Avoid-the-IPI-to-free-the.patch
-Patch310: x86__Allow_to_enable_RT.patch
-Patch311: x86__Enable_RT_also_on_32bit.patch
-Patch312: softirq-Use-a-dedicated-thread-for-timer-wakeups.patch
-Patch313: rcutorture-Also-force-sched-priority-to-timersd-on-b.patch
-Patch314: tick-Fix-timer-storm-since-introduction-of-timersd.patch
-Patch315: tpm_tis__fix_stall_after_iowrites.patch
-Patch316: drivers_block_zram__Replace_bit_spinlocks_with_rtmutex_for_-rt.patch
-Patch317: locking-lockdep-Remove-lockdep_init_map_crosslock.patch
-Patch318: printk-Bring-back-the-RT-bits.patch
-Patch319: 0016-printk-add-infrastucture-for-atomic-consoles.patch
-Patch320: 0017-serial-8250-implement-write_atomic.patch
-Patch321: 0018-printk-avoid-preempt_disable-for-PREEMPT_RT.patch
-Patch322: 0003-drm-i915-Use-preempt_disable-enable_rt-where-recomme.patch
-Patch323: 0004-drm-i915-Don-t-disable-interrupts-on-PREEMPT_RT-duri.patch
-Patch324: 0005-drm-i915-Don-t-check-for-atomic-context-on-PREEMPT_R.patch
-Patch325: 0006-drm-i915-Disable-tracing-points-on-PREEMPT_RT.patch
-Patch326: 0007-drm-i915-skip-DRM_I915_LOW_LEVEL_TRACEPOINTS-with-NO.patch
-Patch327: 0008-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
-Patch328: 0009-drm-i915-gt-Use-spin_lock_irq-instead-of-local_irq_d.patch
-Patch329: 0010-drm-i915-Drop-the-irqs_disabled-check.patch
-Patch330: Revert-drm-i915-Depend-on-PREEMPT_RT.patch
-Patch331: sched__Add_support_for_lazy_preemption.patch
-Patch332: x86_entry__Use_should_resched_in_idtentry_exit_cond_resched.patch
-Patch333: x86__Support_for_lazy_preemption.patch
-Patch334: entry--Fix-the-preempt-lazy-fallout.patch
-Patch335: arm__Add_support_for_lazy_preemption.patch
-Patch336: powerpc__Add_support_for_lazy_preemption.patch
-Patch337: arch_arm64__Add_lazy_preempt_support.patch
-Patch338: 0001-arm-Disable-jump-label-on-PREEMPT_RT.patch
-Patch339: ARM__enable_irq_in_translation_section_permission_fault_handlers.patch
-Patch340: tty_serial_omap__Make_the_locking_RT_aware.patch
-Patch341: tty_serial_pl011__Make_the_locking_work_on_RT.patch
-Patch342: ARM__Allow_to_enable_RT.patch
-Patch343: ARM64__Allow_to_enable_RT.patch
-Patch344: powerpc__traps__Use_PREEMPT_RT.patch
-Patch345: powerpc_pseries_iommu__Use_a_locallock_instead_local_irq_save.patch
-Patch346: powerpc_kvm__Disable_in-kernel_MPIC_emulation_for_PREEMPT_RT.patch
-Patch347: powerpc_stackprotector__work_around_stack-guard_init_from_atomic.patch
-Patch348: POWERPC__Allow_to_enable_RT.patch
-Patch349: sysfs__Add__sys_kernel_realtime_entry.patch
-# Keep rt_version matched up with this patch.
-Patch350: Add_localversion_for_-RT_release.patch
+Patch301: 0001-vduse-Remove-include-of-rwlock.h.patch
+Patch302: 0002-signal-Don-t-disable-preemption-in-ptrace_stop-on-PR.patch
+Patch303: 0003-sched-Consider-task_struct-saved_state-in-wait_task_.patch
+Patch304: 0004-spi-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
+Patch305: 0005-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-d.patch
+Patch306: 0006-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-n.patch
+Patch307: 0007-bpf-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
+Patch308: 0008-u64_stat-Remove-the-obsolete-fetch_irq-variants.patch
+Patch309: 0009-net-Avoid-the-IPI-to-free-the.patch
+Patch310: 0010-x86-Allow-to-enable-RT.patch
+Patch311: 0011-x86-Enable-RT-also-on-32bit.patch
+Patch312: 0012-softirq-Use-a-dedicated-thread-for-timer-wakeups.patch
+Patch313: 0013-rcutorture-Also-force-sched-priority-to-timersd-on-b.patch
+Patch314: 0014-tick-Fix-timer-storm-since-introduction-of-timersd.patch
+Patch315: 0015-softirq-Wake-ktimers-thread-also-in-softirq.patch
+Patch316: 0016-tpm_tis-fix-stall-after-iowrite-s.patch
+Patch317: 0017-zram-Replace-bit-spinlocks-with-spinlock_t-for-PREEM.patch
+Patch318: 0018-locking-lockdep-Remove-lockdep_init_map_crosslock.patch
+Patch319: 0019-printk-Bring-back-the-RT-bits.patch
+Patch320: 0020-printk-add-infrastucture-for-atomic-consoles.patch
+Patch321: 0021-serial-8250-implement-write_atomic.patch
+Patch322: 0022-printk-avoid-preempt_disable-for-PREEMPT_RT.patch
+Patch323: 0023-drm-i915-Use-preempt_disable-enable_rt-where-recomme.patch
+Patch324: 0024-drm-i915-Don-t-disable-interrupts-on-PREEMPT_RT-duri.patch
+Patch325: 0025-drm-i915-Don-t-check-for-atomic-context-on-PREEMPT_R.patch
+Patch326: 0026-drm-i915-Disable-tracing-points-on-PREEMPT_RT.patch
+Patch327: 0027-drm-i915-skip-DRM_I915_LOW_LEVEL_TRACEPOINTS-with-NO.patch
+Patch328: 0028-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
+Patch329: 0029-drm-i915-gt-Use-spin_lock_irq-instead-of-local_irq_d.patch
+Patch330: 0030-drm-i915-Drop-the-irqs_disabled-check.patch
+Patch331: 0031-Revert-drm-i915-Depend-on-PREEMPT_RT.patch
+Patch332: 0032-sched-Add-support-for-lazy-preemption.patch
+Patch333: 0033-x86-entry-Use-should_resched-in-idtentry_exit_cond_r.patch
+Patch334: 0034-x86-Support-for-lazy-preemption.patch
+Patch335: 0035-entry-Fix-the-preempt-lazy-fallout.patch
+Patch336: 0036-arm-Add-support-for-lazy-preemption.patch
+Patch337: 0037-powerpc-Add-support-for-lazy-preemption.patch
+Patch338: 0038-arch-arm64-Add-lazy-preempt-support.patch
+Patch339: 0039-arm-Disable-jump-label-on-PREEMPT_RT.patch
+Patch340: 0040-ARM-enable-irq-in-translation-section-permission-fau.patch
+Patch341: 0041-tty-serial-omap-Make-the-locking-RT-aware.patch
+Patch342: 0042-tty-serial-pl011-Make-the-locking-work-on-RT.patch
+Patch343: 0043-ARM-Allow-to-enable-RT.patch
+Patch344: 0044-ARM64-Allow-to-enable-RT.patch
+Patch345: 0045-powerpc-traps-Use-PREEMPT_RT.patch
+Patch346: 0046-powerpc-pseries-iommu-Use-a-locallock-instead-local_.patch
+Patch347: 0047-powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch
+Patch348: 0048-powerpc-stackprotector-work-around-stack-guard-init-.patch
+Patch349: 0049-POWERPC-Allow-to-enable-RT.patch
+Patch350: 0050-sysfs-Add-sys-kernel-realtime-entry.patch
+Patch351: 0051-Add-localversion-for-RT-release.patch
+Patch352: 0052-Linux-6.1.28-rt10-REBASE.patch
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -178,9 +179,6 @@ Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
 #Patch to add timer padding on guest
 Patch716: Guest-timer-Advancement-Feature.patch
-
-# Fix for a latency issue related to ktimer thread wakeup:
-Patch717: softirq-wake-up-ktimer-thread-in-softirq-context.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -503,6 +501,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue May 16 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
+- Update to version 6.1.28
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
 - Remove dracut & initramfs from requires
 * Fri Apr 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1.10-10
