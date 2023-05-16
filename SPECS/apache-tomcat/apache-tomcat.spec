@@ -1,15 +1,15 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.84
-Release:        2%{?dist}
+Version:        8.5.86
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      noarch
-Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512  %{name}=5224ee4d6c61ed1975fd7a20814eb53b3b5a3d88b31fd3227a94fcc261274aa69f992f161e14217dadea476e4720b7f0a24c733346533d5873206b899ee86695
+
+Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha512  %{name}=fbc57d314fb8885e9986a26515b6536f2bffdb3476af71417eb9dab1623f36ea80da431bc1dc8874aa99dd6575919a0d3a828d84a87404a73ed22de601097e12
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -17,14 +17,19 @@ Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/
 # 3. generated code will be exist to default location $HOME/tomcat-build-libs
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
-Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha512  base=9bd463b82e18f2f8fa01e67780d0c04fb882478092d524268de129a27074d78e8520231a072475fc4ee75f5d1be90529a7db5d6d83facc026ebe62a4e1b06c37
-Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-BuildRequires:  openjre8
-BuildRequires:  openjdk8
-BuildRequires:  apache-ant
-Requires:       openjre8
-Requires:       apache-ant
+Source1: base-for-%{name}-%{version}.tar.gz
+%define sha512  base=036f57a633b708f98a88a18bcbc1d3471a1f0630c53b4c3789616322a5b1f5284446715347d31962f8af0639e54bbde95c36a8b1926b50a86c091b9d80b397dc
+
+Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
+
+BuildArch: noarch
+
+BuildRequires: openjre8
+BuildRequires: openjdk8
+BuildRequires: apache-ant
+
+Requires: openjre8
+Requires: apache-ant
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -122,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.86-1
+- Upgrade to v8.5.86 to address CVE-2023-28708
 * Thu Feb 16 2023 Prashant <psinghchauha@vmware.com> 8.5.84-2
 - Package webapps as a subpackage
 * Wed Jan 11 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.84-1
