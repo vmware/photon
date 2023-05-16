@@ -1,7 +1,7 @@
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          3%{?dist}
+Release:          4%{?dist}
 Group:            System Environment/Libraries
 URL:              http://sourceforge.net/projects/cracklib
 License:          GPL
@@ -192,6 +192,8 @@ rm -f %{_datadir}/cracklib/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Tue May 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-4
+- Fix missed version bump after toybox upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-3
 - Remove .la files
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.7-2
