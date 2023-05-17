@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.4.0
-Release:        6%{?dist}
+Version:        1.5.3
+Release:        1%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=26eda95c45598a500bc142da4d1abf93d03b3bbb0f2390fa87c72dcbffa208dbfa115c0b411095c31ee9955e36422ccf3e2df3bd486818fafffef8c4310798c4
+%define sha512 %{name}=af88e8c1b6a9b737ffaffff7dd9ed8eec996d1fbb5804fb76f590bed66d8a1c2c6024a534d7a7b6d18496b300f3d6571a08874cf406cd2e8cea1d5eff49c136a
 
 Source1: pamtmp.conf
 Source2: default-faillock.conf
@@ -85,7 +85,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 cat %{SOURCE2} >> %{buildroot}%{_sysconfdir}/security/faillock.conf
 
-install -d -m 755 %{buildroot}%{_var}/run/faillock
+install -d -m 755 %{buildroot}/run/faillock
 install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %{find_lang} %{name}
@@ -94,8 +94,8 @@ install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %if 0%{?with_check}
 %check
-install -v -m755 -d /etc/pam.d
-cat > /etc/pam.d/other << "EOF"
+install -v -m755 -d %{_sysconfdir}/pam.d
+cat > %{_sysconfdir}/pam.d/other << "EOF"
 auth     required       pam_deny.so
 account  required       pam_deny.so
 password required       pam_deny.so
@@ -113,15 +113,16 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/security/*.conf
+%attr(755,root,root) %config(noreplace) %{_sysconfdir}/security/namespace.init
+%dir %{_sysconfdir}/security
 %{_sysconfdir}/environment
-%{_sysconfdir}/security
 %{_sbindir}/*
-%{_lib}/security/*
-%{_libdir}/*.so*
+%{_libdir}/security/*
+%{_libdir}/*.so.*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_unitdir}/pam_namespace.service
-%dir %{_var}/run/faillock
+%dir /run/faillock
 %{_tmpfilesdir}/pam.conf
 
 %files lang -f Linux-PAM.lang
@@ -130,10 +131,14 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
+- Upgrade to v1.5.3
 * Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-6
 - Add a default faillock.conf
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-5
