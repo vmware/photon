@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.10.0
-Release:        4%{?dist}
+Version:        18.16.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512 node=30a408b8f2ae41646f2ce3018862105ee4bd7913dd3cbbe8af8fc4d70cf64ac820342db9becff42c5a2b6f71d8dc3b539f580833f975b46628ad159712a8b109
+%define sha512 node=0533f998af9df1e4894af9bace85ed0d731f5859c61146f147305761319289277920cfb545d7430829247f8a6a3ca74a6b3d2904961af99f79670af33d1b64e4
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -32,7 +32,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -p1 -n node-%{version}
+%autosetup -p1 -n node-v%{version}
 
 %build
 %{python3} configure.py \
@@ -76,6 +76,9 @@ make %{?_smp_mflags} cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Wed May 17 2023 Shivani Agarwal <shivania2@vmware.com> 18.16.0-1
+- Upgrade version to Fix CVE-2022-43548, CVE-2023-23918, CVE-2023-23920
+- CVE-2023-23919, CVE-2022-3602, CVE-2022-3786
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-4
 - Bump version as a part of zlib upgrade
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-3
