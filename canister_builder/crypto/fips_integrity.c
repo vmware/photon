@@ -321,7 +321,7 @@ int __init fips_integrity_init(void)
 		if (bytes_remaining < 0)
 			break;
 		/* Copy content of relocated section to the canister */
-		memcpy(d, (char *)s, size);
+		fcw_memcpy(d, (char *)s, size);
 
 		si[i].saddr = s;
 		si[i].daddr = d;

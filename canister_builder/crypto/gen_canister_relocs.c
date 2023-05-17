@@ -386,6 +386,14 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 
 		if ((section_header.sh_flags & SHF_ALLOC) == 0)
 			continue;
+
+		if (!strncmp(name, "__jump_table", 12) ||
+		    !strncmp(name, ".retpoline_sites", 16) ||
+		    !strncmp(name, ".return_sites", 13) ||
+		    !strncmp(name, ".printk_index", 13) ||
+		    !strncmp(name, "__bug_table", 13)) {
+			error("ERROR: Forbidden %s section found in canister!! Please fix it.");
+		}
 		/*
 		 * .discard, .exitcall.exit and .modinfo sections will be
 		 * dropped at vmlinux linking time (see vmlinux linker

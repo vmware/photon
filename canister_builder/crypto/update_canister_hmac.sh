@@ -40,6 +40,7 @@ fail_if_found mutex_lock
 fail_if_found mutex_unlock
 fail_if_found queue_work_on
 fail_if_found latent_entropy
+fail_if_found memcpy
 
 # Get sections list from linker script
 sections=`grep ": {$" $LD_SCRIPT | cut -d " " -f3`

@@ -30,6 +30,11 @@
 #endif
 #include <asm/fpu/api.h>
 #include "internal.h"
+#include <linux/uio.h>
+#include <linux/scatterlist.h>
+#include <crypto/scatterwalk.h>
+#include <crypto/sha1_base.h>
+#include <crypto/sha512_base.h>
 
 static __ro_after_init bool alg_request_report = false;
 
@@ -139,6 +144,96 @@ void fcw_kernel_fpu_begin(void)
 void fcw_kernel_fpu_end(void)
 {
 	kernel_fpu_end();
+}
+
+void fcw_bug(void)
+{
+	BUG();
+}
+
+void fcw_bug_on(int cond)
+{
+	do {
+		if (unlikely(cond))
+			BUG();
+	} while(0);
+}
+
+int fcw_warn_on(int cond)
+{
+	if(unlikely(cond))
+		__WARN();
+	return unlikely(cond);
+}
+
+int fcw_warn_on_once(int cond)
+{
+	if(unlikely(cond))
+		__WARN_FLAGS(BUGFLAG_ONCE | BUGFLAG_TAINT(TAINT_WARN));
+	return unlikely(cond);
+}
+
+int fcw_warn(int cond, const char *fmt, ...)
+{
+	if(unlikely(cond))
+		__WARN_printf(TAINT_WARN, fmt);
+	return unlikely(cond);
+}
+
+void *fcw_memcpy(void *dst, const void *src, size_t len)
+{
+	return memcpy(dst, src, len);
+}
+
+size_t fcw_strlcpy(char *dest, const char *src, size_t size)
+{
+	return strlcpy(dest, src, size);
+}
+
+int fcw_sha1_base_do_update(struct shash_desc *desc,
+				      const u8 *data,
+				      unsigned int len,
+				      sha1_block_fn *block_fn)
+{
+	return sha1_base_do_update(desc, data, len, block_fn);
+}
+
+int fcw_sha512_base_do_update(struct shash_desc *desc,
+					const u8 *data,
+					unsigned int len,
+					sha512_block_fn *block_fn)
+{
+	return sha512_base_do_update(desc, data, len, block_fn);
+}
+size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
+{
+	return copy_from_iter(addr, bytes, i);
+}
+
+void fcw_sg_assign_page(struct scatterlist *sg, struct page *page)
+{
+	return sg_assign_page(sg, page);
+}
+
+void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
+			      unsigned int buflen)
+{
+	return sg_set_buf(sg, buf, buflen);
+}
+
+struct page *fcw_sg_page(struct scatterlist *sg)
+{
+	return sg_page(sg);
+}
+
+void *fcw_sg_virt(struct scatterlist *sg)
+{
+	return sg_virt(sg);
+}
+
+void *fcw_scatterwalk_map(struct scatter_walk *walk)
+{
+	return scatterwalk_map(walk);
 }
 
 static char *canister_algs[] = {
