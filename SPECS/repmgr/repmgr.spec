@@ -13,6 +13,7 @@ Source0:        https://repmgr.org/download/%{name}-%{version}.tar.gz
 
 BuildRequires:  postgresql15-devel
 BuildRequires:  cpio
+BuildRequires:  Linux-PAM-devel
 
 Requires:       readline
 Requires:       openssl
