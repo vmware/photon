@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -82,8 +82,10 @@ Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMW:
+%ifarch x86_64
 Patch40: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
+%endif
 
 #Secure:
 Patch50: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
@@ -123,8 +125,10 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %if 0%{?canister_build}
 Patch10000:      6.1.10-8-0001-FIPS-canister-binary-usage.patch
 Patch10001:      0002-FIPS-canister-creation.patch
-Patch10003:      0004-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
-Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch10003:      0003-aesni_intel_glue-Revert-static-calls-with-indirect-c.patch
+Patch10004:      0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10005:      0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10006:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
 BuildArch:      x86_64
@@ -219,7 +223,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10004
+%autopatch -p1 -m10000 -M10006
 %endif
 
 %build
@@ -259,6 +263,12 @@ sed -i "s/CONFIG_CRYPTO_GHASH=m/CONFIG_CRYPTO_GHASH=y/" .config
 sed -i "s/CONFIG_CRYPTO_GF128MUL=m/CONFIG_CRYPTO_GF128MUL=y/" .config
 sed -i "s/CONFIG_CRYPTO_NULL=m/CONFIG_CRYPTO_NULL=y/" .config
 sed -i "s/CONFIG_CRYPTO_GCM=m/CONFIG_CRYPTO_GCM=y/" .config
+# Disable JUMP_LABEL, PRINTK_INDEX in canister
+sed -i "/# CONFIG_STATIC_KEYS_SELFTEST is not set/d" .config
+sed -i "s/CONFIG_JUMP_LABEL=y/# CONFIG_JUMP_LABEL is not set/" .config
+sed -i "/CONFIG_DRM_USE_DYNAMIC_DEBUG=y/d" .config
+sed -i "/# CONFIG_KFENCE_STATIC_KEYS is not set/d" .config
+sed -i "s/CONFIG_PRINTK_INDEX=y/# CONFIG_PRINTK_INDEX is not set/" .config
 
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
@@ -376,6 +386,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed May 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-12
+- Disable special sections from canister
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
 - Remove dracut & initramfs from requires
 * Fri Mar 31 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 6.1.10-10
