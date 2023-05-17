@@ -1,6 +1,6 @@
 Summary:        Linux API header files
 Name:           linux-api-headers
-Version:        4.19.280
+Version:        4.19.283
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
+%define sha512 linux=30862f1e2ce1b181dc4408b26313ae5572a8176957249355880d59c373639fc9ef4ab740667dcd3f1a4eadca47b70a47d581a2b91e096e6908f5f2188ae60879
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch0:         0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -20,13 +20,7 @@ BuildArch:      noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-# Using autosetup is not feasible
-%setup -q -n linux-%{version}
-
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n linux-%{version}
 
 %build
 # make doesn't support _smp_mflags
@@ -42,6 +36,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+* Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
+- Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
 - Update to version 4.19.280
 * Tue Mar 14 2023 Roye Eshed <eshedr@vmware.com> 4.19.277-1

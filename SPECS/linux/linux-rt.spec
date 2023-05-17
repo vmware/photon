@@ -2,7 +2,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.280
+Version:        4.19.283
 Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -16,7 +16,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=ca6d098f1a297952c58b4b61604027e6d360968668271f6f05b044fee021ffc3e690318a73b8fe5798b590c15fd67ebec251f257b53fb2667cf889f05980c100
+%define sha512 linux=30862f1e2ce1b181dc4408b26313ae5572a8176957249355880d59c373639fc9ef4ab740667dcd3f1a4eadca47b70a47d581a2b91e096e6908f5f2188ae60879
 
 %ifarch x86_64
 Source1: config-rt
@@ -120,8 +120,6 @@ Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch53: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
-Patch54: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch55: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch56: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
@@ -446,7 +444,6 @@ Patch390: 0190-workqueue-Use-normal-rcu.patch
 Patch391: 0191-workqueue-Use-local-irq-lock-instead-of-irq-disable-.patch
 Patch392: 0192-workqueue-Prevent-workqueue-versus-ata-piix-livelock.patch
 Patch393: 0193-sched-Distangle-worker-accounting-from-rqlock.patch
-Patch394: 0194-debugobjects-Make-RT-aware.patch
 Patch395: 0195-seqlock-Prevent-rt-starvation.patch
 Patch396: 0196-sunrpc-Make-svc_xprt_do_enqueue-use-get_cpu_light.patch
 Patch397: 0197-net-Use-skbufhead-with-raw-lock.patch
@@ -1340,6 +1337,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
+- Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
 - Update to version 4.19.280
 * Mon Apr 17 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.277-5
