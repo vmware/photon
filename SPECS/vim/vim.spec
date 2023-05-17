@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.0.1298
-Release:        3%{?dist}
+Version:        9.0.1532
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,11 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b98ed58a378fce8dc76fd57cc80ad4f778c678d8569b4b7c2b4c8b046fa684b74b0d020a83d40eb3bcb23e89d7d8c01269870cb0996404f6a36dfc304cc0c6cb
+%define sha512 %{name}=acaf458f31624181c5c29b062f1d8476767689e2ef3b12c0ec17f7ef41ff12fdcf447a41c9a9b728eaeea45295e5cd8609462d96637cea8a9e044b0925e9ba2b
 
 Source1: vimrc
-
-Patch0: vim-sh-syntax.patch
 
 BuildRequires:  ncurses-devel
 
@@ -106,6 +104,7 @@ fi
 %{_datadir}/vim/vim*/print/*
 %{_datadir}/vim/vim*/scripts.vim
 %{_datadir}/vim/%{maj_ver}/import/dist/vimhelp.vim
+%{_datadir}/vim/%{maj_ver}/import/dist/vimhighlight.vim
 %{_datadir}/vim/vim*/spell/*
 %{_datadir}/vim/vim*/syntax/*
 %exclude %{_datadir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -177,6 +176,10 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed May 17 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.1532-1
+- Update to v9.0.1532 to fix multipled CVEs
+- CVE-2023-2610, CVE-2023-2426, CVE-2023-1264, CVE-2023-1127
+- CVE-2023-1175, CVE-2023-1170, CVE-2023-1355, CVE-2023-2609
 * Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1298-3
 - Add python3 requires to vim-extra
 * Tue Feb 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.0.1298-2
