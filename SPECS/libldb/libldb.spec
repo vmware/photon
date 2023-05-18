@@ -4,7 +4,7 @@
 
 Name:           libldb
 Version:        2.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
 Distribution:   Photon
@@ -152,5 +152,7 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 2.6.1-2
+- Bump up version to compile with new gnupg
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1
 - Initial addition to Photon. Needed for SSSD.

@@ -1,7 +1,7 @@
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
 Version:        5.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 5.10.0-2
+-   Bump up version to compile with new gnupg
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.10.0-1
 -   Automatic Version Bump
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.1-1

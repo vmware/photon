@@ -1,7 +1,7 @@
 Name:           libtdb
 Summary:        Trivial database library
 Version:        1.4.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://tdb.samba.org
 License:        LGPLv3+
 Group:          Development/Libraries
@@ -91,5 +91,7 @@ Python3 bindings for libtdb
 %{python3_sitearch}/*
 
 %changelog
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.4.8-2
+- Bump up version to compile with new nodejs
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.4.8-1
 - Initial addition to Photon. Needed for SSSD.

@@ -1,7 +1,7 @@
 Summary:    High-Level Crypto API
 Name:       gpgme
 Version:    1.18.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:      System Environment/Security
@@ -74,6 +74,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.18.0-3
+- Bump up version to compile with new gnupg
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.18.0-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.0-1
