@@ -1,7 +1,7 @@
 Summary:    Library for accessing X.509 and CMS data structure.
 Name:       libksba
-Version:    1.6.2
-Release:    2%{?dist}
+Version:    1.6.3
+Release:    1%{?dist}
 License:    GPLv3+
 URL:        https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:      Security/Libraries.
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=50533887942921f8009cedd636915c2b27f231151a3b8316af6801a5f8637d66896ba5a24207bf82d8b03e26624133e80c6dd69f1196f06ada929090ef0f178c
+%define sha512 %{name}=188f6d27b4904c10cd54ba949c1132dd6c167f53dd1b77eae39c5b8e3ac8b15e87b2a54cdfddac95ac4ed41ee83c3d4e1b17d95126f245b6c204fade6739a2ce
 
 BuildRequires: libgpg-error-devel >= 1.2
 
@@ -62,6 +62,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/ksba.pc
 
 %changelog
+* Thu May 18 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.3-1
+- Update to v1.6.3 to fix CVE-2022-47629
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.6.2-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1

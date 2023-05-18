@@ -1,7 +1,7 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
 Version:        2.2.27
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
@@ -63,6 +63,8 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 2.2.27-5
+- Bump version as a part of libksba version upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.27-4
 - Bump version as a part of zlib upgrade
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.2.27-3
