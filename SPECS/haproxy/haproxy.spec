@@ -1,18 +1,15 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.7.0
-Release:        3%{?dist}
+Version:        2.7.3
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=cc2eb49c6055cca1d4744cb715d43048621e3078b2621cc104b3e54671f6b9a0a530c0c044c23e4cbd276f3d792bfa46d88bf034c777a671dc49ace0777829ad
-
-Patch0: %{name}-CVE-2023-0056.patch
-Patch1: %{name}-CVE-2023-0836.patch
+Source0: http://www.haproxy.org/download/2.7/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f9eeee2d232fd2f4da1959e9265dd6abe6c6182109a0455d4f868a516e78cc6ea67e8456d5bc26e439385d17f52e4b179d7c615bacf15aeae901ab8e172dc758
 
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -65,6 +62,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Thu May 18 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.3-1
+- Version upgrade to v2.7.3 to fix CVE-2023-25725
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-3
 - Bump version as a part of zlib upgrade
 * Wed Apr 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.0-2
