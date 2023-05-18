@@ -11,17 +11,20 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        2.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/haproxytech/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
-BuildRequires:  go
-BuildRequires:  ca-certificates
-Requires:       haproxy >= 2.0.10
+
+Source0: https://github.com/haproxytech/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
+
+BuildRequires: go
+BuildRequires: ca-certificates
+
+Requires: haproxy >= 2.0.10
 
 %description
 HAProxy Data Plane API is a sidecar process that runs next to HAProxy
@@ -54,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
+* Thu May 18 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-4
+- Version bump up to use haproxy v2.7.3
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-3
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-2
