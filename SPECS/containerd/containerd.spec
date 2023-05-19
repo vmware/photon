@@ -4,19 +4,19 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.17
-Release:        4%{?dist}
+Version:        1.6.21
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512 %{name}=673153b6007b2bd6b0148aef79a9e495c8fde47132c8f2880c22873ac8b8b428f94e8ecca5cf0b670658ab941d2e412f8c63cf1249f9e4765342547b4d30f196
+Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a94ed8b8b9e153c9dc370228b659fcba1b03b3c47c8b5fcb001bb1b4b158ea048159f5d8d8c5294e7da3444edd76fbd903d7b7faa84e3382807a583d757325e1
 
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 9cd3357b7fd7218e4aec3eae239db1f68a5a6ec6
+%define CONTAINERD_GITCOMMIT 3dce8eb055cbb6872793272b4f20ed16117344f8
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
@@ -135,6 +135,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri May 19 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-1
+- Upgrade to v1.6.21.
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-4
 - Bump up version to compile with new go
 * Fri Apr 28 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.17-3
