@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        28.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
@@ -10,6 +10,10 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/emacs/%{name}-%{version}.tar.xz
 %define sha512 %{name}=a7cec7e3e82367815a1442f69af54102dbfc434069810a9dec5938a6660cb8b076e6f1fb0bfff9695b15603dbbe05eb9c7dfd92e90cf40fc4d1e5746bce83bd8
+Patch0:         CVE-2022-45939.patch
+Patch1:         CVE-2022-48337.patch
+Patch2:         CVE-2022-48338.patch
+Patch3:         CVE-2022-48339.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -42,7 +46,6 @@ without leaving the editor.
             --without-xaw3d \
             --without-xim \
             --without-makeinfo
-
 %make_build
 
 %install
@@ -74,6 +77,9 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Fri May 19 2023 Harinadh D <hdommaraju@vmware.com> 28.2-2
+- fix CVE-2022-48337, CVE-2022-48338,CVE-2022-48339
+- CVE-2022-45939
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 28.2-1
 - Bump version
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 28.1-2
