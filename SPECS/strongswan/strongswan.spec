@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.8
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -19,6 +19,7 @@ Patch1: 0001-HCX-custom-remote-natt-port.patch
 Patch2: 0002-ipsec-Add-clear_df-flag.patch
 Patch3: 0003-reiniate-conn-on-failure.patch
 Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
+Patch5: CVE-2023-26463.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -90,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Fri May 19 2023 Keerthana K <keerthanak@vmware.com> 5.9.8-3
+- Fix CVE-2023-26463
 * Thu Mar 09 2023 Srish Srinivasan <ssrish@vmware.com> 5.9.8-2
 - Added HCX patches and enabled OpenSSL and GCM plugins
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.9.8-1
