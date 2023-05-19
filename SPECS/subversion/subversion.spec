@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -54,7 +54,8 @@ Provides Perl (SWIG) support for Subversion version control system.
    --disable-static \
    --with-apache-libexecdir \
    --with-serf=%{_prefix} \
-   --with-lz4=internal
+   --with-lz4=internal \
+   --with-apr=%{_prefix}
 
 %make_build
 
@@ -100,6 +101,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.14.2-7
+- Bump version as a part of apr version upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.2-6
 - Bump up version no. as part of swig upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.14.2-5
