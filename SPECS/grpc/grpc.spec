@@ -8,7 +8,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.48.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -117,6 +117,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 1.48.1-3
+- Bump version as a part of protobuf-c
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-2
 - Bump version as a part of zlib upgrade
 * Tue Aug 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.48.1-1
