@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.28
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -501,6 +501,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 31 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
+- disable kconfig CONFIG_RAID6_PQ_BENCHMARK
 * Tue May 16 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
 - Update to version 6.1.28
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11

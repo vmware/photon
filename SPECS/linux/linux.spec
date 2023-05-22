@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.28
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -703,6 +703,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
+- disable kconfig CONFIG_RAID6_PQ_BENCHMARK
 * Tue May 16 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
 - Update to version 6.1.28
 * Fri May 12 2023 Ajay Kaher <akaher@vmware.com> 6.1.10-13
