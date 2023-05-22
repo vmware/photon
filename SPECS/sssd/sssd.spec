@@ -25,7 +25,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -512,7 +512,9 @@ autoreconf -ivf
 %make_build
 
 %install
-%make_install %{?_smp_mflags}
+# Do not use -j64, with multi thread installation, it tries to install
+# proxy_child before relinking 'libsss_ldap.la' causes install failure
+%make_install
 
 # Prepare language files
 %find_lang %{name}
@@ -1074,6 +1076,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Mon May 22 2023 Ankit Jain <ankitja@vmware.com> 2.8.1-4
+- Removed _smp_mflags flage which causes install failure
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.1-3
 - Bump version as a part of libevent upgrade
 * Tue Mar 14 2023 Anmol Jain <anmolja@vmware.com> 2.8.1-2
