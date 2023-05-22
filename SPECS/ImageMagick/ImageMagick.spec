@@ -1,26 +1,23 @@
-%global VER 7.1.0
-%global Patchlevel 47
+%global VER 7.1.1
+%global Patchlevel 11
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.0.47
-Release:        3%{?dist}
+Version:        7.1.1.11
+Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org
-
-Source0: https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
-%define sha512 %{name}=dae53c80b1fec69e8a570e82553197e2a9f3b1d0dd9b7cdf30e2731e044a83bef82912a5d339c0470d1e41bdf343f2cbd97376d2ef986d33c05bc6c87a705d0d
-
+Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
+%define sha512  %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
 Requires:       zlib
-
 %description
 ImageMagick is an image display and manipulation tool for the X
 Window System. ImageMagick can read and write JPEG, TIFF, PNM, GIF,
@@ -174,6 +171,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Tue Jun 06 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-1
+- Version update
 * Mon Jun 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-3
 - Fix spec issues
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-2
