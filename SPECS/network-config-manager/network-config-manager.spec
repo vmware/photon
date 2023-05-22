@@ -1,6 +1,6 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.6.0
+Version:        0.6.2
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
@@ -8,24 +8,24 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
-Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=e868e7ae8feb6fe632e5cd77579828000ec9192f19cf3671581047a8a24cfdf91da0f485b4337685e8e71c6d1520c72a4aefa082675525b09579fe0ba430343b
+Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=0bfa9620f29be1534dd781ee68512bc64fa6f65e50f654ec07b1f4efc416970b5d112ad40df39bd309b4ffdcfe9de30d8d1995360d2e871b2b01bffb961462e4
 
-BuildRequires:  glib-devel
-BuildRequires:  json-c-devel
-BuildRequires:  meson
-BuildRequires:  systemd-devel
-BuildRequires:  libyaml-devel
-BuildRequires:  libmnl-devel
-BuildRequires:  libnftnl-devel
-BuildRequires:  nftables-devel
+BuildRequires: glib-devel
+BuildRequires: json-c-devel
+BuildRequires: meson
+BuildRequires: systemd-devel
+BuildRequires: libyaml-devel
+BuildRequires: libmnl-devel
+BuildRequires: libnftnl-devel
+BuildRequires: nftables-devel
 
-Requires:       json-c
-Requires:       libyaml
-Requires:       systemd
-Requires:       glib
-Requires:       libmnl
-Requires:       nftables
+Requires: json-c
+Requires: libyaml
+Requires: systemd
+Requires: glib
+Requires: libmnl
+Requires: nftables
 
 %description
 The network-config-manager nmctl allows to configure and introspect
@@ -49,7 +49,7 @@ Requires:       glib-devel
 This package contains the headers necessary for building.
 
 %prep
-%autosetup
+%autosetup -p1
 mkdir build
 
 %build
@@ -59,7 +59,6 @@ mkdir build
 %install
 %meson_install
 mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
-
 %ldconfig_scriptlets
 
 %files
@@ -78,6 +77,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jun 06 2023 Nitesh Kumar <kunitesh@vmware.com> 0.6.2-1
+- Version upgrade to v0.6.2
 * Wed Apr 19 2023 Susant Sahani <ssahani@vmware.com> 0.6.0-1
 - Update to v0.6.0
 * Fri Mar 31 2023 Susant Sahani <ssahani@vmware.com> 0.6.b2-1
