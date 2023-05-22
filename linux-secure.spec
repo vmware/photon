@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.28
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -414,6 +414,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 22 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-6
+- disable kconfig CONFIG_RAID6_PQ_BENCHMARK
 * Wed Nov 22 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.28-5
 - PaX: Support xattr 'em' file markings
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.28-4

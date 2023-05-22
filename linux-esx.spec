@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.28
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -504,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-5
+- disable kconfig CONFIG_RAID6_PQ_BENCHMARK
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.28-4
 - Bump version as a part of openssl upgrade
 * Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.28-3
