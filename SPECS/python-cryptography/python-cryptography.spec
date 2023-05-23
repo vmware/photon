@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        3.3.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -13,6 +13,7 @@ Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{ve
 
 Patch0:         0001-openssl-3.0.0-support.patch
 Patch1:         0002-openssl-3.0.0-support.patch
+Patch2:         CVE-2023-23931.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  python3
@@ -77,6 +78,8 @@ python3 -m pytest
 %{python3_sitelib}/*
 
 %changelog
+* Tue May 23 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.2-5
+- Fix CVE-2023-23931
 * Thu Jun 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.2-4
 - FIPS 3.0.0 support
 - Fix %check to make it run tests
