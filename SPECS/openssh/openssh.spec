@@ -3,8 +3,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        9.1p1
-Release:        8%{?dist}
+Version:        9.3p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a1f02c407f6b621b1d0817d1a0c9a6839b67e416c84f3b76c63003b119035b24c19a1564b22691d1152e1d2d55f4dc7eb1af2d2318751e431a99c4efa77edc70
+%define sha512 %{name}=087ff6fe5f6caab4c6c3001d906399e02beffad7277280f11187420c2939fd4befdcb14643862a657ce4cad2f115b82a0a1a2c99df6ee54dcd76b53647637c19
 
 # These sources are taken from:
 # http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz
@@ -196,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue May 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.3p1-1
+- Update to 9.3p1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-8
 - Bump version as a part of zlib upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.1p1-7
