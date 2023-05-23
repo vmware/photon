@@ -4,13 +4,13 @@
 %define _data_dir     %{_sharedstatedir}/%{name}
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       3.3.1
-Release:       2%{?dist}
+Version:       3.4.0
+Release:       1%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Source0:       %{name}-%{version}-src.tgz
-%define sha512 kafka=1c9386ee7ab98d41d22afa3d1c985d36eed8bb2874f1c12959234c21b08b504f3c0bee8e38fdbb82f45a7b6c300de585fb6728ffc1fa65ce532b7d2cdcaaf1f3
+%define sha512 kafka=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 Vendor:        VMware, Inc.
@@ -60,8 +60,8 @@ install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
 install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
 install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 tools/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
@@ -70,7 +70,7 @@ install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/l
 install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/examples/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/upgrade-system-tests-0100/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
@@ -107,6 +107,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Fri May 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1
+- Update to 3.4.0, Fixes CVE-2023-25194
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-2
 - Use systemd-rpm-macros for user creation
 * Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1
