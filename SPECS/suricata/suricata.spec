@@ -1,7 +1,7 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        6.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -42,7 +42,9 @@ BuildRequires: file-devel
 BuildRequires: jansson-devel
 BuildRequires: python3-devel
 BuildRequires: lua-devel
+%ifarch x86_64
 BuildRequires: hyperscan-devel
+%endif
 BuildRequires: systemd-devel
 BuildRequires: hiredis-devel
 BuildRequires: libevent-devel
@@ -52,7 +54,9 @@ Requires: python3
 Requires: libcap-ng
 Requires: libevent
 Requires: hiredis
+%ifarch x86_64
 Requires: hyperscan
+%endif
 Requires: jansson
 Requires: lua
 Requires: zlib
@@ -167,5 +171,7 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-2
+- Exclude suricata dependency on hyperscan in ARM
 * Fri Apr 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-1
 - Initial packaging
