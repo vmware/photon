@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -12,6 +12,10 @@ Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff
 Source1:        config.guess
 Source2:        config.sub
 Patch0:         autogen.patch
+Patch1:         0001-libtiff-CVE-2022-48281.patch
+Patch2:         0001-libtiff-CVE-2023-0798.patch
+Patch3:         0001-libtiff-CVE-2023-0801.patch
+
 BuildRequires:  libjpeg-turbo-devel wget
 Requires:       libjpeg-turbo
 
@@ -64,6 +68,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/*
 
 %changelog
+*   Wed May 24 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.0-2
+-   Fix multiple CVEs in libtiff
 *   Fri May 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.0-1
 -   Update to 4.5.0
 *   Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com> 4.4.0-1
