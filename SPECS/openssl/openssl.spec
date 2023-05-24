@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -65,6 +65,8 @@ Patch17: 0001-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-3.patch
 
 Patch18: 0001-pk7_doit.c-Check-return-of-BIO_set_md-calls.patch
 Patch19: 0002-Add-testcase-for-missing-return-check-of-BIO_set_md-.patch
+Patch20: 0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
+Patch21: 0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -273,6 +275,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri May 12 2023 Mukul Sikka <msikka@vmware.com> 3.0.7-6
+- Fix for CVE-2023-0464 and CVE-2023-0465
 * Tue Feb 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-5
 - Package fips certified fips.so in openssl-fips-provider
 * Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.7-4
