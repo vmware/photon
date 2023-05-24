@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.28
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -154,6 +154,9 @@ Requires(pre):    (coreutils or coreutils-selinux)
 Requires(preun):  (coreutils or coreutils-selinux)
 Requires(post):   (coreutils or coreutils-selinux)
 Requires(postun): (coreutils or coreutils-selinux)
+# Linux-secure handles user.pax.flags extended attribute
+# User must have setfattr/getfattr tools available
+Requires: attr
 
 %description
 Security hardened Linux kernel.
@@ -382,6 +385,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed May 24 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.28-3
+- PaX: Support xattr 'em' file markings
 * Sat May 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.28-2
 - Fix canister kernel config
 * Fri May 19 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
