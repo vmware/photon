@@ -5108,8 +5108,8 @@ diff --git a/security/Kconfig b/security/Kconfig
 index 1bd57b5d5..dc8fbe4fa 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -81,6 +81,26 @@ config PAX_MPROTECT
- 	  the enforcement of non-executable pages.
+@@ -94,6 +94,26 @@ config PAX_XATTR_PAX_FLAGS
+ 	  will run with PaX enabled on them by default.
  
  endif
 +
