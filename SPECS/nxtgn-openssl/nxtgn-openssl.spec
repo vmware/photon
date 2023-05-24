@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1o
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -21,8 +21,10 @@ Patch5:         0003-Add-a-test-for-CVE-2022-4450.patch
 Patch6:         0004-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
 Patch7:         0005-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
 Patch8:         0006-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-1.patch
+Patch9:         0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
+Patch10:        0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 Requires:       bash glibc libgcc
@@ -72,6 +74,8 @@ Perl scripts that convert certificates and keys to various formats.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
+%patch10 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -140,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Fri May 12 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-5
+-   Fix for CVE-2023-0464 and CVE-2023-0465
 *   Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 1.1.1o-4
 -   Fix for CVE-2023-0286
 *   Mon Jul 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1o-3
