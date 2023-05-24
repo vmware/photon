@@ -6192,7 +6192,7 @@ diff --git a/security/Kconfig b/security/Kconfig
 index 04d9e21e87d4..48efcc926aa6 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -82,6 +82,24 @@ config PAX_MPROTECT
+@@ -94,6 +94,24 @@ config PAX_XATTR_PAX_FLAGS
  
  endif
  

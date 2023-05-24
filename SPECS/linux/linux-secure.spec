@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.175
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -238,6 +238,9 @@ Requires(pre): (coreutils or coreutils-selinux)
 Requires(preun): (coreutils or coreutils-selinux)
 Requires(post): (coreutils or coreutils-selinux)
 Requires(postun): (coreutils or coreutils-selinux)
+# Linux-secure handles user.pax.flags extended attribute
+# User must have setfattr/getfattr tools available
+Requires: attr
 
 %description
 Security hardened Linux kernel.
@@ -424,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 24 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.175-6
+- PaX: Support xattr 'em' file markings
 * Tue Apr 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.175-5
 - Disable strcture randomization
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
