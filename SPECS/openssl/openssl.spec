@@ -2,13 +2,13 @@
 # with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
 %define with_certified_fips     1
 %define with_latest_fips        0
-%define fips_provider_version   3.0.0
+%define fips_provider_version   3.0.8
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -30,10 +30,12 @@ Source6: jitterentropy.c
 
 %if 0%{?with_certified_fips}
 Source7: %{fips_provider_srcname}.tar.xz
-%define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
+%define sha512 %{fips_provider_srcname}=3206c96f77ba5ab0553249e13ddf52145995909e68a9acb851c5db6be759e6f7647b9ad960f6da7c989c20b49fbd9e79a7305f2000f24281345c56a1a8b1148f
 %endif
 
 Patch0: openssl-cnf.patch
+Patch1: 0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
+Patch2: 0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -257,6 +259,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Jun 16 2023 Mukul Sikka <msikka@vmware.com> 3.0.8-3
+- Enable Openssl 3.0.8 fips provider
+- Fix for CVE-2023-0464 and CVE-2023-0465
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-2
 - Bump version as a part of zlib upgrade
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.8-1
