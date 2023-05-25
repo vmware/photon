@@ -1,15 +1,17 @@
 Summary:        Libcap
 Name:           libcap
 Version:        2.43
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
 %define sha512  libcap=817add571fb2c54ad2a39974e6545b8fc8d855ecdcf2e00b2cc10e583802c49dfea2d8bca484c89ecd574fdacfc46565b51e3064a4407cf1985defb913240d45
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
-Distribution:	Photon
+Distribution:   Photon
 BuildRequires:  Linux-PAM-devel
+Patch0:         CVE-2023-2602.patch
+Patch1:         CVE-2023-2603.patch
 
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available
@@ -40,7 +42,7 @@ make $MFLAGS
 
 %install
 # make doesn't support _smp_mflags
-make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
+make prefix=%{_prefix} SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_lib64dir}
 test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir}/* %{buildroot}%{_lib64dir}
 chmod -v 755 %{buildroot}/usr/lib64/libcap.so
@@ -68,6 +70,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 25 2023 Piyush Gupta <gpiyush@vmware.com> 2.43-3
+-   Fix CVE-2023-2602, CVE-2023-2603.
 *   Tue May 10 2022 Piyush Gupta <gpiyush@vmware.com> 2.43-2
 -   Package pam_cap.so.
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.43-1
