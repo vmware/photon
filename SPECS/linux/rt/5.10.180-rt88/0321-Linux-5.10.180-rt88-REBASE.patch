@@ -1,0 +1,20 @@
+From 6cc37f4c14a9507fc7d527f1f42b66030356714b Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Wed, 24 May 2023 22:57:17 -0300
+Subject: [PATCH 321/321] Linux 5.10.180-rt88 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index d42c0971b041d..666227d921a3d 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt66
++-rt88
+-- 
+2.40.1
+

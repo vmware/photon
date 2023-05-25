@@ -1,0 +1,46 @@
+From d24f511b04b8b159b705ec32a3b8782667d1b06a Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 29 Mar 2021 10:40:49 -0700
+Subject: [PATCH] tcp: fix tcp_min_tso_segs sysctl
+
+From: Eric Dumazet <edumazet@google.com>
+
+commit d24f511b04b8b159b705ec32a3b8782667d1b06a upstream.
+
+tcp_min_tso_segs is now stored in u8, so max value is 255.
+
+255 limit is enforced by proc_dou8vec_minmax().
+
+We can therefore remove the gso_max_segs variable.
+
+Fixes: 47996b489bdc ("tcp: convert elligible sysctls to u8")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ net/ipv4/sysctl_net_ipv4.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 442ff4be1bde..3a7e5cf5d6cc 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -31,7 +31,6 @@
+ static int two = 2;
+ static int four = 4;
+ static int thousand = 1000;
+-static int gso_max_segs = GSO_MAX_SEGS;
+ static int tcp_retr1_max = 255;
+ static int ip_local_port_range_min[] = { 1, 1 };
+ static int ip_local_port_range_max[] = { 65535, 65535 };
+@@ -1245,7 +1244,6 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ONE,
+-		.extra2		= &gso_max_segs,
+ 	},
+ 	{
+ 		.procname	= "tcp_min_rtt_wlen",
+-- 
+2.35.6
+

@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.175
-Release:        5%{?dist}
+Version:        5.10.180
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
+%define sha512 linux=5f095270cbfad418f9dbf8d1a1a38062b7ac44958acbc5c8d028eb094a8b3210d8a4f23107dd9c0d3266e813ed8d08d704704ed0fd53a6339c493a59b1ebbb10
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -137,22 +137,14 @@ Patch122: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch123: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch125: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
-Patch126: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch127: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch128: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
-
-#Fix for CVE-2022-39189
-Patch129: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
 
 #Fix for CVE-2022-43945
 Patch131: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch132: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch133: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch134: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-
-#Fix for CVE-2022-4379
-Patch136: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch137: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -232,6 +224,9 @@ Patch510: 0003-FIPS-broken-kattest.patch
 #retpoline
 Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
+
+# Fix proc01 LTP test failure
+Patch512: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
 
 BuildArch:      x86_64
 
@@ -319,7 +314,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m100 -M136
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
-%patch137 -p1
+%autopatch -p1 -m137 -M137
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -336,8 +331,11 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
 
 %if 0%{?fips}
-%patch511 -p1
+%autopatch -p1 -m511 -M511
 %endif
+
+#Fix proc01 LTP test failure
+%autopatch -p1 -m512 -M512
 
 %build
 make %{?_smp_mflags} mrproper
@@ -495,6 +493,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1
+- Update to version 5.10.180
 * Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-5
 - Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4

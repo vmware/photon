@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.175
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.180
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt85
+%define rt_version rt88
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=0656c3ec0a22c8a4dccc5e87bd2c87c57834dab1ce031db4eb44a5c69ba36a2f272c65f28bee9090aa3c1ef202d31bdf814210022152cd8a3cd94479cb176035
+%define sha512 linux=5f095270cbfad418f9dbf8d1a1a38062b7ac44958acbc5c8d028eb094a8b3210d8a4f23107dd9c0d3266e813ed8d08d704704ed0fd53a6339c493a59b1ebbb10
 Source1:    config-rt
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -151,22 +151,14 @@ Patch120: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch121: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch123: 0003-udp-Call-inet6_destroy_sock-in-setsockopt-IPV6_ADDRF.patch
-Patch124: 0004-tcp-udp-Call-inet6_destroy_sock-in-IPv6-sk-sk_destru.patch
 Patch125: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch126: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
-
-#Fix for CVE-2022-39189
-Patch127: KVM-x86-do-not-report-a-vCPU-as-preempted-outside-instruction-boundaries.patch
 
 #Fix for CVE-2022-43945
 Patch129: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch130: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch131: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch132: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-
-#Fix for CVE-2022-4379
-Patch134: 0001-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -414,93 +406,93 @@ Patch532: 0232-scsi-fcoe-Make-RT-aware.patch
 Patch533: 0233-sunrpc-Make-svc_xprt_do_enqueue-use-get_cpu_light.patch
 Patch534: 0234-rt-Introduce-cpu_chill.patch
 Patch535: 0235-fs-namespace-Use-cpu_chill-in-trylock-loops.patch
-Patch536: 0236-debugobjects-Make-RT-aware.patch
-Patch537: 0237-net-Use-skbufhead-with-raw-lock.patch
-Patch538: 0238-net-Dequeue-in-dev_cpu_dead-without-the-lock.patch
-Patch539: 0239-net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch
-Patch540: 0240-irqwork-push-most-work-into-softirq-context.patch
-Patch541: 0241-x86-crypto-Reduce-preempt-disabled-regions.patch
-Patch542: 0242-crypto-Reduce-preempt-disabled-regions-more-algos.patch
-Patch543: 0243-crypto-limit-more-FPU-enabled-sections.patch
-Patch544: 0244-panic-skip-get_random_bytes-for-RT_FULL-in-init_oops.patch
-Patch545: 0245-x86-stackprotector-Avoid-random-pool-on-rt.patch
-Patch546: 0246-net-Remove-preemption-disabling-in-netif_rx.patch
-Patch547: 0247-lockdep-Make-it-RT-aware.patch
-Patch548: 0248-lockdep-selftest-Only-do-hardirq-context-test-for-ra.patch
-Patch549: 0249-lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch
-Patch550: 0250-lockdep-disable-self-test.patch
-Patch551: 0251-drm-radeon-i915-Use-preempt_disable-enable_rt-where-.patch
-Patch552: 0252-drm-i915-Don-t-disable-interrupts-on-PREEMPT_RT-duri.patch
-Patch553: 0253-drm-i915-disable-tracing-on-RT.patch
-Patch554: 0254-drm-i915-skip-DRM_I915_LOW_LEVEL_TRACEPOINTS-with-NO.patch
-Patch555: 0255-drm-i915-gt-Only-disable-interrupts-for-the-timeline.patch
-Patch556: 0256-cpuset-Convert-callback_lock-to-raw_spinlock_t.patch
-Patch557: 0257-x86-Allow-to-enable-RT.patch
-Patch558: 0258-mm-scatterlist-Do-not-disable-irqs-on-RT.patch
-Patch559: 0259-sched-Add-support-for-lazy-preemption.patch
-Patch560: 0260-x86-entry-Use-should_resched-in-idtentry_exit_cond_r.patch
-Patch561: 0261-x86-Support-for-lazy-preemption.patch
-Patch562: 0262-arm-Add-support-for-lazy-preemption.patch
-Patch563: 0263-powerpc-Add-support-for-lazy-preemption.patch
-Patch564: 0264-arch-arm64-Add-lazy-preempt-support.patch
-Patch565: 0265-jump-label-disable-if-stop_machine-is-used.patch
-Patch566: 0266-leds-trigger-disable-CPU-trigger-on-RT.patch
-Patch567: 0267-tty-serial-omap-Make-the-locking-RT-aware.patch
-Patch568: 0268-tty-serial-pl011-Make-the-locking-work-on-RT.patch
-Patch569: 0269-ARM-enable-irq-in-translation-section-permission-fau.patch
-Patch570: 0270-genirq-update-irq_set_irqchip_state-documentation.patch
-Patch571: 0271-KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch
-Patch572: 0272-arm64-fpsimd-Delay-freeing-memory-in-fpsimd_flush_th.patch
-Patch573: 0273-x86-Enable-RT-also-on-32bit.patch
-Patch574: 0274-ARM-Allow-to-enable-RT.patch
-Patch575: 0275-ARM64-Allow-to-enable-RT.patch
-Patch576: 0276-powerpc-traps-Use-PREEMPT_RT.patch
-Patch577: 0277-powerpc-pseries-iommu-Use-a-locallock-instead-local_.patch
-Patch578: 0278-powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch
-Patch579: 0279-powerpc-stackprotector-work-around-stack-guard-init-.patch
-Patch580: 0280-powerpc-Avoid-recursive-header-includes.patch
-Patch581: 0281-POWERPC-Allow-to-enable-RT.patch
-Patch582: 0282-drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch
-Patch583: 0283-tpm_tis-fix-stall-after-iowrite-s.patch
-Patch584: 0284-signals-Allow-rt-tasks-to-cache-one-sigqueue-struct.patch
-Patch585: 0285-signal-Prevent-double-free-of-user-struct.patch
-Patch586: 0286-genirq-Disable-irqpoll-on-rt.patch
-Patch587: 0287-sysfs-Add-sys-kernel-realtime-entry.patch
-Patch588: 0288-Add-localversion-for-RT-release.patch
-Patch589: 0289-net-xfrm-Use-sequence-counter-with-associated-spinlo.patch
-Patch590: 0290-sched-Fix-migration_cpu_stop-requeueing.patch
-Patch591: 0291-sched-Simplify-migration_cpu_stop.patch
-Patch592: 0292-sched-Collate-affine_move_task-stoppers.patch
-Patch593: 0293-sched-Optimize-migration_cpu_stop.patch
-Patch594: 0294-sched-Fix-affine_move_task-self-concurrency.patch
-Patch595: 0295-sched-Simplify-set_affinity_pending-refcounts.patch
-Patch596: 0296-sched-Don-t-defer-CPU-pick-to-migration_cpu_stop.patch
-Patch597: 0297-printk-Enhance-the-condition-check-of-msleep-in-pr_f.patch
-Patch598: 0298-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
-Patch599: 0299-mm-zsmalloc-Convert-zsmalloc_handle.lock-to-spinlock.patch
-Patch600: 0300-sched-Fix-get_push_task-vs-migrate_disable.patch
-Patch601: 0301-sched-Switch-wait_task_inactive-to-HRTIMER_MODE_REL_.patch
-Patch602: 0302-preempt-Move-preempt_enable_no_resched-to-the-RT-blo.patch
-Patch603: 0303-mm-Disable-NUMA_BALANCING_DEFAULT_ENABLED-and-TRANSP.patch
+Patch536: 0236-net-Use-skbufhead-with-raw-lock.patch
+Patch537: 0237-net-Dequeue-in-dev_cpu_dead-without-the-lock.patch
+Patch538: 0238-net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch
+Patch539: 0239-irqwork-push-most-work-into-softirq-context.patch
+Patch540: 0240-x86-crypto-Reduce-preempt-disabled-regions.patch
+Patch541: 0241-crypto-Reduce-preempt-disabled-regions-more-algos.patch
+Patch542: 0242-crypto-limit-more-FPU-enabled-sections.patch
+Patch543: 0243-panic-skip-get_random_bytes-for-RT_FULL-in-init_oops.patch
+Patch544: 0244-x86-stackprotector-Avoid-random-pool-on-rt.patch
+Patch545: 0245-net-Remove-preemption-disabling-in-netif_rx.patch
+Patch546: 0246-lockdep-Make-it-RT-aware.patch
+Patch547: 0247-lockdep-selftest-Only-do-hardirq-context-test-for-ra.patch
+Patch548: 0248-lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch
+Patch549: 0249-lockdep-disable-self-test.patch
+Patch550: 0250-drm-radeon-i915-Use-preempt_disable-enable_rt-where-.patch
+Patch551: 0251-drm-i915-Don-t-disable-interrupts-on-PREEMPT_RT-duri.patch
+Patch552: 0252-drm-i915-disable-tracing-on-RT.patch
+Patch553: 0253-drm-i915-skip-DRM_I915_LOW_LEVEL_TRACEPOINTS-with-NO.patch
+Patch554: 0254-drm-i915-gt-Only-disable-interrupts-for-the-timeline.patch
+Patch555: 0255-cpuset-Convert-callback_lock-to-raw_spinlock_t.patch
+Patch556: 0256-x86-Allow-to-enable-RT.patch
+Patch557: 0257-mm-scatterlist-Do-not-disable-irqs-on-RT.patch
+Patch558: 0258-sched-Add-support-for-lazy-preemption.patch
+Patch559: 0259-x86-entry-Use-should_resched-in-idtentry_exit_cond_r.patch
+Patch560: 0260-x86-Support-for-lazy-preemption.patch
+Patch561: 0261-arm-Add-support-for-lazy-preemption.patch
+Patch562: 0262-powerpc-Add-support-for-lazy-preemption.patch
+Patch563: 0263-arch-arm64-Add-lazy-preempt-support.patch
+Patch564: 0264-jump-label-disable-if-stop_machine-is-used.patch
+Patch565: 0265-leds-trigger-disable-CPU-trigger-on-RT.patch
+Patch566: 0266-tty-serial-omap-Make-the-locking-RT-aware.patch
+Patch567: 0267-tty-serial-pl011-Make-the-locking-work-on-RT.patch
+Patch568: 0268-ARM-enable-irq-in-translation-section-permission-fau.patch
+Patch569: 0269-genirq-update-irq_set_irqchip_state-documentation.patch
+Patch570: 0270-KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch
+Patch571: 0271-arm64-fpsimd-Delay-freeing-memory-in-fpsimd_flush_th.patch
+Patch572: 0272-x86-Enable-RT-also-on-32bit.patch
+Patch573: 0273-ARM-Allow-to-enable-RT.patch
+Patch574: 0274-ARM64-Allow-to-enable-RT.patch
+Patch575: 0275-powerpc-traps-Use-PREEMPT_RT.patch
+Patch576: 0276-powerpc-pseries-iommu-Use-a-locallock-instead-local_.patch
+Patch577: 0277-powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch
+Patch578: 0278-powerpc-stackprotector-work-around-stack-guard-init-.patch
+Patch579: 0279-powerpc-Avoid-recursive-header-includes.patch
+Patch580: 0280-POWERPC-Allow-to-enable-RT.patch
+Patch581: 0281-drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch
+Patch582: 0282-tpm_tis-fix-stall-after-iowrite-s.patch
+Patch583: 0283-signals-Allow-rt-tasks-to-cache-one-sigqueue-struct.patch
+Patch584: 0284-signal-Prevent-double-free-of-user-struct.patch
+Patch585: 0285-genirq-Disable-irqpoll-on-rt.patch
+Patch586: 0286-sysfs-Add-sys-kernel-realtime-entry.patch
+Patch587: 0287-Add-localversion-for-RT-release.patch
+Patch588: 0288-net-xfrm-Use-sequence-counter-with-associated-spinlo.patch
+Patch589: 0289-sched-Fix-migration_cpu_stop-requeueing.patch
+Patch590: 0290-sched-Simplify-migration_cpu_stop.patch
+Patch591: 0291-sched-Collate-affine_move_task-stoppers.patch
+Patch592: 0292-sched-Optimize-migration_cpu_stop.patch
+Patch593: 0293-sched-Fix-affine_move_task-self-concurrency.patch
+Patch594: 0294-sched-Simplify-set_affinity_pending-refcounts.patch
+Patch595: 0295-sched-Don-t-defer-CPU-pick-to-migration_cpu_stop.patch
+Patch596: 0296-printk-Enhance-the-condition-check-of-msleep-in-pr_f.patch
+Patch597: 0297-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
+Patch598: 0298-mm-zsmalloc-Convert-zsmalloc_handle.lock-to-spinlock.patch
+Patch599: 0299-sched-Fix-get_push_task-vs-migrate_disable.patch
+Patch600: 0300-sched-Switch-wait_task_inactive-to-HRTIMER_MODE_REL_.patch
+Patch601: 0301-preempt-Move-preempt_enable_no_resched-to-the-RT-blo.patch
+Patch602: 0302-mm-Disable-NUMA_BALANCING_DEFAULT_ENABLED-and-TRANSP.patch
+Patch603: 0303-fscache-Use-only-one-fscache_object_cong_wait.patch
 Patch604: 0304-fscache-Use-only-one-fscache_object_cong_wait.patch
-Patch605: 0305-fscache-Use-only-one-fscache_object_cong_wait.patch
-Patch606: 0306-locking-Drop-might_resched-from-might_sleep_no_state.patch
-Patch607: 0307-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
-Patch608: 0308-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
-Patch609: 0309-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
-Patch610: 0310-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
-Patch611: 0311-eventfd-Make-signal-recursion-protection-a-task-bit.patch
-Patch612: 0312-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
-Patch613: 0313-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
-Patch614: 0314-Linux-5.10.111-rt66-REBASE.patch
-Patch615: 0315-rt-remove-extra-parameter-from-__trace_stack.patch
-Patch616: 0316-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
-Patch617: 0317-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
-Patch618: 0318-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
-Patch619: 0319-printk-ignore-consoles-without-write-callback.patch
-Patch620: 0320-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
+Patch605: 0305-locking-Drop-might_resched-from-might_sleep_no_state.patch
+Patch606: 0306-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
+Patch607: 0307-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
+Patch608: 0308-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
+Patch609: 0309-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
+Patch610: 0310-eventfd-Make-signal-recursion-protection-a-task-bit.patch
+Patch611: 0311-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
+Patch612: 0312-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
+Patch613: 0313-Linux-5.10.111-rt66-REBASE.patch
+Patch614: 0314-rt-remove-extra-parameter-from-__trace_stack.patch
+Patch615: 0315-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
+Patch616: 0316-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
+Patch617: 0317-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
+Patch618: 0318-printk-ignore-consoles-without-write-callback.patch
+Patch619: 0319-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
+Patch620: 0320-rt-printk-remove-new-references-to-deferred-printing.patch
 # Keep rt_version matched up with this patch.
-Patch621: 0321-Linux-5.10.175-rt85-REBASE.patch
+Patch621: 0321-Linux-5.10.180-rt88-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -567,6 +559,9 @@ Patch1010: 0003-FIPS-broken-kattest.patch
 #retpoline
 Patch1011: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
+
+# Fix proc01 LTP test failure
+Patch1012: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
 
 #Patches for i40e driver
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
@@ -681,8 +676,7 @@ The Linux package contains the Linux kernel doc files
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
 
-# Enable CONFIG_DEBUG_INFO_BTF=y
-%patch202 -p1
+%autopatch -p1 -m202 -M202
 
 # RT
 %autopatch -p1 -m301 -M716
@@ -698,8 +692,11 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%patch1011 -p1
+%autopatch -p1 -m1011 -M1011
 %endif
+
+#Fix proc01 LTP test failure
+%autopatch -p1 -m1012 -M1012
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -927,6 +924,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1
+- Update to version 5.10.180
 * Mon May 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.175-5
 - Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Apr 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.10.175-4
