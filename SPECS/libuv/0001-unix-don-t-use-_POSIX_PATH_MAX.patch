@@ -1,0 +1,44 @@
+From 0e6e8620496dff0eb285589ef1e37a7f407f3ddd Mon Sep 17 00:00:00 2001
+From: Ben Noordhuis <info@bnoordhuis.nl>
+Date: Mon, 24 Aug 2020 11:42:27 +0200
+Subject: [PATCH] unix: don't use _POSIX_PATH_MAX
+
+Libuv was using _POSIX_PATH_MAX wrong. Bug introduced in commit b56d279b
+("unix: do not require PATH_MAX to be defined") from September 2018.
+
+_POSIX_PATH_MAX is the minimum max path size guaranteed by POSIX, not
+the actual max path size of the system libuv runs on. _POSIX_PATH_MAX
+is always 256, the real max is often much bigger.
+
+This commit fixes buffer overruns when processing very long paths in
+uv_fs_readlink() and uv_fs_realpath() because libuv was not allocating
+enough memory to store the result.
+
+Fixes: https://github.com/libuv/libuv/issues/2965
+PR-URL: https://github.com/libuv/libuv/pull/2966
+Reviewed-By: Richard Lau <riclau@uk.ibm.com>
+Reviewed-By: Santiago Gimeno <santiago.gimeno@gmail.com>
+Reviewed-By: Colin Ihrig <cjihrig@gmail.com>
+Reviewed-By: Jameson Nash <vtjnash@gmail.com>
+---
+ src/unix/internal.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/unix/internal.h b/src/unix/internal.h
+index 30711673..9d3c2297 100644
+--- a/src/unix/internal.h
++++ b/src/unix/internal.h
+@@ -62,9 +62,7 @@
+ # include <AvailabilityMacros.h>
+ #endif
+ 
+-#if defined(_POSIX_PATH_MAX)
+-# define UV__PATH_MAX _POSIX_PATH_MAX
+-#elif defined(PATH_MAX)
++#if defined(PATH_MAX)
+ # define UV__PATH_MAX PATH_MAX
+ #else
+ # define UV__PATH_MAX 8192
+-- 
+2.35.6
+
