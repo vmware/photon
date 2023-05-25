@@ -1,7 +1,7 @@
 Summary:        Modern asynchronous API to the DNS
 Name:           getdns
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Url:            http://www.getdnsapi.net
 Group:          Applications
@@ -97,5 +97,7 @@ rm -rf %{buildroot}
 %doc spec
 
 %changelog
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.0-2
+- Bump version as a part of libuv upgrade
 * Mon Apr 11 2022 Mukul Sikka <msikka@vmware.com> 1.7.0-1
 - Initial Build

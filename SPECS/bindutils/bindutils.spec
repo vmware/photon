@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.38
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
@@ -86,6 +86,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 9.16.38-3
+-   Bump version as a part of libuv upgrade
 *   Fri Feb 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.16.38-2
 -   Adding e2fsprogs and krb5 as dependencies to get functionality needed for SSSD.
 *   Thu Feb 16 2023 Harinadh D <hdommaraju@vmware.com> 9.16.38-1
