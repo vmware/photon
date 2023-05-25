@@ -1,7 +1,7 @@
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.3.231.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.231.1-3
+-   Bump version as a part of libxml2 upgrade
 *   Mon Jan 30 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-2
 -   Minor changes in spec file
 *   Tue Nov 15 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1

@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -268,6 +268,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-4
+- Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 3.5.2-3
 - version bump to use curl 8.0.1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.2-2

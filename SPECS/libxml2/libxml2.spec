@@ -1,22 +1,18 @@
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.14
-Release:        8%{?dist}
+Version:        2.11.4
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.gz
-%define sha512 %{name}=18cd5354228af5eb8698273e61313961ec7fb2aed880caed15d7c678eaad8a42e826c171fb514272b350479b7ceb9cb963dc535a50101edeaa321972cdda6ae2
-
-Patch0:         libxml2-CVE-2023-29469.patch
-Patch1:         libxml2-CVE-2023-28484-1.patch
-Patch2:         libxml2-CVE-2023-28484-2.patch
-Patch3:         libxml2-CVE-2022-40304.patch
+Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c1df7441c729430bdd2de52e9da69b171afc4b776e4a2eb43acbc71ada7a3814a465247fb5fca4c83ecf1c281f7745069ec3d051a7964cb7cc119a3d983f93ba
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
 BuildRequires:  pkg-config
 BuildRequires:  readline-devel
@@ -75,7 +71,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_libdir}/%{name}.so.*
-%{_libdir}/xml2Conf.sh
 %{_bindir}/*
 
 %files -n python3-libxml2
@@ -86,7 +81,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/%{name}.so
 %{_includedir}/*
-%{_mandir}/man3/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 %{_docdir}/*
@@ -95,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-1
+- Upgrade to v2.11.4
 * Wed May 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-8
 - Fix for CVE-2022-40304
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-7

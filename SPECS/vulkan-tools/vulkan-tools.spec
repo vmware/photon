@@ -1,6 +1,6 @@
 Name:           vulkan-tools
 Version:        1.3.231.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Vulkan tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.231.1-3
+- Bump version as a part of libxml2 upgrade
 * Mon Jan 30 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-2
 - Minor changes in spec file
 * Mon Nov 7 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1

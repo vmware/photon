@@ -3,7 +3,7 @@
 %define gem_name libxml-ruby
 Name:           rubygem-libxml-ruby
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -55,6 +55,8 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-2
+-   Bump version as a part of libxml2 upgrade
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1

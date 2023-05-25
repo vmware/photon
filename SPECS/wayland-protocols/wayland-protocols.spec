@@ -1,7 +1,7 @@
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 Name:           wayland-protocols
 Version:        1.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
+*       Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.31-2
+-       Bump version as a part of libxml2 upgrade
 *       Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
 -       Automatic Version Bump
 *       Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
