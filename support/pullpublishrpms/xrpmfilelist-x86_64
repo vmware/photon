@@ -43,6 +43,7 @@ x86_64/libXt-devel-1.1.4-1.x86_64.rpm
 x86_64/libXtst-1.2.2-1.x86_64.rpm
 x86_64/libXtst-devel-1.2.2-1.x86_64.rpm
 x86_64/openjdk-1.8.0.112-1.x86_64.rpm
+x86_64/openjdk17-17.0.7-1.ph3.x86_64.rpm
 x86_64/openjre-1.8.0.112-1.x86_64.rpm
 x86_64/xcb-proto-1.11-1.x86_64.rpm
 x86_64/xorg-proto-devel-2018.4-1.x86_64.rpm
