@@ -1,23 +1,23 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.35.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=c4bcd95dc64a78080c6d761604ead6074e5e77eee9b66ee60c9b9fe44d138504a8dc52e1665dedb60bff75b44421730d098050dc920aec12d1aee7f1ee54c15b
+Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c4bcd95dc64a78080c6d761604ead6074e5e77eee9b66ee60c9b9fe44d138504a8dc52e1665dedb60bff75b44421730d098050dc920aec12d1aee7f1ee54c15b
 
-BuildRequires:  curl-devel
-BuildRequires:  python3-devel
-BuildRequires:  openssl-devel
+BuildRequires: curl-devel
+BuildRequires: python3-devel
+BuildRequires: openssl-devel
 
-Requires:   expat
-Requires:   curl
-Requires:   openssl
+Requires: expat
+Requires: curl
+Requires: openssl
 # Conflict is needed because of spliting the package git into git(core) and git-extras
 Conflicts: %{name} < %{version}-%{release}
 
@@ -89,6 +89,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_datadir}/git-core/templates
+%{_datadir}/bash-completion/
 %{_libexecdir}/git-core/*
 %exclude %{_libexecdir}/git-core/git-svn
 %exclude %{_libexecdir}/git-core/git-send-email
@@ -128,13 +129,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/git-gui/*
 %{_datadir}/gitk/*
 %{_datadir}/gitweb/*
-%{_datadir}/bash-completion/
 %{_datadir}/git-core/templates/hooks/*.sample
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-3
+- Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-2
 - Adding subpackage to minimize git dependencies
 * Wed Feb 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-1
