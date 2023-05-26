@@ -1,22 +1,23 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.39.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512  %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
 
-BuildRequires:  curl-devel
-BuildRequires:  python3-devel
-BuildRequires:  openssl-devel
+Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha512 %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
 
-Requires:   expat
-Requires:   curl
-Requires:   openssl
+BuildRequires: curl-devel
+BuildRequires: python3-devel
+BuildRequires: openssl-devel
+
+Requires: expat
+Requires: curl
+Requires: openssl
 
 %description
 Git is a free and open source, distributed version control system
@@ -46,7 +47,7 @@ Requires:   perl-YAML
 Requires:   subversion-perl
 Requires:   python3
 
-Conflicts: %{name} < 2.39.0-2
+Conflicts: %{name} < 2.39.0-4
 
 %description extras
 These are the supported files for perl interface to the git, core package of git,
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-4
+- Adding conflict to git-extras
 * Thu May 25 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
 - Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-2
