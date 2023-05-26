@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.39.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -47,7 +47,7 @@ Requires:   perl-YAML
 Requires:   subversion-perl
 Requires:   python3
 
-Conflicts: %{name} < 2.39.0-2
+Conflicts: %{name} < 2.39.0-3
 
 %description extras
 These are the supported files for perl interface to the git, core package of git,
@@ -93,6 +93,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_datadir}/git-core/templates
+%{_datadir}/bash-completion/
 %{_libexecdir}/git-core/*
 %exclude %{_libexecdir}/git-core/git-svn
 %exclude %{_libexecdir}/git-core/git-send-email
@@ -132,13 +133,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/git-gui/*
 %{_datadir}/gitk/*
 %{_datadir}/gitweb/*
-%{_datadir}/bash-completion/
 %{_datadir}/git-core/templates/hooks/*.sample
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
+- Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-2
 - Adding subpackage to minimize git dependencies
 * Fri Jan 06 2023 Susant Sahani <ssahani@vmware.com> 2.39.0-1
