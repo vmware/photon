@@ -1,7 +1,7 @@
 Summary:        Google's C++ logging module
 Name:           glog
 Version:        0.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://github.com/google/glog
 Group:          Development/Tools
@@ -25,14 +25,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description devel
 This contains development tools and libraries for glog.
-
-%package docs
-Summary:        glog docs
-Group:          Development/Tools
-Requires:       %{name} = %{version}-%{release}
-
-%description docs
-The contains glog package doc files.
 
 %prep
 %autosetup -p1
@@ -70,10 +62,9 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/libglog.pc
 %{_libdir}/cmake/glog/*.cmake
 
-%files docs
-%defattr(-,root,root)
-
 %changelog
+* Sat May 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-3
+- Remove empty docs sub package
 * Mon Feb 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-2
 - Fix spec issues
 * Wed Feb 15 2023 Harinadh D <hdommaraju@vmware.com> 0.6.0-1
