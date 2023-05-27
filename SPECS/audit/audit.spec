@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -28,7 +28,6 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  systemd-devel
 
 %if 0%{?with_golang}
@@ -90,10 +89,8 @@ cp %{_includedir}/linux/%{name}.h lib/
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/%{name}/rules.d} \
-         %{buildroot}/%{_var}/opt/%{name}/log \
-         %{buildroot}/%{_var}/log \
-         %{buildroot}/%{_var}/spool/%{name}
-ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
+         %{buildroot}%{_var}/log/%{name} \
+         %{buildroot}%{_var}/spool/%{name}
 
 %make_install %{?_smp_mflags}
 
@@ -111,9 +108,16 @@ popd
 make %{?_smp_mflags} check
 %endif
 
+%pretrans -p <lua>
+path = "/var/log/audit"
+st = posix.stat(path)
+if st and st.type == "link" then
+  os.remove(path)
+end
+
 %post
 /sbin/ldconfig
-%systemd_post  auditd.service
+%systemd_post auditd.service
 
 %postun
 /sbin/ldconfig
@@ -133,8 +137,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%dir %{_var}/opt/%{name}/log
-%{_var}/log/%{name}
+%dir %{_var}/log/%{name}
 %{_var}/spool/%{name}
 %attr(750,root,root) %dir %{_sysconfdir}/%{name}
 %attr(750,root,root) %dir %{_sysconfdir}/%{name}/rules.d
@@ -168,6 +171,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Sat May 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-9
+- Fix conflict during upgrade
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-8
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-7
