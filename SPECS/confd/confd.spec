@@ -1,7 +1,7 @@
 Summary:        confd is a lightweight configuration management tool
 Name:           confd
 Version:        3.16
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/confd
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -27,16 +27,18 @@ mkdir -p dist
 go build -v -o dist/confd confd.go
 
 %install
-install -vdm 755 %{buildroot}/%{_bindir}/confd
-install -vpm 0755 -t %{buildroot}/%{_bindir}/confd dist/confd
+install -vdm 755 %{buildroot}/%{_bindir}
+install -vpm 0755 -t %{buildroot}/%{_bindir} dist/confd
 cp -r etc/ %{buildroot}%{_sysconfdir}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/confd/confd
+%{_bindir}/confd
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Sat May 27 2023 Piyush Gupta <gpiyush@vmware.com> 3.16-10
+- Install confd binary as /usr/bin/confd.
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.16-9
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.16-8
