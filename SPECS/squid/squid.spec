@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -159,6 +159,17 @@ cat > %{buildroot}%{_tmpfilesdir}/%{name}.conf <<EOF
 d /run/%{name} 0755 %{name} %{name} - -
 EOF
 
+%pretrans -p <lua>
+-- previously /usr/share/squid/errors/es-mx was symlink, now it is directory since squid v5
+-- see https://docs.fedoraproject.org/en-US/packaging-guidelines/Directory_Replacement/
+-- Define the path to the symlink being replaced below.
+-- RHEL bug: #1936422
+path = "/usr/share/squid/errors/es-mx"
+st = posix.stat(path)
+if st and st.type == "link" then
+  os.remove(path)
+end
+
 %pre
 %sysusers_create_compat %{SOURCE6}
 
@@ -220,6 +231,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Fri Jun 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-8
+- Fix for - squid update attempts fail with file conflicts
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-7
 - Bump version as a part of libxml2 upgrade
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 5.7-6
