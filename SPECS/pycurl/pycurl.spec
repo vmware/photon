@@ -1,6 +1,6 @@
 Name:           pycurl3
 Version:        7.43.0.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 7.43.0.6-7
+-   Version bump to use curl 8.1.1
 *   Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 7.43.0.6-6
 -   version bump to use curl 8.0.1
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 7.43.0.6-5

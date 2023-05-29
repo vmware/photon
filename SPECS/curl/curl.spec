@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.0.1
-Release:        2%{?dist}
+Version:        8.1.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=87d945e65176613c6296f8b130bd6c5355e3ca3c62ee4010edd481950cad9760482fd3be8a84e51501c118c29ebc284b8f87c49b06f9d248e9da5819fda38f8f
+%define sha512  %{name}=95aeaca94ec78284102d1f5f8d0e24d7a084f2431356a08e7f6baf79c13c56040f2600571877d74e45b53b9f61ef493d201ed85808233c24b4dcbf45cdb6e762
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-1
+- Version upgrade
 * Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-2
 - version bump to use libssh2 1.10.0
 * Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-1

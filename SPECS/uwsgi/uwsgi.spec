@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.20
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -233,6 +233,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 2.0.20-5
+- Version bump to use curl 8.1.1
 * Tue Apr 04 2023 Harinadh D <hdommaraju@vmware.com> 2.0.20-4
 - version bump to use curl 8.0.1
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.20-3
