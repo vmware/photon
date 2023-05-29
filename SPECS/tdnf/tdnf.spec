@@ -3,7 +3,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -232,6 +232,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 3.1.14-2
+- Version bump to use curl 8.1.1
 * Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.1.14-1
 - update to 3.1.14
 - segfault caused due to missing name param PR #401

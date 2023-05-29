@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.16.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://sourceforge.net/projects/aide
 License:        GPLv2+
 Group:          System Environment/Base
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 0.16.2-4
+- Version bump to use curl 8.1.1
 * Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.2-3
 - Enable bunch of essential options during configure
 * Wed Jan 19 2022 Tapas Kundu <tkundu@vmware.com> 0.16.2-2

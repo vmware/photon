@@ -1,25 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.86.0
-Release:        5%{?dist}
+Version:        8.1.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
-Patch0:         proxy-match-with-adjacent-comma.patch
-Patch1:         fix-tail-matching-regression.patch
-Patch2:         noproxy-tailmatch-revert-before-7.85.patch
-Patch3:         curl-CVE-2022-43551.patch
-Patch4:         curl-CVE-2022-43552.patch
-Patch5:         curl-CVE-2023-23914-5.patch
-Patch6:         curl-CVE-2023-23916.patch
-Patch7:         curl-CVE-2023-27535.patch
-Patch8:         curl-CVE-2023-27536.patch
-
+%define sha512  %{name}=95aeaca94ec78284102d1f5f8d0e24d7a084f2431356a08e7f6baf79c13c56040f2600571877d74e45b53b9f61ef493d201ed85808233c24b4dcbf45cdb6e762
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -67,11 +56,10 @@ This package contains minimal set of shared curl libraries.
     --with-libssh2 \
     --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
@@ -103,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-1
+- Version upgrade
 * Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.com> 7.86.0-5
 - Fixed CVE-2023-27535,CVE-2023-27536
 * Fri Feb 17 2023 Dweep Advani <dadvani@vmware.com> 7.86.0-4

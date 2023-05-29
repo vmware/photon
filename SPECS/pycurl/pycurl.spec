@@ -5,13 +5,13 @@
 
 Name:           pycurl
 Version:        7.43.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha1    pycurl=e8e9c7e9ae91ae32096b8c86cfc7d49976a66d1b
+%define sha512  pycurl=7442462c74c19964b9d72976e9b92bf68bb37debc1401bc399590bea42704065da13d6de710e795eeae79a4651b9a08841d50454243cb0994c7eb1c1bab233a5
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  openssl-devel
@@ -22,7 +22,7 @@ BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires: python-setuptools, vsftpd, curl-libs
 BuildRequires: python3-setuptools, python3-xml
 %endif
@@ -52,8 +52,7 @@ Requires:   %{name} = %{version}
 Documentation and examples for pycurl
 
 %prep
-%setup -q -n pycurl-%{version}
-%patch0 -p1
+%autosetup -p1 -n pycurl-%{version}
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 
@@ -78,7 +77,6 @@ python3 setup.py install -O1 --skip-build --root %{buildroot}
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 popd
-
 
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
@@ -108,6 +106,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 7.43.0-5
+-   Version bump to use curl 8.1.1
 *   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 7.43.0-4
 -   Fixed the make check.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com> 7.43.0-3

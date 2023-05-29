@@ -7,18 +7,19 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
-%define sha1    WWW-Curl=8ec7b7b39bd653539671fb02fbb7d0ff4863e636
+%define sha512  WWW-Curl=bc7a75d0e23f5a77578fd7244b56a1e1b81d814993b90ac7132926f0d571232c4c95875bc615cb6239e424ae1d5481d27796efc5376bb0845d1da0ff1137c0d6
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         perl-www-curl-curl-7.66.0-compatibility.patch
 Patch1:         Define-CURL-as-void.patch
 Patch2:         Skip-preprocessor-symbol-only-CURL_STRICTER.patch
 Patch3:         Adapt-to-changes-in-cURL.patch
+Patch4:         WWW-Curl-4.17-Adapt-to-curl-8.0.1.patch
 BuildRequires:  perl >= 5.28.0
 BuildRequires:  perl-Module-Install
 BuildRequires:  perl-YAML-Tiny
@@ -29,19 +30,15 @@ Requires:       curl
 WWW::Curl is a Perl extension interface for libcurl.
 
 %prep
-%setup -q -n WWW-Curl-%{version}
+%autosetup -p1 -n WWW-Curl-%{version}
 rm -rf inc && sed -i -e '/^inc\//d' MANIFEST
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -type f -name .packlist -exec rm -f {} \;
 find %{buildroot} -type f -name '*.bs' -size 0 -exec rm -f {} \;
 %{_fixperms} %{buildroot}/*
@@ -59,7 +56,7 @@ find %{buildroot} -type f -name '*.bs' -size 0 -exec rm -f {} \;
 %{?!_with_network_tests: rm t/18twinhandles.t }
 %{?!_with_network_tests: rm t/19multi.t }
 %{?!_with_network_tests: rm t/21write-to-scalar.t }
-make test
+make test %{?_smp_mflags}
 
 %files
 %{perl_vendorarch}/auto/*
@@ -67,16 +64,17 @@ make test
 %{_mandir}/man3/*
 
 %changelog
-*   Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 4.17-6
--   Fix build errors
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.17-5
--   Consuming perl version upgrade of 5.28.0
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-4
--   BuildRequires curl-devel.
-*   Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-3
--   Build WWW-Curl with curl 7.50.3
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.17-2
--   GA - Bump release of all rpms
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
--   Initial version.
-
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 4.17-7
+- Version bump to use curl 8.1.1
+* Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 4.17-6
+- Fix build errors
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.17-5
+- Consuming perl version upgrade of 5.28.0
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-4
+- BuildRequires curl-devel.
+* Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-3
+- Build WWW-Curl with curl 7.50.3
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.17-2
+- GA - Bump release of all rpms
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
+- Initial version.

@@ -5,14 +5,14 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.10.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=9709bbca874a1afda9dff1c1775a3c68321c7182
+%define sha512  %{name}-%{version}=a8b0dff4bb82890aa63006f1ba4216765cb8e59e8d994d285977bc8a8f5f71f6baf1d3070944c92848821a19182046d108837148863d898b603441ae773b703b
 Patch0:         librepo-CVE-2020-14352.patch
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -106,13 +106,15 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.10.2-5
--   Version Bump to build with new version of cmake
-*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 1.10.2-4
--   Fix build with updated python symlink changes
-*   Wed Nov 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.2-3
--   Fix CVE-2020-14352
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
--   Added for ARM Build
-*   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
--   Initial build. First version
+* Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 1.10.2-6
+- Version bump to use curl 8.1.1
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.10.2-5
+- Version Bump to build with new version of cmake
+* Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 1.10.2-4
+- Fix build with updated python symlink changes
+* Wed Nov 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.2-3
+- Fix CVE-2020-14352
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+- Added for ARM Build
+* Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
+- Initial build. First version
