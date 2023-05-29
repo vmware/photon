@@ -1,19 +1,14 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.3.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
 Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
 %define sha512  nfs-utils=5025ccd7699ac1a0fdbd8b18ed8b33ea89230158320d809ec51e73f831100db75dceaddde481d911eeca9059caa521d155c2d14d014d75f091f432aad92a9716
-Source1:        nfs-client.service
-Source2:        nfs-client.target
-Source3:        rpc-statd.service
-Source4:        rpc-statd-notify.service
-Source5:        nfs-utils.defaults
-Source6:        nfs-server.service
-Source7:        nfs-mountd.service
+Source1:        nfs-utils.defaults
+Patch0:         0001-service-file-nfs-utils-conf.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtool
@@ -39,7 +34,7 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 The nfs-utils package contains simple nfs client service.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
@@ -61,24 +56,29 @@ make %{?_smp_mflags}
 
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
-install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
+install -v -m644 utils/mount/nfsmount.conf %{_sysconfdir}/nfsmount.conf
 mkdir -p %{buildroot}/lib/systemd/system/
-mkdir -p %{buildroot}/etc/default
-mkdir -p %{buildroot}/etc/export.d
+mkdir -p %{buildroot}%{_sysconfdir}/default
+mkdir -p %{buildroot}%{_sysconfdir}/export.d
 mkdir -p %{buildroot}/var/lib/nfs/v4recovery
-touch %{buildroot}/etc/exports
-install -m644 %{SOURCE1} %{buildroot}/lib/systemd/system/
-install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/
-install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
-install -m644 %{SOURCE4} %{buildroot}/lib/systemd/system/
-install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
-install -m644 %{SOURCE6} %{buildroot}/lib/systemd/system/
-install -m644 %{SOURCE7} %{buildroot}/lib/systemd/system/
-install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
-install -m644 systemd/nfs-idmapd.service %{buildroot}/lib/systemd/system/
-install -m644 systemd/rpc_pipefs.target  %{buildroot}/lib/systemd/system/
-install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}/lib/systemd/system/
-install -m644 systemd/rpc-svcgssd.service %{buildroot}/lib/systemd/system/
+touch %{buildroot}%{_sysconfdir}/exports
+install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/default/nfs-utils
+install -m644 systemd/nfs-utils.service %{buildroot}%{_unitdir}
+#For backward compatibility
+ln -s   %{_prefix}%{_unitdir}/nfs-utils.service %{buildroot}%{_unitdir}/nfs-client.service
+install -m644 systemd/nfs-client.target %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-statd.service %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-statd-notify.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-server.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-mountd.service %{buildroot}%{_unitdir}
+install -m644 systemd/proc-fs-nfsd.mount %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
+install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
+install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-gssd.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-blkmap.service %{buildroot}%{_unitdir}
+install -m644 systemd/auth-rpcgss-module.service %{buildroot}%{_unitdir}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
 echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/50-nfs-server.preset
@@ -114,8 +114,8 @@ fi
 /sbin/*
 %{_sbindir}/*
 %{_sharedstatedir}/*
-%config(noreplace) /etc/default/nfs-utils
-%config(noreplace) /etc/exports
+%config(noreplace) %{_sysconfdir}/default/nfs-utils
+%config(noreplace) %{_sysconfdir}/exports
 /lib/systemd/system/*
 %{_libdir}/libnfsidmap.so.*
 %{_libdir}/libnfsidmap/nsswitch.so
@@ -126,6 +126,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Mon May 29 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.3.3-7
+-   Include rpc-gssd.service file
 *   Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-6
 -   Bump version as a part of libevent upgrade
 *   Fri Mar 18 2022 Harinadh D <hdommaraju@vmware.com> 2.3.3-5
