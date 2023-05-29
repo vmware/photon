@@ -1,41 +1,49 @@
-%global debug_package %{nil}
+%global debug_package   %{nil}
+%define srcname         Twisted
+
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        22.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
-Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.gz
-%define sha512  Twisted=36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
-Patch0:         no_packet.patch
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-incremental
-BuildRequires:  python3-zope.interface
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-automat
+Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
 
-%if %{with_check}
-BuildRequires:  net-tools
-BuildRequires:  sudo
-BuildRequires:  shadow
-BuildRequires:  curl-devel
+Patch0: no_packet.patch
+Patch1: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
+
+BuildRequires: python3-devel
+BuildRequires: python3-incremental
+BuildRequires: python3-zope.interface
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: python3-automat
+
+%if 0%{?with_check}
+BuildRequires: net-tools
+BuildRequires: sudo
+BuildRequires: shadow
+BuildRequires: curl-devel
+BuildRequires: python3-pip
+BuildRequires: python3-constantly
+
 %endif
 
-Requires:       python3
-Requires:       python3-zope.interface
-Requires:       python3-netaddr
-Requires:       python3-incremental
-Requires:       python3-constantly
-Requires:       python3-hyperlink
-Requires:       python3-attrs
-Requires:       python3-PyHamcrest
-Requires:       python3-service_identity >= 18.1.0
-Requires:       python3-typing-extensions
+Requires: python3
+Requires: python3-zope.interface
+Requires: python3-netaddr
+Requires: python3-incremental
+Requires: python3-constantly
+Requires: python3-hyperlink
+Requires: python3-attrs
+Requires: python3-PyHamcrest
+Requires: python3-service_identity >= 18.1.0
+Requires: python3-typing-extensions
 
 %description
 Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT
@@ -43,45 +51,45 @@ license. Twisted runs on Python 2 and an ever growing subset also works with Pyt
 many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %prep
-%autosetup -p1 -n Twisted-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
-mv %{buildroot}/%{_bindir}/twistd %{buildroot}/%{_bindir}/twistd3
-mv %{buildroot}/%{_bindir}/trial %{buildroot}/%{_bindir}/trial3
-mv %{buildroot}/%{_bindir}/tkconch %{buildroot}/%{_bindir}/tkconch3
-mv %{buildroot}/%{_bindir}/pyhtmlizer %{buildroot}/%{_bindir}/pyhtmlizer3
-mv %{buildroot}/%{_bindir}/twist %{buildroot}/%{_bindir}/twist3
-mv %{buildroot}/%{_bindir}/conch %{buildroot}/%{_bindir}/conch3
-mv %{buildroot}/%{_bindir}/ckeygen %{buildroot}/%{_bindir}/ckeygen3
-mv %{buildroot}/%{_bindir}/cftp %{buildroot}/%{_bindir}/cftp3
+%{py3_install}
 
+for fn in twistd trial tkconch pyhtmlizer twist conch ckeygen cftp; do
+  ln -sv ${fn} %{buildroot}%{_bindir}/${fn}3
+done
+
+%if 0%{?with_check}
 %check
-route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
-useradd test -G root -m
-pushd ../p3dir
-pip3 install --upgrade tox
-chmod g+w . -R
-LANG=en_US.UTF-8 tox -e py36-alldeps-nocov
-popd
+export LC_ALL=C
+PATH=%{buildroot}%{_bindir}:$PATH \
+     PYTHONPATH=%{buildroot}%{python3_sitelib} \
+     %{buildroot}%{_bindir}/trial twisted
+%endif
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/mailmail
-%{_bindir}/twistd3
-%{_bindir}/trial3
-%{_bindir}/tkconch3
-%{_bindir}/pyhtmlizer3
-%{_bindir}/twist3
-%{_bindir}/conch3
-%{_bindir}/ckeygen3
-%{_bindir}/cftp3
+%{_bindir}/twistd*
+%{_bindir}/trial*
+%{_bindir}/tkconch*
+%{_bindir}/pyhtmlizer*
+%{_bindir}/twist*
+%{_bindir}/conch*
+%{_bindir}/ckeygen*
+%{_bindir}/cftp*
 
 %changelog
+* Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.0-3
+- Use fips allowed hashing algorithms in sslverify
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.0-2
 - Update release to compile with python 3.11
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.0-1
