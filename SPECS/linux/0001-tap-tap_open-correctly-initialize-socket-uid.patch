@@ -1,0 +1,47 @@
+From 66b2c338adce580dfce2199591e65e2bab889cff Mon Sep 17 00:00:00 2001
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+Date: Sat, 4 Feb 2023 17:39:22 +0000
+Subject: [PATCH] tap: tap_open(): correctly initialize socket uid
+
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+
+commit 66b2c338adce580dfce2199591e65e2bab889cff upstream.
+
+sock_init_data() assumes that the `struct socket` passed in input is
+contained in a `struct socket_alloc` allocated with sock_alloc().
+However, tap_open() passes a `struct socket` embedded in a `struct
+tap_queue` allocated with sk_alloc().
+This causes a type confusion when issuing a container_of() with
+SOCK_INODE() in sock_init_data() which results in assigning a wrong
+sk_uid to the `struct sock` in input.
+On default configuration, the type confused field overlaps with
+padding bytes between `int vnet_hdr_sz` and `struct tap_dev __rcu
+*tap` in `struct tap_queue`, which makes the uid of all tap sockets 0,
+i.e., the root one.
+Fix the assignment by using sock_init_data_uid().
+
+Fixes: 86741ec25462 ("net: core: Add a UID field to struct sock.")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ drivers/net/tap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index a2be1994b389..8941aa199ea3 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -533,7 +533,7 @@ static int tap_open(struct inode *inode, struct file *file)
+ 	q->sock.state = SS_CONNECTED;
+ 	q->sock.file = file;
+ 	q->sock.ops = &tap_socket_ops;
+-	sock_init_data(&q->sock, &q->sk);
++	sock_init_data_uid(&q->sock, &q->sk, inode->i_uid);
+ 	q->sk.sk_write_space = tap_sock_write_space;
+ 	q->sk.sk_destruct = tap_sock_destruct;
+ 	q->flags = IFF_VNET_HDR | IFF_NO_PI | IFF_TAP;
+--
+2.35.6
+

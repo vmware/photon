@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.283
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -479,6 +479,14 @@ Patch706: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 #Fix for CVE-2023-1611
 Patch707: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
+#Fix for CVE-2023-1076
+Patch708: 0001-net-add-sock_init_data_uid.patch
+Patch709: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch710: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+
+#Fix for CVE-2023-1077
+Patch711: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+
 # Patches for i40e driver
 Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
@@ -590,7 +598,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M710
+%autopatch -p1 -m700 -M711
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -818,6 +826,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-4
+- Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-3
 - Fix for CVE-2023-1611
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.283
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -667,6 +667,14 @@ Patch640: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2023-1611
 Patch641: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
+#Fix for CVE-2023-1076
+Patch642: 0001-net-add-sock_init_data_uid.patch
+Patch643: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch644: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+
+#Fix for CVE-2023-1077
+Patch645: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -925,7 +933,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M639
 
 # CVE Fixes
-%autopatch -p1 -m640 -M641
+%autopatch -p1 -m640 -M645
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1346,6 +1354,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
+- Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 09 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4
 - Fix for CVE-2023-1611
 * Fri Jun 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.283-3

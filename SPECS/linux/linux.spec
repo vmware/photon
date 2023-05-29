@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.283
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -552,6 +552,14 @@ Patch1559: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 #Fix for CVE-2023-1611
 Patch1560: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
+#Fix for CVE-2023-1076
+Patch1561: 0001-net-add-sock_init_data_uid.patch
+Patch1562: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch1563: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+
+#Fix for CVE-2023-1077
+Patch1564: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -743,7 +751,7 @@ popd
 %endif
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1560
+%autopatch -p1 -m1550 -M1564
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1132,6 +1140,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-4
+- Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-3
 - Fix for CVE-2023-1611
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2

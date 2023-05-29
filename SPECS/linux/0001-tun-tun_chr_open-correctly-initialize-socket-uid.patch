@@ -1,0 +1,47 @@
+From a096ccca6e503a5c575717ff8a36ace27510ab0a Mon Sep 17 00:00:00 2001
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+Date: Sat, 4 Feb 2023 17:39:21 +0000
+Subject: [PATCH] tun: tun_chr_open(): correctly initialize socket uid
+
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+
+commit a096ccca6e503a5c575717ff8a36ace27510ab0a upstream.
+
+sock_init_data() assumes that the `struct socket` passed in input is
+contained in a `struct socket_alloc` allocated with sock_alloc().
+However, tun_chr_open() passes a `struct socket` embedded in a `struct
+tun_file` allocated with sk_alloc().
+This causes a type confusion when issuing a container_of() with
+SOCK_INODE() in sock_init_data() which results in assigning a wrong
+sk_uid to the `struct sock` in input.
+On default configuration, the type confused field overlaps with the
+high 4 bytes of `struct tun_struct __rcu *tun` of `struct tun_file`,
+NULL at the time of call, which makes the uid of all tun sockets 0,
+i.e., the root one.
+Fix the assignment by using sock_init_data_uid().
+
+Fixes: 86741ec25462 ("net: core: Add a UID field to struct sock.")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ drivers/net/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index a7d17c680f4a..745131b2d6db 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -3448,7 +3448,7 @@ static int tun_chr_open(struct inode *inode, struct file * file)
+ 	tfile->socket.file = file;
+ 	tfile->socket.ops = &tun_socket_ops;
+
+-	sock_init_data(&tfile->socket, &tfile->sk);
++	sock_init_data_uid(&tfile->socket, &tfile->sk, inode->i_uid);
+
+ 	tfile->sk.sk_write_space = tun_sock_write_space;
+ 	tfile->sk.sk_sndbuf = INT_MAX;
+--
+2.35.6
+

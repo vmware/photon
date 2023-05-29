@@ -1,0 +1,55 @@
+From 7c4a5b89a0b5a57a64b601775b296abf77a9fe97 Mon Sep 17 00:00:00 2001
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+Date: Mon, 6 Feb 2023 22:33:54 +0000
+Subject: sched/rt: pick_next_rt_entity(): check list_entry
+
+From: Pietro Borrello <borrello@diag.uniroma1.it>
+
+commit 7c4a5b89a0b5a57a64b601775b296abf77a9fe97 upstream.
+
+Commit 326587b84078 ("sched: fix goto retry in pick_next_task_rt()")
+removed any path which could make pick_next_rt_entity() return NULL.
+However, BUG_ON(!rt_se) in _pick_next_task_rt() (the only caller of
+pick_next_rt_entity()) still checks the error condition, which can
+never happen, since list_entry() never returns NULL.
+Remove the BUG_ON check, and instead emit a warning in the only
+possible error condition here: the queue being empty which should
+never happen.
+
+Fixes: 326587b84078 ("sched: fix goto retry in pick_next_task_rt()")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20230128-list-entry-null-check-sched-v3-1-b1a71bd1ac6b@diag.uniroma1.it
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ kernel/sched/rt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 9c6c3572b..394c66442 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -1522,6 +1522,8 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
+ 	BUG_ON(idx >= MAX_RT_PRIO);
+
+ 	queue = array->queue + idx;
++	if (SCHED_WARN_ON(list_empty(queue)))
++		return NULL;
+ 	next = list_entry(queue->next, struct sched_rt_entity, run_list);
+
+ 	return next;
+@@ -1535,7 +1537,8 @@ static struct task_struct *_pick_next_task_rt(struct rq *rq)
+
+ 	do {
+ 		rt_se = pick_next_rt_entity(rq, rt_rq);
+-		BUG_ON(!rt_se);
++		if (unlikely(!rt_se))
++			return NULL;
+ 		rt_rq = group_rt_rq(rt_se);
+ 	} while (rt_rq);
+
+--
+2.35.6
+

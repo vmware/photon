@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.283
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -268,6 +268,14 @@ Patch201: 0001-net-prevent-race-condition-in-do_tls_getsockopt_tx.patch
 # CVE-2023-1611
 Patch202: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
+#Fix for CVE-2023-1076
+Patch203: 0001-net-add-sock_init_data_uid.patch
+Patch204: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch205: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+
+#Fix for CVE-2023-1077
+Patch206: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -349,7 +357,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M202
+%autopatch -p1 -m192 -M206
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -517,6 +525,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
+- Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4
 - Fix for CVE-2023-1611
 * Fri Jun 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.283-3

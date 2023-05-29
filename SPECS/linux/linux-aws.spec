@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.283
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -237,6 +237,14 @@ Patch306: 0001-net-prevent-race-condition-in-do_tls_getsockopt_tx.patch
 # CVE-2023-1611
 Patch307: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
+#Fix for CVE-2023-1076
+Patch308: 0001-net-add-sock_init_data_uid.patch
+Patch309: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch310: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+
+#Fix for CVE-2023-1077
+Patch311: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -336,7 +344,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M310
+%autopatch -p1 -m300 -M311
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -537,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
+- Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4
 - Fix for CVE-2023-1611
 * Fri Jun 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.283-3
