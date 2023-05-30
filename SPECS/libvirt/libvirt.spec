@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        7.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Group:          Virtualization/Libraries
@@ -55,6 +55,7 @@ Requires:       parted
 Requires:       python3
 Requires:       readline
 Requires:       systemd
+Requires:       %{name}-docs = %{version}-%{release}
 
 %description
 Libvirt is collection of software that provides a convenient way to manage
@@ -77,6 +78,9 @@ This contains development tools and libraries for libvirt.
 %package docs
 Summary:        libvirt docs
 Group:          Development/Tools
+
+Conflicts:      %{name} < 7.10.0-4
+
 %description docs
 The contains libvirt package doc files.
 
@@ -161,11 +165,6 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
-
-%{_datadir}/augeas/*
-%{_datadir}/libvirt/cpu_map/*
-%{_datadir}/polkit-1/*
-
 %{_libdir}/libvirt*.so.*
 %{_libdir}/libvirt/connection-driver/*
 %{_libdir}/libvirt/lock-driver/lockd.so
@@ -173,10 +172,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
 %{_libdir}/systemd/system/*
-
 %{_libexecdir}/libvirt*
 %{_libexecdir}/virt-login-shell-helper
-
 %{_sysconfdir}/libvirt/nwfilter/
 %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/libvirt/qemu/networks/default.xml
@@ -187,16 +184,23 @@ find %{buildroot} -name '*.la' -delete
 %config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/libvirt/*
 %{_libdir}/libvirt*.so
 %{_libdir}/pkgconfig/libvirt*
 
 %files docs
-%{_datadir}/doc/libvirt/*
+%defattr(-,root,root)
+%{_docdir}/libvirt/*
 %{_datadir}/locale/*
 %{_datadir}/libvirt/test-screenshot.png
+%{_datadir}/augeas/*
+%{_datadir}/libvirt/cpu_map/*
+%{_datadir}/polkit-1/*
 
 %changelog
+* Tue May 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.10.0-4
+- Move doc files to docs package
 * Tue May 23 2023 Mukul Sikka <msikka@vmware.com> 7.10.0-3
 - Fix CVE-2023-2700
 * Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 7.10.0-2
