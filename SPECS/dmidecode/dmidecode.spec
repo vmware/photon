@@ -1,6 +1,6 @@
 Summary:    Tool to analyze BIOS DMI data
 Name:       dmidecode
-Version:    3.4
+Version:    3.5
 Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://www.nongnu.org/dmidecode
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.savannah.gnu.org/releases/dmidecode/%{name}-%{version}.tar.xz
-%define sha512 %{name}=62990b6159e5a7c8688d37e44957e7948391d2c6afeabaa4514ba9dad2d08b020297676e2dbbfcb6471efc6fb6f3682750422931a953f78f358bb3dd3745e95b
+%define sha512 %{name}=690c9bea391f6bbfc8cd48e8db408a61d5b551a07a2823c29d03a09607fc2043cc1bea44ee9fd27fd0e7bc0b287bf9de9f22a1a66053f5b1e63d77c03d93e1ae
 
 %description
 Dmidecode reports information about your system's hardware as described in
@@ -38,6 +38,8 @@ I/O ports (e.g. serial, parallel, USB).
 %{_mandir}/man8/*
 
 %changelog
+* Tue May 30 2023 Srish Srinivasan <ssrish@vmware.com> 3.5-1
+- Update to v3.5 to fix CVE-2023-30630
 * Wed Aug 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4-1
 - Upgrade to v3.4
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
