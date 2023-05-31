@@ -3,7 +3,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -20,6 +20,8 @@ Patch1: net-snmp-5.8-CVE-2020-15861.patch
 Patch2: net-snmp-5.8-CVE-2020-15862.patch
 Patch3: net-snmp-5.8-flood-messages.patch
 Patch4: net-snmp-CVE-2022-44792-44793.patch
+Patch5: net-snmp-01-CVE-2022-24806-24805-24807-24808-24809-24810.patch
+Patch6: net-snmp-02-CVE-2022-24806-24805-24807-24808-24809-24810.patch
 
 BuildRequires: openssl-devel
 BuildRequires: perl
@@ -133,6 +135,10 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+* Wed May 31 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.8-11
+- Fix CVE-2022-24805, CVE-2022-24806,
+  CVE-2022-24807, CVE-2022-24808, CVE-2022-24809
+  and CVE-2022-24810
 * Mon Apr 24 2023 Nitesh Kumar <kunitesh@vmware.com> 5.8-10
 - Patched for CVE-2022-44792 and CVE-2022-44793
 * Thu Oct 13 2022 Susant Sahani <ssahani@vmware.com> 5.8-9
