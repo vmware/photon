@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.183
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -161,6 +161,9 @@ Patch85: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 Patch90: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch91: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch92: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
+
+# SBX driver
+Patch95: 0001-Adding-SBX-kernel-driver.patch
 
 # CVE:
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -366,7 +369,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M58
 
 # -esx
-%autopatch -p1 -m60 -M92
+%autopatch -p1 -m60 -M95
 
 # CVE
 %autopatch -p1 -m100 -M136
@@ -609,6 +612,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jul 06 2023 Garrett Goble <gobleg@vmware.com> 5.10.183-2
+- Adding SBX kernel driver
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1
