@@ -15,6 +15,7 @@
             "build-src-rpm" : true,
             "build-dbginfo-rpm" : true,
             "build-dbginfo-rpm-list" : ["glibc", "linux"],
+            "extra-packages-list": ["chromium"],
 
             "target" : "iso",
             "compression-macro" : "w19.zstdio",

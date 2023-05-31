@@ -48,6 +48,7 @@ class constants(object):
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
     buildDbgInfoRpmList = []
+    extraPackagesList = []
 
     noDepsPackageList = [
         "texinfo",
