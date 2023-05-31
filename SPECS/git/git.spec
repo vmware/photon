@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.35.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -18,8 +18,6 @@ BuildRequires: openssl-devel
 Requires: expat
 Requires: curl
 Requires: openssl
-# Conflict is needed because of spliting the package git into git(core) and git-extras
-Conflicts: %{name} < %{version}-%{release}
 
 %description
 Git is a free and open source, distributed version control system
@@ -48,6 +46,8 @@ Requires:   perl-DBI
 Requires:   perl-YAML
 Requires:   subversion-perl
 Requires:   python3
+
+Conflicts: %{name} < 2.35.6-4
 
 %description extras
 These are the supported files for perl interface to the git, core package of git,
@@ -135,6 +135,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed May 31 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-4
+- Adding conflict to git-extras
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-3
 - Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-2
