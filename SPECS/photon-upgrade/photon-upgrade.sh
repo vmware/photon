@@ -1,6 +1,12 @@
 #!/bin/bash
 
 PROG="$(basename $0)"
+
+PHOTON_UPGRADE_UTILS_DIR="/usr/lib/photon-upgrade"
+
+source ${PHOTON_UPGRADE_UTILS_DIR}/utils.sh
+source ${PHOTON_UPGRADE_UTILS_DIR}/common.sh
+
 FROM_VERSION="$(/usr/bin/lsb_release -s -r)"
 TO_VERSION=''       # non-blank value indicates an os-upgrade, otherwise, update
 ASSUME_YES_OPT=''   # value '-y' denotes non-interactive invocation
@@ -10,53 +16,14 @@ UPDATE_PKGS=y       # If 'y', update packages before upgrade. Appliances may not
                     # thus, need this skipping for appliances
 INSTALL_ALL=''      # non-empty value signifies that all packages from provided
                     # repos mentioned in --repos option needs to be installed
-TDNF=/usr/bin/tdnf
-RPM=/usr/bin/rpm
-SYSTEMCTL=/usr/bin/systemctl
-TR=/usr/bin/tr
-AWK=/usr/bin/awk
-SED=/usr/bin/sed
-CP=/usr/bin/cp
-PRINTF=/usr/bin/printf
-WC=/usr/bin/wc
 
-OLD_RPM_DB_LOC=/var/lib/rpm
-TMP_BACKUP_LOC=''                   # temp location for 'rpm -qa' & rpm db copy
-NEW_RPMDB_PATH=/usr/lib/sysimage
-
-# Error Codes for which upgrade can be retried
-ERETRY_EAGAIN=11
-ERETRY_EINVAL=22
-
-declare -a deprecated_packages_arr=(
-  c-rest-engine c-rest-engine-devel cgroup-utils dcerpc dcerpc-devel
-  fcgi fcgi-devel glib-doc glib-networking-lang gmock-static gtest-static
-  json_spirit json_spirit-devel libnss-ato lightstep-tracer-cpp lightwave
-  lightwave-client lightwave-client-libs lightwave-devel lightwave-post
-  lightwave-samples lightwave-server likewise-open likewise-open-devel linux-aws
-  linux-aws-devel linux-aws-docs linux-aws-drivers-gpu linux-aws-oprofile
-  linux-aws-sound linux-drivers-intel-sgx linux-oprofile ndsend netmgmt
-  netmgmt-cli-devel netmgmt-devel openjdk8 openjdk8-doc openjdk8-sample
-  openjdk8-src openjre8 openjre8 pmd pmd-cli pmd-devel pmd-gssapi-unix pmd-libs
-  pmd-python3 postgresql10-libs postgresql10-devel postgresql10
-  python3-backports_abc sqlite2 sqlite2-devel sshfs tiptop ulogd ulogd-mysql
-  ulogd-pcap ulogd-sqlite
-) # end of initialization of $deprecated_packages_arr
-
-declare -A replaced_pkgs_map=(      # This hashtable maps package name changes
-)
-
-declare -a enabled_services_arr=()     # list of enabled services
-declare -a disabled_services_arr=()    # list of disabled serfices
-
-declare -a deprecated_pkgs_to_remove_arr=()
+# temp location for 'rpm -qa' & rpm db copy
+TMP_BACKUP_LOC=''
 
 function show_help() {
-  local rc
+  local rc=0
 
-  if [ -z "$1" ]; then
-    rc=0
-  else
+  if [ -n "$1" ]; then
     rc=$1
   fi
 
@@ -78,36 +45,6 @@ This script upgrades or updates Photon OS based upon the options provided.
   exit $rc
 }
 
-function echoerr() {
-  echo -ne "$*" 1>&2
-}
-
-# To be called on irrecoverable error. It provides a user with actionable items
-# to help debugging
-function abort() {
-  local rc=$1
-  local msg="$*"
-
-  echoerr "$msg\nOriginal list of RPMs and RPM DB are stored in $TMP_BACKUP_LOC,"\
-          " please provide contents of that folder along with system journal "\
-          " logs for analysis; these logs can be captured using command-\n"\
-          "# /usr/bin/journalctl -xa > $TMP_BACKUP_LOC/journal.log\n" \
-          "Cannot continue. Aborting.\n"
-  exit $rc
-}
-
-# displays the space separated list of systemd managed services which have
-# provided state
-# e.g. get_services_by_state(enabled) - will return space separated list of
-# enabled services
-function get_services_by_state() {
-  local state=$1
-
-  ${SYSTEMCTL} list-unit-files |\
-    ${AWK} "/[[:space:]]$state[[:space:]]*\$/{print \$1}"
-  return $?
-}
-
 # Remember what services are enabled or disabled before upgrade
 function record_enabled_disabled_services() {
   enabled_services_arr+=( $(get_services_by_state enabled) )
@@ -116,8 +53,15 @@ function record_enabled_disabled_services() {
 
 # Reset states of services where they were before upgrade
 function reset_enabled_disabled_services() {
-  ${SYSTEMCTL} enable ${enabled_services_arr[@]}
-  ${SYSTEMCTL} disable ${disabled_services_arr[@]}
+  local s=''
+
+  for s in ${enabled_services_arr[@]}; do
+    ${SYSTEMCTL} enable ${s}
+  done
+
+  for s in ${disabled_services_arr[@]}; do
+    ${SYSTEMCTL} disable ${s}
+  done
 }
 
 # Remove all debuginfo packages as they may hamper during upgrade
@@ -232,40 +176,6 @@ function distro_upgrade() {
   fi
 }
 
-function rebuilddb() {
-  local rc=0
-
-  if ! $RPM --rebuilddb; then
-    rc=$?
-    abort $rc "Failed rebuilding installed package database."
-  fi
-}
-
-function relocate_rpmdb() {
-  local nold=$(${RPM} -qa | ${WC} -l)
-  local nnew=0
-  local rc=0
-
-  mkdir -p $NEW_RPMDB_PATH
-  if ! ${CP} -pr "$OLD_RPM_DB_LOC" "$NEW_RPMDB_PATH"; then
-    rc=$?
-    abort $rc "Error making rpmdb immutable"
-  fi
-  if ! ${TDNF} $ASSUME_YES_OPT upgrade rpm; then
-    abort $rc "Error making rpmdb immutable"
-  fi
-  rebuilddb
-  nnew=$(${RPM} -qa | ${WC} -l)
-  if [ $nnew -ge $nold ]; then
-    # RPMDB relocated successfully thus cleanup the old location
-    rm -rf $OLD_RPM_DB_LOC
-    echo "rpmdb relocation succeeded."
-  else
-    rc=$?
-    abort $rc "Error: Relocated rpmdb is corrupt ($nnew RPMs found < expected $nold RPMs)"
-  fi
-}
-
 function post_upgrade_remove_pkgs() {
   local pkgs="$*"
   local err_rm_pkg_list=''
@@ -285,16 +195,6 @@ function post_upgrade_remove_pkgs() {
     echo -ne "Warning: following packages were not removed post upgrade-" \
              "$err_rm_pkg_list"
   fi
-}
-
-# Take care of post upgrade config changes
-function fix_post_upgrade_config() {
-  local FSTAB=/etc/fstab
-  # noacl option is no longer supported for ext4, hence remove them from fstab
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+)noacl,(.*)$/\1\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
-  return
 }
 
 # If user specifies --install-all and --repos then install all packages
@@ -333,13 +233,13 @@ function backup_rpms_list_n_db() {
   echo "Recording list of all installed RPMs on this machine to $rpmqa_file."
   ${RPM} -qa > $rpmqa_file
   echo "Creating back of RPM DB."
-  ${CP} -a $OLD_RPM_DB_LOC $TMP_BACKUP_LOC
+  ${CP} -a $OLD_RPM_DB_PATH $TMP_BACKUP_LOC
 }
 
 # This will cleanup the backup created by backup_rpms_list_n_db()
 function cleanup_and_exit() {
   if [ -n "$TMP_BACKUP_LOC" -a -e "$TMP_BACKUP_LOC" ]; then
-    rm -rf "$TMP_BACKUP_LOC"
+    ${RM} -rf "$TMP_BACKUP_LOC"
   fi
   exit $1
 }
@@ -367,11 +267,10 @@ function find_installed_deprecated_packages() {
   local pkg=''
   local yn=''
 
-  for pkg in ${deprecated_packages_arr[@]}; do
-    if $RPM -q --quiet $pkg; then
-      deprecated_pkgs_to_remove_arr+=( $pkg )
-    fi
-  done
+  deprecated_pkgs_to_remove_arr+=(
+    $(find_installed_packages ${deprecated_packages_arr[@]})
+  )
+
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
     echo "The following deprecated packages will be removed before upgrade -"
     $PRINTF "    %s\n" ${deprecated_pkgs_to_remove_arr[@]}
@@ -423,19 +322,21 @@ function verify_version_and_upgrade() {
   echo
   case "$yn" in
     [Yy]*)
-      record_enabled_disabled_services
       if [ "$UPDATE_PKGS" = 'y' ]; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances control builds so do not need this.
         update_solv_to_support_complex_deps
+        prepare_for_upgrade
         distro_upgrade $FROM_VERSION
       fi
       remove_unsupported_packages
       rebuilddb
+      record_enabled_disabled_services
+      remove_replaced_packages
       upgrade_photon_release
+      update_core_packages
       relocate_rpmdb
       install_replacement_packages
-      remove_replaced_packages
       distro_upgrade $TO_VERSION
       rebuilddb
       post_upgrade_remove_pkgs
@@ -444,6 +345,7 @@ function verify_version_and_upgrade() {
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
       fi
+      rebuilddb
       ask_for_reboot
       ;;
     *) cleanup_and_exit 0;;
@@ -457,6 +359,7 @@ while [ $# -gt 0 ]; do
       ;;
     --upgrade-os )
       TO_VERSION=5.0
+      source ${PHOTON_UPGRADE_UTILS_DIR}/ph4-to-ph5-upgrade.sh
       ;;
     --assume-yes )
       ASSUME_YES_OPT='-y'
@@ -477,7 +380,6 @@ while [ $# -gt 0 ]; do
         echoerr "--repos was specified more than once"
         show_help $ERETRY_EINVAL
       fi
-
 
       for r in $(echo "$repos_csv" | ${TR} , ' '); do
         REPOS_OPT="$REPOS_OPT --enablerepo=$r"
