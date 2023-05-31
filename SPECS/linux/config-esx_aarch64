@@ -1735,6 +1735,7 @@ CONFIG_VMWARE_VMCI=y
 # CONFIG_MISC_RTSX_USB is not set
 # CONFIG_HABANA_AI is not set
 # CONFIG_PVPANIC is not set
+# CONFIG_SBX is not set
 # end of Misc devices
 
 # SCSI device support

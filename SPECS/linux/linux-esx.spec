@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.37
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -146,6 +146,9 @@ Patch77: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
 Patch80: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch81: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
+
+# SBX driver
+Patch85: 0001-Adding-SBX-kernel-driver.patch
 
 # CVE: [100..129]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -495,6 +498,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jul 06 2023 Garrett Goble <gobleg@vmware.com> 6.1.37-2
+- Adding SBX kernel driver
 * Tue Jul 04 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.37-1
 - Update to version 6.1.37
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.32-1

@@ -1692,6 +1692,7 @@ CONFIG_VMWARE_VMCI=y
 # CONFIG_HABANA_AI is not set
 # CONFIG_PVPANIC is not set
 CONFIG_VMWARE_EXTCFG=y
+CONFIG_SBX=m
 # end of Misc devices
 
 # SCSI device support
