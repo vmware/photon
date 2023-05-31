@@ -1,7 +1,7 @@
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
@@ -20,7 +20,6 @@ BuildRequires: ca-certificates
 BuildRequires: gnutls-devel
 BuildRequires: openssl-devel
 BuildRequires: intltool
-BuildRequires: glib
 BuildRequires: glib-devel
 BuildRequires: glib-schemas
 BuildRequires: meson
@@ -40,7 +39,9 @@ Glib-netowkring contains networking related gio modules for Glib.
 %package    lang
 Summary:    Additional language files for glib-networking
 Group:      System Environment/Development
-Requires:   glib-networking
+Requires:   %{name} = %{version}-%{release}
+
+Conflicts:  %{name} < 2.74.0-2
 
 %description lang
 These are the additional language files of glib-networking.
@@ -69,15 +70,18 @@ CONFIGURE_OPTS=(
 %meson_test
 %endif
 
-%files -f %{name}.lang
+%files
 %defattr(-,root,root)
-%license COPYING
-%doc NEWS README
 %{_libdir}/gio/modules/libgioopenssl.so
 %{_libdir}/gio/modules/libgiognutls.so
 %{_libdir}/gio/modules/libgioenvironmentproxy.so
 
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
+* Wed May 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-2
+- Package lang properly
 * Tue Nov 01 2022 Susant Sahani <sshedi@vmware.com> 2.74.0-1
 - Bump version
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.70.1-3
