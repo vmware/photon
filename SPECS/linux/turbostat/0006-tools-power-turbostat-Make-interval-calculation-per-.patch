@@ -1,0 +1,99 @@
+From 9c82296acfab3ec2fa70642396a6fd8973d48116 Mon Sep 17 00:00:00 2001
+From: Yazen Ghannam <yazen.ghannam@amd.com>
+Date: Mon, 25 Mar 2019 17:32:42 +0000
+Subject: [PATCH 06/18] tools/power turbostat: Make interval calculation per
+ thread to reduce jitter
+
+Turbostat currently normalizes TSC and other values by dividing by an
+interval. This interval is the delta between the start of one global
+(all counters on all CPUs) sampling and the start of another. However,
+this introduces a lot of jitter into the data.
+
+In order to reduce jitter, the interval calculation should be based on
+timestamps taken per thread and close to the start of the thread's
+sampling.
+
+Define a per thread time value to hold the delta between samples taken
+on the thread.
+
+Use the timestamp taken at the beginning of sampling to calculate the
+delta.
+
+Move the thread's beginning timestamp to after the CPU migration to
+avoid jitter due to the migration.
+
+Use the global time delta for the average time delta.
+
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 1d1fd616e597..66c49ebae901 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -166,6 +166,7 @@ size_t cpu_present_setsize, cpu_affinity_setsize, cpu_subset_size;
+ struct thread_data {
+ 	struct timeval tv_begin;
+ 	struct timeval tv_end;
++	struct timeval tv_delta;
+ 	unsigned long long tsc;
+ 	unsigned long long aperf;
+ 	unsigned long long mperf;
+@@ -900,7 +901,7 @@ int format_counters(struct thread_data *t, struct core_data *c,
+ 	if (DO_BIC(BIC_TOD))
+ 		outp += sprintf(outp, "%10ld.%06ld\t", t->tv_end.tv_sec, t->tv_end.tv_usec);
+ 
+-	interval_float = tv_delta.tv_sec + tv_delta.tv_usec/1000000.0;
++	interval_float = t->tv_delta.tv_sec + t->tv_delta.tv_usec/1000000.0;
+ 
+ 	tsc = t->tsc * tsc_tweak;
+ 
+@@ -1283,6 +1284,7 @@ delta_thread(struct thread_data *new, struct thread_data *old,
+ 	 * over-write old w/ new so we can print end of interval values
+ 	 */
+ 
++	timersub(&new->tv_begin, &old->tv_begin, &old->tv_delta);
+ 	old->tv_begin = new->tv_begin;
+ 	old->tv_end = new->tv_end;
+ 
+@@ -1378,6 +1380,8 @@ void clear_counters(struct thread_data *t, struct core_data *c, struct pkg_data
+ 	t->tv_begin.tv_usec = 0;
+ 	t->tv_end.tv_sec = 0;
+ 	t->tv_end.tv_usec = 0;
++	t->tv_delta.tv_sec = 0;
++	t->tv_delta.tv_usec = 0;
+ 
+ 	t->tsc = 0;
+ 	t->aperf = 0;
+@@ -1544,6 +1548,9 @@ void compute_average(struct thread_data *t, struct core_data *c,
+ 
+ 	for_all_cpus(sum_counters, t, c, p);
+ 
++	/* Use the global time delta for the average. */
++	average.threads.tv_delta = tv_delta;
++
+ 	average.threads.tsc /= topo.num_cpus;
+ 	average.threads.aperf /= topo.num_cpus;
+ 	average.threads.mperf /= topo.num_cpus;
+@@ -1733,13 +1740,13 @@ int get_counters(struct thread_data *t, struct core_data *c, struct pkg_data *p)
+ 	struct msr_counter *mp;
+ 	int i;
+ 
+-	gettimeofday(&t->tv_begin, (struct timezone *)NULL);
+-
+ 	if (cpu_migrate(cpu)) {
+ 		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
++	gettimeofday(&t->tv_begin, (struct timezone *)NULL);
++
+ 	if (first_counter_read)
+ 		get_apic_id(t);
+ retry:
+-- 
+2.23.1
+

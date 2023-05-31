@@ -1,7 +1,7 @@
-From d9108a492d160398a1392f1febe5bbe32f69a0d5 Mon Sep 17 00:00:00 2001
+From 6b586b0af26ab3e66ad1400acca25e2af764c92e Mon Sep 17 00:00:00 2001
 From: Len Brown <len.brown@intel.com>
 Date: Thu, 10 Feb 2022 21:06:56 -0500
-Subject: [PATCH 5/5] tools/power turbostat: fix ICX DRAM power numbers
+Subject: [PATCH 05/18] tools/power turbostat: fix ICX DRAM power numbers
 
 commit 6397b6418935773a34b533b3348b03f4ce3d7050 upstream.
 
@@ -29,5 +29,5 @@ index 106244f22179..1d1fd616e597 100644
  	case INTEL_FAM6_XEON_PHI_KNM:
  		return (rapl_dram_energy_units = 15.3 / 1000000);
 -- 
-2.25.1
+2.23.1
 

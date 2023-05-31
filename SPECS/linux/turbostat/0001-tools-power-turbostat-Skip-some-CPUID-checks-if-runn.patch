@@ -1,8 +1,8 @@
-From 78e408970bc90fb84f18dc850e47e55ff38feaaf Mon Sep 17 00:00:00 2001
+From bb1dc368a2e18d5b0778079a67d51b7504498307 Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Wed, 21 Dec 2022 05:57:49 -0800
-Subject: [PATCH 1/5] tools/power turbostat: Skip some CPUID checks if running
- on VMware hypervisor
+Subject: [PATCH 01/18] tools/power turbostat: Skip some CPUID checks if
+ running on VMware hypervisor
 
 Turbostat hasn't really worked full-fledged within Linux guests on
 ESXi, since some of the MSRs that it needs in order to gather data
@@ -96,5 +96,5 @@ index 2233cf722c69..be7ccb0c3450 100644
  		BIC_PRESENT(BIC_PkgTmp);
  	has_hwp = eax & (1 << 7);
 -- 
-2.25.1
+2.23.1
 

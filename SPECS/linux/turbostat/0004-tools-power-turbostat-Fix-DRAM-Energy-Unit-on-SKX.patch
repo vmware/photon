@@ -1,7 +1,7 @@
-From f54ad576878ca8e6ec70037699cdfea26b003ecd Mon Sep 17 00:00:00 2001
+From 99f81c33fe1e807a3f1ea4e82058db3bdbd2333d Mon Sep 17 00:00:00 2001
 From: Zhang Rui <rui.zhang@intel.com>
 Date: Thu, 11 Mar 2021 10:05:13 +0800
-Subject: [PATCH 4/5] tools/power turbostat: Fix DRAM Energy Unit on SKX
+Subject: [PATCH 04/18] tools/power turbostat: Fix DRAM Energy Unit on SKX
 
 commit abdc75ab53b7fd2ef42c79e88cf0caf2d007c4f2 upstream.
 
@@ -28,5 +28,5 @@ index c9ae2da46606..106244f22179 100644
  	case INTEL_FAM6_XEON_PHI_KNM:
  		return (rapl_dram_energy_units = 15.3 / 1000000);
 -- 
-2.25.1
+2.23.1
 

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.283
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -228,6 +228,9 @@ Patch191: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 # Patch to distribute the tasks within affined cpus
 Patch192: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 
+# Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
+Patch193: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -322,7 +325,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m161 -M169
 
 # Update vmxnet3 driver to version 7
-%autopatch -p1 -m170 -M192
+%autopatch -p1 -m170 -M184
+
+%autopatch -p1 -m191 -M193
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -523,6 +528,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
+- Allow cpuidle subsystem to use acpi_idle driver
+- when only one C-state is available
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
 - Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1

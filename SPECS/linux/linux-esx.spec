@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.283
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -302,6 +302,9 @@ Patch383: 0003-scsi-vmw_pvscsi-Silence-dma-mapping-errors.patch
 Patch384: 0004-scsi-vmw_pvscsi-Avoid-repeated-dma-mapping-and-unmapping-of-sg-list-memory.patch
 Patch385: 0005-scsi-vmw_pvscsi-Reduce-the-ring-size-when-SEV-is-active.patch
 Patch386: 0006-scsi-vmw_pvscsi-Fix-uninitialized-sense-buffer-with-swiotlb.patch
+
+# Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
+Patch387: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
 # SEV-ES V3
 Patch401: 0001-KVM-SVM-Add-GHCB-definitions.patch
@@ -810,6 +813,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
+- Allow cpuidle subsystem to use acpi_idle driver
+- when only one C-state is available
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
 - Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1

@@ -1,0 +1,36 @@
+From 2c6fabd154fe1675e96e9d2be81f9621103c1361 Mon Sep 17 00:00:00 2001
+From: Tony Luck <tony.luck@intel.com>
+Date: Wed, 3 Jun 2020 10:33:52 -0700
+Subject: [PATCH 09/18] x86/cpu: Add Sapphire Rapids CPU model number
+
+commit be25d1b5ea6a3a3ecbb5474e2ae8e32d2ba055ea upstream.
+
+Latest edition (039) of "Intel Architecture Instruction Set Extensions
+and Future Features Programming Reference" includes three new CPU model
+numbers. Linux already has the two Ice Lake server ones. Add the new
+model number for Sapphire Rapids.
+
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20200603173352.15506-1-tony.luck@intel.com
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ arch/x86/include/asm/intel-family.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index 1f2f52a34086..afd6aae39435 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -63,6 +63,7 @@
+ 
+ #define INTEL_FAM6_TIGERLAKE_L		0x8C
+ #define INTEL_FAM6_TIGERLAKE		0x8D
++#define INTEL_FAM6_SAPPHIRERAPIDS_X	0x8F
+ 
+ #define INTEL_FAM6_COMETLAKE		0xA5
+ #define INTEL_FAM6_COMETLAKE_L		0xA6
+-- 
+2.23.1
+

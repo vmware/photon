@@ -1,0 +1,40 @@
+From 16b08563b4581254c2204ff2b23cabd6329c8561 Mon Sep 17 00:00:00 2001
+From: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Date: Tue, 26 Jul 2022 18:29:34 +0300
+Subject: [PATCH 11/18] tools/power turbostat: fix SPR PC6 limits
+
+commit 0e4d42af81471ab801e059e1feac8e27547230cf upstream.
+
+Sapphire Rapids Xeon (SPR) supports 2 flavors of PC6 - PC6N (non-retention) and
+PC6R (retention). Before this patch we used ICX package C-state limits, which
+was wrong, because ICX has only one PC6 flavor. With this patch, we use SKX PC6
+limits for SPR, because they are the same.
+
+Signed-off-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index b167ce23bc2d..0bf1de6fd081 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3189,11 +3189,11 @@ int probe_nhm_msrs(unsigned int family, unsigned int model)
+ 		has_misc_feature_control = 1;
+ 		break;
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
++	case INTEL_FAM6_SAPPHIRERAPIDS_X:	/* SPR */
+ 		pkg_cstate_limits = skx_pkg_cstate_limits;
+ 		has_misc_feature_control = 1;
+ 		break;
+ 	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+-	case INTEL_FAM6_SAPPHIRERAPIDS_X:	/* SPR */
+ 		pkg_cstate_limits = icx_pkg_cstate_limits;
+ 		has_misc_feature_control = 1;
+ 		break;
+-- 
+2.23.1
+

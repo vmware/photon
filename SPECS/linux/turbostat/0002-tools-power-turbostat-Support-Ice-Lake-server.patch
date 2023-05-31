@@ -1,7 +1,7 @@
-From 3a0f7c6114b857540a84abaaa8a64b76a8878662 Mon Sep 17 00:00:00 2001
+From cb06f9daac6f191cb19592720f65b2b678d976ac Mon Sep 17 00:00:00 2001
 From: Chen Yu <yu.c.chen@intel.com>
 Date: Tue, 14 Jan 2020 12:06:49 +0800
-Subject: [PATCH 2/5] tools/power turbostat: Support Ice Lake server
+Subject: [PATCH 02/18] tools/power turbostat: Support Ice Lake server
 
 commit 23274faf96500700da83c4f0ff12d78ae03d5604 upstream.
 
@@ -29,5 +29,5 @@ index be7ccb0c3450..43eb94e55674 100644
  	case INTEL_FAM6_XEON_PHI_KNM:
  		do_rapl = RAPL_PKG | RAPL_DRAM | RAPL_DRAM_POWER_INFO | RAPL_DRAM_PERF_STATUS | RAPL_PKG_PERF_STATUS | RAPL_PKG_POWER_INFO;
 -- 
-2.25.1
+2.23.1
 

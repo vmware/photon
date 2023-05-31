@@ -1,0 +1,119 @@
+From cf0b5e340afc8da5797db26b094ce607c8550c9e Mon Sep 17 00:00:00 2001
+From: Len Brown <len.brown@intel.com>
+Date: Wed, 30 Sep 2020 20:58:15 -0400
+Subject: [PATCH 14/18] tools/power turbostat: harden against cpu hotplug
+
+commit 	3d7772ea5602b88c7c7f0a50d512171a2eed6659 upstream.
+
+turbostat tends to get confused when CPUs are added and removed
+while it is running.
+
+There are races, such as checking the current cpu, and then
+reading a sysfs file that depends on that cpu number.
+
+Close the two issues that seem to come up the most.
+First, there is an infinite reset loop detector --
+change that to allow more resets before giving up.
+Secondly, one of those file reads didn't really need
+to exit the program on failure...
+
+Signed-off-by: Len Brown <len.brown@intel.com>
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 9973266a007e..a780a020e370 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -1751,7 +1751,7 @@ int get_counters(struct thread_data *t, struct core_data *c, struct pkg_data *p)
+ 	int i;
+ 
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "get_counters: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+@@ -2599,7 +2599,12 @@ int get_thread_siblings(struct cpu_topology *thiscpu)
+ 
+ 	sprintf(path,
+ 		"/sys/devices/system/cpu/cpu%d/topology/thread_siblings", cpu);
+-	filep = fopen_or_die(path, "r");
++	filep = fopen(path, "r");
++
++	if (!filep) {
++		warnx("%s: open failed", path);
++		return -1;
++	}
+ 	do {
+ 		offset -= BITMASK_SIZE;
+ 		fscanf(filep, "%lx%c", &map, &character);
+@@ -2711,7 +2716,7 @@ void re_initialize(void)
+ {
+ 	free_all_buffers();
+ 	setup_all_buffers();
+-	printf("turbostat: re-initialized with num_cpus %d\n", topo.num_cpus);
++	fprintf(outf, "turbostat: re-initialized with num_cpus %d\n", topo.num_cpus);
+ }
+ 
+ void set_max_cpu_num(void)
+@@ -3009,7 +3014,7 @@ void turbostat_loop()
+ 	if (retval < -1) {
+ 		exit(retval);
+ 	} else if (retval == -1) {
+-		if (restarted > 1) {
++		if (restarted > 10) {
+ 			exit(retval);
+ 		}
+ 		re_initialize();
+@@ -3578,7 +3583,7 @@ int print_epb(struct thread_data *t, struct core_data *c, struct pkg_data *p)
+ 		return 0;
+ 
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "print_thermal: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+@@ -3622,7 +3627,7 @@ int print_hwp(struct thread_data *t, struct core_data *c, struct pkg_data *p)
+ 		return 0;
+ 
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "print_perf_limit: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+@@ -3710,7 +3715,7 @@ int print_perf_limit(struct thread_data *t, struct core_data *c, struct pkg_data
+ 		return 0;
+ 
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "print_hwp: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+@@ -4033,7 +4038,7 @@ int print_thermal(struct thread_data *t, struct core_data *c, struct pkg_data *p
+ 		return 0;
+ 
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "print_epb: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+@@ -4397,7 +4402,7 @@ int set_temperature_target(struct thread_data *t, struct core_data *c, struct pk
+ 
+ 	cpu = t->cpu_id;
+ 	if (cpu_migrate(cpu)) {
+-		fprintf(outf, "Could not migrate to CPU %d\n", cpu);
++		fprintf(outf, "print_rapl: Could not migrate to CPU %d\n", cpu);
+ 		return -1;
+ 	}
+ 
+-- 
+2.23.1
+

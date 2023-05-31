@@ -1,0 +1,39 @@
+From 4069c80ce78baba471a39604e42cf94366a7fb07 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <rui.zhang@intel.com>
+Date: Sat, 24 Sep 2022 13:47:38 +0800
+Subject: [PATCH 13/18] tools/power turbostat: Use standard Energy Unit for SPR
+ Dram RAPL domain
+
+commit 	b2d433ae637626d44c9d4a75dd3330cf68fed9de upstream.
+
+Intel Xeon servers used to use a fixed energy resolution (15.3uj) for
+Dram RAPL domain. But on SPR, Dram RAPL domain follows the standard
+energy resolution as described in MSR_RAPL_POWER_UNIT.
+
+Remove the SPR rapl_dram_energy_units quirk.
+
+Fixes: e7af1ed3fa47 ("tools/power turbostat: Support additional CPU model numbers")
+Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+Tested-by: Wang Wendy <wendy.wang@intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 90edbc1765c2..9973266a007e 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3827,7 +3827,6 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	case INTEL_FAM6_BROADWELL_XEON_D:	/* BDX-DE */
+ 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
+ 	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+-	case INTEL_FAM6_SAPPHIRERAPIDS_X:	/* SPR */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
+ 	case INTEL_FAM6_XEON_PHI_KNM:
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
+-- 
+2.23.1
+

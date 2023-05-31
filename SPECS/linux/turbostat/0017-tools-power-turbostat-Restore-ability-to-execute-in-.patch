@@ -1,0 +1,37 @@
+From 767d26493f4caffb89cb859cc26a20d049cecf4f Mon Sep 17 00:00:00 2001
+From: Len Brown <len.brown@intel.com>
+Date: Fri, 15 Feb 2019 21:58:23 -0800
+Subject: [PATCH 17/18] tools/power turbostat: Restore ability to execute in
+ topology-order
+
+turbostat executes on CPUs in "topology order".
+This is an optimization for measuring profoundly idle systems --
+as the closest hardware is woken next...
+
+Fix a typo that was added with the sub-die-node support,
+that broke topology ordering on multi-node systems.
+
+Signed-off-by: Len Brown <len.brown@intel.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index e801b4e67e22..f27a1d8bcf69 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -319,9 +319,8 @@ int for_all_cpus(int (func)(struct thread_data *, struct core_data *, struct pkg
+ 	int retval, pkg_no, core_no, thread_no, node_no;
+ 
+ 	for (pkg_no = 0; pkg_no < topo.num_packages; ++pkg_no) {
+-		for (core_no = 0; core_no < topo.cores_per_node; ++core_no) {
+-			for (node_no = 0; node_no < topo.nodes_per_pkg;
+-			     node_no++) {
++		for (node_no = 0; node_no < topo.nodes_per_pkg; node_no++) {
++			for (core_no = 0; core_no < topo.cores_per_node; ++core_no) {
+ 				for (thread_no = 0; thread_no <
+ 					topo.threads_per_core; ++thread_no) {
+ 					struct thread_data *t;
+-- 
+2.23.1
+

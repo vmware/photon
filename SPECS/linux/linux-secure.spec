@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.283
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -196,6 +196,9 @@ Patch145: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Patch to distribute the tasks within affined cpus
 Patch146: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+
+# Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
+Patch147: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -505,6 +508,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
+- Allow cpuidle subsystem to use acpi_idle driver
+- when only one C-state is available
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
 - Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1

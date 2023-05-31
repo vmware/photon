@@ -1,0 +1,41 @@
+From 4d1600196192d9b2148261360188dea9e624a6ae Mon Sep 17 00:00:00 2001
+From: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Date: Tue, 8 Mar 2022 13:41:01 +0200
+Subject: [PATCH 08/18] turbostat: fix PC6 displaying on some systems
+
+commit a1b6f487cb47ad99ee14730f03c80d3eb4c71e8a upstream.
+
+'MSR_PKG_CST_CONFIG_CONTROL' encodes the deepest allowed package C-state limit,
+and turbostat decodes it.
+
+Before this patch: turbostat does not recognize value "3" on Ice Lake Xeon
+(ICX) and Sapphire Rapids Xeon (SPR), treats it as "unknown", and does not
+display any package C-states in the results table.
+
+After this patch: turbostat recognizes value 3 on ICX and SPR, treats it as
+"PC6", and correctly displays package C-states in the results table.
+
+Signed-off-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 5c30a8211dbd..ed586e50a548 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -2013,7 +2013,7 @@ int amt_pkg_cstate_limits[16] = {PCLUNL, PCL__1, PCL__2, PCLRSV, PCLRSV, PCLRSV,
+ int phi_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL_6N, PCL_6R, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ int glm_pkg_cstate_limits[16] = {PCLUNL, PCL__1, PCL__3, PCL__6, PCL__7, PCL_7S, PCL__8, PCL__9, PCL_10, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ int skx_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL_6N, PCL_6R, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+-int icx_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL__6, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
++int icx_pkg_cstate_limits[16] = {PCL__0, PCL__2, PCL__6, PCL__6, PCLRSV, PCLRSV, PCLRSV, PCLUNL, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV, PCLRSV};
+ 
+ static void
+ calculate_tsc_tweak()
+-- 
+2.23.1
+

@@ -1,0 +1,69 @@
+From 875dbbaa447bedee83a0e3cf6214d69dc8ba5727 Mon Sep 17 00:00:00 2001
+From: Len Brown <len.brown@intel.com>
+Date: Tue, 4 May 2021 19:27:34 -0400
+Subject: [PATCH 15/18] tools/power turbostat: elevate priority of interval
+ mode
+
+commit 38c6663a68903cf1187003129cd1873551979865 upstream.
+
+This makes interval mode less likely to see delayed
+results on a heavily loaded system.
+
+Signed-off-by: Len Brown <len.brown@intel.com>
+[Ankit: Backported to v4.19.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tools/power/x86/turbostat/turbostat.c | 30 +++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index a780a020e370..15a1f9955f0c 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -2996,6 +2996,31 @@ void do_sleep(void)
+ 	}
+ }
+ 
++/*
++ * set_my_sched_priority(pri)
++ * return previous
++ */
++int set_my_sched_priority(int priority)
++{
++	int retval;
++	int original_priority;
++
++	errno = 0;
++	original_priority = getpriority(PRIO_PROCESS, 0);
++	if (errno && (original_priority == -1))
++		err(errno, "getpriority");
++
++	retval = setpriority(PRIO_PROCESS, 0, priority);
++	if (retval)
++		err(retval, "setpriority(%d)", priority);
++
++	errno = 0;
++	retval = getpriority(PRIO_PROCESS, 0);
++	if (retval != priority)
++		err(-1, "getpriority(%d) != setpriority(%d)", retval, priority);
++
++	return original_priority;
++}
+ 
+ void turbostat_loop()
+ {
+@@ -3005,6 +3030,11 @@ void turbostat_loop()
+ 
+ 	setup_signal_handler();
+ 
++	/*
++	 * elevate own priority for interval mode
++	 */
++	set_my_sched_priority(-20);
++
+ restart:
+ 	restarted++;
+ 
+-- 
+2.23.1
+

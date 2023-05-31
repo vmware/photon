@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.283
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -661,6 +661,9 @@ Patch636: 0003-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 Patch637: linux-rt-sched-core-Distribute-tasks-within-affinity-masks.patch
 Patch638: 0001-sched-rt-Use-cpumask_any-_distribute.patch
 
+# Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
+Patch639: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -916,7 +919,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M638
+%autopatch -p1 -m0 -M639
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1337,6 +1340,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
+- Allow cpuidle subsystem to use acpi_idle driver
+- when only one C-state is available
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
 - Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1

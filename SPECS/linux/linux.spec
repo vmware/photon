@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.283
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -80,14 +80,6 @@ Patch16: 0005-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
 %endif
-
-# VMware-specific patch to enable turbostat to work on ESXi
-Patch18: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
-# Backports of upstream patches to add Ice Lake support to turbostat
-Patch19: 0002-tools-power-turbostat-Support-Ice-Lake-server.patch
-Patch20: 0003-tools-power-turbostat-Remove-Package-C6-Retention-on.patch
-Patch21: 0004-tools-power-turbostat-Fix-DRAM-Energy-Unit-on-SKX.patch
-Patch22: 0005-tools-power-turbostat-fix-ICX-DRAM-power-numbers.patch
 
 Patch25: 0001-tools-perf-fix-compilation-error.patch
 Patch26: 4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -217,6 +209,9 @@ Patch145: 0001-sched-deadline-Fix-BUG_ON-condition-for-deboosted-ta.patch
 
 # Patch to distribute the tasks within affined cpus
 Patch146: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
+
+# Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
+Patch147: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
 # Lockdown support
 Patch150: lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -516,6 +511,28 @@ Patch518: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 #Fix for CVE-2022-3303
 Patch519: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 
+# VMware-specific patch to enable turbostat to work on ESXi
+Patch800: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
+# Backports of upstream patches to add Ice Lake support to turbostat
+Patch801: 0002-tools-power-turbostat-Support-Ice-Lake-server.patch
+Patch802: 0003-tools-power-turbostat-Remove-Package-C6-Retention-on.patch
+Patch803: 0004-tools-power-turbostat-Fix-DRAM-Energy-Unit-on-SKX.patch
+Patch804: 0005-tools-power-turbostat-fix-ICX-DRAM-power-numbers.patch
+Patch805: 0006-tools-power-turbostat-Make-interval-calculation-per-.patch
+Patch806: 0007-tools-power-turbostat-Fix-CPU-C1-display-value.patch
+Patch807: 0008-turbostat-fix-PC6-displaying-on-some-systems.patch
+# Backports of upstream patches to add Sapphire Rapids support to turbostat
+Patch808: 0009-x86-cpu-Add-Sapphire-Rapids-CPU-model-number.patch
+Patch809: 0010-tools-power-turbostat-separate-SPR-from-ICX.patch
+Patch810: 0011-tools-power-turbostat-fix-SPR-PC6-limits.patch
+Patch811: 0012-tools-power-turbostat-do-not-decode-ACC-for-ICX-and-.patch
+Patch812: 0013-tools-power-turbostat-Use-standard-Energy-Unit-for-S.patch
+Patch813: 0014-tools-power-turbostat-harden-against-cpu-hotplug.patch
+Patch814: 0015-tools-power-turbostat-elevate-priority-of-interval-m.patch
+Patch815: 0016-tools-power-turbostat-Use-sched_getcpu-instead-of-ha.patch
+Patch816: 0017-tools-power-turbostat-Restore-ability-to-execute-in-.patch
+Patch817: 0018-tools-power-turbostat-reduce-debug-output.patch
+
 #Patches for i40e driver
 Patch1502: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1503: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
@@ -702,6 +719,8 @@ This Linux package contains hmac sha generator kernel module.
 
 %ifarch x86_64
 %autopatch -p1 -m281 -M519
+
+%autopatch -p1 -m800 -M817
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1107,6 +1126,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
+- Add support for Intel Sapphire Rapids server CPUs to turbostat.
+- Allow cpuidle subsystem to use acpi_idle driver
+- when only one C-state is available
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-1
 - Update to version 4.19.283
 * Tue Apr 18 2023 Keerthana K <keerthanak@vmware.com> 4.19.280-1
