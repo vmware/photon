@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.18.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -584,6 +584,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Thu Jun 29 2023 Anmol Jain <anmolja@vmwrae.com> 4.18.3-2
+- Version bump up to use sudo
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.3-1
 - update to 4.18.3 including various CVE fixes
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-3

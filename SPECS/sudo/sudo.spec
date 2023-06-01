@@ -1,15 +1,14 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.12p1
-Release:        2%{?dist}
+Version:        1.9.13p3
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=6f564112aa1e0e9cd223adb280bd430d513109c031e52deca308501234dedc0d7418f13cbb9b4249ac58d997cfdae1908c280c26733acbc55dbf9db45dff239a
-Patch0:         CVE-2023-22809.patch
+%define sha512  %{name}=c0c5cd0c6308868afdad2ecf55b86fdcf1f49889b30831c9db3bc56a63dc3a07686c285c20b2500494b2a76653e2ec69196abdc583312609a5db1c81a6e4e737
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -21,7 +20,7 @@ The Sudo package allows a system administrator to give certain users (or groups 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup -n sudo-%{version} -p1
+%autosetup -n sudo-%{version}
 
 %build
 %configure --host=%{_host} --build=%{_build} \
@@ -98,6 +97,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Thu Jun 01 2023 Anmol Jain <anmolja@vmware.com> 1.9.13p3-1
+- Version update
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.12p1-2
 - Fix CVE-2023-22809
 * Mon Dec 05 2022 Anmol Jain <anmolja@vmware.com> 1.9.12p1-1
