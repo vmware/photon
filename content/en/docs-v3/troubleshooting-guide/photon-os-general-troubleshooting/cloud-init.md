@@ -3,11 +3,11 @@ title:  Cloud-init
 weight: 4
 ---
 
-Cloud-init is mixture of Python and Shell scripts that initialize cloud instances of Linux machines.
+Cloud-init is a mixture of Python and Shell scripts that initialize cloud instances of Linux machines.
 Cloud-init performs boot time configuration of a system.
 We can configure users, hostname, host network, write files to disk, manage packages, run custom scripts and so on.
 
-##DataSources
+## DataSources  
 Datasource is the source of configuration data for cloud-init that is typically given by a user (For example: userdata) or obtained from the cloud that created the configuration drive (For example: metadata).
 Userdata includes files, YAML configuration files and shell scripts.
 Metadata includes server name, instance id, display name and other cloud specific details.
@@ -17,7 +17,7 @@ Currently there are two datasources used in Photon OS, it's usage is described i
 - DataSourceOVF - Used for GuestOS customization in vSphere.
 - VMwareGuestInfo - Used to read meta, user, and vendor data from VMware vSphere's GuestInfo interface and initialize the system.
 
-###DataSourceOVF
+### DataSourceOVF  
 The OVF (Open Virtualization Format) Datasource provides a datasource for reading data from an OVF transport ISO.
 The vmtoolsd service extracts the customization spec cab file from the OVF and calls either cloud-init or the GuestOS customization scripts.
 The `disable_vmware_customization` flag in **/etc/cloud/cloud.cfg** file determines if GOSC scripts or cloud-init is used.
@@ -28,13 +28,13 @@ The `disable_vmware_customization` flag in **/etc/cloud/cloud.cfg** file determi
 **Note**:
 The default value for `disable_vmware_customization` is set to `true` in the **/etc/cloud/cloud.cfg** file
 
-###VMwareGuestInfo
+### VMwareGuestInfo  
 VMwareGuestInfo data source is configured by setting `guestinfo` properties on a VM. This can be set by performing one of the following:
 
 - Using the vmware-rpctool provided by open-vmtools.
 - Modifying the **vmx** file to set the guestinfo properties.
 
-##Debugging Cloud-init Failures
+## Debugging Cloud-init Failures  
 Cloud-init has four services which are started in the following sequence:
 
 1. cloud-init-local - This service locates local data sources and applies networking configurations provided n the metadata (If there is no metadata it applies Fallback). Use `$ systemctl status cloud-init-local` command to check its status.
@@ -58,10 +58,10 @@ Cloud-init doesn't configure the network if **/etc/cloud/cloud.cfg.d/99-disable-
 
 Take a backup of **/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg** file and remove it from it's location.
 Reconfigure the machine using metadata, userdata and vendordata.
-Once the configurations are done copy the backup file to the same location.
-Cloud-init will push it's fallback configuration when service is restarted or rebooted and there is no local datasource to configure. To avoid this **/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg** file is required.
+Once the configurations are done, copy the backup file to the same location.
+Cloud-init will push it's fallback configuration when service is restarted or rebooted and there is no local datasource to configure. To avoid this, **/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg** file is required.
 
-##Run Cloud-init Manually
+## Run Cloud-init Manually  
 To run cloud-init manually, run the following commands:
 ```
 /usr/bin/cloud-init -d init  (-d for debug)
@@ -79,7 +79,7 @@ For more information about cloud-init, see
 For more information about cloud-init CLI, see
 [https://cloudinit.readthedocs.io/en/latest/topics/cli.html](https://cloudinit.readthedocs.io/en/latest/topics/cli.html)https://cloudinit.readthedocs.io/en/latest/topics/cli.html
 
-**Note**:Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.
+**Note**: Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.
 
 1. Collect cloud-init log tarball by running the `cloud-init collect-logs` command.
 1. Collect the vmtoolsd logs from **/var/log/vmware-imc/toolsDeployPkg.log** file.

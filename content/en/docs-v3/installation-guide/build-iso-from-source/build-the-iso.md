@@ -17,7 +17,7 @@ Perform the following steps to install the packages on Ubuntu:
     wget -qO- https://get.docker.com/ | sh
     ```
 
-2. Install pip and docker 2.3.0 
+1. Install pip and docker 2.3.0 
    
     ```
     sudo apt install python3-pip
@@ -31,12 +31,27 @@ Perform the following steps to install the packages on Ubuntu:
     export LC_CTYPE="en_US.UTF-8"
 
     ```
+    
+1. Clone the Photon project:
+   
+    `git clone -b 3.0 https://github.com/vmware/photon.git`  
+    `cd $HOME/workspaces/photon`
+        
 
-3. Make the ISO. The example below assumes that you checked out the workspace under `$HOME/workspaces/photon`:
-    ```
-    cd $HOME/workspaces/photon
-    sudo make iso
-    ```
+1. Make ISO as follows:
+    
+   ` sudo make iso`
+
+
+1. Make Minimal ISO as follows:
+    
+    
+    `sudo make minimal-iso`
+    
+
+1. Make Real-Time ISO as follows:
+
+    `sudo make rt-iso `
     
 **Result**
 

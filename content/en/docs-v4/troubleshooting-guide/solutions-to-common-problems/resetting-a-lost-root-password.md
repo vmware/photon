@@ -15,7 +15,7 @@ Second, in the GNU GRUB edit menu, go to the end of the line that starts with `l
 
 After you add this code, the GNU GRUB edit menu should look exactly like this:
 
-![The modified GNU GRUB edit menu](./images/grub-edit-menu-changepw.png) 
+![The modified GNU GRUB edit menu](../../images/grub2.05-edit-menu-changepw.png) 
 
 Now type `F10`.
 
@@ -31,7 +31,7 @@ Finally, type the following command. You must include the `-f` option to force a
 
 This sequence of commands should look like this:
 
-![The series of commands to reset the root password](./images/resetpw.png)
+![The series of commands to reset the root password](../../images/resetpw.png)
 
 After the Photon OS machine reboots, log in with the new root password. 
 
@@ -40,6 +40,6 @@ Resetting the root password will not reset the failed logon count, if you've had
 
 You will know if this is the case, if you see `Account locked due to X failed logins` at the photon console.
 
-To reset the count, before you unmount the filesystem, run the following...
+To reset the count, before you unmount the filesystem, run the following command.
 
-	/sbin/pam_tally2 --reset --user root
+	/sbin/faillock --reset --user root

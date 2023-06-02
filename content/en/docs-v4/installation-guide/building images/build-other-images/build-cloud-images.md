@@ -11,48 +11,43 @@ Perform the following steps to build the cloud images on Ubuntu:
     sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
     ```
 
-2. Get Docker:
+1. Get Docker:
 
     ```
     wget -qO- https://get.docker.com/ | sh
     ```
  
-3.  Install pip 
+1.  Install pip 
    
     ```
     sudo apt install python3-pip
     pip3 install git+https://github.com/vmware/photon-os-installer.git
     git clone https://github.com/vmware/photon.git
+    ```
     
-    
-    
-   If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:
-    
-   
-       `export LC_ALL="en_US.UTF-8"`
-   ` export LC_CTYPE="en_US.UTF-8"`
+    If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:
+       
+    `export LC_ALL="en_US.UTF-8"`  
+    `export LC_CTYPE="en_US.UTF-8"`
 
-3.  Clone`the Photon project:
+1.  Clone the Photon project:
    
-    `git clone https://github.com/vmware/photon.git`
+    `git clone https://github.com/vmware/photon.git`  
     `cd $HOME/workspaces/photon`
 
-4. Make the cloud image for AMI. 
-
-    
+1. Make the cloud image for AMI. 
+  
     `sudo make image IMG_NAME=ami`
 
-4. Make the cloud image for Azure. 
-  
-   
+1. Make the cloud image for Azure. 
+    
     `sudo make image IMG_NAME=azure`
 
-4. Make the cloud image for GCE. 
+1. Make the cloud image for GCE. 
+      
+    `sudo make image IMG_NAME=gce`  
     
-   
-    `sudo make image IMG_NAME=gce`
-    
-    
+
 **Result**
 
 This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.
@@ -68,4 +63,4 @@ $HOME/workspaces/photon/stage/:
     ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
 ```
 
-The cloud image is created at `$HOME/workspaces/photon.
+The cloud image is created at `$HOME/workspaces/photon`.
