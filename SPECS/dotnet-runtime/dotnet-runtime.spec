@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        7.0.2
+Version:        7.0.5
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=56f7f471052b955968b9a4caa27299ac003e0347ae80e8ef23de87d28a2707bdf7ceb70467cc3e9f0c80928a779841dd7e1392ed6b06e66a7a9cda696d5c0a1e
+%define sha512 %{name}=68014bdbf55bf455f59549c7d9d61ccc051e09fe74a975ca6b46d3269278d77c9cd167ba05760aef8ab413df4212f4f5cebdd1533779b49caf517eb4ec50cce5
 
 BuildArch: x86_64
 
@@ -27,6 +27,7 @@ Requires: curl
 Requires: libunwind
 Requires: krb5
 Requires: lttng-ust >= 2.13.4-2
+Requires: libstdc++
 
 %description
 .NET Core is a development platform that you can use to build command-line
@@ -59,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Jun 01 2023 Raymond Welch <rwelch@vmware.com> 7.0.5-1
+- Upgrade to v7.0.5
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.2-1
 - Upgrade to v7.0.2
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-rc1
