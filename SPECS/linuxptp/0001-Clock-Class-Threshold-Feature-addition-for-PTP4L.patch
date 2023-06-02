@@ -1,0 +1,150 @@
+From f774703cb1eee058a346aec3341fee0be329bd6d Mon Sep 17 00:00:00 2001
+From: Karthikkumar V <kvaloor@altiostar.com>
+Date: Fri, 26 Feb 2021 06:54:07 +0000
+Subject: [PATCH 01/15] Clock Class Threshold Feature addition for PTP4L
+
+This code changes brings in the ability to program the acceptable
+clockClass threshold beyond which device will move to holdover/free-run.
+Default clockClass threshold is 248.
+Example Use-Case:
+This is needed in the cases where T-SC/T-BC Slave might want to listen
+only on PRC clockCLass and anything beyond that might not be acceptible
+and would want to go to holdover (with SyncE backup or internal oscillator).
+
+Signed-off-by: Karthikkumar V <kvaloor@altiostar.com>
+Signed-off-by: Ramana Reddy <rreddy@altiostar.com>
+
+---
+ clock.c             | 7 +++++++
+ clock.h             | 7 +++++++
+ config.c            | 1 +
+ configs/default.cfg | 1 +
+ ds.h                | 1 +
+ port.c              | 8 ++++++++
+ ptp4l.8             | 5 +++++
+ 7 files changed, 30 insertions(+)
+
+diff --git a/clock.c b/clock.c
+index a66d189..60eb35b 100644
+--- a/clock.c
++++ b/clock.c
+@@ -113,6 +113,7 @@ struct clock {
+ 	int utc_offset;
+ 	int time_flags;  /* grand master role */
+ 	int time_source; /* grand master role */
++	UInteger8 clock_class_threshold;
+ 	UInteger8 max_steps_removed;
+ 	enum servo_state servo_state;
+ 	enum timestamp_type timestamping;
+@@ -970,6 +971,7 @@ struct clock *clock_create(enum clock_type type, struct config *config,
+ 	c->default_dataset.localPriority =
+ 		config_get_int(config, NULL, "G.8275.defaultDS.localPriority");
+ 	c->max_steps_removed = config_get_int(config, NULL,"maxStepsRemoved");
++	c->clock_class_threshold = config_get_int(config, NULL, "clock_class_threshold");
+ 
+ 	/* Harmonize the twoStepFlag with the time_stamping option. */
+ 	if (config_harmonize_onestep(config)) {
+@@ -1655,6 +1657,11 @@ UInteger8 clock_max_steps_removed(struct clock *c)
+ 	return c->max_steps_removed;
+ }
+ 
++UInteger8 clock_get_clock_class_threshold(struct clock *c)
++{
++	return c->clock_class_threshold;
++}
++
+ UInteger16 clock_steps_removed(struct clock *c)
+ {
+ 	return c->cur.stepsRemoved;
+diff --git a/clock.h b/clock.h
+index e7daf97..845d54f 100644
+--- a/clock.h
++++ b/clock.h
+@@ -289,6 +289,13 @@ int clock_slave_only(struct clock *c);
+  */
+ UInteger8 clock_max_steps_removed(struct clock *c);
+ 
++/**
++ * Obtain the clock class threshold field from a clock's default data set.
++ * @param c  The clock instance.
++ * @return   Configured clock class threshold value.
++ */
++UInteger8 clock_get_clock_class_threshold(struct clock *c);
++
+ /**
+  * Obtain the steps removed field from a clock's current data set.
+  * @param c  The clock instance.
+diff --git a/config.c b/config.c
+index d237de9..ab0f51f 100644
+--- a/config.c
++++ b/config.c
+@@ -230,6 +230,7 @@ struct config_item config_tab[] = {
+ 	GLOB_ITEM_INT("clockAccuracy", 0xfe, 0, UINT8_MAX),
+ 	GLOB_ITEM_INT("clockClass", 248, 0, UINT8_MAX),
+ 	GLOB_ITEM_STR("clockIdentity", "000000.0000.000000"),
++	GLOB_ITEM_INT("clock_class_threshold", CLOCK_CLASS_THRESHOLD_DEFAULT, 6, CLOCK_CLASS_THRESHOLD_DEFAULT),
+ 	GLOB_ITEM_ENU("clock_servo", CLOCK_SERVO_PI, clock_servo_enu),
+ 	GLOB_ITEM_ENU("clock_type", CLOCK_TYPE_ORDINARY, clock_type_enu),
+ 	GLOB_ITEM_ENU("dataset_comparison", DS_CMP_IEEE1588, dataset_comp_enu),
+diff --git a/configs/default.cfg b/configs/default.cfg
+index 8c19129..108d52b 100644
+--- a/configs/default.cfg
++++ b/configs/default.cfg
+@@ -60,6 +60,7 @@ verbose			0
+ summary_interval	0
+ kernel_leap		1
+ check_fup_sync		0
++clock_class_threshold	248
+ #
+ # Servo Options
+ #
+diff --git a/ds.h b/ds.h
+index 9d9c417..dff6d5e 100644
+--- a/ds.h
++++ b/ds.h
+@@ -87,6 +87,7 @@ struct parent_ds {
+ 
+ #define CURRENT_UTC_OFFSET  37 /* 1 Jan 2017 */
+ #define INTERNAL_OSCILLATOR 0xA0
++#define CLOCK_CLASS_THRESHOLD_DEFAULT 248
+ 
+ struct timePropertiesDS {
+ 	Integer16    currentUtcOffset;
+diff --git a/port.c b/port.c
+index fa49663..be13111 100644
+--- a/port.c
++++ b/port.c
+@@ -1861,6 +1861,14 @@ int process_announce(struct port *p, struct ptp_message *m)
+ 		return result;
+ 	}
+ 
++	if (m->announce.grandmasterClockQuality.clockClass >
++		clock_get_clock_class_threshold(p->clock)) {
++		pl_err(60, "port %hu: Master clock quality received is "
++			"greater than configured, ignoring master!",
++			portnum(p));
++		return result;
++	}
++
+ 	switch (p->state) {
+ 	case PS_INITIALIZING:
+ 	case PS_FAULTY:
+diff --git a/ptp4l.8 b/ptp4l.8
+index b179b81..d9a9e30 100644
+--- a/ptp4l.8
++++ b/ptp4l.8
+@@ -451,6 +451,11 @@ message is greater than or equal to the value of maxStepsRemoved the
+ Announce message is not considered in the operation of the BMCA.
+ The default value is 255.
+ .TP
++.B clock_class_threshold
++The maximum clock class value from master, acceptible to sub-ordinate
++clock beyond which it moves out of lock state.
++The default value is 248.
++.TP
+ 
+ .B domainNumber
+ The domain attribute of the local clock.
+-- 
+2.23.3
+
