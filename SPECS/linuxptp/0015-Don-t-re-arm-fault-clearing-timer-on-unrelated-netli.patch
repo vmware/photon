@@ -1,0 +1,58 @@
+From 6bac465e9528ec5d427869f97ca26c28db297518 Mon Sep 17 00:00:00 2001
+From: davidjm via Linuxptp-devel <linuxptp-devel@lists.sourceforge.net>
+Date: Wed, 23 Nov 2022 15:50:30 -0800
+Subject: [PATCH 15/15] Don't re-arm fault clearing timer on unrelated netlink
+ events
+
+Set the timer only when an event causes the port to transition to the
+FAULTY state, rather than potentially re-arming the timeout when an
+event occurs while the port was already FAULTY.
+
+Concretely this occurs when a port is in fault, perhaps due to a
+single time out while polling for tx-timestamp. If any other port in the
+system (including unrelated ones ptp4l does not even know about) cause
+netlink messages to be sent. As it stands, clock_poll() will note that
+the port is in fault (from before, not due to the current event) and
+reset the timeout to its original value.
+
+If such unrelated netlink messages arrive at a regular enough cadence
+the timeout may be repeatedly reset, not trigger on time (if at all) and
+the port may not get a chance to clear its fault, perhaps indefinitely.
+
+Signed-off-by: David Mirabito <davidjm@arista.com>
+---
+ clock.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/clock.c b/clock.c
+index c8116eb..d4af3e3 100644
+--- a/clock.c
++++ b/clock.c
+@@ -1540,6 +1540,7 @@ void clock_set_sde(struct clock *c, int sde)
+ int clock_poll(struct clock *c)
+ {
+ 	int cnt, i;
++	enum port_state prior_state;
+ 	enum fsm_event event;
+ 	struct pollfd *cur;
+ 	struct port *p;
+@@ -1563,6 +1564,7 @@ int clock_poll(struct clock *c)
+ 		/* Let the ports handle their events. */
+ 		for (i = 0; i < N_POLLFD; i++) {
+ 			if (cur[i].revents & (POLLIN|POLLPRI|POLLERR)) {
++				prior_state = port_state(p);
+ 				if (cur[i].revents & POLLERR) {
+ 					pr_err("port %d: unexpected socket error",
+ 					       port_number(p));
+@@ -1578,7 +1580,7 @@ int clock_poll(struct clock *c)
+ 				}
+ 				port_dispatch(p, event, 0);
+ 				/* Clear any fault after a little while. */
+-				if (PS_FAULTY == port_state(p)) {
++				if ((PS_FAULTY == port_state(p)) && (prior_state != PS_FAULTY)) {
+ 					clock_fault_timeout(p, 1);
+ 					break;
+ 				}
+-- 
+2.23.3
+

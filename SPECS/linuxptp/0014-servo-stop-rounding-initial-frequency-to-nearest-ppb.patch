@@ -1,0 +1,187 @@
+From 4612e4665f916a8ee07ae6a537b7d69eab557410 Mon Sep 17 00:00:00 2001
+From: Jacob Keller <jacob.e.keller@intel.com>
+Date: Mon, 28 Nov 2022 14:43:00 -0800
+Subject: [PATCH 14/15] servo: stop rounding initial frequency to nearest ppb
+
+The interface to the Linux kernel for adjusting clock frequencies is
+specified in scaled parts per million, where the frequency field is parts
+per million with a 16 bit binary fractional field. (Equivalently it is
+parts per ~65 billion).
+
+The frequency adjustment is stored internally as a double, even though when
+displaying we always display only a whole number adjustment. Thus ptp4l and
+phc2sys already use the full range of frequency adjustments that can be
+specified using a double type.
+
+However, when initializing the servo we read the current clock frequency
+and cast it to an integer, discarding the fractional part below a part per
+billion.
+
+Refactor the servo_create API to take a double value instead of an integer
+value. Fix the clockadj_get_freq and clockadj_set_freq initialization to
+avoid casting to an integer and thus rounding the value.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ clock.c        | 10 ++++++----
+ linreg.c       |  2 +-
+ linreg.h       |  2 +-
+ pi.c           |  2 +-
+ pi.h           |  2 +-
+ servo.c        |  2 +-
+ servo.h        |  2 +-
+ ts2phc_slave.c |  5 +++--
+ 8 files changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/clock.c b/clock.c
+index e1b3300..c8116eb 100644
+--- a/clock.c
++++ b/clock.c
+@@ -890,10 +890,11 @@ struct clock *clock_create(enum clock_type type, struct config *config,
+ 	enum servo_type servo = config_get_int(config, NULL, "clock_servo");
+ 	char ts_label[IF_NAMESIZE], phc[32], *tmp;
+ 	enum timestamp_type timestamping;
+-	int fadj = 0, max_adj = 0, sw_ts;
+ 	int phc_index, required_modes = 0;
+ 	struct clock *c = &the_clock;
++	int max_adj = 0, sw_ts;
+ 	const char *uds_ifname;
++	double fadj = 0.0;
+ 	struct port *p;
+ 	unsigned char oui[OUI_LEN];
+ 	struct interface *iface;
+@@ -1112,7 +1113,7 @@ struct clock *clock_create(enum clock_type type, struct config *config,
+ 	c->time_flags = c->utc_timescale ? 0 : PTP_TIMESCALE;
+ 
+ 	if (c->clkid != CLOCK_INVALID) {
+-		fadj = (int) clockadj_get_freq(c->clkid);
++		fadj = clockadj_get_freq(c->clkid);
+ 		/* Due to a bug in older kernels, the reading may silently fail
+ 		   and return 0. Set the frequency back to make sure fadj is
+ 		   the actual frequency of the clock. */
+@@ -1670,9 +1671,10 @@ UInteger16 clock_steps_removed(struct clock *c)
+ int clock_switch_phc(struct clock *c, int phc_index)
+ {
+ 	struct servo *servo;
+-	int fadj, max_adj;
+ 	clockid_t clkid;
+ 	char phc[32];
++	double fadj;
++	int max_adj;
+ 
+ 	snprintf(phc, sizeof(phc), "/dev/ptp%d", phc_index);
+ 	clkid = phc_open(phc);
+@@ -1686,7 +1688,7 @@ int clock_switch_phc(struct clock *c, int phc_index)
+ 		phc_close(clkid);
+ 		return -1;
+ 	}
+-	fadj = (int) clockadj_get_freq(clkid);
++	fadj = clockadj_get_freq(clkid);
+ 	clockadj_set_freq(clkid, fadj);
+ 	servo = servo_create(c->config, c->servo_type, -fadj, max_adj, 0);
+ 	if (!servo) {
+diff --git a/linreg.c b/linreg.c
+index 8f354f4..363636e 100644
+--- a/linreg.c
++++ b/linreg.c
+@@ -330,7 +330,7 @@ static void linreg_leap(struct servo *servo, int leap)
+ 	s->leap = leap;
+ }
+ 
+-struct servo *linreg_servo_create(int fadj)
++struct servo *linreg_servo_create(double fadj)
+ {
+ 	struct linreg_servo *s;
+ 
+diff --git a/linreg.h b/linreg.h
+index 5c86ea7..3c48ce5 100644
+--- a/linreg.h
++++ b/linreg.h
+@@ -21,6 +21,6 @@
+ 
+ #include "servo.h"
+ 
+-struct servo *linreg_servo_create(int fadj);
++struct servo *linreg_servo_create(double fadj);
+ 
+ #endif
+diff --git a/pi.c b/pi.c
+index bfe5022..4a96a5b 100644
+--- a/pi.c
++++ b/pi.c
+@@ -177,7 +177,7 @@ static void pi_reset(struct servo *servo)
+ 	s->count = 0;
+ }
+ 
+-struct servo *pi_servo_create(struct config *cfg, int fadj, int sw_ts)
++struct servo *pi_servo_create(struct config *cfg, double fadj, int sw_ts)
+ {
+ 	struct pi_servo *s;
+ 
+diff --git a/pi.h b/pi.h
+index feb3ebe..1e7eb4f 100644
+--- a/pi.h
++++ b/pi.h
+@@ -21,6 +21,6 @@
+ 
+ #include "servo.h"
+ 
+-struct servo *pi_servo_create(struct config *cfg, int fadj, int sw_ts);
++struct servo *pi_servo_create(struct config *cfg, double fadj, int sw_ts);
+ 
+ #endif
+diff --git a/servo.c b/servo.c
+index 46042aa..6ba7cb4 100644
+--- a/servo.c
++++ b/servo.c
+@@ -31,7 +31,7 @@
+ #define NSEC_PER_SEC 1000000000
+ 
+ struct servo *servo_create(struct config *cfg, enum servo_type type,
+-			   int fadj, int max_ppb, int sw_ts)
++			   double fadj, int max_ppb, int sw_ts)
+ {
+ 	double servo_first_step_threshold;
+ 	double servo_step_threshold;
+diff --git a/servo.h b/servo.h
+index 6c30d33..6cedb66 100644
+--- a/servo.h
++++ b/servo.h
+@@ -77,7 +77,7 @@ enum servo_state {
+  * @return A pointer to a new servo on success, NULL otherwise.
+  */
+ struct servo *servo_create(struct config *cfg, enum servo_type type,
+-			   int fadj, int max_ppb, int sw_ts);
++			   double fadj, int max_ppb, int sw_ts);
+ 
+ /**
+  * Destroy an instance of a clock servo.
+diff --git a/ts2phc_slave.c b/ts2phc_slave.c
+index 749efe5..f54f0b1 100644
+--- a/ts2phc_slave.c
++++ b/ts2phc_slave.c
+@@ -146,9 +146,10 @@ static int ts2phc_slave_clear_fifo(struct ts2phc_slave *slave)
+ static struct ts2phc_slave *ts2phc_slave_create(struct config *cfg, const char *device)
+ {
+ 	enum servo_type servo = config_get_int(cfg, NULL, "clock_servo");
+-	int err, fadj, junk, max_adj, pulsewidth;
++	int err, junk, max_adj, pulsewidth;
+ 	struct ptp_extts_request extts;
+ 	struct ts2phc_slave *slave;
++	double fadj;
+ 
+ 	slave = calloc(1, sizeof(*slave));
+ 	if (!slave) {
+@@ -182,7 +183,7 @@ static struct ts2phc_slave *ts2phc_slave_create(struct config *cfg, const char *
+ 
+ 	pr_debug("PHC slave %s has ptp index %d", device, junk);
+ 
+-	fadj = (int) clockadj_get_freq(slave->clk);
++	fadj = clockadj_get_freq(slave->clk);
+ 	/* Due to a bug in older kernels, the reading may silently fail
+ 	   and return 0. Set the frequency back to make sure fadj is
+ 	   the actual frequency of the clock. */
+-- 
+2.23.3
+

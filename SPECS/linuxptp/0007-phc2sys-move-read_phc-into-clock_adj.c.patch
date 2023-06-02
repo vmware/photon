@@ -1,0 +1,178 @@
+From 0d53d2532cfc108b58ae20a5b6b22b1e7d095742 Mon Sep 17 00:00:00 2001
+From: Jacob Keller <jacob.e.keller@intel.com>
+Date: Tue, 23 Nov 2021 14:43:26 -0800
+Subject: [PATCH 07/15] phc2sys: move read_phc into clock_adj.c
+
+The read_phc function implemented in phc2sys.c is used to perform clock
+comparison between two arbitrary clocks using clock_gettime.
+
+This support is used to allow phc2sys to work on any pair of clocks and
+is implemented in a very similar manner as the kernel PTP_SYS_OFFSET
+ioctls.
+
+Make this function easier to re-use by moving it out of phc2sys.c and
+into a more accessible location. clockadj.c seems like a reasonable
+location as this file has many functions which deal with clockid_t
+values, and this functionality is tangentially related to adjusting
+clocks.
+
+Moving this function will allow using it in the phc_ctl program in a
+future change.
+
+Notice that read_phc returned 0 on failure and 1 on success. This is
+fairly non-standard, so lets update clockadj_compare to return 0 on
+success and -1 on failure. Fix the call sites to check correctly and
+report an error.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ clockadj.c | 31 +++++++++++++++++++++++++++++++
+ clockadj.h | 18 ++++++++++++++++++
+ phc2sys.c  | 46 +++++++++-------------------------------------
+ 3 files changed, 58 insertions(+), 37 deletions(-)
+
+diff --git a/clockadj.c b/clockadj.c
+index b5c78cd..e8c5789 100644
+--- a/clockadj.c
++++ b/clockadj.c
+@@ -139,6 +139,37 @@ int clockadj_max_freq(clockid_t clkid)
+ 	return f;
+ }
+ 
++int clockadj_compare(clockid_t clkid, clockid_t sysclk, int readings,
++		     int64_t *offset, uint64_t *ts, int64_t *delay)
++{
++	struct timespec tdst1, tdst2, tsrc;
++	int i;
++	int64_t interval, best_interval = INT64_MAX;
++
++	/* Pick the quickest clkid reading. */
++	for (i = 0; i < readings; i++) {
++		if (clock_gettime(sysclk, &tdst1) ||
++				clock_gettime(clkid, &tsrc) ||
++				clock_gettime(sysclk, &tdst2)) {
++			pr_err("failed to read clock: %m");
++			return -1;
++		}
++
++		interval = (tdst2.tv_sec - tdst1.tv_sec) * NS_PER_SEC +
++			tdst2.tv_nsec - tdst1.tv_nsec;
++
++		if (best_interval > interval) {
++			best_interval = interval;
++			*offset = (tdst1.tv_sec - tsrc.tv_sec) * NS_PER_SEC +
++				tdst1.tv_nsec - tsrc.tv_nsec + interval / 2;
++			*ts = tdst2.tv_sec * NS_PER_SEC + tdst2.tv_nsec;
++		}
++	}
++	*delay = best_interval;
++
++	return 0;
++}
++
+ void sysclk_set_leap(int leap)
+ {
+ 	clockid_t clkid = CLOCK_REALTIME;
+diff --git a/clockadj.h b/clockadj.h
+index 43325c8..b63ae38 100644
+--- a/clockadj.h
++++ b/clockadj.h
+@@ -63,6 +63,24 @@ void clockadj_step(clockid_t clkid, int64_t step);
+  */
+ int clockadj_max_freq(clockid_t clkid);
+ 
++/**
++ * Compare offset between two clocks
++ * @param clkid     A clock ID obtained using phc_open() or CLOCK_REALTIME
++ * @param sysclk    A clock ID obtained using phc_open() or CLOCK_REALTIME
++ * @param readings  Number of readings to try
++ * @param offset    On return, the nanoseconds offset between the clocks
++ * @param ts        On return, the time of sysclk in nanoseconds that was used
++ * @param delay     On return, the interval between two reads of sysclk
++ * @return Zero on success and non-zero on failure.
++ *
++ * Compare the offset between two clocks in a similar manner as the
++ * PTP_SYS_OFFSET ioctls. Performs multiple reads of sysclk with a read of
++ * clkid between in order to calculate the time difference of sysclk minus
++ * clkid.
++ */
++int clockadj_compare(clockid_t clkid, clockid_t sysclk, int readings,
++		     int64_t *offset, uint64_t *ts, int64_t *delay);
++
+ /**
+  * Set the system clock to insert/delete leap second at midnight.
+  * @param leap  +1 to insert leap second, -1 to delete leap second,
+diff --git a/phc2sys.c b/phc2sys.c
+index a36cbe0..7a547fa 100644
+--- a/phc2sys.c
++++ b/phc2sys.c
+@@ -486,37 +486,6 @@ static void reconfigure(struct phc2sys_private *priv)
+ 	pr_info("selecting %s as the master clock", src->device);
+ }
+ 
+-static int read_phc(clockid_t clkid, clockid_t sysclk, int readings,
+-		    int64_t *offset, uint64_t *ts, int64_t *delay)
+-{
+-	struct timespec tdst1, tdst2, tsrc;
+-	int i;
+-	int64_t interval, best_interval = INT64_MAX;
+-
+-	/* Pick the quickest clkid reading. */
+-	for (i = 0; i < readings; i++) {
+-		if (clock_gettime(sysclk, &tdst1) ||
+-				clock_gettime(clkid, &tsrc) ||
+-				clock_gettime(sysclk, &tdst2)) {
+-			pr_err("failed to read clock: %m");
+-			return 0;
+-		}
+-
+-		interval = (tdst2.tv_sec - tdst1.tv_sec) * NS_PER_SEC +
+-			tdst2.tv_nsec - tdst1.tv_nsec;
+-
+-		if (best_interval > interval) {
+-			best_interval = interval;
+-			*offset = (tdst1.tv_sec - tsrc.tv_sec) * NS_PER_SEC +
+-				tdst1.tv_nsec - tsrc.tv_nsec + interval / 2;
+-			*ts = tdst2.tv_sec * NS_PER_SEC + tdst2.tv_nsec;
+-		}
+-	}
+-	*delay = best_interval;
+-
+-	return 1;
+-}
+-
+ static int64_t get_sync_offset(struct phc2sys_private *priv, struct clock *dst)
+ {
+ 	int direction = priv->forced_sync_offset;
+@@ -672,8 +641,10 @@ static int do_pps_loop(struct phc2sys_private *priv, struct clock *clock,
+ 		/* If a PHC is available, use it to get the whole number
+ 		   of seconds in the offset and PPS for the rest. */
+ 		if (src != CLOCK_INVALID) {
+-			if (!read_phc(src, clock->clkid, priv->phc_readings,
+-				      &phc_offset, &phc_ts, &phc_delay))
++			if (clockadj_compare(src, clock->clkid,
++					     priv->phc_readings,
++					     &phc_offset, &phc_ts,
++					     &phc_delay))
+ 				return -1;
+ 
+ 			/* Convert the time stamp to the PHC time. */
+@@ -781,10 +752,11 @@ static int do_loop(struct phc2sys_private *priv, int subscriptions)
+ 				ts += offset;
+ 			} else {
+ 				/* use phc */
+-				if (!read_phc(priv->master->clkid, clock->clkid,
+-					      priv->phc_readings,
+-					      &offset, &ts, &delay))
+-					continue;
++				if (clockadj_compare(priv->master->clkid,
++						     clock->clkid,
++						     priv->phc_readings,
++						     &offset, &ts, &delay))
++					return -1;
+ 			}
+ 			update_clock(priv, clock, offset, ts, delay);
+ 		}
+-- 
+2.23.3
+

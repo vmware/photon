@@ -1,0 +1,51 @@
+From c9ae9ad790064c8e0dab2628771b964f5c8fa9b9 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 18 May 2022 11:33:34 +0200
+Subject: [PATCH 08/15] clockadj: Change clockadj_compare() to return errno.
+
+Return -errno from the failed clock_gettime() to allow the callers to
+check for specific errors.
+
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+---
+ clockadj.c | 3 ++-
+ clockadj.h | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/clockadj.c b/clockadj.c
+index e8c5789..957dc57 100644
+--- a/clockadj.c
++++ b/clockadj.c
+@@ -17,6 +17,7 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+  */
+ 
++#include <errno.h>
+ #include <math.h>
+ #include <string.h>
+ #include <unistd.h>
+@@ -152,7 +153,7 @@ int clockadj_compare(clockid_t clkid, clockid_t sysclk, int readings,
+ 				clock_gettime(clkid, &tsrc) ||
+ 				clock_gettime(sysclk, &tdst2)) {
+ 			pr_err("failed to read clock: %m");
+-			return -1;
++			return -errno;
+ 		}
+ 
+ 		interval = (tdst2.tv_sec - tdst1.tv_sec) * NS_PER_SEC +
+diff --git a/clockadj.h b/clockadj.h
+index b63ae38..6db1d79 100644
+--- a/clockadj.h
++++ b/clockadj.h
+@@ -71,7 +71,7 @@ int clockadj_max_freq(clockid_t clkid);
+  * @param offset    On return, the nanoseconds offset between the clocks
+  * @param ts        On return, the time of sysclk in nanoseconds that was used
+  * @param delay     On return, the interval between two reads of sysclk
+- * @return Zero on success and non-zero on failure.
++ * @return Zero on success, or negative error code on failure.
+  *
+  * Compare the offset between two clocks in a similar manner as the
+  * PTP_SYS_OFFSET ioctls. Performs multiple reads of sysclk with a read of
+-- 
+2.23.3
+

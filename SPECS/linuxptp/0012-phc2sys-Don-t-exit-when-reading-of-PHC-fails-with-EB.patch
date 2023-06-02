@@ -1,0 +1,106 @@
+From e8dc364f9fd5fbdac5d2c5e433f28e9da0028d49 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Wed, 18 May 2022 11:33:38 +0200
+Subject: [PATCH 12/15] phc2sys: Don't exit when reading of PHC fails with
+ EBUSY.
+
+Reading of the PHC can occasionally fail with some drivers, e.g. the ice
+driver returns EBUSY when it fails to get a lock. Continue in the loop
+instead of exiting on the error.
+
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+---
+ phc2sys.c | 50 +++++++++++++++++++++++++++++---------------------
+ 1 file changed, 29 insertions(+), 21 deletions(-)
+
+diff --git a/phc2sys.c b/phc2sys.c
+index 7a547fa..b4e2e87 100644
+--- a/phc2sys.c
++++ b/phc2sys.c
+@@ -623,6 +623,7 @@ static int do_pps_loop(struct phc2sys_private *priv, struct clock *clock,
+ 	int64_t pps_offset, phc_offset, phc_delay;
+ 	uint64_t pps_ts, phc_ts;
+ 	clockid_t src = priv->master->clkid;
++	int err;
+ 
+ 	priv->master->source_label = "pps";
+ 
+@@ -641,10 +642,13 @@ static int do_pps_loop(struct phc2sys_private *priv, struct clock *clock,
+ 		/* If a PHC is available, use it to get the whole number
+ 		   of seconds in the offset and PPS for the rest. */
+ 		if (src != CLOCK_INVALID) {
+-			if (clockadj_compare(src, clock->clkid,
+-					     priv->phc_readings,
+-					     &phc_offset, &phc_ts,
+-					     &phc_delay))
++			err = clockadj_compare(src, clock->clkid,
++					       priv->phc_readings,
++					       &phc_offset, &phc_ts,
++					       &phc_delay);
++			if (err == -EBUSY)
++				continue;
++			if (err)
+ 				return -1;
+ 
+ 			/* Convert the time stamp to the PHC time. */
+@@ -692,6 +696,7 @@ static int do_loop(struct phc2sys_private *priv, int subscriptions)
+ 	struct clock *clock;
+ 	uint64_t ts;
+ 	int64_t offset, delay;
++	int err;
+ 
+ 	interval.tv_sec = priv->phc_interval;
+ 	interval.tv_nsec = (priv->phc_interval - interval.tv_sec) * 1e9;
+@@ -735,29 +740,32 @@ static int do_loop(struct phc2sys_private *priv, int subscriptions)
+ 			if (clock->clkid == CLOCK_REALTIME &&
+ 			    priv->master->sysoff_method >= 0) {
+ 				/* use sysoff */
+-				if (sysoff_measure(CLOCKID_TO_FD(priv->master->clkid),
+-						   priv->master->sysoff_method,
+-						   priv->phc_readings,
+-						   &offset, &ts, &delay) < 0)
+-					return -1;
++				err = sysoff_measure(CLOCKID_TO_FD(priv->master->clkid),
++						     priv->master->sysoff_method,
++						     priv->phc_readings,
++						     &offset, &ts, &delay);
+ 			} else if (priv->master->clkid == CLOCK_REALTIME &&
+ 				   clock->sysoff_method >= 0) {
+ 				/* use reversed sysoff */
+-				if (sysoff_measure(CLOCKID_TO_FD(clock->clkid),
+-						   clock->sysoff_method,
+-						   priv->phc_readings,
+-						   &offset, &ts, &delay) < 0)
+-					return -1;
+-				offset = -offset;
+-				ts += offset;
++				err = sysoff_measure(CLOCKID_TO_FD(clock->clkid),
++						     clock->sysoff_method,
++						     priv->phc_readings,
++						     &offset, &ts, &delay);
++				if (!err) {
++					offset = -offset;
++					ts += offset;
++				}
+ 			} else {
+ 				/* use phc */
+-				if (clockadj_compare(priv->master->clkid,
+-						     clock->clkid,
+-						     priv->phc_readings,
+-						     &offset, &ts, &delay))
+-					return -1;
++				err = clockadj_compare(priv->master->clkid,
++						       clock->clkid,
++						       priv->phc_readings,
++						       &offset, &ts, &delay);
+ 			}
++			if (err == -EBUSY)
++				continue;
++			if (err)
++				return -1;
+ 			update_clock(priv, clock, offset, ts, delay);
+ 		}
+ 	}
+-- 
+2.23.3
+
