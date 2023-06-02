@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.283
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -649,9 +649,6 @@ Patch626: Guest-timer-Advancement-Feature.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch630: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Fix for CVE-2021-4204
-Patch633: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
 # Backport hrtick changes
 Patch634: 0001-sched-Mark-hrtimers-to-expire-in-hard-interrupt-cont.patch
 Patch635: 0002-sched-features-Fix-hrtick-reprogramming.patch
@@ -663,6 +660,12 @@ Patch638: 0001-sched-rt-Use-cpumask_any-_distribute.patch
 
 # Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
 Patch639: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
+
+# Fix for CVE-2021-4204
+Patch640: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2023-1611
+Patch641: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -920,6 +923,9 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %autopatch -p1 -m0 -M639
+
+# CVE Fixes
+%autopatch -p1 -m640 -M641
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1340,6 +1346,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Fri Jun 09 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4
+- Fix for CVE-2023-1611
 * Fri Jun 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.283-3
 - Fix issues in Guest timer Advancement feature
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2

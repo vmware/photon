@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.283
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -431,23 +431,6 @@ Patch521: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch522: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Fix for CVE-2021-4204
-Patch523: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# CVE-2022-1789
-Patch524: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
-
-# Fix for CVE-2022-39189
-Patch525: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
-
-# Fix for CVE-2022-36123
-Patch526: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
-
-# Fix for CVE-2021-4037
-Patch528: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
-Patch529: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
-Patch530: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
 # Update vmxnet3 driver to version 6
 Patch531: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
 Patch532: 0002-vmxnet3-prepare-for-version-6-changes.patch
@@ -476,6 +459,26 @@ Patch552: 0001-vmxnet3-correctly-report-csum_level-for-encapsulated.patch
 Patch553: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
 Patch554: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
 
+# Fix for CVE-2021-4204
+Patch700: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# CVE-2022-1789
+Patch701: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
+
+# Fix for CVE-2022-39189
+Patch702: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
+
+# Fix for CVE-2022-36123
+Patch703: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
+
+# Fix for CVE-2021-4037
+Patch704: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
+Patch705: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
+Patch706: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+
+#Fix for CVE-2023-1611
+Patch707: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
+
 # Patches for i40e driver
 Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
@@ -495,7 +498,6 @@ Patch822: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 Patch831: 0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
 Patch832: 0002-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch833: 0003-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
-
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -586,6 +588,9 @@ This Linux package contains hmac sha generator kernel module.
 
 # Update vmxnet3 driver to version 7
 %autopatch -p1 -m540 -M554
+
+# CVE Fixes
+%autopatch -p1 -m700 -M710
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -813,6 +818,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-3
+- Fix for CVE-2023-1611
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
 - Allow cpuidle subsystem to use acpi_idle driver
 - when only one C-state is available

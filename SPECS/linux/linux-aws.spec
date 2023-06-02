@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.283
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -176,24 +176,6 @@ Patch150: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch151: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-#Fix for CVE-2021-44879
-Patch152: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
-
-#Fix for CVE-2022-0480
-Patch153: 0001-memcg-enable-accounting-for-file-lock-caches.patch
-
-#Fix for CVE-2022-3061
-Patch154: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
-
-#Fix for CVE-2022-3303
-Patch155: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
-
-# CVE-2022-1789
-Patch159: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
-
-# Fix for CVE-2021-4204
-Patch160: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
 # Update vmxnet3 driver to version 6
 Patch161: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
 Patch162: 0002-vmxnet3-prepare-for-version-6-changes.patch
@@ -231,8 +213,29 @@ Patch192: 0001-sched-core-Distribute-tasks-within-affinity-masks.patch
 # Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
 Patch193: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
+#Fix for CVE-2021-44879
+Patch300: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch301: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch302: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch303: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+# CVE-2022-1789
+Patch304: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
+
+# Fix for CVE-2021-4204
+Patch305: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
 # Fix for CVE-2023-28466
-Patch194: 0001-net-prevent-race-condition-in-do_tls_getsockopt_tx.patch
+Patch306: 0001-net-prevent-race-condition-in-do_tls_getsockopt_tx.patch
+
+# CVE-2023-1611
+Patch307: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -331,6 +334,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m170 -M184
 
 %autopatch -p1 -m191 -M194
+
+# CVE fixes
+%autopatch -p1 -m300 -M310
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -531,6 +537,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4
+- Fix for CVE-2023-1611
 * Fri Jun 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.283-3
 - Add patch to address CVE-2023-28466
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2

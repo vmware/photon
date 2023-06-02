@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.283
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -485,32 +485,6 @@ Patch501: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch506: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Fix for CVE-2021-4204
-Patch509: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-39189
-Patch510: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
-
-# Fix for CVE-2022-36123
-Patch511: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
-
-# Fix for CVE-2021-4037
-Patch513: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
-Patch514: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
-Patch515: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
-#Fix for CVE-2021-44879
-Patch516: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
-
-#Fix for CVE-2022-0480
-Patch517: 0001-memcg-enable-accounting-for-file-lock-caches.patch
-
-#Fix for CVE-2022-3061
-Patch518: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
-
-#Fix for CVE-2022-3303
-Patch519: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
-
 # VMware-specific patch to enable turbostat to work on ESXi
 Patch800: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
 # Backports of upstream patches to add Ice Lake support to turbostat
@@ -548,6 +522,35 @@ Patch1513: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 Patch1521: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1522: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
 %endif
+
+# Fix for CVE-2021-4204
+Patch1550: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-39189
+Patch1551: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
+
+# Fix for CVE-2022-36123
+Patch1552: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
+
+# Fix for CVE-2021-4037
+Patch1553: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
+Patch1554: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
+Patch1555: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+
+#Fix for CVE-2021-44879
+Patch1556: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
+
+#Fix for CVE-2022-0480
+Patch1557: 0001-memcg-enable-accounting-for-file-lock-caches.patch
+
+#Fix for CVE-2022-3061
+Patch1558: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
+
+#Fix for CVE-2022-3303
+Patch1559: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#Fix for CVE-2023-1611
+Patch1560: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -738,6 +741,9 @@ pushd ../ice-%{ice_version}
 popd
 
 %endif
+
+# CVE Patches
+%autopatch -p1 -m1550 -M1560
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1126,6 +1132,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-3
+- Fix for CVE-2023-1611
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
 - Add support for Intel Sapphire Rapids server CPUs to turbostat.
 - Allow cpuidle subsystem to use acpi_idle driver
