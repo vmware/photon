@@ -1,0 +1,66 @@
+From 60f459cc9b29f10721a09762268bce895d330a7a Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 2 Jun 2023 17:59:46 +0000
+Subject: [Patch v4.19.y] net: prevent race condition in do_tls_getsockopt_tx
+
+From: Hangyu Hua <hbh25y@gmail.com>
+
+commit 49c47cc21b5b7a3d8deb18fc57b0aa2ab1286962 upstream
+
+ctx->crypto_send.info is not protected by lock_sock in
+do_tls_getsockopt_conf(). A race condition between do_tls_getsockopt_conf()
+and error paths of do_tls_setsockopt_conf() may lead to a use-after-free
+or null-deref.
+
+More discussion:  https://lore.kernel.org/all/Y/ht6gQL+u6fj3dG@hog/
+
+Fixes: 3c4d7559159b ("tls: kernel TLS support")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20230228023344.9623-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[ Brennan: Regenerated the patch for v4.19.y ]
+Signed-off-by: Brennan Lamoreaux <blamoreaux@vmware.com>
+---
+ net/tls/tls_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 3288bdff9889..fddb2bf63992 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -364,13 +364,11 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+ 			rc = -EINVAL;
+ 			goto out;
+ 		}
+-		lock_sock(sk);
+ 		memcpy(crypto_info_aes_gcm_128->iv,
+ 		       ctx->tx.iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
+ 		       TLS_CIPHER_AES_GCM_128_IV_SIZE);
+ 		memcpy(crypto_info_aes_gcm_128->rec_seq, ctx->tx.rec_seq,
+ 		       TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
+-		release_sock(sk);
+ 		if (copy_to_user(optval,
+ 				 crypto_info_aes_gcm_128,
+ 				 sizeof(*crypto_info_aes_gcm_128)))
+@@ -390,6 +388,8 @@ static int do_tls_getsockopt(struct sock *sk, int optname,
+ {
+ 	int rc = 0;
+
++	lock_sock(sk);
++
+ 	switch (optname) {
+ 	case TLS_TX:
+ 		rc = do_tls_getsockopt_tx(sk, optval, optlen);
+@@ -398,6 +398,9 @@ static int do_tls_getsockopt(struct sock *sk, int optname,
+ 		rc = -ENOPROTOOPT;
+ 		break;
+ 	}
++
++	release_sock(sk);
++
+ 	return rc;
+ }
+
+--
+2.39.0
+

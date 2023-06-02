@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.283
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -262,6 +262,9 @@ Patch199: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 #Fix for CVE-2022-3303
 Patch200: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 
+# Fix for CVE-2023-28466
+Patch201: 0001-net-prevent-race-condition-in-do_tls_getsockopt_tx.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -340,7 +343,7 @@ pushd ..
 %patch99 -p0
 popd
 
-%autopatch -p1 -m100 -M200
+%autopatch -p1 -m100 -M201
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -508,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jun 02 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.283-3
+- Add patch to address CVE-2023-28466
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 4.19.283-2
 - Allow cpuidle subsystem to use acpi_idle driver
 - when only one C-state is available
