@@ -1,7 +1,7 @@
 Summary:        Libcap
 Name:           libcap
 Version:        2.66
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -9,6 +9,8 @@ Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libca
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         CVE-2023-2602.patch
+Patch1:         CVE-2023-2603.patch
 
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available in Linux kernels.
@@ -23,7 +25,7 @@ Requires:       %{name} = %{version}-%{release}
 The libcap-devel package contains libraries, header files and documentation for developing applications that use libcap.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -71,6 +73,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Jun 02 2023 Piyush Gupta <gpiyush@vmware.com> 2.66-2
+-   Fix CVE-2023-2602, CVE-2023-2603.
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.66-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.64-1
