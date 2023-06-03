@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -10,6 +10,7 @@ Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=889f67f3aa32402b63319960539d72e24d65deeacd9360837622bb8e8dc6f79db7e7247a9503f7032fecc891f4f5151c1cce34f727aae69fdac2d84f63963d42
+Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -65,6 +66,28 @@ Requires:   libsolv-devel
 %description devel
 Development files for %{name}
 
+%package    pytests
+Summary:    Test suite for %{name}
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}-automatic = %{version}-%{release}
+Requires:   %{name}-plugin-repogpgcheck = %{version}-%{release}
+Requires:   %{name}-plugin-metalink = %{version}-%{release}
+Requires:   %{name}-python = %{version}-%{release}
+Requires:   python3-pytest
+Requires:   python3-requests
+Requires:   rpm-build
+Requires:   build-essential
+Requires:   createrepo_c
+Requires:   shadow
+Requires:   sudo
+Requires:   e2fsprogs
+Requires:   util-linux
+Requires:   findutils
+
+%description pytests
+Test suite for %{name}
+
 %package    cli-libs
 Summary:    Library providing cli libs for %{name} like clients
 Group:      Applications/RPM
@@ -102,6 +125,7 @@ python bindings for %{name}
 Summary:   %{name} - automated upgrades
 Group:     Applications/RPM
 Requires:  %{name} = %{version}-%{release}
+Requires:  which
 %{?systemd_requires}
 
 %description automatic
@@ -137,9 +161,6 @@ mkdir -p %{buildroot}%{_tdnf_history_db_dir}
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
-rm -f %{buildroot}%{_bindir}/jsondumptest
-# should move into its onw package:
-rm -rf %{buildroot}%{_datadir}/tdnf
 
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
     echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
@@ -236,6 +257,11 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_libdir}/pkgconfig/tdnf.pc
 %{_libdir}/pkgconfig/tdnf-cli-libs.pc
 
+%files pytests
+%defattr(-,root,root)
+%{_datadir}/tdnf/pytests/
+%{_bindir}/jsondumptest
+
 %files cli-libs
 %defattr(-,root,root)
 %{_libdir}/libtdnfcli.so.*
@@ -268,6 +294,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Jun 02 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-4
+- add -pytests package
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-3
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.2-2
