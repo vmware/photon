@@ -4,20 +4,23 @@
 
 Name:           ImageMagick
 Version:        7.1.1.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org/
-Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
-%define sha512  %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
+
+Source0: https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
+%define sha512 %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
+
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
 Requires:       zlib
+
 %description
 ImageMagick is an image display and manipulation tool for the X
 Window System. ImageMagick can read and write JPEG, TIFF, PNM, GIF,
@@ -36,6 +39,7 @@ ImageMagick-devel as well.
 %package        devel
 Summary:        Library links and header files for ImageMagick app development
 Requires:       pkg-config
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 ImageMagick-devel contains the library links and header files you'll
@@ -96,10 +100,7 @@ want to develop/compile applications using the ImageMagick C interface,
 however.
 
 %prep
-%autosetup -n %{name}-%{VER}-%{Patchlevel}
-# for %%doc
-mkdir Magick++/examples
-cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
+%autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
 %build
 %configure
@@ -108,25 +109,30 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
 %install
 %make_install %{?_smp_mflags}
 
-rm -rf %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/*.a
+rm -f %{buildroot}%{_libdir}/*.a
 
+%if 0%{?with_check}
 %check
 export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 %make_build check
 rm PerlMagick/demo/Generic.ttf
+%endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %{_bindir}/[a-z]*
 %{_mandir}/man[145]/[a-z]*
 %{_mandir}/man1/%{name}.*
 
 %files doc
+%defattr(-,root,root)
 %doc %{_datadir}/doc/%{name}-%{major_version}/*
 
 %files libs
+%defattr(-,root,root)
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.10*
 %{_libdir}/%{name}-%{VER}
@@ -135,6 +141,7 @@ rm PerlMagick/demo/Generic.ttf
 %config(noreplace) %{_sysconfdir}/%{name}-%{major_version}/*.xml
 
 %files c++-devel
+%defattr(-,root,root)
 %{_bindir}/Magick++-config
 %{_includedir}/%{name}-%{major_version}/Magick++
 %{_includedir}/%{name}-%{major_version}/Magick++.h
@@ -144,6 +151,7 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/Magick++-config.*
 
 %files devel
+%defattr(-,root,root)
 %{_bindir}/MagickCore-config
 %{_bindir}/MagickWand-config
 %{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so
@@ -161,28 +169,31 @@ rm PerlMagick/demo/Generic.ttf
 %{_mandir}/man1/MagickWand-config.*
 
 %files c++
+%defattr(-,root,root)
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
-*   Fri Jun 02 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-1
--   Version update
-*   Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-8
--   Fix for CVE-2022-44268
-*   Tue Sep 27 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-7
--   Fix for CVE-2022-3213
-*   Mon Sep 12 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-6
--   Fix for CVE-2022-1115
-*   Sat Sep 03 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-5
--   Fix for CVE-2022-0284
-*   Fri Aug 19 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-4
--   Fix for CVE-2022-2719
-*   Mon Jul 4 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-3
--   Fix for CVE-2022-32545, CVE-2022-32546, CVE-2022-32547
-*   Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-2
--   Fix for CVE-2022-1114
-*   Fri Apr 01 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
--   Fix for CVE-2021-4219.
-*   Mon Jan 03 2022 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-2
--   Fix for CVE-2021-39212.
-*   Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
--   Initial build for Photon.
+* Mon Jun 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.1.11-2
+- Fix spec issues
+* Fri Jun 02 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-1
+- Version update
+* Sun Feb 26 2023 Anmol Jain <anmolja@vmware.com> 7.1.0.19-8
+- Fix for CVE-2022-44268
+* Tue Sep 27 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-7
+- Fix for CVE-2022-3213
+* Mon Sep 12 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-6
+- Fix for CVE-2022-1115
+* Sat Sep 03 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-5
+- Fix for CVE-2022-0284
+* Fri Aug 19 2022 Anmol Jain <anmolja@vmware.com> 7.1.0.19-4
+- Fix for CVE-2022-2719
+* Mon Jul 4 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-3
+- Fix for CVE-2022-32545, CVE-2022-32546, CVE-2022-32547
+* Tue May 17 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-2
+- Fix for CVE-2022-1114
+* Fri Apr 01 2022 Shivani Agarwal <shivania2@vmware.com> 7.1.0.19-1
+- Fix for CVE-2021-4219.
+* Mon Jan 03 2022 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-2
+- Fix for CVE-2021-39212.
+* Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
+- Initial build for Photon.
