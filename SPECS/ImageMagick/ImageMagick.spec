@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.0.47
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +39,7 @@ ImageMagick-devel as well.
 %package        devel
 Summary:        Library links and header files for ImageMagick app development
 Requires:       pkg-config
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 ImageMagick-devel contains the library links and header files you'll
@@ -101,10 +102,6 @@ however.
 %prep
 %autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
-# for %%doc
-mkdir Magick++/examples
-cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
-
 %build
 %configure
 %make_build
@@ -121,8 +118,8 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
 rm PerlMagick/demo/Generic.ttf
 %endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -176,6 +173,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+* Tue Jun 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-4
+- Fix spec issues
 * Fri May 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-3
 - Remove _isa entries
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.47-2
