@@ -2,8 +2,8 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.14
-Release:        2%{?dist}
+Version:        3.1.15
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -11,7 +11,7 @@ URL:            https://github.com/vmware/tdnf
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=ba9bfc361859b25b70a54496d7743fe124d02aed2800ffde9950ad992d37eaca6a33a2ffe7522080e9a1bf5d6166f647300c747d0e005968855863916fb82e43
+%define sha512  %{name}=1109f54dd7abaed47e1756e68c0154b63eb3864d9ddd22cdaec841228d115194754b8bd10563d84a6f76d2a7e489fe5fece0413f30538ce94a0f6e3c2657e14f
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -232,6 +232,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Jun 05 2023 Oliver Kurth <okurth@vmware.com> 3.1.15-1
+- update to 3.1.15
+- fix reinstall conflicts PR #428
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 3.1.14-2
 - Version bump to use curl 8.1.1
 * Tue Mar 14 2023 Oliver Kurth <okurth@vmware.com> 3.1.14-1
