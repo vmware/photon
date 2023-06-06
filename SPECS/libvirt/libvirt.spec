@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        8.10.0
-Release:        3%{?dist}
+Version:        9.3.0
+Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha512 %{name}=1d4006e909e185a89f9163e6d2309841f4086da65b9165c42eb512e2f6ae964749eeb72f74e86476768a09061e2e311cfcc31f4024b4ecbaba04cd3f5f5d849d
+%define sha512 %{name}=b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl-devel
@@ -202,6 +202,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 9.3.0-1
+- Version upgrade to v9.3.0
 * Fri Jun 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.10.0-3
 - Move doc files to docs sub package
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.10.0-2
