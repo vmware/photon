@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.28
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        6.1.32
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=7215e62df10847e8bce432880e0756e8a5f56eb8b8abb54f9e1eb8871ce7bd56d765be0f9a40a8dae4d135b2f9a0dab7f6b3d2691d73b0c47f05811194dee8bd
+%define sha512 linux=91ffc55e9f6d4bc4daf600fc751a1dfba8d81132b3184de6b340fb871e28305de8ad2e0293b53c03b062fbdcd9a1774a9b74e301477cd1b1c6eac27c42d15867
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -710,6 +710,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.32-1
+- Update to version 6.1.32
 * Wed Nov 22 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-5
 - disable kconfig CONFIG_RAID6_PQ_BENCHMARK
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.28-4
