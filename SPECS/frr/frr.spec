@@ -3,49 +3,49 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
+Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
 
-Source1:        %{name}-tmpfiles.conf
-Source2:        %{name}-sysusers.conf
+Source1: %{name}-tmpfiles.conf
+Source2: %{name}-sysusers.conf
 
-Patch0:         enable-openssl.patch
-Patch1:         disable-eigrp-crypto.patch
-Patch2:         fips-mode.patch
+Patch0: enable-openssl.patch
+Patch1: disable-eigrp-crypto.patch
+Patch2: fips-mode.patch
 
 %if 0%{?with_check}
-Patch4:         remove-grpc-test.patch
-Patch5:         0001-directly-link-libabsl_synchronization-for-grpc-test.patch
+Patch4: remove-grpc-test.patch
+Patch5: 0001-directly-link-libabsl_synchronization-for-grpc-test.patch
 %endif
 
-BuildRequires:  build-essential
-BuildRequires:  c-ares-devel
-BuildRequires:  python3-devel
-BuildRequires:  python3-sphinx
-BuildRequires:  systemd-devel
-BuildRequires:  flex
-BuildRequires:  json-c-devel
-BuildRequires:  libcap-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  readline-devel
-BuildRequires:  texinfo
-BuildRequires:  libyang-devel
-BuildRequires:  elfutils-devel
-BuildRequires:  pcre2-devel
-BuildRequires:  openssl-devel
-BuildRequires:  grpc-devel
-BuildRequires:  net-snmp-devel
-BuildRequires:  which
+BuildRequires: build-essential
+BuildRequires: c-ares-devel
+BuildRequires: python3-devel
+BuildRequires: python3-sphinx
+BuildRequires: systemd-devel
+BuildRequires: flex
+BuildRequires: json-c-devel
+BuildRequires: libcap-devel
+BuildRequires: ncurses-devel
+BuildRequires: readline-devel
+BuildRequires: texinfo
+BuildRequires: libyang-devel
+BuildRequires: elfutils-devel
+BuildRequires: pcre2-devel
+BuildRequires: openssl-devel
+BuildRequires: grpc-devel
+BuildRequires: net-snmp-devel
+BuildRequires: which
 
 %if 0%{?with_check}
-BuildRequires:  python3-pytest
+BuildRequires: python3-pytest
 %endif
 
 Requires: libcap
@@ -246,6 +246,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.4.1-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-2
 - Bump version as part of libyang upgrade
 * Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 8.4.1-1

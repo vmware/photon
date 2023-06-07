@@ -1,24 +1,25 @@
 Summary:        ALSA Utilities
 Name:           alsa-utils
 Version:        1.2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.alsa-project.org/files/pub/utils/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=882e6f67467596ed273bf554fcce87d8ef287806bbdabd6c103de4980981f9e2102fb3800c6e8628ee8e86ffb165c1c92f9370c8145f28a6cb7cca563942330b
 
-Patch0:         ens1371.patch
+Source0: https://www.alsa-project.org/files/pub/utils/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=882e6f67467596ed273bf554fcce87d8ef287806bbdabd6c103de4980981f9e2102fb3800c6e8628ee8e86ffb165c1c92f9370c8145f28a6cb7cca563942330b
 
-BuildRequires:  alsa-lib-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  systemd-devel
+Patch0: ens1371.patch
 
-Requires:       linux-drivers-sound
-Requires:       alsa-lib
-Requires:       ncurses
+BuildRequires: alsa-lib-devel
+BuildRequires: ncurses-devel
+BuildRequires: systemd-devel
+
+Requires: linux-drivers-sound
+Requires: alsa-lib
+Requires: ncurses
 
 %description
 The ALSA Utilities package contains various utilities which are useful for controlling your sound card.
@@ -55,6 +56,8 @@ alsactl -L store
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.2.8-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.8-1
 - Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.7-1

@@ -1,7 +1,7 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
 Version:          6.24.06
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org
 Group:            System Environment/Shells
@@ -11,11 +11,11 @@ Distribution:     Photon
 Source0: http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a69e51d08b56e1326368029c1dfc8ada9221ba0f17369cf3471c764b77e53fa259a3fe713e9443835a20f528b0940ec2af9d7fab4cb943789aab08856fd5c2e8
 
-Provides:         /bin/csh
-Provides:         /bin/%{name}
-Provides:         csh = %{version}-%{release}
+Provides: /bin/csh
+Provides: /bin/%{name}
+Provides: csh = %{version}-%{release}
 
-BuildRequires:    ncurses-devel
+BuildRequires: ncurses-devel
 
 Requires:         ncurses
 Requires(post):   /bin/grep
@@ -117,6 +117,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 6.24.06-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Sat Jan 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.24.06-2
 - Fix requires
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.06-1

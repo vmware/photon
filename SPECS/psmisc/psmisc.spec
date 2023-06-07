@@ -1,7 +1,7 @@
 Summary:        Displays information about running processes
 Name:           psmisc
 Version:        23.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.com/psmisc/psmisc
 Group:          Applications/System
@@ -11,9 +11,9 @@ Distribution:   Photon
 Source0: https://sourceforge.net/projects/%{name}/files/%{name}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=4daffbd1726e50d9344f8578dd4c10f0b8f7971929ec667490de31122e5f3828747e1bafb3ed3c37ed7e1758ab9ec43b8f4556b676a416a8efbc7c6c88b6985d
 
-BuildRequires:  ncurses-devel
+BuildRequires: ncurses-devel
 
-Requires:       ncurses
+Requires: ncurses
 
 %description
 The Psmisc package contains programs for displaying information about running processes.
@@ -41,6 +41,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 23.6-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.6-2
 - Fix binary path
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 23.6-1

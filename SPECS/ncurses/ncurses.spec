@@ -1,8 +1,8 @@
-%global ncursessubversion 20221029
+%global ncursessubversion 20230603
 
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
-Version:        6.3
+Version:        6.4
 Release:        1%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses
@@ -10,14 +10,14 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha512  %{name}=03bfb42c46acff9484401f24b70781b6c74f0d9247b2c06d7d59d5211cae5498c6f1dcea7994b7caf10dd6a4dcd499c656a753401499c5079c307eb1b9e62060
+Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
+%define sha512 %{name}=5f62eeeba3a826a9c7e447cfe673d3b1f176dd39c930ddfac2550531588dbe7c73c5cc99ef0b844629c6dcd3676d4a93b5cb78d607fee824bdccfc030bdb6541
 
-Requires:       ncurses-libs = %{version}-%{release}
-Requires:       glibc
+Requires: ncurses-libs = %{version}-%{release}
+Requires: glibc
 
-BuildRequires:  gcc glibc
-BuildRequires:  pkg-config
+BuildRequires: gcc glibc
+BuildRequires: pkg-config
 
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -217,6 +217,8 @@ make %{?_smp_mflags}
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+* Tue May 30 2023 Nitesh Kumar <kunitesh@vmware.com> 6.4-1
+- Version upgrade to 6.4 to fix CVE-2023-29491
 * Mon Oct 31 2022 Susant Sahani <ssahani@vmware.com> 6.3-1
 - Update to version 6.3.
 * Mon Mar 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2-5

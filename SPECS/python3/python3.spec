@@ -4,44 +4,44 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512  Python=314eef88ae0d68760f34d7a32f238fd2ecb27c50963baa7357c42ad8159026ec50229a0b31d83c39710a472904a06422afc082f9658a90a1dc83ccb74c08039d
+Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+%define sha512 Python=314eef88ae0d68760f34d7a32f238fd2ecb27c50963baa7357c42ad8159026ec50229a0b31d83c39710a472904a06422afc082f9658a90a1dc83ccb74c08039d
 
-Source1:        macros.python
+Source1: macros.python
 
-Patch0:         cgi3.patch
+Patch0: cgi3.patch
 
-BuildRequires:  pkg-config >= 0.28
-BuildRequires:  bzip2-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  openssl-devel
-BuildRequires:  readline-devel
-BuildRequires:  xz-devel
-BuildRequires:  expat-devel >= 2.1.0
-BuildRequires:  libffi-devel >= 3.0.13
-BuildRequires:  sqlite-devel
-BuildRequires:  util-linux-devel
+BuildRequires: pkg-config >= 0.28
+BuildRequires: bzip2-devel
+BuildRequires: ncurses-devel
+BuildRequires: openssl-devel
+BuildRequires: readline-devel
+BuildRequires: xz-devel
+BuildRequires: expat-devel >= 2.1.0
+BuildRequires: libffi-devel >= 3.0.13
+BuildRequires: sqlite-devel
+BuildRequires: util-linux-devel
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
 
-Requires:       ncurses
-Requires:       openssl
-Requires:       %{name}-libs = %{version}-%{release}
-Requires:       readline
-Requires:       xz
-Provides:       python-sqlite
-Provides:       python(abi)
+Requires: ncurses
+Requires: openssl
+Requires: %{name}-libs = %{version}-%{release}
+Requires: readline
+Requires: xz
+Provides: python-sqlite
+Provides: python(abi)
 
-Provides:       /usr/bin/python
-Provides:       /bin/python
-Provides:       /bin/%{name}
+Provides: /usr/bin/python
+Provides: /bin/python
+Provides: /bin/%{name}
 
 %if 0%{?with_check}
 BuildRequires:  iana-etc
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.11.0-7
+- Bump version as a part of ncurses upgrade to v6.4
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-6
 - Fix requires
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-5

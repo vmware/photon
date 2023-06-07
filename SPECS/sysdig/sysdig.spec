@@ -9,7 +9,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.30.2
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -28,32 +28,32 @@ Patch2: bashcomp-location.patch
 
 BuildArch: x86_64
 
-BuildRequires:  cmake
-BuildRequires:  linux-devel = %{uname_r}
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  wget
-BuildRequires:  which
-BuildRequires:  grpc-devel
-BuildRequires:  jq-devel
-BuildRequires:  c-ares-devel
-BuildRequires:  protobuf-devel
-BuildRequires:  git
-BuildRequires:  net-tools
-BuildRequires:  jsoncpp-devel
+BuildRequires: cmake
+BuildRequires: linux-devel = %{uname_r}
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: wget
+BuildRequires: which
+BuildRequires: grpc-devel
+BuildRequires: jq-devel
+BuildRequires: c-ares-devel
+BuildRequires: protobuf-devel
+BuildRequires: git
+BuildRequires: net-tools
+BuildRequires: jsoncpp-devel
 
-Requires:       linux = %{uname_r}
-Requires:       zlib
-Requires:       ncurses
-Requires:       openssl
-Requires:       curl
-Requires:       grpc
-Requires:       jq
-Requires:       c-ares
-Requires:       protobuf
-Requires:       jsoncpp
+Requires: linux = %{uname_r}
+Requires: zlib
+Requires: ncurses
+Requires: openssl
+Requires: curl
+Requires: grpc
+Requires: jq
+Requires: c-ares
+Requires: protobuf
+Requires: jsoncpp
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -127,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.30.2-4
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-3
 - Bump version as a part of zlib upgrade
 * Tue Jan 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-2

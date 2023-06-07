@@ -1,14 +1,14 @@
 %global major_version 3
 
-Summary:    Cross-platform make system
-Name:       cmake
-Version:    3.25.2
-Release:    2%{?dist}
-License:    BSD and LGPLv2+
-URL:        http://www.cmake.org
-Group:      Development/Tools
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:      Cross-platform make system
+Name:         cmake
+Version:      3.25.2
+Release:      3%{?dist}
+License:      BSD and LGPLv2+
+URL:          http://www.cmake.org
+Group:        Development/Tools
+Vendor:       VMware, Inc.
+Distribution: Photon
 
 Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=20146d06a1722c36249192944a58e4780aad334d2bc5ce2a3d8c4f24656630c5b71ca0ae7ed53587e3d46f488bd773452fa60c3fc7045fe54db2dbc6ffd86390
@@ -72,6 +72,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.25.2-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25.2-2
 - Bump version as a part of zlib upgrade
 * Thu Feb 16 2023 Gerrit Photon <photon-checkins@vmware.com> 3.25.2-1

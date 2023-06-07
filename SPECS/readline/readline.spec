@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
@@ -156,6 +156,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.2-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2-1
 - Upgrade to v8.2
 * Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 7.0-3

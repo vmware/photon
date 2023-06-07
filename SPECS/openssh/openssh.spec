@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -25,18 +25,18 @@ Source5: %{name}.sysusers
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
-BuildRequires:  openssl-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  krb5-devel
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd-devel
-BuildRequires:  groff
+BuildRequires: openssl-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: krb5-devel
+BuildRequires: e2fsprogs-devel
+BuildRequires: systemd-devel
+BuildRequires: groff
 
-Requires:       %{name}-clients = %{version}-%{release}
-Requires:       %{name}-server = %{version}-%{release}
-Requires:       systemd
-Requires:       openssl
-Requires(pre):  systemd-rpm-macros
+Requires:      %{name}-clients = %{version}-%{release}
+Requires:      %{name}-server = %{version}-%{release}
+Requires:      systemd
+Requires:      openssl
+Requires(pre): systemd-rpm-macros
 
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
@@ -196,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 9.3p1-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Tue May 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.3p1-1
 - Update to 9.3p1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-8

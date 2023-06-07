@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.64.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -11,28 +11,28 @@ Distribution:   Photon
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
 %define sha512 %{name}c-%{version}-src=919f40acd8c6eaaef399aa3248503bea19feb96697ab221aaede9ee789ce340b47cb899d1e0e41a31e5d7756653968a10d2faaa4aee83294c9f1243949b43516
 
-BuildRequires:  git
-BuildRequires:  cmake
-BuildRequires:  glibc
-BuildRequires:  binutils
-BuildRequires:  curl-devel
-BuildRequires:  python3-devel
-BuildRequires:  openssl-devel
-BuildRequires:  libssh2-devel
-BuildRequires:  zlib-devel
-BuildRequires:  clang
-BuildRequires:  llvm-devel
-BuildRequires:  xz-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  ncurses-devel
+BuildRequires: git
+BuildRequires: cmake
+BuildRequires: glibc
+BuildRequires: binutils
+BuildRequires: curl-devel
+BuildRequires: python3-devel
+BuildRequires: openssl-devel
+BuildRequires: libssh2-devel
+BuildRequires: zlib-devel
+BuildRequires: clang
+BuildRequires: llvm-devel
+BuildRequires: xz-devel
+BuildRequires: libxml2-devel
+BuildRequires: ncurses-devel
 
-Requires:  glibc
-Requires:  gcc
-Requires:  libstdc++
-Requires:  openssl
-Requires:  ncurses-libs
-Requires:  libgcc
-Requires:  zlib
+Requires: glibc
+Requires: gcc
+Requires: libstdc++
+Requires: openssl
+Requires: ncurses-libs
+Requires: libgcc
+Requires: zlib
 
 %description
 Rust Programming Language
@@ -102,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.64.0-7
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.64.0-6
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.64.0-5

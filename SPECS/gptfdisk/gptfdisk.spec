@@ -1,7 +1,7 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
@@ -16,15 +16,15 @@ Source0: http://downloads.sourceforge.net/project/gptfdisk/%{version}/%{name}-%{
 Patch0: %{name}-%{version}-convenience-1.patch
 Patch1: gptfdisk-Makefile.patch
 
-BuildRequires:  popt-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  util-linux-devel
+BuildRequires: popt-devel
+BuildRequires: ncurses-devel
+BuildRequires: util-linux-devel
 
-Requires:       popt >= 1.16
-Requires:       ncurses
-Requires:       ncurses-devel
-Requires:       libstdc++
-Requires:       util-linux
+Requires: popt >= 1.16
+Requires: ncurses
+Requires: ncurses-devel
+Requires: libstdc++
+Requires: util-linux
 
 %description
 The gptfdisk package is a set of programs for creation and maintenance of GUID Partition
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.0.9-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-1
 - Upgrade to v1.0.9
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.7-3

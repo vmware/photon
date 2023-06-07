@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
@@ -116,6 +116,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 4.0.0-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu Mar 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-2
 - Remove invalid symlink
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-1

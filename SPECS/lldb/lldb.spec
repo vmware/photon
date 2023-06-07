@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -13,23 +13,23 @@ Distribution:   Photon
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
 %define sha512 %{name}=27f94fd87827d08959a572038c22fd558e1776f94e1678e900d6e28517ae6fe2d89cbc719d9c65cd2879fc6bd97d291f90c4b8e6fe283f02fdf210ed138c80fa
 
-BuildRequires:  cmake
-BuildRequires:  llvm-devel = %{version}
-BuildRequires:  clang-devel = %{version}
-BuildRequires:  ncurses-devel
-BuildRequires:  swig
-BuildRequires:  zlib-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  python3-devel
-BuildRequires:  lua-devel
-BuildRequires:  ninja-build
+BuildRequires: cmake
+BuildRequires: llvm-devel = %{version}
+BuildRequires: clang-devel = %{version}
+BuildRequires: ncurses-devel
+BuildRequires: swig
+BuildRequires: zlib-devel
+BuildRequires: libxml2-devel
+BuildRequires: python3-devel
+BuildRequires: lua-devel
+BuildRequires: ninja-build
 
-Requires:       lua
-Requires:       llvm = %{version}
-Requires:       clang = %{version}
-Requires:       ncurses
-Requires:       zlib
-Requires:       libxml2
+Requires: lua
+Requires: llvm = %{version}
+Requires: clang = %{version}
+Requires: ncurses
+Requires: zlib
+Requires: libxml2
 
 %description
 LLDB is a next generation, high-performance debugger.
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-3
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-2

@@ -3,31 +3,31 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha512  %{name}=07e9026423438049b11f4f784d57401ece4e940570f613bd6958b3714fe7fbc2c048470bcce3e7d7d9f93331cdf3881d30dcc964cb113a071143a02b28e5b127
+Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
+%define sha512 %{name}=07e9026423438049b11f4f784d57401ece4e940570f613bd6958b3714fe7fbc2c048470bcce3e7d7d9f93331cdf3881d30dcc964cb113a071143a02b28e5b127
 
-Source1:        gdbinit
+Source1: gdbinit
 
-Patch0:         gdb-7.12-pstack.patch
-Patch1:         gdb-Stop-inaccessible-region-from-getting-dumped.patch
+Patch0: gdb-7.12-pstack.patch
+Patch1: gdb-Stop-inaccessible-region-from-getting-dumped.patch
 
-Requires:       expat
-Requires:       ncurses
-Requires:       python3
-Requires:       xz-libs
+Requires: expat
+Requires: ncurses
+Requires: python3
+Requires: xz-libs
 
-BuildRequires:  expat-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  xz-devel
+BuildRequires: expat-devel
+BuildRequires: ncurses-devel
+BuildRequires: python3-devel
+BuildRequires: python3-libs
+BuildRequires: xz-devel
 
 %if 0%{?with_check}
 BuildRequires:  dejagnu
@@ -152,6 +152,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 11.2-7
+- Bump version as a part of ncurses upgrade to v6.4
 * Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 11.2-6
 - Compile with --with-system-gdbinit
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 11.2-5

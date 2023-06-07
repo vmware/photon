@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -11,22 +11,22 @@ Url:            http://www.mysql.com
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
 %define sha512 %{name}-boost=47f76819004c7c545d1b0b6b6646d8816899976f92d35c5564b1255b144b597ff7d3e674c721a45bcbb13cc0da3f4474fb29221c0e21d2ff91a1892cd42c636c
 
-BuildRequires:  cmake
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  libtirpc-devel
-BuildRequires:  rpcsvc-proto-devel
-BuildRequires:  protobuf-devel
-BuildRequires:  libevent-devel
+BuildRequires: cmake
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: libtirpc-devel
+BuildRequires: rpcsvc-proto-devel
+BuildRequires: protobuf-devel
+BuildRequires: libevent-devel
 
-Requires:       protobuf
-Requires:       libtirpc
-Requires:       libevent
-Requires:       zlib
-Requires:       openssl
-Requires:       ncurses-libs
-Requires:       perl
-Requires:       %{name}-icu-data-files = %{version}-%{release}
+Requires: protobuf
+Requires: libtirpc
+Requires: libevent
+Requires: zlib
+Requires: openssl
+Requires: ncurses-libs
+Requires: perl
+Requires: %{name}-icu-data-files = %{version}-%{release}
 
 %description
 MySQL is a free, widely used SQL engine.
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/private/icudt69l
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.33-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Wed May 10 2023 Oliver Kurth <okurth@vmware.com> 8.0.33-1
 - Upgrade to v8.0.33, fixing CVE-2023-21980 and others
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.32-2

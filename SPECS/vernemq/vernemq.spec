@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.6.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -14,29 +14,30 @@ Source0: https://github.com/vernemq/vernemq/archive/%{name}-%{version}.tar.gz
 Source1: %{name}_vendor-%{version}.tar.gz
 %define sha512 vernemq_vendor=45acfa62b6bebddad19ce02461e5ab212dd868b37ab9d2ed89df1c7b3d9ad2ec7281d61f8d4e1171f6018010607a8129bc99eee837f900a2449617d7935af0d1
 
-Source2:    vars.config
-Source3:    %{name}.service
-Source4:    %{name}.sysusers
+Source2: vars.config
+Source3: %{name}.service
+Source4: %{name}.sysusers
+
 Patch0: local_version.patch
 
 # leveldb(core dependency) build on aarch64 is currently not supported
 # hence vernemq is restricted to x86_64
-BuildArch:        x86_64
+BuildArch: x86_64
 
-BuildRequires:    erlang
-BuildRequires:    which
-BuildRequires:    make
-BuildRequires:    libstdc++-devel
-BuildRequires:    snappy-devel
-BuildRequires:    systemd-devel
+BuildRequires: erlang
+BuildRequires: which
+BuildRequires: make
+BuildRequires: libstdc++-devel
+BuildRequires: snappy-devel
+BuildRequires: systemd-devel
 
-Requires:         snappy
-Requires:         libstdc++
-Requires:         systemd
-Requires:         openssl
-Requires:         ncurses
-Requires(pre):    systemd-rpm-macros
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires:      snappy
+Requires:      libstdc++
+Requires:      systemd
+Requires:      openssl
+Requires:      ncurses
+Requires(pre): systemd-rpm-macros
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 A high-performance, distributed MQTT message broker.
@@ -120,6 +121,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.12.6.2-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.12.6.2-2
 - Use systemd-rpm-macros for user creation
 * Fri Dec 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12.6.2-1

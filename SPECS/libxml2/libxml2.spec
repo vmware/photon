@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.11.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -11,16 +11,16 @@ Distribution:   Photon
 Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.xz
 %define sha512 %{name}=c1df7441c729430bdd2de52e9da69b171afc4b776e4a2eb43acbc71ada7a3814a465247fb5fca4c83ecf1c281f7745069ec3d051a7964cb7cc119a3d983f93ba
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-xml
-BuildRequires:  zlib-devel
-BuildRequires:  pkg-config
-BuildRequires:  readline-devel
-BuildRequires:  ncurses-devel
+BuildRequires: python3-devel
+BuildRequires: python3-xml
+BuildRequires: zlib-devel
+BuildRequires: pkg-config
+BuildRequires: readline-devel
+BuildRequires: ncurses-devel
 
-Requires:  readline
-Requires:  ncurses-libs
-Requires:  zlib
+Requires: readline
+Requires: ncurses-libs
+Requires: zlib
 
 Provides:       pkgconfig(libxml-2.0)
 
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.11.4-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-1
 - Upgrade to v2.11.4
 * Wed May 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-8

@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
 Version:       25.1.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -13,7 +13,7 @@ Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
 
 Patch0: 0001-erlang-fix-vernemq-build-fail.patch
 
-Requires:     ncurses-libs
+Requires: ncurses-libs
 
 BuildRequires: unzip
 BuildRequires: openssl-devel
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 25.1.2-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 25.1.2-1
 - Automatic Version Bump
 * Wed Sep 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 24.3.4.5-1

@@ -7,7 +7,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.32.2
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -19,38 +19,38 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
-BuildArch:      x86_64
+BuildArch: x86_64
 
-BuildRequires:  cmake
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  linux-devel = %{uname_r}
-BuildRequires:  jq-devel
-BuildRequires:  git
-BuildRequires:  lua-devel
-BuildRequires:  libyaml-devel
-BuildRequires:  linux-api-headers
-BuildRequires:  wget
-BuildRequires:  which
-BuildRequires:  grpc-devel
-BuildRequires:  c-ares-devel
-BuildRequires:  protobuf-devel
+BuildRequires: cmake
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: linux-devel = %{uname_r}
+BuildRequires: jq-devel
+BuildRequires: git
+BuildRequires: lua-devel
+BuildRequires: libyaml-devel
+BuildRequires: linux-api-headers
+BuildRequires: wget
+BuildRequires: which
+BuildRequires: grpc-devel
+BuildRequires: c-ares-devel
+BuildRequires: protobuf-devel
 
-Requires:       linux = %{uname_r}
-Requires:       zlib
-Requires:       ncurses
-Requires:       openssl
-Requires:       curl
-Requires:       libyaml
-Requires:       lua
-Requires:       sysdig
-Requires:       dkms
-Requires:       grpc
-Requires:       jq
-Requires:       protobuf
-Requires:       c-ares
+Requires: linux = %{uname_r}
+Requires: zlib
+Requires: ncurses
+Requires: openssl
+Requires: curl
+Requires: libyaml
+Requires: lua
+Requires: sysdig
+Requires: dkms
+Requires: grpc
+Requires: jq
+Requires: protobuf
+Requires: c-ares
 
 %package    devel
 Summary:    falco
@@ -110,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.32.2-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-2
 - Bump version as a part of zlib upgrade
 * Thu Sep 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.32.2-1

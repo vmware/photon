@@ -3,7 +3,7 @@
 
 Name:          crash
 Version:       8.0.2
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -104,6 +104,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.2-4
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.2-3
 - Bump version as a part of zlib upgrade
 * Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 8.0.2-2
