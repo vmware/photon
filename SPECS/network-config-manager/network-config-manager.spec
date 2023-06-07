@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=3e1d743831d1b5cced5f1086bc45a06cce5ff71e4366a49302df2512a6f1cefcf666de3aebd753cb313c16fba9babedfde309dfa831601408cdfc3433b2ee5d7
+%define sha512 %{name}-%{version}=0bfa9620f29be1534dd781ee68512bc64fa6f65e50f654ec07b1f4efc416970b5d112ad40df39bd309b4ffdcfe9de30d8d1995360d2e871b2b01bffb961462e4
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
