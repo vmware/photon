@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ popd
 %{_libdir}/private/icudt69l/brkitr
 
 %changelog
+* Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-2
+- Bump version as a part of protobuf upgrade
 * Wed May 10 2023 Oliver Kurth <okurth@vmware.com> 8.0.33-1
 - Upgrade to v8.0.33, fixing CVE-2023-21980 and others
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.0.32-2

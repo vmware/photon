@@ -3,7 +3,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.35.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -69,11 +69,11 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_build
+%{cmake_build}
 
 %install
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_install
+%{cmake_install}
 mkdir -p %{buildroot}%{_modulesdir}/extra
 install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
 
@@ -98,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/falco.ko
 
 %changelog
+* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.35.0-2
+- Bump version as a part of protobuf upgrade
 * Tue Jun 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.35.0-1
 - Update to 0.35.0
 * Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 0.30.0-3

@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.3.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +14,6 @@ Source0: %{name}-%{version}.tar.gz
 Patch0:         CVE-2022-33070.patch
 Patch1:         CVE-2022-48468.patch
 
-BuildRequires:  protobuf >= 2.6.0
 BuildRequires:  protobuf-devel >= 2.6.0
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -32,7 +31,7 @@ Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neut
 %package        devel
 Summary:        Development files for protobuf
 Group:          Development/Libraries
-Requires:       protobuf-c = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The protobuf-c-devel package contains libraries and header files for
@@ -41,7 +40,7 @@ developing applications that use protobuf-c.
 %package        static
 Summary:        protobuf-c static lib
 Group:          Development/Libraries
-Requires:       protobuf-c = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    static
 The protobuf-c-static package contains static protobuf-c libraries.
@@ -51,13 +50,16 @@ The protobuf-c-static package contains static protobuf-c libraries.
 autoreconf -iv
 
 %build
-%configure --disable-silent-rules
-make %{?_smp_mflags}
+%configure \
+    --disable-silent-rules \
+    --disable-static
+
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -74,9 +76,10 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %files static
 %defattr(-,root,root)
-%{_libdir}/libprotobuf-c.a
 
 %changelog
+* Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-6
+- Bump version as a part of protobuf upgrade
 * Wed May 10 2023 Mukul Sikka <msikka@vmware.com> 1.3.3-5
 - Fix CVE-2022-33070 and CVE-2022-48468
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-4

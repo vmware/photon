@@ -1,7 +1,7 @@
 Summary:        LightStep distributed tracing library for C++
 Name:           lightstep-tracer-cpp
 Version:        0.19
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            https://github.com/lightstep/lightstep-tracer-cpp
 Group:          Development/Tools
@@ -56,6 +56,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/liblightstep_*
 
 %changelog
+* Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.19-6
+- Bump version as a part of protobuf upgrade
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.19-5
 - Bump version as a part of llvm upgrade
 * Mon Mar 28 2022 Harinadh D <hdommaraju@vmware.com> 0.19-4

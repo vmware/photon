@@ -1,31 +1,27 @@
+%define java_min_ver_needed     1.8.0.45
+
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.19.4
-Release:        2%{?dist}
+Version:        3.19.6
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://github.com/google/protobuf/
+URL:            https://github.com/google/protobuf
 
-Source0: protobuf-%{version}.tar.gz
-%define sha512 protobuf=2653b9852e5ac69f1de9b6ac02887c366aa0a9efd2b29e53135f61a9a10f5a1b5853a8c4cbb3658f519dfdbde9f32c547c39751ab417f123162b08be9e76c9e1
+Source0: https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8f92242f2be8e1bbfba41341c87709ad91ad83b8b3e3df88bb430411541d3399295f49291fd52b50e3487b0fce33181cb4d175685fd25aac72adfaee26a612d4
 
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-BuildRequires:  libstdc++
+BuildRequires:  build-essential
 BuildRequires:  curl
-BuildRequires:  make
 BuildRequires:  unzip
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  chkconfig
-BuildRequires:  openjre8 >= 1.8.0.45
-BuildRequires:  openjdk8 >= 1.8.0.45
+BuildRequires:  openjre8 >= %{java_min_ver_needed}
+BuildRequires:  openjdk8 >= %{java_min_ver_needed}
 BuildRequires:  apache-maven >= 3.3.3
 
 %description
@@ -35,7 +31,7 @@ You can find protobuf's documentation on the Google Developers site.
 %package        devel
 Summary:        Development files for protobuf
 Group:          Development/Libraries
-Requires:       protobuf = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The protobuf-devel package contains libraries and header files for
@@ -44,7 +40,7 @@ developing applications that use protobuf.
 %package        static
 Summary:        protobuf static lib
 Group:          Development/Libraries
-Requires:       protobuf = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    static
 The protobuf-static package contains static protobuf libraries.
@@ -53,8 +49,7 @@ The protobuf-static package contains static protobuf libraries.
 Summary:        protobuf python3 lib
 Group:          Development/Libraries
 Requires:       python3
-Requires:       python3-libs
-Requires:       protobuf = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    python3
 This contains protobuf python3 libraries.
@@ -62,7 +57,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-Requires:       openjre8 >= 1.8.0.45
+Requires:       openjre8 >= %{java_min_ver_needed}
 
 %description    java
 This contains protobuf java package.
@@ -73,65 +68,69 @@ This contains protobuf java package.
 # This test is incredibly slow on arm
 # https://github.com/google/protobuf/issues/2389
 %if "%{_arch}" == "aarch64"
-rm -f java/core/src/test/java/com/google/protobuf/IsValidUtf8Test.java
-rm -f java/core/src/test/java/com/google/protobuf/DecodeUtf8Test.java
+rm -f java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
+      java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
 %endif
 
-autoreconf -iv
+autoreconf -vfi
 
 %build
-%configure --disable-silent-rules
-make %{?_smp_mflags}
+%configure \
+    --disable-silent-rules \
+    --disable-static
+
+%make_build
+
 pushd python
-python3 setup.py build
+%{py3_build}
 popd
+
 pushd java
 mvn package
 popd
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
+
 pushd python
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-pushd java
-mvn install
-install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 core/target/protobuf-java-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
-install -vm644 util/target/protobuf-java-util-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
+%{py3_install}
 popd
 
-%post   -p /sbin/ldconfig
+pushd java
+mvn install
+install -vdm755 %{buildroot}%{_libdir}/java/%{name}
+install -vm644 core/target/%{name}-java-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
+install -vm644 util/target/%{name}-java-util-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
+popd
+
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/protoc
-%{_libdir}/libprotobuf-lite.so.*
-%{_libdir}/libprotobuf.so.*
-%{_libdir}/libprotoc.so.*
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libprotobuf-lite.so
-%{_libdir}/libprotobuf.so
-%{_libdir}/libprotoc.so
+%{_libdir}/*.so
 
 %files static
 %defattr(-,root,root)
-%{_libdir}/libprotobuf-lite.a
-%{_libdir}/libprotobuf.a
-%{_libdir}/libprotoc.a
 
 %files python3
+%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %files java
-%{_libdir}/java/protobuf/*.jar
+%defattr(-,root,root)
+%{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Wed Jun 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-1
+- Upgrade to v3.19.6
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.19.4-2
 - Remove .la files
 * Wed Mar 02 2022 Harinadh D <hdommaraju@vmware.com> 3.19.4-1
