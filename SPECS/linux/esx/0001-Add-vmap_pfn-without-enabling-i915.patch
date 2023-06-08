@@ -1,0 +1,29 @@
+From c6a706d68f4de38430068366d4766dcdc71cff7c Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 10 Jul 2023 21:51:31 +0000
+Subject: [PATCH] Add vmap_pfn without enabling i915
+
+We are using backported out of tree version of i915 driver which depends on
+in-kernel presence of vmap_pfn() function. Enable it unconditionally.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ mm/vmalloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index fff03a331..e4573d81d 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2413,7 +2413,7 @@ void *vmap(struct page **pages, unsigned int count,
+ }
+ EXPORT_SYMBOL(vmap);
+ 
+-#ifdef CONFIG_VMAP_PFN
++#if 1
+ struct vmap_pfn_data {
+ 	unsigned long	*pfns;
+ 	pgprot_t	prot;
+-- 
+2.30.3
+

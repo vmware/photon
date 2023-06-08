@@ -1,0 +1,30 @@
+From 8d58d07ccab1ca3e386aae189d0d5187a117aadf Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 29 Jun 2023 06:44:37 +0000
+Subject: [PATCH] linux-esx: Initialize PAT even if MTRR is not set
+
+This is the CRX case, where MTRR is not set by the firmware.
+Achieving it by ignoring return value of get_mtrr_state(), so
+__mtrr_enabled will be always true.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ arch/x86/kernel/cpu/mtrr/mtrr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/mtrr/mtrr.c b/arch/x86/kernel/cpu/mtrr/mtrr.c
+index 5f436cb4f..9053646e7 100644
+--- a/arch/x86/kernel/cpu/mtrr/mtrr.c
++++ b/arch/x86/kernel/cpu/mtrr/mtrr.c
+@@ -762,7 +762,7 @@ void __init mtrr_bp_init(void)
+ 		init_table();
+ 		if (use_intel()) {
+ 			/* BIOS may override */
+-			__mtrr_enabled = get_mtrr_state();
++			get_mtrr_state();
+ 
+ 			if (mtrr_enabled())
+ 				mtrr_bp_pat_init();
+-- 
+2.30.3
+
