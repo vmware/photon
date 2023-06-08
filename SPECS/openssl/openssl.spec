@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2zg
+Version:        1.0.2zh
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,8 +8,8 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zg.tar.gz
-%define sha512 vmware-OpenSSL_1_0_2zg=b831be56361ace0c8d0fdb34d53555b4c20670633ad196f3551964be7a62038e70cecabfa5d6650bd7d59e6faaa466a37568fcf28e9b3ba1c90b0cc3d4d17759
+Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zh.tar.gz
+%define sha512 vmware-OpenSSL_1_0_2zh=c6771b094ad7a50279251bb12c8733c684633f73794ec6474ebd0707d2551841f626d524db3d6548f06c102b3dfb63118afda88e941cada0a81f8c397d970c7e
 
 Source1: rehash_ca_certificates.sh
 
@@ -77,7 +77,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2zg
+%setup -q -n vmware-OpenSSL_1_0_2zh
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -165,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Wed Feb 08 2023 Srinidhi Rao <srinidhir@vmware.com> 1.0.2zh-1
+- Update to openssl-1.0.2zh
 * Wed Feb 08 2023 Srinidhi Rao <srinidhir@vmware.com> 1.0.2zg-1
 - Update to openssl-1.0.2zg
 * Thu Sep 01 2022 Tapas Kundu <tkundu@vmware.com> 1.0.2ze-3
