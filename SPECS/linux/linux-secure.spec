@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.180
+Version:        5.10.183
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=5f095270cbfad418f9dbf8d1a1a38062b7ac44958acbc5c8d028eb094a8b3210d8a4f23107dd9c0d3266e813ed8d08d704704ed0fd53a6339c493a59b1ebbb10
+%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -153,6 +153,12 @@ Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
+#Fix for CVE-2023-1989
+Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
+
+#Fix for CVE-2021-3699
+Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -278,7 +284,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M135
+%autopatch -p1 -m100 -M136
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -425,6 +431,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
+- Update to version 5.10.183, fix some CVEs
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1
 - Update to version 5.10.180
 * Wed May 24 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.175-6
