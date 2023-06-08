@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        8.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -53,6 +53,7 @@ Requires:       parted
 Requires:       python3
 Requires:       readline
 Requires:       systemd
+Requires:       %{name}-docs = %{version}-%{release}
 
 %description
 Libvirt is collection of software that provides a convenient way to manage
@@ -76,6 +77,7 @@ This contains development tools and libraries for libvirt.
 %package        docs
 Summary:        libvirt docs
 Group:          Development/Tools
+Conflicts:      %{name} < 8.10.0-3
 
 %description    docs
 The contains libvirt package doc files.
@@ -165,44 +167,42 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
-
-%{_datadir}/augeas/*
-%{_datadir}/libvirt/cpu_map/*
-%{_datadir}/polkit-1/*
-
-%{_libdir}/libvirt*.so.*
-%{_libdir}/libvirt/connection-driver/*
-%{_libdir}/libvirt/lock-driver/lockd.so
-%{_libdir}/libvirt/storage-backend/*
-%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
+%{_libdir}/%{name}*.so.*
+%{_libdir}/%{name}/connection-driver/*
+%{_libdir}/%{name}/lock-driver/lockd.so
+%{_libdir}/%{name}/storage-backend/*
+%{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
-%{_libdir}/systemd/system/*
-
-%{_libexecdir}/libvirt*
+%{_unitdir}/*
+%{_libexecdir}/%{name}*
 %{_libexecdir}/virt-login-shell-helper
-
-%{_sysconfdir}/libvirt/nwfilter/
-%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
-%{_sysconfdir}/libvirt/qemu/networks/default.xml
+%{_sysconfdir}/%{name}/nwfilter/
+%{_sysconfdir}/%{name}/qemu/networks/autostart/default.xml
+%{_sysconfdir}/%{name}/qemu/networks/default.xml
 %{_sysconfdir}/logrotate.d/*
 
-%config(noreplace)%{_sysconfdir}/libvirt/*.conf
-%config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
+%config(noreplace)%{_sysconfdir}/%{name}/*.conf
+%config(noreplace)%{_sysconfdir}/sasl2/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/libvirt/*
-%{_libdir}/libvirt*.so
-%{_libdir}/pkgconfig/libvirt*
+%{_includedir}/%{name}/*
+%{_libdir}/%{name}*.so
+%{_libdir}/pkgconfig/%{name}*
 
 %files docs
 %defattr(-,root,root)
-%{_datadir}/doc/libvirt/*
+%{_docdir}/%{name}/*
 %{_datadir}/locale/*
-%{_datadir}/libvirt/test-screenshot.png
-%{_datadir}/libvirt/schemas/*.rng
+%{_datadir}/%{name}/test-screenshot.png
+%{_datadir}/%{name}/schemas/*.rng
+%{_datadir}/augeas/*
+%{_datadir}/%{name}/cpu_map/*
+%{_datadir}/polkit-1/*
 
 %changelog
+* Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.10.0-3
+- Move doc files to docs sub package
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.10.0-2
 - Bump version as a part of libxml2 upgrade
 * Sat Jan 07 2023 Susant Sahani <ssahani@vmware.com> 8.10.0-1
