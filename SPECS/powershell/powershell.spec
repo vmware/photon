@@ -3,8 +3,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.3.2
-Release:        2%{?dist}
+Version:        7.3.4
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -20,7 +20,7 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=117d0f4a576eeb12a517fe99f42d376a1a4947da5a109a79c59702393cf0ba82da4f1368cbf78a6a2c8f13438fdb51f9692ee8c122e78b50cae82e6297663266
+%define sha512 %{name}=ecaa83a8b66d98549baac8cdf592382d23a63560a27158eb99bcf82b4618b4346cee6ac6dbce6bac520fdbf206637de4823b7def4913c5ee1bf4877885f2b56a
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
@@ -32,7 +32,7 @@ Source1: %{name}-native-%{ps_native_ver}.tar.gz
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=c42cd23c0a1fd416d9f1c7b639428af70ef71339cd70629ee459cb5cec940a2376317fef3e251f8dca5fa11ac872a319b96d7472b9d359e102c79d8c47a6ffc9
+%define sha512 %{name}-%{version}-linux=19529e64379886f4017b26cf72112751f73aa22a8a2405b666dd39a2595f42666c102cd70ef3ad9a85e76cdfd18ab6dcc0deb624a20a07951baa8ce4b14e47e0
 
 Source3: build.sh
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
@@ -46,8 +46,8 @@ Source5: omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 7.0.102
-BuildRequires:  dotnet-runtime = 7.0.2
+BuildRequires:  dotnet-sdk = 7.0.203
+BuildRequires:  dotnet-runtime = 7.0.5
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -154,6 +154,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Jun 08 2023 Anmol Jain <anmolja@vmware.com> 7.3.4-1
+- Bump version to use dotnet 7.0.5 version
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-2
 - Bump version as a part of zlib upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-1
