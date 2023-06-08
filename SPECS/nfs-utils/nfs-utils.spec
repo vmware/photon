@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.5.1
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -10,14 +10,9 @@ Distribution:     Photon
 
 Source0:    http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
 %define sha512  %{name}=bcdcf186d97f5208de4dbd9b5208f036fc6ded6f27e06db8e3340218a5031e2a34b447484d63965c31965d1cf7175297a8a4a2b4f81a19530f64a9427c1e03b6
+Source1:          nfs-utils.defaults
 
-Source1:          nfs-client.service
-Source2:          nfs-client.target
-Source3:          rpc-statd.service
-Source4:          rpc-statd-notify.service
-Source5:          nfs-utils.defaults
-Source6:          nfs-server.service
-Source7:          nfs-mountd.service
+Patch0:           0001-service-file-nfs-utils-conf.patch
 
 BuildRequires:    libtool
 BuildRequires:    krb5-devel
@@ -71,20 +66,24 @@ mkdir -p %{buildroot}%{_unitdir} \
          %{buildroot}%{_sysconfdir}/default \
          %{buildroot}%{_sysconfdir}/export.d \
          %{buildroot}/var/lib/nfs/v4recovery
-
 touch %{buildroot}%{_sysconfdir}/exports
-install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE3} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE4} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/default/nfs-utils
-install -m644 %{SOURCE6} %{buildroot}%{_unitdir}
-install -m644 %{SOURCE7} %{buildroot}%{_unitdir}
+install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/default/nfs-utils
+install -m644 systemd/nfs-utils.service %{buildroot}%{_unitdir}
+#For backward compatibility
+ln -s   %{_unitdir}/nfs-utils.service %{buildroot}%{_unitdir}/nfs-client.service
+install -m644 systemd/nfs-client.target %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-statd.service %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-statd-notify.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-server.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-mountd.service %{buildroot}%{_unitdir}
 install -m644 systemd/proc-fs-nfsd.mount %{buildroot}%{_unitdir}
 install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
 install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
 install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
 install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
+install -m644 systemd/rpc-gssd.service %{buildroot}%{_unitdir}
+install -m644 systemd/nfs-blkmap.service %{buildroot}%{_unitdir}
+install -m644 systemd/auth-rpcgss-module.service %{buildroot}%{_unitdir}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable nfs-server.service" > %{buildroot}%{_presetdir}/50-nfs-server.preset
@@ -135,6 +134,8 @@ fi
 %{_libdir}/pkgconfig/libnfsidmap.pc
 
 %changelog
+* Wed Jun 07 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.5.1-6
+- Include rpc-gssd.service file
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.5.1-5
 - Bump version as a part of libevent upgrade
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.5.1-4
