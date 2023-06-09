@@ -481,7 +481,7 @@ if [ "$UPGRADE_OS" = "n" ] && [ -n "$TO_VERSION" ]; then
   show_help $ERETRY_EINVAL
 fi
 
-case "$TO_VERSION" in
+[ -n "$TO_VERSION" ] && case "$TO_VERSION" in
   4.0 )
     source ${PHOTON_UPGRADE_UTILS_DIR}/ph3-to-ph4-upgrade.sh
     ;;

@@ -16,14 +16,14 @@ function prepare_for_upgrade() {
   # remove toybox from vm & install coreutils
   # toybox is intended for container images only to keep image size small
   if ${RPM} -q --quiet toybox; then
-    ${TDNF} erase -y toybox
+    ${TDNF} $ASSUME_YES_OPT $REPOS_OPT erase toybox
   fi
 
   # Now install coreutils
   if ${RPM} -q --quiet coreutils; then
-    ${TDNF} reinstall -y coreutils
+    ${TDNF} $ASSUME_YES_OPT $REPOS_OPT reinstall coreutils
   else
-    ${TDNF} install -y coreutils
+    ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install coreutils
   fi
 }
 
@@ -38,7 +38,7 @@ function update_core_packages()
   local rc=0
   create_core_pkgs_list
 
-  if ! ${TDNF} $ASSUME_YES_OPT install ${core_packages[@]}; then
+  if ! ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install ${core_packages[@]}; then
     rc=$?
     abort $rc "Error upgrading rpm package to use the new location."
   fi
