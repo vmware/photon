@@ -65,5 +65,5 @@ function rebuilddb() {
 
 # Finds packages which are installed from the provided package names in args
 function find_installed_packages() {
-  $RPM -q $* | $GREP -v 'is not installed'
+  $RPM -q --queryformat="%{NAME}\n" $* | $GREP -v 'is not installed'
 }
