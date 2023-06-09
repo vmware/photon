@@ -1,23 +1,23 @@
 diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
-index d4fc04e..7afc994 100644
+index 6e5c1f43..155b0375 100644
 --- a/cloudinit/sources/helpers/azure.py
 +++ b/cloudinit/sources/helpers/azure.py
 @@ -1,5 +1,6 @@
  # This file is part of cloud-init. See LICENSE file for license information.
  import base64
 +import configobj
- import enum
  import json
  import logging
-@@ -20,6 +21,7 @@ from xml.sax.saxutils import escape
- from cloudinit import distros, dmi, subp, temp_utils, url_helper, util, version
- from cloudinit.reporting import events
- from cloudinit.settings import CFG_BUILTIN
+ import os
+@@ -11,6 +12,7 @@ import zlib
+ from contextlib import contextmanager
+ from datetime import datetime
+ from errno import ENOENT
 +from io import StringIO
- 
- LOG = logging.getLogger(__name__)
- 
-@@ -52,6 +54,8 @@ DEFAULT_REPORT_FAILURE_USER_VISIBLE_MESSAGE = (
+ from time import sleep, time
+ from typing import TYPE_CHECKING, Callable, List, Optional, TypeVar, Union
+ from xml.etree import ElementTree
+@@ -48,6 +50,8 @@ azure_ds_reporter = events.ReportEventStack(
  
  T = TypeVar("T")
  
@@ -26,7 +26,7 @@ index d4fc04e..7afc994 100644
  
  def azure_ds_telemetry_reporter(func: Callable[..., T]) -> Callable[..., T]:
      def impl(*args, **kwargs):
-@@ -958,6 +962,32 @@ class WALinuxAgentShim:
+@@ -926,6 +930,32 @@ class WALinuxAgentShim:
          report_diagnostic_event(msg, logger_func=LOG.debug)
          return goal_state
  

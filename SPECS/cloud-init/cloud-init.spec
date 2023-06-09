@@ -1,8 +1,8 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
 
 Name:           cloud-init
-Version:        23.1.1
-Release:        3%{?dist}
+Version:        23.2
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,22 +11,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=387d11d09e4c6443125216617893d72c9a060bbd086316a3101076206409f315e50ba580eb445e125179fbcf7bd97c264d3c3b7ebe970d9c536e71f3362e1c66
+%define sha512 %{name}=8b46cbbfcc80d5f7731941f4382826b41b1cc4961e6e7044b0dd8668fba232a0be6d3b402ec010154318801f6466b0fc268dd74e02e4bc1dc54a92203d1f4793
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
 Patch2: ds-vmware-photon.patch
 Patch3: cloud-cfg.patch
-Patch4: 0001-sources-vmware-imc-fix-missing-catch-few-negtive-sce.patch
-Patch5: CVE-2023-1786.patch
 
 %if 0%{?with_check}
-Patch6: test_vmware.py-fix-pkg-test-failure.patch
-Patch7: 0001-cc_ca_certs.py-store-distro_cfg-ca_cert_config-in-a-.patch
-Patch8: 0002-cc_ca_certs.py-check-for-cert-file-existence-before-.patch
-Patch9: 0003-cc_ca_certs.py-remove-redundant-check-for-zero.patch
-Patch10: 0004-cc_ca_certs.py-move-util.write_file-with-if-block.patch
-Patch11: 0001-test_cc_ca_certs.py-fix-test_commands-issue.patch
+Patch4: test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 BuildRequires: python3-devel
@@ -102,21 +95,20 @@ find systemd -name "cloud*.service*" | \
 %install
 %py3_install -- --init-system=systemd
 
-%{python3} tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
+%{python3} tools/render-cloudcfg --variant photon > \
+        %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
 %if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
-sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
+sed -i -e "0,/'OpenStack', / s/'OpenStack', //" \
+        %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
          %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
-mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
-
 %if 0%{?with_check}
-%check
 %define pkglist pytest-metadata unittest2 responses pytest-mock
 
 pip3 install --upgrade %{pkglist}
@@ -145,8 +137,6 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/cloud/templates
 %doc %{_sysconfdir}/cloud/cloud.cfg.d/README
 %doc %{_sysconfdir}/cloud/clean.d/README
-%{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
-%{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
@@ -157,6 +147,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Fri Jun 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2-1
+- Upgrade to v23.2
 * Thu Apr 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-3
 - Fix CVE-2023-1786
 * Thu Mar 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-2
