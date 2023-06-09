@@ -1,7 +1,7 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.0.9-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-1
 - Upgrade to v1.0.9
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.7-3

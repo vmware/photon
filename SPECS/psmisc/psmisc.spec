@@ -1,7 +1,7 @@
 Summary:        Displays information about running processes
 Name:           psmisc
 Version:        23.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.com/psmisc/psmisc
 Group:          Applications/System
@@ -41,6 +41,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 23.6-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.6-2
 - Fix binary path
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 23.6-1

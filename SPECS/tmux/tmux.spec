@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io
 Group:          Applications/System
@@ -44,6 +44,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_usrsrc}
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 3.3-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Wed Feb 01 2023 Harinadh D <hdommaraju@vmware.com> 3.3-2
 - fix CVE-2022-40716
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3-1

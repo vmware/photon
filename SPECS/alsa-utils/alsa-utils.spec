@@ -1,7 +1,7 @@
 Summary:        ALSA Utilities
 Name:           alsa-utils
 Version:        1.2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
 Group:          Applications/Internet
@@ -55,6 +55,8 @@ alsactl -L store
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.2.8-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.8-1
 - Automatic Version Bump
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.7-1

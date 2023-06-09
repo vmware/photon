@@ -1,7 +1,7 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
 Version:          6.24.06
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              http://www.tcsh.org
 Group:            System Environment/Shells
@@ -117,6 +117,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 6.24.06-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Sat Jan 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.24.06-2
 - Fix requires
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 6.24.06-1

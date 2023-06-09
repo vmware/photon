@@ -1,7 +1,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.33
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://sourceforge.net/projects/openipmi
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -178,6 +178,8 @@ echo "disable ipmi.service" > %{buildroot}%{_presetdir}/50-ipmi.preset
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.33-6
+- Bump version as a part of ncurses upgrade to v6.4
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.33-5
 - Bump up version no. as part of swig upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.33-4

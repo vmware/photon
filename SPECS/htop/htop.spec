@@ -1,6 +1,6 @@
 Name:          htop
 Version:       3.2.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Interactive process viewer
 License:       GPLv2+
 Group:         Applications/System
@@ -45,6 +45,8 @@ autoreconf -vfi
 %{_mandir}/man1/htop.1*
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-2
+- Bump version as a part of ncurses upgrade to v6.4
 * Tue Sep 27 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1
 - Automatic Version Bump
 * Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1

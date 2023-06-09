@@ -1,7 +1,7 @@
 Summary:    Text file viewer
 Name:       less
 Version:    608
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        http://www.greenwoodsoftware.com/less
 Group:      Applications/File
@@ -36,6 +36,8 @@ The Less package contains a text file viewer
 %{_mandir}/*/*
 
 %changelog
+* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 608-3
+- Bump version as a part of ncurses upgrade to v6.4
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 608-2
 - Fix CVE-2022-46663
 * Wed Nov 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 608-1
