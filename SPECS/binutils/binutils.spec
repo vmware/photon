@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.35
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -20,6 +20,9 @@ Patch6:         binutils-CVE-2022-38533.patch
 Patch7:         binutils-bug-26520.patch
 Patch8:         binutils-CVE-2022-4285.patch
 Patch9:         binutils-CVE-2023-1972.patch
+Patch10:        binutils-CVE-2023-25584.patch
+Patch11:        binutils-CVE-2023-25585.patch
+Patch12:        binutils-CVE-2023-25588.patch
 
 Requires:       %{name}-libs = %{version}-%{release}
 
@@ -152,6 +155,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Fri Jun 09 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-8
+- Fix CVE-2023-25584, CVE-2023-25585 and CVE-2023-25588
 * Thu May 18 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-7
 - Fix CVE-2022-4285 and CVE-2023-1972
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.35-6
