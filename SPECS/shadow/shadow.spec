@@ -1,14 +1,16 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
-Version:        4.8.1
-Release:        5%{?dist}
-URL:            https://github.com/shadow-maint/
+Version:        4.13
+Release:        1%{?dist}
+URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/shadow-maint/shadow/releases/download/4.6/%{name}-%{version}.tar.xz
-%define sha512  shadow=780a983483d847ed3c91c82064a0fa902b6f4185225978241bc3bc03fcc3aa143975b46aee43151c6ba43efcfdb1819516b76ba7ad3d1d3c34fcc38ea42e917b
+
+Source0: https://github.com/shadow-maint/shadow/releases/download/%{version}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=2949a728c3312bef13d23138d6b79caf402781b1cb179e33b5be546c1790971ec20778d0e9cd3dbe09691d928ffcbe88e60da42fab58c69a90d5ebe5e3e2ab8e
+
 Source1:        chage
 Source2:        chpasswd
 Source3:        login
@@ -20,35 +22,52 @@ Source8:        system-account
 Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
-Patch0:         shadow-4.8.1-goodname.patch
-Patch1:         CVE-2023-29383.patch
-Patch2:         CVE-2023-29383.1.patch
-BuildRequires:  cracklib
+Source12:       useradd
+
 BuildRequires:  cracklib-devel
-Requires:       cracklib
 BuildRequires:  Linux-PAM-devel
+
+Requires:       cracklib
 Requires:       Linux-PAM
 Requires:       libpwquality
+Requires:       openssl
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       %{name}-tools = %{version}-%{release}
 
 %description
 The Shadow package contains programs for handling passwords
 in a secure way.
 
-%package tools
+%package     tools
 Summary:     Contains subset of tools which might be replaced by toybox
 Group:       Applications/System
+Requires:    %{name}-libs = %{version}-%{release}
 Requires:    %{name} = %{version}-%{release}
 Conflicts:   toybox < 0.8.2-2
+
 %description tools
 Contains subset of tools which might be replaced by toybox
 
-%package lang
+%package     lang
 Summary:     Additional language files for shadow
 Group:       Applications/System
 Requires:    %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of shadow.
+
+%package     devel
+Summary:     Development libraries and headers for %{name}.
+Requires:    %{name} = %{version}-%{release}
+
+%description devel
+Development libraries and headers for %{name}.
+
+%package     libs
+Summary:     Libraries needed by %{name}.
+
+%description libs
+Libraries needed by %{name}.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
@@ -64,41 +83,39 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --with-libpam \
-    --with-libcrack --with-group-name-max-length=32
+    --with-libcrack \
+    --with-group-name-max-length=32
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}/bin
-mv -v %{buildroot}%{_bindir}/passwd %{buildroot}/bin
-sed -i 's/yes/no/' %{buildroot}/etc/default/useradd
-# Use group id 100(users) by default
-sed -i 's/GROUP.*/GROUP=100/' %{buildroot}/etc/default/useradd
-# Disable usergroups. Use "users" group by default (see /etc/default/useradd)
+mkdir -p %{buildroot}%{_sysconfdir}/default
+cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
+# Disable usergroups. Use "users" group by default (see /usr/sbin/useradd)
 # for all nonroot users.
-sed -i 's/USERGROUPS_ENAB.*/USERGROUPS_ENAB no/' %{buildroot}/etc/login.defs
-cp etc/{limits,login.access} %{buildroot}/etc
-for FUNCTION in FAIL_DELAY               \
-                FAILLOG_ENAB             \
-                LASTLOG_ENAB             \
-                MAIL_CHECK_ENAB          \
-                OBSCURE_CHECKS_ENAB      \
-                PORTTIME_CHECKS_ENAB     \
-                QUOTAS_ENAB              \
-                CONSOLE MOTD_FILE        \
-                FTMP_FILE NOLOGINS_FILE  \
-                ENV_HZ PASS_MIN_LEN      \
-                SU_WHEEL_ONLY            \
-                CRACKLIB_DICTPATH        \
-                PASS_CHANGE_TRIES        \
-                PASS_ALWAYS_WARN         \
+sed -i 's/USERGROUPS_ENAB.*/USERGROUPS_ENAB no/' %{buildroot}%{_sysconfdir}/login.defs
+cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
+for FUNCTION in FAIL_DELAY \
+                FAILLOG_ENAB \
+                LASTLOG_ENAB \
+                MAIL_CHECK_ENAB \
+                OBSCURE_CHECKS_ENAB \
+                PORTTIME_CHECKS_ENAB \
+                QUOTAS_ENAB \
+                CONSOLE MOTD_FILE \
+                FTMP_FILE NOLOGINS_FILE \
+                ENV_HZ PASS_MIN_LEN \
+                SU_WHEEL_ONLY \
+                CRACKLIB_DICTPATH \
+                PASS_CHANGE_TRIES \
+                PASS_ALWAYS_WARN \
                 CHFN_AUTH ENCRYPT_METHOD \
-                ENVIRON_FILE
-do
-    sed -i "s/^${FUNCTION}/# &/" %{buildroot}/etc/login.defs
+                ENVIRON_FILE; do
+    sed -i "s/^${FUNCTION}/# &/" %{buildroot}%{_sysconfdir}/login.defs
 done
 
-sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/" %{buildroot}/etc/login.defs
+sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/" %{buildroot}%{_sysconfdir}/login.defs
 
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
@@ -119,6 +136,8 @@ do
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
 
+find %{buildroot}%{_libdir} -name '*.la' -delete
+
 %find_lang %{name}
 
 %if 0%{?with_check}
@@ -127,52 +146,65 @@ make %{?_smp_mflags} check
 %endif
 
 %post
+/sbin/ldconfig
 %{_sbindir}/pwconv
 %{_sbindir}/grpconv
 
+%postun
+/sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/login.defs
-%config(noreplace) /etc/login.access
-%config(noreplace) /etc/default/useradd
-%config(noreplace) /etc/limits
+%config(noreplace) %{_sysconfdir}/login.defs
+%config(noreplace) %{_sysconfdir}/login.access
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/default/useradd
+%config(noreplace) %{_sysconfdir}/limits
 %{_bindir}/*
 %{_sbindir}/*
-%{_mandir}/man1
-%{_mandir}/man5
-%{_mandir}/man8
-%exclude %{_bindir}/su
-%exclude %{_bindir}/login
-%exclude %{_mandir}/cs
-%exclude %{_mandir}/da
-%exclude %{_mandir}/de
-%exclude %{_mandir}/fi
-%exclude %{_mandir}/fr
-%exclude %{_mandir}/hu
-%exclude %{_mandir}/id
-%exclude %{_mandir}/it
-%exclude %{_mandir}/ja
-%exclude %{_mandir}/ko
-%exclude %{_mandir}/man3
-%exclude %{_mandir}/pl
-%exclude %{_mandir}/pt_BR
-%exclude %{_mandir}/ru
-%exclude %{_mandir}/sv
-%exclude %{_mandir}/tr
-%exclude %{_mandir}/zh_CN
-%exclude %{_mandir}/zh_TW
+%exclude %{_datadir}/locale/cs
+%exclude %{_datadir}/locale/da
+%exclude %{_datadir}/locale/de
+%exclude %{_datadir}/locale/fi
+%exclude %{_datadir}/locale/fr
+%exclude %{_datadir}/locale/hu
+%exclude %{_datadir}/locale/id
+%exclude %{_datadir}/locale/it
+%exclude %{_datadir}/locale/ja
+%exclude %{_datadir}/locale/ko
+%exclude %{_datadir}/locale/pl
+%exclude %{_datadir}/locale/pt_BR
+%exclude %{_datadir}/locale/ru
+%exclude %{_datadir}/locale/sv
+%exclude %{_datadir}/locale/tr
+%exclude %{_datadir}/locale/zh_CN
+%exclude %{_datadir}/locale/zh_TW
 %config(noreplace) %{_sysconfdir}/pam.d/*
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/libsubid.so.*
 
 %files tools
 %defattr(-,root,root)
-/bin/passwd
+%{_bindir}/passwd
 %{_bindir}/su
 %{_bindir}/login
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/libsubid.so
+%{_libdir}/libsubid.a
+%{_includedir}/%{name}/subid.h
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jun 19 2023 Anmol Jain <anmolja@vmware.com> 4.13-1
+-   Fix for CVE-2013-4235
 *   Mon May 22 2023 Anmol Jain <anmolja@vmware.com> 4.8.1-5
 -   Fix for CVE-2023-29383.patch
 *   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.8.1-4
