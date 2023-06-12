@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -48,6 +48,13 @@ Requires:   %{name} = %{version}-%{release}
 %description pc
 Additional library files for grub
 %endif
+
+%package emu
+Summary:    GRUB user space emulator
+Group:      System Environment/Programming
+Requires:   %{name} = %{version}-%{release}
+%description emu
+GRUB Emulator
 
 %package efi
 Summary:    GRUB Library for UEFI
@@ -92,6 +99,25 @@ sh ../configure \
 popd
 %endif
 
+mkdir -p build-for-emu
+pushd build-for-emu
+sh ../configure \
+    --prefix=%{_prefix} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=%{_sysconfdir} \
+    --disable-werror \
+    --disable-nls \
+    --with-grubdir=grub2 \
+    --with-platform=emu \
+    --target=%{_arch} \
+    --program-transform-name=s,grub,%{name}, \
+    --with-bootdir="/boot"
+
+%make_build
+
+%make_install DESTDIR=${PWD}/../install-for-emu %{?_smp_mflags}
+popd
+
 mkdir -p build-for-efi
 pushd build-for-efi
 sh ../configure \
@@ -116,6 +142,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/default \
          %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}/boot/%{name}
 
+cp -apr install-for-emu/. %{buildroot}/.
 cp -apr install-for-efi/. %{buildroot}/.
 %ifarch x86_64
 cp -apr install-for-pc/. %{buildroot}/.
@@ -186,6 +213,10 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %files efi
 %defattr(-,root,root)
 %{_libdir}/grub/x86_64-efi
+
+%files emu
+%defattr(-,root,root)
+%{_libdir}/grub/x86_64-emu
 %endif
 
 %ifarch aarch64
@@ -203,6 +234,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
+- Add grub2-emu sub pkg
 * Tue Mar 28 2023 Piyush Gupta <gpiyush@vmware.com> 2.06-10
 - Remove verification for font files during secure boot.
 * Tue Mar 14 2023 Alexey Makhalov <amakhalov@vmware.com> 2.06-9
