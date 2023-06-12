@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.283
-Release:        5%{?kat_build:.%kat}%{?dist}
+Version:        4.19.285
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt123
+%define rt_version rt125
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=30862f1e2ce1b181dc4408b26313ae5572a8176957249355880d59c373639fc9ef4ab740667dcd3f1a4eadca47b70a47d581a2b91e096e6908f5f2188ae60879
+%define sha512 linux=830cb0ce1f2793d607fd5342a9d04db9354aef7cb91043918079be35f4e6126a083a98e6c8c0f60f4c544bd9b64379e03199e367e087ea995117e8f93d22a640
 
 %ifarch x86_64
 Source1: config-rt
@@ -148,9 +148,6 @@ Patch69: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 # CVE-2022-1789
 Patch70: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
 
-# CVE-2022-2586
-Patch72: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
-
 # Fix for CVE-2022-39189
 Patch73: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
 
@@ -161,9 +158,6 @@ Patch74: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 Patch76: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch77: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch78: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
-# Fix for CVE-2022-34918
-Patch79: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -444,6 +438,7 @@ Patch390: 0190-workqueue-Use-normal-rcu.patch
 Patch391: 0191-workqueue-Use-local-irq-lock-instead-of-irq-disable-.patch
 Patch392: 0192-workqueue-Prevent-workqueue-versus-ata-piix-livelock.patch
 Patch393: 0193-sched-Distangle-worker-accounting-from-rqlock.patch
+Patch394: 0194-debugobjects-Make-RT-aware.patch
 Patch395: 0195-seqlock-Prevent-rt-starvation.patch
 Patch396: 0196-sunrpc-Make-svc_xprt_do_enqueue-use-get_cpu_light.patch
 Patch397: 0197-net-Use-skbufhead-with-raw-lock.patch
@@ -603,7 +598,7 @@ Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 Patch552: 0352-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 # Keep rt_version matched up with this patch.
-Patch553: 0353-Linux-4.19.280-rt123-REBASE.patch
+Patch553: 0353-Linux-4.19.284-rt125-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -1354,6 +1349,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Jun 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.285-1
+- Update to version 4.19.285
 * Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
 - Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 09 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4

@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.283
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.285
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=30862f1e2ce1b181dc4408b26313ae5572a8176957249355880d59c373639fc9ef4ab740667dcd3f1a4eadca47b70a47d581a2b91e096e6908f5f2188ae60879
+%define sha512 linux=830cb0ce1f2793d607fd5342a9d04db9354aef7cb91043918079be35f4e6126a083a98e6c8c0f60f4c544bd9b64379e03199e367e087ea995117e8f93d22a640
 
 %ifarch x86_64
 Source1: config-aws
@@ -97,9 +97,6 @@ Patch65: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 #Fix for CVE-2022-1055
 Patch66: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
-# CVE-2022-2586
-Patch68: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
-
 # Fix for CVE-2022-39189
 Patch69: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
 
@@ -110,9 +107,6 @@ Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 Patch72: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch73: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch74: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
-# Fix for CVE-2022-34918
-Patch75: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch76: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
@@ -545,6 +539,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.285-1
+- Update to version 4.19.285
 * Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
 - Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-4

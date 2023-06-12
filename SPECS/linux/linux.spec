@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.283
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.285
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=30862f1e2ce1b181dc4408b26313ae5572a8176957249355880d59c373639fc9ef4ab740667dcd3f1a4eadca47b70a47d581a2b91e096e6908f5f2188ae60879
+%define sha512 linux=830cb0ce1f2793d607fd5342a9d04db9354aef7cb91043918079be35f4e6126a083a98e6c8c0f60f4c544bd9b64379e03199e367e087ea995117e8f93d22a640
 
 %ifarch x86_64
 Source1: config
@@ -250,12 +250,6 @@ Patch182: lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.p
 
 # CVE-2022-1789
 Patch185: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
-
-# Fix for CVE-2022-34918
-Patch186: 0001-netfilter-nf_tables-stricter-validation-of-element-d.patch
-
-# CVE-2022-2586
-Patch187: 0002-netfilter-nf_tables-do-not-allow-RULE_ID-to-refer-to.patch
 
 # CVE-2022-43945
 Patch188: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -1140,6 +1134,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jun 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.285-1
+- Update to version 4.19.285
 * Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-4
 - Fix for CVE-2023-1076 and CVE-2023-1077
 * Fri Jun 02 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.283-3
