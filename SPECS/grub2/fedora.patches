@@ -327,3 +327,5 @@ Patch1315: 0315-kern-efi-mm-Implement-runtime-addition-of-pages.patch
 Patch1316: 0316-efi-Increase-default-memory-allocation-to-32-MiB.patch
 Patch1317: 0317-mm-Try-invalidate-disk-caches-last-when-out-of-memor.patch
 #Patch1318: 0318-ppc64le-signed-boot-media-changes.patch
+Patch1323: 0323-hostdisk-work-around-proc-not-reporting-size.patch
+Patch1325: 0325-emu-linux-work-around-systemctl-kexec-returning.patch

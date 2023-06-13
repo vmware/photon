@@ -1,0 +1,64 @@
+From 6ff44b1287bb17d5a53e9ae2abfe165d7a3a8875 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 29 Jun 2023 17:56:48 +0530
+Subject: [PATCH 1/2] grub2-emu: hide menu, skip retry
+
+- set timeout=0 so that grub2-emu don't display menu.
+- exit grub incase any error
+- don't wait after printing any message
+---
+ grub-core/normal/menu.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+index c8516a5..9ead05e 100644
+--- a/grub-core/normal/menu.c
++++ b/grub-core/normal/menu.c
+@@ -61,6 +61,7 @@ struct timeout_style_name {
+ void
+ grub_wait_after_message (void)
+ {
++#ifndef GRUB_MACHINE_EMU
+   grub_uint64_t endtime;
+   grub_xputs ("\n");
+   grub_printf_ (N_("Press any key to continue..."));
+@@ -72,6 +73,7 @@ grub_wait_after_message (void)
+ 	 && grub_getkey_noblock () == GRUB_TERM_NO_KEY);
+ 
+   grub_xputs ("\n");
++#endif
+ }
+ 
+ /* Get a menu entry by its index in the entry list.  */
+@@ -902,6 +904,16 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
+       int auto_boot;
+       int notify_boot;
+ 
++#ifdef GRUB_MACHINE_EMU
++      const char *val;
++      val = grub_env_get ("grub2-emu");
++      if (!(val && !grub_strcmp ("false", val)))
++        {
++          grub_env_set ("timeout", "0");
++          grub_dprintf ("debug", "set timeout=0\n");
++        }
++#endif
++
+       boot_entry = run_menu (menu, nested, &auto_boot, &notify_boot);
+       if (boot_entry < 0)
+ 	break;
+@@ -919,6 +931,11 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
+ 	grub_menu_execute_entry (e, 0);
+       if (autobooted)
+ 	break;
++
++#ifdef GRUB_MACHINE_EMU
++      if (!(val && !grub_strcmp ("false", val)))
++          grub_exit (-1);
++#endif
+     }
+ 
+   return GRUB_ERR_NONE;
+-- 
+2.7.4
+

@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    11%{?dist}
+Release:    12%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -19,7 +19,13 @@ Source1: fedora.patches
 Source2: grub-sbat.csv.in
 
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+
+#fedora patches
 %include %{SOURCE1}
+
+#grub2-emu
+Patch1501: 0001-grub2-emu-hide-menu-skip-retry.patch
+Patch1502: 0002-grub2-emu-fix-if-boot-as-partition.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -234,6 +240,8 @@ diff -sr install-for-efi%{_datadir} install-for-pc%{_datadir}
 %{_datadir}/locale/*
 
 %changelog
+* Thu Aug 31 2023 Ajay Kaher <akaher@vmware.com> 2.06-12
+- Fix path issues if /boot is mounted to boot partition
 * Thu Aug 31 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
 - Add grub2-emu sub pkg
 * Tue Mar 28 2023 Piyush Gupta <gpiyush@vmware.com> 2.06-10
