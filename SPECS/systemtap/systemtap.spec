@@ -8,16 +8,16 @@
 
 Name:          systemtap
 Version:       4.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap
 License:       GPLv2+
 
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 %{name}=40a21d71b0d42bc216f75befd3fca82701821211
+%define sha512 %{name}=66b5ba1902ed974101429dce9fee849273d3dc64e862c057177d158c5f284cc93299819ee8ee49d4bd3b7ff47a3512b1c68b74cad374147ce67fa406c7518c79
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -119,29 +119,29 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 %build
 %configure \
 %if %with_crash
-	--enable-crash \
+    --enable-crash \
 %else
-	--disable-crash \
+    --disable-crash \
 %endif
-	--disable-docs \
+    --disable-docs \
 %if %with_sqlite
-	--enable-sqlite \
+    --enable-sqlite \
 %else
-	--disable-sqlite \
+    --disable-sqlite \
 %endif
 %if %with_rpm
-	--with-rpm \
+    --with-rpm \
 %else
-	--without-rpm \
+    --without-rpm \
 %endif
 %if %with_pie
-	--enable-pie \
+    --enable-pie \
 %else
-	--disable-pie \
+    --disable-pie \
 %endif
-	--disable-grapher \
+    --disable-grapher \
     --disable-virt \
-	--disable-silent-rules
+    --disable-silent-rules
 
 make %{?_smp_mflags}
 
@@ -221,10 +221,10 @@ if [ $1 -eq 1 ] ; then
   }
 
   if test ! -e ~stap-server/.systemtap/ssl/server/stap.cert; then
-	runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
+      runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
 
-	%{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
-	%{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
+      %{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
+      %{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
   fi
   /sbin/chkconfig --add stap-server
   exit 0
@@ -232,46 +232,46 @@ fi
 
 %preun server
 if [ $1 = 0 ] ; then
-	/sbin/service stap-server stop >/dev/null 2>&1
-	/sbin/chkconfig --del stap-server
+    /sbin/service stap-server stop >/dev/null 2>&1
+    /sbin/chkconfig --del stap-server
 fi
 exit 0
 
 %postun server
 if [ "$1" -ge "1" ] ; then
-	/sbin/service stap-server condrestart >/dev/null 2>&1 || :
+    /sbin/service stap-server condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post initscript
 if [ $1 -eq 1 ] ; then
-	/sbin/chkconfig --add systemtap
-	exit 0
+    /sbin/chkconfig --add systemtap
+    exit 0
 fi
 
 %preun initscript
 if [ $1 = 0 ] ; then
-	/sbin/service systemtap stop >/dev/null 2>&1
-	/sbin/chkconfig --del systemtap
+    /sbin/service systemtap stop >/dev/null 2>&1
+    /sbin/chkconfig --del systemtap
 fi
 exit 0
 
 %postun initscript
 if [ "$1" -ge "1" ] ; then
-	/sbin/service systemtap condrestart >/dev/null 2>&1 || :
+    /sbin/service systemtap condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post
 if [ $1 -eq 1 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %files -f %{name}.lang
@@ -360,6 +360,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Wed Jun 14 2023 Harinadh D <hdommaraju@vmware.com> 4.0-4
+-   Bump version as a part of crash upgrade
 *   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-3
 -   Bump version as a part of rpm upgrade
 *   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.0-2
