@@ -1,0 +1,30 @@
+From 954ff2e2673cef48f0ed44668c466eab041db387 Mon Sep 17 00:00:00 2001
+From: Pavel Kopylov <pkopylov@cloudlinux.com>
+Date: Wed, 17 May 2023 11:33:45 +0200
+Subject: [PATCH] Fix an overflow which is still possible for some values.
+
+---
+ common.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/common.c b/common.c
+index 48493b5f..12cd8d9f 100644
+--- a/common.c
++++ b/common.c
+@@ -431,8 +431,11 @@ int check_dir(char *dirname)
+ void check_overflow(unsigned int val1, unsigned int val2,
+ 		    unsigned int val3)
+ {
+-	if ((unsigned long long) val1 * (unsigned long long) val2 *
+-	    (unsigned long long) val3 > UINT_MAX) {
++	if ((val1 != 0) && (val2 != 0) && (val3 != 0) &&
++		(((unsigned long long)UINT_MAX / (unsigned long long)val1 <
++		(unsigned long long)val2) ||
++		((unsigned long long)UINT_MAX / ((unsigned long long)val1 *
++		(unsigned long long)val2) < (unsigned long long)val3))) {
+ #ifdef DEBUG
+ 		fprintf(stderr, "%s: Overflow detected (%llu). Aborting...\n",
+ 			__FUNCTION__, (unsigned long long) val1 * (unsigned long long) val2 *
+-- 
+2.23.3
+
