@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.197
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -558,7 +558,7 @@ Patch714: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 Patch715: 0001-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 
 #Patch to add timer padding on guest
-Patch716: 0001-timer-padding-on-guest.patch
+Patch716: Guest-timer-Advancement-Feature.patch
 
 # Provide mixed cpusets guarantees for processes placement
 Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
@@ -962,6 +962,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.197-2
+- Fix issues in Guest timer Advancement feature
 * Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
 - Update to version 5.10.197
 - Undo commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c as it breaks canister usage.
