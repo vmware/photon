@@ -1,19 +1,20 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       %{name}-libs = %{version}-%{release}
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  dejagnu
 BuildRequires:  bc
 %endif
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha512  binutils=68e038f339a8c21faa19a57bbc447a51c817f47c2e06d740847c6e9cc3396c025d35d5369fa8c3f8b70414757c89f0e577939ddc0d70f283182504920f53b0a3
+
 Patch0:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
 Patch1:         binutils-do-not-link-with-static-libstdc++.patch
 Patch2:         binutils-special-sections-in-groups.patch
@@ -27,6 +28,7 @@ Patch9:         binutils-package-metadata.patch
 Patch10:        binutils-gas-dwarf-skip-empty-functions.patch
 Patch11:        binutils-CVE-38128-dwarf-abbrev-parsing.patch
 Patch12:        binutils-CVE-2022-38533.patch
+Patch13:        binutils-CVE-2023-1972.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -151,6 +153,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Tue Jun 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-3
+- Fix CVE-2023-1972
 * Mon Oct 17 2022 Dweep Advani <dadani@vmware.com> 2.39-2
 - Fix CVE-2022-38533
 * Tue Aug 23 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.39-1
