@@ -2,8 +2,8 @@
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.30.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Version:        0.35.0
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=54410dc7dbbde99e82150a4d0186312a5b352740175157b1e2641a85e989fd3c2717d42380c6d80e2b07181fbdd215b08e88312943ae22267228415a3ec2cc4a
+%define sha512 %{name}=16c76d5d6013ae67a4d103248d9ac910f92d906d1565cd7043c94e4b1deee05db6be0e98aa23b90b45e12adc59c4e59d4c8a9e46e22c1738a3dee597dbe28011
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 
@@ -90,11 +90,16 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %exclude %{_usrsrc}
+%exclude %{_includedir}
+%exclude %{_libdir}/{falcosecurity,pkgconfig}
 %{_sysconfdir}/falco
+%{_sysconfdir}/falcoctl
 %{_datadir}/falco
 %{_modulesdir}/extra/falco.ko
 
 %changelog
+* Tue Jun 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.35.0-1
+- Update to 0.35.0
 * Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 0.30.0-3
 - Version bump up to use c-ares
 * Mon Mar 28 2022 Harinadh D <hdommaraju@vmware.com> 0.30.0-2
