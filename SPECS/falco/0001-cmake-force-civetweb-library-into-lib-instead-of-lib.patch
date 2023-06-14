@@ -1,0 +1,25 @@
+From ce36e8af514568da69e154e8883ccf33b6578a96 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Wed, 14 Jun 2023 19:00:22 +0000
+Subject: [PATCH] cmake: force civetweb library into /lib instead of /lib64
+
+---
+ cmake/modules/civetweb.cmake | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/modules/civetweb.cmake b/cmake/modules/civetweb.cmake
+index 31ba674..807c55c 100644
+--- a/cmake/modules/civetweb.cmake
++++ b/cmake/modules/civetweb.cmake
+@@ -49,5 +49,6 @@ else()
+             -DCIVETWEB_ENABLE_SSL_DYNAMIC_LOADING=off
+             -DCIVETWEB_SERVE_NO_FILES=on
+             -DCMAKE_INSTALL_PREFIX=${CIVETWEB_SRC}/install
++            -DCMAKE_INSTALL_LIBDIR=lib
+             BUILD_BYPRODUCTS ${CIVETWEB_LIB} ${CIVETWEB_CPP_LIB})
+-endif()
+\ No newline at end of file
++endif()
+-- 
+2.39.0
+

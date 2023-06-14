@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.30.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Version:        0.31.1
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -10,9 +10,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha512 falco=54410dc7dbbde99e82150a4d0186312a5b352740175157b1e2641a85e989fd3c2717d42380c6d80e2b07181fbdd215b08e88312943ae22267228415a3ec2cc4a
+%define sha512 %{name}=9b4a50b47d703ba05bf2e91f1b9a3e88c22380bc70b35338fa9735c5c48645fb714c910ab6d6193e304d333bd81dcefaf07021aa8b55dadae358108a873c9f79
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
+Patch1:         0001-cmake-force-civetweb-library-into-lib-instead-of-lib.patch
 
 BuildArch:      x86_64
 
@@ -64,10 +65,14 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 mkdir build
 cd build
 %{cmake} \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
     -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
     ..
 make %{?_smp_mflags} all KERNELDIR="/lib/modules/%{uname_r}/build"
 
@@ -105,6 +110,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Tue Jun 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.31.1-1
+- Update to 0.31.1
 * Tue Mar 14 2023 Anmol Jain <anmolja@vmware.com> 0.30.0-3
 - Version bump up to use c-ares
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.30.0-2
