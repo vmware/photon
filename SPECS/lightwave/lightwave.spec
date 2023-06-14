@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       35%{?dist}
+Release:       36%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -1167,6 +1167,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.1.34-36
+- Bump up version to compile with apache-tomcat v8.5.88
 * Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.1.34-35
 - Bump up version to compile with apache-tomcat v8.5.86
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-34
