@@ -4,16 +4,16 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.6
-Release:    3%{?dist}
+Version:    17.0.8
+Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://openjdk.java.net
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=7fa47285fb1776802dc35352bfe64d6b376cbc73d7b72ef7d5c8ad41c181d8aa9dc6fb392fe3b1c799974765d40c03a6643ad6afeb3ddc9ab45e546b747ebb3c
+Source0:    https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-5.tar.gz
+%define sha512 jdk-17=af6ae3759dda8e7612b8860ccc9c69df260ffa18c80fd73ca71737854aa926442c02e1f56d7bd39dc6ec7f24095a47fc1e448bdcf6f0531ad8bbf403056c0dec
 
 BuildArch:      x86_64
 
@@ -56,7 +56,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%autosetup -p1 -n jdk17u-jdk-%{version}-ga
+%autosetup -p1 -n jdk17u-jdk-%{version}-5
 
 %build
 chmod a+x ./configur*
@@ -200,6 +200,9 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 17.0.8-1
+- Update to jdk-17.0.8-5 to fix CVE-2023-21937, CVE-2023-21938, CVE-2023-21930, CVE-2023-21968, CVE-2023-21967,
+- CVE-2023-21939, CVE-2022-21360, CVE-2023-21843, CVE-2023-21835, CVE-2023-21954
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-3
 - Bump version as a part of freetype2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.6-2
