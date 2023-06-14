@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.5
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -352,6 +352,8 @@ fi
 %{_mandir}/man8/%{name}-service.8*
 
 %changelog
+* Wed Jun 14 2023 Harinadh D <hdommaraju@vmware.com> 4.5-6
+- Version bump as a part of crash upgrade
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.5-5
 - Fix for requires
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.5-4

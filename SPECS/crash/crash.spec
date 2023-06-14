@@ -1,26 +1,36 @@
+%define GCORE_VERSION   1.6.3
+%define GDB_VERSION     10.2
+
 Name:          crash
-Version:       7.3.2
+Version:       8.0.2
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
-Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha512 crash=3eeadce164fe0c65dfbefad56a6c25a58fe6fd518d0f0414a41cef147dad14877c40bb6c2fb92abdf16b641ad2c462bea0c3bd3d634b099c59fccc2c10f8dfab
-%define GCORE_VERSION	1.6.0
-Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha512 crash-gcore=877cb46c54f9059ca0b89f793a0e907102db3921994fa676124bdd688f219a07761fffea6c3369fed836e7049b3611da164d780e7ba8741a4d0a30f7601290c2
-Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
-%define sha512 gdb=02d9c62fa73bcb79138d14c7fc182443f0ca82d4545b4d260b67d3f0074ed75f899a657814a56727e601032a668b0ddd7b48aabd49215fc012eeea6077bca368
-Source3:       gcore_defs.patch
 License:       GPL
+
+Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
+%define sha512 crash=9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
+
+Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
+%define sha512 crash-gcore=697952b7c55af5e4a7528cdd6fe616411d5147979fc90da55c0a3cee44510f39846e99bff3ac701c1ed98ee2c5d125e77c332b1f5b0be6e0ea1d98cf5d547a15
+
+Source2:       https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
+%define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
+
+%ifarch aarch64
+Patch0:       gcore_defs.patch
+%endif
+
 BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
 BuildRequires: bison
 Requires:      binutils
+Requires:      ncurses-libs
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -37,44 +47,55 @@ The core analysis suite is a self-contained tool that can be used to investigate
 This package contains libraries and header files need for development.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
 # Using autosetup is not feasible
-%setup -a 1
+%setup -q -n %{name}-%{version}
+# Using autosetup is not feasible
+%setup -q -a 1
+%ifarch aarch64
+pushd crash-gcore-command-%{GCORE_VERSION}
+%patch0 -p1
+popd
+%endif
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
 cp %{SOURCE2} .
-make GDB=gdb-7.6 RPMPKG=%{version}-%{release} %{?_smp_mflags}
+make %{?_smp_mflags} GDB=gdb-%{GDB_VERSION} RPMPKG=%{version}-%{release}
 cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
-make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64 %{?_smp_mflags}
+make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
 %endif
 %ifarch aarch64
-patch -p1 < %{SOURCE3}
-make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64 %{?_smp_mflags}
+make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
 %endif
 
 %install
-[ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
-mkdir -p %{buildroot}%{_bindir}
-%make_install
-mkdir -p %{buildroot}%{_mandir}/man8
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{_mandir}/man8 \
+         %{buildroot}%{_includedir}/crash \
+         %{buildroot}%{_libdir}/crash
+
+%make_install %{?_smp_mflags}
+
 install -pm 644 crash.8 %{buildroot}%{_mandir}/man8/crash.8
-mkdir -p %{buildroot}%{_includedir}/crash
 chmod 0644 defs.h
 cp -p defs.h %{buildroot}%{_includedir}/crash
-mkdir -p %{buildroot}%{_libdir}/crash
 install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_libdir}/crash/
 
 %clean
-[ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
+rm -rf "%{buildroot}"
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/crash
 %{_libdir}/crash/gcore.so
 %{_mandir}/man8/crash.8.gz
-%doc COPYING3 README
 
 %files devel
 %defattr(-,root,root)
@@ -82,6 +103,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Wed Jun 14 2023 Harinadh D <hdommaraju@vmware.com> 8.0.2-1
+-   Version upgrade to 8.0.2
 *   Wed Jul 13 2022 Ankit Jain <ankitja@vmware.com> 7.3.2-1
 -   Version update to 7.3.2
 *   Mon Nov 30 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.9-1
