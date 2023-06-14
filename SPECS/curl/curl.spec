@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -39,6 +39,7 @@ Summary: Libraries for curl
 Group:      System Environment/Libraries
 Requires:   ca-certificates-pki
 Requires:   libssh2
+Requires:   krb5
 %description libs
 This package contains minimal set of shared curl libraries.
 
@@ -91,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon Jun 19 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-2
+- curl-libs requires krb5
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-1
 - Version upgrade
 * Fri Mar 31 2023 Harinadh D <hdommaraju@vmware.com> 7.86.0-5
