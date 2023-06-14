@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.2
-Release:        4%{?dist}
+Version:        3.5.3
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=889f67f3aa32402b63319960539d72e24d65deeacd9360837622bb8e8dc6f79db7e7247a9503f7032fecc891f4f5151c1cce34f727aae69fdac2d84f63963d42
+%define sha512  %{name}=90cd8c9344ea6588e5eacb03880af73e864731e59777deaded133ca6fa922d71ca72cf00edf95d3e43a2355c40cac281470b2689c652c5214f09019799c7bc5a
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -294,6 +294,11 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 3.5.3-1
+- update to 3.5.3
+- fix python test for python >= 3.11 #425
+- Fix history rollback for public key and protected packages #430
+- Fix error when a repo was disabled because it's unavailable. Fixes #431 #432
 * Fri Jun 02 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-4
 - add -pytests package
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-3
