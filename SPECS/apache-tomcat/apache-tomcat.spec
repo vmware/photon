@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        10.1.6
+Version:        10.1.8
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512  apache-tomcat=54df5784fbbe9c29b5569783c836e1490a6c08610ffe3c98123cc8bee8b483fcb73f46a15487dc5a6c9c7926ba63bab79e1794b07c00c22798ea0984e56f12f5
+%define sha512 %{name}=14ac35a22d24284b770182996388bdc004defc5e56e65d2420e096a1e1c5c45887e4a55c0174884294acb7c99e6412f98159bb9be92de337e1a1cacc48d39ea4
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -18,7 +18,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
 Source1: base-for-%{name}-%{version}.tar.gz
-%define sha512  base=35f2a6553e60c33d7662eef8c779933b8704e760e30609e2f1855d728a1f680e7fba05ad8174577df6e8933854bd12cc653474a62088fd48fec5f74c7e898900
+%define sha512 base=99ab25199d495cf52357845814677d235bb2d016f6cf196d9717ce2a84e518d2e450a7a892766a8616d0113ec5b068d8ef0a9f55ee6ca6f6b482900bcb3a1573
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -125,6 +125,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.8-1
+- Upgrade to v10.1.8 to address CVE-2023-28709
 * Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.6-1
 - Upgrade to v10.1.6 to address CVE-2023-28708
 * Thu Feb 16 2023 Prashant <psinghchauha@vmware.com> 10.1.1-2
