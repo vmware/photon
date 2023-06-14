@@ -3,7 +3,7 @@
 Summary:      Cross-platform make system
 Name:         cmake
 Version:      3.25.2
-Release:      3%{?dist}
+Release:      4%{?dist}
 License:      BSD and LGPLv2+
 URL:          http://www.cmake.org
 Group:        Development/Tools
@@ -31,6 +31,7 @@ Requires: expat
 Requires: zlib
 Requires: libarchive
 Requires: bzip2
+Requires: curl-libs
 
 %description
 CMake is an extensible, open-source system that manages the build process in an
@@ -43,6 +44,7 @@ operating system and in a compiler-independent manner.
 ./bootstrap --prefix=%{_prefix} \
             --system-expat \
             --system-zlib \
+            --system-curl \
             --system-libarchive \
             --system-bzip2 \
             --parallel=$(nproc)
@@ -72,6 +74,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Jun 16 2023 Anmol Jain <anmolja@vmware.com> 3.25.2-4
+- Use system curl
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.25.2-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25.2-2
