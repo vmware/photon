@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.12.1
-Release:        2%{?dist}
+Version:        18.16.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=60607a813a4f1ec5b844471b7d1eb61875cb25960da36708fd6f1b9406309e0ad5a6a060feb9b520c002b06a454664ccfe423ed1058c12b13d0892fd889e439b
+%define sha512  node=0533f998af9df1e4894af9bace85ed0d731f5859c61146f147305761319289277920cfb545d7430829247f8a6a3ca74a6b3d2904961af99f79670af33d1b64e4
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -34,7 +34,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -p1 -n node-%{version}
+%autosetup -p1 -n node-v%{version}
 
 %build
 sh ./configure \
@@ -84,6 +84,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Thu Jun 15 2023 Siju Maliakkal <smaliakkal@vmware.com> 18.16.0-1
+- Upgrade to latest version in Hydrogen
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 18.12.1-2
 - Fix for requires
 * Tue Dec 13 2022 Shivani Agarwal <shivania2@vmware.com> 18.12.1-1
