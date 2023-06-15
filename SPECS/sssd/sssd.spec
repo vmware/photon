@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -97,7 +97,6 @@ BuildRequires: jansson-devel
 BuildRequires: keyutils-devel
 BuildRequires: krb5-devel
 BuildRequires: cmocka-devel >= 1.0.0
-BuildRequires: nfs-utils
 BuildRequires: device-mapper-devel
 BuildRequires: device-mapper-libs
 BuildRequires: libevent-devel
@@ -112,6 +111,7 @@ BuildRequires: pcre2-devel
 BuildRequires: p11-kit-devel
 BuildRequires: util-linux-devel
 BuildRequires: libsemanage-devel
+BuildRequires: libnfsidmap-devel
 
 %description
 Provides a set of daemons to manage access to remote directories and
@@ -437,6 +437,7 @@ and SIDs.
 %package nfs_idmap
 Summary: SSSD plug-in for NFSv4 rpc.idmapd
 License: GPLv3+
+Requires: libnfsidmap
 Conflicts: sssd-common < %{version}-%{release}
 
 %description nfs_idmap
@@ -1075,6 +1076,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Wed Jul 05 2023 Piyush Gupta <gpiyush@vmware.com> 2.8.2-6
+- Replace Requires and BuildRequires from nfs-utils to libnfsidmap.
 * Thu Jun 22 2023 Oliver Kurth <okurth@vmware.com> 2.8.2-5
 - bump version as part of samba and libldb update
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.2-4
