@@ -1,7 +1,7 @@
 Summary:        X11 Composite Extension library.
 Name:           libXcomposite
 Version:        0.4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 0.4.5-2
+- Bump version as a part of libX11 upgrade
 * Fri Aug 06 2021 Alexey Makhalov <amakhalov@vmware.com> 0.4.5-1
 - Version update
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 0.4.4-1

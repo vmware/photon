@@ -1,7 +1,7 @@
 Summary:        X11 Cursor management library.
 Name:           libXcursor
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-2
+- Bump version as a part of libX11 upgrade
 * Thu Aug 18 2022 Shivani Agarwal <shivania2@vmware.com> 1.2.1-1
 - Upgrade to version 1.2.1
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.1.14-1
