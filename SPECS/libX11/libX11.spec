@@ -1,6 +1,6 @@
 Summary:        Core X11 protocol client library.
 Name:           libX11
-Version:        1.8.1
+Version:        1.8.5
 Release:        1%{?dist}
 License:        MIT
 URL:            http://www.x.org/
@@ -9,7 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/freedesktop/xorg-libX11/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  libX11=ac73ff99abfc13a0b8d04e3e4fde2a3b97813120c73c4dbf57e0ec56bbde8cd0272f1c09f417f10561f57def22878509adced897ebb2adfc1cb0d30385ee9396
+%define sha512  libX11=967f7746b08650c4238630b007137e89085c88d89b256d5d9b37faa6a50b1df2a3ec749281677f1c64570a3eafd310872e6842cbb5aecaba1cdf7c0c4140ea56
+Patch0:         CVE-2023-3138.patch
 
 BuildRequires:  libxcb-devel
 BuildRequires:  xtrans-devel
@@ -66,5 +67,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.8.5-1
+- Upgrade to 1.8.5 to Fix CVE-2023-3138
 * Thu Dec 22 2022 Harinadh D <hdommaraju@vmware.com> 1.8.1-1
 - Initial release
