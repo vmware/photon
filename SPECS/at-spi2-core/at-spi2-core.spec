@@ -1,7 +1,7 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
 Version:        2.46.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
 Group:          System Environment/Libraries
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.46.0-3
+- Bump version as a part of libX11 upgrade
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.46.0-2
 - Bump version as a part of libxml2 upgrade
 * Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 2.46.0-1

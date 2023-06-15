@@ -1,7 +1,7 @@
 Summary:        The Xorg applications.
 Name:           xorg-applications
 Version:        7.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          Development/System
@@ -65,6 +65,8 @@ done
 %{_datadir}/*
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-5
+- Bump version as a part of libX11 upgrade
 * Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-4
 - Updated mkfontscale
 * Fri Nov 18 2022 Shivani Agarwal <shivania2@vmware.com> 7.7-3
