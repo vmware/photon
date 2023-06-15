@@ -21,11 +21,11 @@ declare -a deprecated_packages_arr=(
   openjre8 ovn-central ovn-common ovn-controller-vtep ovn-doc ovn-docker
   ovn-host photon-checksum-generator pmd pmd-cli pmd-devel pmd-libs
   pmd-python3 pygobject-devel python-certifi python-lockfile
-  python-vcversioner python2 python3-backports_abc python3-cgroup-utils
+  python-vcversioner python2 python2-libs python3-backports_abc python3-cgroup-utils
   python3-future python3-lvm2-libs python3-macholib python3-PyPAM
   python3-setproctitle  python3-stevedore python3-terminaltables
   rubygem-connection_pool rubygem-net-http-persistent rubygem-zeitwerk salt3
-  sqlite2 sshfs stig-hardening tiptop ulogd uriparser urw-fonts xtrans-devel
+  sqlite2 sshfs tiptop ulogd uriparser urw-fonts xtrans-devel
   yarn zsh-html
   # dcerpc dcerpc-devel
   # openjdk10 openjre10
@@ -34,7 +34,7 @@ declare -a deprecated_packages_arr=(
 # This hashtable maps package name changes
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
-  #[autoconf213]=autoconf
+  [ansible]=ansible   # Added for workaround pertaining to python3-pycrypto
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
   [openjdk8]=openjdk11

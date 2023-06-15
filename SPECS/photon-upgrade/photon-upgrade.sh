@@ -353,10 +353,6 @@ function verify_version_and_upgrade() {
     echo "Your current version $FROM_VERSION is the latest version. Nothing to do."
     exit 0
   fi
-  find_wrongly_enabled_services # Terminates upgrade on finding any regular file in
-                                # /etc/systemd/system/multi-user.target.wants/
-  backup_rpms_list_n_db $RPM_DB_LOC
-  find_installed_deprecated_packages
   if [ -z "$ASSUME_YES_OPT" ]; then
     # This is interactive invocation of the script
     echo "You are about to upgrade PhotonOS from $FROM_VERSION to $TO_VERSION."
@@ -372,6 +368,9 @@ function verify_version_and_upgrade() {
   echo
   case "$yn" in
     [Yy]*)
+      find_wrongly_enabled_services # Terminates upgrade on finding any regular
+                                    # file in multi-user.target.wants under /etc
+      backup_rpms_list_n_db $RPM_DB_LOC
       if [ "$UPDATE_PKGS" = 'y' ]; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances may not need this.
@@ -379,6 +378,7 @@ function verify_version_and_upgrade() {
         prepare_for_upgrade
         distro_upgrade $FROM_VERSION
       fi
+      find_installed_deprecated_packages
       remove_unsupported_packages
       pre_upgrade_rm_pkgs
       rebuilddb

@@ -17,7 +17,7 @@ declare -a deprecated_packages_arr=(
     linux-secure-hmacgen linux-secure-lkcm liota
     logstash mozjs60 ntpsec nxtgn-openssl openjdk10 openjre10 photon-checksum-generator
     ovn-central ovn-common ovn-controller-vtep ovn-doc ovn-docker ovn-host
-    python2 pygobject-devel python3-cgroup-utils python3-future python3-gcovr
+    python2 python2-libs pygobject-devel python3-cgroup-utils python3-future python3-gcovr
     python3-google-compute-engine python3-lvm2-libs python3-macholib python3-ntp
     python3-pefile python3-setproctitle python3-stevedore python3-terminaltables
     python-certifi python-lockfile python-vcversioner rubygem-connection_pool
@@ -27,6 +27,7 @@ declare -a deprecated_packages_arr=(
 # This hashtable maps package name changes
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
+  [ansible]=ansible   # Added for workaround pertaining to python3-pycrypto
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
   [python3-gcovr]=gcovr
