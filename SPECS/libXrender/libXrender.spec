@@ -1,7 +1,7 @@
 Summary:        X11 Xrender runtime library.
 Name:           libXrender
 Version:        0.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
@@ -53,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 0.9.10-2
+- Bump version as a part of libX11 upgrade
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 0.9.10-1
 - Upgrade to 0.9.10
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 0.9.8-1

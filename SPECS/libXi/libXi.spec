@@ -1,7 +1,7 @@
 Summary:        X11 libXi runtime library.
 Name:           libXi
 Version:        1.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -59,5 +59,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.7.4-2
+- Bump version as a part of libX11 upgrade
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.7.4-1
 - initial version

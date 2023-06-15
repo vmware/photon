@@ -1,7 +1,7 @@
 Summary:         X11 libXt runtime library.
 Name:            libXt
 Version:         1.2.1
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         MIT
 URL:             http://www.x.org/
 Group:           System Environment/Libraries
@@ -59,6 +59,8 @@ make %{?_smp_mflags} check
 %{_datadir}/*
 
 %changelog
+*   Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-2
+-   Bump version as a part of libX11 upgrade
 *   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-1
 -   Upgraded version
 *   Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.1.4-1
