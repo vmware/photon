@@ -8,7 +8,6 @@
 
 # Determine the location of the LDB modules directory
 %global ldb_modulesdir %{_libdir}/ldb/modules/ldb
-%global ldb_version 1.2.0
 
 # directory variables
 %global servicename sssd
@@ -25,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -126,7 +125,7 @@ the existing back ends.
 Summary: Common files for the SSSD
 License: GPLv3+
 # Requires
-Requires: samba-client >= %{ldb_version}
+Requires: samba-client
 Requires: sssd-client = %{version}-%{release}
 Requires: libsss_sudo = %{version}-%{release}
 Requires: libsss_autofs = %{version}-%{release}
@@ -1076,6 +1075,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Jun 20 2023 Oliver Kurth <okurth@vmware.com> 2.8.1-5
+- bump version as part of samba and libldb updates
 * Mon May 22 2023 Ankit Jain <ankitja@vmware.com> 2.8.1-4
 - Removed _smp_mflags flage which causes install failure
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.1-3

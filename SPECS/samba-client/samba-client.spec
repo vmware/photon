@@ -1,6 +1,6 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.17.2
+Version:        4.17.8
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
@@ -8,11 +8,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=31d52d3366e39048a02550ee53d4e0956eedfda0d7d8dcb8f1f23b2435852023eb0eb8c1252aa2780ce8e7dd81f402e84ab8c17156dd18fe80d8b763eb83ce79
+%define sha512  samba=60cd72cd40ef4a958d26926d51d9741d4d6c6a7fc8d275c6ba76d2c3ffc4c71aa7554943125c47575135df1271bc421dd57a0d1206708dfa8e25d1b6dc2661ba
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
-Patch1:         rename_dcerpc_to_smbdcerpc.patch
+Patch1:         0001-rename-dcerpc-to-smbdcerpc.patch
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -41,10 +41,12 @@ BuildRequires: dbus-devel
 BuildRequires: sudo
 BuildRequires: libtdb-devel
 BuildRequires: libtalloc-devel
-BuildRequires: libldb-devel
+BuildRequires: libldb-devel >= 2.6.2
 BuildRequires: libtevent-devel
 BuildRequires: bison
 BuildRequires: perl-JSON
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
 
 Requires:      samba-client-libs = %{samba_ver}
 Requires:      libtirpc
@@ -61,9 +63,11 @@ Requires:      perl-Parse-Yapp
 Requires:      dbus
 Requires:      bindutils
 Requires:      libtdb
-Requires:      libldb
+Requires:      libldb >= 2.6.2
 Requires:      libtalloc
 Requires:      libtevent
+Requires:      zlib
+Requires:      ncurses
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -576,6 +580,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Fri Jun 16 2023 Oliver Kurth <okurth@vmware.com> 4.17.8-1
+-   update to 4.17.8 for CVE fixes
 *   Tue Nov 29 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.2-1
 -   Package additional header files needed for SSSD. Version upgrade.
 -   Unbundle some libraries so to not conflict with external libs.

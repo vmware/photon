@@ -3,7 +3,7 @@
 %global tevent_version 0.13.0
 
 Name:           libldb
-Version:        2.6.1
+Version:        2.6.2
 Release:        1%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
@@ -13,7 +13,7 @@ Group:          Development/Libraries
 URL:            http://ldb.samba.org/
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
-%define sha512 ldb=7b920c5ec1252446584caeedf9ec18aeb5c1b689c2ecc8ae65c0d5b64bf0bca0cbaa887c07fca90b36b16904e3a08534fc513fec6bac288e80f94d2980c36211
+%define sha512 ldb=091111b8cf6cd93d662737890dacb64439e930b287d29299d2fc2cb18709f61d1e8a8c17d44f7224d8370dda6dc89af91e4ce8959816903ad5363388d8e37d8f
 
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
@@ -152,5 +152,7 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Fri Jun 16 2023 Oliver Kurth <okurth@vmware.com> 2.6.2-1
+- update to 2.6.2 : required by samba 4.17.8 and fix CVE CVE-2023-0614
 * Thu Sep 22 2022 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1
 - Initial addition to Photon. Needed for SSSD.
