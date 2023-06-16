@@ -1,7 +1,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          12.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.0-2
+- Bump version as a part of openjdk11 upgrade
 * Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 12.0-1
 - Update to version 12.0
 * Fri Sep 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 11.3-1

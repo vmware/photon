@@ -3,27 +3,31 @@
 %define _log_dir     %{_var}/log/%{name}
 %define _data_dir    %{_sharedstatedir}/%{name}
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
-Name: 	       kafka
+Name:          kafka
 Version:       3.4.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
+Vendor:        VMware, Inc.
+Distribution:  Photon
+
 Source0:       %{name}-%{version}-src.tgz
 %define sha512 kafka=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
 Source1:       %{name}.service
 Source2:       %{name}-build-jars-%{version}.tar.gz
 %define sha512 %{name}-build-jars=2a932bcccac8c1fe1dfa6b18e397bdb728275b06a397b0e484d735c96f53854db7f94ae18989cbc6fad0643b1d087486128c08479429c6a9f3dee9e2fe87b0c3
-Vendor:	       VMware, Inc.
-Distribution:  Photon
+
 Provides:      kafka kafka-server
+
 BuildRequires: systemd
 BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
+
 Requires:      zookeeper
 
-%systemd_requires
+%{?systemd_requires}
 
 %description
 Kafka is designed to allow a single cluster to serve as the central data backbone for a large organization. It can be elastically and transparently expanded without downtime. Data streams are partitioned and spread over a cluster of machines to allow data streams larger than the capability of any single machine and to allow clusters of co-ordinated consumers. Messages are persisted on disk and replicated within the cluster to prevent data loss.
@@ -88,8 +92,7 @@ rm -rf %{buildroot}
 
 %postun
 %systemd_postun %{name}.service
-if [ $1 -eq 0 ]
-then
+if [ $1 -eq 0 ]; then
     /usr/sbin/userdel %{name}
     /usr/sbin/groupdel %{name}
 fi
@@ -105,6 +108,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-2
+- Bump version as a part of openjdk11 upgrade
 * Mon Feb 13 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1
 - Update to 3.4.0, use Java11. Fixes CVE-2023-25194.
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.2-1
