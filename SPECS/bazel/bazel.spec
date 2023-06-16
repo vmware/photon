@@ -4,7 +4,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3
+- Bump version as a part of openjdk11 upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.3.2-2
 - Update release to compile with python 3.11
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 5.3.2-1

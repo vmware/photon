@@ -1,14 +1,14 @@
-Summary:	Apache commons-httpclient
-Name:		commons-httpclient
-Version:	3.1
-Release:	2%{?dist}
-License:	Apache
-URL:		http://ant.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:    Apache commons-httpclient
+Name:       commons-httpclient
+Version:    3.1
+Release:    3%{?dist}
+License:    Apache
+URL:        http://ant.apache.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:	https://archive.apache.org/dist/httpcomponents/%{name}/source/%{name}-%{version}-src.tar.gz
+Source0:    https://archive.apache.org/dist/httpcomponents/%{name}/source/%{name}-%{version}-src.tar.gz
 %define sha512  commons-httpclient=e73ceeba3f34a35c30b24a3c6cb8dfc2102ff21079a5ff9270935908cb2f707d366c2f31a53fbdafa99673cc2b82e05470a2bf40d96767c72b2ab037c0f55490
 # Bundled below jar into tarball
 # https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar
@@ -76,6 +76,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false -Dlib.dir
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-3
+- Bump version as a part of openjdk11 upgrade
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.1-2
 - Use openjdk11
 * Thu Sep 10 2020 Ankit Jain <ankitja@vmware.com> 3.1-1

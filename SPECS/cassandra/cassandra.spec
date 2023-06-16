@@ -4,7 +4,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -118,6 +118,8 @@ fi
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-3
+- Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-2
 - Use systemd-rpm-macros for user creation
 * Tue Feb 21 2023 Ankit Jain <ankitja@vmware.com> 4.0.8-1

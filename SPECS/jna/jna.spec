@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -80,6 +80,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-3
+- Bump version as a part of openjdk11 upgrade
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 5.12.1-2
 - Use openjdk11
 * Mon May 30 2022 Gerrit Photon <photon-checkins@vmware.com> 5.12.1-1

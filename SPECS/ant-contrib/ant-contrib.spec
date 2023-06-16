@@ -1,14 +1,14 @@
-Summary:	Ant contrib
-Name:		ant-contrib
-Version:	1.0b3
-Release:	16%{?dist}
-License:	Apache
-URL:		http://ant-contrib.sourceforget.net
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:    Ant contrib
+Name:       ant-contrib
+Version:    1.0b3
+Release:    17%{?dist}
+License:    Apache
+URL:        http://ant-contrib.sourceforget.net
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:	https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
+Source0:    https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 %define sha512  ant-contrib=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
 Patch0:         use-system-provided-commons-httpclient-jar.patch
 Patch1:         ant-contrib-java-8.patch
@@ -48,6 +48,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-17
+- Bump version as a part of openjdk11 upgrade
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.0b3-16
 - Use openjdk11
 * Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.0b3-15

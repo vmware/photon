@@ -1,43 +1,44 @@
+%global security_hardening  none
+%define subversion          20
+%define jdk_major_version   1.11.0
 %define _use_internal_dependency_generator 0
-%global security_hardening none
-%define jdk_major_version 11.0
-%define subversion 18
+
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.18
-Release:        3%{?dist}
+Version:        11.0.20
+Release:        1%{?dist}
 License:        GNU General Public License V2
-URL:            https://openjdk.java.net
+URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=10a48066ad1d2b627cc9be5c6e06a0deef7241f3b95b917b3bf86ffeb53ea043915e0eb7784ea244332d9c3941c8c5056c154e5aff4522b95aca8c8372c19474
-BuildArch:      x86_64
 
-BuildRequires:  pcre-devel
-BuildRequires:  which
-BuildRequires:  zip
-BuildRequires:  unzip
-BuildRequires:  zlib-devel
-BuildRequires:  ca-certificates
-BuildRequires:  chkconfig
-BuildRequires:  freetype2
-BuildRequires:  fontconfig-devel
-BuildRequires:  freetype2-devel
-BuildRequires:  glib-devel
-BuildRequires:  harfbuzz-devel
-BuildRequires:  elfutils-libelf-devel
+Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
+%define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
 
-Requires:       chkconfig
+BuildArch: x86_64
 
-Obsoletes:      openjdk <= %{version}
+BuildRequires: pcre-devel
+BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
+BuildRequires: zlib-devel
+BuildRequires: ca-certificates
+BuildRequires: chkconfig
+BuildRequires: freetype2
+BuildRequires: fontconfig-devel
+BuildRequires: freetype2-devel
+BuildRequires: glib-devel
+BuildRequires: harfbuzz-devel
+BuildRequires: elfutils-libelf-devel
 
-AutoReqProv:    no
+Requires: chkconfig
+
+Obsoletes: openjdk <= %{version}
+
+AutoReqProv: no
 
 %define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk11
-
-%define jdk_major_version 1.11.0
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -58,8 +59,8 @@ Requires:       %{name} = %{version}-%{release}
 %description    src
 This package provides the runtime library class sources.
 
-%prep -p exit
-%autosetup -p1 -n jdk11u-jdk-%{version}-ga
+%prep
+%autosetup -p1 -n jdk11u-jdk-%{version}-6
 
 %build
 chmod a+x ./configur*
@@ -75,7 +76,7 @@ sh ./configur* \
     --with-stdc++lib=dynamic \
     --disable-warnings-as-errors
 
-mkdir %{_datadir}/java -p
+mkdir -p %{_datadir}/java
 # make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -84,18 +85,23 @@ make \
     OPENJDK_TARGET_OS=linux \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
-    LOG=trace
+    LOG=trace \
+    JOBS=$(nproc)
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install
+make install JOBS=$(nproc)
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv %{_usr}/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
-cp README.md LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+cp README.md LICENSE ASSEMBLY_EXCEPTION \
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 20000 \
@@ -207,6 +213,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
+- Upgrade to v11.0.20
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-3
 - Bump version as a part of freetype2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.18-2
