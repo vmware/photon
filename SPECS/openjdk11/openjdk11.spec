@@ -1,74 +1,84 @@
-%define _use_internal_dependency_generator 0
-%global security_hardening none
-%define jdk_major_version 11.0
-%define subversion 12
-Summary:	OpenJDK
-Name:		openjdk11
-Version:	11.0.12
-Release:	3%{?dist}
-License:	GNU General Public License V2
-URL:		https://openjdk.java.net
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha512 openjdk-11.0=1bc7878ccb73e495907c02718573b63c88f61581340e8038ab4f0abf6161ac355d7a1a420de4949192b7df951cd39a1d890f251cba4647d8fd425c72d92d0164
-Patch0:         CVE-2022-34169.patch
-BuildArch:      x86_64
-BuildRequires:  pcre-devel
-BuildRequires:	which
-BuildRequires:	zip
-BuildRequires:	unzip
-BuildRequires:  zlib-devel
-BuildRequires:	ca-certificates
-BuildRequires:	chkconfig
-BuildRequires:  freetype2
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
-BuildRequires:  openjdk10
-Requires:       chkconfig
-Obsoletes:      openjdk <= %{version}
-AutoReqProv: 	no
-%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
+%global security_hardening  none
+%define subversion          20
 %define bootstrapjdkversion 1.8.0.112
-%define jdk_major_version 1.11.0
+%define jdk_major_version   1.11.0
+%define _use_internal_dependency_generator 0
+
+Summary:    OpenJDK
+Name:       openjdk11
+Version:    11.0.20
+Release:    1%{?dist}
+License:    GNU General Public License V2
+URL:        https://github.com/openjdk/jdk11u
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
+%define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+
+BuildArch: x86_64
+
+BuildRequires: pcre-devel
+BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
+BuildRequires: zlib-devel
+BuildRequires: ca-certificates
+BuildRequires: chkconfig
+BuildRequires: freetype2
+BuildRequires: fontconfig-devel
+BuildRequires: freetype2-devel
+BuildRequires: glib-devel
+BuildRequires: harfbuzz-devel
+BuildRequires: elfutils-libelf-devel
+BuildRequires: openjdk10
+
+Requires: chkconfig
+
+Obsoletes: openjdk <= %{version}
+
+AutoReqProv: no
+
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package		doc
-Summary:		Documentation and demo applications for openjdk
+%package        doc
+Summary:        Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	doc
+%description    doc
 It contains the documentation and demo applications for openjdk
 
-%package 		src
+%package        src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	src
+%description    src
 This package provides the runtime library class sources.
 
-%prep -p exit
-%autosetup -p1 -n openjdk-%{version}
+%prep
+%autosetup -p1 -n jdk11u-jdk-%{version}-6
 
 %build
 chmod a+x ./configur*
-unset JAVA_HOME &&
-ENABLE_HEADLESS_ONLY="true" &&
+unset JAVA_HOME
+ENABLE_HEADLESS_ONLY="true"
 ./configur* \
-	--with-target-bits=64 \
-	--enable-headless-only \
-        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic \
-        --disable-warnings-as-errors
+    --with-target-bits=64 \
+    --enable-headless-only \
+    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+    --with-freetype-include=%{_includedir}/freetype2 \
+    --with-freetype-lib=%{_libdir} \
+    --with-stdc++lib=dynamic \
+    --disable-warnings-as-errors
 
-mkdir /usr/share/java -p
+mkdir -p %{_datadir}/java
 # make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -77,18 +87,23 @@ make \
     OPENJDK_TARGET_OS=linux \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
-    LOG=trace
+    LOG=trace \
+    JOBS=$(nproc)
 
 %install
-unset JAVA_HOME &&
+unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install
+make install JOBS=$(nproc)
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
-cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+cp README.md LICENSE ASSEMBLY_EXCEPTION \
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %posttrans
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 20000 \
@@ -138,14 +153,13 @@ alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
 /sbin/ldconfig
 
 %clean
-rm -rf %{buildroot}/*
-rm -rf %{_libdir}/jvm/OpenJDK-*
+rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/ASSEMBLY_EXCEPTION
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/LICENSE
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/README
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/README.md
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
@@ -197,29 +211,31 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-*   Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
--   Fix for CVE-2022-34169.
-*   Wed May 18 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
--   Added alternative for java
-*   Wed Mar 23 2022 Tapas Kundu <tkundu@vmware.com> 11.0.12-1
--   Update to tag jdk-11.0.12-ga
-*   Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
--   Updated to 11.0.9 tag - jdk-11.0.9+10
-*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
--   Replaced %post to %posttrans to avoid alternatives --remove
--   after new version is installed.
-*   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
--   Updating to jdk-11.0.8-ga
-*   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
--   Updating to jdk-11.0.7-ga
-*   Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
--   Updated to jdk11 tag: 11+28
-*   Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 1.11.0.2-4
--   Divided version:majorversion+subversion to remove specific
--   version java dependency from other packages
-*   Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-3
--   Update config in spec
-*   Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-2
--   Add BuildArch setting in spec
-*   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
--   Initial build. First version
+* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
+- Upgrade to v11.0.20
+* Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
+- Fix for CVE-2022-34169.
+* Wed May 18 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
+- Added alternative for java
+* Wed Mar 23 2022 Tapas Kundu <tkundu@vmware.com> 11.0.12-1
+- Update to tag jdk-11.0.12-ga
+* Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
+- Updated to 11.0.9 tag - jdk-11.0.9+10
+* Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
+- Replaced %post to %posttrans to avoid alternatives --remove
+- after new version is installed.
+* Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
+- Updating to jdk-11.0.8-ga
+* Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
+- Updating to jdk-11.0.7-ga
+* Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
+- Updated to jdk11 tag: 11+28
+* Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 1.11.0.2-4
+- Divided version:majorversion+subversion to remove specific
+- version java dependency from other packages
+* Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-3
+- Update config in spec
+* Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-2
+- Add BuildArch setting in spec
+* Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
+- Initial build. First version
