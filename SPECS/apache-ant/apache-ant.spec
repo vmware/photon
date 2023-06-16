@@ -1,7 +1,7 @@
 Summary:        Apache Ant
 Name:           apache-ant
 Version:        1.10.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://ant.apache.org
 Group:          Applications/System
@@ -107,6 +107,8 @@ bootstrap/bin/ant -v run-tests
 %{ant_bindir}/runant.pl
 
 %changelog
+*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-2
+-   Bump version as a part of openjdk8 upgrade
 *   Mon Nov 28 2022 Ankit Jain <ankitja@vmware.com> 1.10.12-1
 -   Updated to 1.10.12
 -   Replaced obsolete maven-ant-task with maven-resolver-ant-task

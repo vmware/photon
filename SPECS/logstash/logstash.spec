@@ -1,27 +1,33 @@
-Summary:	Logstash is a tool for managing events and logs.
+Summary:        Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.8.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
+URL:        https://github.com/elastic/logstash/archive/v%{version}.tar.gz
+
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=97af85061109be81f41b023579f80550ff44b73c
+%define sha512 %{name}-%{version}.tar.gz=be0cf0182d54cce7da3376b10cd2b06a2879be681b0ab7e65844d9101b3b0e3bca69fa0bd6e10fa45dd81078c8a79b44d04bff4145dfbe720d768570c06d9d4d
+
 Source1:        %{name}.service
 Source2:        %{name}.conf
+
 Patch0:         CVE-2021-44228.patch
 Patch1:         CVE-2021-45046.patch
+
 BuildArch:      x86_64
-BuildRequires:	openjdk8
-BuildRequires:	ruby
+
+BuildRequires:  openjdk8
+BuildRequires:  ruby
 BuildRequires:  git
-Requires:	openjdk8
-Requires:	ruby
-Requires:       systemd
-Requires:       elasticsearch = %{version}
-Requires:       kibana = %{version}
+
+Requires:   openjdk8
+Requires:   ruby
+Requires:   systemd
+Requires:   elasticsearch = %{version}
+Requires:   kibana = %{version}
 
 %description
 Logstash is a tool to collect, process, and forward events and log messages. Collection is accomplished via configurable input plugins including raw socket/packet communication, file tailing, and several message bus clients. Once an input plugin has collected data it can be processed by any number of filters which modify and annotate the event data. Finally logstash routes events to output plugins which can forward the events to a variety of external programs including Elasticsearch, local files and several message bus implementations.
@@ -40,7 +46,6 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 ./gradlew assembleOssTarDistribution
 
 %install
-rm -rf %{buildroot}
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/conf.d
 install -vdm 755 %{buildroot}/var/lib/%{name}
@@ -116,39 +121,41 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
-*   Wed Dec 15 2021 Ankit Jain <ankitja@vmware.com> 6.8.15-2
--   Fix for CVE-2021-44228 and CVE-2021-45046
-*   Wed Apr 07 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-1
--   Update to 6.8.15
-*   Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
--   Update to 6.8.13, Fix for CVE-2020-7020
-*   Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
--   Update to 6.8.12
-*   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
--   Update to 6.8.10
-*   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
--   Update to 6.8.9
-*   Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
--   Update to 6.8.8
-*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-6
--   Changed openjdk install directory name
-*   Thu Nov 28 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-5
--   Updated the logstash-input-beat version to fix CVE-2019-7620
-*   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-4
--   Updated jackson to 2.9.9.3
-*   Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-3
--   Bump up to consume the latest release of openjdk8
-*   Fri Aug 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
--   Updated jackson
-*   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
--   Upgrade to 6.7.0
-*   Wed Mar 20 2019 Ankit Jain <ankitja@vmware.com> 6.4.3-2
--   Updated the Java dependencies
-*   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
--   Upgrade to 6.4.3 for kibana,elasticsearch compatibility
-*   Wed Jan 23 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
--   Upgrade to 6.4.1
-*   Wed Dec 12 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2
--   Adding BuildArch.
-*   Tue Dec 04 2018 Ankit Jain <ankitja@vmware.com> 6.4.0-1
--   Initial Version.
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.8.15-3
+- Bump version as a part of openjdk8 upgrade
+* Wed Dec 15 2021 Ankit Jain <ankitja@vmware.com> 6.8.15-2
+- Fix for CVE-2021-44228 and CVE-2021-45046
+* Wed Apr 07 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-1
+- Update to 6.8.15
+* Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
+- Update to 6.8.13, Fix for CVE-2020-7020
+* Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
+- Update to 6.8.12
+* Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
+- Update to 6.8.10
+* Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+- Update to 6.8.9
+* Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
+- Update to 6.8.8
+* Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-6
+- Changed openjdk install directory name
+* Thu Nov 28 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-5
+- Updated the logstash-input-beat version to fix CVE-2019-7620
+* Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-4
+- Updated jackson to 2.9.9.3
+* Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-3
+- Bump up to consume the latest release of openjdk8
+* Fri Aug 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
+- Updated jackson
+* Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+- Upgrade to 6.7.0
+* Wed Mar 20 2019 Ankit Jain <ankitja@vmware.com> 6.4.3-2
+- Updated the Java dependencies
+* Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
+- Upgrade to 6.4.3 for kibana,elasticsearch compatibility
+* Wed Jan 23 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
+- Upgrade to 6.4.1
+* Wed Dec 12 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2
+- Adding BuildArch.
+* Tue Dec 04 2018 Ankit Jain <ankitja@vmware.com> 6.4.0-1
+- Initial Version.

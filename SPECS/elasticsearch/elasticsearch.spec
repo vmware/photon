@@ -3,17 +3,17 @@
 Summary:          Elastic Search
 Name:             elasticsearch
 Version:          6.8.15
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Patch0:           remove_jndi_lookup_class.patch
 Patch1:           add_logging_property.patch
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=ee52aa5943b094e7b8fc2ad4eff0713b7aee7172
+%define sha512 %{name}-%{version}.tar.gz=8f56fc05536e625584c42f456eb890d3ce4580f4abf271eaac0a9bbf298da0ecf2f18599f3085bcb340e8e35fe699a0472ec8d17cc44b27a9146abeb536d6fa1
 Source1:          cacerts
-%define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
+%define sha512 cacerts=34372cf430123df9276ff8bea201c0a7c5ac5c2d90b72e14bdac51af50f2931a9daeb1301d2936164fe43881d8b76d4de016dae3fc461601298b37ea01b066c0
 Source2:          distribution-for-%{name}-%{version}-2.tar.gz
-%define sha1      distribution-for-%{name}=0fcd19646ab7dadce66129e3548a6b5cbf264ee3
+%define sha512 distribution-for-%{name}=84ef4e2cf1469c40f13b8987c9af8843493222998ea7820284df77f4288d592fd0afc1086d63717e7ce5bda7b05fbec8dffd4f3bf6c0fc45d7c51266534d019e
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -125,6 +125,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.8.15-3
+-   Bump version as a part of openjdk8 upgrade
 *   Wed Dec 15 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-2
 -   Added formatMsgNoLookups to true and remove jndi class lookups.
 *   Wed Apr 07 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-1
