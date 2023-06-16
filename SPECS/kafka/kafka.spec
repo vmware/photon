@@ -5,7 +5,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -24,7 +24,7 @@ BuildRequires: zookeeper
 Requires:      zookeeper
 Requires:      systemd-rpm-macros
 
-%systemd_requires
+%{?systemd_requires}
 
 %description
 Kafka is designed to allow a single cluster to serve as the central data backbone for a large organization.
@@ -107,6 +107,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-2
+- Bump version as a part of openjdk11 upgrade
 * Fri May 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1
 - Update to 3.4.0, Fixes CVE-2023-25194
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-2

@@ -3,7 +3,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.9.0-2
+- Bump version as a part of openjdk11 upgrade
 * Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 3.9.0-1
 - Upgrade to v3.9.0
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.8.6-2

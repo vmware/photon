@@ -1,7 +1,7 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
 Version:        1.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
@@ -58,6 +58,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-2
+- Bump version as a part of openjdk11 upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
 - Automatic Version Bump
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.3.1-2

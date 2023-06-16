@@ -4,7 +4,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -133,6 +133,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-2
+- Bump version as a part of openjdk11 upgrade
 * Mon Nov 07 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.10.12-1
 - Bump to version 1.10.12
 - Update hamcrest to latest version

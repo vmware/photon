@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -86,6 +86,8 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_prefix}
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-4
+- Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.8.0-3
 - Use systemd-rpm-macros for user creation
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 3.8.0-2

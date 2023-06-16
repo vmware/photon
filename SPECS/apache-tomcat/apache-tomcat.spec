@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        10.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -125,6 +125,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.1.8-2
+- Bump version as a part of openjdk11 upgrade
 * Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.8-1
 - Upgrade to v10.1.8 to address CVE-2023-28709
 * Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.6-1
