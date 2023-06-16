@@ -1,14 +1,14 @@
 # once certified fips-provider rpm is published, with_certified_fips switch should be turned off
 # with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
-%define with_certified_fips     0
+%define with_certified_fips     1
 %define with_latest_fips        0
-%define fips_provider_version   3.0.0
+%define fips_provider_version   3.0.8
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.7
-Release:        6%{?dist}
+Version:        3.0.8
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,7 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424
+%define sha512 %{name}=8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -33,40 +33,14 @@ Source6: dsapub_noparam.der
 
 %if 0%{?with_certified_fips}
 Source7: %{fips_provider_srcname}.tar.xz
-%define sha512 %{fips_provider_srcname}=bad387fd2ba43bc7395c09c6045a102edc4cc22c90d574904494260c6edb041897d0c0e7fc040b8023ec3a935988bae5e4e07c4b97c9cab8118902e1af5426df
+%define sha512 %{fips_provider_srcname}=3206c96f77ba5ab0553249e13ddf52145995909e68a9acb851c5db6be759e6f7647b9ad960f6da7c989c20b49fbd9e79a7305f2000f24281345c56a1a8b1148f
 %endif
 
 Patch0: openssl-cnf.patch
-Patch1: 0001-x509-fix-double-locking-problem.patch
 
 # Fix for multiple security issues
-Patch2: 0001-Fix-type-confusion-in-nc_match_single.patch
-Patch3: 0002-Add-testcase-for-nc_match_single-type-confusion.patch
-
-Patch4: 0001-Fix-Timing-Oracle-in-RSA-decryption.patch
-
-Patch5: 0001-Avoid-dangling-ptrs-in-header-and-data-params-for-PE.patch
-Patch6: 0002-Add-a-test-for-CVE-2022-4450.patch
-
-Patch7: 0001-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
-Patch8: 0002-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
-Patch9: 0003-squash-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDE.patch
-Patch10: 0004-fixup-Fix-a-UAF-resulting-from-a-bug-in-BIO_new_NDEF.patch
-
-Patch11: 0001-Do-not-dereference-PKCS7-object-data-if-not-set.patch
-Patch12: 0002-Add-test-for-d2i_PKCS7-NULL-dereference.patch
-
-Patch13: 0001-Fix-NULL-deference-when-validating-FFC-public-key.patch
-Patch14: 0002-Prevent-creating-DSA-and-DH-keys-without-parameters-.patch
-Patch15: 0003-Do-not-create-DSA-keys-without-parameters-by-decoder.patch
-Patch16: 0004-Add-test-for-DSA-pubkey-without-param-import-and-che.patch
-
-Patch17: 0001-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-3.patch
-
-Patch18: 0001-pk7_doit.c-Check-return-of-BIO_set_md-calls.patch
-Patch19: 0002-Add-testcase-for-missing-return-check-of-BIO_set_md-.patch
-Patch20: 0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
-Patch21: 0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
+Patch1: 0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
+Patch2: 0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -275,6 +249,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Jun 16 2023 Mukul Sikka <msikka@vmware.com> 3.0.8-1
+- Update to openssl-3.0.8
 * Fri May 12 2023 Mukul Sikka <msikka@vmware.com> 3.0.7-6
 - Fix for CVE-2023-0464 and CVE-2023-0465
 * Tue Feb 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.7-5
