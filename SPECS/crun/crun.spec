@@ -1,6 +1,6 @@
 Name:          crun
 Version:       1.8
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       OCI runtime in C
 License:       GPLv2+
 Group:         Development/Other
@@ -57,6 +57,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8-3
+- Bump version as a part of protobuf upgrade
 * Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 1.8-2
 - Bump up release for protobuf-c
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.8-1

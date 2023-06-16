@@ -1,15 +1,17 @@
+%define java_min_ver_needed     3.3.3
+
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.14.0
-Release:        5%{?dist}
+Version:        3.21.12
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf
 
-Source0:        https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9dabba81119cb6196ef5de382a1032c57f6e69038f4dce0156f8671b98e51bb5095915fb6d05bb5a8ad8b17b559e652e1e9a392dd30c7ed8dcf1d986c137be11
+Source0: https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=152f8441c325e808b942153c15e82fdb533d5273b50c25c28916ec568ada880f79242bb61ee332ac5fb0d20f21239ed6f8de02ef6256cc574b1fc354d002c6b0
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -23,7 +25,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  chkconfig
 BuildRequires:  openjdk11
-BuildRequires:  apache-maven >= 3.3.3
+BuildRequires:  apache-maven >= %{java_min_ver_needed}
 
 %description
 Protocol Buffers (a.k.a., %{name}) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -50,7 +52,6 @@ The %{name}-static package contains static %{name} libraries.
 Summary:        %{name} python3 lib
 Group:          Development/Libraries
 Requires:       python3
-Requires:       python3-libs
 Requires:       %{name} = %{version}-%{release}
 
 %description    python3
@@ -72,23 +73,30 @@ This contains %{name} java package.
 rm -f java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
       java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
 
-autoreconf -iv
-
 %build
-%configure --disable-silent-rules
+autoreconf -vif
+
+%configure \
+    --disable-silent-rules \
+    --disable-static
+
 %make_build
+
 pushd python
-%py3_build
+%{py3_build}
 popd
+
 pushd java
 mvn package
 popd
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
+
 pushd python
-%py3_install
+%{py3_install}
 popd
+
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/%{name}
@@ -96,37 +104,34 @@ install -vm644 core/target/%{name}-java-%{version}.jar %{buildroot}%{_libdir}/ja
 install -vm644 util/target/%{name}-java-util-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
 popd
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/protoc
-%{_libdir}/libprotobuf-lite.so.*
-%{_libdir}/libprotobuf.so.*
-%{_libdir}/libprotoc.so.*
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libprotobuf-lite.so
-%{_libdir}/libprotobuf.so
-%{_libdir}/libprotoc.so
+%{_libdir}/*.so
 
 %files static
 %defattr(-,root,root)
-%{_libdir}/libprotobuf-lite.a
-%{_libdir}/libprotobuf.a
-%{_libdir}/libprotoc.a
 
 %files python3
+%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %files java
+%defattr(-,root,root)
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-1
+- Upgrade to v3.21.2
 * Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 3.14.0-5
 - bump release as part of apache-maven update
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-4

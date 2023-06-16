@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-2
+- Bump version as a part of protobuf upgrade
 * Mon May 22 2023 Mukul Sikka <msikka@vmware.com> 1.4.1-1
 - Updated to release 1.4.1
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-3
