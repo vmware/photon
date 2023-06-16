@@ -1,19 +1,19 @@
-Summary:	Apache Ant
-Name:		apache-ant
-Version:	1.10.10
-Release:	2%{?dist}
-License:	Apache
-URL:		http://ant.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:    Apache Ant
+Name:       apache-ant
+Version:    1.10.10
+Release:    3%{?dist}
+License:    Apache
+URL:        http://ant.apache.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=4cbad480058c6e9061e247731eefef14c0f7c7ed
-Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
-%define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
+Source0:    http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
+%define sha512 apache-ant=428eecbd38d975c705320c1e9ee0a069c6a9c80dc30e52ce03279f8e3816fc098ce6e6591831cdd398eabe444c837add1d26152ff2303470f63d8f0a45bd2ae1
+Source1:    http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
+%define sha512 hamcrest=5672bc627bc71d6fd64b6f776b89ac16ed68819fa4a0748c1250b57f1065c1e7e18ba184d9fe3392e54000ddeb353d0d8d67f4eecdf464974563f05c6b226fc2
 Source2:    https://packages.vmware.com/photon/photon_sources/1.0//maven-ant-tasks-2.1.3.tar.gz
-%define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
+%define sha512 maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 Patch0:        apache-ant-CVE-2021-36373-CVE-2021-36374.patch
 Requires:      openjre8
 BuildRequires: openjre8
@@ -36,8 +36,8 @@ This package contains additional perl and python scripts for Apache
 Ant.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
 
@@ -123,6 +123,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.10-3
+-   Bump version as a part of openjdk8 upgrade
 *   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.10-2
 -   Fix CVE CVE-2021-36373, CVE-2021-36374
 *   Tue Jun 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.10-1
@@ -175,4 +177,4 @@ bootstrap/bin/ant -v run-tests
 *   Wed Aug 12 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
 -   Added maven ant tasks
 *   Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
--   Initial build.	First version
+-   Initial build.  First version

@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.88
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.88-2
+- Bump version as a part of openjdk8 upgrade
 * Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.88-1
 - Upgrade to v8.5.88 to address CVE-2023-28709
 * Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.86-1

@@ -1,43 +1,55 @@
-%define _use_internal_dependency_generator 0
-%global security_hardening none
-%define jdk_major_version 1.8.0
-%define subversion 322
-Summary:        OpenJDK
-Name:           openjdk8
-Version:        1.8.0.322
-Release:        3%{?dist}
-License:        GNU GPL
-URL:            https://openjdk.java.net
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
-# Generate Source using https://github.com/vmware/photon/tree/4.0/tools/script/generate_source_tarball_openjdk8.sh
-Source0:        http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha512  openjdk=d18a229e4ca79fae7d6c801a89caefd4571b711dbadf547737d77569358612298e360631b3bc9bf56e90423a09b88e1c27755463330e91f9ed16743c1606ce21
-Patch0:         Awt_build_headless_only.patch
-Patch1:         check-system-ca-certs-x86.patch
-Patch2:         allow_using_system_installed_libjpeg.patch
-BuildArch:      x86_64
-BuildRequires:  pcre-devel
-BuildRequires:  which
-BuildRequires:  zip
-BuildRequires:  unzip
-BuildRequires:  zlib-devel
-BuildRequires:  ca-certificates
-BuildRequires:  chkconfig
-BuildRequires:  libjpeg-turbo-devel
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
-Requires:       openjre8 = %{version}-%{release}
-Requires:       chkconfig
-Obsoletes:      openjdk <= %{version}
-AutoReqProv:    no
-%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
+%global security_hardening  none
+%define jdk_major_version   1.8.0
+%define subversion          382
 %define bootstrapjdkversion 1.8.0.112
+%define _use_internal_dependency_generator 0
+
+Summary:    OpenJDK
+Name:       openjdk8
+Version:    1.8.0.382
+Release:    1%{?dist}
+License:    GNU GPL
+URL:        https://wiki.openjdk.org/display/jdk8u
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+# download the tag from github and rename the tarball to openjdk-%{version}.tar.gz
+Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/openjdk-%{version}.tar.gz
+%define sha512 openjdk=7830225fda3dfc32f4ead641b59fc5dc725fbfbce840cd5f2c2c331ae0ddff446e4255328aa311ed5bff2b6aa8baae427655ba9e5417fc3e10e5a81208b4539c
+
+Patch0: Awt_build_headless_only.patch
+Patch1: check-system-ca-certs-x86.patch
+Patch2: allow_using_system_installed_libjpeg.patch
+
+BuildArch: x86_64
+
+BuildRequires: pcre-devel
+BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
+BuildRequires: zlib-devel
+BuildRequires: ca-certificates
+BuildRequires: chkconfig
+BuildRequires: libjpeg-turbo-devel
+BuildRequires: fontconfig-devel
+BuildRequires: freetype2-devel
+BuildRequires: glib-devel
+BuildRequires: harfbuzz-devel
+
+Requires: openjre8 = %{version}-%{release}
+Requires: chkconfig
+
+Obsoletes: openjdk <= %{version}
+
+AutoReqProv: no
+
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package        -n openjre8
+%package -n openjre8
 Summary:        Java runtime environment
 AutoReqProv:    no
 Obsoletes:      openjre <= %{version}
@@ -54,15 +66,15 @@ Requires:       %{name} = %{version}-%{release}
 %description    sample
 It contains the Sample java applications.
 
-%package                doc
-Summary:                Documentation and demo applications for openjdk
+%package        doc
+Summary:        Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description    doc
 It contains the documentation and demo applications for openjdk
 
-%package                src
+%package        src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
@@ -70,8 +82,8 @@ Requires:       %{name} = %{version}-%{release}
 %description    src
 This package provides the runtime library class sources.
 
-%prep -p exit
-%autosetup -p1 -n openjdk-%{version}
+%prep
+%autosetup -p1 -n jdk8u-jdk8u%{subversion}-b03
 
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
@@ -81,24 +93,24 @@ sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJ
 pushd common/autoconf
 bash ./autogen.sh
 popd
-chmod a+x ./configur*
-unset JAVA_HOME &&
-./configur* \
-        CUPS_NOT_NEEDED=yes \
-        --with-target-bits=64 \
-        --with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
-        --disable-headful \
-        --with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
-        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-        --with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
-        --with-freetype-include=/usr/include/freetype2 \
-        --with-freetype-lib=/usr/lib \
-        --with-stdc++lib=dynamic \
-        --disable-zip-debug-info \
-        --with-libjpeg=system
 
-export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
-# using NUM_PROC instead of smp_mflags as -jN is not supported.
+chmod a+x ./configur*
+unset JAVA_HOME
+./configur* \
+    CUPS_NOT_NEEDED=yes \
+    --with-target-bits=64 \
+    --with-boot-jdk=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin \
+    --disable-headful \
+    --with-cacerts-file=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre/lib/security/cacerts \
+    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
+    --with-freetype-include=%{_includedir}/freetype2 \
+    --with-freetype-lib=%{_libdir} \
+    --with-stdc++lib=dynamic \
+    --disable-zip-debug-info \
+    --with-libjpeg=system
+
+export NUM_PROC=$(nproc)
 # make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
@@ -107,14 +119,14 @@ make \
     JAVAC_FLAGS=-g \
     STRIP_POLICY=no_strip \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-    CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre \
+    CLASSPATH=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
     JOBS=${NUM_PROC} \
     SCTP_WERROR=
 
 %install
-export NUM_PROC=$(/usr/bin/getconf _NPROCESSORS_ONLN)
+export NUM_PROC=$(nproc)
 # using NUM_PROC instead of smp_mflags as -jN is not supported.
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
@@ -122,13 +134,16 @@ make DESTDIR=%{buildroot} install \
         BUILD_HEADLESS_ONLY=yes \
         OPENJDK_TARGET_OS=linux \
         DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-        CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
+        CLASSPATH=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/amd64 -iname \*.diz -delete
-mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+find %{_usr}/local/jvm/openjdk-%{jdk_major_version}_%{subversion}-internal/jre/lib/amd64 -iname \*.diz -delete
+
+mv %{_usr}/local/jvm/openjdk-%{jdk_major_version}_%{subversion}-internal/* \
+            %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 2000 \
@@ -179,16 +194,14 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_v
 
 %postun
 # Do alternative remove only in case of uninstall
-if [ $1 -eq 0 ]
-then
+if [ $1 -eq 0 ]; then
   alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
 fi
 /sbin/ldconfig
 
 %postun -n openjre8
 # Do alternative remove only in case of uninstall
-if [ $1 -eq 0 ]
-then
+if [ $1 -eq 0 ]; then
   alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
 fi
 /sbin/ldconfig
@@ -269,105 +282,107 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
-*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.322-3
--   Bump version as a part of freetype2 upgrade
-*   Thu Dec 22 2022 Mukul Sikka <msikka@vmware.com> 1.8.0.322-2
--   fix post install script error “--slave: command not found”
-*   Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
--   Upgrade to version 1.8.0.322 (jdk8u322-b04)
-*   Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
--   Upgrade to version 1.8.0.312 (jdk8u312-ga)
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.265-2
--   GCC-10 support.
-*   Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.265-1
--   Upgrade to version 1.8.0.265 (jdk8u265-ga)
-*   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.262-3
--   Use libjpeg-turbo
--   Fix CVE-2020-14153, CVE-2020-14152
-*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.262-2
--   Added a check in %postun to avoid alternatives --remove
--   after new version is installed.
--   Do alternative remove only in case of uninstall.
-*   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 1.8.0.262-1
--   Upgrade to version 1.8.0.262 (jdk8u262-ga)
-*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.252-2
--   Cleaned removing of OpenJDK-1.8.0 directory in postun
-*   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
--   Upgrade to version 1.8.0.252 ga (jdk8u252-ga)
-*   Mon Apr 13 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.242-1
--   Upgrade to version 1.8.0.242 ga (jdk8u242-ga)
-*   Fri Oct 25 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.232-1
--   Upgrade to version 1.8.0.232 ga (jdk8u232-ga)
-*   Wed Sep 18 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.222-2
--   Divided version:majorversion+subversion to remove specific
--   version java dependency from other packages
-*   Thu Aug 01 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.222-1
--   Upgrade to version 1.8.0.222 b10 (jdk8u222-b10)
--   Fix diff for TrustStoreManager.java in file check-system-ca-certs.patch to check-system-ca-certs-212-b04.patch.
--   Replace check-system-ca-certs.patch with check-system-ca-certs-212-b04.patch to build x64-86 binary.
-*   Tue May 21 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
--   Upgrade to version 1.8.0.212 b04
--   Included fix for performance regression.
-*   Thu May 02 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1
--   Upgrade to version 1.8.0.212
--   Add new clhsdb and hsdb binaries.
--   Fix CVE-2019-2602, CVE-2019-2697, CVE-2019-2698.
-*   Wed Jan 23 2019 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.202-1
--   Upgrade to version 1.8.0.202
-*   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.192-3
--   Adding BuildArch
-*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.192-2
--   Use ExtraBuildRequires
-*   Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
--   Upgraded to version 1.8.0.192
-*   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.181-1
--   Upgraded to 1.8.0.181 version.
-*   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.172-1
--   Upgraded to version 1.8.0.172
-*   Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1
--   Upgraded to version 1.8.0.162
-*   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.152-2
--   Reduce list of published rpms dependencies
-*   Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.152-1
--   Upgraded to version 1.8.0.152
-*   Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
--   added ldconfig in post actions.
-*   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
--   Upgraded to version 1.8.0.141-1
-*   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
--   Build AWT libraries as well.
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
--   Added obseletes for deprecated openjdk package
-*   Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
--   Add requires for libstdc++
-*   Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
--   Upgraded to version 1.8.0.131 and building Java from sources
-*   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
--   add java rpm macros
-*   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
--   Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
-*   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
--   Update to 1.8.0.102, minor fixes in url, spelling.
--   addresses CVE-2016-3598, CVE-2016-3606, CVE-2016-3610
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
--   Added version constraint to runtime dependencies
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
--   GA - Bump release of all rpms
-*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
--   Updated to version 1.8.0.92
-*   Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3
--   Move tools like javac to openjdk
-*   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.72-2
--   Adding openjre as run time dependency for openjdk package
-*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
--   Updating Version.
-*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
--   Change to use /var/opt path
-*   Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
--   Split the openjdk into multiple sub-packages to reduce size.
-*   Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
--   Moved to the next version
-*   Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
--   Add JRE path
-*   Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
--   Initial build. First version
+* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.382-1
+- Upgrade to v1.8.0.382
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.322-3
+- Bump version as a part of freetype2 upgrade
+* Thu Dec 22 2022 Mukul Sikka <msikka@vmware.com> 1.8.0.322-2
+- fix post install script error “--slave: command not found”
+* Mon Jul 04 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1
+- Upgrade to version 1.8.0.322 (jdk8u322-b04)
+* Wed May 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.0.312-1
+- Upgrade to version 1.8.0.312 (jdk8u312-ga)
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.265-2
+- GCC-10 support.
+* Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.265-1
+- Upgrade to version 1.8.0.265 (jdk8u265-ga)
+* Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.262-3
+- Use libjpeg-turbo
+- Fix CVE-2020-14153, CVE-2020-14152
+* Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.262-2
+- Added a check in %postun to avoid alternatives --remove
+- after new version is installed.
+- Do alternative remove only in case of uninstall.
+* Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 1.8.0.262-1
+- Upgrade to version 1.8.0.262 (jdk8u262-ga)
+* Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.252-2
+- Cleaned removing of OpenJDK-1.8.0 directory in postun
+* Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
+- Upgrade to version 1.8.0.252 ga (jdk8u252-ga)
+* Mon Apr 13 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.242-1
+- Upgrade to version 1.8.0.242 ga (jdk8u242-ga)
+* Fri Oct 25 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.232-1
+- Upgrade to version 1.8.0.232 ga (jdk8u232-ga)
+* Wed Sep 18 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.222-2
+- Divided version:majorversion+subversion to remove specific
+- version java dependency from other packages
+* Thu Aug 01 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.222-1
+- Upgrade to version 1.8.0.222 b10 (jdk8u222-b10)
+- Fix diff for TrustStoreManager.java in file check-system-ca-certs.patch to check-system-ca-certs-212-b04.patch.
+- Replace check-system-ca-certs.patch with check-system-ca-certs-212-b04.patch to build x64-86 binary.
+* Tue May 21 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
+- Upgrade to version 1.8.0.212 b04
+- Included fix for performance regression.
+* Thu May 02 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1
+- Upgrade to version 1.8.0.212
+- Add new clhsdb and hsdb binaries.
+- Fix CVE-2019-2602, CVE-2019-2697, CVE-2019-2698.
+* Wed Jan 23 2019 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.202-1
+- Upgrade to version 1.8.0.202
+* Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.192-3
+- Adding BuildArch
+* Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.192-2
+- Use ExtraBuildRequires
+* Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
+- Upgraded to version 1.8.0.192
+* Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.181-1
+- Upgraded to 1.8.0.181 version.
+* Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.172-1
+- Upgraded to version 1.8.0.172
+* Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1
+- Upgraded to version 1.8.0.162
+* Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.152-2
+- Reduce list of published rpms dependencies
+* Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.152-1
+- Upgraded to version 1.8.0.152
+* Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
+- added ldconfig in post actions.
+* Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
+- Upgraded to version 1.8.0.141-1
+* Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
+- Build AWT libraries as well.
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
+- Added obseletes for deprecated openjdk package
+* Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
+- Add requires for libstdc++
+* Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
+- Upgraded to version 1.8.0.131 and building Java from sources
+* Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
+- add java rpm macros
+* Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
+- Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
+* Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
+- Update to 1.8.0.102, minor fixes in url, spelling.
+- addresses CVE-2016-3598, CVE-2016-3606, CVE-2016-3610
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
+- Added version constraint to runtime dependencies
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
+- GA - Bump release of all rpms
+* Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
+- Updated to version 1.8.0.92
+* Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3
+- Move tools like javac to openjdk
+* Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.72-2
+- Adding openjre as run time dependency for openjdk package
+* Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
+- Updating Version.
+* Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
+- Change to use /var/opt path
+* Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
+- Split the openjdk into multiple sub-packages to reduce size.
+* Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
+- Moved to the next version
+* Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
+- Add JRE path
+* Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
+- Initial build. First version

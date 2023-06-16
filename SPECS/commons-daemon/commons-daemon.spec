@@ -1,16 +1,16 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
-%define sha1    commons-daemon-%{version}-src=55bf25a379b30f103f2c200acb1c7e64144fcce2
+%define sha512 commons-daemon-%{version}-src=ddce2b90bd847f584f1d2207c5ed70b1554b9aa3a579821724a4e37d4bbaaf47425b85779216b449ee58ec9fdd38f4f3930080c8971febc7fca39dd3e73ace61
 Source1:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
-%define sha1    commons-daemon-%{version}-bin=be7848a5c64fddb184e8a03e2e6e7b4075e70425
+%define sha512 commons-daemon-%{version}-bin=0d7ced8f5d6fd3e8781146ee47c37046c6ccd2f364138f89d137eea5f0255e1b2afae5faf7005164c077087cb08203fd44478d5c14c57c7df449feb324443447
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -22,7 +22,7 @@ including a set of Java interfaces applications must implement
 and Unix native code to control a Java daemon from a Unix operating system.
 
 %prep
-%setup -q -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src
 mkdir dist
 cd dist
 tar -xf %{SOURCE1} --no-same-owner
@@ -59,6 +59,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-2
+-   Bump version as a part of openjdk8 upgrade
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.3-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.2-1

@@ -3,7 +3,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.19.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -129,6 +129,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-2
+- Bump version as a part of openjdk8 upgrade
 * Wed Jun 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-1
 - Upgrade to v3.19.6
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.19.4-2

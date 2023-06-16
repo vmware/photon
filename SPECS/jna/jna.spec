@@ -4,14 +4,14 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.6.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=6c0e5fb9f03994bc8fe9373e1ec6395df0303213
+%define sha512 %{name}-%{version}=645dd13f1ab8b36277fcd2af1557ca9fe15a72aaf78564ed9c2fb027a1b7d4fa93731aa2986d08fabb5af472f79b6cd1d2a260bddb966eac7e50dcd9d3158729
 Patch0:         jna_remove_clover_jar.patch
 Patch1:         jna-gcc-10.patch
 BuildRequires: openjre8
@@ -83,6 +83,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.6.0-4
+-   Bump version as a part of openjdk8 upgrade
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-3
 -   Replacement of ITS suggested words.
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
