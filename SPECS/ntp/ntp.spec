@@ -1,36 +1,40 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        NTP
-URL:            http://www.ntp.org/
+URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f5ad765e45fc302263dd40e94c287698fd235b94f3684e49f1d5d09d7d8bdd6b8c0fb96ecdabffea3d233e1e79b3c9687b76dc204ba76bad3f554682f4a97794
+Source0: https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f5ad765e45fc302263dd40e94c287698fd235b94f3684e49f1d5d09d7d8bdd6b8c0fb96ecdabffea3d233e1e79b3c9687b76dc204ba76bad3f554682f4a97794
 
-#https://github.com/darkhelmet/ntpstat
-Source1:        ntpstat-master.zip
-%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
-Source2:        ntp.sysconfig
-Source3:        %{name}.sysusers
-Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
-Patch1:         NTP_4_2_8P15+2@0x61e3f4da.patch
+# https://github.com/darkhelmet/ntpstat
+Source1: ntpstat-master.zip
+%define sha512 ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 
-BuildRequires:  which
-BuildRequires:  libcap-devel
-BuildRequires:  unzip
-BuildRequires:  systemd
-BuildRequires:  openssl-devel
-BuildRequires:  systemd-devel
+Source2: %{name}.sysconfig
+Source3: %{name}.sysusers
 
-Requires:       systemd
-Requires(pre):  systemd-rpm-macros
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires:       openssl
-Requires:       libcap >= 2.24
+Patch0: Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
+Patch1: NTP_4_2_8P15+2@0x61e3f4da.patch
+
+BuildRequires: which
+BuildRequires: libcap-devel
+BuildRequires: unzip
+BuildRequires: systemd
+BuildRequires: openssl-devel
+BuildRequires: systemd-devel
+BuildRequires: libevent-devel
+
+Requires: systemd
+Requires: openssl
+Requires: libcap >= 2.24
+Requires: libevent
+Requires(pre): systemd-rpm-macros
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 The ntp package contains a client and server to keep the time
@@ -41,7 +45,8 @@ NTP protocol.
 %package        perl
 Summary:        Perl scripts for ntp
 Group:          Utilities
-Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       %{name} = %{version}-%{release}
+Requires:       perl >= 5
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
 %description    perl
@@ -55,46 +60,46 @@ ntpstat is a utility which reports the synchronisation
 state of the NTP daemon running on the local machine.
 
 %prep
-%autosetup -p1 -a 1
+%autosetup -p1 -a1
 
 %build
 %configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
     --with-binsubdir=sbin \
     --enable-linuxcaps
 
 %make_build
-make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
+%make_build -C ntpstat-master
 
 %install
 %make_install %{?_smp_mflags}
-install -v -m755 -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
-cp -v -R html/* %{buildroot}%{_datadir}/doc/%{name}-%{version}/
-install -vdm 755 %{buildroot}/etc
+install -v -m755 -d %{buildroot}%{_docdir}/%{name}-%{version}
+cp -v -R html/* %{buildroot}%{_docdir}/%{name}-%{version}/
+install -vdm 755 %{buildroot}%{_sysconfdir}
 
-mkdir -p %{buildroot}/var/lib/ntp/drift \
-         %{buildroot}/etc/sysconfig \
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/drift \
+         %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}%{_unitdir}
 
-cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
+cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+
 pushd ntpstat-master
 install -m 755 ntpstat %{buildroot}%{_bindir}
 install -m 644 ntpstat.1 %{buildroot}%{_mandir}/man8/ntpstat.8
 popd
+
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-cat > %{buildroot}/etc/ntp.conf <<- "EOF"
+cat > %{buildroot}%{_sysconfdir}/%{name}.conf <<- "EOF"
 tinker panic 0
 restrict default kod nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
-driftfile /var/lib/ntp/drift/ntp.drift
+driftfile %{_sharedstatedir}/%{name}/drift/%{name}.drift
 EOF
 
 install -D -m644 COPYRIGHT %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
-rm -rf %{buildroot}/etc/rc.d/*
+rm -rf %{buildroot}%{_sysconfdir}/rc.d/*
 
 %{_fixperms} %{buildroot}/*
 
@@ -107,25 +112,25 @@ Conflicts=systemd-timesyncd.service
 
 [Service]
 Type=forking
-EnvironmentFile=/etc/sysconfig/ntp
-ExecStart=/usr/bin/ntpd -g -u ntp:ntp
+EnvironmentFile=%{_sysconfdir}/sysconfig/%{name}
+ExecStart=%{_bindir}/ntpd -g -u %{name}:%{name}
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable ntpd.service" > %{buildroot}%{_presetdir}/50-ntpd.preset
 
 %check
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
+%make_build check
 
 %pre
 %sysusers_create_compat %{SOURCE3}
 
 %post
-%{_sbindir}/ldconfig
+/sbin/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -133,47 +138,49 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %postun
 %systemd_postun_with_restart ntpd.service
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%dir /var/lib/ntp/drift
-%attr(0755, ntp, ntp) /var/lib/ntp/drift
-%config(noreplace) /etc/ntp.conf
-%config(noreplace) /etc/sysconfig/ntp
+%dir %{_sharedstatedir}/%{name}/drift
+%attr(0755,%{name},%{name}) %{_sharedstatedir}/%{name}/drift
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_sysusersdir}/%{name}.sysusers
 %{_unitdir}/ntpd.service
-%{_libdir}/systemd/system-preset/50-ntpd.preset
+%{_presetdir}/50-ntpd.preset
 %{_bindir}/ntpd
 %{_bindir}/ntpdate
 %{_bindir}/ntpdc
-%{_bindir}/ntp-keygen
+%{_bindir}/%{name}-keygen
 %{_bindir}/ntpq
 %{_bindir}/ntptime
 %{_bindir}/sntp
 %{_bindir}/tickadj
-%{_datadir}/doc/%{name}-%{version}/*
-%{_datadir}/doc/ntp/*
-%{_datadir}/doc/sntp/*
-%{_datadir}/licenses/ntp/LICENSE
+%{_docdir}/%{name}-%{version}/*
+%{_docdir}/%{name}/*
+%{_docdir}/sntp/*
+%{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man1/ntpd.1.gz
 %{_mandir}/man1/ntpdc.1.gz
-%{_mandir}/man1/ntp-keygen.1.gz
+%{_mandir}/man1/%{name}-keygen.1.gz
 %{_mandir}/man1/ntpq.1.gz
 %{_mandir}/man1/sntp.1.gz
 %{_mandir}/man5/*
 
 %files perl
+%defattr(-,root,root)
 %{_bindir}/calc_tickadj
 %{_bindir}/ntptrace
-%{_bindir}/ntp-wait
+%{_bindir}/%{name}-wait
 %{_bindir}/update-leap
-%{_datadir}/ntp/lib/NTP/Util.pm
+%{_datadir}/%{name}/lib/NTP/Util.pm
 %{_mandir}/man1/calc_tickadj.1.gz
 %{_mandir}/man1/ntptrace.1.gz
-%{_mandir}/man1/ntp-wait.1.gz
+%{_mandir}/man1/%{name}-wait.1.gz
 %{_mandir}/man1/update-leap.1.gz
 
 %files -n ntpstat
@@ -182,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-8
+- Add libevent to buld requires
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.2.8p15-7
 - Use systemd-rpm-macros for user creation
 * Fri Oct 28 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p15-6
