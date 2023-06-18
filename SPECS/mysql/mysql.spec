@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.35
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ BuildRequires: libevent-devel
 BuildRequires: curl-devel
 BuildRequires: zstd-devel
 BuildRequires: lz4-devel
-BuildRequires: protobuf-devel
+#BuildRequires: protobuf-devel
 BuildRequires: openssl-devel
 BuildRequires: libtirpc-devel
 BuildRequires: ncurses-devel
@@ -36,7 +36,7 @@ Requires: libevent
 Requires: curl-libs
 Requires: zstd-libs
 Requires: lz4
-Requires: protobuf
+#Requires: protobuf
 Requires: openssl
 Requires: libtirpc
 Requires: perl
@@ -88,7 +88,8 @@ This package contains ICU data files needed by MySQL regular expressions.
   -DNICE_PROJECT_NAME="MySQL" \
   -DWITH_SYSTEMD=1 \
   -DSYSTEMD_SERVICE_NAME="mysqld" \
-  -DSYSTEMD_PID_DIR="/run/mysqld"
+  -DSYSTEMD_PID_DIR="/run/mysqld" \
+  -DWITH_PROTOBUF=bundled
 
 %{cmake_build}
 
@@ -160,6 +161,8 @@ fi
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
+%dir %{_lib64dir}/%{name}/private
+%attr(755,root,root) %{_lib64dir}/%{name}/private/libprotobuf*.so.*
 %{_libdir}/plugin/*
 %{_datadir}/*
 %{_unitdir}/*.service
@@ -176,6 +179,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-2
+- Use bundled protobuf, build breaks with latest protobuf provided by system
 * Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
 - Upgrade to v8.0.35
 - Add systemd service files for mysql-server

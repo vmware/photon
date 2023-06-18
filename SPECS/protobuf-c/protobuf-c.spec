@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
-Version:        1.4.1
-Release:        2%{?dist}
+Version:        1.5.0
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -9,10 +9,9 @@ Distribution:   Photon
 URL:            https://github.com/protobuf-c/protobuf-c
 
 Source0: https://github.com/protobuf-c/protobuf-c/releases/download/v1.4.1/%{name}-%{version}.tar.gz
-%define sha512 %{name}=57f858118a89befc80e111ad9a57eadbcf2317d60e085b6d99e10f6604ee8c08473fe6ab1fdfb0a3196821a6e68e743943338321d23d15a1229987f140341181
+%define sha512 %{name}=175c9fc901cab88308730eea982dd62b1e0decdceb80aa53be163f17a440b4acecb834a784beab5cd71186413a322a323f4539758a8727ca51801cf92f9bd3da
 
-BuildRequires:  protobuf >= 2.6.0
-BuildRequires:  protobuf-devel >= 2.6.0
+BuildRequires:  protobuf-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -45,7 +44,6 @@ The %{name}-static package contains static %{name} libraries.
 
 %prep
 %autosetup -p1
-autoreconf -iv
 
 %build
 %configure --disable-silent-rules
@@ -77,6 +75,8 @@ rm -rf %{buildroot}
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.0-1
+- Upgrade to v1.5.0
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-2
 - Bump version as a part of protobuf upgrade
 * Mon May 22 2023 Mukul Sikka <msikka@vmware.com> 1.4.1-1

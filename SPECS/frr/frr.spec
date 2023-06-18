@@ -2,8 +2,8 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        8.5.2
-Release:        2%{?dist}
+Version:        9.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -11,18 +11,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1afa6ca1a41096aa47dc2fc39ab87290b3cbf634a1632e7910a5b69d2816998fbccbca616f261a410aa146a21dd26d12b7e6812da4ec08545b1500f8b546b972
+%define sha512 %{name}=77b278a3ea87da9dfd7b87e4f9ae67f08ed0f24809f6dd228d2ab2e2c29e2b3191d59d50fc474e53e159ac6c79c302481b462125d0657889516f07b8e05e8562
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
 
-Patch0: enable-openssl.patch
-Patch1: disable-eigrp-crypto.patch
-Patch2: fips-mode.patch
+Patch0: 0000-remove-babeld-and-ldpd.patch
+Patch1: 0002-enable-openssl.patch
+Patch2: 0003-disable-eigrp-crypto.patch
+Patch3: 0004-fips-mode.patch
 
 %if 0%{?with_check}
-Patch4: remove-grpc-test.patch
-Patch5: 0001-directly-link-libabsl_synchronization-for-grpc-test.patch
+Patch4: 0005-remove-grpc-test.patch
 %endif
 
 BuildRequires: build-essential
@@ -40,10 +40,10 @@ BuildRequires: libyang-devel
 BuildRequires: elfutils-devel
 BuildRequires: pcre2-devel
 BuildRequires: openssl-devel
-BuildRequires: grpc-devel
 BuildRequires: net-snmp-devel
 BuildRequires: which
 BuildRequires: protobuf-devel
+BuildRequires: protobuf-c-devel
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
@@ -66,6 +66,7 @@ Requires: openssl
 Requires: glibc
 Requires: python3
 Requires: protobuf
+Requires: protobuf-c
 Requires(pre): shadow
 Requires(postun): shadow
 
@@ -115,11 +116,10 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --disable-babeld \
         --with-moduledir=%{_libdir}/%{name}/modules \
         --with-crypto=openssl \
-        --enable-fpm \
-        --enable-grpc
+        --enable-fpm
 
 %build
-%make_build PYTHON=%{__python3}
+%make_build PYTHON=%{python3}
 
 %install
 mkdir -p %{buildroot}%{_sysconfdir}/{%{name},rc.d/init.d,sysconfig,logrotate.d,pam.d,default} \
@@ -217,6 +217,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
+- Upgrade to v9.1
 * Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-2
 - Bump version as a part of grpc upgrade
 * Wed Aug 02 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1

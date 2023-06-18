@@ -6,8 +6,8 @@
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.32.2
-Release:        11%{?kernelsubrelease}%{?dist}
+Version:        0.36.2
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -15,7 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=88a98e32285746c2c04bd640495c12a1114a511ef6a9ee276ddaf60ad441effffe8da4879442c82a7fbab76cbecb157bd2cddc01eaa17d3876eb1860e6ec6260
+%define sha512 %{name}=a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1: 0001-build-plugins-locally.patch
@@ -40,6 +40,7 @@ BuildRequires: c-ares-devel
 BuildRequires: protobuf-devel
 BuildRequires: go
 BuildRequires: re2-devel
+BuildRequires: yaml-cpp-devel
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -55,6 +56,7 @@ Requires: jq
 Requires: protobuf
 Requires: c-ares
 Requires: re2
+Requires: yaml-cpp
 
 %package    devel
 Summary:    falco
@@ -77,9 +79,11 @@ Falco lets you continuously monitor and detect container, application, host, and
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
-    -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
+    -DUSE_BUNDLED_YAMLCPP:BOOL=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DUSE_BUNDLED_LIBELF=OFF \
+    -DLIBELF_LIB=%{_libdir}/libelf.so \
+    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
 export KERNELDIR="%{_modulesdir}/build"
@@ -103,17 +107,23 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%exclude %{_usrsrc}
+%{_usrsrc}/*
 %{_sysconfdir}/%{name}
 %{_datadir}/%{name}
 %{_modulesdir}/extra/%{name}.ko
+%{_sysconfdir}/falcoctl/falcoctl.yaml
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/pkgconfig/*.pc
 %{_libdir}/falcosecurity/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Thu Nov 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.36.2-1
+- Upgrade to v0.36.2
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-12
+- Bump version as a part of protobuf upgrade
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-11
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-10
