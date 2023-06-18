@@ -2,8 +2,8 @@
 
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.21.12
-Release:        3%{?dist}
+Version:        3.23.3
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -11,17 +11,27 @@ Distribution:   Photon
 URL:            https://github.com/google/protobuf
 
 Source0: https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=152f8441c325e808b942153c15e82fdb533d5273b50c25c28916ec568ada880f79242bb61ee332ac5fb0d20f21239ed6f8de02ef6256cc574b1fc354d002c6b0
+%define sha512 %{name}=d6f360c3d0a205b012c2db6d5c32fc7cde075941e12dd7cb9da8c03ab1f6cb81044acac34b39bb699dde5bea4558159a5e47beafd87e47d6b91d06b37ea6e886
 
-BuildRequires: build-essential
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: libstdc++
 BuildRequires: curl
+BuildRequires: make
 BuildRequires: unzip
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
 BuildRequires: chkconfig
 BuildRequires: openjdk11
-BuildRequires: apache-maven >= %{java_min_ver_needed}
+BuildRequires: apache-maven
+BuildRequires: cmake
+BuildRequires: gtest-devel
+BuildRequires: gmock-devel
+BuildRequires: abseil-cpp-devel
+
+Requires: abseil-cpp
 
 %description
 Protocol Buffers (a.k.a., %{name}) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -31,6 +41,7 @@ You can find %{name}'s documentation on the Google Developers site.
 Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       abseil-cpp-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -66,48 +77,58 @@ This contains %{name} java package.
 
 # This test is incredibly slow
 # https://github.com/google/protobuf/issues/2389
-rm -f java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
-      java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
+rm java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
+   java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
 
 %build
-autoreconf -fvi
+%{cmake} \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -Dprotobuf_ABSL_PROVIDER=package \
+    -Dprotobuf_BUILD_SHARED_LIBS=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-%configure \
-    --disable-silent-rules \
-    --disable-static
+%{cmake_build}
 
-%make_build
+export PROTOC="${PWD}/%{__cmake_builddir}/protoc"
 
 pushd python
 %{py3_build}
 popd
 
 pushd java
-mvn package
+ln -sfrv ${PROTOC} ../
+mvn -e -B package \
+    -Dhttps.protocols=TLSv1.2 \
+    -Dmaven.test.skip=true
 popd
 
 %install
-%make_install %{?_smp_mflags}
+%{cmake_install}
+
+export PROTOC="%{_builddir}/%{name}-%{version}/%{__cmake_builddir}/protoc"
+
 pushd python
 %{py3_install}
 popd
 
 pushd java
-mvn install
-install -vdm755 %{buildroot}%{_libdir}/java/%{name}
-install -vm644 core/target/%{name}-java-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
-install -vm644 util/target/%{name}-java-util-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
-popd
+mvn -e -B install \
+    -Dhttps.protocols=TLSv1.2 \
+    -Dmaven.test.skip=true
 
-%clean
-rm -rf %{buildroot}/*
+install -vdm755 %{buildroot}%{_libdir}/java/%{name}
+
+for fn in $(find . -name "*.jar"); do
+  install -vm644 ${fn} %{buildroot}%{_libdir}/java/%{name}
+done
+popd
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%{_bindir}/protoc
+%{_bindir}/protoc*
 %{_libdir}/*.so.*
 
 %files devel
@@ -115,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/cmake/*
 
 %files static
 %defattr(-,root,root)
@@ -128,6 +151,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.23.3-1
+- Upgrade to v3.23.3
 * Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-3
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-2

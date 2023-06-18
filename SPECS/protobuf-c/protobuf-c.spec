@@ -1,6 +1,6 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
-Version:        1.4.1
+Version:        1.5.0
 Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
@@ -8,8 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/protobuf-c/protobuf-c
 
-Source0: https://github.com/protobuf-c/protobuf-c/releases/download/v1.3.3/%{name}-%{version}.tar.gz
-%define sha512 %{name}=57f858118a89befc80e111ad9a57eadbcf2317d60e085b6d99e10f6604ee8c08473fe6ab1fdfb0a3196821a6e68e743943338321d23d15a1229987f140341181
+Source0: https://github.com/protobuf-c/protobuf-c/releases/download/v1.4.1/%{name}-%{version}.tar.gz
+%define sha512 %{name}=175c9fc901cab88308730eea982dd62b1e0decdceb80aa53be163f17a440b4acecb834a784beab5cd71186413a322a323f4539758a8727ca51801cf92f9bd3da
 
 BuildRequires:  protobuf-devel
 BuildRequires:  autoconf
@@ -20,7 +20,7 @@ BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
 
-Requires:       protobuf >= 3.21.12
+Requires:       protobuf
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site. This is the C implementation.
@@ -46,7 +46,6 @@ The %{name}-static package contains static %{name} libraries.
 %autosetup -p1
 
 %build
-autoreconf -fvi
 %configure \
     --disable-silent-rules \
     --disable-static
@@ -56,7 +55,7 @@ autoreconf -fvi
 %install
 %make_install %{?_smp_mflags}
 
-%post -p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %clean
@@ -78,6 +77,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.0-1
+- Upgrade to v1.5.0
 * Sat Jun 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-1
 - Upgrade to v1.4.1
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-3

@@ -1,7 +1,7 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
 Version:        1.5.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2
 URL:            https://github.com/facebook/zstd
 Group:          Applications/System
@@ -41,13 +41,13 @@ library, libzstd.
 %autosetup -p1
 
 %build
-%make_build
+%make_build PREFIX=%{_prefix} LIBDIR=%{_libdir}
 
 %install
 %make_install PREFIX=%{_prefix} LIBDIR=%{_libdir} %{?_smp_mflags}
 
 %check
-make check %{?_smp_mflags}
+%make_build check
 
 %post -n zstd-libs -p /sbin/ldconfig
 %postun -n zstd-libs -p /sbin/ldconfig
@@ -80,6 +80,8 @@ make check %{?_smp_mflags}
 %exclude %{_libdir}/libzstd.a
 
 %changelog
+* Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.5-2
+- Generate pc file properly
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com>  1.5.5-1
 - Upgrade to v1.5.5
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-1
