@@ -35,6 +35,9 @@ declare -a deprecated_packages_arr=(
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
   [ansible]=ansible   # Added for workaround pertaining to python3-pycrypto
+  [ansible-posix]=ansible-posix   # This & next 2 lines handle ansible removal
+  [ansible-community-general]=ansible-community-general  # handle ansible removal
+  [stig-hardening]=stig-hardening                        # handle ansible removal
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
   [openjdk8]=openjdk11
