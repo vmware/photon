@@ -28,6 +28,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  libgcrypt-devel
 
 Requires:       libgcrypt
+Requires:       curl-libs
 Requires:       ncurses
 Requires:       expat
 Requires:       zlib
@@ -45,6 +46,7 @@ operating system and in a compiler-independent manner.
 ./bootstrap --prefix=%{_prefix} \
             --system-expat \
             --system-zlib \
+            --system-curl \
             --system-libarchive \
             --system-bzip2 \
             --parallel=$(nproc)
