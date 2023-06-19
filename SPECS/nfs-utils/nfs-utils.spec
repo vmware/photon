@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -31,16 +31,34 @@ BuildRequires:    systemd-devel
 BuildRequires:    keyutils-devel
 BuildRequires:    sqlite-devel
 BuildRequires:    libgssglue-devel
-BuildRequires:    libnfsidmap-devel
 BuildRequires:    e2fsprogs-devel
 BuildRequires:    rpcsvc-proto-devel
 
 Requires:         libtirpc
 Requires:         rpcbind
 Requires:         shadow
+Requires:         libnfsidmap
 Requires:         python3-libs
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+
+%package -n libnfsidmap
+Summary: NFSv4 User and Group ID Mapping Library
+Provides:  libnfsidmap
+License:   BSD
+Conflicts: %{name} < 2.6.2-6
+
+%description -n libnfsidmap
+Library that handles mapping between names and ids for NFSv4.
+
+%package -n libnfsidmap-devel
+Summary:   Development files for the libnfsidmap library
+Requires:  libnfsidmap
+Conflicts: %{name} < 2.6.2-6
+
+%description -n libnfsidmap-devel
+This package includes header files and libraries necessary for
+developing programs which use the libnfsidmap library.
 
 %description
 The %{name} package contains simple nfs client service.
@@ -130,8 +148,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/exports
 %{_sbindir}/*
 %{_sharedstatedir}/*
-%{_unitdir}/*
-%{_libdir}/libnfsidmap.so.*
+%{_unitdir}/*.service
+%{_libdir}/systemd/system/*
 %{_libexecdir}/nfsrahead
 %{_presetdir}/50-nfs-server.preset
 %{_udevrulesdir}/99-nfs.rules
@@ -141,12 +159,25 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_datadir}/*
-%{_includedir}/*
-%{_libdir}/libnfsidmap.so
+
+%files -n libnfsidmap
+%defattr(-,root,root)
+%{_libdir}/libnfsidmap.so.*
 %{_libdir}/libnfsidmap/*.so
+%{_mandir}/man3/nfs4_uid_to_name.*
+%{_mandir}/man8/nfsidmap.*
+%{_mandir}/man8/idmapd.8.gz
+
+%files -n libnfsidmap-devel
+%defattr(-,root,root)
 %{_libdir}/pkgconfig/libnfsidmap.pc
+%{_includedir}/nfsidmap.h
+%{_includedir}/nfsidmap_plugin.h
+%{_libdir}/libnfsidmap.so
 
 %changelog
+* Mon Jun 19 2023 Piyush Gupta <gpiyush@vmware.com> 2.6.2-6
+- Add libnfsidmap as sub pkg.
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.6.2-5
 - Use systemd-rpm-macros for user creation
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.6.2-4
