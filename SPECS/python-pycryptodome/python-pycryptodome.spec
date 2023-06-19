@@ -1,7 +1,7 @@
 Summary:        Cryptographic library for Python
 Name:           python3-pycryptodome
 Version:        3.12.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and Public Domain
 URL:            http://www.pycryptodome.org/
 Source0:        pycryptodome-%{version}.tar.gz
@@ -15,7 +15,8 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-tools
 Requires:       python3
-Provides:       python3-pycrypto
+Provides:       python3-pycrypto = 2.6.2
+Obsoletes:      python3-pycrypto < 2.6.2
 
 %description
 PyCryptodome is a self-contained Python package of low-level
@@ -38,6 +39,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 19 2023 Tapas Kundu <tkundu@vmware.com> 3.12.0-3
+-   Enhance provides and obsoletes of pycrypto
 *   Wed Jun 01 2022 Tapas Kundu <tkundu@vmware.com> 3.12.0-2
 -   Provides python3-pycrypto
 *   Mon Jan 03 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.12.0-1
