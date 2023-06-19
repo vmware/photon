@@ -2,8 +2,8 @@
 
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
-Version:       102.6.0
-Release:       4%{?dist}
+Version:       102.12.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -11,7 +11,7 @@ URL:           https://spidermonkey.dev
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha512 firefox-%{version}=c0f0160bea612d0ae74c29dd44beb7fd9a1c292694b8cd5c4faf2e54feb5c27684eee821b67dd40df714d69866a4e3a8b19e22182d9bc3023050d2d96b02d308
+%define sha512 firefox-%{version}=2a85cf1e1c83a862c2886a63dcf3e3e8bca9dd3ed72c5d0223db52387fff3796bc0dcbb508adb8c10a30729f20554c5aac37f8ad045b0088a593d28e39d77fe5
 
 Patch0:        emitter.patch
 
@@ -21,8 +21,6 @@ Patch2:     spidermonkey_checks_disable.patch
 Patch3:     copy-headers.patch
 Patch4:     fix-soname.patch
 Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
-#python 3.11 fix
-Patch6:     python-change-file-read-mode.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -133,6 +131,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Mon Jun 19 2023 Mukul Sikka <msikka@vmware.com> 102.12.0-1
+- Upgrade to v102.12.0
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.6.0-4
 - Bump version as a part of zlib upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.6.0-3
