@@ -2,7 +2,7 @@
 
 Name:           consul
 Version:        1.11.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -93,6 +93,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+* Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.11.9-3
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.11.9-2
 - Bump up version to compile with new go
 * Thu Apr 06 2023 Harinadh D <hdommaraju@vmware.com> 1.11.9-1

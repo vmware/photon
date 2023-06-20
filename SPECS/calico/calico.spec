@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.20.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
@@ -38,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+* Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 3.20.2-14
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.20.2-13
 - Bump up version to compile with new go
 * Fri Apr 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.20.2-12

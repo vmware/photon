@@ -9,7 +9,7 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -97,6 +97,8 @@ fi
 %systemd_postun_with_restart cloud-network.service
 
 %changelog
+* Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.2-3
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.2-2
 - Bump up version to compile with new go
 * Thu Mar 23 2023 Nitesh Kumar <kunitesh@vmware.com> 0.2.2-1
