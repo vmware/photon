@@ -1509,7 +1509,14 @@ def initialize_constants():
     ):
         constants.enable_fips_in_make_check()
 
-    constants.extraPackagesList = configdict["photon-build-param"]["extra-packages-list"]
+    constants.extraPackagesList = configdict["photon-build-param"][
+        "extra-packages-list"
+    ]
+
+    if configdict.get("photon-build-param", {}).get("resume-build", False):
+        constants.set_resume_build(
+            bool(configdict["photon-build-param"]["resume-build"])
+        )
 
     constants.initialize()
 
@@ -1560,6 +1567,7 @@ def process_env_build_params(ph_build_param):
         "RPMCHECK": "rpm-check-flag",
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
+        "RESUME_BUILD": "resume-build",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1585,6 +1593,7 @@ def process_env_build_params(ph_build_param):
             "SCHEDULER_SERVER",
             "CANISTER_BUILD",
             "BUILD_EXTRA_PKGS",
+            "RESUME_BUILD",
         }:
             val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":

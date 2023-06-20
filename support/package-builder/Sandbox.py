@@ -51,7 +51,10 @@ class Chroot(Sandbox):
 
         chrootID = f"{constants.buildRootPath}/{chrootName}"
         self.chrootID = chrootID
+        self.chrootCmdPrefix = f"{self.runInChrootCommand} {chrootID} "
         if os.path.isdir(chrootID):
+            if constants.resume_build:
+                return
             self._destroy(chrootID)
 
         top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
@@ -82,7 +85,6 @@ class Chroot(Sandbox):
             self.cmdUtils.runBashCmd(cmd)
 
         self.logger.debug(f"Successfully created chroot: {chrootID}")
-        self.chrootCmdPrefix = f"{self.runInChrootCommand} {chrootID} "
 
     def destroy(self):
         self._destroy(self.chrootID)

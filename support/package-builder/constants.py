@@ -46,6 +46,7 @@ class constants(object):
     photonDir = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
+    resume_build = False
     buildDbgInfoRpmList = []
     extraPackagesList = []
 
@@ -543,3 +544,7 @@ class constants(object):
 
     def enable_fips_in_make_check():
         constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")
+
+    def set_resume_build(val):
+        if val:
+            constants.resume_build = True
