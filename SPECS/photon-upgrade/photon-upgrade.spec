@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -46,6 +46,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Jun 20 2023 Dweep Advani <dadvani@vmware.com> 1.0-7
+- Support --to-ver, --rm-pkgs-pre and --rm-pkgs-post
 * Fri Jun 09 2023 Dweep Advani <dadvani@vmware.com> 1.0-6
 - Deprecate salt3 for 5.0 and enhance logic for installed package lookup
 * Wed May 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-5

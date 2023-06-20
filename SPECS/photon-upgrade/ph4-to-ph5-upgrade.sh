@@ -16,18 +16,18 @@ declare -a deprecated_packages_arr=(
 
 # This hashtable maps package name changes
 declare -A replaced_pkgs_map=(
+  [postgresql]=postgresql14
+  [postgresql-libs]=postgresql14-libs
+  [postgresql-devel]=postgresql14-devel
   [postgresql10]=postgresql15
   [postgresql10-libs]=postgresql15-libs
   [postgresql10-devel]=postgresql15-devel
 )
 
-# list of enabled services
-declare -a enabled_services_arr=()
-
-# list of disabled serfices
-declare -a disabled_services_arr=()
-
-declare -a deprecated_pkgs_to_remove_arr=()
+# Residual pkgs to remove post upgrade
+declare -a residual_pkgs_arr=(
+  libdb libmetalink nasm-rdoff zsh-html
+)
 
 function relocate_rpmdb() {
   local nold=$(${RPM} -qa | ${WC} -l)
@@ -39,7 +39,7 @@ function relocate_rpmdb() {
     ${RM} -rf "$NEW_RPMDB_PATH/rpm"
   fi
 
-  if ! ${CP} -pr "$OLD_RPM_DB_PATH" "$NEW_RPMDB_PATH"; then
+  if ! ${CP} -pr "$OLD_RPMDB_PATH" "$NEW_RPMDB_PATH"; then
     rc=$?
     abort $rc "Error copying rpmdb to new location."
   fi
@@ -48,7 +48,7 @@ function relocate_rpmdb() {
   nnew=$(${RPM} -qa | ${WC} -l)
   if [ $nnew -ge $nold ]; then
     # RPMDB relocated successfully thus cleanup the old location
-    ${RM}-rf "$OLD_RPM_DB_PATH"
+    ${RM} -rf "$OLD_RPMDB_PATH"
     echo "rpmdb relocation succeeded."
   else
     rc=$?

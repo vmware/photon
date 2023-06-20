@@ -31,6 +31,9 @@ function create_core_pkgs_list() {
   if ${RPM} -q --quiet systemd; then
     core_packages+=(systemd systemd-udev)
   fi
+  if ${RPM} -q --quiet openssl; then
+    core_packages+=(openssl openssl-libs)
+  fi
 }
 
 function update_core_packages()

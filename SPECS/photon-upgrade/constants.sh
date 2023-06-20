@@ -12,7 +12,7 @@ TR=/usr/bin/tr
 WC=/usr/bin/wc
 RM=/usr/bin/rm
 
-OLD_RPM_DB_PATH=/var/lib/rpm
+OLD_RPMDB_PATH=/var/lib/rpm
 NEW_RPMDB_PATH=/usr/lib/sysimage
 
 ERETRY_EAGAIN=11
