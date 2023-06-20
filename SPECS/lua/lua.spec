@@ -8,8 +8,8 @@
 
 Summary:        Programming language
 Name:           lua
-Version:        5.4.4
-Release:        5%{?dist}
+Version:        5.4.6
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
@@ -17,7 +17,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=af0c35d5ba00fecbb2dd617bd7b825edf7418a16a73076e04f2a0df58cdbf098dc3ff4402e974afd789eb5d86d2e12ec6df9c84b99b23656ea694a85f83bcd21
+%define sha512 %{name}-%{version}=d90c6903355ee1309cb0d92a8a024522ff049091a117ea21efb585b5de35776191cd67d17a65b18c2f9d374795b7c944f047576f0e3fe818d094b26f0e4845c5
 
 %if 0%{?bootstrap}
 Source1: http://www.lua.org/ftp/%{name}-%{bootstrap_version}.tar.gz
@@ -29,9 +29,6 @@ Patch0: lua-%{version}-shared-library.patch
 %if 0%{?bootstrap}
 Patch1: lua-%{bootstrap_version}-shared-library.patch
 %endif
-
-Patch2: CVE-2022-28805.patch
-Patch3: CVE-2022-33099.patch
 
 BuildRequires: readline-devel
 
@@ -80,8 +77,6 @@ sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
 
 %{__patch} -p1 < %{PATCH0}
-%{__patch} -p1 < %{PATCH2}
-%{__patch} -p1 < %{PATCH3}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -167,6 +162,8 @@ rm -rf %{buildroot}
 %{_mandir}/*
 
 %changelog
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.6-1
+- Upgrade to v5.4.6
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-5
 - Add lua-libs sub package
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-4

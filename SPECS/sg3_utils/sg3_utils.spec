@@ -1,7 +1,7 @@
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
 Version:        1.47
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
@@ -55,6 +55,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-2
+- Bump version as a part of lua upgrade
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-1
 - Upgrade to v1.47
 * Thu Apr 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.46-2

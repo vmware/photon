@@ -1,7 +1,7 @@
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
 Version:        5.4.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Freeware
 URL:            http://www.gnuplot.info
 Group:          Applications
@@ -39,6 +39,8 @@ make check %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.5-3
+- Bump version as a part of lua upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.4.5-2
 - Bump version as a part of readline upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.4.5-1
