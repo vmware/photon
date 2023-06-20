@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -30,7 +30,7 @@ Requires: xz
 Requires: (coreutils or coreutils-selinux)
 # For do_file, gdb_add_index
 # We only need gdb-add-index, so suggest gdb-minimal (full gdb is also ok)
-Requires: gdb-minimal
+Requires: (gdb or gdb-minimal)
 # For dwz
 Requires: dwz
 
@@ -75,6 +75,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Fri Jul 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-6
+- Fix gdb requires
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-5
 - Bump version as a part of elfutils upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-4

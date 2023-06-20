@@ -3,36 +3,38 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
+Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha512  %{name}=07e9026423438049b11f4f784d57401ece4e940570f613bd6958b3714fe7fbc2c048470bcce3e7d7d9f93331cdf3881d30dcc964cb113a071143a02b28e5b127
 
-Source1:        gdbinit
+Source1: gdbinit
 
-Patch0:         gdb-7.12-pstack.patch
-Patch1:         gdb-Stop-inaccessible-region-from-getting-dumped.patch
+Patch0: gdb-7.12-pstack.patch
+Patch1: gdb-Stop-inaccessible-region-from-getting-dumped.patch
 
-Requires:       expat
-Requires:       ncurses
-Requires:       python3
-Requires:       xz-libs
+Requires: expat
+Requires: ncurses
+Requires: python3
+Requires: xz-libs
 
-BuildRequires:  expat-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  xz-devel
+BuildRequires: expat-devel
+BuildRequires: ncurses-devel
+BuildRequires: python3-devel
+BuildRequires: python3-libs
+BuildRequires: xz-devel
 
 %if 0%{?with_check}
-BuildRequires:  dejagnu
-BuildRequires:  systemtap-sdt-devel
+BuildRequires: dejagnu
+BuildRequires: systemtap-sdt-devel
 %endif
+
+Obsoletes: %{name}-minimal <= %{version}-%{release}
 
 %description
 GDB, the GNU Project debugger, allows you to see what is going on
@@ -42,7 +44,6 @@ another program was doing at the moment it crashed.
 %if 0%{?build_minimal_gdb}
 %package minimal
 Summary: A GNU source-level debugger for C, C++, Fortran, Go and other languages (minimal version)
-Conflicts: %{name} < %{version}-%{release}
 
 %description minimal
 GDB, the GNU debugger, allows you to debug programs written in C, C++, Java, and other languages,
@@ -55,19 +56,29 @@ It should probably not be used by end users.
 %autosetup -p1
 
 %build
-mkdir -p build && cd build
+mkdir -p build
+
+pushd build
+
 sh ../configure \
-  --host=%{_host} --build=%{_build} \
+  --host=%{_host} \
+  --build=%{_build} \
   --prefix=%{_prefix} \
   --with-system-gdbinit=%{_sysconfdir}/gdbinit \
-  --with-python=%{_bindir}/python3
+  --with-python=%{python3}
 
-make %{?_smp_mflags}
+%make_build
+
+popd
 
 %if 0%{?build_minimal_gdb}
-cd ../ && mkdir -p minimal-build && cd minimal-build
+mkdir -p minimal-build
+pushd minimal-build
+
 sh ../configure \
-  --host=%{_host} --build=%{_build} --prefix=%{_prefix} \
+  --host=%{_host} \
+  --build=%{_build} \
+  --prefix=%{_prefix} \
   --without-babeltrace \
   --without-expat \
   --disable-tui \
@@ -78,12 +89,16 @@ sh ../configure \
   --disable-unit-tests \
   --disable-source-highlight
 
-make %{?_smp_mflags}
+%make_build
+
+popd
 %endif
 
 %install
-cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+pushd build
+
+%make_install %{?_smp_mflags}
+
 rm %{buildroot}%{_infodir}/dir \
    %{buildroot}%{_libdir}/libctf-nobfd.a \
    %{buildroot}%{_libdir}/libctf.a
@@ -95,31 +110,38 @@ rm %{buildroot}%{_includedir}/ansidecl.h \
    %{buildroot}%{_includedir}/dis-asm.h \
    %{buildroot}%{_libdir}/libbfd.a \
    %{buildroot}%{_libdir}/libopcodes.a
+
 # following files conflicts with binutils-2.25-1.x86_64
 rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo \
    %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo \
    %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 
+popd
+
 %if 0%{?build_minimal_gdb}
 mkdir -p %{buildroot}/minimal-gdb
-cd ../minimal-build && make DESTDIR=%{buildroot}/minimal-gdb install %{?_smp_mflags}
+
+pushd minimal-build
+
+%make_install DESTDIR=%{buildroot}/minimal-gdb %{?_smp_mflags}
 
 rm -rfv %{buildroot}/minimal-gdb%{_prefix}/{include,lib*,share} \
        %{buildroot}/minimal-gdb%{_bindir}/{gcore,gdbserver,gstack,gdb-add-index,pstack,run}
 
 mv %{buildroot}/minimal-gdb%{_bindir}/gdb %{buildroot}%{_bindir}/gdb.minimal
+popd
 %endif
 
 %ifarch aarch64
 rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
 %endif
 
-%find_lang %{name} --all-name ../%{name}.lang
+%find_lang %{name} --all-name %{name}.lang
 mkdir -p %{buildroot}%{_sysconfdir}/gdbinit.d
 install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/gdbinit
 
-%check
 %if 0%{?with_check}
+%check
 # disable security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # fix typo in test
@@ -148,10 +170,13 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %files minimal
 %defattr(-,root,root)
 %{_bindir}/gdb.minimal
+# same file in both gdb & gdb-minimal
 %{_bindir}/gdb-add-index
 %endif
 
 %changelog
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.2-8
+- Fix spec issues
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 11.2-7
 - Bump version as a part of ncurses upgrade to v6.4
 * Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 11.2-6
