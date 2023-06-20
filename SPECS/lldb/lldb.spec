@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-5
+- Bump version as a part of lua upgrade
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-3
