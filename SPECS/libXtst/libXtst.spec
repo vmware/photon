@@ -1,7 +1,7 @@
 Summary:        X11 libXtst runtime library.
 Name:           libXtst
 Version:        1.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 21 2023 Kuntal Nayak <nkuntal@vmware.com> 1.2.3-3
+- Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.3-2
 - Bump version as a part of libX11 upgrade
 * Fri Aug 19 2022 Shivani Agarwal <shivania2@vmware.com> 1.2.3-1
