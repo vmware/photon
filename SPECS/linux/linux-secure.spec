@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -235,7 +235,6 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
@@ -391,6 +390,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 21 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-15
+- Fix build when not building canister
 * Mon May 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-14
 - Add printk and others for ph4 comptaibility in fips_canister_wrapper
 * Fri May 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-13
