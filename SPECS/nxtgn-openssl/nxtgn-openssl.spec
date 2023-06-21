@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1o
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ Patch7:         0005-Check-CMS-failure-during-BIO-setup-with-stream-is-ha.patch
 Patch8:         0006-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-1.patch
 Patch9:         0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
 Patch10:        0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
+Patch11:        nxtgn-openssl-CVE-2023-2650.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -63,19 +64,7 @@ Requires: nxtgn-openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -n openssl-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%autosetup -p1 -n openssl-%{version}
 
 %build
 export CFLAGS="%{optflags}"
@@ -144,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Wed Jun 21 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-6
+-   Fix for CVE-2023-2650
 *   Fri May 12 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-5
 -   Fix for CVE-2023-0464 and CVE-2023-0465
 *   Sat Feb 04 2023 Srinidhi Rao <srinidhir@vmware.com> 1.1.1o-4
