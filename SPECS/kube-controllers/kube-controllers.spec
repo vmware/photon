@@ -1,7 +1,7 @@
 Summary:        Collection of kubernetes controllers for Calico
 Name:           kube-controllers
 Version:        3.6.1
-Release:        23%{?dist}
+Release:        24%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/kube-controllers
 Source0:        %{name}-%{version}.zip
@@ -52,6 +52,8 @@ eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 %{_bindir}/check-status
 
 %changelog
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.6.1-24
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.6.1-23
 - Bump up version to compile with new go
 * Tue Apr 04 2023 Piyush Gupta <gpiyush@vmware.com> 3.6.1-22
