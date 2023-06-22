@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk17
 Version:        17.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://openjdk.java.net
 Group:          Development/Tools
@@ -199,6 +199,8 @@ rm -rf %{buildroot}/* \
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Jun 26 2023 Kuntal Nayak <nkuntal@vmware.com> 17.0.8-2
+- Version upgrade for CVE-2016-7945 fix
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 17.0.8-1
 - Update to jdk-17.0.8-5 to fix CVE-2023-21937, CVE-2023-21938, CVE-2023-21930, CVE-2023-21968, CVE-2023-21967,
 - CVE-2023-21939, CVE-2022-21360, CVE-2023-21843, CVE-2023-21835, CVE-2023-21954

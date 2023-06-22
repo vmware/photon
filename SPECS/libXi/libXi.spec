@@ -1,7 +1,7 @@
 Summary:        X11 libXi runtime library.
 Name:           libXi
-Version:        1.7.4
-Release:        2%{?dist}
+Version:        1.7.10
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.x.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=17182e580bdf6d65c743ceef4f652f7c7975761f288dfd6f2961c2fed23931569f7cf7cac745bb252fe0a6c3be2739ba6f6533b895519800e382a48f2e5297f0
+%define sha512 %{name}=591f0860bf5904897587c4990d6c852f3729a212d1ef390362d41242440e078221877c31db2232d5cc81727fe97f4e194b077f7de917e251e60641bbd06ee218
 
 BuildRequires:  libXfixes-devel
 BuildRequires:  proto
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Thu Jun 22 2023 Kuntal Nayak <nkuntal@vmware.com> 1.7.10-1
+- Version upgrade for CVE-2016-7945 fix
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.7.4-2
 - Bump version as a part of libX11 upgrade
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.7.4-1
