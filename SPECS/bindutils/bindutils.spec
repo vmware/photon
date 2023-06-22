@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.19.7
-Release:        4%{?dist}
+Version:        9.19.14
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512    bind=c4872daf71f4c0c108a2f0a68bf0b7ee12b6490d1ae7955419847c255bc5fcd092f935fa6ea68ae53db0510e7e9af13b6ab05cb0ca0058cb13339ccbda4ede43
+%define sha512    bind=7cafb7aeb6471d9b219db7a3fb3ce8a428bf661eb8fa532b16fa2a9054b67661c30eff97f6ff18fdef340e9b717c82b01d55bb0297ccca2388915d5ebfc188bb
 
 Source1:        %{name}.sysusers
 
@@ -17,6 +17,7 @@ Requires:       krb5
 Requires:       e2fsprogs-libs
 Requires:       openssl
 Requires:       %{name}-libs = %{version}-%{release}
+Requires:       userspace-rcu
 Requires(pre):  systemd-rpm-macros
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -27,6 +28,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  systemd-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  userspace-rcu-devel
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -105,18 +107,14 @@ fi
 
 %files libs
 %defattr(-,root,root)
-%{_libdir}/libbind9.so
 %{_libdir}/libdns.so
-%{_libdir}/libirs.so
 %{_libdir}/libisc.so
 %{_libdir}/libisccc.so
 %{_libdir}/libisccfg.so
 %{_libdir}/libns.so
-%{_libdir}/libbind9-%{version}*.so
 %{_libdir}/libisccc-%{version}*.so
 %{_libdir}/libns-%{version}*.so
 %{_libdir}/libdns-%{version}*.so
-%{_libdir}/libirs-%{version}*.so
 %{_libdir}/libisc-%{version}*.so
 %{_libdir}/libisccfg-%{version}*.so
 %{_libdir}/bind/*.so
@@ -130,11 +128,12 @@ fi
 %{_includedir}/irs/*.h
 %{_includedir}/isccc/*.h
 %{_includedir}/isccfg/*.h
-%{_includedir}/bind9/*.h
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Jun 22 2023 Dweep Advani <dadvani@vmware.com> 9.19.14-1
+- Upgrade to 9.19.14 to fix CVE-2023-2828
 * Mon May 15 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-4
 - Resolving systemd user creation issue
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-3
