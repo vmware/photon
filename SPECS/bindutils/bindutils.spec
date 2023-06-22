@@ -1,11 +1,13 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.38
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha512  bind=fe95681b95ce90aee019e1bdcedba104f7bd968915853321205176c29eedd8df6e04682380adaa332aec06c1cc6537f431d5e21d09f756f45c2d780e8bc80435
+Patch0:         bindutils-CVE-2023-2828.patch
+Patch1:         bindutils-CVE-2023-2911.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -86,6 +88,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Wed Jun 21 2023 Dweep Advani <dadvani@vmware.com> 9.16.38-4
+-   Fix CVE-2023-2828 and CVE-2023-2911
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 9.16.38-3
 -   Bump version as a part of libuv upgrade
 *   Fri Feb 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 9.16.38-2
