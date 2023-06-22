@@ -1,9 +1,10 @@
+%global cmocka_version 1.1.5
 %global talloc_version 2.4.0
 %global tdb_version 1.4.8
 %global tevent_version 0.14.1
 
 Name:           libldb
-Version:        2.6.1
+Version:        2.7.2
 Release:        1%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
@@ -13,8 +14,9 @@ Group:          Development/Libraries
 URL:            http://ldb.samba.org/
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
-%define sha512 ldb=7b920c5ec1252446584caeedf9ec18aeb5c1b689c2ecc8ae65c0d5b64bf0bca0cbaa887c07fca90b36b16904e3a08534fc513fec6bac288e80f94d2980c36211
+%define sha512 ldb=beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
 
+BuildRequires: cmocka-devel >= %{cmocka_version}
 BuildRequires: gcc
 BuildRequires: libtalloc-devel >= %{talloc_version}
 BuildRequires: libtdb-devel >= %{tdb_version}
@@ -31,6 +33,7 @@ BuildRequires: python3-tdb
 BuildRequires: python3-talloc-devel
 BuildRequires: python3-tevent
 
+Requires:   cmocka >= %{cmocka_version}
 Requires:   libtalloc >= %{talloc_version}
 Requires:   libtdb >= %{tdb_version}
 Requires:   libtevent >= %{tevent_version}
@@ -107,7 +110,6 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/ldb/libldb-key-value.so
 %{_libdir}/ldb/libldb-tdb-err-map.so
 %{_libdir}/ldb/libldb-tdb-int.so
-%{_libdir}/ldb/libcmocka-ldb.so
 %dir %{_libdir}/ldb/modules
 %dir %{_libdir}/ldb/modules/ldb
 %{_libdir}/ldb/modules/ldb/*.so
@@ -152,5 +154,7 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 2.7.2-1
+- update to 2.7.2 - required by samba 4.18.3
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1
 - Initial addition to Photon. Needed for SSSD.

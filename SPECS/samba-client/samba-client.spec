@@ -1,6 +1,6 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.17.5
+Version:        4.18.3
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
@@ -8,11 +8,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=352ae8bc161fb07ac6c7330c6ebd02c27eb453ffc1c32c8437edc441ba3044cb2e9b31c8cf181664a2b47098c75a55f06c105f5397c57ce75826ef2af331afa9
+%define sha512  samba=b0980291ca124641bd03ba51d4b4e2e492facb3939f8edf491133be83a82beed66f68f00442cb02c211a9e76eb6ba08387136e30eb7df756c3c90c76034689c4
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
-Patch1:         rename_dcerpc_to_smbdcerpc.patch
+Patch1:         0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -38,11 +38,14 @@ BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
-BuildRequires: libtdb-devel
-BuildRequires: libldb-devel
-BuildRequires: libtevent-devel
+BuildRequires: libtdb-devel >= 1.4.8
+BuildRequires: libtalloc-devel >= 2.4.0
+BuildRequires: libldb-devel >= 2.7.2
+BuildRequires: libtevent-devel >= 0.14.1
 BuildRequires: bison
 BuildRequires: perl-JSON
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
 
 Requires:      samba-client-libs = %{samba_ver}
 Requires:      libtirpc
@@ -58,10 +61,12 @@ Requires:      openldap
 Requires:      perl-Parse-Yapp
 Requires:      dbus
 Requires:      bindutils
-Requires:      libtdb
-Requires:      libldb
-Requires:      libtalloc
-Requires:      libtevent
+Requires:      libtdb >= 1.4.8
+Requires:      libldb >= 2.7.2
+Requires:      libtalloc >= 2.4.0
+Requires:      libtevent >= 0.14.1
+Requires:      zlib
+Requires:      ncurses
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -508,6 +513,7 @@ done
 %{_libdir}/samba/libsmbd-base-samba4.so
 %{_libdir}/samba/libsmbd-shim-samba4.so
 %{_libdir}/samba/libsmbldaphelper-samba4.so
+%{_libdir}/samba/libstable-sort-samba4.so
 %{_libdir}/samba/libsys-rw-samba4.so
 %{_libdir}/samba/libsocket-blocking-samba4.so
 %{_libdir}/samba/libtalloc-report-printf-samba4.so
@@ -574,6 +580,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.3-1
+-   update to 4.18.3 including various CVE fixes
 *   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.5-1
 -   Version bump for SSSD. Include some additional libraries needed.
 *   Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
