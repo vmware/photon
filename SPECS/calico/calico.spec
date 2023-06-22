@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.25.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -112,6 +112,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ kube-controllers/dist/controller
 %{_bindir}/controller
 
 %changelog
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.25.0-5
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.25.0-4
 - Bump up version to compile with new go
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.25.0-3
