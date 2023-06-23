@@ -1400,7 +1400,7 @@ def process_env_build_params(ph_build_param):
         "KAT_BUILD": "kat-build",
         "ACVP_BUILD": "acvp-build",
         "BUILDDEPS": "publish-build-dependencies",
-        "PH_DOCKER_IMAGE_URL": "ph-docker-image-url",
+        "PH_DOCKER_IMAGE_URL": "ph-docker-img-url",
         "BUILD_SRC_RPM": "build-src-rpm",
         "BUILD_DBGINFO_RPM": "build-dbginfo-rpm",
         "RPMCHECK": "rpm-check-flag",
