@@ -1,7 +1,7 @@
-From 2c927d164b5836284a88caae498eb2b525c70042 Mon Sep 17 00:00:00 2001
+From 6c2e5af16635f709377f96dad6704fa96779a684 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 31 Oct 2022 08:14:51 +0000
-Subject: [PATCH] stalld: Add debug print for starving tasks
+Subject: [PATCH 7/9] stalld: Add debug print for starving tasks
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/stalld.c b/src/stalld.c
-index 1eb0a19..dccf0a8 100644
+index f040815..8f3f380 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1703,8 +1703,8 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
+@@ -1140,8 +1140,8 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
  
  		cpu = &cpu_starving_vector[i];
  
@@ -24,5 +24,5 @@ index 1eb0a19..dccf0a8 100644
  		if (config_log_only)
  			continue;
 -- 
-2.28.0
+2.39.0
 

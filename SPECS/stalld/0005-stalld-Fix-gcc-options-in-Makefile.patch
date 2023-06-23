@@ -1,7 +1,7 @@
-From 3454c108112696d7cda93191f67bfd5ca59c2f4a Mon Sep 17 00:00:00 2001
+From 34300339117913f7f65a2ef508f3e80dd3041f0a Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Thu, 23 Sep 2021 13:50:58 +0000
-Subject: [PATCH 5/6] stalld: Fix gcc options in Makefile
+Subject: [PATCH 5/9] stalld: Fix gcc options in Makefile
 
 - Fix Makefile to consider spec option only if file exists.
   CFLAGS option is added to match the rpmbuild in RHEL.
@@ -27,46 +27,47 @@ Subject: [PATCH 5/6] stalld: Fix gcc options in Makefile
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- Makefile | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+ Makefile | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index fa14912..7ac8395 100644
+index f866a74..8b53e12 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -4,10 +4,29 @@ VERSION	:=	1.17.1
+@@ -42,11 +42,29 @@ $(info TMOPTS=$(TMOPTS))
  INSTALL	=	install
  CC	:=	gcc
  FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
--		-fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection
--MOPTS	:=	-m64 -mtune=generic
+-		-fasynchronous-unwind-tables -fstack-clash-protection $(strip $(FCF_PROTECTION))
+-MOPTS   :=  $(strip $(TMOPTS))
 +		-fasynchronous-unwind-tables
 +ARCH	:=	$(shell uname -m)
-+GCCVERSION	:=	$(shell gcc -dumpversion | awk -F. '{print $$3+100*($$2+100*$$1)}')
++GCCVERSION:=	$(shell gcc -dumpversion | awk -F. '{print $$3+100*($$2+100*$$1)}')
 +VER	:=	80000
 +ifeq ($(shell expr $(GCCVERSION) \>= $(VER)), 1)
-+    FOPTS	+=	-fstack-clash-protection
++FOPTS	+=	-fstack-clash-protection
 +    ifeq ($(ARCH), x86_64)
-+         FOPTS	+=	-fcf-protection
++        FOPTS	+=	-fcf-protection
 +    endif
 +endif
 +ifeq ($(ARCH), x86_64)
-+     MOPTS	:=	-m64 -mtune=generic
++        MOPTS	:=	-m64 -mtune=generic
 +else
 +    ifeq ($(ARCH), aarch64)
-+         MOPTS	:=	-mabi=lp64 -mtune=generic
++        MOPTS	:=	-mabi=lp64 -mtune=generic
 +    endif
 +endif
  WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS
 -SOPTS	:= 	-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1
+-
 +ifneq (,$(wildcard /usr/lib/rpm/redhat/redhat-hardened-cc1))
 +ifneq (,$(wildcard /usr/lib/rpm/redhat/redhat-annobin-cc1))
-+     SOPTS	:=	-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1
++    SOPTS	:=	-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1
 +endif
 +endif
- 
- CFLAGS	:=	-O2 -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(SOPTS)
+ CFLAGS	:=	-O2 -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(SOPTS) -DUSE_BPF=$(USE_BPF)
  LDFLAGS	:=	-ggdb
+ 
 -- 
-2.38.1
+2.39.0
 

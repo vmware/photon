@@ -1,0 +1,31 @@
+From f3facff3363553def42a93b226e1f64fbece5bd6 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-ja.jain@broadcom.com>
+Date: Tue, 6 Feb 2024 07:20:01 +0000
+Subject: [PATCH] stalld:service: Include 'BE' option in stalld service for
+ backend
+
+- default backend will be based out of sched_debug
+- But with 'BE="-b Q"' line in stalld conf, user may choose
+  eBPF based backend instead of sched_debug based.
+
+Signed-off-by: Ankit Jain <ankit-ja.jain@broadcom.com>
+---
+ systemd/stalld.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/systemd/stalld.service b/systemd/stalld.service
+index f0e1552..33996cb 100644
+--- a/systemd/stalld.service
++++ b/systemd/stalld.service
+@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/throttlectl off
+ 
+ # In case the regex passed to IT or IP includes C escape sequences,
+ # use ${IT} or ${IP} instead of $IT or $IP
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $FF $CG
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $FF $CG $BE
+ ExecStopPost=/usr/bin/throttlectl on
+ CPUSchedulingPolicy=fifo
+ CPUSchedulingPriority=10
+-- 
+2.39.0
+

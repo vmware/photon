@@ -1,7 +1,7 @@
-From 9383780c100a9f7dcb1b21cd17271d5740e866c0 Mon Sep 17 00:00:00 2001
-From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
-Date: Mon, 28 Jun 2021 19:35:03 -0700
-Subject: [PATCH 3/6] stalld: Expose verbose parameter in the config file
+From fb4e8d72392e28203a03a35c735fa4f0a8b2f490 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 5 Apr 2023 14:10:46 +0000
+Subject: [PATCH 3/9] stalld: Expose verbose parameter in the config file
 
 Expose the verbose parameter to the stalld config file so that it can
 be used by the stalld service as well.
@@ -12,45 +12,19 @@ if configured.
 
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Ankit Jain <ankit-ja.jain@broadcom.com>
 ---
- redhat/stalld.conf    | 6 ++++++
- redhat/stalld.service | 2 +-
- src/stalld.c          | 6 +++---
- src/utils.c           | 4 ++--
+ src/stalld.c           | 6 +++---
+ src/utils.c            | 4 ++--
+ systemd/stalld.conf    | 6 ++++++
+ systemd/stalld.service | 2 +-
  4 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/redhat/stalld.conf b/redhat/stalld.conf
-index 40d212f..9820910 100644
---- a/redhat/stalld.conf
-+++ b/redhat/stalld.conf
-@@ -60,3 +60,9 @@ FG=--foreground
- # Write a pidfile
- # ex: PF=--pidfile /run/stalld.pid
- PF="--pidfile /run/stalld.pid"
-+
-+# Verbose logging
-+# ex: VB=-v
-+# Note: Setting verbose logging will automatically set
-+# config_foreground to 1.
-+VB=
-diff --git a/redhat/stalld.service b/redhat/stalld.service
-index e0eb4b7..b1988cc 100644
---- a/redhat/stalld.service
-+++ b/redhat/stalld.service
-@@ -9,7 +9,7 @@ ExecStartPre=/usr/bin/throttlectl off
- 
- # In case the regex passed to IT or IP includes C escape sequences,
- # use ${IT} or ${IP} instead of $IT or $IP
--ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
-+ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB
- ExecStopPost=/usr/bin/throttlectl on
- CPUSchedulingPolicy=fifo
- CPUSchedulingPriority=10
 diff --git a/src/stalld.c b/src/stalld.c
-index 9c5d9d7..65d75b0 100644
+index eaf24e6..4cb0f67 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -955,14 +955,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
+@@ -428,14 +428,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
  	struct task_info *task;
  	int i;
  
@@ -67,8 +41,8 @@ index 9c5d9d7..65d75b0 100644
  	}
  
  	return;
-@@ -1635,7 +1635,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
- 			}
+@@ -1082,7 +1082,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 				continue;
  
  			if (config_verbose)
 -				printf("\tchecking cpu %d - rt: %d - starving: %d\n",
@@ -77,10 +51,10 @@ index 9c5d9d7..65d75b0 100644
  
  			if (check_might_starve_tasks(cpu)) {
 diff --git a/src/utils.c b/src/utils.c
-index 82be2c9..e920cb2 100644
+index 0cd7e7c..c8351c0 100644
 --- a/src/utils.c
 +++ b/src/utils.c
-@@ -856,12 +856,12 @@ static void parse_cpu_list(char *cpulist)
+@@ -963,12 +963,12 @@ static void parse_cpu_list(char *cpulist)
  
  		if (cpu == end_cpu) {
  			if (config_verbose)
@@ -95,6 +69,33 @@ index 82be2c9..e920cb2 100644
  				config_monitored_cpus[i] = 1;
  			}
  		}
+diff --git a/systemd/stalld.conf b/systemd/stalld.conf
+index 7977980..5e02fa8 100644
+--- a/systemd/stalld.conf
++++ b/systemd/stalld.conf
+@@ -61,3 +61,9 @@ FG=--foreground
+ # Write a pidfile
+ # ex: PF=--pidfile /run/stalld.pid
+ PF="--pidfile /run/stalld.pid"
++
++# Verbose logging
++# ex: VB=-v
++# Note: Setting verbose logging will automatically set
++# config_foreground to 1.
++VB=
+diff --git a/systemd/stalld.service b/systemd/stalld.service
+index d93110b..4d48b99 100644
+--- a/systemd/stalld.service
++++ b/systemd/stalld.service
+@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/throttlectl off
+ 
+ # In case the regex passed to IT or IP includes C escape sequences,
+ # use ${IT} or ${IP} instead of $IT or $IP
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB
+ ExecStopPost=/usr/bin/throttlectl on
+ CPUSchedulingPolicy=fifo
+ CPUSchedulingPriority=10
 -- 
-2.38.1
+2.39.0
 
