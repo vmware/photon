@@ -1,17 +1,16 @@
 %global debug_package %{nil}
 
 Name:           docker-compose
-Version:        2.11.0
-Release:        7%{?dist}
+Version:        2.19.0
+Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ASL 2.0
 URL:            https://github.com/docker/compose
-
-Source0: https://github.com/docker/compose/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4fe21c156d5bff2860ae246fd805790800ea9ac47fc8b8c6d581217c338e092ceb6188cbd94b50f52770ef13275788547c194c09553d70351fe2af3fbc287a83
+Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+%define sha512  %{name}=a75ae0311a7aa78aed6cde3885452eb2e94842a3ff8a1c9a829b880fbc9cc84db94ec902ab06611589f2b129a52663cad27166e4fe33db809bd3eb52df441ac2
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -51,6 +50,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Fri Jun 23 2023 Piyush Gupta <gpiyush@vmware.com> 2.19.0-1
+- Upgrade to v2.19.0.
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.11.0-7
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.11.0-6
