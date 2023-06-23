@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -708,6 +708,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Jun 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-5
+- Increase SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST to 20
 * Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-4
 - no coredumps for setuid and setgid binaries
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 253-3
