@@ -1,14 +1,14 @@
 # once certified fips-provider rpm is published, with_certified_fips switch should be turned off
 # with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
-%define with_certified_fips     1
+%define with_certified_fips     0
 %define with_latest_fips        0
 %define fips_provider_version   3.0.8
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.8
-Release:        3%{?dist}
+Version:        3.0.9
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,7 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
+%define sha512 %{name}=86c99146b37236419b110db77dd3ac3992e6bed78c258f0cc3434ca233460b4e17c0ac81d7058547fe9cb72a9fd80ee56d4b4916bb731dbe2bbcf1c3d46bf31a
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -34,8 +34,6 @@ Source7: %{fips_provider_srcname}.tar.xz
 %endif
 
 Patch0: openssl-cnf.patch
-Patch1: 0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
-Patch2: 0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -259,6 +257,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Jun 23 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-1
+- Update to openssl-3.0.9
 * Fri Jun 16 2023 Mukul Sikka <msikka@vmware.com> 3.0.8-3
 - Enable Openssl 3.0.8 fips provider
 - Fix for CVE-2023-0464 and CVE-2023-0465
