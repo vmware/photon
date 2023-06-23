@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.77
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,6 +40,10 @@ Source5: check_for_config_applicability.inc
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 Source6: preempt_rt.patches
+
+%define stalld_version 1.19.1
+Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/stalld-v%{stalld_version}.tar.gz
+%define sha512 stalld=f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
 
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
@@ -190,6 +194,9 @@ Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
+# stalld eBPF plugin patches
+Patch1500: 0001-Add-eBPF-object-interface-and-build-it.patch
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -209,6 +216,9 @@ BuildRequires:  bison
 BuildRequires:  dwarves-devel
 # i40e build scripts require getopt
 BuildRequires:  util-linux
+# stalld plugin requires libbpf-devel and clang-devel
+BuildRequires:  libbpf-devel
+BuildRequires:  clang-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -246,9 +256,20 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%package stalld-ebpf-plugin
+Summary:        Stalld eBPF plugin code
+Group:          System/Tools
+Requires:       %{name} = %{version}-%{release}
+
+%description stalld-ebpf-plugin
+This package provides shared library and headers for
+stalld to use eBPF based backend.
+
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
+# Using autosetup is not feasible
+%setup -q -T -D -b 7 -n linux-%{version}
 %if 0%{?fips}
 # Using autosetup is not feasible
 %setup -q -T -D -b 16 -n linux-%{version}
@@ -284,6 +305,10 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1009
 %endif
+
+pushd ../stalld-v%{stalld_version}/
+%autopatch -p1 -m1500 -M1500
+popd
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -330,6 +355,15 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="phot
 %include %{SOURCE10}
 %endif
 
+# build bpftool
+make %{?_smp_mflags} -C tools/bpf/bpftool
+
+# build stalld eBPF plugin
+bldroot="${PWD}"
+pushd ../stalld-v%{stalld_version}/bpf
+make %{?_smp_mflags} VMLINUX_BTF="${bldroot}/vmlinux" BPFTOOL="${bldroot}/tools/bpf/bpftool/bpftool"
+popd
+
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -337,6 +371,11 @@ install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+
+# install stalld eBPF plugin
+pushd ../stalld-v%{stalld_version}/bpf
+make install PREFIX=%{buildroot}%{_prefix} %{?_smp_mflags}
+popd
 
 %ifarch x86_64
 
@@ -402,6 +441,9 @@ cp -p %{SOURCE20} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 /sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
+%post stalld-ebpf-plugin -p /sbin/ldconfig
+%postun stalld-ebpf-plugin -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
@@ -422,7 +464,16 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/build
 %{_usrsrc}/linux-headers-%{uname_r}
 
+%files stalld-ebpf-plugin
+%defattr(-,root,root)
+%dir %{_includedir}/stalld
+%{_includedir}/stalld/stalld.skel.h
+%{_includedir}/stalld/stalld_bpf.h
+%{_libdir}/libstalld_bpf.so
+
 %changelog
+* Tue Feb 13 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 6.1.77-2
+- Add stalld eBPF plugin package
 * Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1
 - Update to version 6.1.77, rt24
 * Mon Feb 12 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-2

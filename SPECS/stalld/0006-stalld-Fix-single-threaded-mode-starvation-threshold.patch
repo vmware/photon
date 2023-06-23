@@ -1,7 +1,7 @@
-From 1e2e49f8f61a1a54797838bb391102366dbb9a02 Mon Sep 17 00:00:00 2001
+From 9251789778ad3ced2ed269fdf487e11579b05ba9 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Thu, 11 Nov 2021 05:59:05 +0000
-Subject: [PATCH 6/6] stalld: Fix single threaded mode starvation threshold
+Subject: [PATCH 6/9] stalld: Fix single threaded mode starvation threshold
  check
 
 starvation check for tasks in single threaded mode should be
@@ -20,10 +20,10 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/stalld.c b/src/stalld.c
-index 6d5bf91..6803a44 100644
+index 1716e5b..f040815 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1699,7 +1699,7 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
+@@ -1146,7 +1146,7 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
  		if (config_log_only)
  			continue;
  
@@ -33,5 +33,5 @@ index 6d5bf91..6803a44 100644
  			 * Check if this task name is part of a denylist
  			 * If yes, do not boost it.
 -- 
-2.38.1
+2.39.0
 

@@ -1,7 +1,7 @@
-From 874d683eb9648c18de7dfc9c92b2834f6bca44d4 Mon Sep 17 00:00:00 2001
-From: Vikash Bansal <bvikas@vmware.com>
-Date: Thu, 23 Sep 2021 10:58:16 +0000
-Subject: [PATCH 1/6] stalld: Fix for "failed to parse cpu info warning"
+From 61cdb0408627ec17a0ffa20363bc6868b9a4e856 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 11 Apr 2023 09:33:15 +0000
+Subject: [PATCH 1/9] stalld: Fix for "failed to parse cpu info warning"
 
 Root cause:
 
@@ -19,23 +19,52 @@ Make sure complete "/proc/sched" data is read in buffer
 Fix for single threaded mode:
 Make sure complete "/proc/sched" data is read in buffer
 
-[sshedi: ported the patch to stalld-1.17.1]
-
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
-Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Ankit Jain <ankit-ja.jain@broadcom.com>
 ---
- src/stalld.c | 104 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 104 insertions(+)
+ src/stalld.c | 141 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 137 insertions(+), 4 deletions(-)
 
 diff --git a/src/stalld.c b/src/stalld.c
-index 2f11ff0..7a93d7c 100644
+index 7c7b9cb..5a840c9 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1356,6 +1356,36 @@ int check_might_starve_tasks(struct cpu_info *cpu)
+@@ -163,6 +163,29 @@ struct stalld_backend *backend = &sched_debug_backend;
+  */
+ char *config_affinity_cpus;
+ 
++/*
++ * Find the start of a CPU information block in the input buffer.
++ */
++static char *get_cpu_info_start(char *buffer, int cpu)
++{
++	/* 'cpu#9999,\0' */
++	char cpu_header[10];
++
++	sprintf(cpu_header, "cpu#%d,", cpu);
++
++	return strstr(buffer, cpu_header);
++}
++
++static char *get_next_cpu_info_start(char *start)
++{
++	const char *next_cpu = "cpu#";
++
++	/* Skip the current CPU definition. */
++	start += 10;
++
++	return strstr(start, next_cpu);
++}
++
+ /*
+  * API to fetch the process group ID for a thread/process.
+  */
+@@ -746,6 +769,35 @@ int check_might_starve_tasks(struct cpu_info *cpu)
+ 
  	return starving;
  }
- 
 +#define ONLINE_PATH_SIZE 64
 +#define ONLINE_INFO_SIZE 5
 +
@@ -65,20 +94,23 @@ index 2f11ff0..7a93d7c 100644
 +	close(fd);
 +	return retval;
 +}
-+
- void *cpu_main(void *data)
+ 
+ static int get_cpu_and_parse(struct cpu_info *cpu, char *buffer, int buffer_size)
+ {
+@@ -790,9 +842,11 @@ void *cpu_main(void *data)
  {
  	struct cpu_info *cpu = data;
-@@ -1363,6 +1393,8 @@ void *cpu_main(void *data)
- 	int retval;
+ 	int nothing_to_do = 0;
+-	int retval;
++	int retval = 0;
  
  	while (cpu->thread_running && running) {
 +		int old_config_buffer_size;
 +		int alloc_failed = 0;
  
- 		/* Buffer size should increase. See read_sched_debug(). */
+ 		/* Buffer size should increase. See sched_debug_get(). */
  		if (config_buffer_size != cpu->buffer_size) {
-@@ -1371,8 +1403,10 @@ void *cpu_main(void *data)
+@@ -801,8 +855,10 @@ void *cpu_main(void *data)
  			if (!cpu->buffer) {
  				warn("fail to increase the buffer... continue");
  				cpu->buffer = old_buffer;
@@ -89,18 +121,20 @@ index 2f11ff0..7a93d7c 100644
  			}
  		}
  
-@@ -1385,6 +1419,7 @@ void *cpu_main(void *data)
+@@ -815,7 +871,46 @@ void *cpu_main(void *data)
  			}
  		}
  
+-		retval = cpu_main_parse_starving_task(cpu);
 +		old_config_buffer_size = config_buffer_size;
- 		retval = read_sched_debug(cpu->buffer, cpu->buffer_size);
- 		if(!retval) {
- 			warn("fail reading sched debug file");
-@@ -1392,6 +1427,37 @@ void *cpu_main(void *data)
- 			continue;
- 		}
- 
++		if (backend->get) {
++			retval = backend->get(cpu->buffer, cpu->buffer_size);
++			if(!retval) {
++				warn("fail reading backend");
++				warn("Dazed and confused, but trying to continue");
++				goto skipped;
++			}
++		}
 +		/*
 +		 * If new value of config_buf_size is more than old one then
 +		 * read_sched_debug function doubled its size,
@@ -114,7 +148,6 @@ index 2f11ff0..7a93d7c 100644
 +		    !alloc_failed && (retval + 2 > old_config_buffer_size)) {
 +			int online;
 +			char *next_cpu;
-+			char *cpu_buffer;
 +			char *cpu_start;
 +			online = is_cpu_online(cpu->id);
 +			if(online) {
@@ -132,19 +165,29 @@ index 2f11ff0..7a93d7c 100644
 +			}
 +		}
 +
- 		retval = parse_cpu_info(cpu, cpu->buffer, cpu->buffer_size);
- 		if (retval) {
- 			warn("error parsing CPU info");
-@@ -1482,6 +1548,8 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
++		retval = get_cpu_and_parse(cpu, cpu->buffer, cpu->buffer_size);
+ 		if (retval)
+ 			goto skipped;
+ 
+@@ -883,7 +978,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	struct cpu_info *cpu;
+ 	char *buffer = NULL;
+ 	int has_busy_cpu;
+-	int retval;
++	int retval = 0;
+ 	int i;
+ 
+ 	buffer = malloc(config_buffer_size);
+@@ -901,6 +996,8 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  	}
  
  	while (running) {
 +		int old_config_buffer_size;
 +		int alloc_failed = 0;
  
- 		/* Buffer size should increase. See read_sched_debug(). */
+ 		/* Buffer size should increase. See sched_debug_get(). */
  		if (config_buffer_size != buffer_size) {
-@@ -1490,8 +1558,10 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -909,8 +1006,10 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  			if (!buffer) {
  				warn("fail to increase the buffer... continue");
  				buffer = old_buffer;
@@ -155,15 +198,16 @@ index 2f11ff0..7a93d7c 100644
  			}
  		}
  
-@@ -1505,12 +1575,27 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -924,6 +1023,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  			}
  		}
  
 +		old_config_buffer_size = config_buffer_size;
- 		retval = read_sched_debug(buffer, buffer_size);
- 		if (!retval) {
- 			warn("Dazed and confused, but trying to continue");
- 			continue;
+ 		if (backend->get) {
+ 			retval = backend->get(buffer, buffer_size);
+ 			if (!retval) {
+@@ -932,6 +1032,20 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 			}
  		}
  
 +		/*
@@ -183,16 +227,25 @@ index 2f11ff0..7a93d7c 100644
  		for (i = 0; i < nr_cpus; i++) {
  			if (!should_monitor(i))
  				continue;
-@@ -1651,6 +1736,8 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1041,7 +1155,7 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+ 	int overloaded = 0;
+ 	int has_busy_cpu;
+ 	int boosted = 0;
+-	int retval;
++	int retval = 0;
+ 	int i;
+ 
+ 	log_msg("single threaded mode\n");
+@@ -1069,6 +1183,8 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
  	}
  
  	while (running) {
 +		int old_config_buffer_size;
 +		int alloc_failed = 0;
  
- 		/* Buffer size should increase. See read_sched_debug(). */
+ 		/* Buffer size should increase. See sched_debug_get(). */
  		if (config_buffer_size != buffer_size) {
-@@ -1659,8 +1746,10 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1077,8 +1193,10 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
  			if (!buffer) {
  				warn("fail to increase the buffer... continue");
  				buffer = old_buffer;
@@ -203,15 +256,16 @@ index 2f11ff0..7a93d7c 100644
  			}
  		}
  
-@@ -1675,12 +1764,27 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1092,6 +1210,7 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
  			}
  		}
  
 +		old_config_buffer_size = config_buffer_size;
- 		retval = read_sched_debug(buffer, buffer_size);
- 		if (!retval) {
- 			warn("Dazed and confused, but trying to continue");
- 			continue;
+ 		if (backend->get) {
+ 			retval = backend->get(buffer, buffer_size);
+ 			if (!retval) {
+@@ -1100,6 +1219,20 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+ 			}
  		}
  
 +		/*
@@ -232,5 +286,5 @@ index 2f11ff0..7a93d7c 100644
  			if (!should_monitor(i))
  				continue;
 -- 
-2.38.1
+2.39.0
 

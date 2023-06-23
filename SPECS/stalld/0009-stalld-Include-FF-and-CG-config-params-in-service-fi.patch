@@ -1,21 +1,21 @@
-From c10cb2742af6aef3ae6ee6d538a6a91e5b0c9078 Mon Sep 17 00:00:00 2001
+From 23daa61cdf7f0db25cf5bba5bac5aa70c9f5ac6b Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 18 Nov 2022 07:12:24 +0000
-Subject: [PATCH 1/2] stalld: Include 'FF' and 'CG' config params in service
+Subject: [PATCH 9/9] stalld: Include 'FF' and 'CG' config params in service
  file
 
 Add FIFO and config granularity options to service file
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- redhat/stalld.service | 2 +-
+ systemd/stalld.service | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/redhat/stalld.service b/redhat/stalld.service
-index b1988cc..fdebf5a 100644
---- a/redhat/stalld.service
-+++ b/redhat/stalld.service
-@@ -9,7 +9,7 @@ ExecStartPre=/usr/bin/throttlectl off
+diff --git a/systemd/stalld.service b/systemd/stalld.service
+index 4d48b99..f0e1552 100644
+--- a/systemd/stalld.service
++++ b/systemd/stalld.service
+@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/throttlectl off
  
  # In case the regex passed to IT or IP includes C escape sequences,
  # use ${IT} or ${IP} instead of $IT or $IP
@@ -25,5 +25,5 @@ index b1988cc..fdebf5a 100644
  CPUSchedulingPolicy=fifo
  CPUSchedulingPriority=10
 -- 
-2.28.0
+2.39.0
 
