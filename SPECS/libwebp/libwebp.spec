@@ -1,29 +1,29 @@
-Summary:	Library to encode and decode webP format images
-Name:		libwebp
-Version:	1.1.0
-Release:	4%{?dist}
-License:	BSD
-URL:		http://webmproject.org/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Library to encode and decode webP format images
+Name:           libwebp
+Version:        1.1.0
+Release:        5%{?dist}
+License:        BSD
+URL:            http://webmproject.org/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha512  libwebp=c8440059a985587d4876a5e7fc2d07523bc7f582a04ee5dab0ef07df32b9635b907224de2cc15246c831dd5d9215569770196626badccc3171fe2832d7cb4549
-BuildRequires:	libjpeg-turbo-devel
-BuildRequires:	libtiff-devel
-BuildRequires:	libpng-devel
-Requires:	libjpeg-turbo
-Requires:	libtiff
-Requires:	libpng
+BuildRequires:  libjpeg-turbo-devel
+BuildRequires:  libtiff-devel
+BuildRequires:  libpng-devel
+Requires:       libjpeg-turbo
+Requires:       libtiff
+Requires:       libpng
 
 %description
 The libwebp package contains a library and support programs to encode and decode images in WebP format.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications.
 
 %prep
@@ -32,12 +32,12 @@ It contains the libraries and header files to create applications.
 ./autogen.sh
 
 %configure \
-	--enable-libwebpmux \
-	--enable-libwebpdemux \
-	--enable-libwebpdecoder \
-	--enable-libwebpextras  \
-	--enable-swap-16bit-csp \
-	--disable-static
+        --enable-libwebpmux \
+        --enable-libwebpdemux \
+        --enable-libwebpdecoder \
+        --enable-libwebpextras  \
+        --enable-swap-16bit-csp \
+        --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -63,6 +63,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Jun 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-5
+- Bump version as a part of libtiff upgrade
 * Tue Jan 31 2023 Shivani Agarwal <shivania2@vmware.com>  1.1.0-4
 - Version bump up to use libtiff 4.5.0
 * Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com>  1.1.0-3
