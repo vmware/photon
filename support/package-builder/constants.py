@@ -112,6 +112,8 @@ class constants(object):
         "make",
         "patch",
         "util-linux",
+        "attr",
+        "libacl",
         "tar",
         "xz",
         "libtool",
@@ -190,6 +192,8 @@ class constants(object):
         "util-linux",
         "util-linux-libs",
         "util-linux-devel",
+        "attr",
+        "libacl",
         "tar",
         "xz",
         "xz-libs",
@@ -260,6 +264,8 @@ class constants(object):
         "libacl-devel",
         "device-mapper",
         "wget",
+        "attr",
+        "libacl",
         "tar",
         "pkg-config",
         "git",
@@ -286,6 +292,8 @@ class constants(object):
         "elfutils", # SYS_PTRACE
         "gdb",
         "glibc",
+        "attr",
+        "libacl",
         "tar"]
 
     # List of Packages which causes "Makecheck" job

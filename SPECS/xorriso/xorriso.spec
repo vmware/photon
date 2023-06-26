@@ -7,10 +7,12 @@ URL:           https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
-%define sha1   xorriso=98bab86082614a1a0f9601db5c9da14e5ad2d440
+
+Source0: https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
+%define sha512 %{name}=7247c00cda11a5341ab100f1091200e396b76cb5c852a3958fe3b9b735aa6a9142a0f22d2892275887bf52de175776e731fd853fff8c6ce20a096435fa05daf9
+
 BuildRequires: acl
-BuildRequires: attr
+BuildRequires: attr-devel
 BuildRequires: bzip2
 BuildRequires: pkg-config
 BuildRequires: zlib
@@ -28,20 +30,24 @@ Group:   Documentation
 Documentation for xorriso package
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1
 
 %build
 export LANG=C
-%configure --disable-static
-make  %{?_smp_mflags}
 
+%configure \
+    --disable-static
+
+%make_build
+
+%if 0%{?with_check}
 %check
 export LANG=C
-make VERBOSE=1 V=1 %{?_smp_mflags} check
+%make_build check
+%endif
 
 %install
-rm -rf %{buildroot}
-%make_install
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root,-)
@@ -58,9 +64,9 @@ rm -rf %{buildroot}
 %exclude %{_infodir}/dir
 
 %changelog
-*    Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 1.5.2-2
--    Removing /usr/share/info/dir from packaging to avoid conflicts
-*    Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.2-1
--    Automatic Version Bump
-*    Tue Jun 12 2018 Keerthana K <keerthanak@vmware.com> 1.4.8-1
--    Initial build. First Version
+* Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 1.5.2-2
+- Removing /usr/share/info/dir from packaging to avoid conflicts
+* Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.2-1
+- Automatic Version Bump
+* Tue Jun 12 2018 Keerthana K <keerthanak@vmware.com> 1.4.8-1
+- Initial build. First Version

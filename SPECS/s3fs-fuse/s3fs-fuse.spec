@@ -8,10 +8,11 @@ URL:            https://github.com/s3fs-fuse/s3fs-fuse
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-v%{version}.tar.gz
-%define sha512  s3fs-fuse=5b57af18395f34885b4b8a98e93b0e3f9043c9af78e415a0a6c15489611d7e21ae619e69655737de369edee15762d8726b82bc2651b5b7f5c20e26fe866a96bc
+Source0: https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-v%{version}.tar.gz
+%define sha512 %{name}=5b57af18395f34885b4b8a98e93b0e3f9043c9af78e415a0a6c15489611d7e21ae619e69655737de369edee15762d8726b82bc2651b5b7f5c20e26fe866a96bc
+
 %if 0%{?with_check}
-Patch0:         0001-test-Stop-failing-tests-from-running.patch
+Patch0: 0001-test-Stop-failing-tests-from-running.patch
 %endif
 
 BuildRequires:  build-essential
@@ -19,11 +20,12 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pkg-config
-BuildRequires:  fuse-devel >= 2.8.4
+BuildRequires:  fuse-devel
+
 %if 0%{?with_check}
 BuildRequires:  openjdk8
 BuildRequires:  python3-pip
-BuildRequires:  attr
+BuildRequires:  attr-devel
 %endif
 
 Requires:       fuse >= 2.8.4
@@ -39,19 +41,23 @@ s3fs is a FUSE filesystem that allows you to mount an Amazon S3 bucket as a loca
 It stores files natively and transparently in S3 (i.e., you can use other programs to access the same files).
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
-./autogen.sh
+sh ./autogen.sh
+
 %configure
+
 %make_build prefix=%{_prefix}
 
 %install
 %make_install %{?_smp_mflags} prefix=%{_prefix}
 
+%if 0%{?with_check}
 %check
 pip3 install awscli
-make check %{?_smp_mflags}
+%make_build check
+%endif
 
 %clean
 rm -rf %{buildroot}
