@@ -1,7 +1,7 @@
 From 426a6da48e195c99d2b217611cf99da054d917b2 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 17 May 2023 16:11:40 +0000
-Subject: [PATCH 2/2] Move __bug_table section to fips_canister_wrapper
+Subject: [PATCH 5/8] Move __bug_table section to fips_canister_wrapper
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
@@ -29,13 +29,13 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/testmgr.c                   | 110 ++++++++++++++---------------
  crypto/xts.c                       |   2 +-
  lib/crypto/sha256.c                |   6 +-
- 27 files changed, 182 insertions(+), 174 deletions(-)
+ 24 files changed, 182 insertions(+), 174 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index a6da1abb9..1b89d3c78 100644
+index 0628c2bca..6a4378bac 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -37,6 +37,10 @@
+@@ -38,6 +38,10 @@
  
  void fcw_kernel_fpu_begin(void);
  void fcw_kernel_fpu_end(void);
@@ -46,7 +46,7 @@ index a6da1abb9..1b89d3c78 100644
  
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
-@@ -608,7 +612,7 @@ static int xctr_crypt(struct skcipher_request *req)
+@@ -590,7 +594,7 @@ static int xctr_crypt(struct skcipher_request *req)
  		byte_ctr += walk.nbytes - nbytes;
  
  		if (walk.nbytes == walk.total && nbytes > 0) {
@@ -55,7 +55,7 @@ index a6da1abb9..1b89d3c78 100644
  			block[0] ^= cpu_to_le32(1 + byte_ctr / AES_BLOCK_SIZE);
  			aesni_enc(ctx, keystream, (u8 *)block);
  			crypto_xor_cpy(walk.dst.virt.addr + walk.nbytes -
-@@ -654,7 +658,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
+@@ -636,7 +640,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
  	/*Account for 4 byte nonce at the end.*/
  	key_len -= 4;
  
@@ -64,7 +64,7 @@ index a6da1abb9..1b89d3c78 100644
  
  	return aes_set_key_common(crypto_aead_tfm(aead),
  				  &ctx->aes_key_expanded, key, key_len) ?:
-@@ -697,8 +701,6 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
+@@ -679,8 +683,6 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
  	return 0;
  }
  
@@ -73,7 +73,7 @@ index a6da1abb9..1b89d3c78 100644
  static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
  			      unsigned int assoclen, u8 *hash_subkey,
  			      u8 *iv, void *aes_ctx, u8 *auth_tag,
-@@ -725,7 +727,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+@@ -705,7 +707,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
  	/* Linearize assoc, if not already linear */
  	if (req->src->length >= assoclen && req->src->length) {
  		scatterwalk_start(&assoc_sg_walk, req->src);
@@ -82,7 +82,7 @@ index a6da1abb9..1b89d3c78 100644
  	} else {
  		gfp_t flags = (req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
  			      GFP_KERNEL : GFP_ATOMIC;
-@@ -1157,7 +1159,7 @@ static int generic_gcmaes_encrypt(struct aead_request *req)
+@@ -1177,7 +1179,7 @@ static int generic_gcmaes_encrypt(struct aead_request *req)
  	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
  	__be32 counter = cpu_to_be32(1);
  
@@ -91,7 +91,7 @@ index a6da1abb9..1b89d3c78 100644
  	*((__be32 *)(iv+12)) = counter;
  
  	return gcmaes_encrypt(req, req->assoclen, ctx->hash_subkey, iv,
-@@ -1173,7 +1175,7 @@ static int generic_gcmaes_decrypt(struct aead_request *req)
+@@ -1193,7 +1195,7 @@ static int generic_gcmaes_decrypt(struct aead_request *req)
  	u8 ivbuf[16 + (AESNI_ALIGN - 8)] __aligned(8);
  	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
  
@@ -673,7 +673,7 @@ index 04624249a..e294af604 100644
  
  	alg->base.cra_priority = priority;
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 016f785b8..714ff4e6d 100644
+index 016f785b8..ff9a0f156 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -210,10 +210,7 @@ EXPORT_SYMBOL(vli_from_le64);
@@ -881,7 +881,7 @@ index 56e8a80aa..381b82530 100644
  
  /*
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 826dd0833..88039140f 100644
+index 826dd0833..f15e2bff2 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -166,7 +166,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
@@ -1054,7 +1054,7 @@ index 3f98fab3f..0105e631a 100644
  
  			iv_len = crypto_skcipher_ivsize(tfm);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 98422b8da..592ce69c3 100644
+index 98422b8da..65fcb40b4 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,

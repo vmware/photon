@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        15%{?kat_build:.kat}%{?dist}
+Release:        16%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -124,14 +124,18 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000: 6.1.10-14-0001-FIPS-canister-binary-usage.patch
-Patch10001: 0002-FIPS-canister-creation.patch
-Patch10002: 0003-aesni_intel-Remove-static-call.patch
-Patch10003: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
-Patch10004: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10005: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch10006: 0001-crypto-Move-printk-prandom-module_kthread_exit-to-ca.patch
-Patch10007: 0001-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+# Below patches are common for fips and canister_build flags
+# 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
+# in both places until final canister binary is released
+Patch10000: 6.1.10-16-0001-FIPS-canister-binary-usage.patch
+Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Below patches are specific to canister_build flag
+Patch10002: 0002-FIPS-canister-creation.patch
+Patch10003: 0003-aesni_intel-Remove-static-call.patch
+Patch10004: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10005: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10006: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
+Patch10007: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 %endif
 
 BuildArch:      x86_64
@@ -390,6 +394,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jun 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-16
+- Add SHA3 to canister and canister patches re-arrangements and cleanups.
 * Wed Jun 21 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-15
 - Fix build when not building canister
 * Mon May 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-14

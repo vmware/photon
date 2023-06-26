@@ -1,8 +1,10 @@
 From 45555b8e8ae2d97bf2e7f9425491e6bb83aa8b57 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Date: Mon, 22 May 2023 13:27:58 +0530
-Subject: [PATCH] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from canister
+Subject: [PATCH 8/8] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
+ canister
 
+Signed-off-by: Keerthana K <keerthanak@vmware.com
 ---
  crypto/aes_generic.c    |  5 -----
  crypto/ecc.c            | 20 --------------------
@@ -10,13 +12,14 @@ Subject: [PATCH] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from canister
  crypto/rsa_helper.c     |  2 --
  crypto/sha1_generic.c   |  3 ---
  crypto/sha256_generic.c |  4 ----
+ crypto/sha3_generic.c   |  8 +++-----
  crypto/sha512_generic.c |  4 ----
  crypto/testmgr.c        |  2 --
  lib/crypto/aes.c        |  6 ------
  lib/crypto/des.c        |  6 ------
  lib/crypto/sha1.c       |  2 --
  lib/crypto/sha256.c     |  5 -----
- 12 files changed, 1 insertion(+), 63 deletions(-)
+ 13 files changed, 4 insertions(+), 68 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
 index 27ab27931..f73022bed 100644
@@ -42,7 +45,7 @@ index 27ab27931..f73022bed 100644
  
  #define f_rn(bo, bi, n, k)	do {				\
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 714ff4e6d..20937fd57 100644
+index ff9a0f156..f220aaac0 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -50,7 +50,6 @@ const struct ecc_curve *ecc_get_curve25519(void)
@@ -313,6 +316,57 @@ index bf147b01e..c1147386d 100644
  
  static struct shash_alg sha256_algs[2] = { {
  	.digestsize	=	SHA256_DIGEST_SIZE,
+diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
+index 3e4069935..7d107460b 100644
+--- a/crypto/sha3_generic.c
++++ b/crypto/sha3_generic.c
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <crypto/sha3.h>
+ #include <asm/unaligned.h>
++#include "fips_canister_wrapper.h"
+ 
+ /*
+  * On some 32-bit architectures (h8300), GCC ends up using
+@@ -170,7 +171,6 @@ int crypto_sha3_init(struct shash_desc *desc)
+ 	memset(sctx->st, 0, sizeof(sctx->st));
+ 	return 0;
+ }
+-EXPORT_SYMBOL(crypto_sha3_init);
+ 
+ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
+ 		       unsigned int len)
+@@ -185,7 +185,7 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
+ 	if ((sctx->partial + len) > (sctx->rsiz - 1)) {
+ 		if (sctx->partial) {
+ 			done = -sctx->partial;
+-			memcpy(sctx->buf + sctx->partial, data,
++			fcw_memcpy(sctx->buf + sctx->partial, data,
+ 			       done + sctx->rsiz);
+ 			src = sctx->buf;
+ 		}
+@@ -203,12 +203,11 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
+ 
+ 		sctx->partial = 0;
+ 	}
+-	memcpy(sctx->buf + sctx->partial, src, len - done);
++	fcw_memcpy(sctx->buf + sctx->partial, src, len - done);
+ 	sctx->partial += (len - done);
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL(crypto_sha3_update);
+ 
+ int crypto_sha3_final(struct shash_desc *desc, u8 *out)
+ {
+@@ -235,7 +234,6 @@ int crypto_sha3_final(struct shash_desc *desc, u8 *out)
+ 	memset(sctx, 0, sizeof(*sctx));
+ 	return 0;
+ }
+-EXPORT_SYMBOL(crypto_sha3_final);
+ 
+ static struct shash_alg algs[] = { {
+ 	.digestsize		= SHA3_224_DIGEST_SIZE,
 diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
 index 07e27910c..32ff5a0b1 100644
 --- a/crypto/sha512_generic.c
@@ -350,7 +404,7 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 592ce69c3..eb7a53003 100644
+index 65fcb40b4..b8d9fe797 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -5904,5 +5904,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
@@ -507,5 +561,5 @@ index 12fb96b0f..9e14f49b5 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.40.1
+2.19.0
 
