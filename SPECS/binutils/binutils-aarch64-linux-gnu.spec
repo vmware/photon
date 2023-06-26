@@ -1,7 +1,7 @@
 Name:       binutils-aarch64-linux-gnu
 Summary:    Cross Binutils for Aarch64
 Version:    2.35
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -10,6 +10,11 @@ Distribution: Photon
 
 Source0: https://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.xz
 %define sha512 binutils=9f222e4ab6720036402d03904fb11b73ab87714b85cd84997f7d357f405c7e10581d70202f9165a1ee0c70538632db27ecc9dfe627dddb1e6bc7edb1537cf786
+
+Patch0:      binutils-CVE-2023-25584.patch
+Patch1:      binutils-CVE-2023-25585.patch
+Patch2:      binutils-CVE-2023-25588.patch
+Patch3:      binutils-CVE-2022-38533.patch
 
 BuildArch: x86_64
 
@@ -49,6 +54,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Mon Jun 26 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-3
+- Fix CVE-2023-25584, CVE-2023-25585, CVE-2023-25588 and CVE-2022-38533
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.35-2
 - Remove .la files
 * Fri Oct 16 2020 Ajay Kaher <akaher@vmware.com> 2.35-1
