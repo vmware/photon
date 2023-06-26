@@ -64,6 +64,7 @@
 #include <crypto/scatterwalk.h>
 #include <crypto/sha1_base.h>
 #include <crypto/sha512_base.h>
+#include <crypto/sha3.h>
 
 static __ro_after_init bool alg_request_report = false;
 
@@ -481,4 +482,7 @@ EXPORT_SYMBOL(sha224_update);
 EXPORT_SYMBOL(sha256_final);
 EXPORT_SYMBOL(sha224_final);
 EXPORT_SYMBOL(sha256);
+EXPORT_SYMBOL(crypto_sha3_init);
+EXPORT_SYMBOL(crypto_sha3_update);
+EXPORT_SYMBOL(crypto_sha3_final);
 /* End of Exports */

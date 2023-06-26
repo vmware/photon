@@ -1,7 +1,7 @@
 From 6dca4744eec08e19aaf344399833d9f482924267 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 29 Mar 2023 10:40:59 +0000
-Subject: [PATCH] aesni_intel: Remove static call
+Subject: [PATCH 3/8] aesni_intel: Remove static call
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---

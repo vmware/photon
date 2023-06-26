@@ -1,16 +1,15 @@
 From 8661a32500fadfb5e0247b6f37a249952010d5d5 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 17 May 2023 15:35:53 +0000
-Subject: [PATCH 1/2] Disable retpoline_sites and return_sites sections in
- canister
+Subject: [PATCH 4/8] Disable retpoline_sites and return_sites sections in canister
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  arch/x86/crypto/aes_ctrby8_avx-x86_64.S  |  1 +
  arch/x86/crypto/aesni-intel_asm.S        |  1 +
  arch/x86/crypto/aesni-intel_avx-x86_64.S |  1 +
- crypto/Makefile                          | 82 ++++++++++++------------
- 4 files changed, 44 insertions(+), 41 deletions(-)
+ crypto/Makefile                          | 91 +++++++++++++-----------
+ 4 files changed, 52 insertions(+), 42 deletions(-)
 
 diff --git a/arch/x86/crypto/aes_ctrby8_avx-x86_64.S b/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
 index 2402b9418..d81759263 100644
@@ -49,7 +48,7 @@ index 0852ab573..8bef0e67c 100644
  # constants in mergeable sections, linker can reorder and merge
  .section	.rodata.cst16.POLY, "aM", @progbits, 16
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 688a58b30..f2b8ffec2 100644
+index cf8043262..0395dff4c 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -42,11 +42,11 @@ rsa_generic-y += rsa_helper.o
@@ -101,20 +100,22 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
  obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
  obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
-@@ -89,9 +89,9 @@ obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
- canister += sha1_generic.o
+@@ -90,10 +90,10 @@ canister += sha1_generic.o
  canister += sha256_generic.o
  canister += sha512_generic.o
+ canister += sha3_generic.o
 -CFLAGS_REMOVE_sha1_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 -CFLAGS_REMOVE_sha256_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 -CFLAGS_REMOVE_sha512_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+-CFLAGS_REMOVE_sha3_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 +CFLAGS_REMOVE_sha1_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +CFLAGS_REMOVE_sha256_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +CFLAGS_REMOVE_sha512_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
- obj-$(CONFIG_CRYPTO_SHA3) += sha3_generic.o
++CFLAGS_REMOVE_sha3_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
-@@ -103,18 +103,18 @@ CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugz
+ obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
+@@ -104,18 +104,18 @@ CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugz
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
  canister += ecb.o
  canister += cbc.o
@@ -139,7 +140,7 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_XCTR) += xctr.o
  obj-$(CONFIG_CRYPTO_HCTR2) += hctr2.o
  obj-$(CONFIG_CRYPTO_KEYWRAP) += keywrap.o
-@@ -122,8 +122,8 @@ obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
+@@ -123,8 +123,8 @@ obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
  obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
  canister += gcm.o
  canister += ccm.o
@@ -150,7 +151,7 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -151,7 +151,7 @@ CFLAGS_aegis128-neon-inner.o += -isystem $(shell $(CC) -print-file-name=include)
+@@ -152,7 +152,7 @@ CFLAGS_aegis128-neon-inner.o += -isystem $(shell $(CC) -print-file-name=include)
  obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
  obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
  canister += des_generic.o
@@ -159,7 +160,7 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
  obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
  obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
-@@ -161,7 +161,7 @@ obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
+@@ -162,7 +162,7 @@ obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
  canister += aes_generic.o
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
@@ -168,7 +169,7 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
  obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
-@@ -192,14 +192,14 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
+@@ -193,14 +193,14 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
  canister += drbg.o
@@ -186,7 +187,7 @@ index 688a58b30..f2b8ffec2 100644
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
  obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
-@@ -211,15 +211,15 @@ obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+@@ -212,15 +212,15 @@ obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
  canister += ecc.o
@@ -205,7 +206,7 @@ index 688a58b30..f2b8ffec2 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -247,30 +247,30 @@ obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
+@@ -248,30 +248,37 @@ obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
  aesni-intel-y := aesni-intel_asm.o aesni-intel_glue.o
  aesni-intel-$(CONFIG_64BIT) += aesni-intel_avx-x86_64.o aes_ctrby8_avx-x86_64.o
  OBJECT_FILES_NON_STANDARD_x86-aesni-intel_avx-x86_64.o := y
@@ -213,6 +214,7 @@ index 688a58b30..f2b8ffec2 100644
 +CFLAGS_REMOVE_x86-aesni-intel_glue.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
  
 -crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep)
++
 +crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -228,9 +230,13 @@ index 688a58b30..f2b8ffec2 100644
 -CFLAGS_REMOVE_lib-crypto-sha1.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 -crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep)
 +CFLAGS_REMOVE_lib-crypto-aes.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
 +CFLAGS_REMOVE_lib-crypto-des.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
 +CFLAGS_REMOVE_lib-crypto-sha256.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
 +CFLAGS_REMOVE_lib-crypto-sha1.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
 +crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -239,14 +245,16 @@ index 688a58b30..f2b8ffec2 100644
  CFLAGS_crypto_self_test.o += -DFIPS_NOT_ALLOWED=fcw_fips_not_allowed_alg
 -CFLAGS_REMOVE_crypto_self_test.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 +CFLAGS_REMOVE_crypto_self_test.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
  
  canister += fips_integrity.o
 -CFLAGS_REMOVE_fips_integrity.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
 +CFLAGS_REMOVE_fips_integrity.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++
  
  extra-y += $(canister)
  $(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
-@@ -287,7 +287,7 @@ $(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
+@@ -288,7 +295,7 @@ $(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
  clean-files += canister_relocs.c
  clean-files += fips_canister-kallsyms
  targets += canister_relocs.o
