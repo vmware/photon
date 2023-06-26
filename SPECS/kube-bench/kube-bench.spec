@@ -1,39 +1,48 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
-Version:        0.0.34
-Release:        21%{?dist}
+Version:        0.6.12
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
-URL:            https://github.com/aquasecurity/kube-bench
+URL:            https://github.com/aquasecurity/%{name}
 Group:          Development/Tools
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  kube-bench=4df1b88ae3d6425dff7473066bfa6561f32e5ef6f137984f7a90e713f3dd1e59f8551353cbc3e86fe35c6cd3793d2acc13b9db426bd7930d22d1a06e9c7f4156
+
+Source0: https://github.com/aquasecurity/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=dc222f6fd1da5d40bdcf1b9bc366361274a00f6c90494df4006bd617aa2b5de8269ceb46b8197c787a3da3964db3b73e18334aed223e86083ea52ea544264a10
+
 BuildRequires:  git
 BuildRequires:  go
 
 %description
-The Kubernetes Bench for Security is a Go application that checks whether Kubernetes is deployed according to security best practices
+The Kubernetes Bench for Security is a Go application that checks
+whether Kubernetes is deployed according to security best practices.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-KUBEBENCH_VERSION=v%{version} make %{?_smp_mflags}
+export GOPATH=%{_builddir}
+export KUBEBENCH_VERSION=%{version}-%{release}
+%make_build build
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-cp kube-bench %{buildroot}%{_bindir}
-eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/kube-bench
+cp %{name} %{buildroot}%{_bindir}
 
+%if 0%{?with_check}
 %check
 make tests %{?_smp_mflags}
+%endif
 
 %files
-    %defattr(-,root,root,0755)
-    %{_bindir}/kube-bench
+%defattr(-,root,root,0755)
+%{_bindir}/%{name}
+%exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Jun 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.12-1
+- Upgrade to v0.6.12, includes security fixes
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.0.34-21
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.0.34-20
