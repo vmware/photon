@@ -1,40 +1,39 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p15
-Release:        8%{?dist}
+Version:        4.2.8p17
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f5ad765e45fc302263dd40e94c287698fd235b94f3684e49f1d5d09d7d8bdd6b8c0fb96ecdabffea3d233e1e79b3c9687b76dc204ba76bad3f554682f4a97794
+Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
+%define sha512  %{name}=e003bfe6f46065890663bc6791b02277f64318b692e49d8d678b76c23b245f357834eb483b0a44f1f47783166e5504686b36494af77f6eebe6f844cd3f2b6a8c
 
 # https://github.com/darkhelmet/ntpstat
-Source1: ntpstat-master.zip
-%define sha512 ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
+Source1:        ntpstat-master.zip
+%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 
-Source2: %{name}.sysconfig
-Source3: %{name}.sysusers
+Source2:        %{name}.sysconfig
+Source3:        %{name}.sysusers
 
-Patch0: Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
-Patch1: NTP_4_2_8P15+2@0x61e3f4da.patch
+Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
 
-BuildRequires: which
-BuildRequires: libcap-devel
-BuildRequires: unzip
-BuildRequires: systemd
-BuildRequires: openssl-devel
-BuildRequires: systemd-devel
-BuildRequires: libevent-devel
+BuildRequires:  which
+BuildRequires:  libcap-devel
+BuildRequires:  unzip
+BuildRequires:  systemd
+BuildRequires:  openssl-devel
+BuildRequires:  systemd-devel
+BuildRequires:  libevent-devel
 
-Requires: systemd
-Requires: openssl
-Requires: libcap >= 2.24
-Requires: libevent
-Requires(pre): systemd-rpm-macros
-Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires:       systemd
+Requires:       openssl
+Requires:       libcap >= 2.24
+Requires:       libevent
+Requires(pre):  systemd-rpm-macros
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 The ntp package contains a client and server to keep the time
@@ -49,12 +48,14 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       perl >= 5
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
+
 %description    perl
 Perl scripts for ntp.
 
-%package -n ntpstat
-Summary:    Utilities
-Group:      Utilities
+%package -n     ntpstat
+Summary:        Utilities
+Group:          Utilities
+
 %description -n ntpstat
 ntpstat is a utility which reports the synchronisation
 state of the NTP daemon running on the local machine.
@@ -145,7 +146,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%dir %{_sharedstatedir}/%{name}/drift
 %attr(0755,%{name},%{name}) %{_sharedstatedir}/%{name}/drift
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
@@ -189,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Tue Jun 27 2023 Michelle Wang <michellew@vmware.com> 4.2.8p17-1
+- Upgrade to 4.2.8p17 for CVE-2023-26551 ~ CVE-2023-26555
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-8
 - Add libevent to buld requires
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.2.8p15-7
