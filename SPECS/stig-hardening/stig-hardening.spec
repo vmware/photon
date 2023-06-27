@@ -1,18 +1,17 @@
 Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
-#Version x.y corresponds v<x>r<y> tag in the repo. Eg 1.1 = v1r1
-Version:        1.1
+#Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
+Version:        1.1.1
 Release:        1%{?dist}
 License:        Apache-2.0
-#Update this URL to github URL once the source code is available in github
-URL:            https://packages.vmware.com/photon/photon_sources/1.0/%{name}-ph5-%{version}.tar.gz
+URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 #Update this URL to github URL once the source code is available in github
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-ph5-%{version}.tar.gz
-%define sha512 %{name}-ph5-%{version}=414634c3e3023621fb19ca3a273d677e07745907b9f5c28f2eb01aaf060e9a79da17ee95c51cad24a33f00356e3d2ecfe153c6c73a0b5815c18ce9e297f905bf
+%define sha512 %{name}-ph5-%{version}=89ef1c4975c662c41ec147da72742c959f7479bf98de8709d65682bd5281e436fd05ee99a779e8edee0f6e56a72358df7fc1e6c3735e7fc9025756279117a5f6
 
 Patch0: 0001-In-photon-5.0-.rpm.lock-file-path-has-changed.patch
 
@@ -31,6 +30,7 @@ VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 
 %install
 install -d %{buildroot}%{_datadir}/ansible/
+rm -f %{_builddir}/%{name}-ph5-%{version}/vars-cap.yml
 cp -rp %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{name}
 
 %files
@@ -38,5 +38,7 @@ cp -rp %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{na
 %{_datadir}/ansible/
 
 %changelog
+* Wed Jun 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1.1-1
+- Minor version update
 * Mon Jun 5 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1-1
 - Initial version
