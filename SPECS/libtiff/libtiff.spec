@@ -1,6 +1,6 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.4.0
+Version:        4.5.1
 Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha512  libtiff-v=93955a2b802cf243e41d49048499da73862b5d3ffc005e3eddf0bf948a8bd1537f7c9e7f112e72d082549b4c49e256b9da9a3b6d8039ad8fc5c09a941b7e75d7
+%define sha512  libtiff-v=859331284cd28df56c44644a355ecdd8eece19f0d5cd3e693e37c0fe37115091e46943ffbad784e84af1b39a6fd81cd196af2d4fefe86369258f89050dafaa84
 Source1:        config.guess
 Source2:        config.sub
 Patch0:         autogen.patch
@@ -55,7 +55,6 @@ make %{?_smp_mflags} -k check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_datadir}/man/man1/*
 
 %files devel
 %defattr(-,root,root)
@@ -63,9 +62,10 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/doc/*
-%{_datadir}/man/man3/*
 
 %changelog
+*   Mon Jun 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.1-1
+-   Upgrade to v4.5.1
 *   Mon Jun 20 2022 Shivani Agarwal <shivania2@vmware.com> 4.4.0-1
 -   Fix CVE-2022-1622
 *   Mon May 16 2022 Shivani Agarwal <shivania2@vmware.com> 4.3.0-2
