@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        3.1.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -90,9 +90,9 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/ptp4l.conf
 %config(noreplace) %{_sysconfdir}/ts2phc.conf
-%{_sysconfdir}/sysconfig/phc2sys
-%{_sysconfdir}/sysconfig/ptp4l
-%{_sysconfdir}/sysconfig/ts2phc
+%config(noreplace) %{_sysconfdir}/sysconfig/phc2sys
+%config(noreplace) %{_sysconfdir}/sysconfig/ptp4l
+%config(noreplace) %{_sysconfdir}/sysconfig/ts2phc
 %{_libdir}/systemd/system/phc2sys.service
 %{_libdir}/systemd/system/ptp4l.service
 %{_libdir}/systemd/system/ts2phc.service
@@ -117,6 +117,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ts2phc.8.gz
 
 %changelog
+*   Wed Jun 28 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-5
+-   Don't replace config files during update
 *   Fri Jun 02 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-4
 -   Backport upstream patches
 *   Tue Feb 14 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-3
