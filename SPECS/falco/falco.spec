@@ -1,15 +1,16 @@
 %global security_hardening none
+
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.31.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
+Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9b4a50b47d703ba05bf2e91f1b9a3e88c22380bc70b35338fa9735c5c48645fb714c910ab6d6193e304d333bd81dcefaf07021aa8b55dadae358108a873c9f79
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
@@ -82,16 +83,6 @@ make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build" %{?_
 mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
 install -vm 644 driver/falco.ko %{buildroot}/lib/modules/%{uname_r}/extra
 
-#falco requires docker instance and dpkg to pass make check.
-#%%check
-#easy_install pip
-#pip install 'stevedore>=0.14'
-#pip install 'avocado-framework<=36.0'
-#pip install fabric
-#pip install aexpect
-#pip install pystache
-#test/run_regression_tests.sh
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -110,6 +101,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.31.1-2
+- Bump version as a part of sysdig upgrade
 * Tue Jun 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.31.1-1
 - Update to 0.31.1
 * Tue Mar 14 2023 Anmol Jain <anmolja@vmware.com> 0.30.0-3
