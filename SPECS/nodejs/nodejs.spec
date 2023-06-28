@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.20.0
+Version:        16.20.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=83eba9dc1c1861ee848285d734ee1cc0c66d31885fdacadaff1da19bd869c149e0461a10657dadd40fec41156e23b63c12fe12591defedd1e7b941bd53bed87d
+%define         sha512 node=0f4b33d75ff5b74dfb97ee2e7e8aea930a1c20067ba70a27571395a20792947f33bc429fe9c5711600e602f27a3707b50b64d8b778df1678e9613ba14ce51a15
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -69,6 +69,9 @@ make cctest %{?_smp_mflags}
 %{_docdir}/node/gdbinit
 
 %changelog
+*   Tue Jun 27 2023 Siju Maliakkal <smaliakkal@vmware.com> 16.20.1-1
+-   Upgrade to 16.20.1 to fix CVE-2023-30581, CVE-2023-30585
+-   CVE-2023-30588, CVE-2023-30589, CVE-2023-30590
 *   Thu Jun 15 2023 Siju Maliakkal <smaliakkal@vmware.com> 16.20.0-1
 -   Upgrade to latest version in Gallium
 *   Mon Mar 06 2023 Shivani Agarwal <shivania2@vmware.com> 16.19.1-1
