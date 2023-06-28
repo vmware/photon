@@ -1,64 +1,73 @@
-%global security_hardening none
+%global security_hardening      none
+%define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir             /lib/modules/%{uname_r}
 
-%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-%define _modulesdir /lib/modules/%{uname_r}
+# check the release bundle & use the right version, example:
+# https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
+%define falcosecurity_libs_ver  0.9.1
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.27.0
-Release:        9%{?kernelsubrelease}%{?dist}
+Version:        0.30.2
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
-URL:            http://www.sysdig.org/
+URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=102150cc641165a6c18ce71e3c6148dc10700f614fec7e1909c29172e3cce02dfa16af56aabdcd420499d0aa89f90fee8f26d92a250b0a521d1b9d416c6a678f
+%define sha512 %{name}=08e5c4f6e393838fca0b8b72f152fde9873af2095fe28084463f22238c65ad45f699c724b21f2d25051eae803f253f41a319fb38b405977de382809a74a4f625
 
-Patch0:         get-lua-googletest-sources-from-photonstage.patch
+Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-0.9.1.tar.gz
+%define sha512 falconsecurity-libs=06d894e6ea8cd66c80682dcce64e38667f6d7315c1c552898b3944fa16cf57ae49932bd283e2b5d09e2e0462f438df217c722f98e437aa0989fdef69aefd79a2
 
-BuildArch:      x86_64
+Patch0: get-googletest-sources-from-photonstage.patch
+Patch1: falcosecurity-libs-nodownload.patch
+Patch2: bashcomp-location.patch
 
-BuildRequires:  cmake
-BuildRequires:  linux-devel = %{uname_r}
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  wget
-BuildRequires:  which
-BuildRequires:  grpc-devel
-BuildRequires:  jq-devel
-BuildRequires:  c-ares-devel
-BuildRequires:  protobuf-devel
-BuildRequires:  git
-BuildRequires:  net-tools
+BuildArch: x86_64
 
-Requires:       linux = %{uname_r}
-Requires:       zlib
-Requires:       ncurses
-Requires:       openssl
-Requires:       curl
-Requires:       grpc
-Requires:       jq
-Requires:       c-ares
-Requires:       protobuf
+BuildRequires: cmake
+BuildRequires: linux-devel = %{uname_r}
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: wget
+BuildRequires: which
+BuildRequires: grpc-devel
+BuildRequires: jq-devel
+BuildRequires: c-ares-devel
+BuildRequires: protobuf-devel
+BuildRequires: git
+BuildRequires: net-tools
+BuildRequires: jsoncpp-devel
+
+Requires: linux = %{uname_r}
+Requires: zlib
+Requires: ncurses
+Requires: openssl
+Requires: curl
+Requires: grpc
+Requires: jq
+Requires: c-ares
+Requires: protobuf
+Requires: jsoncpp
 
 %description
- Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
+Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
+Then save, filter and analyze.
+Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig,
+that runs in your terminal
 
 %prep
-%autosetup -p1
+%autosetup -p1 -a0 -a1
 
 %build
 export CFLAGS="-Wno-error=misleading-indentation"
-# fix for linux-4.9
-sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
-sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
-sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' userspace/libscap/scap_fds.c
-sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' userspace/libsinsp/CMakeLists.txt
-%cmake \
+
+%{cmake} \
     -DUSE_BUNDLED_OPENSSL=OFF \
     -DUSE_BUNDLED_CURL=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
@@ -66,23 +75,36 @@ sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' userspace/libsinsp/CMakeLists.
     -DUSE_BUNDLED_PROTOBUF=OFF \
     -DUSE_BUNDLED_GRPC=OFF \
     -DUSE_BUNDLED_JQ=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_NJSON=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+    -DBUILD_DRIVER=ON \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
+    -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
+    -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
+    -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
+    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
+    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
+    -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
+    -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
+    -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
+    -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DCMAKE_BUILD_TYPE=Release
 
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_build
+%{cmake_build}
 
 %install
 export KERNELDIR="%{_modulesdir}/build"
-%cmake_install
+%{cmake_install}
 
-mkdir -p %{buildroot}%{_sysconfdir}
-mv %{buildroot}%{_usr}%{_sysconfdir}/bash_completion.d %{buildroot}%{_sysconfdir}
 rm -rf %{buildroot}%{_datadir}/zsh/
-
 mkdir -p %{buildroot}%{_modulesdir}/extra
-mv %{__cmake_builddir}/driver/sysdig-probe.ko %{buildroot}%{_modulesdir}/extra
+mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
 
 %clean
 rm -rf %{buildroot}/*
@@ -95,13 +117,18 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/bash_completion.d/*
-%{_bindir}
+%{_bindir}/*
+%{_includedir}/%{name}
+%{_libdir}/%{name}
 %exclude %{_usrsrc}
-%{_datadir}
-%{_modulesdir}/extra/sysdig-probe.ko
+%{_datadir}/%{name}/*
+%{_datadir}/bash-completion/*
+%{_mandir}/*
+%{_modulesdir}/extra/scap.ko
 
 %changelog
+* Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-1
+- Upgrade to v0.30.2
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.27.0-9
 - Bump version as a part of protobuf upgrade
 * Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 0.27.0-8
