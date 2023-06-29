@@ -23,7 +23,10 @@
 #endif
 
 #include <linux/sched.h>
+#include <linux/kthread.h>
 #include <linux/workqueue.h>
+#include <linux/memblock.h>
+#include <linux/ratelimit.h>
 #include <linux/notifier.h>
 #include <linux/module.h>
 #include <linux/fips.h>
@@ -59,6 +62,7 @@
 #endif
 #include <asm/fpu/api.h>
 #include "internal.h"
+#include "fips_canister_wrapper_internal.h"
 #include <linux/uio.h>
 #include <linux/scatterlist.h>
 #include <crypto/scatterwalk.h>
@@ -80,6 +84,17 @@ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
 }
 #endif
 
+int fcw_signal_pending(void)
+{
+	return signal_pending(current);
+}
+
+void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[])
+{
+	struct task_struct *t = kthread_run(threadfn, data, namefmt);
+	return (void *)t;
+}
+
 int fcw_cond_resched(void)
 {
 	return cond_resched();
@@ -93,6 +108,21 @@ void *fcw_kmalloc(size_t size, gfp_t flags)
 void *fcw_kzalloc(size_t size, gfp_t flags)
 {
 	return kzalloc(size, flags);
+}
+
+void * __init fcw_mem_alloc(size_t size)
+{
+	/* Can be called before mm_init(). */
+	if (!slab_is_available())
+		return memblock_alloc(size, 8);
+
+	return fcw_kmalloc(size, GFP_KERNEL);
+}
+
+void __init fcw_mem_free(void *p)
+{
+	if (p && slab_is_available() && PageSlab(virt_to_head_page(p)))
+		kfree(p);
 }
 
 void *fcw_mutex_init(void)
@@ -198,6 +228,27 @@ void fcw_bug(void)
 	BUG();
 }
 
+void *fcw_init_ratelimit_state(void *rs)
+{
+	if (rs != NULL)
+		return rs;
+
+	struct ratelimit_state *_rs = kzalloc(sizeof(struct ratelimit_state),
+					GFP_KERNEL);
+	_rs->lock = __RAW_SPIN_LOCK_UNLOCKED(_rs.lock);
+	_rs->interval = DEFAULT_RATELIMIT_INTERVAL;
+	_rs->burst = DEFAULT_RATELIMIT_BURST;
+	_rs->flags = 0;
+	return (void *)_rs;
+}
+
+bool fcw_ratelimit(void *rs, const char *name)
+{
+	if (___ratelimit(rs, name))
+		return 1;
+	return 0;
+}
+
 void fcw_bug_on(int cond)
 {
 	do {
@@ -269,11 +320,6 @@ void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
 			      unsigned int buflen)
 {
 	return sg_set_buf(sg, buf, buflen);
-}
-
-struct page *fcw_sg_page(struct scatterlist *sg)
-{
-	return sg_page(sg);
 }
 
 void *fcw_sg_virt(struct scatterlist *sg)
@@ -415,6 +461,82 @@ static int __init alg_request_report_setup(char *__unused)
 }
 __setup("alg_request_report", alg_request_report_setup);
 
+static int __init fcw_module_init(void)
+{
+	fips_integrity_check();
+	crypto_self_test_init();
+	return true;
+}
+module_init(fcw_module_init);
+
+static int __init fcw_arch_initcall(void)
+{
+	cryptomgr_init();
+	return true;
+}
+arch_initcall(fcw_arch_initcall);
+
+static int __init fcw_subsys_initcall(void)
+{
+	rsa_init();
+	crypto_ecb_module_init();
+	sha1_generic_mod_init();
+	sha256_generic_mod_init();
+	sha512_generic_mod_init();
+	sha3_generic_mod_init();
+	des_generic_mod_init();
+	aes_init();
+	crypto_ctr_module_init();
+	hmac_module_init();
+	drbg_init();
+	jent_mod_init();
+	ecdh_init();
+	crypto_cbc_module_init();
+	xts_module_init();
+	crypto_cfb_module_init();
+	crypto_ccm_module_init();
+	crypto_gcm_module_init();
+	ecdsa_init();
+	crypto_cts_module_init();
+	crypto_cmac_module_init();
+	return true;
+}
+subsys_initcall(fcw_subsys_initcall);
+
+static int __init fcw_late_initcall(void)
+{
+	aesni_init();
+	return true;
+}
+late_initcall(fcw_late_initcall);
+
+static void __exit fcw_module_exit(void)
+{
+	cryptomgr_exit();
+	crypto_cbc_module_exit();
+	crypto_ccm_module_exit();
+	crypto_cfb_module_exit();
+	crypto_cmac_module_exit();
+	crypto_ctr_module_exit();
+	crypto_cts_module_exit();
+	des_generic_mod_fini();
+	drbg_exit();
+	crypto_ecb_module_exit();
+	ecdh_exit();
+	ecdsa_exit();
+	crypto_gcm_module_exit();
+	hmac_module_exit();
+	jent_mod_exit();
+	rsa_exit();
+	sha1_generic_mod_fini();
+	sha256_generic_mod_fini();
+	sha512_generic_mod_fini();
+	sha3_generic_mod_fini();
+	xts_module_exit();
+	aesni_exit();
+	aes_fini();
+}
+module_exit(fcw_module_exit);
 
 #ifndef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
 DEFINE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);

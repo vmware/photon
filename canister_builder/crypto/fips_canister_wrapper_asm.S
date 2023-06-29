@@ -1,15 +1,20 @@
-########################################################################
-# Implement asm wrapper for FIPS canister. (x86_64)
-#
-# Copyright (C) 2023 VMware, Inc.
+/*
+ * Kernel assembly wrapper for canister
+ *
+ * Copyright (C) 2023 VMware, Inc.
+ * Authors: Keerthana K <keerthanak@vmware.com>
+ *	    Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+ *
+ */
 
 #include <linux/linkage.h>
 #include <linux/version.h>
 #include <asm/export.h>
 
+SYM_FUNC_START(fcw_printk)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
-SYM_FUNC_START(_printk)
 	jmp printk
-SYM_FUNC_END(_printk)
-EXPORT_SYMBOL(_printk)
+#else
+        jmp _printk
 #endif
+SYM_FUNC_END(fcw_printk)

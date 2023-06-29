@@ -42,17 +42,21 @@ extern void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod,
 #define fcw_module_put_and_kthread_exit(code) __fcw_module_put_and_kthread_exit(THIS_MODULE, code)
 
 
+extern void __init fcw_mem_free(void *p);
+extern void * __init fcw_mem_alloc(size_t size);
+
 extern int fcw_cond_resched(void);
 
 extern void *fcw_kmalloc(size_t size, gfp_t flags);
 extern void *fcw_kzalloc(size_t size, gfp_t flags);
 
+extern int fcw_signal_pending(void);
+extern void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[]);
 extern void *fcw_mutex_init(void);
 extern void fcw_mutex_lock(void *m);
 extern void fcw_mutex_unlock(void *m);
 
 extern bool fcw_schedule_work(struct work_struct *work);
-
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 extern int fcw_sha1_base_do_update(struct shash_desc *desc,
@@ -73,8 +77,11 @@ extern void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
 			      unsigned int buflen);
 extern void *fcw_sg_virt(struct scatterlist *sg);
-extern struct page *fcw_sg_page(struct scatterlist *sg);
 extern void *fcw_scatterwalk_map(struct scatter_walk *walk);
+extern int fcw_printk(const char *fmt, ...);
+
+extern bool fcw_ratelimit(void *rs, const char *name);
+extern void *fcw_init_ratelimit_state(void *rs);
 
 /* testmgr alloc helpers */
 extern struct aead_request *fcw_aead_request_alloc(
