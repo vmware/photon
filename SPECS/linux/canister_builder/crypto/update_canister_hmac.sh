@@ -41,6 +41,7 @@ fail_if_found mutex_unlock
 fail_if_found queue_work_on
 fail_if_found latent_entropy
 fail_if_found memcpy
+fail_if_found _printk
 
 # Fail if any symbols are exported. All EXPORT_SYMBOL and EXPORT_SYMBOL_GPL
 # usages must be moved to wrapper. This is to ensure the target kernel includes
