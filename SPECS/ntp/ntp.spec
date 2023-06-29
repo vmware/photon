@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p14
-Release:        5%{?dist}
+Version:        4.2.8p16
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -9,13 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512    ntp=b0183b4b2f2c6ea0a49d0aca1fa28a7b5cd21e20696a2f633f5afa37c4ea2c59fa7769af82a55c626db49b9eb5a531608710dc1977c4d518583577ef95940ae8
+%define sha512  %{name}=0b4a3336def620d3ab2f06dacf8621e848167e35657c0a1206eca178a7541dd8730071bd7a0a8dea2c4682c4f38d31c3772d01093c26fd5a4395e37a86e770e2
+
 #https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
-%define sha512 ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
-Source2:        ntp.sysconfig
-
-Patch0:         ntp-CVE-2020-15025.patch
+%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
+Source2:        %{name}.sysconfig
 
 BuildRequires:  which
 BuildRequires:  libcap-devel
@@ -42,32 +41,30 @@ Group:          Utilities
 Requires:       ntp = %{version}-%{release}, perl >= 5
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
+
 %description    perl
 Perl scripts for ntp.
 
-%package -n ntpstat
-Summary:    Utilities
-Group:      Utilities
+%package -n     ntpstat
+Summary:        Utilities
+Group:          Utilities
+
 %description -n ntpstat
 ntpstat is a utility which reports the synchronisation
 state of the NTP daemon running on the local machine.
 
 %prep
-%autosetup -p1 -a 1
+%autosetup -p1 -a1
 
 %build
-sh ./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --sysconfdir=/etc \
     --with-binsubdir=sbin \
     --enable-system-libevent \
     --enable-linuxcaps
+
 %make_build
 make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
 
@@ -77,26 +74,30 @@ install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
-mkdir -p %{buildroot}/var/lib/ntp/drift
-mkdir -p %{buildroot}/etc/sysconfig
-cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
+mkdir -p %{buildroot}/var/lib/%{name}/drift \
+         %{buildroot}/etc/sysconfig \
+         %{buildroot}%{_unitdir}
+
+cp %{SOURCE2} %{buildroot}/etc/sysconfig/%{name}
+
 pushd ntpstat-master
 install -m 755 ntpstat %{buildroot}/%{_bindir}
 install -m 644 ntpstat.1 %{buildroot}/%{_mandir}/man8/ntpstat.8
 popd
 
-cat > %{buildroot}/etc/ntp.conf <<- "EOF"
+cat > %{buildroot}/etc/%{name}.conf <<- "EOF"
 tinker panic 0
 restrict default kod nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
-driftfile /var/lib/ntp/drift/ntp.drift
+driftfile /var/lib/%{name}/drift/%{name}.drift
 EOF
+
 install -D -m644 COPYRIGHT %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 rm -rf %{buildroot}/etc/rc.d/*
 
 %{_fixperms} %{buildroot}/*
-mkdir -p %{buildroot}/lib/systemd/system
+
 cat << EOF >> %{buildroot}/lib/systemd/system/ntpd.service
 [Unit]
 Description=Network Time Service
@@ -106,7 +107,7 @@ Conflicts=systemd-timesyncd.service
 
 [Service]
 Type=forking
-EnvironmentFile=/etc/sysconfig/ntp
+EnvironmentFile=/etc/sysconfig/%{name}
 ExecStart=/usr/bin/ntpd -g -u ntp:ntp
 Restart=always
 
@@ -118,7 +119,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
 
 %check
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%make_build check
 
 %pre
 if ! getent group ntp >/dev/null; then
@@ -127,8 +128,9 @@ fi
 if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
+
 %post
-%{_sbindir}/ldconfig
+/sbin/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -136,32 +138,33 @@ fi
 
 %postun
 %systemd_postun_with_restart ntpd.service
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%dir /var/lib/ntp/drift
-%attr(0755, ntp, ntp) /var/lib/ntp/drift
-%config(noreplace) /etc/ntp.conf
-%config(noreplace) /etc/sysconfig/ntp
-/lib/systemd/system/ntpd.service
+%attr(0755, %{name}, %{name}) /var/lib/%{name}/drift
+%config(noreplace) /etc/%{name}.conf
+%config(noreplace) /etc/sysconfig/%{name}
+%{_unitdir}/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
 %{_bindir}/ntpd
 %{_bindir}/ntpdate
 %{_bindir}/ntpdc
-%{_bindir}/ntp-keygen
+%{_bindir}/%{name}-keygen
 %{_bindir}/ntpq
 %{_bindir}/ntptime
 %{_bindir}/sntp
 %{_bindir}/tickadj
 %{_datadir}/doc/%{name}-%{version}/*
-%{_datadir}/doc/ntp/*
+%{_datadir}/doc/%{name}/*
 %{_datadir}/doc/sntp/*
-%{_datadir}/licenses/ntp/LICENSE
+%{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man1/ntpd.1.gz
 %{_mandir}/man1/ntpdc.1.gz
-%{_mandir}/man1/ntp-keygen.1.gz
+%{_mandir}/man1/%{name}-keygen.1.gz
 %{_mandir}/man1/ntpq.1.gz
 %{_mandir}/man1/sntp.1.gz
 %{_mandir}/man5/*
@@ -169,12 +172,12 @@ rm -rf %{buildroot}/*
 %files perl
 %{_bindir}/calc_tickadj
 %{_bindir}/ntptrace
-%{_bindir}/ntp-wait
+%{_bindir}/%{name}-wait
 %{_bindir}/update-leap
-%{_datadir}/ntp/lib/NTP/Util.pm
+%{_datadir}/%{name}/lib/NTP/Util.pm
 %{_mandir}/man1/calc_tickadj.1.gz
 %{_mandir}/man1/ntptrace.1.gz
-%{_mandir}/man1/ntp-wait.1.gz
+%{_mandir}/man1/%{name}-wait.1.gz
 %{_mandir}/man1/update-leap.1.gz
 
 %files -n ntpstat
@@ -183,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Wed Jun 28 2023 Michelle Wang <michellew@vmware.com> 4.2.8p16-1
+- Upgrade to 4.2.8p16 for CVE-2023-26551 ~ CVE-2023-26555
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.2.8p14-5
 - Bump version as a part of libevent upgrade
 * Fri Oct 28 2022 Harinadh D <hdommaraju@vmware.com> 4.2.8p14-4
