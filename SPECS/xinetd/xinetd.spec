@@ -1,7 +1,7 @@
 Summary:        xinetd - A better inetd.
 Name:           xinetd
 Version:        2.3.15
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -18,6 +18,8 @@ BuildRequires: libtirpc-devel
 
 Requires: systemd
 Requires: libtirpc
+
+Patch0: 0001-xinetd-ignores-user-and-group-directives-for-TCPMUX-services.patch
 
 %description
 Xinetd is a powerful inetd replacement. Xinetd has access control
@@ -73,6 +75,8 @@ rm -rf %{buildroot}
 %{_presetdir}/50-%{name}.preset
 
 %changelog
+* Thu Jun 29 2023 Roye Eshed <eshedr@vmware.com> 2.3.15-11
+- Fix for CVE-2013-4342
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.15-10
 - Bump version as a part of libtirpc upgrade
 * Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.15-9
