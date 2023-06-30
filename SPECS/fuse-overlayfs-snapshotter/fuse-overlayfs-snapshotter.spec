@@ -2,19 +2,16 @@
 
 Summary:        fuse-overlayfs plugin for rootless containerd
 Name:           fuse-overlayfs-snapshotter
-Version:        1.0.4
-Release:        5%{?dist}
+Version:        1.0.6
+Release:        1%{?dist}
 License:        GPL3
-URL:            https://github.com/containers/fuse-overlayfs
+URL:            https://github.com/containerd/fuse-overlayfs-snapshotter
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b4a7a3edc7c2baebdc1d6f3717a71aecdf4b8d31c0a26d1efa5dae5325ac19cb915588bb3da1fdd14a6d16377dcf17ed5be3f5b2ec5ae19627adf66332995a71
-
-Patch0: fix-makefile.patch
-Patch1: makefile-destdir-fix.patch
+Source0: https://github.com/containerd/%{name}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+%define sha512 %{name}=7ad7f1e433695045ecb09cda6a49b9822779c953105001fa20773b61128e73b1d57d15c05043ff52a2c9415ae899f75ce1ae5ac62843c4d94640c42aee26a7d3
 
 BuildRequires: go
 BuildRequires: ca-certificates
@@ -34,7 +31,7 @@ fuse-overlayfs-snapshotter is a non-core sub-project of containerd.
 %build
 export VERSION="%{version}-%{release}"
 # git tag commit hash
-export REVISION="db90194f0cf2f42ee8cdc3c542f6ed2c92ef8ffc"
+export REVISION="a705ae6f22850358821ec1e7d968bc79003934ef"
 %make_build
 
 %install
@@ -49,6 +46,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-fuse-overlayfs-grpc
 
 %changelog
+* Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.6-1
+- Update to 1.0.6
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.4-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.4-4

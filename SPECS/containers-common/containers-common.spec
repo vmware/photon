@@ -7,8 +7,8 @@
 
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
-Version:        1
-Release:        2%{?dist}
+Version:        4
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers
 # Clone containers sub repo common, image, shortnames, skopeo and storage
@@ -16,29 +16,29 @@ URL:            https://github.com/containers
 # Move those files into directory & create tarball
 #
 # For example:
-# git clone git clone git@github.com:containers/common.git
-# cd common && git checkout -b v1.0.1 tags/v1.0.1
-# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-1/
+# git clone git@github.com:containers/common.git
+# cd common && git checkout -b v0.55.0 tags/v0.55.0
+# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/image.git
-# cd image && git checkout -b v5.22.0 tags/v5.22.0
-# cp registries.conf ../containers-common-1/
+# cd image && git checkout -b v5.26.0 tags/v5.26.0
+# cp registries.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/shortnames.git
-# cd shortnames && git checkout -b v2022.02.08 tags/v2022.02.08
-# cp shortnames.conf ../containers-common-1/
+# cd shortnames && git checkout -b v2022.02.20 tags/v2022.02.20
+# cp shortnames.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/skopeo.git
-# cd skopeo && git checkout -b v1.9.2 tags/v1.9.2
-# cp default.yaml default-policy.json ../containers-common-1/
+# cd skopeo && git checkout -b v1.12.0 tags/v1.12.0
+# cp default.yaml default-policy.json ../containers-common-4/
 #
 # git clone git@github.com:containers/storage.git
-# cd storage && git checkout -b v1.42.0 tags/v1.42.0
-# cp storage.conf ../containers-common-1/
+# cd storage && git checkout -b v1.48.0 tags/v1.48.0
+# cp storage.conf ../containers-common-4/
 #
-# cd .. && tar czf containers-common-1.tar.gz containers-common-1
+# cd .. && tar czf containers-common-4.tar.gz containers-common-4
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=c013937a79a8a514756580d43ed10fc307812bdc43a96194e2120788a5bc8d6ffdd460dc613ac85448bc842f79c457737dfff59eb6efa106e012404d6ef72a75
+%define sha512 %{name}=de6484566b3115a278bcbd1959ba31cd8ae58aed711cce90824bce50465d9553316651f6d5c883d681f0bc7b4aed7f2d608db5008c6b07fb128288353fff98e4
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -104,6 +104,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 4-1
+- Upgrade to v4
 * Mon Oct 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1-2
 - Bump version as a part of cni upgrade
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1-1
