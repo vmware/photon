@@ -1,0 +1,472 @@
+From 20b0beec1a9ca38246f27e90517e608c24b8f4eb Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Fri, 28 Apr 2023 12:16:40 -0700
+Subject: [PATCH 06/14] Add yaml parser for ks config
+
+This add a yaml parser, so the kickstart file can be in yaml format. Additionally,
+this add the !param tag to the yaml config. This allows paramters to be set on the
+commandd line. For example, to set the "disk" setting:
+
+disk: !param device
+
+This way the "disk" needs to be set on the command line, with:
+
+photon-installer ... args ... --param device=/dev/loop7
+
+Defaults can also be set, which makes setting the parameters optional.
+Example:
+
+eject_cdrom: !param eject=false
+
+Change-Id: I0beeaab68dcd448a7c0e64844bebb8907412245c
+---
+ photon_installer/commandutils.py  | 33 ++++++++++++
+ photon_installer/isoInstaller.py  | 60 +++++++++++----------
+ photon_installer/main.py          | 12 ++++-
+ requirements.txt                  |  1 +
+ sample_ks/sample_ks.cfg           | 46 +++++++++++------
+ sample_ks/sample_ks.yaml          | 52 +++++++++++++++++++
+ sample_ks/sample_ks_btrfs_xfs.cfg | 86 +++++++++++++++++++++++++------
+ sample_ks/sample_ui.cfg           | 12 ++---
+ 8 files changed, 237 insertions(+), 65 deletions(-)
+ create mode 100644 sample_ks/sample_ks.yaml
+
+diff --git a/photon_installer/commandutils.py b/photon_installer/commandutils.py
+index 2500d9c..d916c52 100644
+--- a/photon_installer/commandutils.py
++++ b/photon_installer/commandutils.py
+@@ -15,6 +15,8 @@ import copy
+ import json
+ from urllib.parse import urlparse
+ from OpenSSL.crypto import load_certificate, FILETYPE_PEM
++import yaml
++
+ 
+ class CommandUtils(object):
+     def __init__(self, logger):
+@@ -139,6 +141,37 @@ class CommandUtils(object):
+             data = json.load(f)
+             return data
+ 
++
++    @staticmethod
++    def _yaml_param(loader, node):
++        params = loader.app_params
++        default = None
++        key = node.value
++
++        assert type(key) is str, f"param name must be a string"
++
++        if '=' in key:
++            key, default = [t.strip() for t in key.split('=')]
++            default = yaml.safe_load(default)
++        value = params.get(key, default)
++
++        assert value is not None, f"no param set for '{key}', and there is no default"
++
++        return value
++
++
++    @staticmethod
++    def readConfig(stream, params={}):
++        config = None
++
++        yaml_loader = yaml.SafeLoader
++        yaml_loader.app_params = params
++        yaml.add_constructor("!param", CommandUtils._yaml_param, Loader=yaml_loader)
++        config = yaml.load(stream, Loader=yaml_loader)
++
++        return config
++
++
+     def convertToBytes(self, size):
+         if not isinstance(size, str):
+             return int(size)
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index bab9c24..7324d54 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -21,11 +21,12 @@ from device import Device
+ from defaults import Defaults
+ 
+ class IsoInstaller(object):
+-    def __init__(self, options):
+-        install_config=None
++    def __init__(self, options, params={}):
++        install_config = None
+         self.media_mount_path = None
+         photon_media = None
+         ks_path = options.install_config_file
++        self.params = params
+         # Comma separated paths to RPMS repository: local media or remote URL
+         # If --repo-paths= provided - use it,
+         # if not provided - use kernel repos= parameter,
+@@ -104,29 +105,29 @@ class IsoInstaller(object):
+ 
+         if path.startswith("https://") or path.startswith("http://"):
+             # Do 5 trials to get the kick start
+-            # TODO: make sure the installer run after network is up
+-            ks_file_error = "Failed to get the kickstart file at {0}".format(path)
++            # TODO: make sure the installer runs after network is up
+             wait = 1
+-            for _ in range(0, 5):
+-                err_msg = ""
++            retries = 5
++            while True:
+                 try:
+-                    if self.insecure_installation:
+-                        response = requests.get(path, timeout=3, verify=False)
+-                    else:
+-                        response = requests.get(path, timeout=3, verify=True)
++                    response = requests.get(path, timeout=3, verify=not self.insecure_installation)
++                    response.raise_for_status()
++                    break
+                 except Exception as e:
+-                    err_msg = e
+-                else:
+-                    return json.loads(response.text)
++                    if retries > 0:
++                        print(f"error msg: {e} Retry after {wait} seconds")
++                        time.sleep(wait)
++                        wait *= 2
++                        retries -= 1
++                    else:
++                        print(f"Failed to get the kickstart file at {path}")
++                        raise
+ 
+-                print("error msg: {0}  Retry after {1} seconds".format(err_msg, wait))
+-                time.sleep(wait)
+-                wait = wait * 2
++            return CommandUtils.readConfig(response.text, params=self.params)
+ 
+-            # Something went wrong
+-            print(ks_file_error)
+-            raise Exception(err_msg)
+         else:
++            mnt_path = None
++
+             if path.startswith("cdrom:/"):
+                 if self.media_mount_path is None:
+                     raise Exception("cannot read ks config from cdrom, no cdrom specified")
+@@ -134,14 +135,21 @@ class IsoInstaller(object):
+             elif not path.startswith("/"):
+                 path = os.path.join(os.getcwd(), path)
+             elif len(path.split(':')) == 2:
+-                ks_path_split = path.split(':')
+-                ks_mounted_path = self.mount_media(ks_path_split[0], mount_path='/mnt/ks')
+-                if ks_path_split[1].startswith("/"):
+-                    ks_path_split[1] = ks_path_split[1][1:]
+-                path = os.path.join(ks_mounted_path, ks_path_split[1])
++                device, rel_path = path.split(':')
++                rel_path = rel_path.strip("/")
++                mnt_path = self.mount_media(device, mount_path="/mnt/ks")
++                path = os.path.join(mnt_path, rel_path)
+             else:
+-                raise Exception("Kickstart file provided is not in correct format.")
+-            return (JsonWrapper(path)).read()
++                raise Exception("Kickstart file path provided is not in correct format.")
++
++            with open(path, "rt") as f:
++                config = CommandUtils.readConfig(f, params=self.params)
++
++            if mnt_path is not None:
++                subprocess.check_call(['umount', mnt_path])
++
++            return config
++
+ 
+     def mount_media(self, photon_media, mount_path=Defaults.MOUNT_PATH):
+         """Mount the external media"""
+diff --git a/photon_installer/main.py b/photon_installer/main.py
+index 84c2873..b25a081 100644
+--- a/photon_installer/main.py
++++ b/photon_installer/main.py
+@@ -6,6 +6,8 @@ from os.path import dirname, join
+ from argparse import ArgumentParser
+ import sys
+ import traceback
++from commandutils import CommandUtils
++import yaml
+ 
+ 
+ def main():
+@@ -22,20 +24,26 @@ def main():
+     parser.add_argument("-e", "--eula-file", dest="eula_file_path", default=None)
+     parser.add_argument("-t", "--license-title", dest="license_display_title", default=None)
+     parser.add_argument("-v", "--photon-release-version", dest="photon_release_version", required=True)
++    parser.add_argument("-p", "--param", dest='params', action='append', default=[])
+ 
+     options = parser.parse_args()
+ 
++    params = {}
++    for p in options.params:
++        k,v = p.split('=')
++        params[k] = yaml.safe_load(v)
++
+     try:
+         if options.image_type == 'iso':
+             from isoInstaller import IsoInstaller
+-            IsoInstaller(options)
++            IsoInstaller(options, params=params)
+         else:
+             from installer import Installer
+             import json
+             install_config = None
+             if options.install_config_file:
+                 with open(options.install_config_file) as f:
+-                    install_config = json.load(f)
++                    install_config = CommandUtils.readConfig(f, params=params)
+             else:
+                 raise Exception('install config file not provided')
+             if options.repo_paths is None and "repos" not in install_config:
+diff --git a/requirements.txt b/requirements.txt
+index e5f7447..cac2917 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,2 +1,3 @@
+ Requests
+ pyOpenSSL
++pyYAML
+diff --git a/sample_ks/sample_ks.cfg b/sample_ks/sample_ks.cfg
+index 4aba102..a9fd5eb 100644
+--- a/sample_ks/sample_ks.cfg
++++ b/sample_ks/sample_ks.cfg
+@@ -1,24 +1,40 @@
+ {
+     "hostname": "photon-machine",
+-    "password":
+-        {
+-            "crypted": false,
+-            "text": "changeme"
+-        },
++    "password": {
++        "crypted": false,
++        "text": "changeme"
++    },
+     "disk": "/dev/sda",
+     "partitions": [
+-                        {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+-                        {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
+-                        {"mountpoint": "/root", "size": 128, "filesystem": "ext4"},
+-                        {"size": 128, "filesystem": "swap"}
+-                    ],
++        {
++            "mountpoint": "/",
++            "size": 0,
++            "filesystem": "ext4"
++        },
++        {
++            "mountpoint": "/boot",
++            "size": 128,
++            "filesystem": "ext4"
++        },
++        {
++            "mountpoint": "/root",
++            "size": 128,
++            "filesystem": "ext4"
++        },
++        {
++            "size": 128,
++            "filesystem": "swap"
++        }
++    ],
+     "packagelist_file": "packages_minimal.json",
+-    "additional_packages": ["vim"],
++    "additional_packages": [
++        "vim"
++    ],
+     "postinstall": [
+-                   	"#!/bin/sh",
+-                    	"echo \"Hello World\" > /etc/postinstall"
+-                   ],
++        "#!/bin/sh",
++        "echo \"Hello World\" > /etc/postinstall"
++    ],
+     "public_key": "<ssh-key-here>",
+     "linux_flavor": "linux",
+     "photon_docker_image": "photon:5.0"
+-}
++}
+\ No newline at end of file
+diff --git a/sample_ks/sample_ks.yaml b/sample_ks/sample_ks.yaml
+new file mode 100644
+index 0000000..56db0fb
+--- /dev/null
++++ b/sample_ks/sample_ks.yaml
+@@ -0,0 +1,52 @@
++password:
++    crypted: false
++    text: changeme
++
++disk: !param device=/dev/sda
++
++partitions:
++    - mountpoint: /
++      size: 0
++      filesystem: ext4
++    - mountpoint: /boot
++      size: 128
++      filesystem: ext4
++    - mountpoint: /root
++      sizepercent: 5
++      filesystem: ext4
++    - sizepercent: 5
++      filesystem: swap
++
++packagelist_file: packages_minimal.json
++
++additional_packages:
++    - vim
++
++postinstall:
++    - '#!/bin/sh'
++    - echo "Hello World" > /etc/postinstall
++
++public_key: <ssh-key-here>
++
++linux_flavor: linux
++
++photon_docker_image: photon:5.0
++
++eject_cdrom: false
++
++network:
++    version: "2"
++    nameservers:
++        addresses:
++            - 1.1.1.1
++    ethernets:
++        id0:
++            match:
++                name: eth0
++            dhcp4: "yes"
++    vlans:
++        vlan0:
++            id: 100
++            link: id0
++            addresses:
++                - 192.168.100.58/24
+diff --git a/sample_ks/sample_ks_btrfs_xfs.cfg b/sample_ks/sample_ks_btrfs_xfs.cfg
+index 0ecb9fa..ea7e538 100644
+--- a/sample_ks/sample_ks_btrfs_xfs.cfg
++++ b/sample_ks/sample_ks_btrfs_xfs.cfg
+@@ -1,24 +1,78 @@
+ {
+     "hostname": "photon-machine",
+-    "password":
+-        {
+-            "crypted": false,
+-            "text": "changeme"
+-        },
++    "password": {
++        "crypted": false,
++        "text": "changeme"
++    },
+     "disk": "/dev/sda",
+     "partitions": [
+-                        {"mountpoint": "/", "size": 0, "filesystem": "btrfs", "btrfs": {"label": "main", "subvols": [{"name": "dir1", "mountpoint":"/dir1_data", "subvols": [{"name": "dir2", "mountpoint":"/dir2_data"}]}]}},
+-                        {"mountpoint": "/boot", "size": 128, "filesystem": "btrfs", "btrfs": {"label" : "boot"}},
+-                        {"mountpoint": "/root", "size": 128, "filesystem": "btrfs", "btrfs": {"label": "rootfs", "subvols": [{"name": "Videos"}, {"name": "Projects"}, {"name": "Documents"}]}},
+-                        {"mountpoint": "/root_xfs", "size": 128, "filesystem": "xfs"},
+-                        {"mountpoint": "/root_ext4", "size": 128, "filesystem": "ext4"},
+-                        {"size": 128, "filesystem": "swap"}
+-                    ],
++        {
++            "mountpoint": "/",
++            "size": 0,
++            "filesystem": "btrfs",
++            "btrfs": {
++                "label": "main",
++                "subvols": [
++                    {
++                        "name": "dir1",
++                        "mountpoint": "/dir1_data",
++                        "subvols": [
++                            {
++                                "name": "dir2",
++                                "mountpoint": "/dir2_data"
++                            }
++                        ]
++                    }
++                ]
++            }
++        },
++        {
++            "mountpoint": "/boot",
++            "size": 128,
++            "filesystem": "btrfs",
++            "btrfs": {
++                "label": "boot"
++            }
++        },
++        {
++            "mountpoint": "/root",
++            "size": 128,
++            "filesystem": "btrfs",
++            "btrfs": {
++                "label": "rootfs",
++                "subvols": [
++                    {
++                        "name": "Videos"
++                    },
++                    {
++                        "name": "Projects"
++                    },
++                    {
++                        "name": "Documents"
++                    }
++                ]
++            }
++        },
++        {
++            "mountpoint": "/root_xfs",
++            "size": 128,
++            "filesystem": "xfs"
++        },
++        {
++            "mountpoint": "/root_ext4",
++            "size": 128,
++            "filesystem": "ext4"
++        },
++        {
++            "size": 128,
++            "filesystem": "swap"
++        }
++    ],
+     "packagelist_file": "packages_minimal.json",
+     "postinstall": [
+-                		"#!/bin/sh",
+-                    	"echo \"Hello World\" > /etc/postinstall"
+-                   ],
++        "#!/bin/sh",
++        "echo \"Hello World\" > /etc/postinstall"
++    ],
+     "linux_flavor": "linux",
+     "photon_docker_image": "photon:5.0"
+-}
++}
+\ No newline at end of file
+diff --git a/sample_ks/sample_ui.cfg b/sample_ks/sample_ui.cfg
+index 089ffe7..5bd7f35 100644
+--- a/sample_ks/sample_ui.cfg
++++ b/sample_ks/sample_ui.cfg
+@@ -1,9 +1,9 @@
+ {
+     "license_display_title": "Licence Display Title",
+     "eula_file_path": null,
+-	"download_screen": {
+-		"title": "[!] Download File from URL Page",
+-		"intro": "This is a short description on what this window is doing",
+-		"destination": "/etc/config/config.file"
+-	}
+-}
++    "download_screen": {
++        "title": "[!] Download File from URL Page",
++        "intro": "This is a short description on what this window is doing",
++        "destination": "/etc/config/config.file"
++    }
++}
+\ No newline at end of file
+-- 
+2.23.1
+

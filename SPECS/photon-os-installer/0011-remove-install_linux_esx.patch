@@ -1,0 +1,108 @@
+From d530c4b66e798355f7b88de925bfc0417024ae04 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 8 Jun 2023 12:52:27 -0700
+Subject: [PATCH 11/14] - remove install_linux_esx - make 'linux' flavor the
+ default - add linux flavor to pcakges to be installed if missing
+
+Change-Id: I4fa18cd318f338650b35e1eef56fc929466a6200
+---
+ photon_installer/installer.py     | 24 ++++++++----------------
+ photon_installer/linuxselector.py |  6 +++---
+ 2 files changed, 11 insertions(+), 19 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 25db692..0433883 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -62,7 +62,6 @@ class Installer(object):
+         'disks',
+         'eject_cdrom',
+         'hostname',
+-        'install_linux_esx',
+         'linux_flavor',
+         'live',
+         'log_level',
+@@ -388,17 +387,11 @@ class Installer(object):
+                 install_config['search_path'].append(dirname)
+ 
+         if 'linux_flavor' not in install_config:
+-            if install_config.get('install_linux_esx', False):
+-                install_config['linux_flavor'] = "linux-esx"
+-            else:
+-                available_flavors = []
+-                for flavor in self.all_linux_flavors:
+-                    if flavor in install_config['packages']:
+-                        available_flavors.append(flavor)
+-                if len(available_flavors) == 1:
+-                    install_config['linux_flavor'] = available_flavors[0]
++            install_config['linux_flavor'] = 'linux'
+ 
+-        install_config['install_linux_esx'] = False
++        flavor = install_config['linux_flavor']
++        if flavor not in install_config['packages']:
++            install_config['packages'].append(flavor)
+ 
+         # Default Photon docker image
+         if 'photon_docker_image' not in install_config:
+@@ -447,11 +440,6 @@ class Installer(object):
+                     if 'size' not in disk:
+                         return f"a size needs to be set for disk image '{disk_id}'"
+ 
+-        # For Ostree install_config['packages'] will be empty list, because ostree
+-        # uses preinstalled tree ostree-repo.tar.gz for installation
+-        if 'ostree' not in install_config and 'linux_flavor' not in install_config:
+-            return "Attempting to install more than one linux flavor"
+-
+         # if not we'll use Installer.default_partitions in _add_defaults()
+         if 'partitions' in install_config:
+             # Perform following checks here:
+@@ -526,6 +514,10 @@ class Installer(object):
+             if install_config['password']['age'] < -1:
+                 return "Password age should be -1, 0 or positive"
+ 
++        if 'linux_flavor' in install_config:
++            if install_config['linux_flavor'] not in self.all_linux_flavors:
++                return "linux_flavor is not in allowed list"
++
+         return None
+ 
+ 
+diff --git a/photon_installer/linuxselector.py b/photon_installer/linuxselector.py
+index 1cfc950..f951f49 100644
+--- a/photon_installer/linuxselector.py
++++ b/photon_installer/linuxselector.py
+@@ -11,6 +11,7 @@ from window import Window
+ from actionresult import ActionResult
+ from commandutils import CommandUtils
+ 
++
+ class LinuxSelector(object):
+     def __init__(self, maxy, maxx, install_config):
+         self.install_config = install_config
+@@ -24,14 +25,12 @@ class LinuxSelector(object):
+ 
+         self.menu_starty = self.win_starty + 6
+ 
+-    def set_linux_esx_installation(self, is_linux_esx):
+-        self.install_config['install_linux_esx'] = is_linux_esx
+-        return ActionResult(True, None)
+ 
+     def set_linux_installation(self, selected_linux_package):
+         self.install_config['linux_flavor'] = selected_linux_package
+         return ActionResult(True, None)
+ 
++
+     def create_available_linux_menu(self):
+         linux_flavors = {"linux":"Generic", "linux-esx":"VMware hypervisor optimized", "linux-aws":"AWS optimized", "linux-secure":"Security hardened", "linux-rt":"Real Time"}
+ 
+@@ -53,6 +52,7 @@ class LinuxSelector(object):
+                              position=1, can_go_next=True)
+         self.window.set_action_panel(self.host_menu)
+ 
++
+     def display(self):
+         if 'ostree' in self.install_config:
+             return ActionResult(None, {"inactive_screen": True})
+-- 
+2.23.1
+

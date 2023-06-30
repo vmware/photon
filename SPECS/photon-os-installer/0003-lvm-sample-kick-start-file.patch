@@ -1,0 +1,46 @@
+From 34c0aa22591bf49753a250b29b1cdf442711a58e Mon Sep 17 00:00:00 2001
+From: HarinadhD <hdommaraju@vmware.com>
+Date: Thu, 27 Apr 2023 02:04:26 +0000
+Subject: [PATCH 03/14] lvm sample kick start file
+
+Change-Id: If5e3d227a6c8135dc6a0d0cf029179ab4e19017b
+---
+ sample_ks/sample_ks_lvm.cfg | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 sample_ks/sample_ks_lvm.cfg
+
+diff --git a/sample_ks/sample_ks_lvm.cfg b/sample_ks/sample_ks_lvm.cfg
+new file mode 100644
+index 0000000..98f6ada
+--- /dev/null
++++ b/sample_ks/sample_ks_lvm.cfg
+@@ -0,0 +1,26 @@
++{
++    "hostname": "photon-machine",
++    "password":
++        {
++            "crypted": false,
++            "text": "changeme"
++        },
++    "disk": "/dev/sda",
++    "partitions": [
++                        {"mountpoint": "/", "size": 0, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
++                        {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
++                        {"mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
++                        {"mountpoint": "/swap", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"swap"}}
++                    ],
++    "packagelist_file": "packages_minimal.json",
++    "additional_packages": ["vim"],
++    "postinstall": [
++                        "#!/bin/sh",
++                        "echo \"Hello World\" > /etc/postinstall"
++                   ],
++    "public_key": "<ssh-key-here>",
++    "linux_flavor": "linux",
++    "network": {
++        "type": "dhcp"
++    }
++}
+-- 
+2.23.1
+

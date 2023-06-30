@@ -1,0 +1,191 @@
+From 6b68acd28a15007f4dfd87c19749e51b20b22db6 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 13 Apr 2023 16:09:58 -0700
+Subject: [PATCH 01/14] add _mount() method to the installer
+
+Change-Id: I34926f9a296acabce7f0e5f46194fe1f4b959f5d
+---
+ photon_installer/installer.py | 113 +++++++++++++++++++---------------
+ 1 file changed, 62 insertions(+), 51 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 6efe5b1..9718621 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -105,6 +105,7 @@ class Installer(object):
+         self.insecure_installation = insecure_installation
+         self.photon_release_version = photon_release_version
+         self.ab_present = False
++        self.mounts = []
+ 
+         if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory) and working_directory == Defaults.WORKING_DIRECTORY:
+             shutil.rmtree(self.working_directory)
+@@ -523,6 +524,7 @@ class Installer(object):
+         if self.install_config.get('live', True):
+             self._eject_cdrom()
+ 
++
+     def _unsafe_install(self):
+         """
+         Install photon system
+@@ -551,6 +553,7 @@ class Installer(object):
+         self._deactivate_network_in_chroot()
+         self._unmount_all()
+ 
++
+     def exit_gracefully(self, signal1=None, frame1=None):
+         """
+         This will be called if the installer interrupted by Ctrl+C, exception
+@@ -591,23 +594,11 @@ class Installer(object):
+         """
+         Unmount partitions and special folders
+         """
+-        for d in ["/tmp", "/run", "/sys", "/dev/pts", "/dev", "/proc"]:
+-            if os.path.exists(self.photon_root + d):
+-                retval = self.cmd.run(['umount', '-l', self.photon_root + d])
+-                if retval != 0:
+-                    self.logger.error("Failed to unmount {}".format(d))
+-
+-        for partition in self.install_config['partitions'][::-1]:
+-            if self._get_partition_type(partition) in [PartitionType.BIOS, PartitionType.SWAP]:
+-                continue
+-            if partition.get('shadow', False):
+-                continue
+-
+-            mountpoint = self.photon_root + partition["mountpoint"]
+-            if os.path.exists(mountpoint):
+-                retval = self.cmd.run(['umount', '-l', mountpoint])
+-                if retval != 0:
+-                    self.logger.error("Failed to unmount partition {}".format(mountpoint))
++        while self.mounts:
++            d = self.mounts.pop()
++            retval = self.cmd.run(['umount', '-l', d])
++            if retval != 0:
++                self.logger.error(f"Failed to unmount {d}")
+ 
+         # need to call it twice, because of internal bind mounts
+         if 'ostree' in self.install_config:
+@@ -812,21 +803,22 @@ class Installer(object):
+                 continue
+             if partition.get('shadow', False):
+                 continue
+-            mountpoint = self.photon_root + partition["mountpoint"]
+-            self.cmd.run(['mkdir', '-p', mountpoint])
+-            mount_cmd = ['mount', '-v']
+-            if "fs_options" in partition:
+-                mount_cmd.extend(['-o', partition['fs_options']])
+-            mount_cmd.extend([partition["path"], mountpoint])
+-            retval = self.cmd.run(mount_cmd)
+-            if retval != 0:
+-                self.logger.error("Failed to mount partition {}".format(partition["path"]))
+-                self.exit_gracefully()
++
++            options = None
++            if 'fs_options' in partition:
++                if type(partition['fs_options']) is str:
++                    options = partition['fs_options'].split(",")
++                elif type(partition['fs_options']) is list:
++                    options = partition['fs_options']
++            self._mount(partition['path'], partition['mountpoint'], options=options, create=True)
++
+             if partition['filesystem'] == "btrfs" and "btrfs" in partition:
+-                if "label" in partition["btrfs"]:
+-                    self.cmd.run(f"btrfs filesystem label {mountpoint} {partition['btrfs']['label']}")
+-                if "subvols" in partition["btrfs"]:
+-                    self._create_btrfs_subvolumes(mountpoint, partition["btrfs"], partition["path"])
++                mntpoint = os.path.join(self.photon_root, partition['mountpoint'].strip('/'))
++                if 'label' in partition['btrfs']:
++                    self.cmd.run(f"btrfs filesystem label {mntpoint} {partition['btrfs']['label']}")
++                if 'subvols' in partition["btrfs"]:
++                    self._create_btrfs_subvolumes(mntpoint, partition['btrfs'], partition['path'])
++
+ 
+     def _initialize_system(self):
+         """
+@@ -881,18 +873,14 @@ class Installer(object):
+             os.mknod(os.path.join(self.photon_root, "dev", device),
+                      mode | dev_type, os.makedev(major, minor))
+ 
++
+     def _mount_special_folders(self):
+         for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
+-            retval = self.cmd.run(['mount', '-o', 'bind', d, self.photon_root + d])
+-            if retval != 0:
+-                self.logger.error("Failed to bind mount {}".format(d))
+-                self.exit_gracefully()
++            self._mount(d, d, bind=True)
+ 
+         for d in ["/tmp", "/run"]:
+-            retval = self.cmd.run(['mount', '-t', 'tmpfs', 'tmpfs', self.photon_root + d])
+-            if retval != 0:
+-                self.logger.error("Failed to bind mount {}".format(d))
+-                self.exit_gracefully()
++            self._mount('tmpfs', d, fstype='tmpfs')
++
+ 
+     def _copy_additional_files(self):
+         if 'additional_files' in self.install_config:
+@@ -1236,6 +1224,32 @@ class Installer(object):
+             return '8300'
+         raise Exception("Unknown partition type: {}".format(ptype))
+ 
++
++    def _mount(self, device, mntpoint, bind=False, options=None, fstype=None, create=False):
++        mntpoint = os.path.join(self.photon_root, mntpoint.strip("/"))
++
++        self.logger.info(f"mounting {device} to {mntpoint}")
++        assert mntpoint.startswith(self.photon_root)
++
++        if create and not os.path.isdir(mntpoint):
++            os.makedirs(mntpoint)
++
++        cmd = ['mount', '-v']
++        if fstype is not None:
++            cmd.extend(['-t', fstype])
++        if options is not None:
++            cmd.extend(['-o', ','.join(options)])
++        if bind:
++            cmd.extend(['--bind'])
++        cmd.extend([device, mntpoint])
++        retval = self.cmd.run(cmd)
++        if retval:
++            self.logger.error(f"Failed to mount {device} to {mntpoint}")
++            self.exit_gracefully()
++        else:
++            self.mounts.append(mntpoint)
++
++
+     def _mount_btrfs_subvol(self, mountpoint, disk, subvol_name, fs_options=None, parent_subvol=""):
+         """
+         Mount btrfs subvolume if mountpoint specified.
+@@ -1243,18 +1257,15 @@ class Installer(object):
+         If nested subvolume then append parent subvolume to identify the given subvolume to mount.
+         If fs_options provided then append fs_options to given mount options.
+         """
+-        self.logger.info(self.photon_root + mountpoint)
+-        mountpt = self.photon_root + mountpoint
+-        self.cmd.run(["mkdir", "-p", mountpt])
+-        mount_cmd = ['mount', '-v', disk]
+-        options = "subvol=" + os.path.join(parent_subvol, subvol_name)
+-        if fs_options:
+-            options += f",{fs_options}"
+-        mount_cmd.extend(['-o', options, mountpt])
+-        retval = self.cmd.run(mount_cmd)
+-        if retval:
+-            self.logger.error(f"Failed to mount subvolume {parent_subvol}/{subvol_name} to {mountpt}")
+-            self.exit_gracefully()
++
++        options = []
++        if type(fs_options) is str:
++            options = fs_options.split(",")
++        elif type(fs_options) is list:
++            options = fs_options
++        options.append("subvol={}".format(os.path.join(parent_subvol, subvol_name)))
++        self._mount(disk, mountpoint, options=options, create=True)
++
+ 
+     def _create_btrfs_subvolumes(self, path, partition, disk, parent_subvol=""):
+         """
+-- 
+2.23.1
+

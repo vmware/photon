@@ -1,0 +1,450 @@
+From 4edaf0b4c7e3d169c45cb1c95a86149640c8ff91 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Fri, 17 Feb 2023 13:36:57 -0800
+Subject: [PATCH 05/14] use tdnf class for tdnf calls
+
+Change-Id: I5c27ab33fa02caf707f305db0b9e53362fafeca4
+---
+ photon_installer/installer.py  |  77 +++++++-----------
+ photon_installer/isoBuilder.py |  75 ++++++++++-------
+ photon_installer/tdnf.py       | 142 +++++++++++++++++++++++++++++++++
+ 3 files changed, 213 insertions(+), 81 deletions(-)
+ create mode 100644 photon_installer/tdnf.py
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index aaa835d..b2e4eba 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -30,6 +30,7 @@ from window import Window
+ from networkmanager import NetworkManager
+ from enum import Enum
+ from collections import abc
++from tdnf import Tdnf
+ 
+ BIOSSIZE = 4
+ ESPSIZE = 10
+@@ -114,8 +115,8 @@ class Installer(object):
+ 
+         self.installer_path = os.path.dirname(os.path.abspath(__file__))
+ 
+-        self.photon_root = self.working_directory + "/photon-chroot"
+-        self.tdnf_conf_path = self.working_directory + "/tdnf.conf"
++        self.photon_root = os.path.join(self.working_directory, "photon-chroot")
++        self.tdnf_conf_path = os.path.join(self.working_directory, "tdnf.conf")
+ 
+         self.setup_grub_command = os.path.join(os.path.dirname(__file__), "mk-setup-grub.sh")
+ 
+@@ -154,6 +155,13 @@ class Installer(object):
+ 
+         self._add_defaults(install_config)
+ 
++        self.tdnf = Tdnf(logger=self.logger,
++                         config_file=self.tdnf_conf_path,
++                         reposdir=self.working_directory,
++                         releasever=self.photon_release_version,
++                         installroot=self.photon_root,
++                         docker_image=install_config.get('photon_docker_image', None))
++
+         issue = self._check_install_config(install_config)
+         if issue:
+             self.logger.error(issue)
+@@ -177,7 +185,7 @@ class Installer(object):
+             retval, size = CommandUtils.get_disk_size_bytes(disk)
+             if retval != 0:
+                 self.logger.info("Error code: {}".format(retval))
+-                raise Exception(f"Failed to get disk {disk} size")
++                raise Exception(f"Failed to get disk '{disk}' size")
+             disk_sizes[disk] = int(size)
+         self.disk_sizes = disk_sizes
+ 
+@@ -848,19 +856,10 @@ class Installer(object):
+             self.logger.error("Failed to initialize rpm DB")
+             self.exit_gracefully()
+ 
+-        # Install filesystem rpm
+-        tdnf_cmd = ("tdnf install -y filesystem --releasever {0} "
+-                    "--installroot {1} -c {2} "
+-                    "--setopt=reposdir={3}").format(self.photon_release_version,
+-                                                    self.photon_root,
+-                                                    self.tdnf_conf_path,
+-                                                    self.working_directory)
+-        retval = self.cmd.run(tdnf_cmd)
++        retval, tdnf_out = self.tdnf.run(['install', 'filesystem'])
+         if retval != 0:
+-            retval = self._run_tdnf_in_docker(tdnf_cmd)
+-            if retval != 0:
+-                self.logger.error("Failed to install filesystem rpm")
+-                self.exit_gracefully()
++            self.logger.error("Failed to install filesystem rpm")
++            self.exit_gracefully()
+ 
+         # Create special devices. We need it when devtpmfs is not mounted yet.
+         devices = {
+@@ -1057,6 +1056,7 @@ class Installer(object):
+                 "clean_requirements_on_remove=true\n",
+                 "keepcache=0\n"])
+ 
++
+     def _install_additional_rpms(self):
+         rpms_path = self.install_config.get('additional_rpms_path', None)
+ 
+@@ -1068,20 +1068,6 @@ class Installer(object):
+             self.exit_gracefully()
+ 
+ 
+-    def _run_tdnf_in_docker(self, tdnf_cmd):
+-        docker_args = ['docker', 'run', '--rm', '--privileged', '--ulimit',  'nofile=1024:1024']
+-        docker_args.extend(['-v', f'{self.working_directory}:{self.working_directory}'])
+-
+-        repos = self.install_config["repos"]
+-        for repo in repos:
+-            if repos[repo]["baseurl"].startswith('file://'):
+-                 rpm_path = repos[repo]["baseurl"][7:]
+-                 docker_args.extend(['-v', f'{rpm_path}:{rpm_path}'])
+-        docker_args.extend([self.install_config["photon_docker_image"], "/bin/sh", "-c", tdnf_cmd])
+-        self.logger.info(' '.join(docker_args))
+-        return self.cmd.run(docker_args)
+-
+-
+     def _install_packages(self):
+         """
+         Install packages using tdnf command
+@@ -1092,19 +1078,19 @@ class Installer(object):
+         packages_to_install = {}
+         total_size = 0
+         stderr = None
+-        tdnf_cmd = ("tdnf install -y --releasever {0} --installroot {1} "
+-                    "-c {2} --setopt=reposdir={3} "
+-                    "{4}").format(self.photon_release_version,
+-                                  self.photon_root,
+-                                  self.tdnf_conf_path,
+-                                  self.working_directory,
+-                                  " ".join(selected_packages))
+-        self.logger.debug(tdnf_cmd)
+-
+-        # run in shell to do not throw exception if tdnf not found
+-        process = subprocess.Popen(tdnf_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+ 
+         if self.install_config['ui']:
++            tdnf_cmd = ("tdnf install -y --releasever {0} --installroot {1} "
++                        "-c {2} --setopt=reposdir={3} "
++                        "{4}").format(self.photon_release_version,
++                                      self.photon_root,
++                                      self.tdnf_conf_path,
++                                      self.working_directory,
++                                      " ".join(selected_packages))
++
++            # run in shell to do not throw exception if tdnf not found
++            process = subprocess.Popen(tdnf_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++
+             while True:
+                 output = process.stdout.readline().decode()
+                 if output == '':
+@@ -1143,16 +1129,7 @@ class Installer(object):
+ 
+                     self.progress_bar.update_message(output)
+         else:
+-            stdout, stderr = process.communicate()
+-            self.logger.info(stdout.decode())
+-            retval = process.returncode
+-            # image creation. host's tdnf might not be available or can be outdated (Photon 1.0)
+-            # retry with docker container
+-            if retval != 0 and retval != 137:
+-                self.logger.error(stderr.decode())
+-                stderr = None
+-                self.logger.info("Retry 'tdnf install' using docker image")
+-                retval = self._run_tdnf_in_docker(tdnf_cmd)
++            retval, tdnf_out = self.tdnf.run(['install'] + selected_packages)
+ 
+         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+         if retval != 0 and retval != 137:
+diff --git a/photon_installer/isoBuilder.py b/photon_installer/isoBuilder.py
+index 3c8001b..0afdf9b 100755
+--- a/photon_installer/isoBuilder.py
++++ b/photon_installer/isoBuilder.py
+@@ -10,6 +10,7 @@ import collections
+ from logger import Logger
+ from argparse import ArgumentParser
+ from commandutils import CommandUtils
++from tdnf import Tdnf
+ 
+ 
+ class IsoBuilder(object):
+@@ -26,6 +27,13 @@ class IsoBuilder(object):
+         self.cmdUtil = CommandUtils(self.logger)
+         self.architecture = platform.machine()
+         self.additional_files = []
++        self.repos_dir = os.path.join(self.working_dir, "yum.repos.d")
++
++        self.tdnf = Tdnf(logger=self.logger,
++                         releasever=self.photon_release_version,
++                         reposdir=self.repos_dir,
++                         docker_image=self.photon_docker_image)
++
+ 
+     def runCmd(self, cmd):
+         retval = self.cmdUtil.run(cmd)
+@@ -78,6 +86,21 @@ class IsoBuilder(object):
+         with open(f"{self.working_dir}/build_install_options_custom.json", "w") as json_file:
+             json_file.write(json.dumps(install_option_data))
+ 
++
++    def setupReposDir(self):
++        os.makedirs(self.repos_dir, exist_ok=True)
++
++        # copy repo files from host
++        if os.path.isdir("/etc/yum.repos.d"):
++            for repo_file in glob.glob("/etc/yum.repos.d/*.repo"):
++                shutil.copy(repo_file, self.repos_dir)
++
++        # additional repos
++        if self.additional_repos:
++            for repo_file in self.additional_repos:
++                shutil.copy(repo_file, self.repos_dir)
++
++
+     def generateInitrd(self):
+         """
+         Generate custom initrd
+@@ -103,6 +126,7 @@ class IsoBuilder(object):
+         # Skip downloading packages if ostree iso.
+         ostree_iso = False
+         if self.function != "build-rpm-ostree-iso":
++            self.setupReposDir()
+             self.downloadPkgs()
+         else:
+             ostree_iso = True
+@@ -162,7 +186,7 @@ class IsoBuilder(object):
+     def downloadPkgs(self):
+         if not os.path.exists(self.rpms_path):
+             self.logger.info(f"Creating RPMS directory: {self.rpms_path}")
+-            os.makedirs(self.rpms_path)
++            os.makedirs(self.rpms_path, exist_ok=True)
+ 
+         # Add installer initrd and custom packages to package list..
+         self.addPkgsToList(self.initrd_pkg_list_file)
+@@ -180,25 +204,17 @@ class IsoBuilder(object):
+ 
+         pkg_list = " ".join(self.pkg_list)
+         self.logger.info(f"List of packages to download: {self.pkg_list}")
+-        additionalRepo = ""
+-        if self.additional_repos:
+-            self.logger.info(f"List of additional repos given to download packages from: {self.additional_repos}")
+-            for repo in self.additional_repos:
+-                abs_repo_path = os.path.abspath(repo)
+-                additionalRepo += f"--mount  type=bind,source={abs_repo_path},target=/etc/yum.repos.d/{os.path.basename(repo)} "
+-
+-        # TDNF cmd to download packages in the list from packages.vmware.com/photon.
+-        # Using --alldeps option to include all dependencies even though package might be installed on system.
+-        tdnf_download_cmd = (f"tdnf --releasever {self.photon_release_version} --alldeps --downloadonly -y "
+-                             f"--downloaddir={self.working_dir}/RPMS install {pkg_list}")
+-        download_cmd = (f"docker run --privileged --rm {additionalRepo} -v {self.rpms_path}:{self.rpms_path} "
+-                        f"-v {self.working_dir}:{self.working_dir} photon:{self.photon_release_version} "
+-                        f"/bin/bash -c \"tdnf clean all && tdnf update tdnf -y && {tdnf_download_cmd}\"")
+-        self.logger.info("Starting to download packages...")
+-        self.logger.debug(f"Starting to download packages:\n{download_cmd}")
+-        self.runCmd(download_cmd)
+-
+-        # Seperate out packages downloaded into arch specific directories.
++
++        # skip downloading if repo already exists
++        if not os.path.isdir(os.path.join(self.rpms_path, 'repodata')):
++            self.logger.info("downloading packages...")
++            retval, tdnf_out = self.tdnf.run(['--alldeps', '--downloadonly', '--downloaddir', self.rpms_path, 'install'] + self.pkg_list, \
++                                             directories=[self.rpms_path])
++            if retval != 0:
++                raise Exception(f"tdnf failed: {tdnf_out}")
++            self.logger.info("...done.")
++
++        # Separate out packages downloaded into arch specific directories.
+         # Run createrepo on the rpm download path once downloaded.
+         if not os.path.exists(f"{self.rpms_path}/x86_64"):
+             os.mkdir(f"{self.rpms_path}/x86_64")
+@@ -260,15 +276,13 @@ class IsoBuilder(object):
+         pkg_list=["photon-iso-config"]
+         if self.architecture == "x86_64":
+             pkg_list.extend(["syslinux"])
+-        pkg_list = " ".join(pkg_list)
+-        tdnf_install_cmd = (f"tdnf install -qy --releasever {self.photon_release_version} --installroot {self.working_dir}/isolinux-temp "
+-                            f"--rpmverbosity 10 {pkg_list}")
+ 
+-        self.logger.debug(tdnf_install_cmd)
+-        # When using tdnf --installroot or rpm --root on chroot folder without /proc mounted, we must limit number of open files
+-        # to avoid librpm hang scanning all possible FDs.
+-        self.runCmd((f'docker run --privileged --ulimit nofile=1024:1024 --rm -v {self.working_dir}:{self.working_dir}'
+-                    f' photon:{self.photon_release_version} /bin/bash -c "{tdnf_install_cmd}"'))
++        self.logger.info("installing packages for isolinux...")
++        isolinux_dir = os.path.join(self.working_dir, "isolinux-temp")
++        retval, tdnf_out = self.tdnf.run(['install', '--installroot', isolinux_dir] + pkg_list, directories=[isolinux_dir])
++        if retval != 0:
++            raise Exception(f"tdnf failed: {tdnf_out}")
++        self.logger.info("...done.")
+ 
+         self.logger.debug("Succesfully installed photon-iso-config syslinux...")
+         for file in os.listdir(f"{self.working_dir}/isolinux-temp/usr/share/photon-iso-config"):
+@@ -324,12 +338,11 @@ class IsoBuilder(object):
+         self.addGrubConfig()
+ 
+         self.logger.info(f"Generating Iso: {self.iso_name}")
+-        build_iso_cmd = f"pushd {self.working_dir} && "
++        build_iso_cmd = f"cd {self.working_dir} && "
+         build_iso_cmd += "mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat "
+         build_iso_cmd += "-no-emul-boot -boot-load-size 4 -boot-info-table "
+         build_iso_cmd += f"-eltorito-alt-boot -e {self.efi_img} -no-emul-boot "
+-        build_iso_cmd += f"-V \"PHOTON_$(date +%Y%m%d)\" {self.working_dir} > {self.iso_name} && "
+-        build_iso_cmd += "popd"
++        build_iso_cmd += f"-V \"PHOTON_$(date +%Y%m%d)\" {self.working_dir} > {self.iso_name}"
+         self.runCmd(build_iso_cmd)
+ 
+ 
+diff --git a/photon_installer/tdnf.py b/photon_installer/tdnf.py
+new file mode 100644
+index 0000000..e5bf958
+--- /dev/null
++++ b/photon_installer/tdnf.py
+@@ -0,0 +1,142 @@
++#/*
++# * Copyright © 2023 VMware, Inc.
++# * SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
++# */
++#pylint: disable=invalid-name,missing-docstring
++
++import subprocess
++import os
++import json
++from logger import Logger
++
++
++def find_binary_in_path(binary_name):
++    path_dirs = os.environ.get('PATH').split(os.pathsep)
++
++    for dir in path_dirs:
++        binary_path = os.path.join(dir, binary_name)
++        if os.path.isfile(binary_path) and os.access(binary_path, os.X_OK):
++            return binary_path
++
++    return None
++
++
++class Tdnf:
++
++    DOCKER_ARGS = ['--rm', '--privileged', '--ulimit', 'nofile=1024:1024']
++    DEFAULT_CONTAINER = "photon:latest"
++
++    def __init__(self, **kwargs):
++        kwords = ['logger', 'config_file', 'reposdir', 'releasever', 'installroot', 'docker_image']
++
++        for kw in kwords:
++            attr = kwargs.get(kw, None)
++            setattr(self, kw, attr)
++
++        if self.logger is None:
++            self.logger = Logger.get_logger(None, 'debug', True)
++
++        self.tdnf_bin = find_binary_in_path("tdnf")
++
++        if self.tdnf_bin:
++            try:
++                retval, tdnf_out = self.run(["--version"])
++                assert retval == 0
++                self.tdnf_version = tdnf_out['Version']
++            except Exception as e:
++                self.logger.error(f"tdnf binary found at {self.tdnf_bin} is not usable.")
++                self.tdnf_bin = None
++
++        self.docker_bin = find_binary_in_path("docker")
++
++        if self.tdnf_bin is None:
++            if self.docker_bin:
++                assert self.docker_image is not None, "local tdnf binary not found, try setting a docker image that contains tdnf"
++                try:
++                    retval, tdnf_out = self.run(["--version"])
++                    assert retval == 0
++                    self.tdnf_version = tdnf_out['Version']
++                except Exception as e:
++                    self.logger.error(f"tdnf binary on docker image {self.docker_image} is not usable - maybe provide another image?")
++                    self.tdnf_bin = None
++                    raise e
++            else:
++                raise Exception("No usable tdnf or docker binary found")
++
++
++    def default_args(self):
++        args = []
++        if self.config_file:
++            args += ['-c', self.config_file]
++        if self.reposdir:
++            args += ['--setopt', f"reposdir={self.reposdir}"]
++        if self.releasever:
++            args += ['--releasever', self.releasever]
++        if self.installroot:
++            args += ['--installroot', self.installroot]
++        return args
++
++
++    def get_command(self, args=[], directories=[]):
++        tdnf_args = ['-j', '-y'] + self.default_args() + args
++        if self.tdnf_bin:
++            return [self.tdnf_bin] + tdnf_args
++        elif self.docker_bin:
++            dirs = set(directories)
++            if self.installroot:
++                dirs.add(self.installroot)
++            if self.config_file:
++                dirs.add(os.path.dirname(self.config_file))
++            if self.reposdir:
++                dirs.add(os.path.dirname(self.reposdir))
++
++            dir_args = []
++            for d in dirs:
++                dir_args.append("-v")
++                dir_args.append(f"{d}:{d}")
++
++            return [self.docker_bin, "run"] + \
++                   self.DOCKER_ARGS + \
++                   dir_args + \
++                   [self.docker_image, "tdnf"] + \
++                   tdnf_args
++        else:
++            raise Exception("no usable tdnf or docker binary found")
++
++
++    def execute(self, args):
++        self.logger.info(f"running {' '.join(args)}")
++        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++        out, err = process.communicate()
++        retval = process.returncode
++
++        out_json = None
++        try:
++            out_json = json.loads(out)
++        except json.decoder.JSONDecodeError as e:
++            # try again, stopping at the pos where error happened
++            # happens when packages print output from scripts
++            out_json = json.loads(out[:e.pos])
++            self.logger.info(f"json decode failed at line {e.lineno}, at: '{e.doc[e.pos:]}'")
++
++        if retval != 0:
++            self.logger.info(f"Command failed: {args}")
++            self.logger.info(f"Error code: {out_json['Error']}")
++            self.logger.error(out_json['ErrorMessage'])
++
++        return retval, out_json
++
++
++    def run(self, args=[], directories=[]):
++        args = self.get_command(args, directories)
++        return self.execute(args)
++
++
++def main():
++    tdnf = Tdnf(installroot="/installroot", releasever="5.0")
++    retval, out_json = tdnf.run(['repolist'])
++    print(json.dumps(out_json, indent=4))
++
++
++if __name__ == '__main__':
++    main()
+-- 
+2.23.1
+

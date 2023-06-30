@@ -1,0 +1,25 @@
+From 54a8effeaacf2768cac7b8dc4d33ee3764f632fe Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Mon, 26 Jun 2023 13:37:49 -0700
+Subject: [PATCH 13/14] print stderr output from tdnf for easier diagnosis
+
+Change-Id: I6bc2c01b6c124c68f21de67cbc8344180ff9ba0e
+---
+ photon_installer/tdnf.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/photon_installer/tdnf.py b/photon_installer/tdnf.py
+index e5bf958..faf3447 100644
+--- a/photon_installer/tdnf.py
++++ b/photon_installer/tdnf.py
+@@ -121,6 +121,7 @@ class Tdnf:
+ 
+         if retval != 0:
+             self.logger.info(f"Command failed: {args}")
++            self.logger.error(err.decode())
+             self.logger.info(f"Error code: {out_json['Error']}")
+             self.logger.error(out_json['ErrorMessage'])
+ 
+-- 
+2.23.1
+
