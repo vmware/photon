@@ -1,13 +1,13 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        2.3.1
-Release:        17%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  kubernetes-dashboard=806ca363c4d99b638216e9833e99849bafe60be90c5804627acb2ef18bcea7419c5a0cdb8135e1652ce3dd3a58df7c53e9d7f08b3fa5c5287e890b59ef5767f4
+%define sha512  kubernetes-dashboard=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
 Source1:        dashboard-dist-%{version}.tar.gz
-%define sha512  dashboard-dist=662715400fb64d661beedcd69ee84119345c10339d401976e9652dcb86a0df9cb0f95de6d13c58783ecbc9523af61eabcc2d8329db3a621a2a9b48c5cd702341
+%define sha512  dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -71,6 +71,8 @@ cp -p -r ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+* Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-1
+- Update to 2.7.0, Fixes multiple second level CVE
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.3.1-17
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.3.1-16
