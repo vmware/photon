@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.288
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -565,6 +565,9 @@ Patch1563: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 #Fix for CVE-2023-1077
 Patch1564: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 
+#Fix for CVE-2021-3759
+Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -763,7 +766,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1564
+%autopatch -p1 -m1550 -M1565
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1152,6 +1155,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2
+- Fix for CVE-2021-3759
 * Fri Jul 21 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.288-1
 - Update to version 4.19.288
 * Tue Jul 18 2023 Naadir Jeewa <jeewan@vmware.com> 4.19.285-2
