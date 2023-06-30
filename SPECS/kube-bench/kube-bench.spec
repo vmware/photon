@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.6.12
