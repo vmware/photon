@@ -432,7 +432,7 @@ class BuildEnvironmentSetup:
         )
         check_prerequesite["sources-cached"] = True
 
-    def pull_publish_rpms():
+    def publish_rpms():
         if check_prerequesite["publish-rpms"]:
             return
 
@@ -447,7 +447,7 @@ class BuildEnvironmentSetup:
 
         check_prerequesite["publish-rpms"] = True
 
-    def pull_publish_x_rpms():
+    def publish_x_rpms():
         if check_prerequesite["publish-x-rpms"]:
             return
 
@@ -628,12 +628,12 @@ class RpmBuildTarget:
         if configdict["additional-path"]["photon-publish-x-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_x_rpms_cached()
         else:
-            BuildEnvironmentSetup.pull_publish_x_rpms()
+            BuildEnvironmentSetup.publish_x_rpms()
 
         if configdict["additional-path"]["photon-publish-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_rpms_cached()
         else:
-            BuildEnvironmentSetup.pull_publish_rpms()
+            BuildEnvironmentSetup.publish_rpms()
 
         if configdict["additional-path"]["photon-sources-path"] is not None:
             BuildEnvironmentSetup.sources_cached()
