@@ -1,6 +1,6 @@
 Summary:        FUSE overlay+shiftfs implementation for rootless containers
 Name:           fuse-overlayfs
-Version:        1.10
+Version:        1.12
 Release:        1%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Distribution:   Photon
 
 URL:            https://github.com/containers/fuse-overlayfs
 Source0:        https://github.com/containers/fuse-overlayfs/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=cb399a56f2cb0ccf3d294d82cfaa9682db6812e709b1b6d3edf6ce4f7653ddddeffb2810d1c5f8a4178dcdb42e0f65af878fd5c007b31ed18538464482ad1dcf
+%define sha512 %{name}=f113ac20b389d2f1c5e5ff160a60c308017e74c9c85d74a7200bab81a4cfa30335a64740c173f17c91ab4feddffb138ca4378e92894645a67eea5ac73d42890f
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -23,16 +23,6 @@ Requires:       kmod
 %description
 fuse-overlayfs provides an overlayfs FUSE implementation so that it can be used since
 Linux 4.18 by unprivileged users in an user namespace.
-
-%package        devel
-Summary:        Header and development files
-Group:          Development/Libraries
-BuildArch:      noarch
-Requires:       %{name} = %{version}
-
-%description    devel
-This package contains library source intended for building other packages which use
-import path with %{import_path} prefix.
 
 %prep
 %autosetup -p1
@@ -56,6 +46,8 @@ echo fuse > %{buildroot}%{_modulesloaddir}/fuse-overlayfs.conf
 %config(noreplace) %{_modulesloaddir}/fuse-overlayfs.conf
 
 %changelog
+* Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.12-1
+- Upgrade to 1.12
 * Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10-1
 - Version upgrade to 1.10
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 1.9-1
