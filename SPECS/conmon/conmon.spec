@@ -1,11 +1,11 @@
 Summary:        A container monitor utility
 Name:           conmon
-Version:        2.1.5
+Version:        2.1.7
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        conmon-%{version}.tar.gz
-%define sha512  %{name}=84d3cd512e3536281789cf4b592b9799d1302d246f67712287f768eaaad93e25de52e9773dd91e3327f464bd4a294214905c681860a7c7b9e28441247a5e0814
+%define sha512  %{name}=95d394b399a19a62b894cdd03937ab79b81051eea1db461b1bf957ddd7626d6ca4aa108b8319ed8c08adbdf99fd960c5ba29146e8b0673b5c920708912a72973
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +44,8 @@ make %{?_smp_mflags} PREFIX=%{buildroot}%{_prefix} -C docs install
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.7-1
+- Upgrade to v2.1.7
 * Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.5-1
 - Version upgrade to v2.1.5
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.4-1

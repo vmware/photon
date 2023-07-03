@@ -10,35 +10,35 @@
 #
 # For example:
 # git clone git@github.com:containers/common.git
-# cd common && git checkout -b v1.0.1 tags/v1.0.1
-# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-2/
+# cd common && git checkout -b v0.55.0 tags/v0.55.0
+# cp pkg/config/containers.conf pkg/seccomp/seccomp.json pkg/subscriptions/mounts.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/image.git
-# cd image && git checkout -b v5.23.1 tags/v5.23.1
-# cp registries.conf ../containers-common-2/
+# cd image && git checkout -b v5.26.0 tags/v5.26.0
+# cp registries.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/shortnames.git
-# cd shortnames && git checkout -b v2022.02.08 tags/v2022.02.08
-# cp shortnames.conf ../containers-common-2/
+# cd shortnames && git checkout -b v2022.02.20 tags/v2022.02.20
+# cp shortnames.conf ../containers-common-4/
 #
 # git clone git@github.com:containers/skopeo.git
-# cd skopeo && git checkout -b v1.10.0 tags/v1.10.0
-# cp default.yaml default-policy.json ../containers-common-2/
+# cd skopeo && git checkout -b v1.12.0 tags/v1.12.0
+# cp default.yaml default-policy.json ../containers-common-4/
 #
 # git clone git@github.com:containers/storage.git
-# cd storage && git checkout -b v1.44.0 tags/v1.44.0
-# cp storage.conf ../containers-common-2/
+# cd storage && git checkout -b v1.48.0 tags/v1.48.0
+# cp storage.conf ../containers-common-4/
 #
-# cd .. && tar czf containers-common-2.tar.gz containers-common-2
+# cd .. && tar czf containers-common-4.tar.gz containers-common-4
 
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
-Version:        3
+Version:        4
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=74c42f76794998e27b015bb1fe3123df7aa626628753efa003916fedbd6da8a12df52fa420c035555cd4fc4d3e76eae529c2c2092b87ca99646c572c4df345ee
+%define sha512  %{name}=de6484566b3115a278bcbd1959ba31cd8ae58aed711cce90824bce50465d9553316651f6d5c883d681f0bc7b4aed7f2d608db5008c6b07fb128288353fff98e4
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -104,6 +104,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 4-1
+- Upgrade to v4
 * Sun Feb 12 2023 Piyush Gupta <gpiyush@vmware.com> 3-1
 - Version upgrade to v3
 * Mon Dec 19 2022 Nitesh Kumar <kunitesh@vmware.com> 2-1

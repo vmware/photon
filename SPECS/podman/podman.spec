@@ -1,10 +1,10 @@
 %global dnsnamevers 1.3.1
-%global gvisorvers 0.6.0
+%global gvisorvers 0.6.2
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.3.1
-Release:        5%{?dist}
+Version:        4.5.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -12,13 +12,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=907dafc6481cbcb7a9b6771c3682a88d6c3b055050c0a180f9ceb985c1a3826318056b62dd6d2859a2a23eba7aad4bf26404327d5479bde98658745fa7d88efa
+%define sha512 %{name}=c09af81063dba7125d06bb982ae6db5c1933bb32273f194f90875b5c63b916f94d0daacf09212139ae8dc5f8cfa224e7fd1d83e1a22df19be2adde84583ee049
 
 Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
 %define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 
 Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
-%define sha512 gvisor-tap-vsock-%{gvisorvers}=793ebb4224d4b16a4fd29f43471c0558d391f8cc807d54c51a009af1ddf7d27c971484684befefbf1156fa855763d4a8fd0887ee52300175ff00092b296d151e
+%define sha512 gvisor-tap-vsock-%{gvisorvers}=c509c69c545584e7d95e0ec7f8399e6038f71f5d17a7dd280acff59c7a572a1a8a786d541ea1d92469dcd3087efce3c1b01608fb1642f6bf217108900393243f
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -142,10 +142,13 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_bindir}/%{name}
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/rootlessport
+%{_libexecdir}/%{name}/quadlet
 %{_datadir}/bash-completion/completions/%{name}
 %{_unitdir}/%{name}*
 %{_userunitdir}/%{name}*
 %{_tmpfilesdir}/%{name}.conf
+%{_systemdgeneratordir}/%{name}-system-generator
+%{_systemdusergeneratordir}/%{name}-user-generator
 %{_modulesloaddir}/%{name}-iptables.conf
 
 %files remote
@@ -172,6 +175,8 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Thu Jul 13 2023 Prashant S Chauhan <psingchauha@vmware.com> 4.5.1-1
+- Update to 4.5.1, Fixes second level CVE-2022-2990, CVE-2023-25173
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 4.3.1-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 4.3.1-4
