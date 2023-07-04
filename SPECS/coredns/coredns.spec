@@ -3,27 +3,29 @@
 %else
 %global gohostarch      amd64
 %endif
+%define debug_package %{nil}
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.7.1
-Release:        19%{?dist}
+Version:        1.10.1
+Release:        1%{?dist}
 License:        Apache License 2.0
-URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
-Source0:        coredns-%{version}.tar.gz
-%define sha512  coredns=4ac92d040afb145d0b721ba381704741d2e0eb32f0f7e53788195fb72c06bcd7c915ac698396d5f7c27df899c7f526045e39d08cb37ae04d2ca871930d299ac0
+URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go
-BuildRequires:  git
-%define debug_package %{nil}
+
+Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=6906ecf64b6274f4d3957faec6930ec3ed4de0bddd9e2d72ea2794f43186689ede1f440d7626c5ea66956fdec41e354242f99fa489f1f992b86fede5f580a328
+
+BuildRequires: go
+BuildRequires: git
 
 %description
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%autosetup -n coredns-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 export ARCH=%{gohostarch}
@@ -33,9 +35,9 @@ export GOARCH=${ARCH}
 export GOHOSTARCH=${ARCH}
 export GOOS=linux
 export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
+export GOROOT=%{_libdir}/golang
+export GOPATH=%{_datadir}/gocode
+export GOBIN=%{_datadir}/gocode/bin
 export PATH=$PATH:$GOBIN
 mkdir -p ${GOPATH}/src/${PKG}
 cp -rf . ${GOPATH}/src/${PKG}
@@ -44,7 +46,7 @@ pushd ${GOPATH}/src/${PKG}
 # TODO: use prefetched tarball instead.
 sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
 sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
-make %{?_smp_mflags}
+%make_build
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
@@ -55,9 +57,14 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_bindir}/coredns
+%{_bindir}/%{name}
 
 %changelog
+* Tue Jul 04 2023 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+- Version upgrade to v1.10.1 to fix following CVE's:
+- CVE-2018-1098, CVE-2018-1099, CVE-2023-0296,
+- CVE-2020-15106, CVE-2020-15112, CVE-2020-15113,
+- CVE-2020-15114, CVE-2020-15115, CVE-2020-15136
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.7.1-19
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.7.1-18
