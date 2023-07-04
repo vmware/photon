@@ -1,11 +1,11 @@
 %define debug_package %{nil}
 # git tag commit hash
 # update commit id upon every new version release
-%define commit_hash 18944bc70784dfa83010d37054d75487a58ab581
+%define commit_hash 7e8114a82da342cdbec9a518c5c6a1cce58105e9
 
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
-Version:        1.1.0
+Version:        1.4.0
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/containerd/nerdctl
@@ -14,7 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=68c0e13c1fe7c19c91753c5e290247f8dad043538fed1014a34e9881e3da438044441473b2c01657ae923ce23e10d0d3b97ae18168a785d8fbfffdcf43c7b3d2
+%define sha512 %{name}=b14cd92b76d9699b4042fcd7a6906b1c714221b30cff1074a1d59ea038cf74ea6437d4a4d9a265e7b0f4c96397c82d53856f9e43d08aa8abcb98af5e9fb6e8dc
 
 BuildRequires:  go
 BuildRequires:  build-essential
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
+* Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-1
+- Upgrade to v1.4.0
 * Mon Jul 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-1
 - Upgrade to v1.1.0
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.23.0-4
