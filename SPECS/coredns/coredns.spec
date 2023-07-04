@@ -3,21 +3,23 @@
 %else
 %global gohostarch      amd64
 %endif
+%define debug_package %{nil}
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.10.0
-Release:        4%{?dist}
+Version:        1.10.1
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
-Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/v1.9.3.tar.gz/%{name}-%{version}.tar.gz
-%define sha512  %{name}=ddec7ee0139105f417249756133d0384d28cd7f6960183644dfb26d6dfba43a80d461da65040f160a8a7e38785bfdc9f458b2bab2fe8ce82635e8dd0dd42a467
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go
-BuildRequires:  git
-%define debug_package %{nil}
+
+Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=6906ecf64b6274f4d3957faec6930ec3ed4de0bddd9e2d72ea2794f43186689ede1f440d7626c5ea66956fdec41e354242f99fa489f1f992b86fede5f580a328
+
+BuildRequires: go
+BuildRequires: git
 
 %description
 CoreDNS is a DNS server that chains plugins
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Jul 04 2023 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+- Version upgrade to v1.10.1 to fix CVE-2023-0296
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-4
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-3
