@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -26,6 +26,7 @@ Patch10: 0011-remove-install_linux_esx.patch
 Patch11: 0012-handle-LVM-on-the-host.patch
 Patch12: 0013-print-stderr-output-from-tdnf-for-easier-diagnosis.patch
 Patch13: 0014-Add-architecture-specific-settings-for-linux_flavor-.patch
+Patch14: 0001-When-using-docker-a-fallback-to-use-tdnf-file-reposi.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -69,6 +70,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Jul 04 2023 Ankit Jain <ankitja@vmware.com> 2.3-3
+- Fix for file based repo in container
 * Fri Jun 30 2023 Ankit Jain <ankitja@vmware.com> 2.3-2
 - Sync with upstream
 * Tue May 02 2023 Ankit Jain <ankitja@vmware.com> 2.3-1

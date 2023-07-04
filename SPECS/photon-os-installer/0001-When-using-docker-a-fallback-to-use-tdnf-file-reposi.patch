@@ -1,0 +1,177 @@
+From edab1f1220485c1f58fc93cf6ac20974446b9969 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Fri, 30 Jun 2023 16:39:14 -0700
+Subject: [PATCH] When using docker a fallback to use tdnf, file repositories
+ were not mounted to the container. Fixing this in tdnf.py by scanning all
+ configuted repos for base URLs starting with file:// and mounting those (this
+ was the behavior before the Tdnf class was introduced).
+
+Also replacing use of 'rpm' to install additional RPMs with 'tdnf'. This improves
+consistency and avoids mixed use of 'tdnf' in a container and 'rpm' from the host,
+and also may resolve eventual dependencies in the additional RPMs.
+
+Change-Id: Iabeebe5d17c735ec565bbc8ae4de497b6e213cce
+---
+ photon_installer/installer.py | 28 +++++++++++++++++----------
+ photon_installer/tdnf.py      | 36 +++++++++++++++++++++--------------
+ 2 files changed, 40 insertions(+), 24 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 0433883..8857e95 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -400,12 +400,12 @@ class Installer(object):
+         # if "repos" key not present in install_config or "repos=" provided by user through cmdline prioritize cmdline
+         if "repos" not in install_config or (self.repo_paths and self.repo_paths != Defaults.REPO_PATHS):
+             # override "repos" provided via ks_config
+-            install_config["repos"] = {}
++            install_config['repos'] = {}
+             repo_pathslist = self.repo_paths.split(",")
+             for idx,url in enumerate(repo_pathslist):
+                 if url.startswith('/'):
+                     url = f"file://{url}"
+-                install_config["repos"][f"photon-local{idx}"] = {
++                install_config['repos'][f"photon-local{idx}"] = {
+                                                 "name": f"VMware Photon OS Installer-{idx}",
+                                                 "baseurl": url,
+                                                 "gpgcheck": 0,
+@@ -931,7 +931,8 @@ class Installer(object):
+             self.logger.error("Failed to initialize rpm DB")
+             self.exit_gracefully()
+ 
+-        retval, tdnf_out = self.tdnf.run(['install', 'filesystem'])
++        retval, tdnf_out = self.tdnf.run(['install', 'filesystem'],
++                                         repos=self.install_config['repos'])
+         if retval != 0:
+             self.logger.error("Failed to install filesystem rpm")
+             self.exit_gracefully()
+@@ -996,7 +997,7 @@ class Installer(object):
+             shutil.rmtree(cache_dir)
+         if os.path.exists(self.tdnf_conf_path):
+             os.remove(self.tdnf_conf_path)
+-        for repo in self.install_config["repos"]:
++        for repo in self.install_config['repos']:
+             try:
+                 os.remove(os.path.join(self.working_directory, f"{repo}.repo"))
+             except FileNotFoundError:
+@@ -1121,7 +1122,7 @@ class Installer(object):
+         """
+         Setup the tdnf repo for installation
+         """
+-        repos = self.install_config["repos"]
++        repos = self.install_config['repos']
+         for repo in repos:
+             if self.insecure_installation:
+                 repos[repo]["sslverify"] =  0
+@@ -1142,12 +1143,19 @@ class Installer(object):
+     def _install_additional_rpms(self):
+         rpms_path = self.install_config.get('additional_rpms_path', None)
+ 
+-        if not rpms_path or not os.path.exists(rpms_path):
++        if not rpms_path:
+             return
+ 
+-        if self.cmd.run(['rpm', '--root', self.photon_root, '-U', rpms_path + '/*.rpm']) != 0:
+-            self.logger.info('Failed to install additional_rpms from ' + rpms_path)
+-            self.exit_gracefully()
++        if not os.path.exists(rpms_path):
++            raise Exception(f"additional rpms path '{rpms_path}' not found")
++
++        pkgs = glob.glob(os.path.join(rpms_path, "*.rpm"))
++        retval, tdnf_out = self.tdnf.run(['install'] + pkgs,
++                                         directories=[rpms_path],
++                                         repos=self.install_config['repos'])
++
++        if retval != 0:
++            raise Exception(f"failed to install additional rpms from '{rpms_path}'")
+ 
+ 
+     def _install_packages(self):
+@@ -1211,7 +1219,7 @@ class Installer(object):
+ 
+                     self.progress_bar.update_message(output)
+         else:
+-            retval, tdnf_out = self.tdnf.run(['install'] + selected_packages)
++            retval, tdnf_out = self.tdnf.run(['install'] + selected_packages, repos=self.install_config['repos'])
+ 
+         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+         if retval != 0 and retval != 137:
+diff --git a/photon_installer/tdnf.py b/photon_installer/tdnf.py
+index e5bf958..f29c11c 100644
+--- a/photon_installer/tdnf.py
++++ b/photon_installer/tdnf.py
+@@ -26,8 +26,9 @@ class Tdnf:
+     DOCKER_ARGS = ['--rm', '--privileged', '--ulimit', 'nofile=1024:1024']
+     DEFAULT_CONTAINER = "photon:latest"
+ 
+-    def __init__(self, **kwargs):
+-        kwords = ['logger', 'config_file', 'reposdir', 'releasever', 'installroot', 'docker_image']
++    def __init__(self, force_docker=False, **kwargs):
++        kwords = ['logger', 'config_file', 'reposdir',
++                  'releasever', 'installroot', 'docker_image']
+ 
+         for kw in kwords:
+             attr = kwargs.get(kw, None)
+@@ -36,16 +37,19 @@ class Tdnf:
+         if self.logger is None:
+             self.logger = Logger.get_logger(None, 'debug', True)
+ 
+-        self.tdnf_bin = find_binary_in_path("tdnf")
++        self.tdnf_bin = None
+ 
+-        if self.tdnf_bin:
+-            try:
+-                retval, tdnf_out = self.run(["--version"])
+-                assert retval == 0
+-                self.tdnf_version = tdnf_out['Version']
+-            except Exception as e:
+-                self.logger.error(f"tdnf binary found at {self.tdnf_bin} is not usable.")
+-                self.tdnf_bin = None
++        if not force_docker:
++            self.tdnf_bin = find_binary_in_path("tdnf")
++
++            if self.tdnf_bin:
++                try:
++                    retval, tdnf_out = self.run(["--version"])
++                    assert retval == 0
++                    self.tdnf_version = tdnf_out['Version']
++                except Exception:
++                    self.logger.error(f"tdnf binary found at {self.tdnf_bin} is not usable.")
++                    self.tdnf_bin = None
+ 
+         self.docker_bin = find_binary_in_path("docker")
+ 
+@@ -77,7 +81,7 @@ class Tdnf:
+         return args
+ 
+ 
+-    def get_command(self, args=[], directories=[]):
++    def get_command(self, args=[], directories=[], repos={}):
+         tdnf_args = ['-j', '-y'] + self.default_args() + args
+         if self.tdnf_bin:
+             return [self.tdnf_bin] + tdnf_args
+@@ -90,6 +94,10 @@ class Tdnf:
+             if self.reposdir:
+                 dirs.add(os.path.dirname(self.reposdir))
+ 
++            for repoid, repo in repos.items():
++                if repo['baseurl'].startswith('file://'):
++                    dirs.add(repo["baseurl"][7:])
++
+             dir_args = []
+             for d in dirs:
+                 dir_args.append("-v")
+@@ -127,8 +135,8 @@ class Tdnf:
+         return retval, out_json
+ 
+ 
+-    def run(self, args=[], directories=[]):
+-        args = self.get_command(args, directories)
++    def run(self, args=[], directories=[], repos={}):
++        args = self.get_command(args, directories, repos)
+         return self.execute(args)
+ 
+ 
+-- 
+2.23.1
+
