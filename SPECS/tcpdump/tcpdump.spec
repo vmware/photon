@@ -1,14 +1,12 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
-Version:        4.9.3
-Release:        5%{?dist}
+Version:        4.99.4
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
+%define sha512  tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
 Patch0:         CVE-2018-19519.patch
-Patch1:         CVE-2020-8037.patch
-Patch2:         CVE-2018-16301.patch
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -25,22 +23,23 @@ transmitted or received over a network to which the computer is attached.
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
-sed -i '626,636d' tests/TESTLIST
 make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-%{_sbindir}/*
-%{_mandir}/man1/*
+%{_bindir}/tcpdump
+%{_bindir}/tcpdump.%{version}
+%{_mandir}/man1/tcpdump.1.gz
 
 %changelog
+*   Tue Jul 04 2023 Shivani Agarwal <shivania2@vmware.com> 4.99.4-1
+-   Fix CVE-2020-8036
 *   Wed Feb 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-5
 -   Fix CVE-2018-16301
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
