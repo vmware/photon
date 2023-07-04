@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
-Release:         6%{?dist}
+Release:         7%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -46,6 +46,7 @@ Requires:        glib-devel
 Requires:        libxml2-devel
 Requires:        sqlite-devel
 Requires:        libpsl-devel
+Requires:        nghttp2-devel
 
 %description     devel
 Header files for libsoup.
@@ -94,6 +95,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Wed Jul 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-7
+- Add nghttp2-devel to devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.1-6
 - Bump version as a part of libxml2 upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-5

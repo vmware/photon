@@ -1,7 +1,7 @@
-From d2bdb4b2ea4922d22e07613782b392d9732d9e3f Mon Sep 17 00:00:00 2001
+From 12d3343dbae3ce42b1baa0919e48a00fce92a0d8 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Fri, 13 Sep 2019 18:32:07 +0530
-Subject: [PATCH 2/2] ostree: Adding load env to menuentry
+Subject: [PATCH 3/4] ostree: Adding load env to menuentry
 
 Adding load env to menuentry to load photon specific config files
 to add kernel and systemd commandline parameter
@@ -13,10 +13,10 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/src/libostree/ostree-bootloader-grub2.c b/src/libostree/ostree-bootloader-grub2.c
-index ee3ae6f..ad74509 100644
+index 5e6fef5..3224241 100644
 --- a/src/libostree/ostree-bootloader-grub2.c
 +++ b/src/libostree/ostree-bootloader-grub2.c
-@@ -193,6 +193,8 @@ _ostree_bootloader_grub2_generate_config (OstreeSysroot                 *sysroot
+@@ -184,6 +184,8 @@ _ostree_bootloader_grub2_generate_config (OstreeSysroot *sysroot, int bootversio
        const char *kernel;
        const char *initrd;
        const char *devicetree;
@@ -25,7 +25,7 @@ index ee3ae6f..ad74509 100644
        char *quoted_title = NULL;
        char *uuid = NULL;
        char *quoted_uuid = NULL;
-@@ -217,6 +219,25 @@ _ostree_bootloader_grub2_generate_config (OstreeSysroot                 *sysroot
+@@ -210,6 +212,25 @@ _ostree_bootloader_grub2_generate_config (OstreeSysroot *sysroot, int bootversio
        g_string_append (output, grub2_prepare_root_cache);
        g_string_append_c (output, '\n');
  
@@ -52,5 +52,5 @@ index ee3ae6f..ad74509 100644
          return glnx_throw (error, "No \"linux\" key in bootloader config");
        g_string_append (output, "linux");
 -- 
-2.7.4
+2.41.0
 

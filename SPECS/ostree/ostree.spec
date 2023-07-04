@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2022.5
-Release:        6%{?dist}
+Version:        2023.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -9,41 +9,40 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha512 lib%{name}-%{version}=39abd076491ebab5cd6e23bff6ce0a346fe8d1e6a372abb42626ef5a8643411070b272637513b37393dc37af9b8eaaa42c19e2f1c16b98d441358c2046653654
+%define sha512 lib%{name}-%{version}=0bb19f199344d8db7299cf710f2ba0b2657cdcb5b1fc6d85446cef9538b069e470b47fc0c2c1029e12b8b9adb978f32a6f44f48949ff5c97a01051a425a9f2d5
 
-Source1:        91-%{name}.preset
+Source1: 91-%{name}.preset
 
-Patch0:         dualboot-support.patch
-Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
-Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
-Patch3:         skip-rebuild-selinux-policy.patch
+Patch0: 0001-dualboot-support.patch
+Patch1: 0002-ostree-Copying-photon-config-to-boot-directory.patch
+Patch2: 0003-ostree-Adding-load-env-to-menuentry.patch
+Patch3: 0004-Revert-for-commit-https-github.com-ostreedev-ostree-.patch
 
-BuildRequires:  git
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-BuildRequires:  which
-BuildRequires:  gtk-doc
-BuildRequires:  glib-devel
-BuildRequires:  gobject-introspection
-BuildRequires:  gobject-introspection-devel
-BuildRequires:  xz-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  mkinitcpio
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  zlib-devel
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-BuildRequires:  libsoup-devel = 2.72.0
-BuildRequires:  attr-devel
-BuildRequires:  libarchive-devel
-BuildRequires:  fuse-devel
-BuildRequires:  libcap-devel
-BuildRequires:  gpgme-devel
-BuildRequires:  systemd-devel
-BuildRequires:  dracut
-BuildRequires:  bison
-BuildRequires:  libselinux-devel
+BuildRequires: git
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: which
+BuildRequires: gtk-doc
+BuildRequires: glib-devel
+BuildRequires: gobject-introspection-devel
+BuildRequires: xz-devel
+BuildRequires: sqlite-devel
+BuildRequires: mkinitcpio
+BuildRequires: e2fsprogs-devel
+BuildRequires: zlib-devel
+BuildRequires: curl-devel
+BuildRequires: openssl-devel
+BuildRequires: libsoup-devel
+BuildRequires: attr-devel
+BuildRequires: libarchive-devel
+BuildRequires: fuse-devel
+BuildRequires: libcap-devel
+BuildRequires: gpgme-devel
+BuildRequires: systemd-devel
+BuildRequires: dracut
+BuildRequires: bison
+BuildRequires: libselinux-devel
 
 Requires: dracut
 Requires: systemd
@@ -64,7 +63,7 @@ of both.
 %package libs
 Summary:    Development headers for %{name}
 Group:      Development/Libraries
-Requires:   libsoup = 2.72.0
+Requires:   libsoup
 
 %description libs
 The %{name}-libs provides shared libraries for %{name}.
@@ -89,17 +88,19 @@ Requires:   %{name} = %{version}-%{release}
 GRUB2 integration for OSTree
 
 %prep
-%autosetup -Sgit -p1 -n libostree-%{version}
+%autosetup -p1 -n lib%{name}-%{version}
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
+
 %configure \
      --disable-silent-rules \
      --enable-gtk-doc \
      --with-dracut \
      --with-mkinitcpio \
      --with-selinux \
-     --enable-libsoup-client-certs
+     --enable-libsoup-client-certs \
+     --with-soup3
 
 %make_build
 
@@ -122,8 +123,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc COPYING
-%doc README.md
 %{_bindir}/%{name}
 %{_bindir}/rofiles-fuse
 %{_datadir}/%{name}
@@ -168,6 +167,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-1
+- Upgrade to v2023.5
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-6
 - Bump version as a part of zlib upgrade
 * Tue Jan 17 2023 Oliver Kurth <okurth@vmware.com> 2022.5-5
