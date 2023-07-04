@@ -1,16 +1,16 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
-Version:        4.9.3
-Release:        2%{?dist}
+Version:        4.99.4
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
+%define sha512  tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
 Patch0:         CVE-2018-19519.patch
-Patch1:         CVE-2020-8037.patch
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 BuildRequires:  libpcap-devel
 Requires:       libpcap
 
@@ -20,28 +20,27 @@ It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
-sed -i '626,636d' tests/TESTLIST
 make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-%{_sbindir}/*
-%{_mandir}/man1/*
+%{_bindir}/tcpdump
+%{_bindir}/tcpdump.%{version}
+%{_mandir}/man1/tcpdump.1.gz
 
 %changelog
+*   Tue Jul 04 2023 Shivani Agarwal <shivania2@vmware.com> 4.99.4-1
+-   Fix CVE-2020-8036
 *   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-2
 -   Added patch, fixes CVE-2020-8037
 *   Wed Oct 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.3-1
@@ -57,24 +56,24 @@ make %{?_smp_mflags} check
 -   Fix for CVE-2017-11541 CVE-2017-11542 and CVE-2017-11543
 *   Thu Aug 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-1
 -   Updating version to 4.9.1
-*       Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
--       Adding latest version to handle following CVEs
--       CVE-2016-7922, CVE-2016-7923, CVE-2016-7924, CVE-2016-7925,
--       CVE-2016-7926, CVE-2016-7927, CVE-2016-7928, CVE-2016-7929,
--       CVE-2016-7930, CVE-2016-7931, CVE-2016-7932, CVE-2016-7933,
--       CVE-2016-7934, CVE-2016-7935, CVE-2016-7936, CVE-2016-7937,
--       CVE-2016-7938, CVE-2016-7939, CVE-2016-7940, CVE-2016-7973,
--       CVE-2016-7974, CVE-2016-7975, CVE-2016-7983, CVE-2016-7984,
--       CVE-2016-7985, CVE-2016-7986, CVE-2016-7992, CVE-2016-7993,
--       CVE-2016-8574, CVE-2016-8575, CVE-2017-5202, CVE-2017-5203,
--       CVE-2017-5204, CVE-2017-5205, CVE-2017-5341, CVE-2017-5342,
--       CVE-2017-5482, CVE-2017-5483, CVE-2017-5484, CVE-2017-5485,
--       CVE-2017-5486
-*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.7.4-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7.4-2
--	GA - Bump release of all rpms
-*       Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
--       Upgrade version.
+*   Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
+-   Adding latest version to handle following CVEs
+-   CVE-2016-7922, CVE-2016-7923, CVE-2016-7924, CVE-2016-7925,
+-   CVE-2016-7926, CVE-2016-7927, CVE-2016-7928, CVE-2016-7929,
+-   CVE-2016-7930, CVE-2016-7931, CVE-2016-7932, CVE-2016-7933,
+-   CVE-2016-7934, CVE-2016-7935, CVE-2016-7936, CVE-2016-7937,
+-   CVE-2016-7938, CVE-2016-7939, CVE-2016-7940, CVE-2016-7973,
+-   CVE-2016-7974, CVE-2016-7975, CVE-2016-7983, CVE-2016-7984,
+-   CVE-2016-7985, CVE-2016-7986, CVE-2016-7992, CVE-2016-7993,
+-   CVE-2016-8574, CVE-2016-8575, CVE-2017-5202, CVE-2017-5203,
+-   CVE-2017-5204, CVE-2017-5205, CVE-2017-5341, CVE-2017-5342,
+-   CVE-2017-5482, CVE-2017-5483, CVE-2017-5484, CVE-2017-5485,
+-   CVE-2017-5486
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.7.4-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7.4-2
+-   GA - Bump release of all rpms
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
+-   Upgrade version.
 *   Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1
 -   Updating version to 4.7.3
