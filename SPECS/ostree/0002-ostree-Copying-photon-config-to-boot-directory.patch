@@ -1,7 +1,7 @@
-From ac64f92b68bfcdd4df1fd0833ad865649b537d11 Mon Sep 17 00:00:00 2001
+From e59899b39b2fa9fe5b827049e54c6b55d5c56819 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sat, 28 Aug 2021 12:04:19 +0000
-Subject: [PATCH] ostree: Copying photon config to boot directory
+Subject: [PATCH 2/4] ostree: Copying photon config to boot directory
 
 Copying photon specific config files to suitable boot directory,
 to get the kernel and systemd command line parameter
@@ -13,18 +13,18 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  1 file changed, 68 insertions(+)
 
 diff --git a/src/libostree/ostree-sysroot-deploy.c b/src/libostree/ostree-sysroot-deploy.c
-index 6a13a41b..7a566529 100644
+index 2454a58..13387af 100644
 --- a/src/libostree/ostree-sysroot-deploy.c
 +++ b/src/libostree/ostree-sysroot-deploy.c
-@@ -987,6 +987,7 @@ ostree_sysroot_write_origin_file (OstreeSysroot         *sysroot,
- 
- typedef struct {
-   int   boot_dfd;
-+  int   ostree_boot_dfd;
+@@ -998,6 +998,7 @@ ostree_sysroot_write_origin_file (OstreeSysroot *sysroot, OstreeDeployment *depl
+ typedef struct
+ {
+   int boot_dfd;
++  int ostree_boot_dfd;
    char *kernel_srcpath;
    char *kernel_namever;
    char *kernel_hmac_srcpath;
-@@ -994,6 +995,10 @@ typedef struct {
+@@ -1005,6 +1006,10 @@ typedef struct
    char *initramfs_srcpath;
    char *initramfs_namever;
    char *devicetree_srcpath;
@@ -33,9 +33,9 @@ index 6a13a41b..7a566529 100644
 +  char *kernelcfg_srcpath;
 +  char *kernelcfg_namever;
    char *devicetree_namever;
-   char *bootcsum;
- } OstreeKernelLayout;
-@@ -1009,6 +1014,10 @@ _ostree_kernel_layout_free (OstreeKernelLayout *layout)
+   char *aboot_srcpath;
+   char *aboot_namever;
+@@ -1022,6 +1027,10 @@ _ostree_kernel_layout_free (OstreeKernelLayout *layout)
    g_free (layout->initramfs_namever);
    g_free (layout->devicetree_srcpath);
    g_free (layout->devicetree_namever);
@@ -43,14 +43,14 @@ index 6a13a41b..7a566529 100644
 +  g_free (layout->systemdcfg_namever);
 +  g_free (layout->kernelcfg_srcpath);
 +  g_free (layout->kernelcfg_namever);
+   g_free (layout->aboot_srcpath);
+   g_free (layout->aboot_namever);
    g_free (layout->bootcsum);
-   g_free (layout);
- }
-@@ -1182,6 +1191,26 @@ get_kernel_from_tree_usrlib_modules (OstreeSysroot       *sysroot,
+@@ -1217,6 +1226,26 @@ get_kernel_from_tree_usrlib_modules (OstreeSysroot *sysroot, int deployment_dfd,
        ret_layout->kernel_hmac_namever = g_strdup_printf (".%s.hmac", ret_layout->kernel_namever);
      }
  
-+/* Setting the param for Copying Photon Specific config files to sutiable location */
++  /* Setting the param for Copying Photon Specific config files to sutiable location */
 +  if (!glnx_opendirat (deployment_dfd, "usr/lib/ostree-boot", FALSE, &ret_layout->ostree_boot_dfd, error))
 +       return FALSE;
 +  if (!ot_openat_ignore_enoent (ret_layout->ostree_boot_dfd, "photon.cfg", &fd, error))
@@ -70,10 +70,10 @@ index 6a13a41b..7a566529 100644
 +    }
 +  glnx_close_fd (&fd);
 +
-   char hexdigest[OSTREE_SHA256_STRING_LEN+1];
+   char hexdigest[OSTREE_SHA256_STRING_LEN + 1];
    ot_checksum_get_hexdigest (&checksum, hexdigest, sizeof (hexdigest));
    ret_layout->bootcsum = g_strdup (hexdigest);
-@@ -1897,6 +1926,33 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
+@@ -2005,6 +2034,33 @@ install_deployment_kernel (OstreeSysroot *sysroot, int new_bootversion,
        g_ptr_array_add (overlay_initrds, g_steal_pointer (&destpath));
      }
  
@@ -107,7 +107,7 @@ index 6a13a41b..7a566529 100644
    g_autofree char *contents = NULL;
    if (!glnx_fstatat_allow_noent (deployment_dfd, "usr/lib/os-release", &stbuf, 0, error))
      return FALSE;
-@@ -1992,6 +2048,18 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
+@@ -2103,6 +2159,18 @@ install_deployment_kernel (OstreeSysroot *sysroot, int new_bootversion,
        ostree_kernel_args_replace_take (kargs, g_steal_pointer (&prepare_root_arg));
      }
  
@@ -123,9 +123,9 @@ index 6a13a41b..7a566529 100644
 +      ostree_bootconfig_parser_set (bootconfig, "kernelcfg", ph_boot_relpath);
 +    }
 +
-   if (kernel_layout->devicetree_namever)
+   const char *aboot_fn = NULL;
+   if (kernel_layout->aboot_namever)
      {
-       g_autofree char * dt_boot_relpath = g_strconcat ("/", bootcsumdir, "/", kernel_layout->devicetree_namever, NULL);
 -- 
-2.23.1
+2.41.0
 
