@@ -1,11 +1,11 @@
 Name:           kapacitor
-Version:        1.5.9
-Release:        9%{?dist}
+Version:        1.6.6
+Release:        1%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=948d5a2a495ff05c10ca3a2a57dcdddba633579b096dc520e8575e0da46f0d5c0e6f961c9f97e6d1bce7dc695c178e4b9e04b201cec70db913943f601445bbcd
+%define sha512  %{name}=55f8452c47220034928c4a8d22b88083c60d71ed3f2be8468599493bcf6d5167f4666e785dfd44926bd8e9a2af8011e9d4bb332db8b5c119085677a5eb017158
 Source1:        %{name}.sysusers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,14 +13,18 @@ Group:          System/Monitoring
 BuildRequires:  go
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
+BuildRequires:  rust
 Requires:       systemd
 Requires:       systemd-rpm-macros
+
+Patch0:         fix-build-1.patch
+Patch1:         fix-build-2.patch
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 go env -w GO111MODULE=auto
@@ -29,6 +33,7 @@ mkdir -p build/src/github.com/influxdata/kapacitor
 mv %{name}-%{version}/* build/src/github.com/influxdata/%{name}
 cd build
 export GOPATH=$PWD
+export PKG_CONFIG=${GOPATH}/src/github.com/influxdata/kapacitor/pkg-config.sh
 cd src/github.com/influxdata/kapacitor
 go build ./cmd/kapacitor
 go build ./cmd/kapacitord
@@ -92,6 +97,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Jul 03 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.6-1
+- Update to v1.6.6 to fix multiple CVEs
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-9
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-8
