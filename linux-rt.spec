@@ -15,7 +15,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.32
+Version:        6.1.37
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -24,12 +24,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt10
+%define rt_version rt11
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=91ffc55e9f6d4bc4daf600fc751a1dfba8d81132b3184de6b340fb871e28305de8ad2e0293b53c03b062fbdcd9a1774a9b74e301477cd1b1c6eac27c42d15867
+%define sha512 linux=c0abb4548a6cae8eafce7ca60845d03ab30c03a8656e8ebfb5d7a56506b0fdd6300594554eeaef5cfcd5b0e570a2af1dee1deff1b9931972a14a480dbe0e7f37
 
 %ifarch x86_64
 Source1:    config-rt
@@ -168,7 +168,7 @@ Patch348: 0048-powerpc-stackprotector-work-around-stack-guard-init-.patch
 Patch349: 0049-POWERPC-Allow-to-enable-RT.patch
 Patch350: 0050-sysfs-Add-sys-kernel-realtime-entry.patch
 Patch351: 0051-Add-localversion-for-RT-release.patch
-Patch352: 0052-Linux-6.1.28-rt10-REBASE.patch
+Patch352: 0052-Linux-6.1.33-rt11-REBASE.patch
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -506,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.37-1
+- Update to version 6.1.37
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.32-1
 - Update to version 6.1.32
 * Wed Nov 22 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-5
