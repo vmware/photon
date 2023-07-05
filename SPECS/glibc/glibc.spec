@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        22%{?dist}
+Release:        23%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -203,24 +203,24 @@ rm -rf %{buildroot}%{_infodir}
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 #       Begin /etc/nsswitch.conf
 
-	passwd: files
-	group: files
-	shadow: files
+passwd: files
+group: files
+shadow: files
 
-	hosts: files dns
-	networks: files
+hosts: files dns
+networks: files
 
-	protocols: files
-	services: files
-	ethers: files
-	rpc: files
+protocols: files
+services: files
+ethers: files
+rpc: files
 #       End /etc/nsswitch.conf
 EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 #       Begin /etc/ld.so.conf
-	/usr/local/lib
-	/opt/lib
-	include /etc/ld.so.conf.d/*.conf
+    /usr/local/lib
+    /opt/lib
+    include /etc/ld.so.conf.d/*.conf
 EOF
 popd
 %find_lang %{name} --all-name
@@ -260,6 +260,15 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
+
+%posttrans iconv
+/usr/sbin/iconvconfig
+
+%postun iconv
+if [ -e /usr/lib64/gconv/gconv-modules.cache ]
+then
+    rm /usr/lib64/gconv/gconv-modules.cache
+fi
 
 %files
 %defattr(-,root,root)
@@ -341,6 +350,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Wed Jul 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.28-23
+-   Added post for glibc-iconv, to have:
+-   fast-loading gconv module configuration cache file
 *   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.28-22
 -   fix CVE-2021-3999
 *   Mon Sep 05 2022 Ajay Kaher <akaher@vmware.com> 2.28-21
