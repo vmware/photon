@@ -11,7 +11,6 @@ from SpecData import SPECS
 
 
 class PackageInfo(object):
-
     def __init__(self, logName=None, logPath=None):
         if logName is None:
             logName = "PackageInfo"
@@ -31,24 +30,30 @@ class PackageInfo(object):
             for version in SPECS.getData().getVersions(package):
                 srpmFile = pkgUtils.findSourceRPMFile(package, version)
                 debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
-                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
+                listRPMPackages = SPECS.getData().getRPMPackages(
+                    package, version
+                )
                 for rpmPkg in listRPMPackages:
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
                         listPkgAttributes = {
-                            "sourcerpm":srpmFile,
-                            "rpm":rpmFile,
-                            "debugrpm":debugrpmFile
+                            "sourcerpm": srpmFile,
+                            "rpm": rpmFile,
+                            "debugrpm": debugrpmFile,
                         }
                         self.pkgList[f"{rpmPkg}-{version}"] = listPkgAttributes
-                        self.logger.debug(f"Added {rpmPkg}-{version}to the package info json")
+                        self.logger.debug(
+                            f"Added {rpmPkg}-{version}to the package info json"
+                        )
                     else:
-                        self.logger.debug(f"Missing rpm file for package: {rpmPkg}")
+                        self.logger.debug(
+                            f"Missing rpm file for package: {rpmPkg}"
+                        )
 
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")
         dirPath = os.path.basename(fileName)
         if not os.path.isdir(dirPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {dirPath}")
-        with open(fileName, 'w+') as pkgInfoFile:
+        with open(fileName, "w+") as pkgInfoFile:
             json.dump(self.pkgList, pkgInfoFile, indent=4)

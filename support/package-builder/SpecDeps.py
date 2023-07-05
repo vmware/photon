@@ -9,10 +9,8 @@ import shutil
 import traceback
 
 from SpecData import SPECS
-from jsonwrapper import JsonWrapper
 from constants import constants
 from CommandUtils import CommandUtils
-from StringUtils import StringUtils
 from Logger import Logger
 from argparse import ArgumentParser
 
@@ -23,18 +21,21 @@ LOG_FILE_DIR = "../../stage/LOGS"
 
 
 class SpecDependencyGenerator(object):
-
     def __init__(self, logPath, logLevel):
-        self.logger = Logger.getLogger("Serializable Spec objects", logPath, logLevel)
+        self.logger = Logger.getLogger(
+            "Serializable Spec objects", logPath, logLevel
+        )
 
     def findTotalRequires(self, mapDependencies, depQue, parent):
         while not depQue.empty():
             specPkg = depQue.get()
             try:
-                listRequiredPackages = SPECS.getData().getRequiresForPkg(specPkg)
+                listRequiredPackages = SPECS.getData().getRequiresForPkg(
+                    specPkg
+                )
             except Exception as e:
-                self.logger.info("Caught Exception:"+str(e))
-                self.logger.info(specPkg + " is missing")
+                self.logger.info(f"Caught Exception: {e}")
+                self.logger.info(f"{specPkg} is missing")
                 raise e
 
             for depPkg in listRequiredPackages:
@@ -42,14 +43,19 @@ class SpecDependencyGenerator(object):
                     if mapDependencies[depPkg] < mapDependencies[specPkg] + 1:
                         mapDependencies[depPkg] = mapDependencies[specPkg] + 1
                         parent[depPkg] = specPkg
-                        self.updateLevels(mapDependencies, depPkg, parent, mapDependencies[depPkg])
+                        self.updateLevels(
+                            mapDependencies,
+                            depPkg,
+                            parent,
+                            mapDependencies[depPkg],
+                        )
                 else:
                     mapDependencies[depPkg] = mapDependencies[specPkg] + 1
                     parent[depPkg] = specPkg
                     depQue.put(depPkg)
 
     def getBasePackagesRequired(self, pkg):
-        listBasePackagesRequired=[]
+        listBasePackagesRequired = []
         listPackagesRequired = SPECS.getData().getBuildRequiresForPkg(pkg)
         listPackagesRequired.extend(SPECS.getData().getRequiresAllForPkg(pkg))
         for p in listPackagesRequired:
@@ -58,13 +64,12 @@ class SpecDependencyGenerator(object):
                 listBasePackagesRequired.append(basePkg)
         return listBasePackagesRequired
 
-
     def findTotalWhoNeeds(self, depList, whoNeeds):
         while depList:
             pkg = depList.pop(0)
             for depPackage in SPECS.getData().getListPackages():
                 for version in SPECS.getData().getVersions(depPackage):
-                    depBasePkg = depPackage+"-"+version
+                    depBasePkg = f"{depPackage}-{version}"
                     if depBasePkg in whoNeeds:
                         continue
                     if pkg in self.getBasePackagesRequired(depBasePkg):
@@ -82,7 +87,7 @@ class SpecDependencyGenerator(object):
         with open(jsonFilePath) as jsonData:
             option_list_json = json.load(jsonData)
             packages = option_list_json["packages"]
-            archSpecificPkgs = "packages_" + constants.buildArch
+            archSpecificPkgs = f"packages_{constants.buildArch}"
             if archSpecificPkgs in option_list_json:
                 packages += option_list_json[archSpecificPkgs]
 
@@ -93,47 +98,62 @@ class SpecDependencyGenerator(object):
         for depPkg in SPECS.getData().getRequiresForPkg(inPkg):
             if depPkg in listPackages:
                 continue
-            if depPkg in mapDependencies and mapDependencies[depPkg] < level + 1:
+            if (
+                depPkg in mapDependencies
+                and mapDependencies[depPkg] < level + 1
+            ):
                 mapDependencies[depPkg] = level + 1
                 parent[depPkg] = inPkg
-                self.updateLevels(mapDependencies, depPkg, parent, mapDependencies[depPkg])
+                self.updateLevels(
+                    mapDependencies, depPkg, parent, mapDependencies[depPkg]
+                )
 
     def calculateSpecDependency(self, inputPackages, mapDependencies, parent):
         depQue = queue.Queue()
         for package in inputPackages:
             if SPECS.getData().isRPMPackage(package):
                 version = SPECS.getData().getHighestVersion(package)
-                pkg = package+"-"+version
+                pkg = f"{package}-{version}"
                 if pkg not in mapDependencies:
                     mapDependencies[pkg] = 0
                     parent[pkg] = ""
                     depQue.put(pkg)
                     self.findTotalRequires(mapDependencies, depQue, parent)
             else:
-                self.logger.info("Could not find spec for " + package)
+                self.logger.info(f"Could not find spec for: {package}")
 
-    def displayDependencies(self, displayOption, inputType, inputValue, allDeps, parent):
+    def displayDependencies(
+        self, displayOption, inputType, inputValue, allDeps, parent
+    ):
         children = {}
         sortedList = []
-        for elem in sorted(allDeps.items(), key=operator.itemgetter(1), reverse=True):
+        for elem in sorted(
+            allDeps.items(), key=operator.itemgetter(1), reverse=True
+        ):
             sortedList.append(elem[0])
         # construct all children nodes
         if displayOption == "tree":
             for k, v in parent.items():
                 children.setdefault(v, []).append(k)
             if inputType == "json":
-                self.logger.info("Dependency Mappings for {}".format(inputValue) + " :")
-                self.logger.info("-" * 52 + " {}".format(children))
+                self.logger.info(f"Dependency Mappings for {inputValue} :")
+                self.logger.info("-" * 52 + f" {children}")
                 self.logger.info("-" * 52)
             if "" in children:
                 for child in children[""]:
                     self.logger.info(child)
                     self.printTree(children, child, 1)
-                self.logger.info("*" * 18 + " {} ".format(len(sortedList)) +
-                      "packages in total " + "*" * 18)
+                self.logger.info(
+                    "*" * 18
+                    + " {} ".format(len(sortedList))
+                    + "packages in total "
+                    + "*" * 18
+                )
             else:
                 if inputType == "pkg" and len(children) > 0:
-                    self.logger.info("cyclic dependency detected, mappings: \n", children)
+                    self.logger.info(
+                        "cyclic dependency detected, mappings: \n", children
+                    )
 
         # To display a flat list of all packages
         elif displayOption == "list":
@@ -150,18 +170,36 @@ class SpecDependencyGenerator(object):
     # Returns list of RPM names of all packages excluding src.rpm
     def listRPMfilenames(self, includeDebuginfoRPMs=False):
         output = []
-        arch=constants.currentArch
+        arch = constants.currentArch
         for base_package in SPECS.getData().getListPackages():
             for version in SPECS.getData().getVersions(base_package):
-                listRPMPackages = SPECS.getData().getRPMPackages(base_package, version)
+                listRPMPackages = SPECS.getData().getRPMPackages(
+                    base_package, version
+                )
                 for package in listRPMPackages:
                     release = SPECS.getData(arch).getRelease(package, version)
-                    buildarch=SPECS.getData(arch).getBuildArch(package, version)
-                    filename = os.path.join(buildarch, package + "-" + version + "-" + release + "." + buildarch + ".rpm")
+                    buildarch = SPECS.getData(arch).getBuildArch(
+                        package, version
+                    )
+                    filename = os.path.join(
+                        buildarch,
+                        f"{package}-{version}-{release}.{buildarch}.rpm",
+                    )
                     output.append(filename)
-                # TODO: support '%global debug_package %{nil}' parsing, to exclude such packages
-                if includeDebuginfoRPMs and SPECS.getData(arch).getBuildArch(base_package, version) == arch:
-                    filename = os.path.join(buildarch, base_package + "-debuginfo-" + version + "-" + release + "." + buildarch + ".rpm")
+                """
+                TODO: support '%global debug_package %{nil}' parsing, to
+                exclude such packages
+                """
+                if (
+                    includeDebuginfoRPMs
+                    and SPECS.getData(arch).getBuildArch(base_package, version)
+                    == arch
+                ):
+                    filename = os.path.join(
+                        buildarch,
+                        f"{base_package}-debuginfo-{version}-{release}."
+                        f"{buildarch}.rpm",
+                    )
                     output.append(filename)
 
         return output
@@ -169,7 +207,6 @@ class SpecDependencyGenerator(object):
     def process(self, inputType, inputValue, displayOption, outputFile=None):
         whoNeedsList = []
         inputPackages = []
-        whatNeedsBuild = []
         mapDependencies = {}
         parent = {}
         if inputType == "pkg" or inputType == "json":
@@ -177,26 +214,43 @@ class SpecDependencyGenerator(object):
                 inputPackages.append(inputValue)
             else:
                 inputPackages = self.getAllPackageNames(inputValue)
-            self.calculateSpecDependency(inputPackages, mapDependencies, parent)
+            self.calculateSpecDependency(
+                inputPackages, mapDependencies, parent
+            )
             if outputFile is not None:
-                return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
-            else:
-                return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
+                return self.displayDependencies(
+                    displayOption,
+                    inputType,
+                    outputFile,
+                    mapDependencies,
+                    parent,
+                )
+            return self.displayDependencies(
+                displayOption,
+                inputType,
+                inputValue,
+                mapDependencies,
+                parent,
+            )
         elif inputType == "get-upward-deps":
             depList = []
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
-                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
-                    whoNeedsList.append(specObj.name+"-"+specObj.version)
-                    depList.append(specObj.name+"-"+specObj.version)
+                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[
+                        specFile
+                    ]
+                    whoNeedsList.append(f"{specObj.name}-{specObj.version}")
+                    depList.append(f"{specObj.name}-{specObj.version}")
             self.findTotalWhoNeeds(depList, whoNeedsList)
             return whoNeedsList
 
         elif inputType == "who-needs":
             for depPackage in SPECS.getData().mapPackageToSpec:
-                pkg=inputValue+"-"+SPECS.getData().getHighestVersion(inputValue)
+                pkg = f"{inputValue}-" + SPECS.getData().getHighestVersion(
+                    inputValue
+                )
                 for version in SPECS.getData().getVersions(depPackage):
-                    depPkg = depPackage+"-"+version
+                    depPkg = f"{depPackage}-{version}"
                     self.logger.info(depPkg)
                     if pkg in SPECS.getData().getRequiresForPkg(depPkg):
                         whoNeedsList.append(depPkg)
@@ -204,7 +258,9 @@ class SpecDependencyGenerator(object):
             return whoNeedsList
 
         elif inputType == "all-requires":
-            pkg=inputValue+"-"+SPECS.getData().getHighestVersion(inputValue)
+            pkg = f"{inputValue}-" + SPECS.getData().getHighestVersion(
+                inputValue
+            )
             requires = SPECS.getData().getRequiresTreeOfBasePkgsForPkg(pkg)
             requires.sort()
             self.logger.info(requires)
@@ -213,25 +269,54 @@ class SpecDependencyGenerator(object):
         elif inputType == "is-toolchain-pkg":
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
-                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
-                    if (specObj.name in constants.listCoreToolChainPackages) \
-                        or (specObj.name in constants.listToolChainPackages):
+                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[
+                        specFile
+                    ]
+                    if (
+                        specObj.name in constants.listCoreToolChainPackages
+                    ) or (specObj.name in constants.listToolChainPackages):
                         return True
             return False
+
 
 def main():
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
-    parser.add_argument("-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE)
+    parser.add_argument(
+        "-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE
+    )
     parser.add_argument("-p", "--pkg", dest="pkg")
-    parser.add_argument("-f", "--file", dest="json_file", default="packages_minimal.json")
-    parser.add_argument("-d", "--display-option", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
-    parser.add_argument("-s", "--spec-path", dest="spec_path", default=SPEC_FILE_DIR)
-    parser.add_argument("-l", "--log-path", dest="log_path", default=LOG_FILE_DIR)
+    parser.add_argument(
+        "-f", "--file", dest="json_file", default="packages_minimal.json"
+    )
+    parser.add_argument(
+        "-d",
+        "--display-option",
+        dest="display_option",
+        default=DEFAULT_DISPLAY_OPTION,
+    )
+    parser.add_argument(
+        "-s", "--spec-path", dest="spec_path", default=SPEC_FILE_DIR
+    )
+    parser.add_argument(
+        "-l", "--log-path", dest="log_path", default=LOG_FILE_DIR
+    )
     parser.add_argument("-y", "--log-level", dest="log_level", default="info")
-    parser.add_argument("-t", "--stage-dir", dest="stage_dir", default="../../stage")
-    parser.add_argument("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
-    parser.add_argument("-o", "--output-dir", dest="output_dir", default="../../stage/common/data")
+    parser.add_argument(
+        "-t", "--stage-dir", dest="stage_dir", default="../../stage"
+    )
+    parser.add_argument(
+        "-a",
+        "--input-data-dir",
+        dest="input_data_dir",
+        default="../../common/data/",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-dir",
+        dest="output_dir",
+        default="../../stage/common/data",
+    )
     options = parser.parse_args()
 
     constants.setSpecPath(options.spec_path)
@@ -251,30 +336,62 @@ def main():
         specDeps = SpecDependencyGenerator(options.log_path, options.log_level)
 
         if options.input_type == "print-upward-deps":
-            whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
+            whoNeedsList = specDeps.process(
+                "get-upward-deps", options.pkg, options.display_option
+            )
             logger.info(f"Upward dependencies: {whoNeedsList}")
         # To display/print package dependencies on console
-        elif (options.input_type == "pkg" or
-                options.input_type == "who-needs" or
-                options.input_type == "all-requires"):
-            specDeps.process(options.input_type, options.pkg, options.display_option)
+        elif (
+            options.input_type == "pkg"
+            or options.input_type == "who-needs"
+            or options.input_type == "all-requires"
+        ):
+            specDeps.process(
+                options.input_type, options.pkg, options.display_option
+            )
 
         elif options.input_type == "json":
             list_json_files = options.json_file.split("\n")
-            # Generate the expanded package dependencies json file based on package_list_file
-            logger.info("Generating the install time dependency list for all json files")
+            """
+            Generate the expanded package dependencies json file based on
+            package_list_file
+            """
+            logger.info(
+                "Generating the install time dependency list for all "
+                "json files"
+            )
             if list_json_files:
-                shutil.copy2(os.path.dirname(list_json_files[0]) + "/build_install_options_all.json", options.output_dir)
+                shutil.copy2(
+                    os.path.dirname(list_json_files[0])
+                    + "/build_install_options_all.json",
+                    options.output_dir,
+                )
             for json_file in list_json_files:
                 output_file = None
                 if options.display_option == "json":
-                    output_file = os.path.join(options.output_dir, os.path.splitext(os.path.basename(json_file))[0]+"_expanded.json")
-                    specDeps.process(options.input_type, json_file, options.display_option, output_file)
-                    shutil.copyfile(json_file, os.path.join(options.output_dir, os.path.basename(json_file)))
+                    output_file = os.path.join(
+                        options.output_dir,
+                        os.path.splitext(os.path.basename(json_file))[0]
+                        + "_expanded.json",
+                    )
+                    specDeps.process(
+                        options.input_type,
+                        json_file,
+                        options.display_option,
+                        output_file,
+                    )
+                    shutil.copyfile(
+                        json_file,
+                        os.path.join(
+                            options.output_dir, os.path.basename(json_file)
+                        ),
+                    )
     except Exception as e:
         traceback.print_exc()
         sys.stderr.write(str(e))
-        sys.stderr.write("Failed to generate dependency lists from spec files\n")
+        sys.stderr.write(
+            "Failed to generate dependency lists from spec files\n"
+        )
         sys.exit(1)
 
     sys.exit(0)

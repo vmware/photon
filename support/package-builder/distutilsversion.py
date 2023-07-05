@@ -1,16 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
-# Taken from
-# https://github.com/pypa/distutils/blob/main/distutils/version.py
-# distutils/version.py
-#
-# Implements multiple version numbering conventions for the
-# Python Module Distribution Utilities.
-#
-# $Id$
-#
+"""
+Taken from
+https://github.com/pypa/distutils/blob/main/distutils/version.py
+distutils/version.py
 
-"""Provides classes to represent module version numbers (one class for
+Implements multiple version numbering conventions for the
+Python Module Distribution Utilities.
+
+Provides classes to represent module version numbers (one class for
 each style of version numbering).  There are currently two such classes
 implemented: StrictVersion and LooseVersion.
 
@@ -38,7 +36,7 @@ import contextlib
 def suppress_known_deprecation():
     with warnings.catch_warnings(record=True) as ctx:
         warnings.filterwarnings(
-            action='default',
+            action="default",
             category=DeprecationWarning,
             message="distutils Version classes are deprecated.",
         )
@@ -151,7 +149,7 @@ class StrictVersion(Version):
     """
 
     version_re = re.compile(
-        r'^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$', re.VERBOSE | re.ASCII
+        r"^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$", re.VERBOSE | re.ASCII
     )
 
     def parse(self, vstring):
@@ -159,7 +157,9 @@ class StrictVersion(Version):
         if not match:
             raise ValueError("invalid version number '%s'" % vstring)
 
-        (major, minor, patch, prerelease, prerelease_num) = match.group(1, 2, 4, 5, 6)
+        (major, minor, patch, prerelease, prerelease_num) = match.group(
+            1, 2, 4, 5, 6
+        )
 
         if patch:
             self.version = tuple(map(int, [major, minor, patch]))
@@ -174,9 +174,9 @@ class StrictVersion(Version):
     def __str__(self):
 
         if self.version[2] == 0:
-            vstring = '.'.join(map(str, self.version[0:2]))
+            vstring = ".".join(map(str, self.version[0:2]))
         else:
-            vstring = '.'.join(map(str, self.version))
+            vstring = ".".join(map(str, self.version))
 
         if self.prerelease:
             vstring = vstring + self.prerelease[0] + str(self.prerelease[1])
@@ -322,14 +322,16 @@ class LooseVersion(Version):
     of "want").
     """
 
-    component_re = re.compile(r'(\d+ | [a-z]+ | \.)', re.VERBOSE)
+    component_re = re.compile(r"(\d+ | [a-z]+ | \.)", re.VERBOSE)
 
     def parse(self, vstring):
         # I've given up on thinking I can reconstruct the version string
         # from the parsed tuple -- so I just store the string here for
         # use by __str__
         self.vstring = vstring
-        components = [x for x in self.component_re.split(vstring) if x and x != '.']
+        components = [
+            x for x in self.component_re.split(vstring) if x and x != "."
+        ]
         for i, obj in enumerate(components):
             try:
                 components[i] = int(obj)

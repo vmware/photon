@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+
 
 class dependentPackageData(object):
-
     def __init__(self):
         self.package = ""
         self.version = ""
         self.compare = ""
+
 
 class Package(object):
     def __init__(self, buildarch, basePkg=None):
@@ -39,7 +41,7 @@ class Package(object):
         self.filesMacro = None
         self.packageMacro = None
 
-        if basePkg is not None:
+        if basePkg:
             self.basePkgName = basePkg.name
             self.group = basePkg.group
             self.license = basePkg.license
@@ -58,15 +60,19 @@ class Package(object):
         if macro.macroName == "%description":
             self.descriptionMacro = macro
 
+
 class SpecObject(object):
     def __init__(self):
         self.name = ""
         self.version = ""
         self.release = ""
+
         # map subpackage name to its buildarch
         self.buildarch = {}
+
         # list of subpackage names
         self.listPackages = []
+
         # list of subpackage names that have %files section
         self.listRPMPackages = []
 
@@ -76,8 +82,11 @@ class SpecObject(object):
         self.checkBuildRequires = []
         self.extraBuildRequires = []
         self.buildRequiresNative = []
-        # map subpackage name to list of install requires
-        # dependentPackageData objects
+
+        """
+        map subpackage name to list of install requires
+        dependentPackageData objects
+        """
         self.installRequiresPackages = {}
 
         # full spec file name

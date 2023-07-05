@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 
 
@@ -8,25 +7,28 @@ class CommandUtils:
     @staticmethod
     def findFile(filename, sourcePath):
         (out, _, _) = CommandUtils.runBashCmd(
-                        f"find -L {sourcePath} -name {filename} -not -type d",
-                        capture=True,
-                        ignore_rc=True,
-                    )
+            f"find -L {sourcePath} -name {filename} -not -type d",
+            capture=True,
+            ignore_rc=True,
+        )
         """
-        We don't check the return val here because find could return 1 but still be
-        able to find the result. We shouldn't blindly return None without even
-        checking the result.
-        The reason we want to suppress this is because for built RPMs, we first copy it to
-        the location with a random name and move it to the real name. find will complain our
-        action and return 1.
-        find's flag ignore_readdir_race can suppress this but it isn't working.
+        We don't check the return val here because find could return 1 but
+        still be able to find the result. We shouldn't blindly return None
+        without even checking the result.
+        The reason we want to suppress this is because for built RPMs,
+        we first copy it to the location with a random name and move it to
+        the real name. find will complain our action and return 1.
+        find's flag ignore_readdir_race can suppress this but it isn't
+        working.
         https://bugs.centos.org/view.php?id=13685
         """
 
         return out.split() if out else None
 
     @staticmethod
-    def runBashCmd(cmd, logfile=None, logfn=None, capture=False, ignore_rc=False):
+    def runBashCmd(
+        cmd, logfile=None, logfn=None, capture=False, ignore_rc=False
+    ):
         fp = None
         if logfile:
             fp = open(logfile, "w")
@@ -34,11 +36,14 @@ class CommandUtils:
             fp = subprocess.PIPE
 
         stdout = fp
-        stderr = fp
 
-        sp = subprocess.Popen(cmd,
-                              shell=True, executable="/bin/bash",
-                              stdout=stdout, stderr=stdout)
+        sp = subprocess.Popen(
+            cmd,
+            shell=True,
+            executable="/bin/bash",
+            stdout=stdout,
+            stderr=stdout,
+        )
 
         out, err = sp.communicate()
         rc = sp.wait()

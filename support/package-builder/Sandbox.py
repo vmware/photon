@@ -3,10 +3,9 @@
 import sys
 import os.path
 import shutil
-import time
+import docker
 
 from constants import constants
-from Logger import Logger
 from CommandUtils import CommandUtils
 
 
@@ -32,13 +31,20 @@ class Sandbox(object):
     def hasToolchain(self):
         return False
 
+
 class Chroot(Sandbox):
     def __init__(self, logger):
         Sandbox.__init__(self, logger)
         self.chrootID = None
-        self.prepareBuildRootCmd = os.path.join(os.path.dirname(__file__), "prepare-build-root.sh")
-        self.runInChrootCommand = str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh"))
-        self.runInChrootCommand += f" {constants.sourcePath} {constants.rpmPath}"
+        self.prepareBuildRootCmd = os.path.join(
+            os.path.dirname(__file__), "prepare-build-root.sh"
+        )
+        self.runInChrootCommand = str(
+            os.path.join(os.path.dirname(__file__), "run-in-chroot.sh")
+        )
+        self.runInChrootCommand += (
+            f" {constants.sourcePath} {constants.rpmPath}"
+        )
         self.chrootCmdPrefix = None
         self.cmdUtils = CommandUtils()
 
@@ -47,7 +53,10 @@ class Chroot(Sandbox):
 
     def create(self, chrootName):
         if self.chrootID:
-            raise Exception(f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}")
+            raise Exception(
+                f"Unable to create: {chrootName}. "
+                f"Chroot is already active: {self.chrootID}"
+            )
 
         chrootID = f"{constants.buildRootPath}/{chrootName}"
         self.chrootID = chrootID
@@ -57,11 +66,11 @@ class Chroot(Sandbox):
                 return
             self._destroy(chrootID)
 
-        top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
-        extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
-        cmd = (
-            f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"
+        top_dirs = (
+            "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
         )
+        extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
+        cmd = f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"  # noqa: E501
 
         # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
@@ -74,13 +83,13 @@ class Chroot(Sandbox):
 
         if os.geteuid() == 0:
             cmd = (
-                f"mount --bind {constants.rpmPath} {chrootID}{constants.topDirPath}/RPMS"
-                f" && mount --bind {constants.sourceRpmPath} {chrootID}{constants.topDirPath}/SRPMS"
-                f" && mount -o ro --bind {constants.prevPublishRPMRepo} {chrootID}/publishrpms"
-                f" && mount -o ro --bind {constants.prevPublishXRPMRepo} {chrootID}/publishxrpms"
+                f"mount --bind {constants.rpmPath} {chrootID}{constants.topDirPath}/RPMS"  # noqa: E501
+                f" && mount --bind {constants.sourceRpmPath} {chrootID}{constants.topDirPath}/SRPMS"  # noqa: E501
+                f" && mount -o ro --bind {constants.prevPublishRPMRepo} {chrootID}/publishrpms"  # noqa: E501
+                f" && mount -o ro --bind {constants.prevPublishXRPMRepo} {chrootID}/publishxrpms"  # noqa: E501
             )
             if constants.inputRPMSPath:
-                cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"
+                cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"  # noqa: E501
 
             self.cmdUtils.runBashCmd(cmd)
 
@@ -100,7 +109,9 @@ class Chroot(Sandbox):
     def run(self, cmd, logfile=None, logfn=None):
         self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
-        (_, _, retval) = self.cmdUtils.runBashCmd(f"{self.chrootCmdPrefix}{cmd}", logfile, logfn)
+        (_, _, retval) = self.cmdUtils.runBashCmd(
+            f"{self.chrootCmdPrefix}{cmd}", logfile, logfn
+        )
         return retval
 
     def put(self, src, dest):
@@ -150,7 +161,7 @@ class Chroot(Sandbox):
 
 class Container(Sandbox):
     def __init__(self, logger):
-        import docker
+
         Sandbox.__init__(self, logger)
         self.containerID = None
         self.dockerClient = docker.from_env(version="auto")
@@ -161,50 +172,71 @@ class Container(Sandbox):
     def create(self, containerName):
         containerID = None
         mountVols = {
-            constants.prevPublishRPMRepo: {'bind': '/publishrpms', 'mode': 'ro'},
-            constants.prevPublishXRPMRepo: {'bind': '/publishxrpms', 'mode': 'ro'},
-            constants.tmpDirPath: {'bind': '/tmp', 'mode': 'rw'},
-            constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
-            constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},
-            #constants.logPath: {'bind': constants.topDirPath + "/LOGS", 'mode': 'rw'},
-            # Prepare an empty chroot environment to let docker use the BUILD folder.
-            # This avoids docker using overlayFS which will cause make check failure.
-            #chroot.getID() + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD", 'mode': 'rw'},
-            constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
+            constants.prevPublishRPMRepo: {
+                "bind": "/publishrpms",
+                "mode": "ro",
+            },
+            constants.prevPublishXRPMRepo: {
+                "bind": "/publishxrpms",
+                "mode": "ro",
+            },
+            constants.tmpDirPath: {"bind": "/tmp", "mode": "rw"},
+            constants.rpmPath: {
+                "bind": f"{constants.topDirPath}/RPMS",
+                "mode": "rw",
+            },
+            constants.sourceRpmPath: {
+                "bind": f"{constants.topDirPath}/SRPMS",
+                "mode": "rw",
+            },
+            constants.dockerUnixSocket: {
+                "bind": constants.dockerUnixSocket,
+                "mode": "rw",
+            },
         }
 
         if constants.inputRPMSPath:
-            mountVols[constants.inputRPMSPath] = {'bind': '/inputrpms', 'mode': 'ro'}
+            mountVols[constants.inputRPMSPath] = {
+                "bind": "/inputrpms",
+                "mode": "ro",
+            }
 
         containerName = containerName.replace("+", "p")
         try:
             oldContainerID = self.dockerClient.containers.get(containerName)
-            if oldContainerID is not None:
+            if oldContainerID:
                 oldContainerID.remove(force=True)
         except docker.errors.NotFound:
             try:
                 sys.exc_clear()
-            except:
+            except Exception:
                 pass
 
-        # TODO: Is init=True equivalent of --sig-proxy?
-        privilegedDocker = False
-        cap_list = ['SYS_PTRACE']
-        #if packageName in constants.listReqPrivilegedDockerForTest:
-            #privilegedDocker = True
+        #  TODO: Is init=True equivalent of --sig-proxy?
+        #  privilegedDocker = False
+        cap_list = ["SYS_PTRACE"]
+        #  if packageName in constants.listReqPrivilegedDockerForTest:
+        #  privilegedDocker = True
 
-        containerID = self.dockerClient.containers.run(constants.buildContainerImage,
-                                                       detach=True,
-                                                       cap_add=cap_list,
-                                                       #privileged=privilegedDocker,
-                                                       privileged=False,
-                                                       name=containerName,
-                                                       network_mode="host",
-                                                       volumes=mountVols,
-                                                       command="tail -f /dev/null")
+        containerID = self.dockerClient.containers.run(
+            constants.buildContainerImage,
+            detach=True,
+            cap_add=cap_list,
+            # privileged=privilegedDocker,
+            privileged=False,
+            name=containerName,
+            network_mode="host",
+            volumes=mountVols,
+            command="tail -f /dev/null",
+        )
         if not containerID:
-            raise Exception(f"Unable to start Photon build container for task {containerTaskName}")
-        self.logger.debug(f"Successfully created container: {containerID.short_id}")
+            raise Exception(
+                "Unable to start Photon build container for task "
+                "tail -f /dev/null"
+            )
+        self.logger.debug(
+            f"Successfully created container: {containerID.short_id}"
+        )
         self.containerID = containerID
 
     def run(self, cmd, logfile=None, logfn=None):

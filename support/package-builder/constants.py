@@ -1,7 +1,10 @@
+#!/usr/bin/env/ python3
+
 import platform
 
 from Logger import Logger
 from CommandUtils import CommandUtils as cmdUtils
+
 
 class constants(object):
     specPath = ""
@@ -62,7 +65,8 @@ class constants(object):
         "go",
         "sqlite",
         "sqlite-devel",
-        "sqlite-libs"]
+        "sqlite-libs",
+    ]
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
@@ -81,7 +85,8 @@ class constants(object):
         "pkg-config",
         "ncurses",
         "readline",
-        "bash"]
+        "bash",
+    ]
 
     # These packages will be built in a second stage to replace publish RPMS
     # Put only main pakage names here. Do not add subpackages such as libgcc
@@ -142,7 +147,8 @@ class constants(object):
         "debugedit",
         "pandoc-bin",
         "help2man",
-        "pcre-libs"]
+        "pcre-libs",
+    ]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -248,7 +254,8 @@ class constants(object):
         "rpm-libs",
         "cpio",
         "debugedit",
-        "pcre-libs"]
+        "pcre-libs",
+    ]
 
     # List of packages that will be installed in addition for each
     # package to make check
@@ -296,61 +303,70 @@ class constants(object):
         "unzip",
         "systemd-devel",
         "gnupg",
-        "ncurses-terminfo"]
+        "ncurses-terminfo",
+    ]
 
-    # List of packages that requires privileged docker
-    # to run make check.
+    """
+    List of packages that requires privileged docker
+    to run make check.
+    """
     listReqPrivilegedDockerForTest = [
-        "elfutils", # SYS_PTRACE
+        "elfutils",  # SYS_PTRACE
         "gdb",
         "glibc",
         "glibc-libs",
-        "tar"]
+        "tar",
+    ]
 
-    # List of Packages which causes "Makecheck" job
-    # to stuck indefinately or getting failed.
-    # Until these pkgs %check is fixed, these pkgs will be
-    # skip to run makecheck.
+    """
+    List of Packages which causes "Makecheck" job
+    to stuck indefinately or getting failed.
+    Until these pkgs %check is fixed, these pkgs will be
+    skip to run makecheck.
+    """
     listMakeCheckPkgToSkip = [
         "gtk-doc",
         "libmspack",
         "socat",
         "bash",
-        "libical"]
+        "libical",
+    ]
 
-    # .spec file might contain lines such as
-    # Requires(post):/sbin/useradd
-    # Build system should interpret it as
-    # Requires: shadow
+    """
+    .spec file might contain lines such as
+    Requires(post):/sbin/useradd
+    Build system should interpret it as
+    Requires: shadow
+    """
     providedBy = {
-        "/usr/sbin/useradd":"shadow",
-        "/usr/sbin/userdel":"shadow",
-        "/usr/sbin/groupadd":"shadow",
-        "/sbin/service":"initscripts",
-        "/usr/bin/which":"which",
-        "/usr/bin/python":"python3",
-        "/bin/python":"python3",
-        "/bin/python3":"python3",
-        "/bin/awk":"gawk",
-        "/bin/gawk":"gawk",
-        "/bin/sed":"sed",
-        "/bin/grep":"grep",
-        "/bin/sh":"bash",
-        "/bin/bash":"bash",
-        "/bin/zsh":"zsh",
-        "/bin/tcsh":"tcsh",
-        "/bin/csh":"csh",
-        "/bin/perl":"perl",
-        "/bin/mergerepo":"createrepo_c",
-        "/bin/modifyrepo":"createrepo_c",
-        "/usr/bin/false":"coreutils",
-        "/usr/bin/ln":"coreutils",
-        "/usr/bin/chown":"coreutils",
-        "/usr/bin/cp":"coreutils",
-        "/usr/bin/rm":"coreutils",
-        "/usr/bin/mv":"coreutils",
-        "/sbin/ldconfig":"glibc",
-        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
+        "/usr/sbin/useradd": "shadow",
+        "/usr/sbin/userdel": "shadow",
+        "/usr/sbin/groupadd": "shadow",
+        "/sbin/service": "initscripts",
+        "/usr/bin/which": "which",
+        "/usr/bin/python": "python3",
+        "/bin/python": "python3",
+        "/bin/python3": "python3",
+        "/bin/awk": "gawk",
+        "/bin/gawk": "gawk",
+        "/bin/sed": "sed",
+        "/bin/grep": "grep",
+        "/bin/sh": "bash",
+        "/bin/bash": "bash",
+        "/bin/zsh": "zsh",
+        "/bin/tcsh": "tcsh",
+        "/bin/csh": "csh",
+        "/bin/perl": "perl",
+        "/bin/mergerepo": "createrepo_c",
+        "/bin/modifyrepo": "createrepo_c",
+        "/usr/bin/false": "coreutils",
+        "/usr/bin/ln": "coreutils",
+        "/usr/bin/chown": "coreutils",
+        "/usr/bin/cp": "coreutils",
+        "/usr/bin/rm": "coreutils",
+        "/usr/bin/mv": "coreutils",
+        "/sbin/ldconfig": "glibc",
+        "/usr/bin/containerd-shim-runc-v2": "containerd-extras",
     }
 
     @staticmethod
@@ -411,7 +427,7 @@ class constants(object):
 
     @staticmethod
     def getPullSourcesURLs(packageName):
-        urls=[]
+        urls = []
         urls.append(constants.pullsourcesURL)
         if packageName in constants.extrasourcesURLs:
             urls.extend(constants.extrasourcesURLs[packageName])
@@ -469,8 +485,9 @@ class constants(object):
     @staticmethod
     def initialize():
         if constants.rpmCheck:
-            constants.testLogger = Logger.getLogger("MakeCheckTest",
-                                                    constants.logPath, constants.logLevel)
+            constants.testLogger = Logger.getLogger(
+                "MakeCheckTest", constants.logPath, constants.logLevel
+            )
             constants.addMacro("with_check", "1")
         else:
             constants.addMacro("with_check", "0")
@@ -485,13 +502,15 @@ class constants(object):
 
         # adding releasenumber rpm macro
         if constants.releaseVersion is not None:
-            constants.addMacro("photon_release_version", constants.releaseVersion)
+            constants.addMacro(
+                "photon_release_version", constants.releaseVersion
+            )
 
         if constants.katBuild:
             constants.addMacro("kat_build", "1")
 
         if constants.canisterBuild:
-            constants.addMacro("canister_build","1")
+            constants.addMacro("canister_build", "1")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
@@ -515,7 +534,7 @@ class constants(object):
         if package in constants.buildOptions.keys():
             pkg = constants.buildOptions[package]
             for m in pkg["macros"]:
-                k, v = m.split(' ', 1)
+                k, v = m.split(" ", 1)
                 macros[k] = v
         return macros
 

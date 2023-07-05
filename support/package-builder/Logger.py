@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import os
 import logging
+
 
 class Logger(object):
     @staticmethod
@@ -14,46 +17,57 @@ class Logger(object):
 
     @staticmethod
     def getLogger(mymodule, logpath=None, loglevel="info"):
-        logfile = mymodule + ".log"
+        logfile = f"{mymodule}.log"
         if logpath is not None:
             if not os.path.isdir(logpath):
                 os.makedirs(logpath)
-            logfile = logpath + "/" + logfile
+            logfile = f"{logpath}/{logfile}"
         logger = logging.getLogger(mymodule)
         if not logger.handlers:
-            #creating file handler
+            # creating file handler
             fhandler = logging.FileHandler(logfile)
             # create console handler
             ch = logging.StreamHandler()
-            fhformatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
-            if loglevel=="debug":
-                chformatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+            fhformatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(message)s"
+            )
+            if loglevel == "debug":
+                chformatter = logging.Formatter(
+                    "%(asctime)s - %(name)s - %(message)s"
+                )
             else:
-                chformatter = logging.Formatter('%(message)s')
-            if mymodule=='werkzeug':
+                chformatter = logging.Formatter("%(message)s")
+            if mymodule == "werkzeug":
                 import anticrlf
-                if loglevel=="debug":
-                    chformatter = anticrlf.LogFormatter('%(asctime)s - %(name)s - %(message)s')
+
+                if loglevel == "debug":
+                    chformatter = anticrlf.LogFormatter(
+                        "%(asctime)s - %(name)s - %(message)s"
+                    )
                 else:
-                    chformatter = logging.Formatter('%(message)s')
-                fhformatter = anticrlf.LogFormatter('%(asctime)s - %(name)s - %(message)s')
+                    chformatter = logging.Formatter("%(message)s")
+                fhformatter = anticrlf.LogFormatter(
+                    "%(asctime)s - %(name)s - %(message)s"
+                )
             # add formatter to handler
             fhandler.setFormatter(fhformatter)
-            #fhandler.setLevel(logging.DEBUG)
+            # fhandler.setLevel(logging.DEBUG)
             ch.setFormatter(chformatter)
-            #ch.setLevel(Logger.string_to_loglevel(loglevel))
+            # ch.setLevel(Logger.string_to_loglevel(loglevel))
             logger.setLevel(Logger.string_to_loglevel(loglevel))
             logger.addHandler(ch)
             logger.addHandler(fhandler)
             logger.debug("-" * 75)
             logger.debug("Starting Log")
             logger.debug("-" * 75)
+
         return logger
 
+
 if __name__ == "__main__":
-    #Logger.getLogger("my module")
+    # Logger.getLogger("my module")
     t1 = Logger.getLogger("my module")
     t1.info("test1")
+
     t2 = Logger.getLogger("my module")
     t2.info("test2")
-    t1.info("test3")
