@@ -70,6 +70,7 @@ targetDict = {
         "generate-yaml-files",
         "create-repo",
         "distributed-build",
+        "extra-packages",
     ],
     "buildEnvironment": [
         "packages-cached",
@@ -767,6 +768,8 @@ class RpmBuildTarget:
 
     def package(self, pkgName):
         self.logger.debug(f"Package to build: {pkgName}")
+        if pkgName in constants.extraPackagesList:
+            constants.extraPackagesList.remove(pkgName)
         Builder.buildSpecifiedPackages(
             [pkgName], Build_Config.buildThreads, Build_Config.pkgBuildType
         )
@@ -856,6 +859,21 @@ class RpmBuildTarget:
             self.logger,
         )
         check_prerequesite["check-packages"] = True
+
+    def extra_packages(self):
+        if check_prerequesite["extra-packages"]:
+            return
+
+        Builder.buildSpecifiedPackages(
+            constants.extraPackagesList,
+            Build_Config.buildThreads,
+            Build_Config.pkgBuildType,
+            Build_Config.pkgInfoFile,
+            self.logger,
+            build_extra_pkgs=True,
+        )
+
+        check_prerequesite["extra-packages"] = True
 
     def distributed_build():
         # TODO: should be moved to top
@@ -1491,6 +1509,8 @@ def initialize_constants():
     ):
         constants.enable_fips_in_make_check()
 
+    constants.extraPackagesList = configdict["photon-build-param"]["extra-packages-list"]
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
@@ -1539,6 +1559,7 @@ def process_env_build_params(ph_build_param):
         "BUILD_DBGINFO_RPM": "build-dbginfo-rpm",
         "RPMCHECK": "rpm-check-flag",
         "SCHEDULER_SERVER": "start-scheduler-server",
+        "BUILD_EXTRA_PKGS": "build-extra-pkgs",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1563,6 +1584,7 @@ def process_env_build_params(ph_build_param):
             "BUILDDEPS",
             "SCHEDULER_SERVER",
             "CANISTER_BUILD",
+            "BUILD_EXTRA_PKGS",
         }:
             val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
@@ -1674,6 +1696,16 @@ def main():
             check_prerequesite[item] = False
 
     initialize_constants()
+
+    """
+    Special case.
+    If BUILD_EXTRA_PKGS environment variable is set
+    Override everything else and build extra packages.
+    """
+    if configdict["photon-build-param"].get("build-extra-pkgs", False):
+        # incase if build.py is invoked directly
+        if targetName != "extra-packages":
+            targetName = "extra-packages"
 
     if not targetName:
         targetName = ph_build_param["target"]

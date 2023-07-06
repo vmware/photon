@@ -20,6 +20,9 @@
             "glibc",
             "linux"
         ],
+        "extra-packages-list": [
+            "chromium"
+        ],
         "target": "iso",
         "compression-macro": "w19.zstdio",
 
