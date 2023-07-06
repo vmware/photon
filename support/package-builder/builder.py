@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
 import os.path
 import collections
 import traceback
 import sys
 import json
 import copy
+
 from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
@@ -14,12 +14,25 @@ from PackageManager import PackageManager
 from SpecData import SPECS
 from PackageInfo import PackageInfo
 
+
 class Builder:
 
-    def buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile=None, logger=None):
+    def buildSpecifiedPackages(
+        listPackages,
+        buildThreads,
+        pkgBuildType,
+        pkgInfoJsonFile=None,
+        logger=None,
+        build_extra_pkgs=False,
+    ):
         if constants.rpmCheck:
             constants.setTestForceRPMS(copy.copy(listPackages))
+
         pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+
+        if not build_extra_pkgs:
+            listPackages = set(listPackages) - set(constants.extraPackagesList)
+
         pkgManager.buildPackages(listPackages, buildThreads)
 
         if pkgInfoJsonFile is not None:
