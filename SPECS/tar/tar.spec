@@ -1,7 +1,7 @@
 Summary:    Archiving program
 Name:       tar
 Version:    1.34
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0:    tar/%{name}-%{version}.tar.xz
 %define sha512 tar=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+
+Patch0: CVE-2022-48303.patch
 
 %description
 Contains GNU archiving program
@@ -44,6 +46,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Thu Jul 06 2023 Kuntal Nayak <nkuntal@vmware.com> 1.34-3
+- Fixed CVE-2022-48303 with patch
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.34-2
 - Remove .la files
 * Thu Apr 08 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.34-1
