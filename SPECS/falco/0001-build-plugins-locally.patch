@@ -1,0 +1,52 @@
+From 0433f600bd01cd2d399a931cb1611e55322ad15d Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 7 Jul 2023 19:42:23 +0000
+Subject: [PATCH] build plugins locally
+
+Build plugins locally with updated toolchain instead of
+downloading/consuming prebuilt binaries compiled with an older
+Go compiler.
+---
+ cmake/modules/plugins.cmake | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/cmake/modules/plugins.cmake b/cmake/modules/plugins.cmake
+index acc1ea87..20daf1bd 100644
+--- a/cmake/modules/plugins.cmake
++++ b/cmake/modules/plugins.cmake
+@@ -17,20 +17,24 @@ string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} PLUGINS_SYSTEM_NAME)
+ 
+ ExternalProject_Add(
+   cloudtrail-plugin
+-  URL "https://download.falco.org/plugins/stable/cloudtrail-0.2.3-${PLUGINS_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}.tar.gz"
+-  URL_HASH "SHA256=3dfce36f37a4f834b6078c6b78776414472a6ee775e8f262535313cc4031d0b7"
++  URL "https://github.com/falcosecurity/plugins/archive/refs/tags/cloudtrail-0.2.3.tar.gz"
++  URL_HASH "SHA256=4c986b8dcf1574de5f45cc7994f255761fd9dc7a9c00126a39fbb9182aa5a284"
+   CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
++  SOURCE_DIR "plugins-cloudtrail-0.2.3"
++  BINARY_DIR "plugins-cloudtrail-0.2.3/plugins/cloudtrail"
++  BUILD_COMMAND "make"
+   INSTALL_COMMAND "")
+ 
+-install(FILES "${PROJECT_BINARY_DIR}/cloudtrail-plugin-prefix/src/cloudtrail-plugin/libcloudtrail.so" DESTINATION "${FALCO_PLUGINS_DIR}")
++install(FILES "${PROJECT_BINARY_DIR}/plugins-cloudtrail-0.2.3/plugins/cloudtrail/libcloudtrail.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
+ 
+ ExternalProject_Add(
+   json-plugin
+-  URL "https://download.falco.org/plugins/stable/json-0.2.2-${PLUGINS_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}.tar.gz"
+-  URL_HASH "SHA256=83eb411c9f2125695875b229c6e7974e6a4cc7f028be146b79d26db30372af5e"
++  URL "https://github.com/falcosecurity/plugins/archive/refs/tags/json-0.2.2.tar.gz"
++  URL_HASH "SHA256=5f6e924e5bee4dc5b8f818f7d51acb53303557848b98523bc4fe1dd6d50696bd"
+   CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
++  SOURCE_DIR "plugins-json-0.2.2"
++  BINARY_DIR "plugins-json-0.2.2/plugins/json"
++  BUILD_COMMAND "make"
+   INSTALL_COMMAND "")
+ 
+-install(FILES "${PROJECT_BINARY_DIR}/json-plugin-prefix/src/json-plugin/libjson.so" DESTINATION "${FALCO_PLUGINS_DIR}")
++install(FILES "${PROJECT_BINARY_DIR}/plugins-json-0.2.2/plugins/json/libjson.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
+-- 
+2.39.0
+

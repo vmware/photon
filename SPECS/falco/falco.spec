@@ -3,7 +3,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.31.1
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1:         0001-cmake-force-civetweb-library-into-lib-instead-of-lib.patch
+Patch2:         0001-build-plugins-locally.patch
 
 BuildArch:      x86_64
 
@@ -34,6 +35,7 @@ BuildRequires:  which
 BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
+BuildRequires:  go
 %if 0%{?with_check}
 BuildRequires:  dkms
 BuildRequires:  xz-devel
@@ -101,6 +103,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Fri Jul 07 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.31.1-3
+- Build Go plugins locally
 * Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.31.1-2
 - Bump version as a part of sysdig upgrade
 * Tue Jun 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.31.1-1
