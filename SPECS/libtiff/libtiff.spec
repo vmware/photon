@@ -1,23 +1,14 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.5.0
-Release:        5%{?dist}
+Version:        4.5.1
+Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha512  libtiff-v=5227cb7b496ac6829601d8d689233bd8f318c1d04e5ce3457cdd6eac9e4f8c80cd7211d90cd092c61ad38bc8a4949169a13eabd788c46c15bcee1f72519fa022
-Patch0:         CVE-2022-48281.patch
-Patch1:         CVE-2023-25433-1.patch
-Patch2:         CVE-2023-25433-2.patch
-Patch3:         CVE-2023-0798.patch
-Patch4:         CVE-2023-0804.patch
-Patch5:         CVE-2023-26965.patch
-Patch6:         CVE-2023-26966.patch
-Patch7:         CVE-2023-2731.patch
-Patch8:         CVE-2023-3316.patch
+%define sha512  libtiff-v=859331284cd28df56c44644a355ecdd8eece19f0d5cd3e693e37c0fe37115091e46943ffbad784e84af1b39a6fd81cd196af2d4fefe86369258f89050dafaa84
 
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  wget
@@ -67,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/*
 
 %changelog
+*   Fri Jul 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.1-1
+-   Update to v4.5.1
 *   Wed Jul 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.0-5
 -   Fix for CVE-2023-2731/CVE-2023-3316
 *   Mon Jul 03 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5.0-4
