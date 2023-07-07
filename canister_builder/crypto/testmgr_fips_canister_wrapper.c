@@ -7,7 +7,7 @@
  */
 #include <linux/scatterlist.h>
 #include <linux/uio.h>
-#include "testmgr.h"
+#include "fips_canister_wrapper_internal.h"
 
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf, unsigned int buflen);
 extern int fcw_warn_on(int cond);
@@ -18,6 +18,23 @@ void *fcw_sg_page_address(struct scatterlist *sg)
 {
 	struct page *page = sg_page(sg);
 	return page_address(page);
+}
+
+static unsigned int count_test_sg_divisions(const struct test_sg_division *divs)
+{
+	unsigned int remaining = TEST_SG_TOTAL;
+	unsigned int ndivs = 0;
+
+	do {
+		remaining -= divs[ndivs++].proportion_of_total;
+	} while (remaining);
+
+	return ndivs;
+}
+
+static void testmgr_poison(void *addr, size_t len)
+{
+	memset(addr, TESTMGR_POISON_BYTE, len);
 }
 
 /**

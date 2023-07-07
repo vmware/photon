@@ -25,11 +25,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/rsa-pkcs1pad.c              |   6 +-
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
- crypto/tcrypt.c                    |  21 +++---
  crypto/testmgr.c                   | 110 ++++++++++++++---------------
  crypto/xts.c                       |   2 +-
  lib/crypto/sha256.c                |   6 +-
- 24 files changed, 182 insertions(+), 174 deletions(-)
+ 23 files changed, 171 insertions(+), 164 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 0628c2bca..6a4378bac 100644
@@ -971,88 +970,6 @@ index be70e76d6..07e27910c 100644
  	return sha512_final(desc, hash);
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
-diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
-index 3f98fab3f..0105e631a 100644
---- a/crypto/tcrypt.c
-+++ b/crypto/tcrypt.c
-@@ -34,6 +34,7 @@
- #include <linux/timex.h>
- #include <linux/interrupt.h>
- #include "tcrypt.h"
-+#include "fips_canister_wrapper.h"
- 
- /*
-  * Need slab memory for testing (size in number of pages).
-@@ -115,15 +116,15 @@ static void sg_init_aead(struct scatterlist *sg, char *xbuf[XBUFSIZE],
- 
- 	sg_init_table(sg, np + 1);
- 
--	sg_set_buf(&sg[0], assoc, aad_size);
-+	fcw_sg_set_buf(&sg[0], assoc, aad_size);
- 
- 	if (rem)
- 		np--;
- 	for (k = 0; k < np; k++)
--		sg_set_buf(&sg[k + 1], xbuf[k], PAGE_SIZE);
-+		fcw_sg_set_buf(&sg[k + 1], xbuf[k], PAGE_SIZE);
- 
- 	if (rem)
--		sg_set_buf(&sg[k + 1], xbuf[k], rem);
-+		fcw_sg_set_buf(&sg[k + 1], xbuf[k], rem);
- }
- 
- static inline int do_one_aead_op(struct aead_request *req, int ret)
-@@ -701,7 +702,7 @@ static void test_hash_sg_init(struct scatterlist *sg)
- 
- 	sg_init_table(sg, TVMEMSIZE);
- 	for (i = 0; i < TVMEMSIZE; i++) {
--		sg_set_buf(sg + i, tvmem[i], PAGE_SIZE);
-+		fcw_sg_set_buf(sg + i, tvmem[i], PAGE_SIZE);
- 		memset(tvmem[i], 0xff, PAGE_SIZE);
- 	}
- }
-@@ -1161,14 +1162,14 @@ static void test_mb_skcipher_speed(const char *algo, int enc, int secs,
- 				sg_init_table(cur->sg, pages);
- 
- 				while (k > PAGE_SIZE) {
--					sg_set_buf(cur->sg + p, cur->xbuf[p],
-+					fcw_sg_set_buf(cur->sg + p, cur->xbuf[p],
- 						   PAGE_SIZE);
- 					memset(cur->xbuf[p], 0xff, PAGE_SIZE);
- 					p++;
- 					k -= PAGE_SIZE;
- 				}
- 
--				sg_set_buf(cur->sg + p, cur->xbuf[p], k);
-+				fcw_sg_set_buf(cur->sg + p, cur->xbuf[p], k);
- 				memset(cur->xbuf[p], 0xff, k);
- 
- 				skcipher_request_set_crypt(cur->req, cur->sg,
-@@ -1370,20 +1371,20 @@ static void test_skcipher_speed(const char *algo, int enc, unsigned int secs,
- 			sg_init_table(sg, DIV_ROUND_UP(k, PAGE_SIZE));
- 
- 			if (k > PAGE_SIZE) {
--				sg_set_buf(sg, tvmem[0] + *keysize,
-+				fcw_sg_set_buf(sg, tvmem[0] + *keysize,
- 				   PAGE_SIZE - *keysize);
- 				k -= PAGE_SIZE;
- 				j = 1;
- 				while (k > PAGE_SIZE) {
--					sg_set_buf(sg + j, tvmem[j], PAGE_SIZE);
-+					fcw_sg_set_buf(sg + j, tvmem[j], PAGE_SIZE);
- 					memset(tvmem[j], 0xff, PAGE_SIZE);
- 					j++;
- 					k -= PAGE_SIZE;
- 				}
--				sg_set_buf(sg + j, tvmem[j], k);
-+				fcw_sg_set_buf(sg + j, tvmem[j], k);
- 				memset(tvmem[j], 0xff, k);
- 			} else {
--				sg_set_buf(sg, tvmem[0] + *keysize, bs);
-+				fcw_sg_set_buf(sg, tvmem[0] + *keysize, bs);
- 			}
- 
- 			iv_len = crypto_skcipher_ivsize(tfm);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index 98422b8da..65fcb40b4 100644
 --- a/crypto/testmgr.c

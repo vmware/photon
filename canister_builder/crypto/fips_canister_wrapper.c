@@ -110,6 +110,11 @@ void *fcw_kzalloc(size_t size, gfp_t flags)
 	return kzalloc(size, flags);
 }
 
+bool fcw_boot_cpu_has(unsigned long bit)
+{
+	return boot_cpu_has(bit);
+}
+
 void * __init fcw_mem_alloc(size_t size)
 {
 	/* Can be called before mm_init(). */
