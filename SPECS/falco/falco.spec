@@ -3,7 +3,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.35.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -14,6 +14,8 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 %define sha512 %{name}=16c76d5d6013ae67a4d103248d9ac910f92d906d1565cd7043c94e4b1deee05db6be0e98aa23b90b45e12adc59c4e59d4c8a9e46e22c1738a3dee597dbe28011
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
+Patch1:         0001-build-plugins-locally.patch
+Patch2:         0002-falcoctl-build-locally.patch
 
 BuildArch:      x86_64
 
@@ -33,6 +35,7 @@ BuildRequires:  which
 BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
+BuildRequires:  go
 
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
@@ -98,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/falco.ko
 
 %changelog
+* Fri Jul 07 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.35.0-4
+- Build all Go components locally
 * Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.35.0-3
 - Bump version as a part of sysdig upgrade
 * Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.35.0-2

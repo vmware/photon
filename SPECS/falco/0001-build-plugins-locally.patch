@@ -1,0 +1,100 @@
+From 14044669886ce8402e09493d5796afe31a980c5e Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 7 Jul 2023 16:35:29 +0000
+Subject: [PATCH 1/2] build plugins locally
+
+Build plugins locally with the updated Photon OS toolchain,
+instead of downloading precompiled binaries compiled with
+outdated Go versions.
+---
+ cmake/modules/plugins.cmake | 42 ++++++++++++++++---------------------
+ 1 file changed, 18 insertions(+), 24 deletions(-)
+
+diff --git a/cmake/modules/plugins.cmake b/cmake/modules/plugins.cmake
+index 803af1d3..7382ef37 100644
+--- a/cmake/modules/plugins.cmake
++++ b/cmake/modules/plugins.cmake
+@@ -24,21 +24,19 @@ endif()
+ 
+ # k8saudit
+ set(PLUGIN_K8S_AUDIT_VERSION "0.6.0")
+-if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+-    set(PLUGIN_K8S_AUDIT_HASH "560e8f8dc8fd169e524d95462d65b5227415a7a157442e82383c7d9f456ce58f")
+-else() # aarch64
+-    set(PLUGIN_K8S_AUDIT_HASH "e4757af1bac42b21c5937340790841dedc3805759050a6ffb22d1761e1dd1d31")
+-endif()
++set(PLUGIN_K8S_AUDIT_HASH "afa6750100ed7e2d8cd5a627c9b09e98a7a47ef044ae9302ccb1c5dc65d3737f")
+ 
+ ExternalProject_Add(
+   k8saudit-plugin
+-  URL "https://download.falco.org/plugins/${PLUGINS_DOWNLOAD_BUCKET}/k8saudit-${PLUGIN_K8S_AUDIT_VERSION}-${PLUGINS_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}.tar.gz"
++  URL "https://github.com/falcosecurity/plugins/archive/refs/tags/k8saudit-${PLUGIN_K8S_AUDIT_VERSION}.tar.gz"
+   URL_HASH "SHA256=${PLUGIN_K8S_AUDIT_HASH}"
+   CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
++  SOURCE_DIR "plugins-k8saudit-${PLUGIN_K8S_AUDIT_VERSION}/"
++  BINARY_DIR "plugins-k8saudit-${PLUGIN_K8S_AUDIT_VERSION}/plugins/k8saudit"
++  BUILD_COMMAND "make"
+   INSTALL_COMMAND "")
+ 
+-install(FILES "${PROJECT_BINARY_DIR}/k8saudit-plugin-prefix/src/k8saudit-plugin/libk8saudit.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
++install(FILES "${PROJECT_BINARY_DIR}/plugins-k8saudit-${PLUGIN_K8S_AUDIT_VERSION}/plugins/k8saudit/libk8saudit.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
+ 
+ ExternalProject_Add(
+   k8saudit-rules
+@@ -52,21 +50,19 @@ install(FILES "${PROJECT_BINARY_DIR}/k8saudit-rules-prefix/src/k8saudit-rules/k8
+ 
+ # cloudtrail
+ set(PLUGIN_CLOUDTRAIL_VERSION "0.8.0")
+-if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+-    set(PLUGIN_CLOUDTRAIL_HASH "13ba77602c0859936f6e3b00f93bd218c463300c6a797b694a0d5aeecde13976")
+-else() # aarch64
+-    set(PLUGIN_CLOUDTRAIL_HASH "a01730738e9d5769f69957a204c8afe528b059e9a22f59792dfc65e19d6a43db")
+-endif()
++set(PLUGIN_CLOUDTRAIL_HASH "846aef179b73fa7f1312bc45ca9f929a884d32bd6ea375b9fa3886f060545316")
+ 
+ ExternalProject_Add(
+   cloudtrail-plugin
+-  URL "https://download.falco.org/plugins/${PLUGINS_DOWNLOAD_BUCKET}/cloudtrail-${PLUGIN_CLOUDTRAIL_VERSION}-${PLUGINS_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}.tar.gz"
++  URL "https://github.com/falcosecurity/plugins/archive/refs/tags/cloudtrail-${PLUGIN_CLOUDTRAIL_VERSION}.tar.gz"
+   URL_HASH "SHA256=${PLUGIN_CLOUDTRAIL_HASH}"
+   CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
++  SOURCE_DIR "plugins-cloudtrail-${PLUGIN_CLOUDTRAIL_VERSION}/"
++  BINARY_DIR "plugins-cloudtrail-${PLUGIN_CLOUDTRAIL_VERSION}/plugins/cloudtrail"
++  BUILD_COMMAND "make"
+   INSTALL_COMMAND "")
+ 
+-install(FILES "${PROJECT_BINARY_DIR}/cloudtrail-plugin-prefix/src/cloudtrail-plugin/libcloudtrail.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
++install(FILES "${PROJECT_BINARY_DIR}/plugins-cloudtrail-${PLUGIN_CLOUDTRAIL_VERSION}/plugins/cloudtrail/libcloudtrail.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
+ 
+ ExternalProject_Add(
+   cloudtrail-rules
+@@ -80,18 +76,16 @@ install(FILES "${PROJECT_BINARY_DIR}/cloudtrail-rules-prefix/src/cloudtrail-rule
+ 
+ # json
+ set(PLUGIN_JSON_VERSION "0.7.0")
+-if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+-    set(PLUGIN_JSON_HASH "a7bf52009a935f22b473724f722566fde27aec5c7d618ecd426eed81e477e94d")
+-else() # aarch64
+-    set(PLUGIN_JSON_HASH "9cd65fac3f1cbc7f723b69671d42d35901cd322a23d8f2b9dc95fb0593918a7e")
+-endif()
++set(PLUGIN_JSON_HASH "a97948ccf875273f86481ef7db3e146ee64e823260d68a00caf1f54725e7ac8a")
+ 
+ ExternalProject_Add(
+   json-plugin
+-  URL "https://download.falco.org/plugins/${PLUGINS_DOWNLOAD_BUCKET}/json-${PLUGIN_JSON_VERSION}-${PLUGINS_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}.tar.gz"
++  URL "https://github.com/falcosecurity/plugins/archive/refs/tags/json-${PLUGIN_JSON_VERSION}.tar.gz"
+   URL_HASH "SHA256=${PLUGIN_JSON_HASH}"
+   CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
++  SOURCE_DIR "plugins-json-${PLUGIN_JSON_VERSION}/"
++  BINARY_DIR "plugins-json-${PLUGIN_JSON_VERSION}/plugins/json"
++  BUILD_COMMAND "make"
+   INSTALL_COMMAND "")
+ 
+-install(FILES "${PROJECT_BINARY_DIR}/json-plugin-prefix/src/json-plugin/libjson.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
++install(FILES "${PROJECT_BINARY_DIR}/plugins-json-${PLUGIN_JSON_VERSION}/plugins/json/libjson.so" DESTINATION "${FALCO_PLUGINS_DIR}" COMPONENT "${PLUGINS_COMPONENT_NAME}")
+-- 
+2.39.0
+
