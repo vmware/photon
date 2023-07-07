@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
-Version:        2.2.5
-Release:        15%{?dist}
+Version:        2.3.3
+Release:        1%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -9,19 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.xz
-%define sha512  libgd=e4598e17a277a75e02255402182cab139cb3f2cffcd68ec05cc10bbeaf6bc7aa39162c3445cd4a7efc1a26b72b9152bbedb187351e3ed099ea51767319997a6b
-Source1:        %{name}-tests.tar.gz
-%define sha512  libgd-tests=72da4b0f3789ad4a6850175c36b4486d04d642bd5a222a4d5b47a09e8bea88c90be378a3166e1c1c256e83354cc08e2a260ffad369e21e199643ba219359da60
-
-Patch0:         CVE-2018-1000222.patch
-Patch1:         libgd-CVE-2019-6978.patch
-Patch2:         libgd-CVE-2019-6977.patch
-Patch3:         libgd-CVE-2018-14553.patch
-Patch4:         libgd-CVE-2017-6363.patch
-Patch5:         libgd-CVE-2019-11038.patch
-Patch6:         libgd-CVE-2019-11038-testcase.patch
-Patch7:         libgd-CVE-2021-38115.patch
-Patch8:         libgd-CVE-2021-40145.patch
+%define sha512  libgd=aa49d4381d604a4360d556419d603df2ffd689a6dcc10f8e5e1d158ddaa3ab89912f6077ca77da4e370055074007971cf6d356ec9bf26dcf39bcff3208bc7e6c
 
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
@@ -50,25 +38,14 @@ Requires:   %{name} = %{version}-%{release}
 Header & Development files
 
 %prep
-%autosetup -N -a0
-tar xf %{SOURCE1} --no-same-owner
-cp libgd-tests/bug00383.gd tests/gd/
-cp libgd-tests/bug00383.gd2 tests/gd2/
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 # To use the system installed automake latest version instead of given version in source
-autoreconf -fi
-%configure --with-webp --with-tiff --with-jpeg --with-png --with-freetype --with-fontconfig --disable-werror --disable-static
-make %{?_smp_mflags}
+sh ./bootstrap.sh
+%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+%make_build
+
 %install
 %make_install
 
@@ -88,6 +65,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Jul 11 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-1
+- Upgrade to v2.3.3
 * Fri Jul 07 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2.5-15
 - Bump version as a part of libtiff upgrade
 * Fri Jan 27 2023 Harinadh D <hdommaraju@vmware.com> 2.2.5-14
