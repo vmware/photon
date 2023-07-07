@@ -1,7 +1,7 @@
 Name:       binutils-aarch64-linux-gnu
 Summary:    Cross Binutils for Aarch64
 Version:    2.35
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -11,10 +11,22 @@ Distribution: Photon
 Source0: https://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.xz
 %define sha512 binutils=9f222e4ab6720036402d03904fb11b73ab87714b85cd84997f7d357f405c7e10581d70202f9165a1ee0c70538632db27ecc9dfe627dddb1e6bc7edb1537cf786
 
-Patch0:      binutils-CVE-2023-25584.patch
-Patch1:      binutils-CVE-2023-25585.patch
-Patch2:      binutils-CVE-2023-25588.patch
-Patch3:      binutils-CVE-2022-38533.patch
+Patch1:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
+Patch2:         binutils-CVE-2019-1010204.patch
+Patch3:         binutils-CVE-2021-3487.patch
+Patch4:         binutils-CVE-2021-20294.patch
+Patch5:         binutils-CVE-2021-45078.patch
+Patch6:         binutils-CVE-2022-38533.patch
+Patch7:         binutils-bug-26520.patch
+Patch8:         binutils-CVE-2022-4285.patch
+Patch9:         binutils-CVE-2023-1972.patch
+Patch10:        binutils-CVE-2023-25584.patch
+Patch11:        binutils-CVE-2023-25585.patch
+Patch12:        binutils-CVE-2023-25588.patch
+Patch13:        binutils-CVE-2021-20197-1.patch
+Patch14:        binutils-CVE-2021-20197-2.patch
+Patch15:        binutils-CVE-2021-20197-3.patch
+Patch16:        binutils-CVE-2021-20197-4.patch
 
 BuildArch: x86_64
 
@@ -54,6 +66,9 @@ rm -rf %{buildroot}%{_infodir} \
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Tue Jul 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-4
+- Fix CVE-2021-20197 and sync applied patches between binutils.spec
+- and binutils-aarch64-linux-gnu.spec
 * Mon Jun 26 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-3
 - Fix CVE-2023-25584, CVE-2023-25585, CVE-2023-25588 and CVE-2022-38533
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.35-2
