@@ -1,14 +1,14 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2020f
-Release:        2%{?dist}
+Version:        2023c
+Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha512  tzdata=dd312def18c807452fda2e697514e2064c5f51ebdbedd0cfe6f231252c76ee5d4409f653b295ed5657b7d30b868690047fdb70a10942e69eaa40b77473e3f9ca
+%define sha512  tzdata=608bd286ebcbd0004cfdc1da183273f08aff61f90c8867661154453d77a05d421e4c46ad6d066a1fe2e87d5c82ec0f1c0224667a3b35f3180a3eb7f6ff84cbf5
 BuildArch:      noarch
 
 %description
@@ -42,6 +42,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Fri Jun 30 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2023c-1
+-   Update to 2023c
 *   Fri Jan 13 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2020f-2
 -   Add leap-seconds.list file
 *   Fri Jan 08 2021 Gerrit Photon <photon-checkins@vmware.com> 2020f-1

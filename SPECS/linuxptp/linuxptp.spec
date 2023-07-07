@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -20,7 +20,7 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
-Requires:       tzdata >= 2020f-2
+Requires:       tzdata >= 2023c-1
 
 %description
 This software is an implementation of the Precision Time Protocol (PTP)
@@ -104,6 +104,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/tz2alt.8.gz
 
 %changelog
+*   Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.0-2
+-   Build with latest tzdata for accurate timing
 *   Thu Jun 29 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.0-1
 -   Update to version 4.0
 *   Wed Jun 28 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-5

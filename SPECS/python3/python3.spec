@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        27%{?dist}
+Release:        28%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -281,6 +281,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.7.5-28
+- Version bump to build with updated tzdata
 * Mon Jun 05 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-27
 - Fix CVE-2023-24329
 * Tue Mar 21 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-26

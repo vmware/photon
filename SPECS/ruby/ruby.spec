@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -67,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.5.8-5
+- Version bump to build with updated tzdata
 * Fri Sep 02 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-4
 - Fix CVE-2022-28739
 * Tue Jan 18 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-3

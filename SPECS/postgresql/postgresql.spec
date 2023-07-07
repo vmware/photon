@@ -11,7 +11,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        10.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -261,6 +261,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.23-3
+- Version bump to build with updated tzdata
 * Fri Nov 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.23-2
 - Upgrade to v10.23
 * Wed Nov 16 2022 Tapas Kundu <tkundu@vmware.com> 10.23-1
