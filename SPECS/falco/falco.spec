@@ -5,7 +5,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.32.2
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -16,6 +16,7 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 %define sha512 %{name}=88a98e32285746c2c04bd640495c12a1114a511ef6a9ee276ddaf60ad441effffe8da4879442c82a7fbab76cbecb157bd2cddc01eaa17d3876eb1860e6ec6260
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
+Patch1: 0001-build-plugins-locally.patch
 
 BuildArch:      x86_64
 
@@ -35,6 +36,7 @@ BuildRequires:  which
 BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
+BuildRequires:  go
 
 Requires:       linux = %{uname_r}
 Requires:       zlib
@@ -108,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.32.2-6
+- Build Go plugins locally, instead of consuming precompiled binary
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-5
 - Bump version as a part of lua upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-4
