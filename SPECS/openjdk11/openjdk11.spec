@@ -6,7 +6,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -213,6 +213,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.20-2
+- Bump version as a part of cups upgrade
 * Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
 - Upgrade to v11.0.20
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-3
