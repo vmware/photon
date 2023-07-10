@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.183
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -46,15 +46,12 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 4.0.1-5.10.21-3-secure
+%define fips_canister_version 5.0.0-6.1.10-18.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
+%define sha512 fips-canister=8c5e9beba4a90249455f5effa00e540a9660cbf375533572c08b62e7e9a090ef779201b667da64c43e1d473a47e1242e1e2858a091d1e0e4cf9e49344a3f7fe9
 
 Source17:       modify_kernel_configs.inc
-Source18:       fips_canister-kallsyms
-Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-Source20:       Add-alg_request_report-cmdline.patch
-Source21:       speedup-algos-registration-in-non-fips-mode.patch
+Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 Source22:       spec_install_post.inc
@@ -228,24 +225,16 @@ Patch503: 0002-FIPS-crypto-self-tests.patch
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
-#Patch to not make shash_no_setkey static
-Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
-#Patch to introduce wrappers for random callback functions
-Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %else
 %if 0%{?kat_build}
-Patch510: 0003-FIPS-broken-kattest.patch
+Patch511: 0003-FIPS-broken-kattest.patch
 %endif
-%endif
-
-%if 0%{?fips}
-#retpoline
-Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
 # Fix proc01 LTP test failure
@@ -381,18 +370,14 @@ The Linux package contains the Linux kernel doc files
 %patch300 -p1
 
 # crypto
-%autopatch -p1 -m500 -M507
+%autopatch -p1 -m500 -M505
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %else
 %if 0%{?kat_build}
-%patch510 -p1
+%patch511 -p1
 %endif
-%endif
-
-%if 0%{?fips}
-%autopatch -p1 -m511 -M511
 %endif
 
 #Fix proc01 LTP test failure
@@ -443,15 +428,19 @@ popd
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
-cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
+   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
+   crypto/
 # Change m to y for modules that are in the canister
 %include %{SOURCE17}
-cp %{SOURCE18} crypto/
 # Patch canister wrapper
-patch -p1 < %{SOURCE19}
-patch -p1 < %{SOURCE20}
-patch -p1 < %{SOURCE21}
+patch -p1 < %{SOURCE18}
 %else
 %if 0%{?kat_build}
 # Change m to y for modules in katbuild
@@ -612,6 +601,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 10 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-3
+- Use canister 5.0.0-6.1.10-18
 * Thu Jul 06 2023 Garrett Goble <gobleg@vmware.com> 5.10.183-2
 - Adding SBX kernel driver
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1

@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.183
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,13 +37,9 @@ Source4:    check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 4.0.1-5.10.21-3-secure
+%define fips_canister_version 5.0.0-6.1.10-18.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=1d3b88088a23f7d6e21d14b1e1d29496ea9e38c750d8a01df29e1343034f74b0f3801d1f72c51a3d27e9c51113c808e6a7aa035cb66c5c9b184ef8c4ed06f42a
-
-Source18:       fips_canister-kallsyms
-Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-Source20:       Add-alg_request_report-cmdline.patch
+%define sha512 fips-canister=8c5e9beba4a90249455f5effa00e540a9660cbf375533572c08b62e7e9a090ef779201b667da64c43e1d473a47e1242e1e2858a091d1e0e4cf9e49344a3f7fe9
 %endif
 
 Source21:       spec_install_post.inc
@@ -208,27 +204,19 @@ Patch503: 0002-FIPS-crypto-self-tests.patch
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
-#Patch to not make shash_no_setkey static
-Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
-#Patch to introduce wrappers for random callback functions
-Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 
 %else
 
 %if 0%{?kat_build}
-Patch510: 0003-FIPS-broken-kattest.patch
+Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 
-%endif
-
-%if 0%{?fips}
-#retpoline
-Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
 # Fix proc01 LTP test failure
@@ -326,18 +314,14 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m201 -M240
 
 # crypto
-%autopatch -p1 -m500 -M507
+%autopatch -p1 -m500 -M505
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %else
 %if 0%{?kat_build}
-%patch510 -p1
+%patch511 -p1
 %endif
-%endif
-
-%if 0%{?fips}
-%autopatch -p1 -m511 -M511
 %endif
 
 #Fix proc01 LTP test failure
@@ -347,12 +331,15 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
-cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
-cp %{SOURCE18} crypto/
-# Patch canister wrapper
-patch -p1 < %{SOURCE19}
-patch -p1 < %{SOURCE20}
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
+   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
+   crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .config
@@ -499,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 04 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-2
+- Use canister 5.0.0-6.1.10-18
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1

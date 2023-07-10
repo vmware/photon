@@ -101,14 +101,14 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  net/netfilter/ipset/ip_set_core.c             |   1 -
  scripts/Makefile.gcc-plugins                  |  12 +
  scripts/gcc-plugins/Makefile                  |   4 +-
- scripts/gcc-plugins/rap_plugin/rap.h          |  36 ++
+ scripts/gcc-plugins/rap_plugin/rap.h          |  38 ++
  .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 +++++++
  scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 ++++++++++++
- scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 539 ++++++++++++++++
+ scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 554 ++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   7 -
  security/Kconfig                              |  18 +
- 100 files changed, 2403 insertions(+), 587 deletions(-)
+ 100 files changed, 2420 insertions(+), 587 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -4561,7 +4561,7 @@ index 4cc42ad2f..78a401339 100644
  	pci_channel_io_normal = (__force pci_channel_state_t) 1,
  
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index d3f6a0708..561d884c4 100644
+index d3f6a0708..5ea4f7992 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
 @@ -860,6 +860,8 @@ void __weak bpf_jit_free_exec(void *addr)
@@ -4578,11 +4578,11 @@ index d3f6a0708..561d884c4 100644
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
 +#ifdef CONFIG_PAX_RAP
-+	hole -= 8;
++	hole -= 6;
 +#endif
  	start = (get_random_int() % hole) & ~(alignment - 1);
 +#ifdef CONFIG_PAX_RAP
-+	start += 8;
++	start += 6;
 +#endif
  
  	/* Leave a random number of instructions before BPF code. */
@@ -4590,9 +4590,9 @@ index d3f6a0708..561d884c4 100644
  
 +#ifdef CONFIG_PAX_RAP
 +#ifdef CONFIG_RELOCATABLE
-+	*(long *)(*image_ptr - 8) = 0x456bce13LL;
++	*(int *)(*image_ptr - 6) = 0x456bce13;
 +#else
-+	*(long *)(*image_ptr - 8) = (long)&__rap_hash___bpf_prog_run;
++	*(int *)(*image_ptr - 6) = (int)&__rap_hash___bpf_prog_run;
 +#endif
 +#endif
  	return hdr;
@@ -4852,15 +4852,17 @@ index b5487cce6..4cfae9729 100644
  plugin-single	:= $(addprefix $(obj)/, $(plugin-single))
 diff --git a/scripts/gcc-plugins/rap_plugin/rap.h b/scripts/gcc-plugins/rap_plugin/rap.h
 new file mode 100644
-index 000000000..f6a284da4
+index 000000000..dbaafeed7
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap.h
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,38 @@
 +#ifndef RAP_H_INCLUDED
 +#define RAP_H_INCLUDED
 +
 +#include "gcc-common.h"
 +
++#define RAP_HASH_START_PADDING_SIZE  3
++#define RAP_HASH_END_PADDING_SIZE  2
 +typedef struct {
 +	int hash; // will be sign extended to long in reality
 +} rap_hash_t;
@@ -4894,7 +4896,7 @@ index 000000000..f6a284da4
 +#endif
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 new file mode 100644
-index 000000000..b1f5f1644
+index 000000000..511076ab2
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 @@ -0,0 +1,224 @@
@@ -4911,7 +4913,7 @@ index 000000000..b1f5f1644
 +
 +static bool rap_fptr_gate(void)
 +{
-+#ifdef TARGET_386
++#ifdef TARGET_64BIT
 +	tree section;
 +
 +	if (!TARGET_64BIT || ix86_cmodel != CM_KERNEL)
@@ -4949,7 +4951,7 @@ index 000000000..b1f5f1644
 +#endif
 +	basic_block cond_bb, join_bb, true_bb;
 +	edge e;
-+	const HOST_WIDE_INT rap_hash_offset = TARGET_64BIT ? 2 * sizeof(rap_hash_t) : sizeof(rap_hash_t);
++	const HOST_WIDE_INT rap_hash_offset = sizeof(rap_hash_t) + 2;
 +
 +	call_stmt = gsi_stmt(*gsi);
 +	loc = gimple_location(call_stmt);
@@ -4988,7 +4990,7 @@ index 000000000..b1f5f1644
 +
 +	assign_hash = gimple_build_assign(target_hash, build1(INDIRECT_REF, rap_hash_type_node, fptr));
 +#else
-+	assign_hash = gimple_build_assign(target_hash, build2(MEM_REF, rap_hash_type_node, fptr, build_int_cst_type(build_pointer_type(rap_hash_type_node), -rap_hash_offset)));
++	assign_hash = gimple_build_assign(target_hash, build2(MEM_REF, integer_type_node, fptr, build_int_cst_type(build_pointer_type(rap_hash_type_node), -rap_hash_offset)));
 +#endif
 +	gimple_set_location(assign_hash, loc);
 +	SSA_NAME_DEF_STMT(target_hash) = assign_hash;
@@ -5526,10 +5528,10 @@ index 000000000..420fcbdbf
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 new file mode 100644
-index 000000000..a15bbb019
+index 000000000..1e0d234b3
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-@@ -0,0 +1,539 @@
+@@ -0,0 +1,553 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -5670,15 +5672,17 @@ index 000000000..a15bbb019
 +	if (DECL_USER_ALIGN(decl))
 +		return;
 +
-+	if (!optimize_function_for_speed_p(cfun))
++	if (!optimize_function_for_speed_p(cfun)) {
++		ASM_OUTPUT_ASCII(asm_out_file, "\xb8", 1);
 +		return;
++	}
 +
 +	if (skip <= rap_hash_offset)
 +		return;
 +
-+#ifdef TARGET_386
++#ifdef TARGET_64BIT
 +	{
-+		char padding[skip - rap_hash_offset];
++		char padding[RAP_HASH_START_PADDING_SIZE];
 +
 +		// this byte sequence helps disassemblers not trip up on the following rap hash
 +		memset(padding, 0xcc, sizeof padding - 1);
@@ -5694,32 +5698,47 @@ index 000000000..a15bbb019
 +{
 +	cgraph_node_ptr node;
 +	rap_hash_t imprecise_rap_hash;
++	char *name = NULL;
++	char end_padding[RAP_HASH_END_PADDING_SIZE];
 +
++	memset(end_padding, 0xcc, sizeof end_padding);
 +	gcc_assert(debug_hooks == &rap_debug_hooks);
 +
 +	// chain to previous callback
 +	if (old_debug_hooks && old_debug_hooks->begin_function)
 +		old_debug_hooks->begin_function(decl);
 +
-+	// align the rap hash if necessary
-+	rap_hash_align(decl);
-+
 +	// don't compute hash for functions called only directly
 +	node = cgraph_get_node(decl);
 +	gcc_assert(node);
 +	if (!rap_cgraph_indirectly_callable(node)) {
 +		imprecise_rap_hash.hash = 0;
++		return;
 +	} else {
 +		imprecise_rap_hash = rap_hash_function_node_imprecise(node);
 +	}
 +
++	gcc_assert(asprintf(&name, "__cfi_%s", IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl))) != -1);
++	if (TREE_PUBLIC(decl)) {
++		if (lookup_attribute("weak", DECL_ATTRIBUTES(decl)))
++			fprintf(asm_out_file, "\t.weak\t%s\n", name);
++		else
++			fprintf(asm_out_file, GLOBAL_ASM_OP " %s\n", name);
++	}
++
++	ASM_OUTPUT_TYPE_DIRECTIVE(asm_out_file, name, "function");
++	ASM_OUTPUT_LABEL(asm_out_file, name);
++
++	// align the rap hash if necessary
++	rap_hash_align(decl);
++
 +	if (report_func_hash)
 +		inform(DECL_SOURCE_LOCATION(decl), "func rap_hash: %x %s", imprecise_rap_hash.hash, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
 +
-+	if (TARGET_64BIT)
-+		fprintf(asm_out_file, "\t.quad %#lx\t%s __rap_hash_%s\n", (long)imprecise_rap_hash.hash, ASM_COMMENT_START, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
-+	else
-+		fprintf(asm_out_file, "\t.long %#x\t%s __rap_hash_%s\n", imprecise_rap_hash.hash, ASM_COMMENT_START, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
++	fprintf(asm_out_file, "\t.long %#x\t%s __rap_hash_%s\n", imprecise_rap_hash.hash, ASM_COMMENT_START, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
++
++	ASM_OUTPUT_ASCII(asm_out_file, end_padding, sizeof end_padding);
++	fprintf(asm_out_file, "\t.size\t%s, .-%s\n", name, name);
 +}
 +
 +static void rap_start_unit_common(void *gcc_data __unused, void *user_data __unused)
@@ -5799,10 +5818,7 @@ index 000000000..a15bbb019
 +			inform(DECL_SOURCE_LOCATION(fndecl), "abs rap_hash: %x %s", hash.hash, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(fndecl)));
 +
 +		fprintf(asm_out_file, GLOBAL_ASM_OP " %s\n", name);
-+		if (TARGET_64BIT)
-+			fprintf(asm_out_file, "\t.offset %#lx\n", (long)hash.hash);
-+		else
-+			fprintf(asm_out_file, "\t.offset %#x\n", hash.hash);
++		fprintf(asm_out_file, "\t.offset %#x\n", hash.hash);
 +		ASM_OUTPUT_TYPE_DIRECTIVE(asm_out_file, name, "object");
 +		ASM_OUTPUT_LABEL(asm_out_file, name);
 +		free(name);
@@ -6193,7 +6209,7 @@ diff --git a/security/Kconfig b/security/Kconfig
 index 04d9e21e87d4..48efcc926aa6 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -94,6 +94,24 @@ config PAX_XATTR_PAX_FLAGS
+@@ -95,6 +95,24 @@ config PAX_XATTR_PAX_FLAGS
  
  endif
  
