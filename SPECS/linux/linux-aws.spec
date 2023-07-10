@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.183
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -152,8 +152,12 @@ Patch135: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
 #Fix for CVE-2021-3699
 Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
+#Fix for CVE-2023-0597
+Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
 # Enable CONFIG_DEBUG_INFO_BTF=y
-Patch137: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -317,10 +321,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M138
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
-%patch137 -p1
+%patch150 -p1
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -499,6 +503,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
+- Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1

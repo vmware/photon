@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.183
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -159,6 +159,10 @@ Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
 #Fix for CVE-2021-3699
 Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
+#Fix for CVE-2023-0597
+Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -284,7 +288,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M138
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -431,6 +435,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
+- Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 31 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1

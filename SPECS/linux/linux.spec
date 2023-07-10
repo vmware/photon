@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.183
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -201,6 +201,10 @@ Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
 
 #Fix for CVE-2021-3699
 Patch135: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
+
+#Fix for CVE-2023-0597
+Patch136: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch137: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -463,7 +467,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M135
+%autopatch -p1 -m100 -M137
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -896,6 +900,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
+- Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1

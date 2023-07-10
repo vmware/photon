@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.183
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -165,6 +165,10 @@ Patch133: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
 #Fix for CVE-2023-1989
 Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
+
+#Fix for CVE-2023-0597
+Patch135: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch136: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -677,7 +681,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M136
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -930,6 +934,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
+- Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1
 - Update to version 5.10.183, fix some CVEs
 * Wed May 17 2023 Ankit Jain <ankitja@vmware.com> 5.10.180-1
