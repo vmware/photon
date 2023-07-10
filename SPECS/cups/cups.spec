@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.2.7
-Release:        5%{?dist}
+Version:        2.4.6
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -9,13 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}.tar.gz
-%define sha512 %{name}=143f085ce0a8953d9ab277a46369dcf337bcdd84f5a4dc0ed5dba7a5d0188dc62825728d56e8baf4a2b4f96f2086b3798660016924969d69d28483809a031a4d
-Patch0:         CVE-2018-4300.patch
-Patch1:         CVE-2022-26691.patch
-Patch2:         CVE-2020-10001.patch
-Patch3:         CVE-2019-2228.patch
-Patch4:         0001-cups-Fix-for-CVE-2023-32324.patch
-Patch5:         CVE-2023-34241.patch
+%define sha512 %{name}=390b1a1afca4b6a2cacc42caca26b72888dfb049c663ea3ea1f2f8662c0becaa198ee27bd6ac13c7938c1a3c103ca206fdf2337a130294a1bd3b00f000ddfc35
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -56,6 +50,8 @@ make %{?_smp_mflags}
 
 %install
 make %{?_smp_mflags} install BUILDROOT=%{buildroot}
+find %{buildroot} -name '*.desktop' -delete
+find %{buildroot} -name '*.png' -delete
 
 %ldconfig_scriptlets
 
@@ -93,8 +89,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/cups/
 %{_libdir}/libcups*.so
+%{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.6-1
+- Update to v2.4.6
 * Thu Jun 15 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2.7-5
 - Fix for CVE-2023-34241
 * Wed May 24 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2.7-4
