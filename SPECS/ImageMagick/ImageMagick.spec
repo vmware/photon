@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.1.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -15,7 +15,7 @@ Url:            http://www.imagemagick.org
 Epoch:          1
 Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
 %define sha512  %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
-
+Patch0:         CVE-2023-3428.patch
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
@@ -175,6 +175,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Mon Jul 10 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-2
+- Fix for CVE-2023-3428
 * Tue Jun 06 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-1
 - Version update
 * Mon Jun 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.1.0.19-10
