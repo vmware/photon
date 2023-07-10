@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.66
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.66-4
+- Bump version as a part of cups upgrade
 * Fri May 12 2023 Nitesh Kumar <kunitesh@vmware.com> 5.66-3
 - Patched to fix CVE-2023-27349
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.66-2

@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.4.2
-Release:        5%{?dist}
+Version:        2.4.6
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}.tar.gz
-%define sha512  %{name}=1942a677a78df0dcfaaae4b93cf7bf4ba59865d270d89d893831cb47a02f6b7e581c56bbb9264d39504b46d81c3b17ba89f7c5e21f20628f12ddf7161ac6a574
-Patch0:         0001-cups-Fix-for-CVE-2023-32324.patch
-Patch1:         CVE-2023-34241.patch
+%define sha512  %{name}=390b1a1afca4b6a2cacc42caca26b72888dfb049c663ea3ea1f2f8662c0becaa198ee27bd6ac13c7938c1a3c103ca206fdf2337a130294a1bd3b00f000ddfc35
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -94,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.6-1
+- Update to v2.4.6
 * Thu Jun 15 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.2-5
 - Fix for CVE-2023-34241
 * Wed May 24 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.2-4
