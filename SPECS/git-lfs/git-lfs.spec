@@ -3,8 +3,8 @@
 
 Summary:      Git extension for versioning large files
 Name:         git-lfs
-Version:      2.12.0
-Release:      20%{?dist}
+Version:      3.2.0
+Release:      1%{?dist}
 License:      MIT
 URL:          https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Group:        System Environment/Programming
@@ -12,7 +12,7 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=be143f4008040504357e6e8748e6549bcff08c42340c1cca14b6d617c7a215554c6c3ad8b4c1ce26906bc812ef21c9aa4c8b6f36be2c01a65952c5e075ad81da
+%define sha512 %{name}=c2ba8cecd5b3519a032f446b0c3043352f37f3c67ff3c2304a38beb176f0ae8efd1deaeb8bd54a35d7dd7dcd988da67249c896dffd83fc293b165a3e6bb02d66
 
 BuildRequires: go
 BuildRequires: which
@@ -38,8 +38,8 @@ rm -rf %{buildroot}
 install -D bin/git-lfs %{buildroot}%{_bindir}/git-lfs
 mkdir -p %{buildroot}%{_mandir}/man1
 mkdir -p %{buildroot}%{_mandir}/man5
-install -D man/*.1 %{buildroot}%{_mandir}/man1
-install -D man/*.5 %{buildroot}%{_mandir}/man5
+install -D man/man1/* %{buildroot}%{_mandir}/man1
+install -D man/man5/* %{buildroot}%{_mandir}/man5
 
 %post
 git lfs install --system
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Tue Jul 11 2023 Anmol Jain <anmolja@vmware.com> 3.2.0-1
+- Version update
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.12.0-20
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.12.0-19
