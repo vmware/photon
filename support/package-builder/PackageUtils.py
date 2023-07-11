@@ -318,6 +318,9 @@ class PackageUtils(object):
         make_check_na = False
         rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildBuildallOption}"
 
+        if constants.resume_build:
+            rpmBuildcmd += f" -D \"__spec_prep_cmd /bin/true\" "
+
         if not constants.buildDbgInfoRpm and package not in constants.buildDbgInfoRpmList:
             rpmBuildcmd += " -D \"debug_package %{nil}\" "
 

@@ -79,3 +79,15 @@ class CommandUtils:
             raise Exception(f"Error while running:\n{cmd}")
 
         return out, err, rc
+
+    @staticmethod
+    def strtobool(val):
+        val = val.lower()
+
+        if val in ("y", "yes", "t", "true", "on", "1", "enable"):
+            return 1
+
+        if val in ("n", "no", "f", "false", "off", "0", "disable"):
+            return 0
+
+        raise ValueError("invalid truth value {!r}".format(val))

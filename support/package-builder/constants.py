@@ -47,6 +47,7 @@ class constants(object):
     phBuilderTag = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
+    resume_build = False
     buildDbgInfoRpmList = []
     extraPackagesList = []
 
@@ -516,3 +517,7 @@ class constants(object):
             constants.hostRpmIsNotUsable = 0
 
         return constants.hostRpmIsNotUsable
+
+    def set_resume_build(val):
+        if val:
+            constants.resume_build = True

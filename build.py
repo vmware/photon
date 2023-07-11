@@ -1025,7 +1025,7 @@ class CheckTools:
             return
 
         key = "SKIP_INSTALLER_UPDATE"
-        if key in os.environ and Utils.strtobool(os.environ[key]):
+        if key in os.environ and cmdUtils.strtobool(os.environ[key]):
             print("%s is enabled, not checking for updates" % key)
             return
 
@@ -1375,6 +1375,11 @@ def initialize_constants():
 
     constants.extraPackagesList = configdict["photon-build-param"]["extra-packages-list"]
 
+    if configdict.get("photon-build-param", {}).get("resume-build", False):
+        constants.set_resume_build(
+            bool(configdict["photon-build-param"]["resume-build"])
+        )
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
@@ -1426,6 +1431,7 @@ def process_env_build_params(ph_build_param):
         "RPMCHECK": "rpm-check-flag",
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
+        "RESUME_BUILD": "resume-build",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1442,12 +1448,13 @@ def process_env_build_params(ph_build_param):
         if k in {"THREADS", "BUILD_SRC_RPM", "BUILD_DBGINFO_RPM"}:
             val = int(val)
         elif k in {"KAT_BUILD", "BUILDDEPS", "SCHEDULER_SERVER",
-                   "ACVP_BUILD", "BUILD_EXTRA_PKGS"}:
-            val = val in {"enable", "True", "yes"}
+                   "ACVP_BUILD", "BUILD_EXTRA_PKGS", "RESUME_BUILD"}:
+            val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
-            if val in {"enable", "enable_stop_on_error"}:
+            t = "enable_stop_on_error"
+            if val == t or cmdUtils.strtobool(val):
                 ph_build_param[v] = True
-                if val == "enable_stop_on_error":
+                if val == t:
                     ph_build_param["rpm-check-stop-on-error"] = True
                     continue
 
