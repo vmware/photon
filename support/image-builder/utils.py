@@ -13,7 +13,6 @@ import shutil
 
 
 class Utils(object):
-
     def __init__(self):
         self.buildArch = platform.machine()
         self.filesystems = []
@@ -21,7 +20,9 @@ class Utils(object):
             for line in fs:
                 self.filesystems.append(line.rstrip("\n").split("\t")[1])
 
-        self.libcloader = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+        self.libcloader = ctypes.CDLL(
+            ctypes.util.find_library("c"), use_errno=True
+        )
 
     def mount(self, source, destination, filesystem, flags):
         if not os.access(source, os.R_OK):
@@ -32,20 +33,28 @@ class Utils(object):
             raise Exception(f"Could not write to path {destination}")
         if filesystem not in self.filesystems:
             raise ValueError("Filesystem unknown")
-        ret = self.libcloader.mount(ctypes.c_char_p(source),
-                                    ctypes.c_char_p(destination),
-                                    ctypes.c_char_p(filesystem),
-                                    ctypes.c_char_p(flags),
-                                    0)
+        ret = self.libcloader.mount(
+            ctypes.c_char_p(source),
+            ctypes.c_char_p(destination),
+            ctypes.c_char_p(filesystem),
+            ctypes.c_char_p(flags),
+            0,
+        )
         if ret != 0:
             raise RuntimeError(
-                "Cannot mount {} : {}".format(source, os.strerror(ctypes.get_errno())))
+                "Cannot mount {} : {}".format(
+                    source, os.strerror(ctypes.get_errno())
+                )
+            )
 
     def umount(self, destination):
         ret = self.libcloader.umount(ctypes.c_char_p(destination))
         if ret != 0:
             raise RuntimeError(
-                "Cannot umount {} : {}".format(destination, os.strerror(ctypes.get_errno())))
+                "Cannot umount {} : {}".format(
+                    destination, os.strerror(ctypes.get_errno())
+                )
+            )
 
     @staticmethod
     def jsonread(filename):
@@ -75,12 +84,16 @@ class Utils(object):
                 for device in ["scsi0:", "sata0:"]:
                     if device in line:
                         line_as_is = False
-                        line = re.sub(pattern, pattern + "0", line)
+                        line = re.sub(pattern, f"{pattern}0", line)
                         new.write(line)
-                        for i in range(1,disk):
+                        for i in range(1, disk):
                             nline = copy.copy(line)
-                            nline = re.sub(device + "0", device + str(i), nline)
-                            nline = re.sub(pattern + "0", pattern + str(i), nline)
+                            nline = re.sub(
+                                f"{device}0", f"{device}{i}", nline
+                            )
+                            nline = re.sub(
+                                f"{pattern}0", f"{pattern}{i}", nline
+                            )
                             new.write(nline)
                 if line_as_is:
                     new.write(line)

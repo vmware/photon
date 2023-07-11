@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
 import os
-import re
 import shutil
 import tarfile
 import lzma as xz
-import fileinput
 import json
-import types
 import ovagenerator
 
 from utils import Utils
@@ -16,11 +13,12 @@ from CommandUtils import CommandUtils
 
 imgUtils = Utils()
 
+
 def create_container_cmd(src_root, photon_docker_image, cmd):
     cmd = (
         f"docker run --ulimit nofile=1024:1024 --rm"
         f" -v {src_root}:/mnt:rw {photon_docker_image}"
-        f" /bin/bash -c \"{cmd}\""
+        f' /bin/bash -c "{cmd}"'
     )
     return cmd
 
@@ -31,10 +29,15 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ["PHOTON_RELEASE_VER"]
     photon_build_num = os.environ["PHOTON_BUILD_NUM"]
 
-    image_name = config.get("image_name",
-                            f"photon-{config['image_type']}-{photon_release_ver}-{photon_build_num}.{imgUtils.buildArch}")
+    image_name = config.get(
+        "image_name",
+        f"photon-{config['image_type']}-{photon_release_ver}-"
+        f"{photon_build_num}.{imgUtils.buildArch}",
+    )
 
-    photon_docker_image = config["installer"].get("photon_docker_image", "photon:latest")
+    photon_docker_image = config["installer"].get(
+        "photon_docker_image", "photon:latest"
+    )
     new_name = []
     if type(raw_image_path) is not list:
         raw_image_path = [raw_image_path]
@@ -65,13 +68,17 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         vhdname = f"{image_name}.vhd"
         dockerenv = False
         print("Check if inside docker env")
-        out, _, _ = cmdUtils.runBashCmd("grep -c docker /proc/self/cgroup || :", capture=True)
+        out, _, _ = cmdUtils.runBashCmd(
+            "grep -c docker /proc/self/cgroup || :", capture=True
+        )
         if out.rstrip() != "0":
             dockerenv = True
 
         print("Converting raw disk to vhd ...")
 
-        cmd = "tdnf install -qy qemu-img; qemu-img info -f raw --output json {}"
+        cmd = (
+            "tdnf install -qy qemu-img; qemu-img info -f raw --output json {}"
+        )
         if not dockerenv:
             cmd = cmd.format(f"/mnt/{relrawpath}")
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
@@ -80,7 +87,9 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
         info_out, _, _ = cmdUtils.runBashCmd(cmd, capture=True)
         mbsize = 1024 * 1024
-        mbroundedsize = (int(json.loads(info_out)["virtual-size"]) / mbsize + 1) * mbsize
+        mbroundedsize = (
+            int(json.loads(info_out)["virtual-size"]) / mbsize + 1
+        ) * mbsize
 
         cmd = "tdnf install -qy qemu-img; qemu-img resize -f raw {} {}"
         if not dockerenv:
@@ -93,22 +102,32 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         cmd = "tdnf install -qy qemu-img; "
         cmd += "qemu-img convert {} -O vpc -o subformat=fixed,force_size {}"
         if not dockerenv:
-            cmd = cmd.format(f"/mnt/{relrawpath}", f"/mnt/{os.path.dirname(relrawpath)}/{vhdname}")
+            cmd = cmd.format(
+                f"/mnt/{relrawpath}",
+                f"/mnt/{os.path.dirname(relrawpath)}/{vhdname}",
+            )
             cmd = create_container_cmd(src_root, photon_docker_image, cmd)
         else:
-            cmd = cmd.format(raw_image[0], f"{os.path.dirname(raw_image[0])}/{vhdname}")
+            cmd = cmd.format(
+                raw_image[0], f"{os.path.dirname(raw_image[0])}/{vhdname}"
+            )
         cmdUtils.runBashCmd(cmd)
 
         if config["artifacttype"] == "vhd.gz":
             outputfile = f"{img_path}/{image_name}.vhd.tar.gz"
-            compressed = generateCompressedFile(f"{img_path}/{vhdname}", outputfile, "w:gz")
+            compressed = generateCompressedFile(
+                f"{img_path}/{vhdname}", outputfile, "w:gz"
+            )
             # remove raw image and call the vhd as raw image
             os.remove(raw_image[0])
             raw_image = f"{img_path}/{vhdname}"
     elif config["artifacttype"] == "ova":
-        ovagenerator.create_ova(raw_image, config,
-                image_name=image_name,
-                eulafile=os.path.join(src_root, "EULA.txt"))
+        ovagenerator.create_ova(
+            raw_image,
+            config,
+            image_name=image_name,
+            eulafile=os.path.join(src_root, "EULA.txt"),
+        )
     elif config["artifacttype"] == "raw":
         pass
     else:
@@ -163,5 +182,5 @@ if __name__ == "__main__":
         options.raw_image_path,
         config,
         options.src_root,
-        options.tools_bin_path
+        options.tools_bin_path,
     )

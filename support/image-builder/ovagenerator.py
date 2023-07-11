@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 
 import os
-import fileinput
-import tarfile
-import shutil
 
 from utils import Utils
 from argparse import ArgumentParser
 from CommandUtils import CommandUtils
 
 
-def create_ova(raw_image_names, config, skip_convert=False, image_name=None, eulafile=None):
-    utils = Utils()
+def create_ova(
+    raw_image_names, config, skip_convert=False, image_name=None, eulafile=None
+):
     cmdUtils = CommandUtils()
 
-    config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), config['image_type'])
+    config_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), config["image_type"]
+    )
 
     if image_name is None:
-        image_name = config.get("image_name", "photon-" + config["image_type"])
+        image_name = config.get("image_name", "photon-{config['image_type']}")
 
     if type(raw_image_names) is str:
         raw_image_names = [raw_image_names]
@@ -29,9 +29,11 @@ def create_ova(raw_image_names, config, skip_convert=False, image_name=None, eul
     for i, raw_img in enumerate(raw_image_names):
         vmdk_paths.append(os.path.join(output_path, f"{image_name}{i}.vmdk"))
         if not skip_convert:
-            cmdUtils.runBashCmd(f"vmdk-convert -t 2147483647 {raw_img} {vmdk_paths[i]}")
+            cmdUtils.runBashCmd(
+                f"vmdk-convert -t 2147483647 {raw_img} {vmdk_paths[i]}"
+            )
 
-    ova_config_file = os.path.join(config_path, config['ova_config'])
+    ova_config_file = os.path.join(config_path, config["ova_config"])
     ova_file = os.path.join(output_path, f"{image_name}.ova")
 
     compose_cmd = f"ova-compose -i {ova_config_file} -o {ova_file}"
@@ -45,9 +47,11 @@ def create_ova(raw_image_names, config, skip_convert=False, image_name=None, eul
 if __name__ == "__main__":
     parser = ArgumentParser()
 
-    parser.add_argument("-r", "--raw-image-path", dest='raw_image_path')
-    parser.add_argument("-c", "--config-path", dest='config_path')
-    parser.add_argument('-v', '--skip-convert', dest='skip_convert', action='store_true')
+    parser.add_argument("-r", "--raw-image-path", dest="raw_image_path")
+    parser.add_argument("-c", "--config-path", dest="config_path")
+    parser.add_argument(
+        "-v", "--skip-convert", dest="skip_convert", action="store_true"
+    )
 
     options = parser.parse_args()
     if options.config_path:
@@ -55,4 +59,6 @@ if __name__ == "__main__":
     else:
         raise Exception("No config file defined")
 
-    create_ova(options.raw_image_path, config, skip_convert=options.skip_convert)
+    create_ova(
+        options.raw_image_path, config, skip_convert=options.skip_convert
+    )
