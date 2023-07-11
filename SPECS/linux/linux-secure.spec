@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.37
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -51,10 +51,14 @@ Source21: fips_integrity.h
 Source22: update_canister_hmac.sh
 Source23: canister_combine.lds
 Source24: gen_canister_relocs.c
+Source25: fips_canister_wrapper_asm.S
+Source26: fips_canister_wrapper_internal.h
+Source27: aesni-intel_glue_fips_canister_wrapper.c
+Source28: testmgr_fips_canister_wrapper.c
 %endif
 
-Source25: spec_install_post.inc
-Source26: %{name}-dracut.conf
+Source29: spec_install_post.inc
+Source30: %{name}-dracut.conf
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -123,10 +127,19 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 
 %if 0%{?canister_build}
-Patch10000:      6.1.10-10-0001-FIPS-canister-binary-usage.patch
-Patch10001:      0002-FIPS-canister-creation.patch
-Patch10003:      0001-aesni_intel-Remove-static-call.patch
-Patch10004:      0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Below patches are common for fips and canister_build flags
+# 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
+# in both places until final canister binary is released
+Patch10000: 6.1.37-2-0001-FIPS-canister-binary-usage.patch
+Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Below patches are specific to canister_build flag
+Patch10002: 0002-FIPS-canister-creation.patch
+Patch10003: 0003-aesni_intel-Remove-static-call.patch
+Patch10004: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10005: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10006: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
+Patch10007: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch10008: 0008-Move-kernel-structures-usage.patch
 %endif
 
 BuildArch:      x86_64
@@ -224,7 +237,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10004
+%autopatch -p1 -m10000 -M10008
 %endif
 
 %build
@@ -248,6 +261,10 @@ cp %{SOURCE21} crypto/
 cp %{SOURCE22} crypto/
 cp %{SOURCE23} crypto/
 cp %{SOURCE24} crypto/
+cp %{SOURCE25} crypto/
+cp %{SOURCE26} crypto/
+cp %{SOURCE27} crypto/
+cp %{SOURCE28} crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -293,7 +310,11 @@ pushd crypto/
 mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
 cp fips_canister.o \
    fips_canister-kallsyms \
+   fips_canister_wrapper_asm.S \
    fips_canister_wrapper.c \
+   fips_canister_wrapper_internal.h \
+   aesni-intel_glue_fips_canister_wrapper.c \
+   testmgr_fips_canister_wrapper.c \
    .fips_canister.o.cmd \
    fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
 tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
@@ -347,11 +368,11 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE26} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE30} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE3}
-%include %{SOURCE25}
+%include %{SOURCE29}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -385,6 +406,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 11 2023 Keerthana K <keerthanak@vmware.com> 6.1.37-2
+- fips_canister: Merge changes from dev branch
 * Tue Jul 04 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.37-1
 - Update to version 6.1.37
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.32-1

@@ -13,23 +13,62 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
-#include <linux/sched.h>
 #include <linux/version.h>
+#include <linux/printk.h>
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include <linux/prandom.h>
+#else
+#include <linux/random.h>
+#endif
+
+#include <linux/sched.h>
+#include <linux/kthread.h>
 #include <linux/workqueue.h>
+#include <linux/memblock.h>
+#include <linux/ratelimit.h>
 #include <linux/notifier.h>
 #include <linux/module.h>
 #include <linux/fips.h>
+#ifndef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+#include <linux/jump_label.h>
+#endif
+#include <linux/crypto.h>
 #include <crypto/algapi.h>
 #include <crypto/aead.h>
 #include <crypto/hash.h>
 #include <crypto/akcipher.h>
 #include <crypto/skcipher.h>
 #include <crypto/kpp.h>
+#include <crypto/aes.h>
+#include <crypto/des.h>
+#include <crypto/ecdh.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include <crypto/sha.h>
+#else
+#include <crypto/sha1.h>
+#include <crypto/sha2.h>
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+#include "ecc.h"
+#else
+#include <crypto/internal/ecc.h>
+#endif
+#include <crypto/internal/rsa.h>
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
 #include <crypto/internal/hash.h>
 #endif
 #include <asm/fpu/api.h>
 #include "internal.h"
+#include "fips_canister_wrapper_internal.h"
+#include <linux/uio.h>
+#include <linux/scatterlist.h>
+#include <crypto/scatterwalk.h>
+#include <crypto/sha1_base.h>
+#include <crypto/sha512_base.h>
+#include <crypto/sha3.h>
 
 static __ro_after_init bool alg_request_report = false;
 
@@ -45,6 +84,17 @@ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
 }
 #endif
 
+int fcw_signal_pending(void)
+{
+	return signal_pending(current);
+}
+
+void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[])
+{
+	struct task_struct *t = kthread_run(threadfn, data, namefmt);
+	return (void *)t;
+}
+
 int fcw_cond_resched(void)
 {
 	return cond_resched();
@@ -58,6 +108,26 @@ void *fcw_kmalloc(size_t size, gfp_t flags)
 void *fcw_kzalloc(size_t size, gfp_t flags)
 {
 	return kzalloc(size, flags);
+}
+
+bool fcw_boot_cpu_has(unsigned long bit)
+{
+	return boot_cpu_has(bit);
+}
+
+void * __init fcw_mem_alloc(size_t size)
+{
+	/* Can be called before mm_init(). */
+	if (!slab_is_available())
+		return memblock_alloc(size, 8);
+
+	return fcw_kmalloc(size, GFP_KERNEL);
+}
+
+void __init fcw_mem_free(void *p)
+{
+	if (p && slab_is_available() && PageSlab(virt_to_head_page(p)))
+		kfree(p);
 }
 
 void *fcw_mutex_init(void)
@@ -130,6 +200,23 @@ struct kpp_request *fcw_kpp_request_alloc(
 	return kpp_request_alloc(tfm, gfp);
 }
 
+u32 fcw_prandom_u32_max(u32 ep_ro)
+{
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+	return prandom_u32_max(ep_ro);
+#else
+	return get_random_u32_below(ep_ro);
+#endif
+}
+
+void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod, long code)
+{
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
+	__module_put_and_exit(mod, code);
+#else
+	__module_put_and_kthread_exit(mod, code);
+#endif
+}
 
 void fcw_kernel_fpu_begin(void)
 {
@@ -139,6 +226,115 @@ void fcw_kernel_fpu_begin(void)
 void fcw_kernel_fpu_end(void)
 {
 	kernel_fpu_end();
+}
+
+void fcw_bug(void)
+{
+	BUG();
+}
+
+void *fcw_init_ratelimit_state(void *rs)
+{
+	if (rs != NULL)
+		return rs;
+
+	struct ratelimit_state *_rs = kzalloc(sizeof(struct ratelimit_state),
+					GFP_KERNEL);
+	_rs->lock = __RAW_SPIN_LOCK_UNLOCKED(_rs.lock);
+	_rs->interval = DEFAULT_RATELIMIT_INTERVAL;
+	_rs->burst = DEFAULT_RATELIMIT_BURST;
+	_rs->flags = 0;
+	return (void *)_rs;
+}
+
+bool fcw_ratelimit(void *rs, const char *name)
+{
+	if (___ratelimit(rs, name))
+		return 1;
+	return 0;
+}
+
+void fcw_bug_on(int cond)
+{
+	do {
+		if (unlikely(cond))
+			BUG();
+	} while(0);
+}
+
+int fcw_warn_on(int cond)
+{
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
+		__WARN();
+	return unlikely(__ret_warn_on);
+}
+
+int fcw_warn_on_once(int cond)
+{
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
+		__WARN_FLAGS(BUGFLAG_ONCE | BUGFLAG_TAINT(TAINT_WARN));
+	return unlikely(__ret_warn_on);
+}
+
+int fcw_warn(int cond, const char *fmt, ...)
+{
+	int __ret_warn_on = !!(cond);
+	if(unlikely(__ret_warn_on))
+		__WARN_printf(TAINT_WARN, fmt);
+	return unlikely(__ret_warn_on);
+}
+
+void *fcw_memcpy(void *dst, const void *src, size_t len)
+{
+	return memcpy(dst, src, len);
+}
+
+size_t fcw_strlcpy(char *dest, const char *src, size_t size)
+{
+	return strlcpy(dest, src, size);
+}
+
+int fcw_sha1_base_do_update(struct shash_desc *desc,
+				      const u8 *data,
+				      unsigned int len,
+				      sha1_block_fn *block_fn)
+{
+	return sha1_base_do_update(desc, data, len, block_fn);
+}
+
+int fcw_sha512_base_do_update(struct shash_desc *desc,
+					const u8 *data,
+					unsigned int len,
+					sha512_block_fn *block_fn)
+{
+	return sha512_base_do_update(desc, data, len, block_fn);
+}
+size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
+{
+	return copy_from_iter(addr, bytes, i);
+}
+
+void fcw_sg_assign_page(struct scatterlist *sg, struct page *page)
+{
+	return sg_assign_page(sg, page);
+}
+
+void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
+			      unsigned int buflen)
+{
+	return sg_set_buf(sg, buf, buflen);
+}
+
+void *fcw_sg_virt(struct scatterlist *sg)
+{
+	return sg_virt(sg);
+}
+
+void *fcw_scatterwalk_map(struct scatter_walk *walk)
+{
+	return scatterwalk_map(walk);
 }
 
 static char *canister_algs[] = {
@@ -269,3 +465,151 @@ static int __init alg_request_report_setup(char *__unused)
 	return 1;
 }
 __setup("alg_request_report", alg_request_report_setup);
+
+static int __init fcw_module_init(void)
+{
+	fips_integrity_check();
+	crypto_self_test_init();
+	return true;
+}
+module_init(fcw_module_init);
+
+static int __init fcw_arch_initcall(void)
+{
+	cryptomgr_init();
+	return true;
+}
+arch_initcall(fcw_arch_initcall);
+
+static int __init fcw_subsys_initcall(void)
+{
+	rsa_init();
+	crypto_ecb_module_init();
+	sha1_generic_mod_init();
+	sha256_generic_mod_init();
+	sha512_generic_mod_init();
+	sha3_generic_mod_init();
+	des_generic_mod_init();
+	aes_init();
+	crypto_ctr_module_init();
+	hmac_module_init();
+	drbg_init();
+	jent_mod_init();
+	ecdh_init();
+	crypto_cbc_module_init();
+	xts_module_init();
+	crypto_cfb_module_init();
+	crypto_ccm_module_init();
+	crypto_gcm_module_init();
+	ecdsa_init();
+	crypto_cts_module_init();
+	crypto_cmac_module_init();
+	return true;
+}
+subsys_initcall(fcw_subsys_initcall);
+
+static int __init fcw_late_initcall(void)
+{
+	aesni_init();
+	return true;
+}
+late_initcall(fcw_late_initcall);
+
+static void __exit fcw_module_exit(void)
+{
+	cryptomgr_exit();
+	crypto_cbc_module_exit();
+	crypto_ccm_module_exit();
+	crypto_cfb_module_exit();
+	crypto_cmac_module_exit();
+	crypto_ctr_module_exit();
+	crypto_cts_module_exit();
+	des_generic_mod_fini();
+	drbg_exit();
+	crypto_ecb_module_exit();
+	ecdh_exit();
+	ecdsa_exit();
+	crypto_gcm_module_exit();
+	hmac_module_exit();
+	jent_mod_exit();
+	rsa_exit();
+	sha1_generic_mod_fini();
+	sha256_generic_mod_fini();
+	sha512_generic_mod_fini();
+	sha3_generic_mod_fini();
+	xts_module_exit();
+	aesni_exit();
+	aes_fini();
+}
+module_exit(fcw_module_exit);
+
+#ifndef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+DEFINE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
+EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+#endif
+
+/* Export Canister Symbols */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
+EXPORT_SYMBOL(ecc_get_curve25519);
+EXPORT_SYMBOL(ecc_get_curve);
+EXPORT_SYMBOL(ecc_alloc_point);
+EXPORT_SYMBOL(ecc_free_point);
+EXPORT_SYMBOL(vli_num_bits);
+EXPORT_SYMBOL(ecc_point_is_zero);
+#endif
+EXPORT_SYMBOL_GPL(crypto_ft_tab);
+EXPORT_SYMBOL_GPL(crypto_it_tab);
+EXPORT_SYMBOL_GPL(crypto_aes_set_key);
+EXPORT_SYMBOL(vli_is_zero);
+EXPORT_SYMBOL(vli_from_be64);
+EXPORT_SYMBOL(vli_from_le64);
+EXPORT_SYMBOL(vli_cmp);
+EXPORT_SYMBOL(vli_sub);
+EXPORT_SYMBOL(vli_mod_mult_slow);
+EXPORT_SYMBOL(vli_mod_inv);
+EXPORT_SYMBOL(ecc_point_mult_shamir);
+EXPORT_SYMBOL(ecc_is_key_valid);
+EXPORT_SYMBOL(ecc_gen_privkey);
+EXPORT_SYMBOL(ecc_make_pub_key);
+EXPORT_SYMBOL(ecc_is_pubkey_valid_partial);
+EXPORT_SYMBOL(ecc_is_pubkey_valid_full);
+EXPORT_SYMBOL(crypto_ecdh_shared_secret);
+EXPORT_SYMBOL_GPL(crypto_ecdh_key_len);
+EXPORT_SYMBOL_GPL(crypto_ecdh_encode_key);
+EXPORT_SYMBOL_GPL(crypto_ecdh_decode_key);
+EXPORT_SYMBOL_GPL(rsa_parse_pub_key);
+EXPORT_SYMBOL_GPL(rsa_parse_priv_key);
+EXPORT_SYMBOL_GPL(sha1_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha1_update);
+EXPORT_SYMBOL(crypto_sha1_finup);
+EXPORT_SYMBOL_GPL(sha224_zero_message_hash);
+EXPORT_SYMBOL_GPL(sha256_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha256_update);
+EXPORT_SYMBOL(crypto_sha256_finup);
+EXPORT_SYMBOL_GPL(sha384_zero_message_hash);
+EXPORT_SYMBOL_GPL(sha512_zero_message_hash);
+EXPORT_SYMBOL(crypto_sha512_update);
+EXPORT_SYMBOL(crypto_sha512_finup);
+EXPORT_SYMBOL_GPL(alg_test);
+EXPORT_SYMBOL(crypto_aes_sbox);
+EXPORT_SYMBOL(crypto_aes_inv_sbox);
+EXPORT_SYMBOL(aes_expandkey);
+EXPORT_SYMBOL(aes_encrypt);
+EXPORT_SYMBOL(aes_decrypt);
+EXPORT_SYMBOL_GPL(des_expand_key);
+EXPORT_SYMBOL_GPL(des_encrypt);
+EXPORT_SYMBOL_GPL(des_decrypt);
+EXPORT_SYMBOL_GPL(des3_ede_expand_key);
+EXPORT_SYMBOL_GPL(des3_ede_encrypt);
+EXPORT_SYMBOL_GPL(des3_ede_decrypt);
+EXPORT_SYMBOL(sha1_transform);
+EXPORT_SYMBOL(sha1_init);
+EXPORT_SYMBOL(sha256_update);
+EXPORT_SYMBOL(sha224_update);
+EXPORT_SYMBOL(sha256_final);
+EXPORT_SYMBOL(sha224_final);
+EXPORT_SYMBOL(sha256);
+EXPORT_SYMBOL(crypto_sha3_init);
+EXPORT_SYMBOL(crypto_sha3_update);
+EXPORT_SYMBOL(crypto_sha3_final);
+/* End of Exports */

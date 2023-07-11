@@ -10,7 +10,6 @@
 #include <linux/kallsyms.h>
 #include <linux/err.h>
 #include <linux/fips.h>
-#include <linux/memblock.h>
 #include <crypto/hash.h>
 #include <asm/elf.h>
 #include "fips_integrity.h"
@@ -55,21 +54,6 @@ struct section_info {
 	unsigned long size;
 };
 
-static void * __init mem_alloc(size_t size)
-{
-	/* Can be called before mm_init(). */
-	if (!slab_is_available())
-		return memblock_alloc(size, 8);
-
-	return fcw_kmalloc(size, GFP_KERNEL);
-}
-
-static void __init mem_free(void *p)
-{
-	if (p && slab_is_available() && PageSlab(virt_to_head_page(p)))
-		kfree(p);
-}
-
 static int canister_perform_reverse_relocation(int i, struct relocation *r, char *mem, unsigned long target, unsigned long pc)
 {
 	int err = 0;
@@ -81,7 +65,7 @@ static int canister_perform_reverse_relocation(int i, struct relocation *r, char
 		*(uint64_t *)mem = value;
 #if FIPS_DEBUG
 		if (value) {
-			printk("%d failed for %d with value %llx\n", i, r->type, value);
+			fcw_printk("%d failed for %d with value %llx\n", i, r->type, value);
 			err = -ENOENT;
 			return err;
 		}
@@ -93,7 +77,7 @@ static int canister_perform_reverse_relocation(int i, struct relocation *r, char
 		*(int32_t *)mem = value;
 #if FIPS_DEBUG
 		if (value) {
-			printk("%d failed for %d with value %x\n", i, r->type, value);
+			fcw_printk("%d failed for %d with value %x\n", i, r->type, value);
 			err = -ENOENT;
 			return err;
 		}
@@ -105,13 +89,13 @@ static int canister_perform_reverse_relocation(int i, struct relocation *r, char
 		*(int32_t *)mem = value;
 #if FIPS_DEBUG
 		if (value) {
-			printk("%d failed for %d with value %x\n", i, r->type, value);
+			fcw_printk("%d failed for %d with value %x\n", i, r->type, value);
 			err = -ENOENT;
 			return err;
 		}
 #endif
 	} else {
-		printk(KERN_ERR "FIPS(%s): unknown relocation type: %d\n", __FUNCTION__, r->type);
+		fcw_printk(KERN_ERR "FIPS(%s): unknown relocation type: %d\n", __FUNCTION__, r->type);
 		err = -ENOENT;
 		return err;
 	}
@@ -126,7 +110,7 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 	unsigned char rel_add = 0;
 
 	if (!r) {
-		printk(KERN_ERR "FIPS(%s): Relocation is NULL\n", __FUNCTION__);
+		fcw_printk(KERN_ERR "FIPS(%s): Relocation is NULL\n", __FUNCTION__);
 		return -ENOENT;
 	}
 	c = canister_relocations_bytecode[*pos];
@@ -241,7 +225,7 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 		r->insn_read_complete = false;
 
 	} else {
-		printk(KERN_ERR "FIPS(%s): Unknown Instruction\n", __FUNCTION__);
+		fcw_printk(KERN_ERR "FIPS(%s): Unknown Instruction\n", __FUNCTION__);
 		err = -ENOENT;
 		return err;
 	}
@@ -275,22 +259,22 @@ int __init fips_integrity_init(void)
 		return 0;
 
 	/* Canister image to measure */
-	c = (unsigned char *)mem_alloc(canister_size);
+	c = (unsigned char *)fcw_mem_alloc(canister_size);
 	if (!c) {
 		err = -ENOMEM;
 		goto quit;
 	}
 
 	/* Description of section regions to put in the canister */
-	si = (struct section_info *)mem_alloc(sizeof(struct section_info) * sections_size);
+	si = (struct section_info *)fcw_mem_alloc(sizeof(struct section_info) * sections_size);
 	if (!si) {
 		err = -ENOMEM;
 		goto quit;
 	}
 
-	printk(KERN_INFO "FIPS(%s): canister %s found (based on %s)\n", __FUNCTION__,
+	fcw_printk(KERN_INFO "FIPS(%s): canister %s found (based on %s)\n", __FUNCTION__,
 		FIPS_CANISTER_VERSION, FIPS_KERNEL_VERSION);
-	printk(KERN_INFO "FIPS(%s): processing %d sections, %d bytes\n",
+	fcw_printk(KERN_INFO "FIPS(%s): processing %d sections, %d bytes\n",
 		__FUNCTION__, sections_size, canister_size);
 	d = c;
 	bytes_remaining = canister_size;
@@ -303,25 +287,25 @@ int __init fips_integrity_init(void)
 		ptr += strlen(ptr) + 1;
 		s = kallsyms_lookup_name(begin_marker);
 		if (!s) {
-			printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, begin_marker);
+			fcw_printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, begin_marker);
 			err = -ENOENT;
 			goto quit;
 		}
 		e = kallsyms_lookup_name(end_marker);
 		if (!e) {
-			printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, end_marker);
+			fcw_printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, end_marker);
 			err = -ENOENT;
 			goto quit;
 		}
 		size = e - s;
 #if FIPS_DEBUG
-		printk("Processing %s: [%lx-%lx], size %ld\n", begin_marker, s, e, size);
+		fcw_printk("Processing %s: [%lx-%lx], size %ld\n", begin_marker, s, e, size);
 #endif
 		bytes_remaining -= size;
 		if (bytes_remaining < 0)
 			break;
 		/* Copy content of relocated section to the canister */
-		memcpy(d, (char *)s, size);
+		fcw_memcpy(d, (char *)s, size);
 
 		si[i].saddr = s;
 		si[i].daddr = d;
@@ -329,12 +313,12 @@ int __init fips_integrity_init(void)
 		d += size;
 	}
 	if (bytes_remaining) {
-		printk(KERN_ERR "FIPS(%s): invalid canister size or markers\n", __FUNCTION__);
+		fcw_printk(KERN_ERR "FIPS(%s): invalid canister size or markers\n", __FUNCTION__);
 		err = -EINVAL;
 		goto quit;
 	}
 
-	symbols_addr = (unsigned long *)mem_alloc(sizeof(unsigned long) * canister_strtab_size);
+	symbols_addr = (unsigned long *)fcw_mem_alloc(sizeof(unsigned long) * canister_strtab_size);
 	if (!symbols_addr) {
 		err = -ENOMEM;
 		goto quit;
@@ -344,21 +328,21 @@ int __init fips_integrity_init(void)
 	for (i = 0; i < canister_strtab_size; i++) {
 		symbols_addr[i] = kallsyms_lookup_name(ptr);
 		if (!symbols_addr[i]) {
-			printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, ptr);
+			fcw_printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, ptr);
 			err = -ENOENT;
 			goto quit;
 		}
 		ptr += strlen(ptr) + 1;
 	}
 #if FIPS_DEBUG
-	printk("Processed %d symbols\n", canister_strtab_size);
+	fcw_printk("Processed %d symbols\n", canister_strtab_size);
 #endif
 
 	/*
 	 * Main interpreter work: perform reverse relocation to resotre
 	 * canister image to its original state.
 	 */
-	r = (struct relocation *)mem_alloc(sizeof(struct relocation));
+	r = (struct relocation *)fcw_mem_alloc(sizeof(struct relocation));
 	memset(r, 0, sizeof(struct relocation));
 	for (i = 0; i < canister_relocations_bytecode_size; i++) {
 		char *mem;
@@ -388,7 +372,7 @@ int __init fips_integrity_init(void)
 		/* Where the reverse relocation will happen, inside canister image */
 		mem = si[r->section].daddr + offset;
 #if FIPS_DEBUG
-		printk("section %d, rel %d, symbol %d, offset %x(%x), addend %d, target %lx, pc %lx\n",
+		fcw_printk("section %d, rel %d, symbol %d, offset %x(%x), addend %d, target %lx, pc %lx\n",
 		       r->section, r->type, r->symbol, offset, r->offset, r->addend, target, pc);
 #endif
 		err = canister_perform_reverse_relocation(i, r, mem, target, pc);
@@ -398,14 +382,14 @@ int __init fips_integrity_init(void)
 		canister_relocations_size++;
 	}
 #if FIPS_DEBUG
-	printk("Processed %d relocations\n", canister_relocations_size);
+	fcw_printk("Processed %d relocations\n", canister_relocations_size);
 #endif
 quit:
-	mem_free(symbols_addr);
-	mem_free(si);
-	mem_free(r);
+	fcw_mem_free(symbols_addr);
+	fcw_mem_free(si);
+	fcw_mem_free(r);
 	if (err) {
-		mem_free(c);
+		fcw_mem_free(c);
 		panic("FIPS(%s) canister initialization failed.", __FUNCTION__);
 	} else {
 		/* It is save to set 'canister' pointer now. */
@@ -421,7 +405,7 @@ quit:
  * Can be invoked at any time after crypto algorithms initialization and
  * self-tests completed.
  */
-static int __init fips_integrity_check (void)
+int __init fips_integrity_check (void)
 {
 	int err;
 	unsigned char runtime_hmac[RUNTIME_HMAC_SIZE];
@@ -434,19 +418,19 @@ static int __init fips_integrity_check (void)
 		return 0;
 
 	if (!canister) {
-		printk (KERN_ERR "FIPS(%s): canister image not found\n", __FUNCTION__);
+		fcw_printk (KERN_ERR "FIPS(%s): canister image not found\n", __FUNCTION__);
 		return -EINVAL;
 	}
 
 	tfm = crypto_alloc_shash ("hmac(sha256)", 0, 0);
 	if (IS_ERR(tfm)) {
-		printk(KERN_ERR "FIPS(%s): crypto_alloc_shash failed (%d)\n", __FUNCTION__, (int)PTR_ERR(tfm));
+		fcw_printk(KERN_ERR "FIPS(%s): crypto_alloc_shash failed (%d)\n", __FUNCTION__, (int)PTR_ERR(tfm));
 		return PTR_ERR(tfm);
 	}
 
 	err = crypto_shash_setkey (tfm, key, strlen(key));
 	if (err) {
-		printk(KERN_ERR "FIPS(%s): crypto_hash_setkey failed (%d)\n", __FUNCTION__, err);
+		fcw_printk(KERN_ERR "FIPS(%s): crypto_hash_setkey failed (%d)\n", __FUNCTION__, err);
 		goto free_tfm;
 	}
 
@@ -460,14 +444,14 @@ static int __init fips_integrity_check (void)
 	shash->tfm = tfm;
 	err = crypto_shash_digest(shash, canister, canister_size, runtime_hmac);
 	if (err)
-		printk(KERN_ERR "FIPS(%s): crypto_shash_digest failed (%d)\n", __FUNCTION__, err);
+		fcw_printk(KERN_ERR "FIPS(%s): crypto_shash_digest failed (%d)\n", __FUNCTION__, err);
 
 	kfree(shash);
 free_tfm:
 	crypto_free_shash (tfm);
-	mem_free(canister);
+	fcw_mem_free(canister);
 #if FIPS_DEBUG
-	printk("canister: %lx %d\n", (unsigned long)canister, canister_size);
+	fcw_printk("canister: %lx %d\n", (unsigned long)canister, canister_size);
 #endif
 	if (err)
 		return err;
@@ -481,14 +465,13 @@ free_tfm:
 
 		linebuf[sizeof(linebuf) - 1] = '\0';
 
-		printk("FIPS canister HMAC: %s\n", linebuf);
+		fcw_printk("FIPS canister HMAC: %s\n", linebuf);
 	}
 
 	err = memcmp (canister_hmac, runtime_hmac, sizeof(runtime_hmac)) ? -EACCES: 0;
 	if (!err)
-		printk("FIPS canister verification passed!");
+		fcw_printk("FIPS canister verification passed!");
 	else
 		panic("FIPS canister verification failed!");
 	return err;
 }
-module_init(fips_integrity_check);

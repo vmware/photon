@@ -40,6 +40,15 @@ fail_if_found mutex_lock
 fail_if_found mutex_unlock
 fail_if_found queue_work_on
 fail_if_found latent_entropy
+fail_if_found memcpy
+fail_if_found _printk
+
+# Fail if any symbols are exported. All EXPORT_SYMBOL and EXPORT_SYMBOL_GPL
+# usages must be moved to wrapper. This is to ensure the target kernel includes
+# __ksymtab/__ksymtab_gpl and ___kcrctab/___kcrctab_gpl correctly.
+# See below commit that necessitated this check.
+# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=7b4537199a4a8480b8c3ba37a2d44765ce76cd9b
+nm $INPUT_FILE | grep " r __ksymtab" > /dev/null && abort "Error: Exported symbols found in canister. Please move them to wrapper" ||:
 
 # Get sections list from linker script
 sections=`grep ": {$" $LD_SCRIPT | cut -d " " -f3`
