@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        6.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
@@ -78,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-2
+- Bump version as a part of elfutils upgrade
 * Mon Oct 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1
 - Upgrade to v6.0.0
 * Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.12.0-3

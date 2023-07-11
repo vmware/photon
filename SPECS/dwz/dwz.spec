@@ -1,7 +1,7 @@
 Summary:    DWARF optimization and duplicate removal tool
 Name:       dwz
 Version:    0.15
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+ and GPLv3+
 URL:        https://sourceware.org/dwz
 Group:      Applications/System
@@ -51,6 +51,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.15-3
+- Bump version as a part of elfutils upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.15-2
 - Bump up due to change in elfutils
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.15-1

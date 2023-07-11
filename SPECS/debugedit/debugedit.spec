@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -75,6 +75,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-5
+- Bump version as a part of elfutils upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-4
 - Fix requires
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.0-3

@@ -3,8 +3,8 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.10.30
-Release:        2%{?dist}
+Version:        1.11.117
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -19,19 +19,19 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
 # tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9c3ae4ba18e76cf2aacea8412f1f808774af9bd1c3ccfc55c541833ca399775f008eec387870fa71fa067a0e3345d6e9f4486511426bfb7c40f2429a72878b4f
+%define sha512 %{name}=c398d2e5176d7369ea571aaa58ac240876929d5f97226de17282baeaadc0d7e20a3f2e8d4d348fbd3eaa365e09ad55631c0f6bb0d52b8a38c3ac935def5165c6
 
-Requires:       openssl-devel
-Requires:       curl-devel
-Requires:       zlib-devel
-Requires:       aws-sdk-core = %{version}-%{release}
-Requires:       aws-sdk-kinesis = %{version}-%{release}
-Requires:       aws-sdk-s3 = %{version}-%{release}
+Requires: openssl-devel
+Requires: curl-devel
+Requires: zlib-devel
+Requires: aws-sdk-core = %{version}-%{release}
+Requires: aws-sdk-kinesis = %{version}-%{release}
+Requires: aws-sdk-s3 = %{version}-%{release}
 
-BuildRequires:  cmake
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
+BuildRequires: cmake
+BuildRequires: curl-devel
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
 
 %description
 The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface for Amazon Web Services (AWS).
@@ -99,16 +99,26 @@ export CXXFLAGS="%{optflags} -Wno-stringop-truncation"
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
 cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-${component}
+
+pushd ./src/aws-cpp-sdk-core
+%make_build
+popd
+
+for component in "kinesis" "s3"; do
+  pushd ./generated/src/aws-cpp-sdk-${component}
   %make_build
   popd
 done
 
 %install
 cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-${component}
+
+pushd ./src/aws-cpp-sdk-core
+%make_install %{?_smp_mflags}
+popd
+
+for component in  "kinesis" "s3"; do
+  pushd ./generated/src/aws-cpp-sdk-${component}
   %make_install %{?_smp_mflags}
   popd
 done
@@ -126,19 +136,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_includedir}/aws/core
-%exclude %{_includedir}/aws/kinesis
-%exclude %{_includedir}/aws/s3
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-kinesis.pc
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-s3.pc
-%exclude %{_libdir}/libaws-cpp-sdk-core.so
-%exclude %{_libdir}/libaws-cpp-sdk-kinesis.so
-%exclude %{_libdir}/libaws-cpp-sdk-s3.so
 
 %files -n aws-sdk-core
 %defattr(-,root,root,0755)
 %{_includedir}/aws/core/*
+%{_includedir}/smithy/*
 %{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
 
 %files -n aws-core-libs
@@ -164,6 +166,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libaws-cpp-sdk-s3.so
 
 %changelog
+* Wed Jul 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-1
+- Upgrade to v1.11.117
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-2
 - Bump version as a part of zlib upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-1

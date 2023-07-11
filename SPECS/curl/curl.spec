@@ -1,26 +1,30 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.86.0
-Release:        3%{?dist}
+Version:        8.1.2
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c
+Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
+%define sha512 %{name}=532ab96eba6dea66d272f3be56f5af5c5da922480f9a10e203de98037c311f12f8145ba6bf813831e42815e068874ccfd108f84f7650743f5dbb3ebc3bc9c4f4
 
-BuildRequires:  ca-certificates
-BuildRequires:  openssl-devel
-BuildRequires:  krb5-devel
-BuildRequires:  libssh2-devel
+BuildRequires: ca-certificates
+BuildRequires: openssl-devel
+BuildRequires: krb5-devel
+BuildRequires: libssh2-devel
 
-Requires:       ca-certificates
-Requires:       openssl-libs
-Requires:       krb5
-Requires:       libssh2
-Requires:       %{name}-libs = %{version}-%{release}
+%if 0%{?with_check}
+BuildRequires: python3
+%endif
+
+Requires: ca-certificates
+Requires: openssl-libs
+Requires: krb5
+Requires: libssh2
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 The cURL package contains an utility and a library used for
@@ -41,12 +45,14 @@ Static libraries and header files for the support library for curl
 Summary:        Libraries for curl
 Group:          System Environment/Libraries
 Requires:       ca-certificates-pki
+Requires:       libssh2
+Requires:       krb5
 
 %description    libs
 This package contains minimal set of shared curl libraries.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
@@ -67,10 +73,12 @@ This package contains minimal set of shared curl libraries.
 install -v -d -m755 %{buildroot}%{_docdir}/%{name}-%{version}
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %clean
@@ -95,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.1.2-1
+- Upgrade to v8.1.2
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.86.0-3
 - Require openssl-libs
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.86.0-2

@@ -1,7 +1,7 @@
 Name:          dwarves
 Summary:       Debugging Information Manipulation Tools (pahole & friends)
 Version:       1.24
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -103,6 +103,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*  Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.24-3
+-  Bump version as a part of elfutils upgrade
 *  Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.24-2
 -  Bump version as a part of zlib upgrade
 *  Fri Apr 07 2023 Srish Srinivasan <ssrish@vmware.com> 1.24-1

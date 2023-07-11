@@ -1,15 +1,16 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
-Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=90cd8c9344ea6588e5eacb03880af73e864731e59777deaded133ca6fa922d71ca72cf00edf95d3e43a2355c40cac281470b2689c652c5214f09019799c7bc5a
+Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=90cd8c9344ea6588e5eacb03880af73e864731e59777deaded133ca6fa922d71ca72cf00edf95d3e43a2355c40cac281470b2689c652c5214f09019799c7bc5a
+
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -294,6 +295,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.3-2
+- Bump version as a part of curl upgrade
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 3.5.3-1
 - update to 3.5.3
 - fix python test for python >= 3.11 #425

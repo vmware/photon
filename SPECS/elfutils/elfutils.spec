@@ -3,8 +3,8 @@
 
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
-Version:        0.188
-Release:        5%{?dist}
+Version:        0.189
+Release:        2%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
@@ -12,28 +12,28 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=585551b2d937d19d1becfc2f28935db1dd1a3d25571a62f322b70ac8da98c1a741a55d070327705df6c3e2ee026652e0b9a3c733b050a0b0ec5f2fc75d5b74b5
+%define sha512 %{name}=93a877e34db93e5498581d0ab2d702b08c0d87e4cafd9cec9d6636dfa85a168095c305c11583a5b0fb79374dd93bc8d0e9ce6016e6c172764bcea12861605b71
 
-Requires:       %{name}-libelf = %{version}-%{release}
-Requires:       glibc >= 2.7
-Requires:       bzip2-libs
-Requires:       libmicrohttpd
-Requires:       curl
-Requires:       libarchive
-Requires:       zstd
+Requires: %{name}-libelf = %{version}-%{release}
+Requires: glibc >= 2.7
+Requires: bzip2-libs
+Requires: libmicrohttpd
+Requires: curl
+Requires: libarchive
+Requires: zstd
 
-BuildRequires:  gcc
-BuildRequires:  glibc
-BuildRequires:  bison
-BuildRequires:  flex
-BuildRequires:  m4
-BuildRequires:  gettext-devel
-BuildRequires:  bzip2-devel
-BuildRequires:  libmicrohttpd-devel
-BuildRequires:  curl-devel
-BuildRequires:  libarchive-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  zstd-devel
+BuildRequires: gcc
+BuildRequires: glibc
+BuildRequires: bison
+BuildRequires: flex
+BuildRequires: m4
+BuildRequires: gettext-devel
+BuildRequires: bzip2-devel
+BuildRequires: libmicrohttpd-devel
+BuildRequires: curl-devel
+BuildRequires: libarchive-devel
+BuildRequires: sqlite-devel
+BuildRequires: zstd-devel
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -115,7 +115,9 @@ These are the additional language files of %{name}.
 %autosetup -p1
 
 %build
-%configure --program-prefix=%{_programprefix}
+%configure \
+    --program-prefix=%{_programprefix}
+
 %make_build
 
 %install
@@ -137,18 +139,18 @@ chmod +x %{buildroot}%{_libdir}/lib*.so*
 
 %if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
 %endif
 
 %clean
 rm -rf %{buildroot}
 
 %ldconfig_scriptlets
+
 %ldconfig_scriptlets libelf
 
 %files
 %defattr(-,root,root)
-%doc COPYING COPYING-GPLV2 COPYING-LGPLV3 README TODO CONTRIBUTING
 %{_bindir}/eu-*
 %{_bindir}/debuginfod
 %{_bindir}/debuginfod-find
@@ -198,12 +200,17 @@ rm -rf %{buildroot}
 %{_libdir}/libelf.so
 
 %files libelf-devel-static
+%defattr(-,root,root)
 %{_libdir}/libelf.a
 
 %files libelf-lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.189-2
+- Bump version as a part of curl upgrade
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.189-1
+- Upgrade to v0.189
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.188-5
 - Bump version as a part of zstd upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.188-4
