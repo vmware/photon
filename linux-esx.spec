@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.10
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -498,6 +498,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-11
+- Bump version as a part of elfutils upgrade
 * Wed Jun 21 2023 Garrett Goble <gobleg@vmware.com> 6.1.10-10
 - Adding SBX kernel driver
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-9

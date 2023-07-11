@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.10
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -704,6 +704,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-14
+- Bump version as a part of elfutils upgrade
 * Fri Apr 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-13
 - Remove dracut & initramfs from requires
 * Wed Apr 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.10-12
