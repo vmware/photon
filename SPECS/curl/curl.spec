@@ -1,24 +1,30 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.1.1
-Release:        2%{?dist}
+Version:        8.1.2
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=95aeaca94ec78284102d1f5f8d0e24d7a084f2431356a08e7f6baf79c13c56040f2600571877d74e45b53b9f61ef493d201ed85808233c24b4dcbf45cdb6e762
-BuildRequires:  ca-certificates
-BuildRequires:  openssl-devel
-BuildRequires:  krb5-devel
-BuildRequires:  libssh2-devel
 
-Requires:       ca-certificates
-Requires:       openssl
-Requires:       krb5
-Requires:       libssh2
-Requires:       curl-libs = %{version}-%{release}
+Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
+%define sha512 %{name}=532ab96eba6dea66d272f3be56f5af5c5da922480f9a10e203de98037c311f12f8145ba6bf813831e42815e068874ccfd108f84f7650743f5dbb3ebc3bc9c4f4
+
+BuildRequires: ca-certificates
+BuildRequires: openssl-devel
+BuildRequires: krb5-devel
+BuildRequires: libssh2-devel
+
+%if 0%{?with_check}
+BuildRequires: python3
+%endif
+
+Requires: ca-certificates
+Requires: openssl
+Requires: krb5
+Requires: libssh2
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 The cURL package contains an utility and a library used for
@@ -28,19 +34,21 @@ DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
-%package devel
-Summary:    Libraries and header files for curl
-Requires:   %{name} = %{version}-%{release}
-%description devel
+%package        devel
+Summary:        Libraries and header files for curl
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
 Static libraries and header files for the support library for curl
 
-%package libs
-Summary: Libraries for curl
-Group:      System Environment/Libraries
-Requires:   ca-certificates-pki
-Requires:   libssh2
-Requires:   krb5
-%description libs
+%package        libs
+Summary:        Libraries for curl
+Group:          System Environment/Libraries
+Requires:       ca-certificates-pki
+Requires:       libssh2
+Requires:       krb5
+
+%description    libs
 This package contains minimal set of shared curl libraries.
 
 %prep
@@ -52,21 +60,24 @@ This package contains minimal set of shared curl libraries.
     CXXFLAGS="%{optflags}" \
     --disable-static \
     --enable-threaded-resolver \
+    --enable-hidden-symbols \
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
+    --with-ca-bundle=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+install -v -d -m755 %{buildroot}%{_docdir}/%{name}-%{version}
+find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -85,13 +96,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_mandir}/man3/*
-%{_datarootdir}/aclocal/libcurl.m4
+%{_datadir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 
 %files libs
+%defattr(-,root,root)
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.1.2-1
+- Upgrade to v8.1.2
 * Mon Jun 19 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-2
 - curl-libs requires krb5
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 8.1.1-1
