@@ -11,8 +11,8 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.26.1
-Release:        3%{?dist}
+Version:        1.27.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=8794322c1e943ca47a059e6866bda9dee04acc8a202a984efe5c82403e394c4f5aa2c0218fb43582016c7276e17e837f64c39fc3af0c633461bf026aaacc97ae
+%define sha512 %{name}-%{version}.tar.gz=51cf0178c8a2a00798cc618c9918f556c418de137566db60a66a0c7556ee625b34cf86b1da241856599784588c0e3e8b81225dca627fea70a87c94adb073bb7a
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
@@ -36,7 +36,7 @@ BuildRequires:  systemd-devel
 
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.5.5
+Requires:       etcd >= 3.5.7
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -210,6 +210,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.3-1
+- Update to 1.27.3, Fixes multiple second level CVEs
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-3
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-2

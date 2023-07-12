@@ -1,11 +1,11 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.25.0
-Release:        5%{?dist}
+Version:        3.26.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  calico=8899b65be0b3b93f371942113f6bb0c958b31ff0db106d181152c3c5bf6f2f3e842719bc3ac21c573ae5fd681176ee46222798b43ebf029140a5c32ab27d9fbf
+%define sha512  calico=2571bbae94ca0c80b11a347ffc4601e7ab5feba3bd9fb93e78e0b3ec9998a2871ba7abf3fe8029f8738ed9cf616b4e0a7ddb6a0556b08873045fefe1c2656d99
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +44,13 @@ Requires:       python3-setuptools
 %description    k8s-policy
 Calico Network Policy enables Calico to enforce network policy on top of Calico BGP, Flannel, or GCE native.
 
+%package -n     confd
+Summary:        confd is a lightweight configuration management tool
+Group:          Development/Tools
+
+%description -n confd
+This is a Calico-specific version of confd. It is heavily modified from the original and only supports a single backend type - namely a Calico datastore. It has a single purpose which is to monitor Calico BGP configuration and to autogenerate bird BGP templates from that config.
+
 %prep
 %autosetup -p1 -n calico-%{version}
 
@@ -67,6 +74,10 @@ CGO_ENABLED=0 go build -v -o felix/dist/calico-felix -v \
 #k8s-policy
 mkdir -p kube-controllers/dist
 CGO_ENABLED=0 go build -v -o kube-controllers/dist/controller -ldflags "-X main.VERSION=%{version}" ./kube-controllers/cmd/kube-controllers/
+
+#confd
+mkdir -p confd/dist
+CGO_ENABLED=0 go build -v -o confd/dist/confd ./confd/
 
 %install
 #node
@@ -92,6 +103,11 @@ install felix/dist/calico-felix %{buildroot}%{_bindir}/
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ kube-controllers/dist/controller
 
+#confd
+install -vdm 755 %{buildroot}/%{_bindir}
+install -vpm 0755 -t %{buildroot}/%{_bindir} confd/dist/confd
+cp -r confd/etc/ %{buildroot}%{_sysconfdir}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-node
@@ -111,7 +127,14 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ kube-controllers/dist/controller
 %defattr(-,root,root)
 %{_bindir}/controller
 
+%files -n confd
+%defattr(-,root,root)
+%{_bindir}/confd
+%config(noreplace) %{_sysconfdir}/calico
+
 %changelog
+* Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.26.1-1
+- Update to 3.26.1, Fixes multiple second level CVEs
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.25.0-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.25.0-4
