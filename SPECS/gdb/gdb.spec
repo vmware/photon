@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
@@ -22,12 +22,15 @@ Requires: expat
 Requires: ncurses
 Requires: python3
 Requires: xz-libs
+Requires: zlib
 
 BuildRequires: expat-devel
 BuildRequires: ncurses-devel
 BuildRequires: python3-devel
 BuildRequires: python3-libs
 BuildRequires: xz-devel
+BuildRequires: zlib-devel
+BuildRequires: texinfo
 
 %if 0%{?with_check}
 BuildRequires:  dejagnu
@@ -55,12 +58,14 @@ It should probably not be used by end users.
 %autosetup -p1
 
 %build
+rm -rf zlib texinfo
 mkdir -p build && cd build
 sh ../configure \
   --host=%{_host} --build=%{_build} \
   --prefix=%{_prefix} \
   --with-system-gdbinit=%{_sysconfdir}/gdbinit \
-  --with-python=%{_bindir}/python3
+  --with-python=%{_bindir}/python3 \
+  --with-system-zlib
 
 make %{?_smp_mflags}
 
@@ -76,7 +81,8 @@ sh ../configure \
   --disable-inprocess-agent \
   --without-intel-pt \
   --disable-unit-tests \
-  --disable-source-highlight
+  --disable-source-highlight \
+  --with-system-zlib
 
 make %{?_smp_mflags}
 %endif
@@ -152,6 +158,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+* Wed Jul 12 2023 Anmol Jain <anmolja@vmware.com> 11.2-8
+- Using system zlib to fix CVE-2018-25032
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 11.2-7
 - Bump version as a part of ncurses upgrade to v6.4
 * Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 11.2-6
