@@ -14,7 +14,10 @@ abort()
   exit 1
 }
 
-if rpm --quiet -q rpm --dbpath "${old_rpmdb_path}"; then
+# check for old_rpmdb_path directorie's existence before running rpm query
+# rpm --quiet -q rpm --dbpath <dir> will create <dir> if it doesn't exist
+if ls -ld "${old_rpmdb_path}" &> /dev/null && \
+    rpm --quiet -q rpm --dbpath "${old_rpmdb_path}"; then
   if [ "${old_rpmdb_path}" != "${actual_rpmdb_path}" ]; then
     echo "INFO: RpmDB is at ${old_rpmdb_path} and needs to be migrated"
     if ! mkdir -p "${actual_rpmdb_path}"; then
