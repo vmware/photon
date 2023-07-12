@@ -23,7 +23,7 @@ LOG_FILE_DIR = "../../stage/LOGS"
 class SpecDependencyGenerator(object):
     def __init__(self, logPath, logLevel):
         self.logger = Logger.getLogger(
-            "Serializable Spec objects", logPath, logLevel
+            "SerializableSpecobjects", logPath, logLevel
         )
 
     def findTotalRequires(self, mapDependencies, depQue, parent):
