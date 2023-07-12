@@ -17,7 +17,7 @@ def create_ova(
     )
 
     if image_name is None:
-        image_name = config.get("image_name", "photon-{config['image_type']}")
+        image_name = config.get("image_name", f"photon-{config['image_type']}")
 
     if type(raw_image_names) is str:
         raw_image_names = [raw_image_names]
@@ -36,12 +36,17 @@ def create_ova(
     ova_config_file = os.path.join(config_path, config["ova_config"])
     ova_file = os.path.join(output_path, f"{image_name}.ova")
 
-    compose_cmd = f"ova-compose -i {ova_config_file} -o {ova_file}"
-    if eulafile is not None:
-        compose_cmd += f" --param eulafile={eulafile}"
+    compose_cmd = [f"ova-compose -i {ova_config_file} -o {ova_file}"]
+
+    if eulafile:
+        compose_cmd.append(f"--param eulafile={eulafile}")
+
     for i, d in enumerate(vmdk_paths):
-        compose_cmd += f" --param disk{i}={d}"
-    cmdUtils.runBashCmd(compose_cmd)
+        compose_cmd.append(f"--param disk{i}={d}")
+
+    cmdUtils.runBashCmd(" ".join(compose_cmd))
+
+    cmdUtils.runBashCmd(f"rm -f {output_path}/*.vmdk")
 
 
 if __name__ == "__main__":
