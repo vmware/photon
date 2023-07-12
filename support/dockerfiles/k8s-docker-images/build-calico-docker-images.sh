@@ -27,6 +27,9 @@ CALICO_FELIX_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_FELIX_RPM}
 CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_K8S_POLICY_RPM}
 
+CONFD_RPM=confd-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
+CONFD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CONFD_RPM}
+
 fn="${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec"
 CALICO_BGP_VER=$(get_spec_ver "${fn}")
 CALICO_BGP_VER_REL=${CALICO_BGP_VER}-$(get_spec_rel "${fn}")
@@ -44,12 +47,6 @@ CALICO_BIRD_VER=$(get_spec_ver "${fn}")
 CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-$(get_spec_rel "${fn}")
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BIRD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_BIRD_RPM}
-
-fn="${SPEC_DIR}/confd/confd.spec"
-CONFD_VER=$(get_spec_ver "${fn}")
-CONFD_VER_REL=${CONFD_VER}-$(get_spec_rel "${fn}")
-CONFD_RPM=confd-${CONFD_VER_REL}${DIST_TAG}.${ARCH}.rpm
-CONFD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CONFD_RPM}
 
 fn="${SPEC_DIR}/calico-libnetwork/calico-libnetwork.spec"
 CALICO_LIBNET_VER=$(get_spec_ver "${fn}")
