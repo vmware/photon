@@ -35,6 +35,7 @@ fi
 mkdir -p tmp/k8dash
 
 cp ${K8S_DASH_RPM_FILE} tmp/k8dash
+cp ./Dockerfile.kubernetes-dashboard tmp/k8dash
 
 basedir="${PWD}"
 
@@ -52,6 +53,7 @@ cp -pr usr/bin/dashboard \
      "${basedir}"/stage-rpms-tdnf.conf \
      "${basedir}"/tmp/stage-rpms.repo \
      img/
+cp ./Dockerfile.kubernetes-dashboard img/Dockerfile
 
 pushd img
 create_container_img_archive "${IMG_NAME}" "Dockerfile.kubernetes-dashboard" "." \

@@ -11,8 +11,8 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.23.9
-Release:        13%{?dist}
+Version:        1.27.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -20,15 +20,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=e5e46e68c90f6374e4b97424b088ed5b3d494a60bfd753a88cafed59d51d6696260d2be279631eab52f73b9f5444511609aaf950c51c73dfc77cba174943f37f
+%define sha512 %{name}-%{version}.tar.gz=51cf0178c8a2a00798cc618c9918f556c418de137566db60a66a0c7556ee625b34cf86b1da241856599784588c0e3e8b81225dca627fea70a87c94adb073bb7a
 
 Source1: https://github.com/kubernetes/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
-Patch0:         CVE-2022-3294.patch
-Patch1:         CVE-2022-3162.patch
 
 BuildRequires:  go
 BuildRequires:  rsync
@@ -36,7 +34,7 @@ BuildRequires:  which
 
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.5.0
+Requires:       etcd >= 3.5.7
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -207,6 +205,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.3-1
+- Update to 1.27.3, Fixes multiple second level CVEs
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.9-13
 - Bump up version to compile with new go
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.9-12
