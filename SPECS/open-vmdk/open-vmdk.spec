@@ -1,7 +1,7 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
-Version:       0.2.0
-Release:       2%{?dist}
+Version:       0.3.0
+Release:       1%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       Apache License 2.0
@@ -9,20 +9,22 @@ URL:           https://github.com/vmware/open-vmdk
 Group:         Development/Tools
 
 Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=12bee074d2b3664e8cccddcf9d943a77e15437f77ca18c0923e1d4d98b9b56128626988104ae4bf6cf91c18f033b2b5caf0160ce5fa4d2403e77924f7775a151
+%define sha512 %{name}=82211a3f3d3f271e6943503ede03ab28c857d7436ef5b5177f1e2b98a21da2100a584eb954bcab2772f30b6fd0565a91e009ae56de656c5bf7506f6a03448643
 
 BuildRequires: zlib-devel
 
 Requires: coreutils
-Requires: zlib
-Requires: tar
 Requires: grep
+Requires: python3-lxml
+Requires: python3-PyYAML
 Requires: sed
+Requires: tar
 Requires: util-linux
+Requires: zlib
 
 %description
 Tools to create OVA files from raw disk images. This includes 'vmdk-convert'
-to create VMDKs from raw disk images, and 'mkova.sh' to create OVA files
+to create VMDKs from raw disk images, and 'ova-compose' to create OVA files
 that can be imported by VMware vSphere or Fusion and Workstation.
 
 %prep
@@ -47,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Jul 12 2023 Oliver Kurth <okurth@vmware.com> 0.3.0-1
+- update to 0.3.0
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.2.0-2
 - Bump version as a part of zlib upgrade
 * Fri Mar 17 2023 Oliver Kurth <okurth@vmware.com> 0.2.0-1
