@@ -1,20 +1,19 @@
-Summary:    advanced key-value store
-Name:       redis
-Version:    7.0.9
-Release:    3%{?dist}
-License:    BSD
-URL:        http://redis.io
-Group:      Applications/Databases
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:       advanced key-value store
+Name:          redis
+Version:       7.0.12
+Release:       1%{?dist}
+License:       BSD
+URL:           http://redis.io
+Group:         Applications/Databases
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=75f812c9ed8bfbea867789ed127cb8db4bd0d34a7e4fc98bfe004cbd66ba291baa90efc42e41347af367c8e284d3655bd7ba5228bd5c3338804e53eadab75b18
+%define sha512 %{name}=8cbb4dda73313c571fe643d893bbea4bdcf4cc1ac643fdf7cf7563fadfb28ca4e553120df03277d8429ae3f97a2c7b57db0548ad7c7ce1af380fe8234938471a
 
 Source1: %{name}.sysusers
 
 Patch0: %{name}-conf.patch
-Patch1: CVE-2023-28856.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -91,6 +90,9 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.12-1
+- Upgrade to v7.0.12 to fix following CVE's:
+- CVE-2022-24834, CVE-2023-36824
 * Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-3
 - Fix CVE-2023-28856
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 7.0.9-2
