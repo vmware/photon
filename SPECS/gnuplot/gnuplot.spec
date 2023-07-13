@@ -1,7 +1,7 @@
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
-Version:        5.4.0
-Release:        3%{?dist}
+Version:        5.4.6
+Release:        1%{?dist}
 License:        Freeware
 URL:            http://www.gnuplot.info/
 Group:          Applications
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=b4660dff7d047a453c55fd77faba11f63bb2d5ed
-
-Patch0:         gnuplot-CVE-2020-25412.patch
+%define sha512  %{name}=a78333f7c0ed3429b24fcdeb6296e67fb760e6f8ffc0801a6b379fcb12ae7e80cebe65a2655cb3530c2a2d4083adc34060c9a7cbe67ce98b660682c0edba174b
 
 BuildRequires:  lua-devel
 
@@ -25,7 +23,7 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 %build
 %configure --disable-static --enable-shared
-make %{?_smp_mflags}
+%make_build
 
 %check
 %if 0%{?with_check}
@@ -34,7 +32,7 @@ GNUTERM=dumb make check %{?_smp_mflags}
 %endif
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -42,6 +40,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Thu Jul 13 2023 Shivani Agarwal <shivania2@vmware.com> 5.4.6-1
+- Upgrade to 5.4.6 and fix CVE-2020-25559
 * Wed Dec 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.0-3
 - Add lua to Requires
 * Fri May 07 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.4.0-2
