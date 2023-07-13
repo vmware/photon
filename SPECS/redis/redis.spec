@@ -1,26 +1,17 @@
-Summary:    advanced key-value store
-Name:       redis
-Version:    7.0.0
-Release:    8%{?dist}
-License:    BSD
-URL:        http://redis.io
-Group:      Applications/Databases
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:       advanced key-value store
+Name:          redis
+Version:       7.0.12
+Release:       1%{?dist}
+License:       BSD
+URL:           http://redis.io
+Group:         Applications/Databases
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9209dd95511a27802f83197b037c006c5f40c50fe5315eb6a5ac2af1619a7b1c890160106157086420c1aca8a058f573681bfad1897052308ca6e64407404757
+%define sha512 %{name}=8cbb4dda73313c571fe643d893bbea4bdcf4cc1ac643fdf7cf7563fadfb28ca4e553120df03277d8429ae3f97a2c7b57db0548ad7c7ce1af380fe8234938471a
 
 Patch0: %{name}-conf.patch
-Patch1: CVE-2022-33105.patch
-Patch2: CVE-2022-31144.patch
-Patch3: CVE-2022-35951.patch
-Patch4: CVE-2022-3647.patch
-Patch5: CVE-2022-35977.patch
-Patch6: CVE-2023-22458.patch
-Patch7: CVE-2022-36021.patch
-Patch8: CVE-2023-25155.patch
-Patch9: CVE-2023-28856.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -97,6 +88,9 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.12-1
+- Upgrade to v7.0.12 to fix following CVE's:
+- CVE-2022-24834, CVE-2023-36824
 * Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-8
 - Fix CVE-2023-28856
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.0-7
