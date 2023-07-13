@@ -1,15 +1,15 @@
-Summary:    advanced key-value store
-Name:       redis
-Version:    7.0.11
-Release:    1%{?dist}
-License:    BSD
-URL:        http://redis.io
-Group:      Applications/Databases
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:       advanced key-value store
+Name:          redis
+Version:       7.0.12
+Release:       1%{?dist}
+License:       BSD
+URL:           http://redis.io
+Group:         Applications/Databases
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5c5bd4047cca111570bb25139eb31af3f8a194a3f818a595b679813b20274caec323fb4e0b0f4a045d7de87063c874e2a1c3616d7b906a5f30f05c0771df5a47
+%define sha512 %{name}=8cbb4dda73313c571fe643d893bbea4bdcf4cc1ac643fdf7cf7563fadfb28ca4e553120df03277d8429ae3f97a2c7b57db0548ad7c7ce1af380fe8234938471a
 
 Source1: %{name}.sysusers
 
@@ -90,6 +90,9 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.12-1
+- Upgrade to v7.0.12 to fix following CVE's:
+- CVE-2022-24834, CVE-2023-36824
 * Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.11-1
 - Upgrade to v7.0.11
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 7.0.9-2
