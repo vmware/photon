@@ -1,7 +1,7 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    6.2.7
-Release:    5%{?dist}
+Version:    6.2.13
+Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
 Group:      Applications/Databases
@@ -9,15 +9,9 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e4c1fc37c2c68587efc38695cdbf76dacc0dac809bed564e510f32fe1a005bf5bcf9b2a43bf6a40c756e779ceb22a5ad85f6ed9ecd1ceac5bfb669383c79ffa1
+%define sha512 %{name}=80db41ef910d268f1880b4941d7b3ee34423d0ae9132f9b870eb9a0f875a6863909eae9c6eecba9068f3b8684528d7a86dca854e51968624d53980438f5f0e95
 
 Patch0: %{name}-conf.patch
-Patch1: CVE-2022-3647.patch
-Patch2: CVE-2022-35977.patch
-Patch3: CVE-2023-22458.patch
-Patch4: CVE-2022-36021.patch
-Patch5: CVE-2023-25155.patch
-Patch6: CVE-2023-28856.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -93,6 +87,8 @@ getent passwd %{name} &> /dev/null || \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 6.2.13-1
+- Upgrade to v6.2.13 to fix CVE-2022-24834
 * Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-5
 - Fix CVE-2023-28856
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-4
