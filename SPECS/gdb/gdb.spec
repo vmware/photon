@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        10.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -16,12 +16,16 @@ Requires:       expat
 Requires:       ncurses
 Requires:       python3
 Requires:       xz-libs
+Requires:       zlib
 BuildRequires:  expat-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  xz-devel
-%if %{with_check}
+BuildRequires:  zlib-devel
+BuildRequires:  texinfo
+
+%if 0%{?with_check}
 BuildRequires:  dejagnu
 BuildRequires:  systemtap-sdt-devel
 %endif
@@ -34,12 +38,14 @@ another program was doing at the moment it crashed.
 %autosetup -p1
 
 %build
+rm -rf zlib texinfo
 mkdir build && cd build
 ../configure \
   --host=%{_host} --build=%{_build} \
   --prefix=%{_prefix} \
   --with-system-gdbinit=%{_sysconfdir}/gdbinit \
-  --with-python=/usr/bin/python3
+  --with-python=/usr/bin/python3 \
+  --with-system-zlib
 %make_build
 
 %install
@@ -90,6 +96,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_sysconfdir}/gdbinit.d
 
 %changelog
+* Wed Jul 12 2023 Anmol Jain <anmolja@vmware.com> 10.1-3
+- Using system zlib to fix CVE-2018-25032
 * Mon Feb 20 2023 Ajay Kaher <akaher@vmware.com> 10.1-2
 - Compile with --with-system-gdbinit
 * Tue Jan 03 2023 Harinadh D <hdommaraju@vmware.com> 10.1-1
