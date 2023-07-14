@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -74,7 +74,6 @@ Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
-Requires: btrfs-progs
 
 BuildArch: noarch
 
@@ -147,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Wed Jul 12 2023 Piyush Gupta <gpiyush@vmware.com> 23.2-2
+- Remove btrfs-progs as requires.
 * Fri Jun 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2-1
 - Upgrade to v23.2
 * Thu Apr 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.1.1-3
