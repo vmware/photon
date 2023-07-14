@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.183
-Release:        2%{?dist}
+Version:        5.10.186
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
+%define sha512 linux=748f37b7d5b072f02b2fe74ec40eb48abe7b6386b4ee8e9a614ef78c286c67ae979809a7eaecc34afa6f4e19f8cdce296435d423ddd9ccd7f88236a779e63139
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -235,9 +235,6 @@ Patch510: 0003-FIPS-broken-kattest.patch
 Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
-# Fix proc01 LTP test failure
-Patch512: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
-
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -343,9 +340,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %if 0%{?fips}
 %autopatch -p1 -m511 -M511
 %endif
-
-#Fix proc01 LTP test failure
-%autopatch -p1 -m512 -M512
 
 %build
 make %{?_smp_mflags} mrproper
@@ -503,6 +497,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
+- Update to version 5.10.186
 * Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
 - Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1

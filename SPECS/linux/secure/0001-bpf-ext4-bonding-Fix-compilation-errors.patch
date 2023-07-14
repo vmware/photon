@@ -25,10 +25,10 @@ kernel/bpf/core.c:1410:3: note: in expansion of macro ‘__bpf_call_base_args’
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Roye Eshed <eshedr@vmware.com>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 ---
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
- include/net/bond_alb.h                  | 4 ++--
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/gpu/drm/nouveau/Kbuild b/drivers/gpu/drm/nouveau/Kbuild
 index 60586fb82..1dd1be224 100644
@@ -40,21 +40,5 @@ index 60586fb82..1dd1be224 100644
  obj-$(CONFIG_DRM_NOUVEAU) += nouveau.o
 +
 +OBJECT_FILES_NON_STANDARD := y
-diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index f6af76c87..67d687608 100644
---- a/include/net/bond_alb.h
-+++ b/include/net/bond_alb.h
-@@ -156,8 +156,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link);
- void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave);
--int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
--int bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
- struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 				      struct sk_buff *skb);
- struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
 -- 
 2.17.1
-

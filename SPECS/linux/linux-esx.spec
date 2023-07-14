@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.183
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.186
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
+%define sha512 linux=748f37b7d5b072f02b2fe74ec40eb48abe7b6386b4ee8e9a614ef78c286c67ae979809a7eaecc34afa6f4e19f8cdce296435d423ddd9ccd7f88236a779e63139
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -31,9 +31,9 @@ Source4:        check_for_config_applicability.inc
 
 %ifarch x86_64
 # Intel i915 baskport
-%define i915_backports RHEL87_23WW21.5_627.7_23.4.15_PSB_230307.15
+%define i915_backports RHEL88_23WW28.5_647.21_23.5.19_230406.22
 Source5:        https://github.com/intel-gpu/intel-gpu-i915-backports/archive/refs/tags/%{i915_backports}.tar.gz
-%define sha512 RHEL87=85c94b81de483e70e6474f9aa673122e20f40109da66e49702ed2e9f59ef9e3e15a2ba3bdd21897809f4bf7bb4a46718c1200844c5f119f3152179b212919113
+%define sha512 RHEL88=1b9a13c18631f3a5f245fa226f56cefaeb70af7631eeceda707b3daafbb6650f5f6840f02fc86186241b7d9b17e70495d3e0f342e271f9817e0411facdf113b7
 
 %define i40e_version 2.22.18
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
@@ -262,9 +262,6 @@ Patch510: 0003-FIPS-broken-kattest.patch
 Patch511: 0001-retpoline-re-introduce-alternative-for-r11.patch
 %endif
 
-# Fix proc01 LTP test failure
-Patch512: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
-
 # SEV:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
@@ -417,9 +414,6 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?fips}
 %autopatch -p1 -m511 -M511
 %endif
-
-#Fix proc01 LTP test failure
-%autopatch -p1 -m512 -M512
 
 # SEV
 %autopatch -p1 -m600 -M605
@@ -663,6 +657,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
+- Update to version 5.10.186
 * Mon Jul 17 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.183-4
 - Add Intel i915 backport in headless mode.
 - Use PAT even if MTRR is not set (CRX case).

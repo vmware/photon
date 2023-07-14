@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.183
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.186
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
+%define sha512 linux=748f37b7d5b072f02b2fe74ec40eb48abe7b6386b4ee8e9a614ef78c286c67ae979809a7eaecc34afa6f4e19f8cdce296435d423ddd9ccd7f88236a779e63139
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -274,9 +274,6 @@ Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
 Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
 %endif
 
-# Fix proc01 LTP test failure
-Patch522:       0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
-
 %ifarch x86_64
 # SEV on VMware:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -509,9 +506,6 @@ manipulation of eBPF programs and maps.
 %patch520 -p1
 %patch521 -p1
 %endif
-
-#Fix proc01 LTP test failure
-%autopatch -p1 -m522 -M522
 
 %ifarch x86_64
 # SEV on VMware
@@ -900,6 +894,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
+- Update to version 5.10.186
 * Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
 - Fix for CVE-2023-0597
 * Thu Jun 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.183-1

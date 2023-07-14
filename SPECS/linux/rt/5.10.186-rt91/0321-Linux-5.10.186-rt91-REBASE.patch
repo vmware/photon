@@ -1,0 +1,20 @@
+From 3d549a9dfa787acfaeff1fe84dd80c2ff2f366dd Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Thu, 6 Jul 2023 11:18:01 -0300
+Subject: [PATCH 321/321] Linux 5.10.186-rt91 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f..e95e3382b7be 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt91
+-- 
+2.41.0
+
