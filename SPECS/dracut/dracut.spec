@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -16,13 +16,13 @@ Distribution:   Photon
 Source0: http://www.kernel.org/pub/linux/utils/boot/dracut/%{name}-%{version}.tar.xz
 %define sha512 %{name}=eba046cf1c8013369a398e585e0bff233daa8595d469ce9acc8bbc6a32d55c6a5429d4219db19abbf6001104be05b357f0961f9e66b7f926039a5d3ee7c2b850
 
-Patch0: disable-xattr.patch
-Patch1: fix-initrd-naming-for-photon.patch
-Patch2: lvm-no-read-only-locking.patch
-Patch3: fix-hostonly.patch
-Patch4: 0001-mkinitrd-verbose-fix.patch
-Patch5: 0002-dracut.sh-validate-instmods-calls.patch
-Patch6: 0003-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch0: 0001-disable-xattr.patch
+Patch1: 0002-fix-initrd-naming-for-photon.patch
+Patch2: 0003-lvm-no-read-only-locking.patch
+Patch3: 0004-fix-hostonly.patch
+Patch4: 0005-mkinitrd-verbose-fix.patch
+Patch5: 0006-dracut.sh-validate-instmods-calls.patch
+Patch6: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -152,6 +152,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Fri Jul 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-11
+- Fix a bug in finding installed kernel versions during mkinitrd
 * Mon Apr 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-10
 - Add /etc/dracut.conf.d to conf dirs list during initrd creation
 - Update wiki link and remove obsolete references

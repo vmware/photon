@@ -1,7 +1,7 @@
-From 613dcdc92be98afafca0b9aef9ffa39c30bcbb9f Mon Sep 17 00:00:00 2001
+From df94da20c69ecee25c93d460ec2561747ed2286e Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 31 Mar 2023 17:43:33 +0530
-Subject: [PATCH 1/3] mkinitrd: verbose fix
+Subject: [PATCH] mkinitrd: verbose fix
 
 Add a sanity check to verify initrd post creation.
 If something is wrong with initrd, show an error on tty.
@@ -12,11 +12,11 @@ mkinitrd logs will be captured at: `/var/log/mkinitrd-<kernel>.log`
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- mkinitrd-dracut.sh | 151 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 112 insertions(+), 39 deletions(-)
+ mkinitrd-dracut.sh | 158 ++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 120 insertions(+), 38 deletions(-)
 
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index 4047233..deacb69 100755
+index 4047233..17106d5 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
 @@ -1,6 +1,6 @@
@@ -58,21 +58,30 @@ index 4047233..deacb69 100755
      local rematch='^[^=]*=(.*)$' result
      if [[ $2 =~ $rematch ]]; then
          read "$param" <<< "${BASH_REMATCH[1]}"
-@@ -56,14 +59,14 @@ read_arg() {
+@@ -55,15 +58,24 @@ read_arg() {
+
  # For photon
  default_kernel_images() {
++  local kernel_version=""
 
 -    local kernel_version
--
++  local installed_kernels=
+
 -    for kernel_version in $(ls $kernel_ver_dir) ; do
-+    local kernel_version=""
++  installed_kernels="$(find /boot/ -mindepth 1 -maxdepth 1 -type f \
++                  -iname "vmlinuz-*.ph[[:digit:]]*" -exec basename {} \; | \
++                  cut -d '-' -f 2-)"
 
 -        # Take this directory as the source of truth
 -	kernels="$kernels $kernel_version"
 -        targets="$targets $boot_dir/initrd.img-$kernel_version"
 -    done
-+  for kernel_version in $(find /lib/modules -mindepth 1 -maxdepth 1 -type d); do
-+    kernel_version="$(basename ${kernel_version})"
++  for kernel_version in ${installed_kernels}; do
++    local modules_dir="/lib/modules/${kernel_version}"
++    if [ ! -d "${modules_dir}" ]; then
++      echo -e "\nERROR: ${modules_dir} not found for vmlinuz-${kernel_version}\n" >&2
++      continue
++    fi
 +    # Take this directory as the source of truth
 +    kernels="$kernels $kernel_version"
 +    targets="$targets $boot_dir/initrd.img-$kernel_version"
@@ -80,7 +89,7 @@ index 4047233..deacb69 100755
  }
 
  while (($# > 0)); do
-@@ -88,6 +91,7 @@ while (($# > 0)); do
+@@ -88,6 +100,7 @@ while (($# > 0)); do
          --nocompress) dracut_args="$dracut_args --no-compress";;
          --set-hostonly) set_hostonly=1;;
          --no-hostonly) no_hostonly=1;;
@@ -88,7 +97,7 @@ index 4047233..deacb69 100755
          --help) usage -n;;
          --builtin) ;;
          --without*) ;;
-@@ -145,7 +149,7 @@ while (($# > 0)); do
+@@ -145,7 +158,7 @@ while (($# > 0)); do
  done
 
  [[ $targets && $kernels ]] || default_kernel_images
@@ -97,7 +106,7 @@ index 4047233..deacb69 100755
 
  # We can have several targets/kernels, transform the list to an array
  targets=( $targets )
-@@ -179,36 +183,105 @@ fi
+@@ -179,36 +192,105 @@ fi
  [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
  [[ $force == 1 ]]     && dracut_args="${dracut_args} -f"
 
@@ -232,4 +241,4 @@ index 4047233..deacb69 100755
 +
 +exit ${final_ret}
 --
-2.25.1
+2.41.0
