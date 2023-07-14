@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.30.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org
 Group:          Development/Languages
@@ -29,6 +29,7 @@ Patch3: CVE-2020-10878-2.patch
 Patch4: CVE-2020-12723.patch
 patch5: CVE-2020-10543.patch
 Patch6: 0001-Remove-libdb-support.patch
+Patch7: CVE-2023-31486.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -55,7 +56,7 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
 %autopatch -p1 -m0 -M1
 %endif
-%autopatch -p1 -m2 -M6
+%autopatch -p1 -m2 -M7
 
 %build
 export BUILD_ZLIB=False
@@ -110,6 +111,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Thu Jul 13 2023 Kuntal Nayak <nkuntal@vmware.com> 5.30.1-6
+- Patch fixed CVE-2023-31486
 * Thu Feb 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.30.1-5
 - Drop libdb support
 * Tue Mar 16 2021 Dweep Advani <dadvani@vmware.com> 5.30.1-4
