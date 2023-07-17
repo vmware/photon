@@ -13,7 +13,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.20.5
+Version:        1.20.8
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=94cecb366cd9d9722b53e52ea3b0a5715a9e9dc21da0273dd3db9354557f71b9501b018125ef073dacc2e59125335f436cea1151cd8df0d60e2ad513f841905c
+%define sha512  go=858d0289b3cd709e71e14aed9a36fd3d462fb3aa72cc1108eef0c70ab583742ab2eff99a24f8bfd72d42d1cc741adc1d3619073fbed943f8aea20e453ed479d3
 Requires:       glibc
 Requires:       gcc
 
@@ -116,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.8-1
+- Upgrade to 1.20.8
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.5-1
 - Upgrade to 1.20.5
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.4-1

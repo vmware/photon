@@ -1,7 +1,7 @@
 Summary:    Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:       heapster
 Version:    1.5.4
-Release:    21%{?dist}
+Release:    22%{?dist}
 License:    Apache 2.0
 URL:        https://github.com/wavefrontHQ/cadvisor
 Group:      Development/Tools
@@ -62,6 +62,8 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-22
+- Bump up version to compile with new go
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-21
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-20

@@ -2,8 +2,8 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 87a90dc
-%define DOCKER_CLI_GITCOMMIT a224086
+%define DOCKER_ENGINE_GITCOMMIT a61e2b4
+%define DOCKER_CLI_GITCOMMIT ced0996
 %define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
@@ -12,8 +12,8 @@
 
 Summary:        Docker
 Name:           docker
-Version:        20.10.14
-Release:        13%{?dist}
+Version:        24.0.5
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512  moby=94ee555337aaf96bb95ce8cbe8fe1d9c8b87fcd4f256d2af5082fc47915f7576882929c1211ef7fba0c754097bdef5e6df59abbdf77456d3babe139f4353ed21
+%define sha512  moby=cde2e47e7658b153399ee29154ec21eebf54b292185e07d43b968895dcfdfead95e4507fefb713859a4540f21d8007116d3ebeaa1fb7ba305fb2a0449ba1bee6
 
 Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -30,7 +30,7 @@ Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.
 %define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512  docker-cli=f8b7f1040eccd404e39ec33bcef8bb8423636b0695af65f84c0612e77223844892d219f82cfbb99ccd5326e228f8af27be1870d90ebace77810ea5fce9f86e4a
+%define sha512  docker-cli=765c67634d91d248b156d3e407398b98b7a0a89507bbac0310d4a68b95aa1a05e3af43c8b90bc10166748749d8cc36670619fc9efca110beefbdcd4385dc96be
 
 Source97:       docker-post19.service
 Source98:       docker-post19.socket
@@ -234,7 +234,7 @@ install -p -m 644 src/%{gopath_comp_cli}/man/man8/*.8 %{buildroot}%{_mandir}/man
 # vimfiles are now upstream, no vim files installed
 
 mkdir -p build-docs
-for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
+for engine_file in AUTHORS CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
   cp "src/%{gopath_comp_engine}/$engine_file" "build-docs/engine-$engine_file"
 done
 for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
@@ -311,7 +311,7 @@ rm -rf %{buildroot}/*
 
 %files doc
 %defattr(-,root,root)
-%doc build-docs/engine-AUTHORS build-docs/engine-CHANGELOG.md build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
+%doc build-docs/engine-AUTHORS build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
 %doc build-docs/cli-LICENSE build-docs/cli-MAINTAINERS build-docs/cli-NOTICE build-docs/cli-README.md
 %doc
 %{_mandir}/man1/*
@@ -324,6 +324,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-1
+- Upgrade to 24.0.5.
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 20.10.14-13
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 20.10.14-12
