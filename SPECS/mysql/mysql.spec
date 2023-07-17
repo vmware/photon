@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.33
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -12,21 +12,33 @@ Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.ta
 %define sha512 %{name}-boost=47f76819004c7c545d1b0b6b6646d8816899976f92d35c5564b1255b144b597ff7d3e674c721a45bcbb13cc0da3f4474fb29221c0e21d2ff91a1892cd42c636c
 
 BuildRequires: cmake
-BuildRequires: openssl-devel
-BuildRequires: zlib-devel
-BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
-BuildRequires: protobuf-devel
+BuildRequires: icu-devel
+BuildRequires: libedit-devel
 BuildRequires: libevent-devel
+BuildRequires: curl-devel
+BuildRequires: zstd-devel
+BuildRequires: lz4-devel
+BuildRequires: protobuf-devel
+BuildRequires: openssl-devel
+BuildRequires: libtirpc-devel
+BuildRequires: ncurses-devel
+BuildRequires: libnuma-devel
+BuildRequires: libfido2-devel
 
-Requires: protobuf
-Requires: libtirpc
+Requires: icu
+Requires: libedit
 Requires: libevent
-Requires: zlib
+Requires: curl-libs
+Requires: zstd-libs
+Requires: lz4
+Requires: protobuf
 Requires: openssl
-Requires: ncurses-libs
+Requires: libtirpc
 Requires: perl
-Requires: %{name}-icu-data-files = %{version}-%{release}
+Requires: ncurses-libs
+Requires: libnuma
+Requires: libfido2
 
 %description
 MySQL is a free, widely used SQL engine.
@@ -50,21 +62,20 @@ This package contains ICU data files needed by MySQL regular expressions.
 
 %build
 %{cmake} \
-   -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-   -DWITH_BOOST=boost \
-   -DINSTALL_MANDIR=share/man \
-   -DINSTALL_DOCDIR=share/doc \
-   -DINSTALL_DOCREADMEDIR=share/doc \
-   -DINSTALL_SUPPORTFILESDIR=share/support-files \
-   -DCMAKE_BUILD_TYPE=RELEASE \
-   -DCMAKE_C_FLAGS=-fPIC \
-   -DCMAKE_CXX_FLAGS=-fPIC \
-   -DWITH_EMBEDDED_SERVER=OFF \
-   -DFORCE_INSOURCE_BUILD=1 \
-   -DWITH_PROTOBUF=system \
-   -DWITH_ROUTER=OFF \
-   -DWITH_UNIT_TESTS=OFF \
-   -DWITH_LIBEVENT=system
+  -DCMAKE_INSTALL_PREFIX=%{_usr} \
+  -DWITH_BOOST=boost \
+  -DINSTALL_MANDIR=%{_mandir} \
+  -DINSTALL_DOCDIR=%{_docdir} \
+  -DINSTALL_DOCREADMEDIR=%{_docdir} \
+  -DINSTALL_SUPPORTFILESDIR=share/support-files \
+  -DCMAKE_BUILD_TYPE=RELEASE \
+  -DCMAKE_C_FLAGS=-fPIC \
+  -DCMAKE_CXX_FLAGS=-fPIC \
+  -DWITH_EMBEDDED_SERVER=OFF \
+  -DFORCE_INSOURCE_BUILD=1 \
+  -DWITH_UNIT_TESTS=OFF \
+  -DWITH_ROUTER=OFF \
+  -DWITH_SYSTEM_LIBS=ON
 
 %{cmake_build}
 
@@ -96,7 +107,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_datadir}/support-files/*
 %exclude %{_usr}/mysql-test
-%exclude %{_usr}/docs
 %exclude %{_datadir}
 
 %files devel
@@ -108,9 +118,10 @@ rm -rf %{buildroot}/*
 
 %files icu-data-files
 %defattr(-,root,root)
-%{_libdir}/private/icudt69l
 
 %changelog
+* Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-4
+- Use system libs
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-3
 - Bump version as a part of protobuf upgrade
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.33-2
