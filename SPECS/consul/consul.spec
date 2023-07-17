@@ -1,25 +1,26 @@
 %global debug_package %{nil}
 
 Name:           consul
-Version:        1.14.2
-Release:        5%{?dist}
+Version:        1.15.4
+Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/hashicorp/consul
-Source0:        https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=58052afc7cc6536099b0bfe2ceca7ef4d0cb76cd08df67508b77b7c58719fd9617919228ccd5a5c150fcbbaca550299baa5e26586d6ca1296f7b84f5760ae11f
-Source1:        %{name}.service
-Source2:        %{name}.sysusers
 
-BuildRequires:  systemd-devel
-BuildRequires:  go
-BuildRequires:  ca-certificates
+Source0: https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=a03d0f71fc4f6e42a0c0efbc8477701356c40d7221ede565985ba6775a7a2ffb75cb99e609b0ec428875731ecc20941cc4bba7d1d1551ea859563a02a3c41e95
+Source1: %{name}.service
+Source2: %{name}.sysusers
 
-Requires(pre):  systemd-rpm-macros
-Requires:       systemd
+BuildRequires: systemd-devel
+BuildRequires: go
+BuildRequires: ca-certificates
+
+Requires(pre): systemd-rpm-macros
+Requires:      systemd
 
 %description
 Consul is a tool for service discovery and configuration. Consul is distributed, highly available, and extremely scalable.
@@ -90,6 +91,9 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Jul 17 2023 Nitesh Kumar <kunitesh@vmware.com> 1.15.4-1
+- Version upgrade to v1.15.4 to fix following CVE's:
+- CVE-2023-1297, CVE-2023-0845
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-4
