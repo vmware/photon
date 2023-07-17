@@ -36,7 +36,10 @@ if [ %{_host} != %{_build} ]; then
   export STRIP=%{_host}-strip
 fi
 
-sh ./configure --prefix=%{_prefix} --shared
+sh ./configure \
+    --prefix=%{_prefix} \
+    --shared
+
 %make_build
 
 %install
@@ -47,7 +50,7 @@ sh ./configure --prefix=%{_prefix} --shared
 make %{?_smp_mflags} check
 %endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
