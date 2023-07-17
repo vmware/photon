@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.183
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -46,9 +46,9 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.10-18.ph5-secure
+%define fips_canister_version 5.0.0-6.1.37-2.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=8c5e9beba4a90249455f5effa00e540a9660cbf375533572c08b62e7e9a090ef779201b667da64c43e1d473a47e1242e1e2858a091d1e0e4cf9e49344a3f7fe9
+%define sha512 fips-canister=034485970dec88400350a3bb14796c2a9b7c369651bf99083d670b33bb6b31216ab42fb14617c8120b4c3d53441a4a04caeca2a0bd479970b1965872c68099b1
 
 Source17:       modify_kernel_configs.inc
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
@@ -601,6 +601,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-4
+- Use canister version 5.0.0-6.1.37-2
 * Mon Jul 10 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-3
 - Use canister 5.0.0-6.1.10-18
 * Thu Jul 06 2023 Garrett Goble <gobleg@vmware.com> 5.10.183-2
