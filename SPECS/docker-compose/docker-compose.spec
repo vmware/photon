@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           docker-compose
-Version:        2.19.0
+Version:        2.20.2
 Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
@@ -10,7 +10,7 @@ Distribution:   Photon
 License:        ASL 2.0
 URL:            https://github.com/docker/compose
 Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a75ae0311a7aa78aed6cde3885452eb2e94842a3ff8a1c9a829b880fbc9cc84db94ec902ab06611589f2b129a52663cad27166e4fe33db809bd3eb52df441ac2
+%define sha512  %{name}=8b8ccece806edfaffef497ed8b8b64c6050aa35363e350a14b5a257c9230ed5656a0e5661ce6c314c2911b438780421f71714477a83e2e64db2cf6c921f86af1
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.20.2-1
+- Upgrade to 2.20.2.
 * Fri Jun 23 2023 Piyush Gupta <gpiyush@vmware.com> 2.19.0-1
 - Upgrade to v2.19.0.
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.11.0-7
