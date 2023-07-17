@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -30,7 +30,6 @@ Source14:       sysusers.generate-pre.sh
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
-Patch3: systemd-issue-26494.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -708,6 +707,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 253-6
+- Revert https://github.com/systemd/systemd/pull/26494.patch.
 * Fri Jun 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-5
 - Increase SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST to 20
 * Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-4
