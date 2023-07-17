@@ -2,8 +2,8 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 219f21b
-%define DOCKER_CLI_GITCOMMIT 569dd73
+%define DOCKER_ENGINE_GITCOMMIT a61e2b4
+%define DOCKER_CLI_GITCOMMIT ced0996
 %define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
@@ -12,8 +12,8 @@
 
 Summary:        Docker
 Name:           docker
-Version:        23.0.2
-Release:        3%{?dist}
+Version:        24.0.5
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=dabac193e309ce170e5e2dd7bafb750172b3f2717307387d32164d0efac9756e91834903980624b1df3a853b5b332e25ae8b0d50ae0be02513b9cb3ea7bb5666
+%define sha512 moby=cde2e47e7658b153399ee29154ec21eebf54b292185e07d43b968895dcfdfead95e4507fefb713859a4540f21d8007116d3ebeaa1fb7ba305fb2a0449ba1bee6
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -30,7 +30,7 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=5dd373200b4d979162d8e33c47c1124ece0298a9fc68d24b68d0ac8e8268780934d209fabcea67d4bb8ca5370cef94a54dccc29f75d5084a4e454efa43b0466f
+%define sha512 docker-cli=765c67634d91d248b156d3e407398b98b7a0a89507bbac0310d4a68b95aa1a05e3af43c8b90bc10166748749d8cc36670619fc9efca110beefbdcd4385dc96be
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-1
+- Upgrade to v24.0.5.
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-3
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-2
