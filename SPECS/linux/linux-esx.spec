@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.37
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -60,9 +60,9 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.10-10%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.37-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=89d7eb292f6dfa7026778d0b909037d8d61b4a6e5aa8dd549b9bbc09b40f455a0541b03b5502c810b519c733885d2cc75924e291b5f3d34edb30ac32765fb366
+%define sha512 fips-canister=034485970dec88400350a3bb14796c2a9b7c369651bf99083d670b33bb6b31216ab42fb14617c8120b4c3d53441a4a04caeca2a0bd479970b1965872c68099b1
 
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
@@ -178,12 +178,10 @@ Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
-#Patch to not make shash_no_setkey static
-Patch506: 0001-fips-Continue-to-export-shash_no_setkey.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.10-10-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.37-2-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %else
@@ -296,7 +294,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M506
+%autopatch -p1 -m500 -M505
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
@@ -333,6 +331,10 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
+   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
+   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
+   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
    crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE18}
@@ -498,6 +500,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.37-3
+- Use canister version 5.0.0-6.1.37-2
 * Thu Jul 06 2023 Garrett Goble <gobleg@vmware.com> 6.1.37-2
 - Adding SBX kernel driver
 * Tue Jul 04 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.37-1

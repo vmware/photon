@@ -29,3 +29,4 @@ sed -i 's/CONFIG_CRYPTO_CMAC=m/CONFIG_CRYPTO_CMAC=y/' .config
 sed -i 's/CONFIG_CRYPTO_GHASH=m/CONFIG_CRYPTO_GHASH=y/' .config
 sed -i 's/CONFIG_CRYPTO_CTS=m/CONFIG_CRYPTO_CTS=y/' .config
 sed -i 's/CONFIG_CRYPTO_CFB=m/CONFIG_CRYPTO_CFB=y/' .config
+sed -i 's/CONFIG_CRYPTO_SHA3=m/CONFIG_CRYPTO_SHA3=y/' .config

@@ -1,29 +1,34 @@
 # Find structure symbols in fips_canister.o
-gdb crypto/fips_canister.o -q -ex="set pagination off" -ex="info variables -q -t struct" -ex q | tail -n +2 > fips_canister_structure_symbols
+echo "Extracting symbols from fips_canister.o"
+gdb crypto/fips_canister.o -q -ex="set pagination off" -ex="info types" -ex q | tail -n +2 > fips_canister_symbols
 
-# Loop through the symbols and extract structure name
+echo "Filtering structure and union symbols"
 while read line; do
-      if [[ $line =~ ^[0-9]*: ]]; then
-         echo $line | sed -n -e 's/.*struct //p' | awk '{print $1}' >> structure-symbols
+      if [[ $line =~ ^[0-9]*:[[:space:]]*.*struct|union ]]; then
+           if [[ $line =~ .*"typedef".* ]]; then
+              echo $line | awk '{print "ptype "$NF}' | sed -r 's/;+$//' >> fips-canister-symbols-gdbcmds
+          else
+             echo $line | awk '{print "ptype "$(NF-1),"\t",$NF}' | sed -r 's/;+$//' >> fips-canister-symbols-gdbcmds
+          fi
       fi
-done <fips_canister_structure_symbols
+done <fips_canister_symbols
 
-awk '!seen[$0]++' structure-symbols > fips-structure-symbols
+awk -i inplace '!seen[$0]++' fips-canister-symbols-gdbcmds
 
-# Loop through the symbols and compare with vmlinux
+ignore_list='void \*module;\|struct module \*module;\|raw_spinlock_t lock;\|void \*lock;\|void \*drbg_mutex;\|struct mutex drbg_mutex;\|void \*cra_type;\|const struct crypto_type \*cra_type;\|void \*cra_module;\|struct module \*cra_module;\|void \*jent_lock;\|spinlock_t jent_lock;'
+
+#
+## Loop through the symbols and compare with vmlinux
+echo "Comparing the symbols between canister and vmlinux"
 while read symbol; do
-         if [[ $symbol == "simd_aead_alg" || $symbol == "simd_skcipher_alg" ]]; then
-            continue
-         fi
-         symbol_name="struct ${symbol}"
-         if [[ $symbol_name =~ ^[a-zA-Z] ]]; then
-            gdb crypto/fips_canister.o -q -ex="set pagination off" -ex="ptype $symbol_name" -ex q | tail -n +2 > symbol-canister
-            gdb vmlinux -q -ex="set pagination off" -ex="ptype $symbol_name" -ex q | tail -n +2 > symbol-vmlinux
-            diff symbol-canister symbol-vmlinux
-            if [[ $? == 1 ]];then
-               echo "$symbol_name does not match in vmlinux"
-               exit 1
-            fi
-         fi
-done <fips-structure-symbols
-rm fips_canister_structure_symbols structure-symbols fips-structure-symbols symbol-canister symbol-vmlinux
+     if [[ ${symbol} == *"struct"* ]]; then
+        gdb crypto/fips_canister.o -q -ex="set pagination off" -ex="$symbol" -ex q | tail -n +2 > symbol-canister
+        gdb vmlinux -q -ex="set pagination off" -ex="$symbol" -ex q | tail -n +2 > symbol-vmlinux
+        diff symbol-canister symbol-vmlinux -I "$ignore_list"
+        if [[ $? == 1 ]];then
+           echo "$symbol does not match in vmlinux"
+           exit 1
+        fi
+     fi
+done <fips-canister-symbols-gdbcmds
+rm fips_canister_symbols fips-canister-symbols-gdbcmds symbol-canister symbol-vmlinux
