@@ -3,21 +3,24 @@ Name:           lz4
 Version:        1.9.2
 Release:        2%{?dist}
 License:        BSD 2-Clause and GPLv2
-URL:            http://lz4.github.io/lz4/
+URL:            http://lz4.github.io/lz4
 Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    lz4=4dc36f29d7b4e5b45b114be2674068200714abb3
+Source0: https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ae714c61ec8e33ed91359b63f2896cfa102d66b730dce112b74696ec5850e59d88bd5527173e01e354a70fbe8f036557a47c767ee0766bc5f9c257978116c3c1
 
-Patch0:         CVE-2021-3520.patch
+Patch0: CVE-2021-3520.patch
 
 %description
-LZ4 is lossless compression algorithm, providing compression speed at 400 MB/s per core, scalable with multi-cores CPU.
-It features an extremely fast decoder, with speed in multiple GB/s per core, typically reaching RAM speed limits on multi-core systems.
+LZ4 is lossless compression algorithm, providing compression speed
+at 400 MB/s per core, scalable with multi-cores CPU.
 
-%package        devel
+It features an extremely fast decoder, with speed in multiple GB/s
+per core, typically reaching RAM speed limits on multi-core systems.
+
+%package devel
 Summary:        Libraries and header files for lz4
 Requires:       %{name} = %{version}-%{release}
 
@@ -28,13 +31,15 @@ Static libraries and header files for the support library for lz4.
 %autosetup -p1
 
 %build
-make %{?_smp_mflags} all
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix} %{?_smp_mflags}
+%make_install PREFIX="%{_usr}" %{?_smp_mflags}
 
-%post   -p /sbin/ldconfig
+%clean
+rm -rf %{buildroot}
+
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
