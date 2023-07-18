@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.288
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -242,6 +242,9 @@ Patch311: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 #Fix for CVE-2021-3759
 Patch312: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
+#Fix for CVE-2023-2124
+Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -353,7 +356,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M312
+%autopatch -p1 -m300 -M313
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -560,6 +563,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
+- Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2
 - Fix for CVE-2021-3759
 * Fri Jul 21 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.288-1

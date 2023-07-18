@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.288
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -484,6 +484,9 @@ Patch711: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 #Fix for CVE-2021-3759
 Patch712: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
+#Fix for CVE-2023-2124
+Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
+
 # Patches for i40e driver
 Patch802: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
@@ -607,7 +610,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M712
+%autopatch -p1 -m700 -M713
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -841,6 +844,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
+- Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2
 - Fix CVE-2021-3759
 * Fri Jul 21 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.288-1
