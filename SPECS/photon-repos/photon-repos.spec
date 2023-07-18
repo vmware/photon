@@ -1,7 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -13,6 +13,7 @@ Source5:        photon-iso.repo
 Source6:        photon-debuginfo.repo
 Source7:        photon-release.repo
 Source8:        photon-srpms.repo
+Source9:        photon-extras.repo
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       photon-release
@@ -34,6 +35,7 @@ install -m 644 %{SOURCE5} %{buildroot}/etc/yum.repos.d
 install -m 644 %{SOURCE6} %{buildroot}/etc/yum.repos.d
 install -m 644 %{SOURCE7} %{buildroot}/etc/yum.repos.d
 install -m 644 %{SOURCE8} %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE9} %{buildroot}/etc/yum.repos.d
 
 install -d -m 755 %{buildroot}/etc/pki/rpm-gpg
 install -m 644 %{SOURCE1} %{buildroot}/etc/pki/rpm-gpg
@@ -53,8 +55,11 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-updates.repo
 %config(noreplace) /etc/yum.repos.d/photon-release.repo
 %config(noreplace) /etc/yum.repos.d/photon-srpms.repo
+%config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Tue Jul 18 2023 Piyush Gupta <gpiyush@vmware.com> 5.0-4
+-   Add photon-extras.repo.
 *   Fri Mar 24 2023 Tapas Kundu <tkundu@vmware.com> 5.0-3
 -   Disable photon-release.repo
 -   All latest rpms for every pkg can be picked from photon-updates
