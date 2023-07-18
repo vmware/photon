@@ -1,11 +1,11 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.26.1
-Release:         3%{?dist}
+Version:         1.27.1
+Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512   telegraf=5e7cb45fb7268ad45556a6802ed9e2d58d376144c5fb27d2f95fde5aa702e7485b4331e67b01211b9e7943679e4d65a304f171c4989a26b08a331c3a47d48099
+%define sha512   telegraf=0f28d5c6edb0b1d8ed6a3b223412bc5f7dc27fdb643c94bc0d8f03d03d05ec58d333c5e4a5fc269ea22f137f655ab9b1c8cadb1bc649d0856a48554f9185fb2c
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512   telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -100,6 +100,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+* Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.1-1
+- Update to 1.27.1, Fixes second level CVEs
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-3
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-2
