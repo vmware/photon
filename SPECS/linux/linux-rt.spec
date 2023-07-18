@@ -752,6 +752,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
+BuildRequires:  gettext
 
 Requires:       filesystem
 Requires:       kmod

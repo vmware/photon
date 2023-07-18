@@ -520,6 +520,7 @@ BuildRequires: procps-ng-devel
 BuildRequires: lz4
 BuildRequires: elfutils-libelf-devel
 BuildRequires: bison
+BuildRequires: gettext
 
 Requires:      filesystem
 Requires:      kmod

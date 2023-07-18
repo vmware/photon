@@ -288,6 +288,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  bison
+BuildRequires:  gettext
 
 Requires:       filesystem
 Requires:       kmod
