@@ -258,6 +258,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  bison
+BuildRequires:  gettext
 
 Requires:       filesystem
 Requires:       kmod
