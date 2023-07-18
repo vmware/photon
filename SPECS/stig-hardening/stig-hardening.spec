@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Remove these files while preparing the tar ball
-# .gitattributes .gitignore .gitlab-ci.yml .yamllint .ansible-lint
+# .gitattributes .gitignore .gitlab-ci.yml .yamllint .ansible-lint vars-cap.yml
 # Update this URL to github URL once the source code is available in github
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=b7240a03d3c04878ed257f63187a06c7c6458ffe851f5dedbdc36088210ff18c040dbc2763ca74c4b5feb4eb7e966abf25799f325ba8cc65a56bded761694fdb
