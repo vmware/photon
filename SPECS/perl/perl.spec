@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.36.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -25,6 +25,7 @@ Patch1:         make-check-failure2.patch
 %endif
 
 Patch2:         0001-Remove-libdb-support.patch
+Patch3:         CVE-2023-31486.patch
 
 Source1:    https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
 %define sha512  perl-cross=81d86d0ad1dab55da9debcdf705f4937e36f4b3b3c3ce93e7d6eeef4a3b1e1d9498b3db5e2b6abf92525e6767d639da7587d95136c46e50808386767ee7e5b13
@@ -56,6 +57,7 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %patch1 -p1
 %endif
 %patch2 -p1
+%patch3 -p1
 
 %build
 export BUILD_ZLIB=False
@@ -107,6 +109,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Mon Jul 17 2023 Kuntal Nayak <nkuntal@vmware.com> 5.36.0-3
+- Patch fixed CVE-2023-31486
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.36.0-2
 - Bump version as a part of zlib upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.36.0-1
