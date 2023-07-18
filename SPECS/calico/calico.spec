@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -47,6 +47,8 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 %package -n     confd
 Summary:        confd is a lightweight configuration management tool
 Group:          Development/Tools
+Conflicts:      %{name}-confd <= 0.16.0-20
+Provides:       %{name}-confd = %{version}-%{release}
 
 %description -n confd
 This is a Calico-specific version of confd. It is heavily modified from the original and only supports a single backend type - namely a Calico datastore. It has a single purpose which is to monitor Calico BGP configuration and to autogenerate bird BGP templates from that config.
@@ -133,6 +135,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Mon Jul 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.26.1-2
+- Add conflict with calico-confd package
 * Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.26.1-1
 - Update to 3.26.1, Fixes multiple second level CVEs
 - Create single spec for all calico subpackages
