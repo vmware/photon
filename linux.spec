@@ -14,6 +14,10 @@
 %endif
 %endif
 
+%if 0%{?acvp_build}
+%global fips 1
+%endif
+
 %ifarch aarch64
 %define arch arm64
 %define archdir arm64
@@ -23,7 +27,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.56
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -217,6 +221,22 @@ Patch511: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
+%if 0%{?acvp_build:1}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+Patch512:       0001-crypto-AF_ALG-add-sign-verify-API.patch
+Patch513:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
+Patch514:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
+Patch515:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
+Patch516:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
+Patch517:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
+Patch518:       0007-crypto-AF_ALG-add-KPP-support.patch
+Patch519:       0008-crypto-AF_ALG-add-ECC-support.patch
+Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
+Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
+Patch522:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
+%endif
+
 %ifarch x86_64
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -405,6 +425,12 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m511 -M511
 %endif
 
+%if 0%{?acvp_build:1}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+%autopatch -p1 -m512 -M522
+%endif
+
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M609
@@ -442,6 +468,27 @@ cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
+
+%if 0%{?acvp_build:1}
+#ACVP test harness changes in kernel configs.
+sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
+sed -i 's/# CONFIG_CRYPTO_DH is not set/CONFIG_CRYPTO_DH=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API=m/CONFIG_CRYPTO_USER_API=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_HASH=m/CONFIG_CRYPTO_USER_API_HASH=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_SKCIPHER=m/CONFIG_CRYPTO_USER_API_SKCIPHER=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_RNG=m/CONFIG_CRYPTO_USER_API_RNG=y/' .config
+sed -i 's/# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set/CONFIG_CRYPTO_USER_API_RNG_CAVP=y/' .config
+sed -i 's/# CONFIG_CRYPTO_USER_API_AEAD is not set/CONFIG_CRYPTO_USER_API_AEAD=y/' .config
+sed -i '/CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE/ a # CONFIG_CRYPTO_STATS is not set' .config
+sed -i '/CONFIG_CRYPTO_STATS/ a CONFIG_CRYPTO_USER_API_AKCIPHER=y' .config
+sed -i '/CONFIG_CRYPTO_USER_API_AKCIPHER/ a CONFIG_CRYPTO_USER_API_KPP=y' .config
+sed -i '/CONFIG_CRYPTO_USER_API_KPP=y/ a CONFIG_CRYPTO_USER_API_ECC=y' .config
+sed -i '/CONFIG_CRYPTO_DH=y/ a # CONFIG_CRYPTO_DH_RFC7919_GROUPS is not set' .config
+sed -i '/# end of Userspace interface/ { N; d; }' .config
+sed -i '/# CONFIG_CRYPTO_STATS is not set/ a # end of Userspace interface' .config
+sed -i '/# end of Userspace interface/{G;}' .config
+%endif
+
 cp %{SOURCE20} photon_sb2020.pem
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
@@ -746,6 +793,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-4
+- Adding support for ACVP build
+- Added jitterentropy implementation of SHA3-256
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-3
 - Add missing self-test vector for ecdh-nist-p384 with genkey
 * Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.56-2
