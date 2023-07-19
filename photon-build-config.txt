@@ -63,6 +63,10 @@ Build config file is a json format with possible parameters:
         Default value: null
         Example: { "photon-build-param": { "kat-build" : null } }
 
+  "acvp-build":
+        Default value: null
+        Example: { "photon-build-param": { "acvp-build" : null } }
+
   "pkg-build-options":
         Default value: "pkg_build_options.json"
         Example: { "photon-build-param": { "pkg-build-options" : "pkg_build_options.json" } }

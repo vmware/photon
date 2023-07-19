@@ -1360,6 +1360,9 @@ def initialize_constants():
     constants.setCanisterBuild(
         configdict["photon-build-param"].get("canister-build", False)
     )
+    constants.setAcvpBuild(
+        configdict["photon-build-param"].get("acvp-build", False)
+    )
     Build_Config.setConfFile(configdict["additional-path"]["conf-file"])
     Build_Config.setPkgToBeCopiedConfFile(
         configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file")
@@ -1435,6 +1438,7 @@ def process_env_build_params(ph_build_param):
         "PHOTON_DOCKER_IMAGE": "photon-docker-image",
         "KAT_BUILD": "kat-build",
         "CANISTER_BUILD": "canister-build",
+        "ACVP_BUILD": "acvp-build",
         "BUILDDEPS": "publish-build-dependencies",
         "PH_DOCKER_IMAGE_URL": "ph-docker-img-url",
         "BUILD_SRC_RPM": "build-src-rpm",
@@ -1459,7 +1463,7 @@ def process_env_build_params(ph_build_param):
         if k in {"THREADS", "BUILD_SRC_RPM", "BUILD_DBGINFO_RPM"}:
             val = int(val)
         elif k in {"KAT_BUILD", "BUILDDEPS", "SCHEDULER_SERVER",
-                   "CANISTER_BUILD", "BUILD_EXTRA_PKGS", "RESUME_BUILD"}:
+                   "CANISTER_BUILD", "ACVP_BUILD", "BUILD_EXTRA_PKGS", "RESUME_BUILD"}:
             val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
             t = "enable_stop_on_error"
