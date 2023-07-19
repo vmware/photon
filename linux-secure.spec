@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        19%{?kat_build:.kat}%{?dist}
+Release:        20%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -406,6 +406,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-20
+- Fix rap_plugin patch
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-19
 - Use canister version 5.0.0-6.1.37-2
 * Fri Jul 07 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-18
