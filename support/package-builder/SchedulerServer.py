@@ -114,6 +114,7 @@ def getConstants():
     constant_dict["userDefinedMacros"] = constants.userDefinedMacros
     constant_dict["katBuild"] = constants.katBuild
     constant_dict["canisterBuild"] = constants.canisterBuild
+    constant_dict['acvpBuild'] = constants.acvpBuild
     constant_dict["tmpDirPath"] = constants.tmpDirPath
     constant_dict["buildArch"] = constants.buildArch
     constant_dict["currentArch"] = constants.currentArch
