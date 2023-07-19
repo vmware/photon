@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.190
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -253,21 +253,6 @@ Patch511: 0003-FIPS-broken-kattest.patch
 
 %endif
 
-%if 0%{?acvp_build:1} && 0%{?fips}
-#ACVP test harness patches.
-#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-Patch512:       0001-crypto-AF_ALG-add-sign-verify-API.patch
-Patch513:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
-Patch514:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
-Patch515:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
-Patch516:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
-Patch517:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
-Patch518:       0007-crypto-AF_ALG-add-KPP-support.patch
-Patch519:       0008-crypto-AF_ALG-add-ECC-support.patch
-Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
-Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
-%endif
-
 %ifarch x86_64
 # SEV on VMware:
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -313,6 +298,22 @@ Patch1544:       0014-add-support-for-arm64.patch
 
 %ifarch x86_64
 Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
+%if 0%{?acvp_build:1} && 0%{?fips}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+Patch10100:       0001-crypto-AF_ALG-add-sign-verify-API.patch
+Patch10101:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
+Patch10102:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
+Patch10103:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
+Patch10104:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
+Patch10105:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
+Patch10106:       0007-crypto-AF_ALG-add-KPP-support.patch
+Patch10107:       0008-crypto-AF_ALG-add-ECC-support.patch
+Patch10108:       0009-kernels-net-Export-sock_getsockopt.patch
+Patch10109:       0010-DRBG-Fix-issues-with-DRBG.patch
+Patch10110:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
 %endif
 
 BuildRequires:  bc
@@ -492,21 +493,6 @@ manipulation of eBPF programs and maps.
 %endif
 %endif
 
-%if 0%{?acvp_build:1} && 0%{?fips}
-#ACVP test harness patches.
-#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%patch512 -p1
-%patch513 -p1
-%patch514 -p1
-%patch515 -p1
-%patch516 -p1
-%patch517 -p1
-%patch518 -p1
-%patch519 -p1
-%patch520 -p1
-%patch521 -p1
-%endif
-
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M605
@@ -553,6 +539,12 @@ popd
 %autopatch -p1 -m10010 -M10010
 %endif
 
+%if 0%{?acvp_build:1} && 0%{?fips}
+#ACVP test harness patches.
+#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
+%autopatch -p1 -m10100 -M10110
+%endif
+
 %build
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -572,12 +564,13 @@ sed -i 's/# CONFIG_CRYPTO_DH is not set/CONFIG_CRYPTO_DH=y/' .config
 sed -i 's/CONFIG_CRYPTO_USER_API=m/CONFIG_CRYPTO_USER_API=y/' .config
 sed -i 's/CONFIG_CRYPTO_USER_API_HASH=m/CONFIG_CRYPTO_USER_API_HASH=y/' .config
 sed -i 's/CONFIG_CRYPTO_USER_API_SKCIPHER=m/CONFIG_CRYPTO_USER_API_SKCIPHER=y/' .config
-sed -i 's/# CONFIG_CRYPTO_USER_API_RNG is not set/CONFIG_CRYPTO_USER_API_RNG=y/' .config
+sed -i 's/CONFIG_CRYPTO_USER_API_RNG=m/CONFIG_CRYPTO_USER_API_RNG=y/' .config
 sed -i 's/# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set/CONFIG_CRYPTO_USER_API_RNG_CAVP=y/' .config
 sed -i '/CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE/ a # CONFIG_CRYPTO_STATS is not set' .config
 sed -i '/CONFIG_CRYPTO_STATS/ a CONFIG_CRYPTO_USER_API_AKCIPHER=y' .config
 sed -i '/CONFIG_CRYPTO_USER_API_AKCIPHER/ a CONFIG_CRYPTO_USER_API_KPP=y' .config
 sed -i '/CONFIG_CRYPTO_USER_API_KPP=y/ a CONFIG_CRYPTO_USER_API_ECC=y' .config
+sed -i 's/# CONFIG_CRYPTO_USER_API_AEAD is not set/CONFIG_CRYPTO_USER_API_AEAD=y/' .config
 %endif
 
 %if 0%{?fips}
@@ -910,6 +903,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 03 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.190-2
+- Tweak ACVP kernel patches to support LKCM 5.0 canister
+- Added jitterentropy implementation of SHA3-256
 * Wed Sep 27 2023 Keerthana K <keerthanak@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Sep 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.183-6

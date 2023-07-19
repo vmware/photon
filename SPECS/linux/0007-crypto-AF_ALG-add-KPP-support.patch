@@ -34,22 +34,30 @@ The following operations are supported:
  * The shared secret is obtained by providing the peer's public key via
    sendmsg / sendpage and reading the shared secret via recvmsg.
 
+Added support for LKCM 5.0:
+
+ * Removed all instances of 'curve_id' usage as it is being removed from the ecdh structure
+   in order to have compatibility with LKCM 5.0
+
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/Kconfig          |  10 +
- crypto/Makefile         |   1 +
- crypto/af_alg.c         |   2 +
- crypto/algif_kpp.c      | 587 ++++++++++++++++++++++++++++++++++++++++
- include/crypto/if_alg.h |   2 +
- 5 files changed, 602 insertions(+)
+ crypto/Kconfig              |  10 +
+ crypto/Makefile             |   1 +
+ crypto/af_alg.c             |   2 +
+ crypto/algif_kpp.c          | 582 ++++++++++++++++++++++++++++++++++++
+ include/crypto/ecdh.h       |   1 -
+ include/crypto/if_alg.h     |   2 +
+ net/bluetooth/ecdh_helper.c |   2 -
+ 7 files changed, 597 insertions(+), 3 deletions(-)
  create mode 100644 crypto/algif_kpp.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
 index c2aa90b98..13556bd15 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1942,6 +1942,16 @@ config CRYPTO_USER_API_AKCIPHER
+@@ -1958,6 +1958,16 @@ config CRYPTO_USER_API_AKCIPHER
  	  This option enables the user-space interface for asymmetric
  	  key cipher algorithms.
  
@@ -70,7 +78,7 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index 4a06f5659..3ea05f3b9 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -157,6 +157,7 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -152,6 +152,7 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
@@ -96,7 +104,7 @@ new file mode 100644
 index 000000000..d30136020
 --- /dev/null
 +++ b/crypto/algif_kpp.c
-@@ -0,0 +1,587 @@
+@@ -0,0 +1,582 @@
 +/*
 + * algif_kpp: User-space interface for key protocol primitives algorithms
 + *
@@ -529,7 +537,6 @@ index 000000000..d30136020
 +				unsigned int keylen)
 +{
 +	struct ecdh params = {
-+		.curve_id = 2,
 +		.key = key,
 +		.key_size = keylen,
 +	};
@@ -589,10 +596,6 @@ index 000000000..d30136020
 +
 +	if (curveidlen != sizeof(unsigned long))
 +		return -EINVAL;
-+
-+	err = kstrtou16(curveid, 10, &params.curve_id);
-+	if (err)
-+		return err;
 +
 +	err = kpp_ecdh_set_secret(tfm, &params);
 +	if (!err) {
@@ -684,6 +687,18 @@ index 000000000..d30136020
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
 +MODULE_DESCRIPTION("Key protocol primitives kernel crypto API user space interface");
+diff --git a/include/crypto/ecdh.h b/include/crypto/ecdh.h
+index a5b805b55..36851f79b 100644
+--- a/include/crypto/ecdh.h
++++ b/include/crypto/ecdh.h
+@@ -34,7 +34,6 @@
+  * @key_size:	Size of the private ECDH key
+  */
+ struct ecdh {
+-	unsigned short curve_id;
+ 	char *key;
+ 	unsigned short key_size;
+ };
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
 index 1412672e1..85a67f635 100644
 --- a/include/crypto/if_alg.h
@@ -704,6 +719,18 @@ index 1412672e1..85a67f635 100644
  	} cra_u;
  
  	/* req ctx trails this struct */
+diff --git a/net/bluetooth/ecdh_helper.c b/net/bluetooth/ecdh_helper.c
+index 3226fe02e..989401f11 100644
+--- a/net/bluetooth/ecdh_helper.c
++++ b/net/bluetooth/ecdh_helper.c
+@@ -126,8 +126,6 @@ int set_ecdh_privkey(struct crypto_kpp *tfm, const u8 private_key[32])
+ 	int err;
+ 	struct ecdh p = {0};
+ 
+-	p.curve_id = ECC_CURVE_NIST_P256;
+-
+ 	if (private_key) {
+ 		tmp = kmalloc(32, GFP_KERNEL);
+ 		if (!tmp)
 -- 
 2.17.1
-

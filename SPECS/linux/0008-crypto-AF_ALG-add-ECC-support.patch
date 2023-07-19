@@ -21,20 +21,35 @@ Enabling CONFIG_CRYPTO_USER_API_ECC is not recommended for production, but
 it will not harm if enabled, as it does not expose used by kernel keys to
 user space.
 
+Added support for LKCM 5.0:
+
+ * In LKCM 4.0 (kernel v5.10.x), nist_p256 was the only fips supported curve.
+ * In kernel v6.1.x, there are two fips supported curves - nist_p256 and nist_p384
+ * Tweaked ecc_sendmsg and ecc_recvmsg to accomodate both these curves while performing
+   keyVer and keyGen respectively.
+ * Also made some inclusions in ecc.h, ecc_curve_defs.h, ecdh.h, asymmetric-type.h and
+   asymmetric-type.h to accomodate the nist_p384 curve.
+
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmwae.com>
 ---
- crypto/Kconfig     |   8 ++
- crypto/Makefile    |   1 +
- crypto/algif_ecc.c | 248 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 257 insertions(+)
+ crypto/Kconfig                 |   8 ++
+ crypto/Makefile                |   1 +
+ crypto/algif_ecc.c             | 253 +++++++++++++++++++++++++++++++++
+ crypto/ecc.h                   |  26 ++++
+ crypto/ecc_curve_defs.h        |  49 +++++++
+ include/crypto/ecdh.h          |   1 +
+ include/keys/asymmetric-type.h |   6 +
+ include/linux/oid_registry.h   |  10 +-
+ 8 files changed, 353 insertions(+), 1 deletion(-)
  create mode 100644 crypto/algif_ecc.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
 index 9f068f95cb32..2671bc52ea5c 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1939,6 +1939,14 @@ config CRYPTO_USER_API_KPP
+@@ -1968,6 +1968,14 @@ config CRYPTO_USER_API_KPP
  	  primitives algorithms. This covers Diffie-Hellman and EC
  	  Diffie-Hellman.
  
@@ -53,7 +68,7 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index 3ea05f3..38fd14e 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -158,6 +158,7 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -152,6 +152,7 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_KPP) += algif_kpp.o
@@ -66,7 +81,7 @@ new file mode 100644
 index 000000000000..1f5defa98b5f
 --- /dev/null
 +++ b/crypto/algif_ecc.c
-@@ -0,0 +1,248 @@
+@@ -0,0 +1,253 @@
 +/*
 + * algif_ecc: User-space interface for ECC routines
 + *
@@ -109,16 +124,6 @@ index 000000000000..1f5defa98b5f
 +#include "ecc.h"
 +#include "ecc_curve_defs.h"
 +
-+static inline void ecc_swap_digits(const u64 *in, u64 *out,
-+				   unsigned int ndigits)
-+{
-+	const __be64 *src = (__force __be64 *)in;
-+	int i;
-+
-+	for (i = 0; i < ndigits; i++)
-+		out[i] = be64_to_cpu(src[ndigits - 1 - i]);
-+}
-+
 +/*
 + * Sendmsg to ecc socket is used only to verify public key curve point.
 + * There are 2 input iov segments, one for x coordinate and another for y.
@@ -126,59 +131,67 @@ index 000000000000..1f5defa98b5f
 + * Negative return value means failure. -EINVAL value get returned if
 + * key verification failed.
 + */
++
 +static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 +{
 +	const struct iovec *iov;
-+	struct ecc_point pk;
 +	int ret;
-+	/* Only FIPS supported curve */
++	/* FIPS supported curves: nist_p256 and nist_p384 */
 +	const struct ecc_curve *curve = &nist_p256;
-+	u8 x_buf[32] = {0}, y_buf[32] = {0};
++	u8 x_buf[48] = {0}, y_buf[48] = {0}, hash_buf[64] = {0};
++	int curve_id = 2;
 +
 +	if (!iter_is_iovec(&msg->msg_iter))
 +		return -ENOTSUPP;
 +
-+	if (msg->msg_iter.nr_segs != 2)
-+		return -EINVAL;
++	if(msg->msg_iter.nr_segs == 3) {
 +
-+	iov = msg->msg_iter.iov;
-+	if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
-+	    iov[1].iov_len != curve->g.ndigits * sizeof(u64))
-+		return -EINVAL;
++		iov = msg->msg_iter.iov;
++		struct ecc_point pk;
 +
-+	ret = copy_from_user(x_buf, iov[0].iov_base, iov[0].iov_len);
-+	if (ret) {
-+		pr_err("\n Error in copying X from iov_base %p %d\n",
++		if(iov[2].iov_len == 384)
++			curve = &nist_p384;
++
++		if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
++	    		iov[1].iov_len != curve->g.ndigits * sizeof(u64))
++			return -EINVAL;
++
++		ret = copy_from_user(x_buf, iov[0].iov_base, iov[0].iov_len);
++		if (ret) {
++			pr_err("\n Error in copying X from iov_base %p %d\n",
 +					iov[0].iov_base, ret);
-+		return -ENOMEM;
-+	}
-+	ret = copy_from_user(y_buf, iov[1].iov_base, iov[1].iov_len);
-+	if (ret) {
-+		pr_err("\n Error in copying Y from iov_base %p %d\n",
-+					iov[1].iov_base, ret);
-+		return -ENOMEM;
-+	}
++			return -ENOMEM;
++		}
++		ret = copy_from_user(y_buf, iov[1].iov_base, iov[1].iov_len);
++		if (ret) {
++			pr_err("\n Error in copying Y from iov_base %p %d\n",
++						iov[1].iov_base, ret);
++			return -ENOMEM;
++		}
 +
-+	pk.ndigits = curve->g.ndigits;
-+	pk.x = kmalloc(pk.ndigits * sizeof(u64), GFP_KERNEL);
-+	if (!pk.x)
-+		return -ENOMEM;
++		pk.ndigits = curve->g.ndigits;
++		pk.x = kmalloc(pk.ndigits * sizeof(u64), GFP_KERNEL);
++		if (!pk.x)
++			return -ENOMEM;
 +
-+	pk.y = kmalloc(pk.ndigits * sizeof(u64), GFP_KERNEL);
-+	if (!pk.y) {
++		pk.y = kmalloc(pk.ndigits * sizeof(u64), GFP_KERNEL);
++		if (!pk.y) {
++			kfree(pk.x);
++			return -ENOMEM;
++		}
++
++		ecc_swap_digits((u64 *)x_buf, pk.x, pk.ndigits);
++		ecc_swap_digits((u64 *)y_buf, pk.y, pk.ndigits);
++
++		ret = ecc_is_pubkey_valid_full(curve, &pk);
++
++
 +		kfree(pk.x);
-+		return -ENOMEM;
++		kfree(pk.y);
++		return ret;
 +	}
-+
-+	ecc_swap_digits((u64 *)x_buf, pk.x, pk.ndigits);
-+	ecc_swap_digits((u64 *)y_buf, pk.y, pk.ndigits);
-+
-+	ret = ecc_is_pubkey_valid_full(curve, &pk);
-+
-+
-+	kfree(pk.x);
-+	kfree(pk.y);
-+	return ret;
++	else
++		return -EINVAL;
 +}
 +
 +/*
@@ -192,53 +205,60 @@ index 000000000000..1f5defa98b5f
 +static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
 +			    size_t ignored, int flags)
 +{
-+	const struct iovec *iov;
-+	u64 pubkey[8];
-+	int ret;
-+	/* Only FIPS supported curve */
-+	const struct ecc_curve *curve = &nist_p256;
-+	u8 d_buf[32] = {0};
++        const struct iovec *iov;
++        u64 pubkey[12];
++        int ret;
++        /* FIPS supported curves: nist_p256 and nist_p384 */
++        struct ecc_curve *curve = &nist_p256;
++        u8 d_buf[48] = {0};
++        int curve_id = 2;
 +
-+	if (!iter_is_iovec(&msg->msg_iter))
-+		return -ENOTSUPP;
++        if (!iter_is_iovec(&msg->msg_iter))
++                return -ENOTSUPP;
 +
-+	if (msg->msg_iter.nr_segs != 3)
-+		return -EINVAL;
++        if (msg->msg_iter.nr_segs != 4)
++                return -EINVAL;
 +
-+	iov = msg->msg_iter.iov;
-+	if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
-+	    iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
-+	    iov[2].iov_len != curve->g.ndigits * sizeof(u64))
-+		return -EINVAL;
++        iov = msg->msg_iter.iov;
 +
-+	ret = ecc_gen_privkey(2, curve->g.ndigits, (u64 *)d_buf);
-+	if (ret < 0)
-+		return ret;
++        if(iov[3].iov_len == 384){
++                curve = &nist_p384;
++                curve_id = 3;
++        }
 +
-+	ret = ecc_make_pub_key(2, curve->g.ndigits, (u64 *)d_buf, pubkey);
-+	if (ret < 0)
-+		return ret;
++        if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
++            iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
++            iov[2].iov_len != curve->g.ndigits * sizeof(u64))
++                return -EINVAL;
 +
-+	ret = copy_to_user(iov[0].iov_base, d_buf, iov[0].iov_len);
-+	if (ret) {
-+		pr_err("\n Error in copying from iov_base %p %d\n",
-+					iov[0].iov_base, ret);
-+		return -ENOMEM;
-+	}
-+	ret = copy_to_user(iov[1].iov_base, pubkey,
-+					curve->g.ndigits * sizeof(u64));
-+	if (ret) {
-+		pr_err("\n Err in copying to user %d\n", ret);
-+		return -ENOMEM;
-+	}
-+	ret = copy_to_user(iov[2].iov_base, &pubkey[curve->g.ndigits],
-+				curve->g.ndigits * sizeof(u64));
-+	if (ret) {
-+		pr_err("\n Err in copying to user %d\n", ret);
-+		return -ENOMEM;
-+	}
++        ret = ecc_gen_privkey(curve_id, curve->g.ndigits, (u64 *)d_buf);
++        if (ret < 0)
++                return ret;
 +
-+	return msg->msg_iter.count;
++        ret = ecc_make_pub_key(curve_id, curve->g.ndigits, (u64 *)d_buf, pubkey);
++        if (ret < 0)
++                return ret;
++
++        ret = copy_to_user(iov[0].iov_base, d_buf, iov[0].iov_len);
++        if (ret) {
++                pr_err("\n Error in copying from iov_base %p %d\n",
++                                        iov[0].iov_base, ret);
++                return -ENOMEM;
++        }
++        ret = copy_to_user(iov[1].iov_base, pubkey,
++                                        curve->g.ndigits * sizeof(u64));
++        if (ret) {
++                pr_err("\n Err in copying to user %d\n", ret);
++                return -ENOMEM;
++        }
++        ret = copy_to_user(iov[2].iov_base, &pubkey[curve->g.ndigits],
++                                curve->g.ndigits * sizeof(u64));
++        if (ret) {
++                pr_err("\n Err in copying to user %d\n", ret);
++                return -ENOMEM;
++        }
++
++        return msg->msg_iter.count;
 +}
 +
 +static struct proto_ops algif_ecc_ops = {
@@ -315,6 +335,176 @@ index 000000000000..1f5defa98b5f
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Alexey Makhalov <amakhalov@vmware.com>");
 +MODULE_DESCRIPTION("ECC primitives kernel crypto API user space interface");
+diff --git a/crypto/ecc.h b/crypto/ecc.h
+index d4e546b9a..a60b6bc35 100644
+--- a/crypto/ecc.h
++++ b/crypto/ecc.h
+@@ -29,10 +29,13 @@
+ /* One digit is u64 qword. */
+ #define ECC_CURVE_NIST_P192_DIGITS  3
+ #define ECC_CURVE_NIST_P256_DIGITS  4
++#define ECC_CURVE_NIST_P384_DIGITS  6
+ #define ECC_MAX_DIGITS             (512 / 64)
+ 
+ #define ECC_DIGITS_TO_BYTES_SHIFT 3
+ 
++#define ECC_MAX_BYTES (ECC_MAX_DIGITS << ECC_DIGITS_TO_BYTES_SHIFT)
++
+ /**
+  * struct ecc_point - elliptic curve point in affine coordinates
+  *
+@@ -48,6 +51,29 @@ struct ecc_point {
+ 
+ #define ECC_POINT_INIT(x, y, ndigits)	(struct ecc_point) { x, y, ndigits }
+ 
++/**
++ * ecc_swap_digits() - Copy ndigits from big endian array to native array
++ * @in:       Input array
++ * @out:      Output array
++ * @ndigits:  Number of digits to copy
++ */
++static inline void ecc_swap_digits(const u64 *in, u64 *out, unsigned int ndigits)
++{
++       const __be64 *src = (__force __be64 *)in;
++       int i;
++
++       for (i = 0; i < ndigits; i++)
++               out[i] = be64_to_cpu(src[ndigits - 1 - i]);
++}
++
++/**
++ * ecc_get_curve()  - Get a curve given its curve_id
++ * @curve_id:  Id of the curve
++ *
++ * Returns pointer to the curve data, NULL if curve is not available
++ */
++const struct ecc_curve *ecc_get_curve(unsigned int curve_id);
++
+ /**
+  * struct ecc_curve - definition of elliptic curve
+  *
+diff --git a/crypto/ecc_curve_defs.h b/crypto/ecc_curve_defs.h
+index 69be6c7d2..47cb9440e 100644
+--- a/crypto/ecc_curve_defs.h
++++ b/crypto/ecc_curve_defs.h
+@@ -54,4 +54,53 @@ static struct ecc_curve nist_p256 = {
+ 	.b = nist_p256_b
+ };
+ 
++/* NIST P-384 */
++static u64 nist_p384_g_x[] = { 0x3A545E3872760AB7ull, 0x5502F25DBF55296Cull,
++                               0x59F741E082542A38ull, 0x6E1D3B628BA79B98ull,
++                               0x8Eb1C71EF320AD74ull, 0xAA87CA22BE8B0537ull };
++static u64 nist_p384_g_y[] = { 0x7A431D7C90EA0E5Full, 0x0A60B1CE1D7E819Dull,
++                               0xE9DA3113B5F0B8C0ull, 0xF8F41DBD289A147Cull,
++                               0x5D9E98BF9292DC29ull, 0x3617DE4A96262C6Full };
++static u64 nist_p384_p[] = { 0x00000000FFFFFFFFull, 0xFFFFFFFF00000000ull,
++                               0xFFFFFFFFFFFFFFFEull, 0xFFFFFFFFFFFFFFFFull,
++                               0xFFFFFFFFFFFFFFFFull, 0xFFFFFFFFFFFFFFFFull };
++static u64 nist_p384_n[] = { 0xECEC196ACCC52973ull, 0x581A0DB248B0A77Aull,
++                               0xC7634D81F4372DDFull, 0xFFFFFFFFFFFFFFFFull,
++                               0xFFFFFFFFFFFFFFFFull, 0xFFFFFFFFFFFFFFFFull };
++static u64 nist_p384_a[] = { 0x00000000FFFFFFFCull, 0xFFFFFFFF00000000ull,
++                               0xFFFFFFFFFFFFFFFEull, 0xFFFFFFFFFFFFFFFFull,
++                               0xFFFFFFFFFFFFFFFFull, 0xFFFFFFFFFFFFFFFFull };
++static u64 nist_p384_b[] = { 0x2a85c8edd3ec2aefull, 0xc656398d8a2ed19dull,
++                               0x0314088f5013875aull, 0x181d9c6efe814112ull,
++                               0x988e056be3f82d19ull, 0xb3312fa7e23ee7e4ull };
++static struct ecc_curve nist_p384 = {
++       .name = "nist_384",
++       .g = {
++               .x = nist_p384_g_x,
++               .y = nist_p384_g_y,
++               .ndigits = 6,
++       },
++       .p = nist_p384_p,
++       .n = nist_p384_n,
++       .a = nist_p384_a,
++       .b = nist_p384_b
++};
++
++/* curve25519 */
++static u64 curve25519_g_x[] = { 0x0000000000000009, 0x0000000000000000,
++                               0x0000000000000000, 0x0000000000000000 };
++static u64 curve25519_p[] = { 0xffffffffffffffed, 0xffffffffffffffff,
++                               0xffffffffffffffff, 0x7fffffffffffffff };
++static u64 curve25519_a[] = { 0x000000000001DB41, 0x0000000000000000,
++                               0x0000000000000000, 0x0000000000000000 };
++static const struct ecc_curve ecc_25519 = {
++       .name = "curve25519",
++       .g = {
++               .x = curve25519_g_x,
++               .ndigits = 4,
++       },
++       .p = curve25519_p,
++       .a = curve25519_a,
++};
++
+ #endif
+diff --git a/include/crypto/ecdh.h b/include/crypto/ecdh.h
+index a755abb13..5592bd9cb 100644
+--- a/include/crypto/ecdh.h
++++ b/include/crypto/ecdh.h
+@@ -25,6 +25,7 @@
+ /* Curves IDs */
+ #define ECC_CURVE_NIST_P192	0x0001
+ #define ECC_CURVE_NIST_P256	0x0002
++#define ECC_CURVE_NIST_P384     0x0003
+ 
+ /**
+  * struct ecdh - define an ECDH private key
+diff --git a/include/keys/asymmetric-type.h b/include/keys/asymmetric-type.h
+index a29d3ff2e..747e52785 100644
+--- a/include/keys/asymmetric-type.h
++++ b/include/keys/asymmetric-type.h
+@@ -72,6 +72,12 @@ const struct asymmetric_key_ids *asymmetric_key_ids(const struct key *key)
+ 	return key->payload.data[asym_key_ids];
+ }
+ 
++static inline
++const struct public_key *asymmetric_key_public_key(const struct key *key)
++{
++       return key->payload.data[asym_crypto];
++}
++
+ extern struct key *find_asymmetric_key(struct key *keyring,
+ 				       const struct asymmetric_key_id *id_0,
+ 				       const struct asymmetric_key_id *id_1,
+diff --git a/include/linux/oid_registry.h b/include/linux/oid_registry.h
+index 4462ed2c1..a3c984b20 100644
+--- a/include/linux/oid_registry.h
++++ b/include/linux/oid_registry.h
+@@ -19,8 +19,14 @@
+ enum OID {
+ 	OID_id_dsa_with_sha1,		/* 1.2.840.10030.4.3 */
+ 	OID_id_dsa,			/* 1.2.840.10040.4.1 */
+-	OID_id_ecdsa_with_sha1,		/* 1.2.840.10045.4.1 */
+ 	OID_id_ecPublicKey,		/* 1.2.840.10045.2.1 */
++        OID_id_prime192v1,              /* 1.2.840.10045.3.1.1 */
++        OID_id_prime256v1,              /* 1.2.840.10045.3.1.7 */
++        OID_id_ecdsa_with_sha1,         /* 1.2.840.10045.4.1 */
++        OID_id_ecdsa_with_sha224,       /* 1.2.840.10045.4.3.1 */
++        OID_id_ecdsa_with_sha256,       /* 1.2.840.10045.4.3.2 */
++        OID_id_ecdsa_with_sha384,       /* 1.2.840.10045.4.3.3 */
++        OID_id_ecdsa_with_sha512,       /* 1.2.840.10045.4.3.4 */
+ 
+ 	/* PKCS#1 {iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1)} */
+ 	OID_rsaEncryption,		/* 1.2.840.113549.1.1.1 */
+@@ -58,6 +64,7 @@ enum OID {
+ 
+ 	OID_certAuthInfoAccess,		/* 1.3.6.1.5.5.7.1.1 */
+ 	OID_sha1,			/* 1.3.14.3.2.26 */
++	OID_id_ansip384r1,              /* 1.3.132.0.34 */
+ 	OID_sha256,			/* 2.16.840.1.101.3.4.2.1 */
+ 	OID_sha384,			/* 2.16.840.1.101.3.4.2.2 */
+ 	OID_sha512,			/* 2.16.840.1.101.3.4.2.3 */
+@@ -117,6 +124,7 @@ enum OID {
+ };
+ 
+ extern enum OID look_up_OID(const void *data, size_t datasize);
++extern int parse_OID(const void *data, size_t datasize, enum OID *oid);
+ extern int sprint_oid(const void *, size_t, char *, size_t);
+ extern int sprint_OID(enum OID, char *, size_t);
+ 
 -- 
 2.30.0
-
