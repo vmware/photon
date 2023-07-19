@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.285
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -652,23 +652,24 @@ Patch636: 0003-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 # Patch to distribute the tasks within affined cpus
 Patch637: linux-rt-sched-core-Distribute-tasks-within-affinity-masks.patch
 Patch638: 0001-sched-rt-Use-cpumask_any-_distribute.patch
+Patch639: 0001-sched_core-Disable-tasks-distribution-within-cpumask.patch
 
 # Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
-Patch639: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
+Patch640: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
 # Fix for CVE-2021-4204
-Patch640: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+Patch641: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2023-1611
-Patch641: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
+Patch642: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 #Fix for CVE-2023-1076
-Patch642: 0001-net-add-sock_init_data_uid.patch
-Patch643: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
-Patch644: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+Patch643: 0001-net-add-sock_init_data_uid.patch
+Patch644: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch645: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
 #Fix for CVE-2023-1077
-Patch645: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+Patch646: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -940,7 +941,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M639
 
 # CVE Fixes
-%autopatch -p1 -m640 -M645
+%autopatch -p1 -m640 -M646
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1367,6 +1368,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Jul 19 2023 Ankit Jain <ankitja@vmware.com> 4.19.285-3
+- Kernel cmdline param to disable tasks distribution within
+- cpumask feature
 * Tue Jul 18 2023 Naadir Jeewa <jeewan@vmware.com> 4.19.285-2
 - Fixes for bpfilter and usermode helpers
 - Add additional build dependencies for container builds
