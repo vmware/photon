@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.183
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -419,6 +419,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-4
+- Fix rap-plugin patch
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-3
 - Use canister version 5.0.0-6.1.37-2
 * Tue Jul 04 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-2
