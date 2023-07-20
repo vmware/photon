@@ -1,0 +1,150 @@
+From 73ab1cb2de9e3efe7f818d5453de271e5371df1d Mon Sep 17 00:00:00 2001
+From: Taehee Yoo <ap420073@gmail.com>
+Date: Wed, 9 Jan 2019 02:23:56 +0900
+Subject: [PATCH] umh: add exit routine for UMH process
+
+A UMH process which is created by the fork_usermode_blob() such as
+bpfilter needs to release members of the umh_info when process is
+terminated.
+But the do_exit() does not release members of the umh_info. hence module
+which uses UMH needs own code to detect whether UMH process is
+terminated or not.
+But this implementation needs extra code for checking the status of
+UMH process. it eventually makes the code more complex.
+
+The new PF_UMH flag is added and it is used to identify UMH processes.
+The exit_umh() does not release members of the umh_info.
+Hence umh_info->cleanup callback should release both members of the
+umh_info and the private data.
+
+Suggested-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/linux/sched.h |  9 +++++++++
+ include/linux/umh.h   |  2 ++
+ kernel/exit.c         |  1 +
+ kernel/umh.c          | 33 +++++++++++++++++++++++++++++++--
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index fd4899236037..9e559b6b4bfb 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1402,6 +1402,7 @@ extern struct pid *cad_pid;
+ #define PF_KTHREAD		0x00200000	/* I am a kernel thread */
+ #define PF_RANDOMIZE		0x00400000	/* Randomize virtual address space */
+ #define PF_SWAPWRITE		0x00800000	/* Allowed to write to swap */
++#define PF_UMH			0x02000000	/* I'm an Usermodehelper process */
+ #define PF_NO_SETAFFINITY	0x04000000	/* Userland is not allowed to meddle with cpus_allowed */
+ #define PF_MCE_EARLY		0x08000000      /* Early kill for mce process policy */
+ #define PF_MUTEX_TESTER		0x20000000	/* Thread belongs to the rt mutex tester */
+@@ -1900,6 +1901,14 @@ static inline void rseq_execve(struct task_struct *t)
+
+ #endif
+
++void __exit_umh(struct task_struct *tsk);
++
++static inline void exit_umh(struct task_struct *tsk)
++{
++	if (unlikely(tsk->flags & PF_UMH))
++		__exit_umh(tsk);
++}
++
+ #ifdef CONFIG_DEBUG_RSEQ
+
+ void rseq_syscall(struct pt_regs *regs);
+diff --git a/include/linux/umh.h b/include/linux/umh.h
+index 235f51b62c71..0c08de356d0d 100644
+--- a/include/linux/umh.h
++++ b/include/linux/umh.h
+@@ -47,6 +47,8 @@ struct umh_info {
+ 	const char *cmdline;
+ 	struct file *pipe_to_umh;
+ 	struct file *pipe_from_umh;
++	struct list_head list;
++	void (*cleanup)(struct umh_info *info);
+ 	pid_t pid;
+ };
+ int fork_usermode_blob(void *data, size_t len, struct umh_info *info);
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 02360ec3b122..0467c8868c35 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -916,6 +916,7 @@ void __noreturn do_exit(long code)
+ 	exit_task_namespaces(tsk);
+ 	exit_task_work(tsk);
+ 	exit_thread(tsk);
++	exit_umh(tsk);
+
+ 	/*
+ 	 * Flush inherited counters to the parent - before the parent
+diff --git a/kernel/umh.c b/kernel/umh.c
+index a00c51651906..535fe0e09ca9 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -38,6 +38,8 @@ static kernel_cap_t usermodehelper_bset = CAP_FULL_SET;
+ static kernel_cap_t usermodehelper_inheritable = CAP_FULL_SET;
+ static DEFINE_SPINLOCK(umh_sysctl_lock);
+ static DECLARE_RWSEM(umhelper_sem);
++static LIST_HEAD(umh_list);
++static DEFINE_MUTEX(umh_list_lock);
+
+ static void call_usermodehelper_freeinfo(struct subprocess_info *info)
+ {
+@@ -109,10 +111,12 @@ static int call_usermodehelper_exec_async(void *data)
+ 	commit_creds(new);
+
+ 	sub_info->pid = task_pid_nr(current);
+-	if (sub_info->file)
++	if (sub_info->file) {
+ 		retval = do_execve_file(sub_info->file,
+ 					sub_info->argv, sub_info->envp);
+-	else
++		if (!retval)
++			current->flags |= PF_UMH;
++	} else
+ 		retval = do_execve(getname_kernel(sub_info->path),
+ 				   (const char __user *const __user *)sub_info->argv,
+ 				   (const char __user *const __user *)sub_info->envp);
+@@ -526,6 +530,11 @@ int fork_usermode_blob(void *data, size_t len, struct umh_info *info)
+ 		goto out;
+
+ 	err = call_usermodehelper_exec(sub_info, UMH_WAIT_EXEC);
++	if (!err) {
++		mutex_lock(&umh_list_lock);
++		list_add(&info->list, &umh_list);
++		mutex_unlock(&umh_list_lock);
++	}
+ out:
+ 	fput(file);
+ 	return err;
+@@ -693,6 +702,26 @@ static int proc_cap_handler(struct ctl_table *table, int write,
+ 	return 0;
+ }
+
++void __exit_umh(struct task_struct *tsk)
++{
++	struct umh_info *info;
++	pid_t pid = tsk->pid;
++
++	mutex_lock(&umh_list_lock);
++	list_for_each_entry(info, &umh_list, list) {
++		if (info->pid == pid) {
++			list_del(&info->list);
++			mutex_unlock(&umh_list_lock);
++			goto out;
++		}
++	}
++	mutex_unlock(&umh_list_lock);
++	return;
++out:
++	if (info->cleanup)
++		info->cleanup(info);
++}
++
+ struct ctl_table usermodehelper_table[] = {
+ 	{
+ 		.procname	= "bset",
+--
+2.41.0

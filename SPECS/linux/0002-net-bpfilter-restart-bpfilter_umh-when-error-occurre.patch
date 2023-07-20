@@ -1,0 +1,202 @@
+From 61fbf5933d42b02f552123af5a87a06335a3b4db Mon Sep 17 00:00:00 2001
+From: Taehee Yoo <ap420073@gmail.com>
+Date: Wed, 9 Jan 2019 02:24:53 +0900
+Subject: [PATCH] net: bpfilter: restart bpfilter_umh when error occurred
+
+The bpfilter_umh will be stopped via __stop_umh() when the bpfilter
+error occurred.
+The bpfilter_umh() couldn't start again because there is no restart
+routine.
+
+The section of the bpfilter_umh_{start/end} is no longer .init.rodata
+because these area should be reused in the restart routine. hence
+the section name is changed to .bpfilter_umh.
+
+The bpfilter_ops->start() is restart callback. it will be called when
+bpfilter_umh is stopped.
+The stop bit means bpfilter_umh is stopped. this bit is set by both
+start and stop routine.
+
+Before this patch,
+Test commands:
+   $ iptables -vnL
+   $ kill -9 <pid of bpfilter_umh>
+   $ iptables -vnL
+   [  480.045136] bpfilter: write fail -32
+   $ iptables -vnL
+
+All iptables commands will fail.
+
+After this patch,
+Test commands:
+   $ iptables -vnL
+   $ kill -9 <pid of bpfilter_umh>
+   $ iptables -vnL
+   $ iptables -vnL
+
+Now, all iptables commands will work.
+
+Fixes: d2ba09c17a06 ("net: add skeleton of bpfilter kernel module")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/linux/bpfilter.h         |  2 ++
+ net/bpfilter/bpfilter_kern.c     | 36 +++++++++++++++++++++++---------
+ net/bpfilter/bpfilter_umh_blob.S |  2 +-
+ net/ipv4/bpfilter/sockopt.c      | 11 +++++++++-
+ 4 files changed, 39 insertions(+), 12 deletions(-)
+
+diff --git a/include/linux/bpfilter.h b/include/linux/bpfilter.h
+index 70ffeed280e9..8ebcbdd70bdc 100644
+--- a/include/linux/bpfilter.h
++++ b/include/linux/bpfilter.h
+@@ -15,6 +15,8 @@ struct bpfilter_umh_ops {
+ 	int (*sockopt)(struct sock *sk, int optname,
+ 		       char __user *optval,
+ 		       unsigned int optlen, bool is_set);
++	int (*start)(void);
++	bool stop;
+ };
+ extern struct bpfilter_umh_ops bpfilter_ops;
+ #endif
+diff --git a/net/bpfilter/bpfilter_kern.c b/net/bpfilter/bpfilter_kern.c
+index 908375b45d75..a07b4b2c9b0a 100644
+--- a/net/bpfilter/bpfilter_kern.c
++++ b/net/bpfilter/bpfilter_kern.c
+@@ -16,13 +16,13 @@ extern char bpfilter_umh_end;
+ /* since ip_getsockopt() can run in parallel, serialize access to umh */
+ static DEFINE_MUTEX(bpfilter_lock);
+
+-static void shutdown_umh(struct umh_info *info)
++static void shutdown_umh(void)
+ {
+ 	struct task_struct *tsk;
+
+-	if (!info->pid)
++	if (bpfilter_ops.stop)
+ 		return;
+-	tsk = get_pid_task(find_vpid(info->pid), PIDTYPE_PID);
++	tsk = get_pid_task(find_vpid(bpfilter_ops.info.pid), PIDTYPE_PID);
+ 	if (tsk) {
+ 		send_sig(SIGKILL, tsk, 1);
+ 		put_task_struct(tsk);
+@@ -31,10 +31,8 @@ static void shutdown_umh(struct umh_info *info)
+
+ static void __stop_umh(void)
+ {
+-	if (IS_ENABLED(CONFIG_INET)) {
+-		bpfilter_ops.sockopt = NULL;
+-		shutdown_umh(&bpfilter_ops.info);
+-	}
++	if (IS_ENABLED(CONFIG_INET))
++		shutdown_umh();
+ }
+
+ static void stop_umh(void)
+@@ -85,7 +83,7 @@ static int __bpfilter_process_sockopt(struct sock *sk, int optname,
+ 	return ret;
+ }
+
+-static int __init load_umh(void)
++static int start_umh(void)
+ {
+ 	int err;
+
+@@ -95,6 +93,7 @@ static int __init load_umh(void)
+ 				 &bpfilter_ops.info);
+ 	if (err)
+ 		return err;
++	bpfilter_ops.stop = false;
+ 	pr_info("Loaded bpfilter_umh pid %d\n", bpfilter_ops.info.pid);
+
+ 	/* health check that usermode process started correctly */
+@@ -102,14 +101,31 @@ static int __init load_umh(void)
+ 		stop_umh();
+ 		return -EFAULT;
+ 	}
+-	if (IS_ENABLED(CONFIG_INET))
+-		bpfilter_ops.sockopt = &__bpfilter_process_sockopt;
+
+ 	return 0;
+ }
+
++static int __init load_umh(void)
++{
++	int err;
++
++	if (!bpfilter_ops.stop)
++		return -EFAULT;
++	err = start_umh();
++	if (!err && IS_ENABLED(CONFIG_INET)) {
++		bpfilter_ops.sockopt = &__bpfilter_process_sockopt;
++		bpfilter_ops.start = &start_umh;
++	}
++
++	return err;
++}
++
+ static void __exit fini_umh(void)
+ {
++	if (IS_ENABLED(CONFIG_INET)) {
++		bpfilter_ops.start = NULL;
++		bpfilter_ops.sockopt = NULL;
++	}
+ 	stop_umh();
+ }
+ module_init(load_umh);
+diff --git a/net/bpfilter/bpfilter_umh_blob.S b/net/bpfilter/bpfilter_umh_blob.S
+index 40311d10d2f2..7f1c521dcc2f 100644
+--- a/net/bpfilter/bpfilter_umh_blob.S
++++ b/net/bpfilter/bpfilter_umh_blob.S
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-	.section .init.rodata, "a"
++	.section .bpfilter_umh, "a"
+ 	.global bpfilter_umh_start
+ bpfilter_umh_start:
+ 	.incbin "net/bpfilter/bpfilter_umh"
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index c326cfbc0f62..de84ede4e765 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -14,6 +14,7 @@ EXPORT_SYMBOL_GPL(bpfilter_ops);
+
+ static void bpfilter_umh_cleanup(struct umh_info *info)
+ {
++	bpfilter_ops.stop = true;
+ 	fput(info->pipe_to_umh);
+ 	fput(info->pipe_from_umh);
+ 	info->pid = 0;
+@@ -23,14 +24,21 @@ static int bpfilter_mbox_request(struct sock *sk, int optname,
+ 				 char __user *optval,
+ 				 unsigned int optlen, bool is_set)
+ {
++	int err;
++
+ 	if (!bpfilter_ops.sockopt) {
+-		int err = request_module("bpfilter");
++		err = request_module("bpfilter");
+
+ 		if (err)
+ 			return err;
+ 		if (!bpfilter_ops.sockopt)
+ 			return -ECHILD;
+ 	}
++	if (bpfilter_ops.stop) {
++		err = bpfilter_ops.start();
++		if (err)
++			return err;
++	}
+ 	return bpfilter_ops.sockopt(sk, optname, optval, optlen, is_set);
+ }
+
+@@ -53,6 +61,7 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname, char __user *optval,
+
+ static int __init bpfilter_sockopt_init(void)
+ {
++	bpfilter_ops.stop = true;
+ 	bpfilter_ops.info.cmdline = "bpfilter_umh";
+ 	bpfilter_ops.info.cleanup = &bpfilter_umh_cleanup;
+
+--
+2.41.0

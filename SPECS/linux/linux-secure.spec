@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.285
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -274,6 +274,17 @@ Patch206: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 Patch1000: fips-kat-tests.patch
 %endif
 
+# Usermode helper fixes
+Patch1540: 0001-umh-Add-command-line-to-user-mode-helpers.patch
+Patch1541: 0002-umh-add-exit-routine-for-UMH-process.patch
+
+# BPFilter fixes
+Patch1545: 0001-net-bpfilter-use-cleanup-callback-to-release-umh_inf.patch
+Patch1546: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
+Patch1547: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
+Patch1548: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
+Patch1549: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
+
 BuildArch: x86_64
 
 BuildRequires:  bc
@@ -357,6 +368,12 @@ popd
 %if 0%{?kat_build}
 %patch1000 -p1
 %endif
+
+# Usermode helper patches
+%autopatch -p1 -m1540 -M1541
+
+# bpfilter patches
+%autopatch -p1 -m1545 -M1549
 
 %build
 make mrproper %{?_smp_mflags}
@@ -520,6 +537,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 18 2023 Naadir Jeewa <jeewan@vmware.com> 4.19.285-2
+- Fixes for bpfilter and usermode helpers
+- Add additional build dependencies for container builds
 * Wed Jun 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.285-1
 - Update to version 4.19.285
 * Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5

@@ -1,0 +1,185 @@
+From 5b4cb650e569db2e6a09d2fa0ef8eb789a0ac5d8 Mon Sep 17 00:00:00 2001
+From: Taehee Yoo <ap420073@gmail.com>
+Date: Wed, 9 Jan 2019 02:24:34 +0900
+Subject: [PATCH] net: bpfilter: use cleanup callback to release umh_info
+
+Now, UMH process is killed, do_exit() calls the umh_info->cleanup callback
+to release members of the umh_info.
+This patch makes bpfilter_umh's cleanup routine to use the
+umh_info->cleanup callback.
+
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/linux/bpfilter.h     | 11 ++++++++---
+ net/bpfilter/bpfilter_kern.c | 23 ++++++++++-------------
+ net/ipv4/bpfilter/sockopt.c  | 33 ++++++++++++++++++++++++++-------
+ 3 files changed, 44 insertions(+), 23 deletions(-)
+
+diff --git a/include/linux/bpfilter.h b/include/linux/bpfilter.h
+index f02cee0225d4..70ffeed280e9 100644
+--- a/include/linux/bpfilter.h
++++ b/include/linux/bpfilter.h
+@@ -3,13 +3,18 @@
+ #define _LINUX_BPFILTER_H
+
+ #include <uapi/linux/bpfilter.h>
++#include <linux/umh.h>
+
+ struct sock;
+ int bpfilter_ip_set_sockopt(struct sock *sk, int optname, char __user *optval,
+ 			    unsigned int optlen);
+ int bpfilter_ip_get_sockopt(struct sock *sk, int optname, char __user *optval,
+ 			    int __user *optlen);
+-extern int (*bpfilter_process_sockopt)(struct sock *sk, int optname,
+-				       char __user *optval,
+-				       unsigned int optlen, bool is_set);
++struct bpfilter_umh_ops {
++	struct umh_info info;
++	int (*sockopt)(struct sock *sk, int optname,
++		       char __user *optval,
++		       unsigned int optlen, bool is_set);
++};
++extern struct bpfilter_umh_ops bpfilter_ops;
+ #endif
+diff --git a/net/bpfilter/bpfilter_kern.c b/net/bpfilter/bpfilter_kern.c
+index 7acfc83087d5..a68940b74c01 100644
+--- a/net/bpfilter/bpfilter_kern.c
++++ b/net/bpfilter/bpfilter_kern.c
+@@ -13,7 +13,6 @@
+ extern char bpfilter_umh_start;
+ extern char bpfilter_umh_end;
+
+-static struct umh_info info;
+ /* since ip_getsockopt() can run in parallel, serialize access to umh */
+ static DEFINE_MUTEX(bpfilter_lock);
+
+@@ -28,16 +27,13 @@ static void shutdown_umh(struct umh_info *info)
+ 		send_sig(SIGKILL, tsk, 1);
+ 		put_task_struct(tsk);
+ 	}
+-	fput(info->pipe_to_umh);
+-	fput(info->pipe_from_umh);
+-	info->pid = 0;
+ }
+
+ static void __stop_umh(void)
+ {
+ 	if (IS_ENABLED(CONFIG_INET)) {
+-		bpfilter_process_sockopt = NULL;
+-		shutdown_umh(&info);
++		bpfilter_ops.sockopt = NULL;
++		shutdown_umh(&bpfilter_ops.info);
+ 	}
+ }
+
+@@ -64,9 +60,10 @@ static int __bpfilter_process_sockopt(struct sock *sk, int optname,
+ 	req.addr = (long __force __user)optval;
+ 	req.len = optlen;
+ 	mutex_lock(&bpfilter_lock);
+-	if (!info.pid)
++	if (!bpfilter_ops.info.pid)
+ 		goto out;
+-	n = __kernel_write(info.pipe_to_umh, &req, sizeof(req), &pos);
++	n = __kernel_write(bpfilter_ops.info.pipe_to_umh, &req, sizeof(req),
++			   &pos);
+ 	if (n != sizeof(req)) {
+ 		pr_err("write fail %zd\n", n);
+ 		__stop_umh();
+@@ -74,7 +71,8 @@ static int __bpfilter_process_sockopt(struct sock *sk, int optname,
+ 		goto out;
+ 	}
+ 	pos = 0;
+-	n = kernel_read(info.pipe_from_umh, &reply, sizeof(reply), &pos);
++	n = kernel_read(bpfilter_ops.info.pipe_from_umh, &reply, sizeof(reply),
++			&pos);
+ 	if (n != sizeof(reply)) {
+ 		pr_err("read fail %zd\n", n);
+ 		__stop_umh();
+@@ -94,10 +94,10 @@ static int __init load_umh(void)
+ 	/* fork usermode process */
+ 	err = fork_usermode_blob(&bpfilter_umh_start,
+ 				 &bpfilter_umh_end - &bpfilter_umh_start,
+-				 &info);
++				 &bpfilter_ops.info);
+ 	if (err)
+ 		return err;
+-	pr_info("Loaded bpfilter_umh pid %d\n", info.pid);
++	pr_info("Loaded bpfilter_umh pid %d\n", bpfilter_ops.info.pid);
+
+ 	/* health check that usermode process started correctly */
+ 	if (__bpfilter_process_sockopt(NULL, 0, NULL, 0, 0) != 0) {
+@@ -106,7 +103,7 @@ static int __init load_umh(void)
+ 		return -EFAULT;
+ 	}
+ 	if (IS_ENABLED(CONFIG_INET))
+-		bpfilter_process_sockopt = &__bpfilter_process_sockopt;
++		bpfilter_ops.sockopt = &__bpfilter_process_sockopt;
+
+ 	return 0;
+ }
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index 5e04ed25bc0e..c326cfbc0f62 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -1,28 +1,37 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <linux/init.h>
++#include <linux/module.h>
+ #include <linux/uaccess.h>
+ #include <linux/bpfilter.h>
+ #include <uapi/linux/bpf.h>
+ #include <linux/wait.h>
+ #include <linux/kmod.h>
++#include <linux/fs.h>
++#include <linux/file.h>
+
+-int (*bpfilter_process_sockopt)(struct sock *sk, int optname,
+-				char __user *optval,
+-				unsigned int optlen, bool is_set);
+-EXPORT_SYMBOL_GPL(bpfilter_process_sockopt);
++struct bpfilter_umh_ops bpfilter_ops;
++EXPORT_SYMBOL_GPL(bpfilter_ops);
++
++static void bpfilter_umh_cleanup(struct umh_info *info)
++{
++	fput(info->pipe_to_umh);
++	fput(info->pipe_from_umh);
++	info->pid = 0;
++}
+
+ static int bpfilter_mbox_request(struct sock *sk, int optname,
+ 				 char __user *optval,
+ 				 unsigned int optlen, bool is_set)
+ {
+-	if (!bpfilter_process_sockopt) {
++	if (!bpfilter_ops.sockopt) {
+ 		int err = request_module("bpfilter");
+
+ 		if (err)
+ 			return err;
+-		if (!bpfilter_process_sockopt)
++		if (!bpfilter_ops.sockopt)
+ 			return -ECHILD;
+ 	}
+-	return bpfilter_process_sockopt(sk, optname, optval, optlen, is_set);
++	return bpfilter_ops.sockopt(sk, optname, optval, optlen, is_set);
+ }
+
+ int bpfilter_ip_set_sockopt(struct sock *sk, int optname, char __user *optval,
+@@ -41,3 +50,13 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname, char __user *optval,
+
+ 	return bpfilter_mbox_request(sk, optname, optval, len, false);
+ }
++
++static int __init bpfilter_sockopt_init(void)
++{
++	bpfilter_ops.info.cmdline = "bpfilter_umh";
++	bpfilter_ops.info.cleanup = &bpfilter_umh_cleanup;
++
++	return 0;
++}
++
++module_init(bpfilter_sockopt_init);
+--
+2.41.0
