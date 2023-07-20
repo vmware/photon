@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.285
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -736,6 +736,17 @@ Patch1537: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1538: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 Patch1539: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
 
+# Usermode helper patches
+Patch1540: 0001-umh-Add-command-line-to-user-mode-helpers.patch
+Patch1541: 0002-umh-add-exit-routine-for-UMH-process-rt.patch
+
+# bpfilter patches
+Patch1545: 0001-net-bpfilter-use-cleanup-callback-to-release-umh_inf.patch
+Patch1546: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
+Patch1547: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
+Patch1548: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
+Patch1549: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
+
 BuildArch: x86_64
 
 BuildRequires:  bc
@@ -752,6 +763,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
+BuildRequires:  gettext
 
 Requires:       filesystem
 Requires:       kmod
@@ -988,6 +1000,12 @@ popd
 pushd ../ice-%{ice_version_1_6_4}
 %autopatch -p1 -m1536 -M1539
 popd
+
+# Usermode helper patches
+%autopatch -p1 -m1540 -M1541
+
+# bpfilter patches
+%autopatch -p1 -m1545 -M1549
 
 %build
 make mrproper %{?_smp_mflags}
@@ -1349,6 +1367,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Jul 18 2023 Naadir Jeewa <jeewan@vmware.com> 4.19.285-2
+- Fixes for bpfilter and usermode helpers
+- Add additional build dependencies for container builds
 * Wed Jun 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.285-1
 - Update to version 4.19.285
 * Wed Jun 14 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.283-5
