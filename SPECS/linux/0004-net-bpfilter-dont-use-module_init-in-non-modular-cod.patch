@@ -1,0 +1,41 @@
+From 3557b3fdeefacdd111469f90db1a0602902c9698 Mon Sep 17 00:00:00 2001
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Date: Sat, 20 Apr 2019 23:29:47 -0400
+Subject: [PATCH] net: bpfilter: dont use module_init in non-modular code
+
+The Kconfig controlling this code is:
+
+bpfilter/Kconfig:menuconfig BPFILTER
+bpfilter/Kconfig:   bool "BPF based packet filtering framework (BPFILTER)"
+
+Since it isn't a module, we shouldn't use module_init().  Instead we
+use device_initcall() - which is exactly what module_init() defaults
+to for non-modular code/builds.
+
+We don't remove <linux/module.h> from the includes since this file does
+a request_module() and hence is a valid user of that header file, even
+though it is not modular itself.
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/bpfilter/sockopt.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index 1e976bb93d99..15427163a041 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -77,5 +77,4 @@ static int __init bpfilter_sockopt_init(void)
+ 
+ 	return 0;
+ }
+-
+-module_init(bpfilter_sockopt_init);
++device_initcall(bpfilter_sockopt_init);
+-- 
+2.41.0
+

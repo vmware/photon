@@ -1,0 +1,93 @@
+From 876dcf2f3aaa0f68d437b368b93a4c4b81521191 Mon Sep 17 00:00:00 2001
+From: Olivier Brunel <jjk@jjacky.com>
+Date: Sat, 20 Oct 2018 19:39:56 +0200
+Subject: [PATCH] umh: Add command line to user mode helpers
+
+User mode helpers were spawned without a command line, and because
+an empty command line is used by many tools to identify processes as
+kernel threads, this could cause some issues.
+
+Notably during killing spree on shutdown, since such helper would then
+be skipped (i.e. not killed) which would result in the process remaining
+alive, and thus preventing unmouting of the rootfs (as experienced with
+the bpfilter umh).
+
+Fixes: 449325b52b7a ("umh: introduce fork_usermode_blob() helper")
+Signed-off-by: Olivier Brunel <jjk@jjacky.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/linux/umh.h |  1 +
+ kernel/umh.c        | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/umh.h b/include/linux/umh.h
+index 5c812acbb80a..235f51b62c71 100644
+--- a/include/linux/umh.h
++++ b/include/linux/umh.h
+@@ -44,6 +44,7 @@ struct subprocess_info *call_usermodehelper_setup_file(struct file *file,
+ 			  int (*init)(struct subprocess_info *info, struct cred *new),
+ 			  void (*cleanup)(struct subprocess_info *), void *data);
+ struct umh_info {
++	const char *cmdline;
+ 	struct file *pipe_to_umh;
+ 	struct file *pipe_from_umh;
+ 	pid_t pid;
+diff --git a/kernel/umh.c b/kernel/umh.c
+index c449858946af..0baa672e023c 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -405,11 +405,19 @@ struct subprocess_info *call_usermodehelper_setup_file(struct file *file,
+ 		void (*cleanup)(struct subprocess_info *info), void *data)
+ {
+ 	struct subprocess_info *sub_info;
++	struct umh_info *info = data;
++	const char *cmdline = (info->cmdline) ? info->cmdline : "usermodehelper";
+ 
+ 	sub_info = kzalloc(sizeof(struct subprocess_info), GFP_KERNEL);
+ 	if (!sub_info)
+ 		return NULL;
+ 
++	sub_info->argv = argv_split(GFP_KERNEL, cmdline, NULL);
++	if (!sub_info->argv) {
++		kfree(sub_info);
++		return NULL;
++	}
++
+ 	INIT_WORK(&sub_info->work, call_usermodehelper_exec_work);
+ 	sub_info->path = "none";
+ 	sub_info->file = file;
+@@ -458,10 +466,11 @@ static int umh_pipe_setup(struct subprocess_info *info, struct cred *new)
+ 	return 0;
+ }
+ 
+-static void umh_save_pid(struct subprocess_info *info)
++static void umh_clean_and_save_pid(struct subprocess_info *info)
+ {
+ 	struct umh_info *umh_info = info->data;
+ 
++	argv_free(info->argv);
+ 	umh_info->pid = info->pid;
+ }
+ 
+@@ -471,6 +480,9 @@ static void umh_save_pid(struct subprocess_info *info)
+  * @len: length of the blob
+  * @info: information about usermode process (shouldn't be NULL)
+  *
++ * If info->cmdline is set it will be used as command line for the
++ * user process, else "usermodehelper" is used.
++ *
+  * Returns either negative error or zero which indicates success
+  * in executing a blob of bytes as a usermode process. In such
+  * case 'struct umh_info *info' is populated with two pipes
+@@ -500,7 +512,7 @@ int fork_usermode_blob(void *data, size_t len, struct umh_info *info)
+ 
+ 	err = -ENOMEM;
+ 	sub_info = call_usermodehelper_setup_file(file, umh_pipe_setup,
+-						  umh_save_pid, info);
++						  umh_clean_and_save_pid, info);
+ 	if (!sub_info)
+ 		goto out;
+ 
+-- 
+2.41.0
+
