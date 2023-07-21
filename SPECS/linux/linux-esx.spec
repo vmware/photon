@@ -22,7 +22,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.37
+Version:        6.1.41
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=c0abb4548a6cae8eafce7ca60845d03ab30c03a8656e8ebfb5d7a56506b0fdd6300594554eeaef5cfcd5b0e570a2af1dee1deff1b9931972a14a480dbe0e7f37
+%define sha512 linux=82101034257f746e1b6717d374a7960c1a83f93e8c2912e159c6eda6ea7605ff3c8505d37cc55ee0aadaddc964475c7ece4c26ed60407877d6eeaa7938de7c91
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -504,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
+- Update to version 6.1.41
 * Wed Nov 22 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.37-1
 - Update to version 6.1.37
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.32-1
