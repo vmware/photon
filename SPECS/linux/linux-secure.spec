@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -105,6 +105,11 @@ Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
+%endif
+
+# SEV, TDX:
+%ifarch x86_64
+Patch61: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 %endif
 
 #Secure:
@@ -281,6 +286,11 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 %endif
 
+# SEV, TDX
+%ifarch x86_64
+%autopatch -p1 -m61 -M61
+%endif
+
 #Secure
 %autopatch -p1 -m90 -M94
 
@@ -429,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 28 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
 - Update to version 5.10.186
 * Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2

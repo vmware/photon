@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.186
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -282,6 +282,7 @@ Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch606: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 #Patches for i40e driver
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
@@ -509,7 +510,7 @@ manipulation of eBPF programs and maps.
 
 %ifarch x86_64
 # SEV on VMware
-%autopatch -p1 -m600 -M605
+%autopatch -p1 -m600 -M606
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -894,6 +895,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jul 21 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
 - Update to version 5.10.186
 * Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2

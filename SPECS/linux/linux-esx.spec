@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -269,6 +269,7 @@ Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603: x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604: x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605: x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch606: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 %ifarch x86_64
 #Patches for i40e driver
@@ -416,7 +417,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # SEV
-%autopatch -p1 -m600 -M605
+%autopatch -p1 -m600 -M606
 
 %ifarch x86_64
 # Patches for i40e driver
@@ -657,6 +658,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 28 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
 - Update to version 5.10.186
 * Mon Jul 17 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.183-4

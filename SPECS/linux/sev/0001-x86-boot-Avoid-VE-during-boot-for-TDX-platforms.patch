@@ -1,0 +1,111 @@
+From fb2f9da7e722d049d6821cc1557852515f29817f Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 27 Jul 2023 17:27:58 +0530
+Subject: [PATCH] x86/boot: Avoid #VE during boot for TDX platforms
+
+Upstream 77a512e35db7609a8c909e2006b2ea82f2b1616f commit
+
+There are a few MSRs and control register bits that the kernel
+normally needs to modify during boot. But, TDX disallows
+modification of these registers to help provide consistent security
+guarantees. Fortunately, TDX ensures that these are all in the correct
+state before the kernel loads, which means the kernel does not need to
+modify them.
+
+The conditions to avoid are:
+
+ * Any writes to the EFER MSR
+ * Clearing CR4.MCE
+
+This theoretically makes the guest boot more fragile. If, for instance,
+EFER was set up incorrectly and a WRMSR was performed, it will trigger
+early exception panic or a triple fault, if it's before early
+exceptions are set up. However, this is likely to trip up the guest
+BIOS long before control reaches the kernel. In any case, these kinds
+of problems are unlikely to occur in production environments, and
+developers have good debug tools to fix them quickly.
+
+Change the common boot code to work on TDX and non-TDX systems.
+This should have no functional effect on non-TDX systems.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-24-kirill.shutemov@linux.intel.com
+[Ajay: Dropped EFER MSR changes, because it's not require for ESXi SEV-ES
+       Removed CONFIG_X86_MCE from this patch]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 12 +++++++++++-
+ arch/x86/boot/compressed/pgtable.h |  2 +-
+ arch/x86/kernel/head_64.S          | 12 +++++++++++-
+ 3 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 907b76c..bdb073c 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -649,8 +649,18 @@ SYM_CODE_START(trampoline_32bit_src)
+ 	popl	%edx
+ 	popl	%ecx
+ 
++	/*
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
++	 */
++	movl	%cr4, %eax
++	andl	$X86_CR4_MCE, %eax
++
+ 	/* Enable PAE and LA57 (if required) paging modes */
+-	movl	$X86_CR4_PAE, %eax
++	orl	$X86_CR4_PAE, %eax
+ 	cmpl	$0, %edx
+ 	jz	1f
+ 	orl	$X86_CR4_LA57, %eax
+diff --git a/arch/x86/boot/compressed/pgtable.h b/arch/x86/boot/compressed/pgtable.h
+index 6ff7e81..cc9b252 100644
+--- a/arch/x86/boot/compressed/pgtable.h
++++ b/arch/x86/boot/compressed/pgtable.h
+@@ -6,7 +6,7 @@
+ #define TRAMPOLINE_32BIT_PGTABLE_OFFSET	0
+ 
+ #define TRAMPOLINE_32BIT_CODE_OFFSET	PAGE_SIZE
+-#define TRAMPOLINE_32BIT_CODE_SIZE	0x70
++#define TRAMPOLINE_32BIT_CODE_SIZE	0x80
+ 
+ #define TRAMPOLINE_32BIT_STACK_END	TRAMPOLINE_32BIT_SIZE
+ 
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 0424c2a..525bd9f 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -149,8 +149,18 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	addq	$(init_top_pgt - __START_KERNEL_map), %rax
+ 1:
+ 
++	/*
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
++	 */
++	movq	%cr4, %rcx
++	andl	$X86_CR4_MCE, %ecx
++
+ 	/* Enable PAE mode, PGE and LA57 */
+-	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
++	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+ #ifdef CONFIG_X86_5LEVEL
+ 	testl	$1, __pgtable_l5_enabled(%rip)
+ 	jz	1f
+-- 
+2.7.4
+

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -178,6 +178,11 @@ Patch201: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch202: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+
+# SEV, TDX
+%ifarch x86_64
+Patch211: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
+%endif
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -685,6 +690,11 @@ The Linux package contains the Linux kernel doc files
 
 %autopatch -p1 -m202 -M202
 
+# SEV, TDX
+%ifarch x86_64
+%autopatch -p1 -m211 -M211
+%endif
+
 # RT
 %autopatch -p1 -m301 -M716
 
@@ -928,6 +938,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 28 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1
 - Update to version 5.10.186
 * Mon Jul 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.183-2
