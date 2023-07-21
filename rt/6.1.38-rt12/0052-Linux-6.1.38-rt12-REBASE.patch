@@ -1,0 +1,20 @@
+From 38cb7510205268ac373ad23f4f422ba28dac71e6 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Fri, 7 Jul 2023 09:18:42 -0500
+Subject: [PATCH 52/52] 'Linux 6.1.38-rt12 REBASE'
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 045478966e9f..6e44e540b927 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt7
++-rt12
+-- 
+2.41.0
+
