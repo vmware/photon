@@ -1,15 +1,20 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
 Version:        1.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2
 URL:            https://github.com/facebook/zstd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/facebook/zstd/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=e107508a41fca50845cc2494e64adaba93efb95a2fa486fc962510a8ba4b2180d93067cae9870f119e88e5e8b28a046bc2240b0b23cdd8933d1fb1a6a9668c1e
-Requires:       zstd-libs = %{version}-%{release}
+
+Source0: https://github.com/facebook/zstd/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e107508a41fca50845cc2494e64adaba93efb95a2fa486fc962510a8ba4b2180d93067cae9870f119e88e5e8b28a046bc2240b0b23cdd8933d1fb1a6a9668c1e
+
+Patch0: CVE-2022-4899-1.patch
+Patch1: CVE-2022-4899-2.patch
+
+Requires: zstd-libs = %{version}-%{release}
 
 %description
 Zstandard, or zstd as short version, is a fast lossless compression algorithm,
@@ -36,7 +41,7 @@ This package contains the headers necessary for building against the zstd
 library, libzstd.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %make_build
@@ -44,11 +49,13 @@ library, libzstd.
 %install
 %make_install PREFIX=%{_prefix}
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
-%post -n zstd-libs -p /sbin/ldconfig
-%postun -n zstd-libs -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
@@ -80,9 +87,11 @@ make %{?_smp_mflags} check
 %exclude %{_libdir}/libzstd.a
 
 %changelog
-*   Wed Jul 20 2022 Harinadh D <hdommaraju@vmware.com> 1.5.2-1
--   Fix CVE-2021-24032 and version update
-*   Thu Oct 15 2020 Anisha Kumari <kanisha@vmware.com> 1.4.5-2
--   Added package libs for zstd and files.
-*   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.4.5-1
--   Initial build. First version
+* Sun Jul 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-2
+- Fix CVE-2022-4899
+* Wed Jul 20 2022 Harinadh D <hdommaraju@vmware.com> 1.5.2-1
+- Fix CVE-2021-24032 and version update
+* Thu Oct 15 2020 Anisha Kumari <kanisha@vmware.com> 1.4.5-2
+- Added package libs for zstd and files.
+* Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.4.5-1
+- Initial build. First version
