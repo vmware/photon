@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.33
-Release:        2%{?dist}
+Version:        8.0.34
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=47f76819004c7c545d1b0b6b6646d8816899976f92d35c5564b1255b144b597ff7d3e674c721a45bcbb13cc0da3f4474fb29221c0e21d2ff91a1892cd42c636c
+%define sha512 %{name}-boost=e5e79ac6870c214cf62c8e2830106d60e09d2e6df30654b84bb5d26864b4eabe777468a223e6ee4c1e22b7f6ec086c73e85e3f4c1fa66912b0e59b606ab46cd6
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -116,6 +116,8 @@ popd
 %defattr(-,root,root)
 
 %changelog
+* Sun Jul 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-1
+- Upgrade to v8.0.34
 * Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-2
 - Use system lz4 for build
 * Wed May 10 2023 Oliver Kurth <okurth@vmware.com> 8.0.33-1
