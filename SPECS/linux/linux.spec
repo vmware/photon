@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.285
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.288
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=830cb0ce1f2793d607fd5342a9d04db9354aef7cb91043918079be35f4e6126a083a98e6c8c0f60f4c544bd9b64379e03199e367e087ea995117e8f93d22a640
+%define sha512 linux=33428794d84a114fc909f053760d09ef1ad1c745921c274cdf5f0b42f0038901b84217ec68aa56ac1d0aa4ed6375cff97201c043420f72bef22b8bdd6392afd1
 
 %ifarch x86_64
 Source1: config
@@ -1152,6 +1152,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Jul 21 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.288-1
+- Update to version 4.19.288
 * Tue Jul 18 2023 Naadir Jeewa <jeewan@vmware.com> 4.19.285-2
 - Fixes for bpfilter and usermode helpers
 - Add additional build dependencies for container builds

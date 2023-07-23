@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.285
-Release:        3%{?kat_build:.%kat}%{?dist}
+Version:        4.19.288
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt125
+%define rt_version rt126
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=830cb0ce1f2793d607fd5342a9d04db9354aef7cb91043918079be35f4e6126a083a98e6c8c0f60f4c544bd9b64379e03199e367e087ea995117e8f93d22a640
+%define sha512 linux=33428794d84a114fc909f053760d09ef1ad1c745921c274cdf5f0b42f0038901b84217ec68aa56ac1d0aa4ed6375cff97201c043420f72bef22b8bdd6392afd1
 
 %ifarch x86_64
 Source1: config-rt
@@ -598,7 +598,7 @@ Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 Patch552: 0352-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 # Keep rt_version matched up with this patch.
-Patch553: 0353-Linux-4.19.284-rt125-REBASE.patch
+Patch553: 0353-Linux-4.19.288-rt126-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -1368,6 +1368,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Fri Jul 21 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.288-1
+- Update to version 4.19.288
 * Wed Jul 19 2023 Ankit Jain <ankitja@vmware.com> 4.19.285-3
 - Kernel cmdline param to disable tasks distribution within
 - cpumask feature
