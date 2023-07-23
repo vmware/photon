@@ -30,6 +30,8 @@ To add a DNS server, insert a DNS key into the Network section of the static net
 	DNS=198.51.0.1
 
 **Note**: To apply the changes made to `/etc/systemd/network/*.network` files, perform the following:
+- If you just created the configuration file, you must run the `chmod` command to set the new file’s mode bits to `664` and also change it's owner and group to `systemd-network` using the `chown` command.
+
 - Restart `systemd-networkd` and `systemd-resolved` services by running the following commands:
   - `systemctl restart systemd-networkd`
   - `systemctl restart systemd-resolved`
