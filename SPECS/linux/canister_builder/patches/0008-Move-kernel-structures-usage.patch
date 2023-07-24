@@ -32,7 +32,6 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/crypto_self_test.c          |   8 +-
  crypto/ctr.c                       |  13 +-
  crypto/cts.c                       |  11 +-
- crypto/des_generic.c               |  15 +-
  crypto/drbg.c                      | 127 +++---
  crypto/ecb.c                       |  11 +-
  crypto/ecc.c                       |  17 +-
@@ -62,7 +61,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  include/linux/crypto.h             |   8 +
  include/linux/rtattr.h             |   6 +
  include/linux/swait.h              |   4 +
- 40 files changed, 386 insertions(+), 852 deletions(-)
+ 39 files changed, 384 insertions(+), 839 deletions(-)
  create mode 100644 include/linux/rtattr.h
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
@@ -644,44 +643,6 @@ index 3d3f0b08e..3392d0c56 100644
 -MODULE_LICENSE("Dual BSD/GPL");
 -MODULE_DESCRIPTION("CTS-CBC CipherText Stealing for CBC");
 -MODULE_ALIAS_CRYPTO("cts");
-diff --git a/crypto/des_generic.c b/crypto/des_generic.c
-index c85354a5e..b2af7d9b6 100644
---- a/crypto/des_generic.c
-+++ b/crypto/des_generic.c
-@@ -10,7 +10,6 @@
- #include <asm/byteorder.h>
- #include <linux/bitops.h>
- #include <linux/init.h>
--#include <linux/module.h>
- #include <linux/errno.h>
- #include <linux/crypto.h>
- 
-@@ -112,23 +111,13 @@ static struct crypto_alg des_algs[2] = { {
- 	.cia_decrypt		=	crypto_des3_ede_decrypt } }
- } };
- 
--static int __init des_generic_mod_init(void)
-+int __init des_generic_mod_init(void)
- {
- 	return crypto_register_algs(des_algs, ARRAY_SIZE(des_algs));
- }
- 
--static void __exit des_generic_mod_fini(void)
-+void __exit des_generic_mod_fini(void)
- {
- 	crypto_unregister_algs(des_algs, ARRAY_SIZE(des_algs));
- }
- 
--subsys_initcall(des_generic_mod_init);
--module_exit(des_generic_mod_fini);
--
--MODULE_LICENSE("GPL");
--MODULE_DESCRIPTION("DES & Triple DES EDE Cipher Algorithms");
--MODULE_AUTHOR("Dag Arne Osvik <da@osvik.no>");
--MODULE_ALIAS_CRYPTO("des");
--MODULE_ALIAS_CRYPTO("des-generic");
--MODULE_ALIAS_CRYPTO("des3_ede");
--MODULE_ALIAS_CRYPTO("des3_ede-generic");
 diff --git a/crypto/drbg.c b/crypto/drbg.c
 index e294af604..a9c3f1940 100644
 --- a/crypto/drbg.c
@@ -3503,5 +3464,4 @@ index 6a8c22b8c..d4faea8b0 100644
  };
  
 -- 
-2.19.0
-
+2.41.0

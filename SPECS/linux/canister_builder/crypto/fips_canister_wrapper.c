@@ -6,8 +6,6 @@
  *
  */
 
-#define DES3_IS_NOT_ALLOWED
-
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/gfp.h>
@@ -41,7 +39,6 @@
 #include <crypto/skcipher.h>
 #include <crypto/kpp.h>
 #include <crypto/aes.h>
-#include <crypto/des.h>
 #include <crypto/ecdh.h>
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
 #include <crypto/sha.h>
@@ -346,7 +343,6 @@ static char *canister_algs[] = {
 	"sha224-generic",
 	"sha512-generic",
 	"sha384-generic",
-	"des3_ede-generic",
 	"aes-generic",
 	"ctr(aes-generic)",
 	"drbg_pr_ctr_aes128",
@@ -378,10 +374,7 @@ static char *canister_algs[] = {
 	"jitterentropy_rng",
 	"ecdh-generic",
 	"cbc(aes-generic)",
-	"cbc(des3_ede-generic)",
-	"ctr(des3_ede-generic)",
 	"ecb(aes-generic)",
-	"ecb(des3_ede-generic)",
 	"hmac(sha224-generic)",
 	"pkcs1pad(rsa-generic,sha256)",
 	"pkcs1pad(rsa-generic,sha512)",
@@ -406,10 +399,6 @@ static char *canister_algs[] = {
 
 int fcw_fips_not_allowed_alg(char *name)
 {
-#ifdef DES3_IS_NOT_ALLOWED
-	if (strstr(name, "des3_ede"))
-		return 1;
-#endif
 	if (fips_enabled == 2) {
 		int i;
 		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
@@ -489,7 +478,6 @@ static int __init fcw_subsys_initcall(void)
 	sha256_generic_mod_init();
 	sha512_generic_mod_init();
 	sha3_generic_mod_init();
-	des_generic_mod_init();
 	aes_init();
 	crypto_ctr_module_init();
 	hmac_module_init();
@@ -524,7 +512,6 @@ static void __exit fcw_module_exit(void)
 	crypto_cmac_module_exit();
 	crypto_ctr_module_exit();
 	crypto_cts_module_exit();
-	des_generic_mod_fini();
 	drbg_exit();
 	crypto_ecb_module_exit();
 	ecdh_exit();
@@ -596,12 +583,6 @@ EXPORT_SYMBOL(crypto_aes_inv_sbox);
 EXPORT_SYMBOL(aes_expandkey);
 EXPORT_SYMBOL(aes_encrypt);
 EXPORT_SYMBOL(aes_decrypt);
-EXPORT_SYMBOL_GPL(des_expand_key);
-EXPORT_SYMBOL_GPL(des_encrypt);
-EXPORT_SYMBOL_GPL(des_decrypt);
-EXPORT_SYMBOL_GPL(des3_ede_expand_key);
-EXPORT_SYMBOL_GPL(des3_ede_encrypt);
-EXPORT_SYMBOL_GPL(des3_ede_decrypt);
 EXPORT_SYMBOL(sha1_transform);
 EXPORT_SYMBOL(sha1_init);
 EXPORT_SYMBOL(sha256_update);

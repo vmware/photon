@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        20%{?kat_build:.kat}%{?dist}
+Release:        21%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -128,7 +128,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.10-18-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.10-21-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10002: 0002-FIPS-canister-creation.patch
@@ -406,6 +406,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 24 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-21
+- Remove DES/DES3 from canister
 * Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-20
 - Fix rap_plugin patch
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-19

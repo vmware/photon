@@ -1,7 +1,7 @@
 From a47055705cd0e9554675818a3feba2c7724dde69 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 11 Jan 2021 16:46:43 +0000
-Subject: [PATCH 1/8] FIPS canister binary usage
+Subject: FIPS canister binary usage
 
 Build with fips canister and skip building crypto algorithms.
 Invoke fips canister integrity check during kernel startup.
@@ -15,10 +15,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/Makefile |   4 --
- crypto/Makefile          | 116 +++++++++++++++++++++++++++++++--------
- init/main.c              |   3 +
- lib/crypto/Makefile      |  12 ----
- 4 files changed, 95 insertions(+), 40 deletions(-)
+ crypto/Makefile          | 112 +++++++++++++++++++++++++++++++--------
+ init/main.c              |   3 ++
+ lib/crypto/Makefile      |   9 ----
+ 4 files changed, 92 insertions(+), 36 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 3b1d701a4..3836c4e30 100644
@@ -36,7 +36,7 @@ index 3b1d701a4..3836c4e30 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index d7fcab76d..4f6f373dc 100644
+index d7fcab76d..ad810d945 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -106,15 +106,7 @@ index d7fcab76d..4f6f373dc 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -128,7 +110,6 @@ CFLAGS_aegis128-neon-inner.o += -isystem $(shell $(CC) -print-file-name=include)
- 
- obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
- obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
--obj-$(CONFIG_CRYPTO_DES) += des_generic.o
- obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
- obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
- obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
-@@ -136,7 +117,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -136,7 +118,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -122,7 +114,7 @@ index d7fcab76d..4f6f373dc 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -167,8 +147,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -167,8 +148,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -131,7 +123,7 @@ index d7fcab76d..4f6f373dc 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
-@@ -183,13 +161,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -183,13 +162,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -145,7 +137,7 @@ index d7fcab76d..4f6f373dc 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -213,3 +189,95 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -213,3 +190,92 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -182,9 +174,6 @@ index d7fcab76d..4f6f373dc 100644
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AES)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_AES=y)
-+endif
-+ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DES)),y)
-+  $(error FIPS canister requires CONFIG_CRYPTO_DES=y)
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECB)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_ECB=y)
@@ -263,7 +252,7 @@ index aa21add5f..4db7e4edd 100644
  	 * These use large bootmem allocations and must precede
  	 * kmem_cache_init()
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index c852f067a..84ec57dba 100644
+index c852f067a..33d229c6d 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -7,9 +7,6 @@ libcryptoutils-y				:= memneq.o utils.o
@@ -276,15 +265,7 @@ index c852f067a..84ec57dba 100644
  obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
  libarc4-y					:= arc4.o
  
-@@ -29,20 +26,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
- obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
- libcurve25519-y					+= curve25519.o
- 
--obj-$(CONFIG_CRYPTO_LIB_DES)			+= libdes.o
--libdes-y					:= des.o
--
- obj-$(CONFIG_CRYPTO_LIB_POLY1305_GENERIC)	+= libpoly1305.o
- libpoly1305-y					:= poly1305-donna32.o
+@@ -37,12 +34,6 @@ libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
  libpoly1305-y					+= poly1305.o
  
@@ -298,5 +279,4 @@ index c852f067a..84ec57dba 100644
  libblake2s-y					+= blake2s-selftest.o
  libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
-2.19.0
-
+2.41.0

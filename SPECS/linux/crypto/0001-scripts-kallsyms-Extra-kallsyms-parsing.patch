@@ -208,4 +208,4 @@ index 918470d76..58d3210e5 100755
  	scripts/kallsyms ${kallsymopt} ${1} > ${2}
  }
 -- 
-2.39.1
+2.41.0
