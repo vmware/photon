@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Group:          System Environment/Utilities
@@ -25,6 +25,7 @@ Patch10: CVE-2014-8140.patch
 Patch11: CVE-2018-1000035.patch
 Patch12: unzip-passwd-as-stdin.patch
 Patch13: CVE-2022-0529-2022-0530.patch
+Patch14: CVE-2021-4217.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful
@@ -54,6 +55,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
+* Mon Jul 24 2023 Nitesh Kumar <kunitesh@vmware.com> 6.0-16
+- Patched for CVE-2021-4217
 * Fri May 19 2023 Nitesh Kumar <kunitesh@vmware.com> 6.0-15
 - Patched for CVE-2022-0529 and CVE-2022-0530
 * Tue Apr 21 2020 Sujay G <gsujay@vmware.com> 6.0-14
