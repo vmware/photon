@@ -7,12 +7,12 @@
 %global _pgdatadir      %{_pgbaseinstdir}/share/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    300
-%define obsoletes_version 14.5-1
+%define obsoletes_version 14.5
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -275,6 +275,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.8-2
+- Fix obsoletes version
 * Wed May 17 2023 Julien Rouhaud <jrouhaud@vmware.com> 14.8-1
 - Update to v14.8, fixing CVE-2023-2454 and CVE-2023-2455
 * Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-2
