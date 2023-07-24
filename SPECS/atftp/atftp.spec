@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
@@ -133,6 +133,8 @@ rm -rf %{buildroot}
 %{_bindir}/atftp
 
 %changelog
+* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.8.0-4
+- Version bump as part of pcre2 update
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.8.0-3
 - Use systemd-rpm-macros for user creation
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-2

@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.4.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -246,6 +246,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-5
+- Version bump as part of pcre2 update
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-4
 - Bump version as a part of elfutils upgrade
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.4.1-3

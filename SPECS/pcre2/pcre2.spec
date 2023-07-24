@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
-Version:        10.40
-Release:        3%{?dist}
+Version:        10.42
+Release:        1%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 License:        BSD
 Group:          Development/Tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/PhilipHazel/pcre2/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
+%define sha512 %{name}=a3db6c5c620775838819be616652e73ce00f5ef5c1f49f559ff3efb51a119d02f01254c5901c1f7d0c47c0ddfcf4313e38d6ca32c35381b8f87f36896d10e6f7
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.42-1
+- Update to latest version, fix minor CVE
 * Tue Jan 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-3
 - Fix file packaging
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 10.40-2

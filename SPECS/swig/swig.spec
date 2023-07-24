@@ -1,7 +1,7 @@
 Summary:        Connects C/C++/Objective C to some high-level programming languages
 Name:           swig
 Version:        4.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://swig.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
@@ -27,10 +27,10 @@ tool for building user interfaces
 %build
 ./autogen.sh
 %configure \
-	--without-ocaml \
- 	--without-java \
- 	--without-r \
- 	--without-go
+    --without-ocaml \
+    --without-java \
+    --without-r \
+    --without-go
 make %{?_smp_mflags}
 
 %install
@@ -49,6 +49,8 @@ make %{?_smp_mflags} check
 %{_libdir}/ccache
 
 %changelog
+*       Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.1.1-2
+-       Version bump as part of pcre2 update
 *       Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 4.1.1-1
 -       Automatic Version Bump
 *       Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
@@ -59,9 +61,9 @@ make %{?_smp_mflags} check
 -       Update to version 3.0.12
 *       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.0.8-3
 -       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.8-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.0.8-1
-- 	Upgrade to 3.0.8
-* 	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.5-1
-- 	Initial version
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.8-2
+-       GA - Bump release of all rpms
+*       Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.0.8-1
+-       Upgrade to 3.0.8
+*       Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.5-1
+-       Initial version
