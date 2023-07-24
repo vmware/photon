@@ -77,7 +77,7 @@ rm -fv %{buildroot}/%{_libdir}/*.la \
 %changelog
 * Thu Jul 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.48-2
 - Fix spec issues
-- mOve *.so to devel package
+- Move *.so to devel package
 * Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.4.48-1
 - Updated to version 2.4.48
 * Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 2.4.47-4

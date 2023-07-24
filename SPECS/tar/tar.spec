@@ -52,7 +52,6 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %changelog
 * Thu Jul 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-4
 - Add acl support
-- tar is a coretoolchain package, so static link the binaries
 * Thu Jul 06 2023 Kuntal Nayak <nkuntal@vmware.com> 1.34-3
 - Fixed CVE-2022-48303 with patch
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.34-2
