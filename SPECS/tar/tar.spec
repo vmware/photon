@@ -1,17 +1,21 @@
 Summary:    Archiving program
 Name:       tar
 Version:    1.34
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    %{name}-%{version}.tar.xz
-%define sha512  %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+Source0: https://ftp.gnu.org/gnu/tar/%{name}-%{version}.tar.xz
+%define sha512 %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
 
 Patch0: CVE-2022-48303.patch
+
+BuildRequires: libacl-devel
+
+Requires: libacl
 
 %description
 Contains GNU archiving program
@@ -21,32 +25,33 @@ Contains GNU archiving program
 
 %build
 export FORCE_UNSAFE_CONFIGURE=1
-%configure --disable-silent-rules
+
+%configure \
+    --disable-silent-rules \
+    --with-posix-acls
 
 %make_build
 
 %install
-install -vdm 755 %{buildroot}%{_sbindir}
 %make_install %{?_smp_mflags}
-make DESTDIR=%{buildroot} -C doc install-html docdir=%{_defaultdocdir}/%{name}-%{version} %{?_smp_mflags}
-install -vdm 755 %{buildroot}/usr/share/man/man1
-rm -rf %{buildroot}%{_infodir}
+
+rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 
 %find_lang %{name}
 
 %if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
 %endif
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_bindir}/tar
+%{_bindir}/%{name}
 %{_libexecdir}/rmt
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_mandir}/*/*
 
 %changelog
+* Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-4
+- Add acl support
 * Thu Jul 06 2023 Kuntal Nayak <nkuntal@vmware.com> 1.34-3
 - Fixed CVE-2022-48303 with patch
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.34-2

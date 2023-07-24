@@ -11,12 +11,12 @@ Distribution:    Photon
 Source0: https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
 %define sha512 %{name}=d12c7769e5cca74fc0a15d9cba6bbc652976aab45df1291e524e1b0841d6be1fac15c17f2c34bbc3fbdd320f2c74dcdf663968b766f80a2e95d203d9b9d6c581
 
-BuildRequires:   acl
-BuildRequires:   attr
-BuildRequires:   bzip2-devel
-BuildRequires:   pkg-config
-BuildRequires:   zlib-devel
-BuildRequires:   readline-devel
+BuildRequires: acl
+BuildRequires: attr-devel
+BuildRequires: bzip2-devel
+BuildRequires: pkg-config
+BuildRequires: zlib-devel
+BuildRequires: readline-devel
 
 Requires: bzip2-libs
 Requires: readline
@@ -35,28 +35,32 @@ Group:           Documentation
 Documentation for xorriso package
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 export LANG=C
-%configure --disable-static
+%configure \
+    --disable-static
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
+%if 0%{?with_check}
 %check
 export LANG=C
-make VERBOSE=1 V=1 %{?_smp_mflags} check
+%make_build check
+%endif
 
 %files
 %defattr(-,root,root,-)
-%exclude %{_bindir}/xorriso-tcltk
+%exclude %{_bindir}/%{name}-tcltk
 %{_bindir}/xorrisofs
 %{_bindir}/xorrecord
 %{_bindir}/osirrox
-%{_bindir}/xorriso
-%{_bindir}/xorriso-dd-target
+%{_bindir}/%{name}
+%{_bindir}/%{name}-dd-target
 
 %files doc
 %defattr(-,root,root,-)

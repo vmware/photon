@@ -3,6 +3,7 @@ noarch/automake-1.16.5-1.ph5.noarch.rpm
 noarch/linux-api-headers-6.0.7-1.ph5.noarch.rpm
 noarch/man-pages-5.13-1.ph5.noarch.rpm
 noarch/systemd-rpm-macros-252.4-8.ph5.noarch.rpm
+x86_64/attr-2.5.1-2.ph5.x86_64.rpm
 x86_64/apache-maven-3.8.6-2.ph5.x86_64.rpm
 x86_64/bash-5.2-1.ph5.x86_64.rpm
 x86_64/binutils-2.39-2.ph5.x86_64.rpm
@@ -46,6 +47,7 @@ x86_64/go-1.19.3-2.ph5.x86_64.rpm
 x86_64/grep-3.7-3.ph5.x86_64.rpm
 x86_64/groff-1.22.4-1.ph5.x86_64.rpm
 x86_64/gzip-1.12-2.ph5.x86_64.rpm
+x86_64/libacl-2.3.1-2.ph5.x86_64.rpm
 x86_64/libcap-2.66-1.ph5.x86_64.rpm
 x86_64/libffi-3.4.2-1.ph5.x86_64.rpm
 x86_64/libgcc-12.2.0-1.ph5.x86_64.rpm

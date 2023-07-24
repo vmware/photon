@@ -147,6 +147,7 @@ CONFIGURE_OPTS=(
     -Dyajl=disabled \
     -Dudev=disabled \
     -Dwireshark_dissector=disabled \
+    -Dattr=disabled \
     )
 
 %meson "${CONFIGURE_OPTS[@]}"

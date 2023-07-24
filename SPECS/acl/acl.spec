@@ -1,37 +1,41 @@
 Summary:        Access control list utilities
 Name:           acl
 Version:        2.3.1
-Release:        1%{?dist}
-Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
-%define sha1 %{name}=a5343e9f75326ffe5aa8d5d042e52227a3fd66cb
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 URL:            https://savannah.nongnu.org/projects/%{name}
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f101e27058c959f4c412f475c3fc77a90d1ead8728701e4ce04ff08b34139d35e0e72278c9ac7622ba6054e81c0aeca066e09491b5f5666462e3866705a0e892
+
 Requires:       libacl = %{version}-%{release}
+
 BuildRequires:  attr-devel
 
 %description
 This package contains the getfacl and setfacl utilities needed for
 manipulating access control lists.
 
-%package -n	libacl
-Summary:	Dynamic library for access control list support
-License:	LGPLv2+
-Group:		System Environment/Libraries
-Requires:	attr
+%package -n libacl
+Summary:    Dynamic library for access control list support
+License:    LGPLv2+
+Group:      System Environment/Libraries
+Requires:   attr
 
 %description -n libacl
 This package contains the libacl.so dynamic library which contains
 the POSIX 1003.1e draft standard 17 functions for manipulating access
 control lists.
 
-%package -n	libacl-devel
-Summary:	Files needed for building programs with libacl
-License:	LGPLv2+
-Group:		Development/Libraries
-Requires:	libacl = %{version}-%{release}
+%package -n libacl-devel
+Summary:    Files needed for building programs with libacl
+License:    LGPLv2+
+Group:      Development/Libraries
+Requires:   libacl = %{version}-%{release}
+Requires:   attr-devel
 
 %description -n libacl-devel
 This package contains header files and documentation needed to develop
@@ -42,24 +46,21 @@ defined in POSIX 1003.1e draft standard 17.
 %autosetup -p1
 
 %build
-%configure
+%configure \
+    --disable-static
 
-make %{?_smp_mflags} LIBTOOL="libtool --tag=CC"
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
-
-chmod 0755 %{buildroot}%{_libdir}/libacl.so.*.*.*
+%make_install %{?_smp_mflags}
 
 %find_lang %{name}
 
 %check
-if ./setfacl -m u:`id -u`:rwx .; then
-    make %{?_smp_mflags} check
+if ./setfacl -m u:$(id -u):rwx .; then
+  %make_build check
 else
-    echo '*** The chroot file system does not support all ACL options ***'
+  echo '*** The chroot file system does not support all ACL options ***'
 fi
 
 %post -n libacl
@@ -69,6 +70,7 @@ fi
 /sbin/ldconfig
 
 %files -f %{name}.lang
+%defattr(-,root,root)
 %{_bindir}/chacl
 %{_bindir}/getfacl
 %{_bindir}/setfacl
@@ -78,18 +80,21 @@ fi
 %{_mandir}/man5/acl.5*
 
 %files -n libacl-devel
+%defattr(-,root,root)
 %{_libdir}/libacl.so
-%{_includedir}/acl
+%{_includedir}/%{name}
 %{_includedir}/sys/acl.h
 %{_mandir}/man3/acl_*
-%{_libdir}/libacl.a
-%{_datadir}/doc/acl/*
+%{_docdir}/acl/*
 %{_libdir}/pkgconfig/libacl.pc
 
 %files -n libacl
+%defattr(-,root,root)
 %{_libdir}/libacl.so.*
 
 %changelog
+* Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3.1-2
+- Fix spec issues
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1
 - Automatic Version Bump
 * Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 2.2.53-1
