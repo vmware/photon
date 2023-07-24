@@ -1,7 +1,7 @@
 From 06e988b1547114c603a337f10c8a6f944b911f24 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Date: Sun, 5 Mar 2023 18:43:14 +0530
-Subject: [PATCH 7/8] crypto: Add prandom, module_kthread_exit to canister
+Subject: [PATCH 6/8] crypto: Add prandom, module_kthread_exit to canister
  wrapper
 
 prandom_u32_max is a static inline function whose definition changed
@@ -53,5 +53,4 @@ index f15e2bff2..979472edf 100644
  
  	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
 -- 
-2.19.0
-
+2.41.0

@@ -1,7 +1,8 @@
 From 8661a32500fadfb5e0247b6f37a249952010d5d5 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 17 May 2023 15:35:53 +0000
-Subject: [PATCH 4/8] Disable retpoline_sites and return_sites sections in canister
+Subject: [PATCH 4/8] Disable retpoline_sites and return_sites sections in
+ canister
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
@@ -47,5 +48,4 @@ index 0852ab573..8bef0e67c 100644
  # constants in mergeable sections, linker can reorder and merge
  .section	.rodata.cst16.POLY, "aM", @progbits, 16
 -- 
-2.19.0
-
+2.41.0
