@@ -1,7 +1,7 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
 Version:        0.9.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -107,6 +107,8 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 0.9.6-6
+- Bump version as part of openssh upgrade
 * Fri Jun 02 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.9.6-5
 - Bump version as part of openssh upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.6-4
