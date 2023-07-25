@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -12,19 +12,20 @@ Source0: %{name}-%{version}.tar.gz
 %define sha512 nss=0c626d709acda49378a37400ee91cd0cf38677af8f4404b2d18190977b050bb0c7f9c989e2c664e97aa906f4527cd1642925a764ee281523003430954aab71c8
 
 Patch0: nss-3.44-standalone-1.patch
-Patch1: nss-CVE-2020-12403.patch
-Patch2: nss-CVE-2021-43527.patch
-Patch3: nss-CVE-2019-17006.patch
-Patch4: nss-CVE-2020-25648.patch
+Patch1: CVE-2020-12403.patch
+Patch2: CVE-2021-43527.patch
+Patch3: CVE-2019-17006.patch
+Patch4: CVE-2020-25648.patch
 Patch5: CVE-2022-36320-1.patch
 Patch6: CVE-2022-36320-2.patch
 Patch7: CVE-2019-11729.patch
+Patch8: CVE-2019-11745.patch
 
-BuildRequires:  nspr-devel
-BuildRequires:  sqlite-devel
+BuildRequires: nspr-devel
+BuildRequires: sqlite-devel
 
-Requires:       nspr
-Requires:       nss-libs = %{version}-%{release}
+Requires: nspr
+Requires: nss-libs = %{version}-%{release}
 
 %description
 The Network Security Services (NSS) package is a set of libraries
@@ -125,6 +126,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Jul 25 2023 Nitesh Kumar <kunitesh@vmware.com> 3.44-11
+- Patched for CVE-2019-11745
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.44-10
 - Fix CVE-2022-36320, CVE-2019-11729
 * Mon Jan 23 2023 Harinadh D <hdommaraju@vmware.com> 3.44-9
