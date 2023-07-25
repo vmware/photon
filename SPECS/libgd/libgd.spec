@@ -1,34 +1,31 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
-Version:        2.3.0
-Release:        9%{?dist}
+Version:        2.3.3
+Release:        1%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.gz
-%define sha512  libgd=7e7743bb95bd7fe259515aad9e10afd7c78c52e08fce0fa6ed5b42d4d03230c5c2ab499b02b5a141736fe0865983a852c3896bff0cbbc4fe3edace7edb5d7a67
+Source0: https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.xz
+%define sha512 %{name}=aa49d4381d604a4360d556419d603df2ffd689a6dcc10f8e5e1d158ddaa3ab89912f6077ca77da4e370055074007971cf6d356ec9bf26dcf39bcff3208bc7e6c
 
-Patch0:         libgd-CVE-2021-38115.patch
-Patch1:         libgd-CVE-2021-40145.patch
+BuildRequires: libjpeg-turbo-devel
+BuildRequires: libpng-devel
+BuildRequires: libwebp-devel
+BuildRequires: libtiff-devel
+BuildRequires: libltdl-devel
+BuildRequires: freetype2-devel
+BuildRequires: fontconfig-devel
 
-BuildRequires:  libjpeg-turbo-devel
-BuildRequires:  libpng-devel
-BuildRequires:  libwebp-devel
-BuildRequires:  libtiff-devel
-BuildRequires:  libltdl-devel
-BuildRequires:  freetype2-devel
-BuildRequires:  fontconfig-devel
-
-Requires:       libpng
-Requires:       libwebp
-Requires:       libtiff
-Requires:       libjpeg-turbo
-Requires:       freetype2
-Requires:       fontconfig
-Provides:       pkgconfig(libgd)
+Requires: libpng
+Requires: libwebp
+Requires: libtiff
+Requires: libjpeg-turbo
+Requires: freetype2
+Requires: fontconfig
+Provides: pkgconfig(libgd)
 
 %description
 GD is an open source code library for the dynamic creation of images by programmers.
@@ -41,24 +38,21 @@ Requires:   %{name} = %{version}-%{release}
 Header & Development files
 
 %prep
-# Using autosetup is not feasible
-%setup -c -n %{name}
-cd %{name}-gd-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
-cd %{name}-gd-%{version}
 # To use the system installed automake latest version instead of given version in source
-./bootstrap.sh
-%configure --with-webp --with-tiff --with-jpeg --with-png --with-freetype --with-fontconfig --disable-werror --disable-static
-make %{?_smp_mflags}
+sh ./bootstrap.sh
+%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+%make_build
+
 %install
-cd %{name}-gd-%{version}
 %make_install
 
+%if 0%{?with_check}
 %check
 make %{?_smp_mflags} -k check
+%endif
 
 %files
 %defattr(-,root,root)
@@ -72,6 +66,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Jul 25 2023 Nitesh Kumar <kunitesh@vmware.com> 2.3.3-1
+- Version upgrade to v2.3.3 to fix CVE-2021-40812
 * Mon Jun 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.0-9
 - Bump version as a part of libtiff upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.0-8
