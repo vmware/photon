@@ -1,27 +1,30 @@
 Summary:        C debugger
 Name:           gdb
-Version:        10.1
-Release:        3%{?dist}
+Version:        13.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha512  %{name}=0dc54380435c6853db60f1e388b94836d294dfa9ad7f518385a27db4edd03cb970f8717d5f1e9c9a0d4a33d7fcf91bc2e5d6c9cf9e4b561dcc74e65b806c1537
+%define sha512 %{name}=8185d3e11ab60dafff5860a5016577bfe7dd7547ef01ebc867bc247603d82b74ff74c4f29492c7d2aee57076f52be33e289f4c6b414a4b870d4b3004909f4c34
+
 Source1:        gdbinit
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         gdb-7.12-pstack.patch
-Patch1:         0001-skip-inaccessible.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
 Requires:       xz-libs
+Requires:       zlib
 BuildRequires:  expat-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  xz-devel
-%if %{with_check}
+BuildRequires:  zlib-devel
+BuildRequires:  texinfo
+
+%if 0%{?with_check}
 BuildRequires:  dejagnu
 BuildRequires:  systemtap-sdt-devel
 %endif
@@ -34,35 +37,37 @@ another program was doing at the moment it crashed.
 %autosetup -p1
 
 %build
+rm -rf zlib texinfo
 mkdir build && cd build
 ../configure \
   --host=%{_host} --build=%{_build} \
   --prefix=%{_prefix} \
   --with-system-gdbinit=%{_sysconfdir}/gdbinit \
-  --with-python=/usr/bin/python3
-make %{?_smp_mflags}
+  --with-python=/usr/bin/python3 \
+  --with-system-zlib
+
+%make_build
 
 %install
 cd build && make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
-rm %{buildroot}%{_infodir}/dir
-rm %{buildroot}%{_libdir}/libctf-nobfd.a
-rm %{buildroot}%{_libdir}/libctf.a
+rm %{buildroot}%{_infodir}/dir \
+   %{buildroot}%{_libdir}/libctf-nobfd.a \
+   %{buildroot}%{_libdir}/libctf.a
 
 # following files conflicts with binutils-2.24-1.x86_64
-rm %{buildroot}%{_includedir}/ansidecl.h
-rm %{buildroot}%{_includedir}/bfd.h
-rm %{buildroot}%{_includedir}/bfdlink.h
-rm %{buildroot}%{_includedir}/dis-asm.h
-rm %{buildroot}%{_libdir}/libbfd.a
-rm %{buildroot}%{_libdir}/libopcodes.a
+rm %{buildroot}%{_includedir}/ansidecl.h \
+   %{buildroot}%{_includedir}/bfd.h \
+   %{buildroot}%{_includedir}/bfdlink.h \
+   %{buildroot}%{_includedir}/dis-asm.h \
+   %{buildroot}%{_libdir}/libbfd.a \
+   %{buildroot}%{_libdir}/libopcodes.a
+
 # following files conflicts with binutils-2.25-1.x86_64
-rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo
-rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo
-rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
-%ifarch aarch64
-rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
-%endif
+rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo \
+   %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo \
+   %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
+
 %find_lang %{name} --all-name ../%{name}.lang
 mkdir -p %{buildroot}%{_sysconfdir}/gdbinit.d
 install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/gdbinit
@@ -80,6 +85,7 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %exclude %{_datadir}/locale
 %exclude %{_includedir}/*.h
 %{_includedir}/gdb/*.h
+%{_libdir}/libsframe.a
 %{_libdir}/*.so
 %{_infodir}/*.gz
 %{_datadir}/gdb/python/*
@@ -89,8 +95,15 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 %{_sysconfdir}/gdbinit
 %{_sysconfdir}/gdbinit.d
+%ifarch aarch64
+%{_includedir}/sim/callback.h
+%{_includedir}/sim/sim.h
+%{_libdir}/libsim.a
+%endif
 
 %changelog
+*   Tue Jul 25 2023 Anmol Jain <anmolja@vmware.com> 13.2-1
+-   Version upgrade
 *   Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 10.1-3
 -   Compile with --with-system-gdbinit
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 10.1-2
