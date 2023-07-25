@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
@@ -37,7 +37,7 @@ BuildRequires: dejagnu
 BuildRequires: systemtap-sdt-devel
 %endif
 
-Obsoletes: %{name}-minimal <= %{version}-%{release}
+Requires: %{name}-minimal = %{version}-%{release}
 
 %description
 GDB, the GNU Project debugger, allows you to see what is going on
@@ -47,6 +47,7 @@ another program was doing at the moment it crashed.
 %if 0%{?build_minimal_gdb}
 %package minimal
 Summary: A GNU source-level debugger for C, C++, Fortran, Go and other languages (minimal version)
+Conflicts: %{name} < 11.2-9%{?dist}
 
 %description minimal
 GDB, the GNU debugger, allows you to debug programs written in C, C++, Java, and other languages,
@@ -61,7 +62,6 @@ It should probably not be used by end users.
 %build
 rm -rf zlib texinfo
 mkdir -p build
-
 pushd build
 
 sh ../configure \
@@ -78,7 +78,6 @@ popd
 
 %if 0%{?build_minimal_gdb}
 mkdir -p minimal-build
-
 pushd minimal-build
 
 sh ../configure \
@@ -125,16 +124,15 @@ rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo \
 popd
 
 %if 0%{?build_minimal_gdb}
-mkdir -p %{buildroot}/minimal-gdb
-
+mkdir -p %{buildroot}/minimal-%{name}
 pushd minimal-build
 
-%make_install DESTDIR=%{buildroot}/minimal-gdb %{?_smp_mflags}
+%make_install DESTDIR=%{buildroot}/minimal-%{name} %{?_smp_mflags}
 
-rm -rfv %{buildroot}/minimal-gdb%{_prefix}/{include,lib*,share} \
-       %{buildroot}/minimal-gdb%{_bindir}/{gcore,gdbserver,gstack,gdb-add-index,pstack,run}
+rm -rfv %{buildroot}/minimal-%{name}%{_prefix}/{include,lib*,share} \
+       %{buildroot}/minimal-%{name}%{_bindir}/{gcore,gdbserver,gstack,%{name}-add-index,pstack,run}
 
-mv %{buildroot}/minimal-gdb%{_bindir}/gdb %{buildroot}%{_bindir}/gdb.minimal
+mv %{buildroot}/minimal-%{name}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}.minimal
 
 popd
 %endif
@@ -152,24 +150,25 @@ install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/gdbinit
 # disable security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # fix typo in test
-sed -i 's/hex in)/hex in )/g' gdb/testsuite/gdb.arch/i386-signal.exp
+sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 # ignore exit code and check for expected number of failures
-make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpected failures.*1219\|# of unexpected failures.*1220"
+%make_build check || tail %{name}/testsuite/%{name}.sum | grep "# of unexpected failures.*1219\|# of unexpected failures.*1220"
 %endif
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %exclude %{_datadir}/locale
 %exclude %{_includedir}/*.h
-%{_includedir}/gdb/*.h
+%{_includedir}/%{name}/*.h
 %{_includedir}/sim/*.h
 %{_libdir}/*.so
 %{_infodir}/*.gz
-%{_datadir}/gdb/python/*
-%{_datadir}/gdb/syscalls/*
-%{_datadir}/gdb/system-gdbinit/*
+%{_datadir}/%{name}/python/*
+%{_datadir}/%{name}/syscalls/*
+%{_datadir}/%{name}/system-gdbinit/*
 %{_bindir}/*
-%exclude %{_bindir}/gdb.minimal
+%exclude %{_bindir}/%{name}.minimal
+%exclude %{_bindir}/%{name}-add-index
 %{_mandir}/*/*
 %{_sysconfdir}/gdbinit
 %{_sysconfdir}/gdbinit.d
@@ -177,12 +176,13 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %if 0%{?build_minimal_gdb}
 %files minimal
 %defattr(-,root,root)
-%{_bindir}/gdb.minimal
-# same file in both gdb & gdb-minimal
-%{_bindir}/gdb-add-index
+%{_bindir}/%{name}.minimal
+%{_bindir}/%{name}-add-index
 %endif
 
 %changelog
+* Tue Jul 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.2-10
+- Add gdb-minimal to requires of gdb
 * Thu Jul 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.2-9
 - Fix spec issues
 * Wed Jul 12 2023 Anmol Jain <anmolja@vmware.com> 11.2-8
