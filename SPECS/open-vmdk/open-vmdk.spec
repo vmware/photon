@@ -1,6 +1,6 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
-Version:       0.3.0
+Version:       0.3.1
 Release:       1%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -9,7 +9,7 @@ URL:           https://github.com/vmware/open-vmdk
 Group:         Development/Tools
 
 Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=82211a3f3d3f271e6943503ede03ab28c857d7436ef5b5177f1e2b98a21da2100a584eb954bcab2772f30b6fd0565a91e009ae56de656c5bf7506f6a03448643
+%define sha512 %{name}=f1f3ad9e7f627bd9fb2459df1235851c8fff521f3bc8ecaf29d1606796428fbdedca2f2345f35ebdc609ee8690f0420dd0c4a64df6f3309c1d4eeff15aa81bea
 
 BuildRequires: zlib-devel
 
@@ -34,7 +34,6 @@ that can be imported by VMware vSphere or Fusion and Workstation.
 %make_build
 
 %install
-mkdir -p %{buildroot}/%{_sysconfdir}
 %make_install
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
 install templates/*.ovf %{buildroot}%{_datadir}/%{name}
@@ -49,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Jul 26 2023 Oliver Kurth <okurth@vmware.com> 0.3.1-1
+- update to 0.3.1
 * Wed Jul 12 2023 Oliver Kurth <okurth@vmware.com> 0.3.0-1
 - update to 0.3.0
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.2.0-2
