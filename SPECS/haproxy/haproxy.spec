@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.2.6
-Release:        6%{?dist}
+Version:        2.2.29
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -9,15 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.haproxy.org/download/2.2/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b9afa4a4112dccaf192fce07b1cdbb1547060d998801595147a41674042741b62852f65a65aa9b2d033db8808697fd3a522494097710a19071fbb0c604544de5
-
-Patch0: %{name}-CVE-2021-39242.patch
-Patch1: %{name}-CVE-2021-39240.patch
-Patch2: %{name}-CVE-2021-40346.patch
-Patch3: %{name}-CVE-2022-0711.patch
-Patch4: %{name}-CVE-2023-25725.patch
-Patch5: %{name}-CVE-2023-0056.patch
-Patch6: %{name}-CVE-2023-0836.patch
+%define sha512 %{name}=066affb96d46de9c323e53cb3766f5eafa4f34f2403107d5d056588462c59b8340fb0e33acebd560e016d695b4423f61b9c42ea2b08d1754448e9919a4c6865f
 
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -70,6 +62,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Wed Jul 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.2.29-1
+- Version upgrade to v2.2.29 to fix CVE-2021-39241
 * Wed Apr 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.2.6-6
 - Fix CVE-2023-0056, CVE-2023-0836
 * Mon Feb 27 2023 Harinadh D <hdommaraju@vmware.com> 2.2.6-5
