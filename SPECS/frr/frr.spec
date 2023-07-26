@@ -2,8 +2,8 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        8.4.1
-Release:        6%{?dist}
+Version:        8.5.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
+%define sha512 %{name}=1afa6ca1a41096aa47dc2fc39ab87290b3cbf634a1632e7910a5b69d2816998fbccbca616f261a410aa146a21dd26d12b7e6812da4ec08545b1500f8b546b972
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
@@ -220,6 +220,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1
+- Update to latest version
 * Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-6
 - Add protobuf to requires
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-5
