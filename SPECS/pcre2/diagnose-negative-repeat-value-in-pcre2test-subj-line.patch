@@ -1,0 +1,54 @@
+From 94e1c001761373b7d9450768aa15d04c25547a35 Mon Sep 17 00:00:00 2001
+From: Philip Hazel <Philip.Hazel@gmail.com>
+Date: Tue, 16 Aug 2022 17:00:45 +0100
+Subject: [PATCH] Diagnose negative repeat value in pcre2test subject line
+
+---
+ src/pcre2test.c      | 4 ++--
+ testdata/testinput2  | 3 +++
+ testdata/testoutput2 | 4 ++++
+ 4 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/src/pcre2test.c b/src/pcre2test.c
+index 08f86096..f6f5d66c 100644
+--- a/src/pcre2test.c
++++ b/src/pcre2test.c
+@@ -6844,9 +6844,9 @@ while ((c = *p++) != 0)
+       }
+
+     i = (int32_t)li;
+-    if (i-- == 0)
++    if (i-- <= 0)
+       {
+-      fprintf(outfile, "** Zero repeat not allowed\n");
++      fprintf(outfile, "** Zero or negative repeat not allowed\n");
+       return PR_OK;
+       }
+
+diff --git a/testdata/testinput2 b/testdata/testinput2
+index d37d8f30..717ba2ae 100644
+--- a/testdata/testinput2
++++ b/testdata/testinput2
+@@ -5932,4 +5932,7 @@ a)"xI
+ /[Aa]{2,3}/BI
+     aabcd
+
++--
++    \[X]{-10}
++
+ # End of testinput2
+diff --git a/testdata/testoutput2 b/testdata/testoutput2
+index ce090f8c..d2188d3c 100644
+--- a/testdata/testoutput2
++++ b/testdata/testoutput2
+@@ -17746,6 +17746,10 @@ Subject length lower bound = 2
+     aabcd
+  0: aa
+
++--
++    \[X]{-10}
++** Zero or negative repeat not allowed
++
+ # End of testinput2
+ Error -70: PCRE2_ERROR_BADDATA (unknown error number)
+ Error -62: bad serialized data
