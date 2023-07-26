@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 License:        BSD
 Group:          Development/Tools
@@ -25,6 +25,8 @@ Requires:       readline
 Requires:       libstdc++
 Requires:       %{name}-libs = %{version}
 Requires:       bzip2-libs
+
+Patch0:         diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
 
 %description
 The PCRE2 library is a set of C functions that implement regular expression pattern matching using the same syntax and semantics as Perl 5.
@@ -100,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.40-4
+- Fix for CVE-2022-41409
 * Tue Jan 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-3
 - Fix file packaging
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 10.40-2
