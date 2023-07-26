@@ -3,8 +3,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        8.8p1
-Release:        6%{?dist}
+Version:        8.9p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d44cd04445f9c8963513b0d5a7e8348985114ff2471e119a6e344498719ef40f09c61c354888a3be9dabcb5870e5cbe5d3aafbb861dfa1d82a4952f3d233a8df
+%define sha512 %{name}=04bd38ea6fe4be31acc8c4e83de7d3dda66fb7207be2e4ba25d3b8118d13d098a283769da9e8ce1fc4fba7edf739c14efcc6c9137132919261a7f882314b0f6b
 
 # These sources are taken from:
 # http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz
@@ -23,6 +23,10 @@ Source3: sshd-keygen.service
 Source4: sshdat.service
 
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+Patch1: CVE-2023-38408-1.patch
+Patch2: CVE-2023-38408-2.patch
+Patch3: CVE-2023-38408-3.patch
+Patch4: CVE-2023-38408-4.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -92,7 +96,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-maintype=man \
     --enable-strip=no \
     --with-kerberos5=%{_usr} \
-    --with-sandbox=rlimit
+    --with-sandbox=seccomp_filter
 
 %make_build
 
@@ -196,6 +200,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 8.9p1-1
+- Upgrade to 8.9p1 and fix CVE-2023-38408
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-6
 - Fix requires
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.8p1-5
