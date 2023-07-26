@@ -2,8 +2,8 @@
 
 Summary:    Programming language
 Name:       lua
-Version:    5.3.5
-Release:    4%{?dist}
+Version:    5.3.6
+Release:    1%{?dist}
 License:    MIT
 URL:        http://www.lua.org
 Group:      Development/Tools
@@ -11,13 +11,12 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4f9516acc4659dfd0a9e911bfa00c0788f0ad9348e5724fe8fb17aac59e9c0060a64378f82be86f8534e49c6c013e7488ad17321bafcc787831d3d67406bd0f4
+%define sha512 %{name}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 
-Patch0:     fix-version-string.patch
-Patch1:     %{name}-%{version}-shared_library-1.patch
-Patch2:     CVE-2019-6706.patch
-Patch3:     CVE-2022-28805.patch
-Patch4:     CVE-2022-33099.patch
+Patch0:     %{name}-%{version}-shared_library-1.patch
+Patch1:     CVE-2022-28805.patch
+Patch2:     CVE-2022-33099.patch
+Patch3:     CVE-2021-44647.patch
 
 BuildRequires:  readline-devel
 
@@ -41,7 +40,6 @@ Static libraries and header files for the support library for lua
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
@@ -106,6 +104,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+* Wed Jul 26 2023 Mukul Sikka <msikka@vmware.com> 5.3.6-1
+- Update to version 5.3.6
 * Thu Jul 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.5-4
 - Fix CVE-2022-33099
 * Mon Apr 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.5-3
