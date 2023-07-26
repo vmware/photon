@@ -9,7 +9,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.30.2
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -43,6 +43,7 @@ BuildRequires: protobuf-devel
 BuildRequires: git
 BuildRequires: net-tools
 BuildRequires: jsoncpp-devel
+BuildRequires: re2-devel
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -54,6 +55,7 @@ Requires: jq
 Requires: c-ares
 Requires: protobuf
 Requires: jsoncpp
+Requires: re2
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -127,6 +129,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko
 
 %changelog
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 0.30.2-6
+- Bump version as a part of grpc upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-5
 - Bump version as a part of protobuf upgrade
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.30.2-4
