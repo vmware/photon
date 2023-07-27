@@ -1,14 +1,14 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.17.8
-Release:        2%{?dist}
+Version:        4.17.10
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=60cd72cd40ef4a958d26926d51d9741d4d6c6a7fc8d275c6ba76d2c3ffc4c71aa7554943125c47575135df1271bc421dd57a0d1206708dfa8e25d1b6dc2661ba
+%define sha512  samba=a39fa5bee8ccd37b8537ebe4acd4a15cc644e8bcc610eecf57c50c2162813e71a898e8dbc681e06b09cb733c228a424f89cc5b6e1b76eeb4dd3c5749f9419af1
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
@@ -47,6 +47,7 @@ BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
+BuildRequires: popt-devel
 
 Requires:      samba-client-libs = %{samba_ver}
 Requires:      libtirpc
@@ -68,6 +69,7 @@ Requires:      libtalloc
 Requires:      libtevent
 Requires:      zlib
 Requires:      ncurses
+Requires:      popt
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -580,6 +582,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Thu Jul 27 2023 Oliver Kurth <okurth@vmware.com> 4.17.10-1
+-   update to 4.17.10 for CVE fixes
 *   Mon Jul 17 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 4.17.8-2
 -   Bump version as a part of bindutils upgrade
 *   Fri Jun 16 2023 Oliver Kurth <okurth@vmware.com> 4.17.8-1
