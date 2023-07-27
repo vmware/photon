@@ -6,29 +6,28 @@
 %endif
 %define debug_package %{nil}
 %define __strip /bin/true
+%define contrib_ver 0.7.0
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.23.2
-Release:        12%{?dist}
+Version:        1.27.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        kubernetes-%{version}.tar.gz
-%define sha512  kubernetes-%{version}.tar.gz=af67745f84efe1e340187e510d42db231bbeef29d59fae3408b8a560bf5a336d3afa21d4a6bdd6a748ebd018aae0b15edcb4ebda594367aae3f91bae173c3a98
+Source0:        https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}-%{version}.tar.gz=51cf0178c8a2a00798cc618c9918f556c418de137566db60a66a0c7556ee625b34cf86b1da241856599784588c0e3e8b81225dca627fea70a87c94adb073bb7a
 
-Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
-%define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
+Source1:        https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
+%define sha512  contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
-Patch0:         CVE-2022-3294.patch
-Patch1:         CVE-2022-3162.patch
 
-BuildRequires:  go >= 1.16.2
+BuildRequires:  go
 BuildRequires:  rsync
 BuildRequires:  which
 
@@ -69,13 +68,16 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
-cd %{name}-%{version}
 
 %build
-# make doesn't support _smp_mflags
-make -j8
-# make doesn't support _smp_mflags
-make -j8 WHAT="cmd/cloud-controller-manager"
+make WHAT="cmd/kube-proxy" %{?_smp_mflags}
+make WHAT="cmd/kube-apiserver" %{?_smp_mflags}
+make WHAT="cmd/kube-controller-manager" %{?_smp_mflags}
+make WHAT="cmd/kubelet" %{?_smp_mflags}
+make WHAT="cmd/kubeadm" %{?_smp_mflags}
+make WHAT="cmd/kube-scheduler" %{?_smp_mflags}
+make WHAT="cmd/kubectl" %{?_smp_mflags}
+make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
@@ -83,7 +85,7 @@ strip bin/pause-%{archname}
 popd
 
 %install
-install -vdm644 %{buildroot}/etc/profile.d
+install -vdm644 %{buildroot}%{_sysconfdir}/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 
 # binaries install
@@ -95,48 +97,42 @@ done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
 # kubeadm install
-install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
+install -vdm644 %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
-install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2}
-install -p -m 644 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3}
-sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+install -p -m 755 -t %{buildroot}%{_sysconfdir}/systemd/system %{SOURCE2}
+install -p -m 644 -t %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d %{SOURCE3}
+sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
-install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-%{contrib_ver}/init/systemd/environ/*
 cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
 apiVersion: v1
 clusters:
 - cluster:
     server: http://127.0.0.1:8080
 EOF
-sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
+sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=%{_sysconfdir}/%{name}/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
 
 # install service files
-install -d -m 0755 %{buildroot}/usr/lib/systemd/system
-install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/systemd/*.service
+install -d -m 0755 %{buildroot}%{_unitdir}
+install -m 0644 -t %{buildroot}%{_unitdir} contrib-%{contrib_ver}/init/systemd/*.service
 
 # install the place the kubelet defaults to put volumes
-install -dm755 %{buildroot}/var/lib/kubelet
-install -dm755 %{buildroot}/var/run/kubernetes
-cat << EOF >> %{buildroot}/var/lib/kubelet/config.yaml
-apiVersion: kubelet.config.k8s.io/v1beta1
-kind: KubeletConfiguration
-address: 127.0.0.1
-EOF
+install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
+install -dm755 %{buildroot}%{_var}/run/%{name}
 
-mkdir -p %{buildroot}/%{_lib}/tmpfiles.d
-cat << EOF >> %{buildroot}/%{_lib}/tmpfiles.d/kubernetes.conf
-d /var/run/kubernetes 0755 kube kube -
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
+d %{_var}/run/%{name} 0755 kube kube -
 EOF
 
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-# make doesn't support _smp_mflags
-make -j8 check
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
@@ -150,8 +146,8 @@ if [ $1 -eq 1 ]; then
 fi
 
 %post
-chown -R kube:kube /var/lib/kubelet
-chown -R kube:kube /var/run/kubernetes
+chown -R kube:kube %{_sharedstatedir}/kubelet
+chown -R kube:kube %{_var}/run/%{name}
 systemctl daemon-reload
 
 %post kubeadm
@@ -186,16 +182,15 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-%{_lib}/systemd/system/kube-apiserver.service
-%{_lib}/systemd/system/kubelet.service
-%{_lib}/systemd/system/kube-scheduler.service
-%{_lib}/systemd/system/kube-controller-manager.service
-%{_lib}/systemd/system/kube-proxy.service
-%{_lib}/tmpfiles.d/kubernetes.conf
+%{_unitdir}/kube-apiserver.service
+%{_unitdir}/kubelet.service
+%{_unitdir}/kube-scheduler.service
+%{_unitdir}/kube-controller-manager.service
+%{_unitdir}/kube-proxy.service
+%{_tmpfilesdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}
-%dir /var/lib/kubelet
-/var/lib/kubelet/config.yaml
-%dir /var/run/kubernetes
+%dir %{_sharedstatedir}/kubelet
+%dir %{_var}/run/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/config
 %config(noreplace) %{_sysconfdir}/%{name}/apiserver
 %config(noreplace) %{_sysconfdir}/%{name}/controller-manager
@@ -207,14 +202,16 @@ fi
 %files kubeadm
 %defattr(-,root,root)
 %{_bindir}/kubeadm
-/etc/systemd/system/kubelet.service
-/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+%{_sysconfdir}/systemd/system/kubelet.service
+%{_sysconfdir}/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 %files pause
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.3-1
+- Update to 1.27.3, Fixes multiple second level CVEs
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.2-12
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.2-11

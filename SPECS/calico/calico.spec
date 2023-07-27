@@ -1,45 +1,140 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.20.2
-Release:        10%{?dist}
+Version:        3.26.1
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/projectcalico/node
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  calico=9852a9144ac3da6ac2286fe349d3aada199d5926e2b1c1c4efdbd3f9ad9815505da912d6610b2dfc23b9e466a6fbe839702341b55e0aac2f9b5b5df0be82f76e
+URL:            https://github.com/projectcalico/calico
+Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  calico=2571bbae94ca0c80b11a347ffc4601e7ab5feba3bd9fb93e78e0b3ec9998a2871ba7abf3fe8029f8738ed9cf616b4e0a7ddb6a0556b08873045fefe1c2656d99
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
 BuildRequires:  go
-BuildRequires:  make
 
 %description
 Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine.
 
+%package        cni
+Summary:        Calico networking for CNI
+Group:          Development/Tools
+Requires:       cni
+
+%description    cni
+Project Calico network plugin for CNI. This allows kubernetes to use Calico networking. This repository includes a top-level CNI networking plugin, as well as a CNI IPAM plugin which makes use of Calico IPAM.
+
+%package        felix
+Summary:        A per-host daemon for Calico
+Group:          Applications/System
+
+%description    felix
+Main task is to program routes and ACLs, and anything else required on the host to provide
+desired connectivity for the endpoints on that host. Runs on each machine that hosts endpoints.
+Runs as an agent daemon.
+
+%package        k8s-policy
+Summary:        Calico Network Policy for Kubernetes
+Group:          Development/Tools
+Requires:       python3
+Requires:       python3-setuptools
+
+%description    k8s-policy
+Calico Network Policy enables Calico to enforce network policy on top of Calico BGP, Flannel, or GCE native.
+
+%package -n     confd
+Summary:        confd is a lightweight configuration management tool
+Group:          Development/Tools
+Conflicts:      %{name}-confd <= 0.16.0-18
+Provides:       %{name}-confd = %{version}-%{release}
+
+%description -n confd
+This is a Calico-specific version of confd. It is heavily modified from the original and only supports a single backend type - namely a Calico datastore. It has a single purpose which is to monitor Calico BGP configuration and to autogenerate bird BGP templates from that config.
+
 %prep
-%autosetup -n node-%{version}
+%autosetup -n calico-%{version}
 
 %build
-export GO111MODULE=auto
-mkdir -p dist
-go build -v -o dist/calico-node cmd/calico-node/main.go
+#node
+mkdir -p node/dist
+CGO_ENABLED=0 go build -v -o node/dist/calico-node ./node/cmd/calico-node/main.go
+
+#cni
+mkdir -p cni-plugin/dist
+CGO_ENABLED=0 go build -v -o cni-plugin/dist/calico -ldflags "-X main.VERSION= -s -w" ./cni-plugin/cmd/calico
+CGO_ENABLED=0 go build -v -o cni-plugin/dist/calico-ipam -ldflags "-X main.VERSION= -s -w" ./cni-plugin/cmd/calico
+CGO_ENABLED=0 go build -v -o cni-plugin/dist/install -ldflags "-X main.VERSION= -s -w" ./cni-plugin/cmd/calico
+
+#felix
+mkdir -p felix/dist
+CGO_ENABLED=0 go build -v -o felix/dist/calico-felix -v \
+  -ldflags " -X github.com/projectcalico/felix/buildinfo.GitVersion=<unknown>" \
+  ./felix/cmd/calico-felix
+
+#k8s-policy
+mkdir -p kube-controllers/dist
+CGO_ENABLED=0 go build -v -o kube-controllers/dist/controller -ldflags "-X main.VERSION=%{version}" ./kube-controllers/cmd/kube-controllers/
+
+#confd
+mkdir -p confd/dist
+CGO_ENABLED=0 go build -v -o confd/dist/confd ./confd/
 
 %install
+#node
 install -vdm 755 %{buildroot}%{_bindir}
-install dist/calico-node %{buildroot}%{_bindir}/
+install node/dist/calico-node %{buildroot}%{_bindir}/
 install -vdm 0755 %{buildroot}/usr/share/calico/docker/fs
-cp -r filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
-cp -r filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
+cp -r node/filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
+cp -r node/filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
 eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/calico-node
+
+#cni
+install -vdm 755 %{buildroot}/opt/cni/bin
+install -vpm 0755 -t %{buildroot}/opt/cni/bin/ cni-plugin/dist/calico
+install -vpm 0755 -t %{buildroot}/opt/cni/bin/ cni-plugin/dist/calico-ipam
+install -vpm 0755 -t %{buildroot}/opt/cni/bin/ cni-plugin/dist/install
+
+#felix
+install -vdm 755 %{buildroot}%{_bindir}
+install felix/dist/calico-felix %{buildroot}%{_bindir}/
+
+#k8s-policy
+install -vdm 755 %{buildroot}%{_bindir}
+install -vpm 0755 -t %{buildroot}%{_bindir}/ kube-controllers/dist/controller
+
+#confd
+install -vdm 755 %{buildroot}/%{_bindir}
+install -vpm 0755 -t %{buildroot}/%{_bindir} confd/dist/confd
+cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-node
 /usr/share/calico/docker/fs/*
 
+%files cni
+%defattr(-,root,root)
+/opt/cni/bin/calico
+/opt/cni/bin/calico-ipam
+/opt/cni/bin/install
+
+%files felix
+%defattr(-,root,root)
+%{_bindir}/calico-felix
+
+%files k8s-policy
+%defattr(-,root,root)
+%{_bindir}/controller
+
+%files -n confd
+%defattr(-,root,root)
+%{_bindir}/confd
+%config(noreplace) %{_sysconfdir}/calico
+
 %changelog
+* Thu Jul 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.26.1-1
+- Update to 3.26.1, Fixes multiple second level CVEs
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.20.2-10
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.20.2-9

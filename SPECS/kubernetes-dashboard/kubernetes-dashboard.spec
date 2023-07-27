@@ -1,14 +1,14 @@
+%global debug_package %{nil}
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        1.10.1
-Release:        24%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  kubernetes-dashboard=9887ea4bab324abf1b1bebbfeb58d7f45a0c4bf43e65768412086256406bd1d70f313b704a8211d43c5eff33ee2739caf16467a3fe6bf45b17f8c54e02909e93
-Source1:        npm-sources-9.9.0.tar.gz
-%define sha512  npm-sources=f3dd8468189a6458faf1c878f861e1e67e68886da73fbcbea7eecbc3963c536ba7a1153f6e3619d48494ab6de78e495810a221f4de2742d7729bd8e07ae8513d
-Source2:        package-lock.json
+Source0:        https://github.com/kubernetes/dashboard/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
+Source1:        dashboard-dist-%{version}.tar.gz
+%define sha512  dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,36 +18,44 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs = 9.11.2
-BuildRequires:  openjre8
+BuildRequires:  nodejs
+BuildRequires:  openjdk11
 BuildRequires:  which
-Requires:       nodejs = 9.11.2
-Requires:       openjre8
+Requires:       nodejs
+Requires:       openjdk11
 
 %description
 Kubernetes Dashboard UI.
 
 %prep
-%autosetup -n dashboard-%{version}
+%autosetup -p1 -n dashboard-%{version}
+# Change the npm default registry to enterprise registry
+#sed -i 's#https://registry.npmjs.org#http://<url>#g' *.json
+#npm config set registry http://<url>
 
 %build
 export PATH=${PATH}:/usr/bin
-export GO111MODULE=auto
+# During building, it looks .git/hooks in the root path
+# But tar.gz file  from github/kibana/tag doesn't provide .git/hooks
+# inside it. so did below steps to create the tar
+# 1) git clone git@github.com:kubernetes/dashboard.git dashboard-%{version}
+# 2) cd dashboard-%{version}
+# 3) git checkout tags/v2.0.3 -b 2.0.3
+# 4) cd ..
+# 5) tar -zcvf kubernetes-dashboard-2.0.3.tar.gz dashboard-%{version}
+
+#download npm sources in node_modules
+#npm ci --unsafe-perm
+
+#npm run build
+
 tar xf %{SOURCE1} --no-same-owner
-cp %{SOURCE2} .
-#npm install --unsafe-perm
-#Remove the lines which strips the debuginfo.
-sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
-./node_modules/.bin/gulp build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}/opt/k8dashboard
+mkdir -p %{buildroot}%{_bindir}  %{buildroot}/opt/k8dashboard
 cp -p -r ./dist/amd64/dashboard %{buildroot}%{_bindir}/
-cp -p -r ./dist/amd64/locale_conf.json %{buildroot}/opt/k8dashboard/
-cp -p -r ./dist/amd64/public %{buildroot}/opt/k8dashboard/
-cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
-eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
+cp -p -r ./dist/amd64/locale_conf.json ./dist/amd64/public \
+          ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
 
 %check
 # dashboard unit tests require chrome browser binary not present in PhotonOS
@@ -60,6 +68,8 @@ eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 /opt/k8dashboard/public/*
 
 %changelog
+* Thu Jul 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-1
+- Update to 2.7.0
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-24
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-23

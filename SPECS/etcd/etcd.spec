@@ -1,22 +1,20 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.5.1
-Release:        12%{?dist}
+Version:        3.5.9
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  etcd=4cf6f3f422c8390287d5eca7518e1e6ab078fca2d1e5708636886cf57dc2901d56f5b5b713d814e16ebe349bc3abe59e0ea021bb33d8038f97d69bd1e76f8e73
+Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  etcd=c71c8bb532f0f7d7f2bb63f3eed0a2a0f05e3299a9dd7b7fd5a4ca7c0acb89ea0259797306053c7dc5ca3ad735711df6540bf134ce15975330a2fe1754bb27d5
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
 %endif
-Patch0:         CVE-2021-28235.patch
-Patch1:         CVE-2023-32082.patch
 
-BuildRequires:  go >= 1.12
+BuildRequires:  go
 BuildRequires:  git
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
@@ -88,6 +86,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Thu Jul 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.9-1
+- Update to 3.5.9
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.1-12
 - Bump up version to compile with new go
 * Wed May 24 2023 Shivani Agarwal <shivania2@vmware.com> 3.5.1-11
