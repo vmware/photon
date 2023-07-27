@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -1076,6 +1076,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Mon Jul 31 2023 Oliver Kurth <okurth@vmware.com> 2.8.2-8
+- bump version as part of samba update
 * Mon Jul 17 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.8.2-7
 - Bump version as a part of bindutils upgrade
 * Wed Jul 05 2023 Piyush Gupta <gpiyush@vmware.com> 2.8.2-6
