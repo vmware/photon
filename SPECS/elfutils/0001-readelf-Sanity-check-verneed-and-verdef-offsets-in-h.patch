@@ -1,0 +1,55 @@
+From fedc22d6e64974a5d5dafb9a9b2242668394edbc Mon Sep 17 00:00:00 2001
+From: Mark Wielaard <mark@klomp.org>
+Date: Wed, 3 Mar 2021 21:40:53 +0100
+Subject: [PATCH] readelf: Sanity check verneed and verdef offsets in
+ handle_symtab.
+
+We are going through vna_next, vn_next and vd_next in a while loop.
+Make sure that all offsets are sane. We don't want things to wrap
+around so we go in cycles.
+
+https://sourceware.org/bugzilla/show_bug.cgi?id=27501
+
+Signed-off-by: Oliver Kurth <okurth@vmware.com>
+---
+ src/readelf.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/readelf.c b/src/readelf.c
+index 64067a57..275a7671 100644
+--- a/src/readelf.c
++++ b/src/readelf.c
+@@ -2550,7 +2550,9 @@ handle_symtab (Ebl *ebl, Elf_Scn *scn, GElf_Shdr *shdr)
+ 						 &vernaux_mem);
+ 		      while (vernaux != NULL
+ 			     && vernaux->vna_other != *versym
+-			     && vernaux->vna_next != 0)
++			     && vernaux->vna_next != 0
++			     && (verneed_data->d_size - vna_offset
++				 >= vernaux->vna_next))
+ 			{
+ 			  /* Update the offset.  */
+ 			  vna_offset += vernaux->vna_next;
+@@ -2567,6 +2569,9 @@ handle_symtab (Ebl *ebl, Elf_Scn *scn, GElf_Shdr *shdr)
+ 			/* Found it.  */
+ 			break;
+ 
++		      if (verneed_data->d_size - vn_offset < verneed->vn_next)
++			break;
++
+ 		      vn_offset += verneed->vn_next;
+ 		      verneed = (verneed->vn_next == 0
+ 				 ? NULL
+@@ -2602,6 +2607,9 @@ handle_symtab (Ebl *ebl, Elf_Scn *scn, GElf_Shdr *shdr)
+ 			/* Found the definition.  */
+ 			break;
+ 
++		      if (verdef_data->d_size - vd_offset < verdef->vd_next)
++			break;
++
+ 		      vd_offset += verdef->vd_next;
+ 		      verdef = (verdef->vd_next == 0
+ 				? NULL
+-- 
+2.34.1
+

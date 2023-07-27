@@ -1,28 +1,29 @@
-Summary:	A collection of utilities and DSOs to handle compiled objects
-Name:		elfutils
-Version:	0.176
-Release:	1%{?dist}
-License:	GPLv3+ and (GPLv2+ or LGPLv3+)
-Group:		Development/Tools
-URL:    	https://sourceware.org/elfutils
-Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=6511203cae7225ae780501834a7ccd234b14889a
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        A collection of utilities and DSOs to handle compiled objects
+Name:           elfutils
+Version:        0.176
+Release:        2%{?dist}
+License:        GPLv3+ and (GPLv2+ or LGPLv3+)
+Group:          Development/Tools
+URL:            https://sourceware.org/elfutils
+Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define         sha512 %{name}=7f032913be363a43229ded85d495dcf7542b3c85974aaaba0d984228dc9ac1721da3dc388d3fa02325a80940161db7e9ad2c9e4521a424ad8a7d050c0902915b
+Patch0:         0001-readelf-Sanity-check-verneed-and-verdef-offsets-in-h.patch
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-BuildRequires:	gcc >= 4.1.2-33
-BuildRequires:	glibc >= 2.7
-BuildRequires:	bison >= 1.875
-BuildRequires:	flex >= 2.5.4a
-BuildRequires:	m4
-BuildRequires:	gettext
-BuildRequires:	bzip2-devel
+BuildRequires:  gcc >= 4.1.2-33
+BuildRequires:  glibc >= 2.7
+BuildRequires:  bison >= 1.875
+BuildRequires:  flex >= 2.5.4a
+BuildRequires:  m4
+BuildRequires:  gettext
+BuildRequires:  bzip2-devel
 
-Requires:	elfutils-libelf = %{version}-%{release}
-Requires:	glibc >= 2.7
-Requires:	bzip2-libs
+Requires:       elfutils-libelf = %{version}-%{release}
+Requires:       glibc >= 2.7
+Requires:       bzip2-libs
 
-Obsoletes:	libelf libelf-devel
+Obsoletes:      libelf libelf-devel
 
 %define _gnu %{nil}
 %define _programprefix eu-
@@ -194,6 +195,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 30 2023 Oliver Kurth <okurth@vmware.com> 0.176-2
+- fix for CVE-2021-33294
 * Mon Jun 10 2019 Sujay G <gsujay@vmware.com> 0.176-1
 - Updated to version 0.176 to fix CVE-2019-{7148, 7149, 7150}'s
 - Removed cve-2014-0172.patch, CVE-2018-18310.patch, CVE-2018-18520.patch,
@@ -299,17 +302,17 @@ rm -rf %{buildroot}
   to make the D behavior the default when U is not specified.
 - ranlib: Support -D and -U flags with same meaning.
 - readelf: Improve output of -wline. Add support for printing SDT elf
-  notes.          Add printing of .gdb_index section. 	 Support for
+  notes.          Add printing of .gdb_index section.    Support for
   typed DWARF stack, call_site and entry_value.
 - strip: Add --reloc-debug-sections option.        Improved SHT_GROUP
   sections handling.
 * Tue Feb 15 2011  <drepper@gmail.com> 0.152-1
 - Various build and warning nits fixed for newest GCC and Autoconf.
 - libdwfl: Yet another prelink-related fix for another regression.
-  	 Look for Linux kernel images in files named with compression
+         Look for Linux kernel images in files named with compression
   suffixes.
 - elfcmp: New flag --ignore-build-id to ignore differing build ID
-  bits. 	New flag -l/--verbose to print all differences.
+  bits.         New flag -l/--verbose to print all differences.
 * Wed Jan 12 2011  <drepper@gmail.com> 0.151-1
 - libdwfl: Fix for more prelink cases with separate debug file.
 - strip: New flag --strip-sections to remove section headers entirely.
@@ -331,7 +334,7 @@ rm -rf %{buildroot}
   dwarf_offdie_types.        New functions dwarf_lineisa,
   dwarf_linediscriminator, dwarf_lineop_index.
 - libdwfl: Fixes in core-file handling, support cores from PIEs.
-  	 When working from build IDs, don't open a named file that
+         When working from build IDs, don't open a named file that
   mismatches.
 - readelf: Handle DWARF 4 formats.
 * Mon May  3 2010 Ulrich Drepper <drepper@redhat.com> 0.147-1
@@ -346,11 +349,11 @@ rm -rf %{buildroot}
 - Fix build with most recent glibc headers.
 - libelf: More robust to bogus section headers.
 - libdw: Fix CFI decoding.
-- libdwfl: Fix address bias returned by CFI accessors. 	 Fix core
+- libdwfl: Fix address bias returned by CFI accessors.   Fix core
   file module layout identification.
 - readelf: Fix CFI decoding.
 * Thu Jan 14 2010  <drepper@redhat.com> 0.144-1
-- libelf: New function elf_getphdrnum. 	Now support using more than
+- libelf: New function elf_getphdrnum.  Now support using more than
   65536 program headers in a file.
 - libdw: New function dwarf_aggregate_size for computing (constant)
   type        sizes, including array_type cases with nontrivial
@@ -376,13 +379,13 @@ rm -rf %{buildroot}
   Handle some new DWARF 3 expression operations previously omitted.
   Basic handling of some new encodings slated for DWARF
 * Thu Apr 23 2009 Ulrich Drepper <drepper@redhat.com> 0.141-1
-- libebl: sparc backend fixes; 	some more arm backend support
+- libebl: sparc backend fixes;  some more arm backend support
 - libdwfl: fix dwfl_module_build_id for prelinked DSO case;
-  fixes in core file support; 	 dwfl_module_getsym interface
+  fixes in core file support;    dwfl_module_getsym interface
   improved for non-address symbols
 - strip: fix infinite loop on strange inputs with -f
 - addr2line: take -j/--section=NAME option for binutils compatibility
-  	   (same effect as '(NAME)0x123' syntax already supported)
+           (same effect as '(NAME)0x123' syntax already supported)
 * Mon Feb 16 2009 Ulrich Drepper <drepper@redhat.com> 0.140-1
 - libelf: Fix regression in creation of section header
 - libdwfl: Less strict behavior if DWARF reader ist just used to
@@ -405,7 +408,7 @@ rm -rf %{buildroot}
 * Tue Aug 26 2008 Ulrich Drepper <drepper@redhat.com> 0.137-1
 - Minor fixes for unreleased 0.136 release.
 * Mon Aug 25 2008 Ulrich Drepper <drepper@redhat.com> 0.136-1
-- libdwfl: bug fixes; new segment interfaces;	 all the libdwfl-based
+- libdwfl: bug fixes; new segment interfaces;    all the libdwfl-based
  tools now support --core=COREFILE option
 * Mon May 12 2008 Ulrich Drepper <drepper@redhat.com> 0.135-1
 - libdwfl: bug fixes
@@ -433,14 +436,14 @@ rm -rf %{buildroot}
 * Mon Oct 15 2007 Ulrich Drepper <drepper@redhat.com> 0.130-1
 - readelf: -p option can take an argument like -x for one section,
   or no argument (as before) for all SHF_STRINGS sections;
-  new option --archive-index (or -c);	 improved -n output fo r core files, on many machines
+  new option --archive-index (or -c);    improved -n output fo r core files, on many machines
 - libelf: new function elf_getdata_rawchunk, replaces gelf_rawchunk;
   new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
 - readelf, elflint: handle SHT_NOTE sections without requiring phdrs
 - elflint: stricter checks on debug sections
 - libdwfl: new functions dwfl_build_id_find_elf, dwfl_build_id_find_debu ginfo,
   dwfl_module_build_id, dwfl_module_report_build_id; support dynamic symbol
-  tables found via phdrs;	 dwfl_standard_find_debuginfo now uses build IDs when available
+  tables found via phdrs;        dwfl_standard_find_debuginfo now uses build IDs when available
 - unstrip: new option --list (or -n)
 - libebl: backend improvements for sparc, alpha, powerpc
 * Tue Aug 14 2007 Ulrich Drepper <drepper@redhat.com> 0.129-1
