@@ -1,7 +1,7 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
 
 Name:           cloud-init
-Version:        23.2
+Version:        23.2.2
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8b46cbbfcc80d5f7731941f4382826b41b1cc4961e6e7044b0dd8668fba232a0be6d3b402ec010154318801f6466b0fc268dd74e02e4bc1dc54a92203d1f4793
+%define sha512 %{name}=5a3788d3bad568b502bc4776472ca58d2543da2340a1cfcffd69429d44b1a00ba904d9986fac9babb0b4f58f0d1d326a497e56239e9c10fa35f2668de5a77dba
 
 Patch0: cloud-init-azureds.patch
 Patch1: ds-identify.patch
@@ -113,7 +113,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
 %define pkglist pytest-metadata unittest2 responses pytest-mock
 
 pip3 install --upgrade %{pkglist}
-make check %{?_smp_mflags}
+%make_build check
 %endif
 
 %clean
@@ -148,6 +148,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Jul 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2.2-1
+- Upgrade to v23.2.2
 * Fri Jun 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2-1
 - Upgrade to v23.2
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 23.1.1-4
