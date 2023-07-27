@@ -1,15 +1,15 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.8.7
-Release:        5%{?dist}
+Version:        1.8.9
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}-%{version}=05ef75415cb7cb7641f51d51e74f3ea29cc31ab1
+Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.xz
+%define sha512  %{name}-%{version}=e367bf286135e39b7401e852de25c1ed06d44befdffd92ed1566eb2ae9704b48ac9196cb971f43c6c83c6ad4d910443d32064bcdf618cfcef6bcab113e31ff70
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
@@ -23,10 +23,14 @@ Requires(postun): systemd
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  libpcap-devel
 
 Requires:       libpcap
+Requires:       libnftnl
+Requires:       libmnl
+Requires:       jansson
+Requires:       chkconfig
 
 %description
 The next part of this chapter deals with firewalls. The principal
@@ -47,7 +51,6 @@ It contains the libraries and header files to create applications.
     --disable-silent-rules \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
-    --disable-nftables \
     --enable-libipq \
     --enable-devel  \
     --enable-bpf-compiler
@@ -58,6 +61,7 @@ make V=0 %{?_smp_mflags}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
+
 #   Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}
 install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
@@ -72,12 +76,34 @@ find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %post
+for target in iptables \
+              ip6tables \
+              ebtables \
+              arptables; do
+alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-nft 10000 \
+  --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-nft-save \
+  --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
+done
+alternatives --install %{_sbindir}/%{name} %{name} %{_sbindir}/%{name}-legacy 30000 \
+  --slave %{_sbindir}/%{name}-save %{name}-save %{_sbindir}/%{name}-legacy-save \
+  --slave %{_sbindir}/%{name}-restore %{name}-restore %{_sbindir}/%{name}-legacy-restore
+
 %systemd_post iptables.service
 
 %preun
 %systemd_preun iptables.service
 
 %postun
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]; then
+  for target in iptables \
+              ip6tables \
+              ebtables \
+              arptables; do
+  alternatives --remove ${target} %{_sbindir}/${target}-nft
+  done
+  alternatives --remove %{name} %{_sbindir}/%{name}-legacy
+fi
 %?ldconfig
 %systemd_postun_with_restart iptables.service
 
@@ -86,10 +112,12 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/systemd/scripts/iptables
-%config(noreplace) /etc/systemd/scripts/iptables.stop
-%config(noreplace) /etc/systemd/scripts/ip4save
-%config(noreplace) /etc/systemd/scripts/ip6save
+%config(noreplace) %{_sysconfdir}/systemd/scripts/iptables
+%config(noreplace) %{_sysconfdir}/systemd/scripts/iptables.stop
+%config(noreplace) %{_sysconfdir}/systemd/scripts/ip4save
+%config(noreplace) %{_sysconfdir}/systemd/scripts/ip6save
+%config(noreplace) %{_sysconfdir}/ethertypes
+%config(noreplace) %{_sysconfdir}/xtables.conf
 %{_sbindir}/*
 %{_bindir}/*
 %{_libdir}/*.so.*
@@ -98,6 +126,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/systemd/system/iptables.service
 %{_mandir}/man1/*
 %{_mandir}/man8/*
+%{_datadir}/xtables/iptables.xslt
+%ghost %{_sbindir}/ip{,6}tables{,-save,-restore}
+%ghost %{_sbindir}/{eb,arp}tables{,-save,-restore}
 
 %files devel
 %{_libdir}/*.so
@@ -106,6 +137,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jul 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.9-1
+- Enable arptables
+- Upgrade to latest
+- Introduce alternatives
 * Wed Mar 02 2022 Susant Sahani <ssahani@vmware.com> 1.8.7-5
 - Allow IPv6 RA and DHCPv6
 * Thu Feb 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.7-4

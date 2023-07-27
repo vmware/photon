@@ -1,7 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://ebtables.netfilter.org
 Group:          System Environment/Security
@@ -24,6 +24,7 @@ BuildRequires:  gcc
 BuildRequires:  make
 
 Requires:       systemd
+Requires:       chkconfig
 
 %description
 Ethernet bridge tables is a firewalling tool to transparently filter network
@@ -55,9 +56,8 @@ install -m 755 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/scripts/%{name}
 install -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
 install -D -m 600 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/ebtables-config
 
-ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy %{buildroot}%{_sbindir}/%{name}
-ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy-save %{buildroot}%{_sbindir}/%{name}-save
-ln -srfv %{buildroot}%{_sbindir}/%{name}-legacy-restore %{buildroot}%{_sbindir}/%{name}-restore
+# prepare for alternatives
+touch %{buildroot}%{_sbindir}/%{name}{,-save,-restore}
 
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
@@ -67,9 +67,16 @@ echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 %post
 /sbin/ldconfig
+alternatives --install %{_sbindir}/%{name} %{name} %{_sbindir}/%{name}-legacy 30000 \
+  --slave %{_sbindir}/%{name}-save %{name}-save %{_sbindir}/%{name}-legacy-save \
+  --slave %{_sbindir}/%{name}-restore %{name}-restore %{_sbindir}/%{name}-legacy-restore
 %systemd_post ebtables.service
 
 %postun
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]; then
+  alternatives --remove %{name} %{_sbindir}/%{name}-legacy
+fi
 /sbin/ldconfig
 %systemd_postun_with_restart ebtables.service
 
@@ -84,12 +91,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 %{_unitdir}/*
 %{_presetdir}/50-%{name}.preset
-%{_sysconfdir}/ethertypes
+%config(noreplace) %{_sysconfdir}/ethertypes
 %{_sysconfdir}/systemd/scripts/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-config
+%ghost %{_sbindir}/ebtables{,-save,-restore}
 
 %changelog
-* Wed May 11 2022 Shreenidhi Shedi >sshedi@vmware.com> 2.0.11-1
+* Sun Jan 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.0.11-2
+- Use alternatives for ebtables
+* Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.11-1
 - Upgrade to v2.0.11
 - Initialise len and flags in ebt_nflog_info structure
 * Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 2.0.10-4
