@@ -1,7 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://ebtables.netfilter.org
 Group:          System Environment/Security
@@ -22,6 +22,7 @@ BuildRequires:  gcc
 BuildRequires:  make
 
 Requires:       systemd
+Conflicts:      iptables < 1.8.3-7%{?dist}
 
 %description
 Ethernet bridge tables is a firewalling tool to transparently filter network
@@ -88,6 +89,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-config
 
 %changelog
+* Fri Jul 28 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.0.11-2
+- Fix ebtables-nft conflict with ebtables.
 * Wed May 11 2022 Shreenidhi Shedi >sshedi@vmware.com> 2.0.11-1
 - Upgrade to v2.0.11
 * Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 2.0.10-4

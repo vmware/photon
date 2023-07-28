@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -21,7 +21,7 @@ Patch0:         libebt_nflog.c-initialize-len-flag-fields-to-0.patch
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  bison
 
 Requires:       systemd
@@ -146,16 +146,18 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/%{name}/libebt*.so
 %{_libdir}/%{name}/libarpt_mangle.so
+%exclude %{_sbindir}/ebtables{,-save,-restore}
 %{_sbindir}/ebtables-*
-%exclude %{_sbindir}/ebtables
+%exclude %{_sbindir}/arptables{,-save,-restore}
 %{_sbindir}/arptables-*
-%exclude %{_sbindir}/arptables
 
 %{_sysconfdir}/ethertypes
 %{_mandir}/man8/ebtables-nft.8.gz
 %{_mandir}/man8/arptables*.gz
 
 %changelog
+* Fri Jul 28 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.3-7
+- Fix ebtables-nft conflict with ebtables.
 * Wed Jul 13 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.3-6
 - Do not override legacy ebtables, arptables softlink
 * Tue May 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.3-5
