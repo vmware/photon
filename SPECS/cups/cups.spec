@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.4.6-2
+- Bump version as a part of krb5 upgrade
 * Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.6-1
 - Update to v2.4.6
 * Thu Jun 15 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.4.2-5

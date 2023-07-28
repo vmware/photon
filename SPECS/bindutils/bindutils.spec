@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -132,6 +132,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.19.14-2
+- Bump version as a part of krb5 upgrade
 * Thu Jun 22 2023 Dweep Advani <dadvani@vmware.com> 9.19.14-1
 - Upgrade to 9.19.14 to fix CVE-2023-2828
 * Mon May 15 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-4

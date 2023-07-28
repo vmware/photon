@@ -1,15 +1,16 @@
+%define minor_ver 1.20
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
-Version:        1.20.1
-Release:        3%{?dist}
+Version:        1.20.2
+Release:        1%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6f57479f13f107cd84f30de5c758eb6b9fc59171329c13e5da6073b806755f8d163eb7bd84767ea861ad6458ea0c9eeb00ee044d3bcad01ef136e9888564b6a2
+Source0: http://web.mit.edu/kerberos/www/dist/%{name}/%{minor_ver}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
 
 Requires:       openssl-libs
 Requires:       e2fsprogs-libs
@@ -125,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.20.2-1
+- Update to v1.20.2 to fix CVE-2023-36054
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3
 - Require openssl-libs
 * Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2

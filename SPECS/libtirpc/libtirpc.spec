@@ -1,7 +1,7 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -70,6 +70,8 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 %{_libdir}/*.a
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.3-3
+- Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.3-2
 - Bump version as a part of krb5 upgrade
 * Thu Sep 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1

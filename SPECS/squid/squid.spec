@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -231,6 +231,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 5.7-9
+- Bump version as a part of krb5 upgrade
 * Fri Jun 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-8
 - Fix for - squid update attempts fail with file conflicts
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-7
