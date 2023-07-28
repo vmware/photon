@@ -1,0 +1,37 @@
+From 88cc443d80e409a6b54b5aa4ab7e41556bc59041 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 28 Jul 2023 16:20:52 +0530
+Subject: [PATCH] dstat: use collections.abc.Sequence
+
+Or else dstat can't work with newer python3
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ dstat | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dstat b/dstat
+index 9359965..6c6c7aa 100755
+--- a/dstat
++++ b/dstat
+@@ -19,7 +19,7 @@
+ from __future__ import absolute_import, division, generators, print_function
+ __metaclass__ = type
+ 
+-import collections
++import collections.abc
+ import fnmatch
+ import getopt
+ import getpass
+@@ -512,7 +512,7 @@ class dstat:
+                 scale = self.scales[i]
+             else:
+                 scale = self.scale
+-            if isinstance(self.val[name], collections.Sequence) and not isinstance(self.val[name], six.string_types):
++            if isinstance(self.val[name], collections.abc.Sequence) and not isinstance(self.val[name], six.string_types):
+                 line = line + cprintlist(self.val[name], ctype, self.width, scale)
+                 sep = theme['frame'] + char['colon']
+                 if i + 1 != len(self.vars):
+-- 
+2.41.0
+
