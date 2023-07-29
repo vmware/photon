@@ -1,7 +1,7 @@
 Summary:        Docbook-xsl-%{name}
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License
 URL:            http://www.docbook.org
 Group:          Development/Tools
@@ -82,7 +82,7 @@ xmlcatalog --noout --add "rewriteURI" \
            %{_sysconfdir}/xml/catalog
 
 %postun
-if [ $1 -eq 0 ] then
+if [ $1 -eq 0 ]; then
   if [ -f %{_sysconfdir}/xml/catalog ]; then
     xmlcatalog --noout --del \
         "%{_datadir}/xml/docbook/xsl-stylesheets-%{version}" \
@@ -96,6 +96,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Sun Jul 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.79.1-10
+- Fix a typo error in postun
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.79.1-9
 - Bump version as a part of libxml2 upgrade
 * Mon Nov 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.79.1-8
