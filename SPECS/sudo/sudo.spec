@@ -1,6 +1,6 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.13p3
+Version:        1.9.14p3
 Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=c0c5cd0c6308868afdad2ecf55b86fdcf1f49889b30831c9db3bc56a63dc3a07686c285c20b2500494b2a76653e2ec69196abdc583312609a5db1c81a6e4e737
+%define sha512  %{name}=d4af836e3316c35d8b81a2c869ca199e8f2d5cb26dbd98b8ad031f29be62b154452afdf5a506ddabad21b80e5988a49f1f7c8f1ec44718ffcbd7e89ccbdef612
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
+- Version update
 * Thu Jun 01 2023 Anmol Jain <anmolja@vmware.com> 1.9.13p3-1
 - Version update
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.12p1-2
