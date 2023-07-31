@@ -1,51 +1,52 @@
-%global frr_libdir %{_libexecdir}/frr
+%global frr_libdir %{_libexecdir}/%{name}
 
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.4.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
+Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=69f936580d2e7838e1f15fdfa71a4fa00e7acaa93df4cdbd6129560fbcd45f3754cf5d03b4c9331bf4850477560d63d5509d185098583d19fa93d9e960e1483a
 
-Source1:        %{name}-tmpfiles.conf
-Source2:        %{name}-sysusers.conf
+Source1: %{name}-tmpfiles.conf
+Source2: %{name}-sysusers.conf
 
-Patch0:         enable-openssl.patch
-Patch1:         disable-eigrp-crypto.patch
-Patch2:         fips-mode.patch
+Patch0: enable-openssl.patch
+Patch1: disable-eigrp-crypto.patch
+Patch2: fips-mode.patch
 
 %if 0%{?with_check}
-Patch4:         remove-grpc-test.patch
-Patch5:         0001-directly-link-libabsl_synchronization-for-grpc-test.patch
+Patch4: remove-grpc-test.patch
+Patch5: 0001-directly-link-libabsl_synchronization-for-grpc-test.patch
 %endif
 
-BuildRequires:  build-essential
-BuildRequires:  c-ares-devel
-BuildRequires:  python3-devel
-BuildRequires:  python3-sphinx
-BuildRequires:  systemd-devel
-BuildRequires:  flex
-BuildRequires:  json-c-devel
-BuildRequires:  libcap-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  readline-devel
-BuildRequires:  texinfo
-BuildRequires:  libyang-devel
-BuildRequires:  elfutils-devel
-BuildRequires:  pcre2-devel
-BuildRequires:  openssl-devel
-BuildRequires:  grpc-devel
-BuildRequires:  net-snmp-devel
-BuildRequires:  which
+BuildRequires: build-essential
+BuildRequires: c-ares-devel
+BuildRequires: python3-devel
+BuildRequires: python3-sphinx
+BuildRequires: systemd-devel
+BuildRequires: flex
+BuildRequires: json-c-devel
+BuildRequires: libcap-devel
+BuildRequires: ncurses-devel
+BuildRequires: readline-devel
+BuildRequires: texinfo
+BuildRequires: libyang-devel
+BuildRequires: elfutils-devel
+BuildRequires: pcre2-devel
+BuildRequires: openssl-devel
+BuildRequires: grpc-devel
+BuildRequires: net-snmp-devel
+BuildRequires: which
+buildRequires: protobuf-devel
 
 %if 0%{?with_check}
-BuildRequires:  python3-pytest
+BuildRequires: python3-pytest
 %endif
 
 Requires: libcap
@@ -64,6 +65,7 @@ Requires: ncurses-libs
 Requires: openssl
 Requires: glibc
 Requires: python3
+Requires: protobuf
 Requires(pre): shadow
 Requires(postun): shadow
 
@@ -93,17 +95,17 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --mandir=%{_mandir} \
         --infodir=%{_infodir} \
         --sbindir=%{frr_libdir} \
-        --sysconfdir=%{_sysconfdir}/frr \
-        --libdir=%{_libdir}/frr \
-        --libexecdir=%{_libexecdir}/frr \
-        --localstatedir=%{_localstatedir}/run/frr \
+        --sysconfdir=%{_sysconfdir}/%{name} \
+        --libdir=%{_libdir}/%{name} \
+        --libexecdir=%{_libexecdir}/%{name} \
+        --localstatedir=%{_localstatedir}/run/%{name} \
         --enable-multipath=64 \
         --enable-vtysh=yes \
         --disable-ospfclient \
         --disable-ospfapi \
         --enable-snmp=agentx \
-        --enable-user=frr \
-        --enable-group=frr \
+        --enable-user=%{name} \
+        --enable-group=%{name} \
         --enable-vty-group=frrvty \
         --enable-rtadv \
         --disable-exampledir \
@@ -111,7 +113,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --enable-static=no \
         --disable-ldpd \
         --disable-babeld \
-        --with-moduledir=%{_libdir}/frr/modules \
+        --with-moduledir=%{_libdir}/%{name}/modules \
         --with-crypto=openssl \
         --enable-fpm \
         --enable-grpc
@@ -151,23 +153,15 @@ rm -rf %{buildroot}%{_libdir}/%{name}/*.so \
 
 %if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
+%make_build check %{?_smp_mflags}
 %endif
 
 %pre
-getent group 'frrvty' >/dev/null || groupadd -r 'frrvty' || :
-
-getent group '%{name}' >/dev/null || groupadd -r '%{name}' || :
-
-getent passwd '%{name}' >/dev/null || \
-  useradd -r -g '%{name}' -d '/var/run/%{name}' -s '/sbin/nologin' -c 'FRRouting routing suite' '%{name}' || :
-
-# add frr to frrvty groups
-usermod -a -G frrvty %{name}
+%sysusers_create_compat %{SOURCE2}
 
 %post
 /sbin/ldconfig
-%systemd_post frr.service
+%systemd_post %{name}.service
 
 mkdir -p %{_sysconfdir}/%{name}
 # Create dummy files if they don't exist so basic functions can be used.
@@ -185,67 +179,49 @@ if [ ! -e %{_sysconfdir}/%{name}/vtysh.conf ]; then
 fi
 
 %preun
-%systemd_preun frr.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
 
 if [ $1 -ne 0 ]; then
-  %systemd_postun_with_restart frr.service
+  %systemd_postun_with_restart %{name}.service
 fi
 
 if [ $1 -eq 0 ]; then
-  %systemd_postun frr.service
-  if getent passwd %{name} >/dev/null; then
-    gpasswd --delete %{name} %{name} &> /dev/null
-    gpasswd --delete %{name} frrvty &> /dev/null
-    userdel -f %{name}
-  fi
-  if getent group %{name} >/dev/null; then
-    groupdel -f %{name}
-  fi
-  if getent group frrvty >/dev/null; then
-    groupdel -f frrvty
-  fi
+  %systemd_postun %{name}.service
 fi
 
 %files
 %defattr(-,root,root)
 %license COPYING
 %doc doc/mpls
-
 %dir %attr(750,%{name},%{name}) %{_sysconfdir}/%{name}
 %dir %attr(755,%{name},%{name}) %{_localstatedir}/log/%{name}
 %dir %attr(755,%{name},%{name}) /run/%{name}
-
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %attr(644,%{name},%{name}) %{_sysconfdir}/%{name}/daemons
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}
-
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so.*
-
 %dir %{_libdir}/%{name}/modules
 %{_libdir}/%{name}/modules/*
-
 %{_unitdir}/%{name}.service
-
 %dir %{_datadir}/yang
 %{_datadir}/yang/*.yang
-
 %{_tmpfilesdir}/%{name}.conf
 %{_sysusersdir}/%{name}.conf
 %{_infodir}/*info*
 %{_bindir}/*
-
 %dir %{frr_libdir}/
 %{frr_libdir}/*
-
 %{_datadir}/man/*
 %{_libdir}/%{name}/modules/*.so
 %{frr_libdir}/*.py
 
 %changelog
+* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-6
+- Add protobuf to requires
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-5
 - Version bump as part of pcre2 update
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-4
