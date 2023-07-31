@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -56,6 +56,7 @@ PREFIX=%{buildroot} make install %{?_smp_mflags}
 mv %{buildroot}/bin/* %{buildroot}%{_bindir}
 mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
 mv %{buildroot}%{_sbindir}/{ifconfig,lspci} %{buildroot}%{_bindir}
+mv %{buildroot}%{_bindir}/httpd %{buildroot}%{_sbindir}
 chmod 755 %{buildroot}%{_bindir}/%{name}
 install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}-toys
 
@@ -311,6 +312,11 @@ mktoy %{_bindir}/egrep \
 mktoy %{_bindir}/gunzip \
       %{_bindir}/gzip \
       %{_bindir}/zcat
+
+%triggerpostun -- httpd
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/httpd
 
 %triggerpostun -- iotop
 [ $2 -eq 0 ] || exit 0
@@ -571,6 +577,9 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/gzip
 %ghost %{_bindir}/zcat
 
+# httpd
+%ghost %{_sbindir}/httpd
+
 # iotop
 %ghost %{_sbindir}/iotop
 
@@ -706,6 +715,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Fri Jul 28 2023 Oliver Kurth <okurth@vmware.com> 0.8.9-5
+- enable httpd
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-4
 - Bump version as a part of zlib upgrade
 * Tue Mar 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-3
