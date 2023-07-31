@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.288
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -387,6 +387,7 @@ Patch485: 0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
 Patch486: 0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
 Patch487: 0001-x86-sev-es_Use_GHCB_accessor_for_setting_the_MMIO_scratch_buffer.patch
 Patch488: 0001-drm_vmwgfx_Dont_use_screen_objects_when_SEV_is_active.patch
+Patch489: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 # SEV-ES: Security Mitigate
 Patch491: 0001-x86-boot-compressed-64-Introduce-sev_status.patch
@@ -844,6 +845,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
 - Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2

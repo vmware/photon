@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.288
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -242,6 +242,9 @@ Patch157: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 
 #Fix for CVE-2022-3303
 Patch158: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+#SEV, TDX
+Patch161: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -1374,6 +1377,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
 - Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2

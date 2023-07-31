@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.288
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -131,6 +131,9 @@ Patch93: 0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch94: 0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
 Patch95: 0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
+# SEV, TDX
+Patch96: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch97: 0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -563,6 +566,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
 - Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2

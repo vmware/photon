@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.288
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -118,6 +118,9 @@ Patch77: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
 Patch79: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
 Patch83: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch84: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+# SEV, TDX
+Patch85: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch86: 0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -543,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
+- Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
 - Fix for CVE-2023-2124
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-2
