@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.41
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -106,6 +106,11 @@ Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch57: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# SEV-ES, TDX
+%ifarch x86_64
+Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+%endif
 
 # CVE:
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -289,6 +294,11 @@ The Linux package contains the Linux kernel doc files
 
 #VMW
 %autopatch -p1 -m55 -M57
+
+#SEV-ES, TDX
+%ifarch x86_64
+%autopatch -p1 -m61 -M61
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M100
@@ -503,6 +513,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
+- Fix: unconditional preserve CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
 - Update to version 6.1.41
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.37-2

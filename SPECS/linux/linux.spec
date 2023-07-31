@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.41
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -200,6 +200,7 @@ Patch511: 0003-FIPS-broken-kattest.patch
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 %endif
 
@@ -705,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
+- Fix: unconditional preserve CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
 - Update to version 6.1.41
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.37-2

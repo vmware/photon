@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.41
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -79,7 +79,7 @@ Patch20:  vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 Patch21:  6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 
 # Out-of-tree patches from AppArmor:
-Patch30:  6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch31: 6.0-0002-apparmor-af_unix-mediation.patch
 Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
@@ -96,6 +96,11 @@ Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch51: 0002-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch52: 0003-gcc-rap-plugin-with-kcfi.patch
 Patch53: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+
+# SEV-ES, TDX
+%ifarch x86_64
+Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+%endif
 
 # CVE:
 # Fix CVE-2017-1000252
@@ -220,6 +225,11 @@ The kernel fips-canister
 
 #Secure
 %autopatch -p1 -m50 -M53
+
+%ifarch x86_64
+#SEV-ES, TDX
+%autopatch -p1 -m61 -M61
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M100
@@ -408,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
+- Fix: unconditional preserve CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
 - Update to version 6.1.41
 * Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.37-4
