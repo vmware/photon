@@ -1,24 +1,24 @@
-Summary:                Wayland Compositor Infrastructure
-Name:                   wayland
-Version:                1.20.0
-Release:                3%{?dist}
-License:                MIT
-URL:                    http://wayland.freedesktop.org
-Group:                  System Environment/Libraries
-Vendor:                 VMware, Inc.
-Distribution:           Photon
+Summary:        Wayland Compositor Infrastructure
+Name:           wayland
+Version:        1.20.0
+Release:        4%{?dist}
+License:        MIT
+URL:            http://wayland.freedesktop.org
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
 %define sha512 %{name}=e8a1f410994b947f850799bdd0d95a2429d8467f853e62a0ab3915a4e9fe130f8aa977e03715114ab740c6ec546edea63d275ce7f927d4f3029ea126e6a7d215
 
-Patch0:                 CVE-2021-3782.patch
+Patch0: CVE-2021-3782.patch
 
-BuildRequires:          libxml2-devel
-BuildRequires:          meson
-BuildRequires:          ninja-build
-BuildRequires:          libffi-devel
-BuildRequires:          expat-devel
-BuildRequires:          libxslt-devel
+BuildRequires: libxml2-devel
+BuildRequires: meson
+BuildRequires: ninja-build
+BuildRequires: libffi-devel
+BuildRequires: expat-devel
+BuildRequires: libxslt-devel
 
 %description
 Wayland is a protocol for a compositor to talk to its clients as well as a C library implementation of that protocol. The compositor can be a standalone display server running on Linux kernel modesetting and evdev input devices, an X application, or a Wayland client itself. The clients can be traditional applications, X servers (rootless or fullscreen) or other display servers.
@@ -55,7 +55,7 @@ It contains the wayland egl libraries
 
 %package    -n libwayland-server
 Summary:    wayland server library for wayland
-Requires:   libffi
+Requires:   libffi-devel
 
 %description -n libwayland-server
 It contains the wayland server libraries
@@ -114,6 +114,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.0-4
+- Add libffi-devel to requires of libwayland-server
 * Wed Sep 28 2022 Shivani Agarwal <shivania2@vmware.com> 1.20.0-3
 - Fix CVE-2021-3782
 * Thu Aug 25 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.20.0-2
