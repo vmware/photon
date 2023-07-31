@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.5
-Release:        5%{?dist}
+Version:        1.9.14p3
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -9,14 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=7044bbe83194171f0514b9d4809be037c01d8e1daacf4444165019c19346c4bc89f20e679b4dd6d25a7de5edfcc1ba710ae0a02b49fdbe8b46d0f1fc7ce1ab47
-
-Patch0:         CVE-2021-3156_1.patch
-Patch1:         CVE-2021-3156_2.patch
-Patch2:         CVE-2021-3156_3.patch
-Patch3:         CVE-2021-3156_4.patch
-Patch4:         sudo-CVE-2022-43995.patch
-Patch5:         CVE-2023-22809.patch
+%define sha512  %{name}=d4af836e3316c35d8b81a2c869ca199e8f2d5cb26dbd98b8ad031f29be62b154452afdf5a506ddabad21b80e5988a49f1f7c8f1ec44718ffcbd7e89ccbdef612
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -116,6 +109,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
+- Version update
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.5-5
 - Fix CVE-2023-22809
 * Tue Nov 08 2022 Ankit Jain <ankitja@vmware.com> 1.9.5-4
