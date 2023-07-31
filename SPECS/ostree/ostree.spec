@@ -1,49 +1,48 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2021.3
-Release:        4%{?dist}
+Version:        2022.7
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-# Manually created Source tar which is equal to
-# Source0 + .git as it requires git hooks at build time
-Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=a462ce6b8dde9c2984cee26c4828e9db4468d7311c61dddc1399a2c5b04602f777c65b40c79d00477db77d2b142f85c41119d1f8bac1f57a66ee326c7d2d2d97
-Source1:        91-ostree.preset
+Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
+%define sha512 lib%{name}-%{version}=725eff027b2c4c1aec0c222a5fa6059f3a777f4d0c831b82a4021befba0078692aa5ced2c4c609530c70462b4148a3cc33152e3d9dc4a5d6f8cf98f61ef09c2a
 
-Patch0:         dualboot-support.patch
-Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
-Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
+Source1: 91-ostree.preset
 
-BuildRequires:  git
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-BuildRequires:  which
-BuildRequires:  gtk-doc
-BuildRequires:  glib-devel
-BuildRequires:  gobject-introspection
-BuildRequires:  gobject-introspection-devel
-BuildRequires:  xz-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  mkinitcpio
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  zlib-devel
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-BuildRequires:  libsoup-devel
-BuildRequires:  attr-devel
-BuildRequires:  libarchive-devel
-BuildRequires:  fuse-devel
-BuildRequires:  libcap-devel
-BuildRequires:  gpgme-devel
-BuildRequires:  systemd-devel
-BuildRequires:  dracut
-BuildRequires:  bison
-BuildRequires:  libselinux-devel
+Patch0: dualboot-support.patch
+Patch1: 0001-ostree-Copying-photon-config-to-boot-directory.patch
+Patch2: 0002-ostree-Adding-load-env-to-menuentry.patch
+
+BuildRequires: git
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: which
+BuildRequires: gtk-doc
+BuildRequires: glib-devel
+BuildRequires: gobject-introspection
+BuildRequires: gobject-introspection-devel
+BuildRequires: xz-devel
+BuildRequires: sqlite-devel
+BuildRequires: mkinitcpio
+BuildRequires: e2fsprogs-devel
+BuildRequires: zlib-devel
+BuildRequires: curl-devel
+BuildRequires: openssl-devel
+BuildRequires: libsoup-devel
+BuildRequires: attr-devel
+BuildRequires: libarchive-devel
+BuildRequires: fuse-devel
+BuildRequires: libcap-devel
+BuildRequires: gpgme-devel
+BuildRequires: systemd-devel
+BuildRequires: dracut
+BuildRequires: bison
+BuildRequires: libselinux-devel
 
 Requires: dracut
 Requires: systemd
@@ -71,7 +70,7 @@ The %{name}-libs provides shared libraries for %{name}.
 %package devel
 Summary: Development headers for %{name}
 Group: Development/Libraries
-Requires: %{name}-libs
+Requires: %{name}-libs = %{version}-%{release}
 
 %description devel
 The %{name}-devel package includes the header files for the %{name} library.
@@ -81,13 +80,13 @@ Summary: GRUB2 integration for OSTree
 Group: Development/Libraries
 Requires: grub2
 Requires: grub2-efi
-Requires: %{name}
+Requires: %{name} = %{version}-%{release}
 
 %description grub2
 GRUB2 integration for OSTree
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n lib%{name}-%{version}
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -103,18 +102,17 @@ env NOCONFIGURE=1 ./autogen.sh
 
 %install
 %make_install
-find %{buildroot} -name '*.la' -delete
-install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-ostree.preset
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_presetdir}/91-%{name}.preset
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 
 %post
-%systemd_post ostree-remount.service
+%systemd_post %{name}-remount.service
 
 %preun
-%systemd_preun ostree-remount.service
+%systemd_preun %{name}-remount.service
 
 %postun
-%systemd_postun_with_restart ostree-remount.service
+%systemd_postun_with_restart %{name}-remount.service
 
 %files
 %defattr(-,root,root)
@@ -128,7 +126,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 %{_unitdir}/%{name}-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
 %{_systemdgeneratordir}/%{name}-system-generator
-%{_presetdir}/91-ostree.preset
+%{_presetdir}/91-%{name}.preset
 %{_unitdir}/%{name}*.service
 %{_libdir}/%{name}/%{name}-prepare-root
 %{_libdir}/%{name}/%{name}-remount
@@ -137,7 +135,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 %config(noreplace) %{_sysconfdir}/%{name}-mkinitcpio.conf
 %{_mandir}/man1/%{name}-admin*
 %{_libexecdir}/libostree/*
-%exclude %{_sysconfdir}/grub.d/*ostree
+%exclude %{_sysconfdir}/grub.d/*%{name}
 %exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
@@ -160,10 +158,12 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 
 %files grub2
 %defattr(-,root,root)
-%{_sysconfdir}/grub.d/*ostree
+%{_sysconfdir}/grub.d/*%{name}
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.7-1
+- Upgrade to v2022.7
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.3-4
 - Bump version as a part of sqlite upgrade
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2021.3-3
