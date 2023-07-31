@@ -1,9 +1,9 @@
-%global frr_libdir %{_libexecdir}/frr
+%global frr_libdir %{_libexecdir}/%{name}
 
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -43,6 +43,7 @@ BuildRequires: openssl-devel
 BuildRequires: grpc-devel
 BuildRequires: net-snmp-devel
 BuildRequires: which
+BuildRequires: protobuf-devel
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
@@ -64,6 +65,7 @@ Requires: ncurses-libs
 Requires: openssl
 Requires: glibc
 Requires: python3
+Requires: protobuf
 Requires(pre): shadow
 Requires(postun): shadow
 
@@ -93,17 +95,17 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --mandir=%{_mandir} \
         --infodir=%{_infodir} \
         --sbindir=%{frr_libdir} \
-        --sysconfdir=%{_sysconfdir}/frr \
-        --libdir=%{_libdir}/frr \
-        --libexecdir=%{_libexecdir}/frr \
-        --localstatedir=%{_localstatedir}/run/frr \
+        --sysconfdir=%{_sysconfdir}/%{name} \
+        --libdir=%{_libdir}/%{name} \
+        --libexecdir=%{_libexecdir}/%{name} \
+        --localstatedir=%{_localstatedir}/run/%{name} \
         --enable-multipath=64 \
         --enable-vtysh=yes \
         --disable-ospfclient \
         --disable-ospfapi \
         --enable-snmp=agentx \
-        --enable-user=frr \
-        --enable-group=frr \
+        --enable-user=%{name} \
+        --enable-group=%{name} \
         --enable-vty-group=frrvty \
         --enable-rtadv \
         --disable-exampledir \
@@ -111,7 +113,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --enable-static=no \
         --disable-ldpd \
         --disable-babeld \
-        --with-moduledir=%{_libdir}/frr/modules \
+        --with-moduledir=%{_libdir}/%{name}/modules \
         --with-crypto=openssl \
         --enable-fpm \
         --enable-grpc
@@ -127,7 +129,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/{%{name},rc.d/init.d,sysconfig,logrotate.d,p
          %{buildroot}%{_tmpfilesdir} \
          %{buildroot}%{_sysusersdir}
 
-%make_install
+%make_install %{?_smp_mflags}
 
 install -p -m 644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
@@ -141,9 +143,6 @@ install -p -m 644 redhat/%{name}.logrotate %{buildroot}%{_sysconfdir}/logrotate.
 install -p -m 644 redhat/%{name}.pam %{buildroot}%{_sysconfdir}/pam.d/%{name}
 install -d -m 775 %{buildroot}/run/%{name}
 
-# Delete libtool archives
-find %{buildroot} -type f -name "*.la" -delete -print
-
 # Upstream does not maintain a stable API, these headers from -devel subpackage are no longer needed
 rm -rf %{buildroot}%{_libdir}/%{name}/*.so \
        %{buildroot}%{_includedir}/%{name}/ \
@@ -151,23 +150,15 @@ rm -rf %{buildroot}%{_libdir}/%{name}/*.so \
 
 %if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
+%make_build check %{?_smp_mflags}
 %endif
 
 %pre
-getent group 'frrvty' >/dev/null || groupadd -r 'frrvty' || :
-
-getent group '%{name}' >/dev/null || groupadd -r '%{name}' || :
-
-getent passwd '%{name}' >/dev/null || \
-  useradd -r -g '%{name}' -d '/var/run/%{name}' -s '/sbin/nologin' -c 'FRRouting routing suite' '%{name}' || :
-
-# add frr to frrvty groups
-usermod -a -G frrvty %{name}
+%sysusers_create_compat %{SOURCE2}
 
 %post
 /sbin/ldconfig
-%systemd_post frr.service
+%systemd_post %{name}.service
 
 mkdir -p %{_sysconfdir}/%{name}
 # Create dummy files if they don't exist so basic functions can be used.
@@ -185,67 +176,49 @@ if [ ! -e %{_sysconfdir}/%{name}/vtysh.conf ]; then
 fi
 
 %preun
-%systemd_preun frr.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
 
 if [ $1 -ne 0 ]; then
-  %systemd_postun_with_restart frr.service
+  %systemd_postun_with_restart %{name}.service
 fi
 
 if [ $1 -eq 0 ]; then
-  %systemd_postun frr.service
-  if getent passwd %{name} >/dev/null; then
-    gpasswd --delete %{name} %{name} &> /dev/null
-    gpasswd --delete %{name} frrvty &> /dev/null
-    userdel -f %{name}
-  fi
-  if getent group %{name} >/dev/null; then
-    groupdel -f %{name}
-  fi
-  if getent group frrvty >/dev/null; then
-    groupdel -f frrvty
-  fi
+  %systemd_postun %{name}.service
 fi
 
 %files
 %defattr(-,root,root)
 %license COPYING
 %doc doc/mpls
-
 %dir %attr(750,%{name},%{name}) %{_sysconfdir}/%{name}
 %dir %attr(755,%{name},%{name}) %{_localstatedir}/log/%{name}
 %dir %attr(755,%{name},%{name}) /run/%{name}
-
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %attr(644,%{name},%{name}) %{_sysconfdir}/%{name}/daemons
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}
-
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so.*
-
 %dir %{_libdir}/%{name}/modules
 %{_libdir}/%{name}/modules/*
-
 %{_unitdir}/%{name}.service
-
 %dir %{_datadir}/yang
 %{_datadir}/yang/*.yang
-
 %{_tmpfilesdir}/%{name}.conf
 %{_sysusersdir}/%{name}.conf
 %{_infodir}/*info*
 %{_bindir}/*
-
 %dir %{frr_libdir}/
 %{frr_libdir}/*
-
 %{_datadir}/man/*
 %{_libdir}/%{name}/modules/*.so
 %{frr_libdir}/*.py
 
 %changelog
+* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-4
+- Bump version as a part of protobuf upgrade
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.4.1-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-2
