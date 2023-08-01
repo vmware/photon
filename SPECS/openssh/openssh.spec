@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -38,6 +38,9 @@ Patch14:        openssh-fix-ssh-keyscan.patch
 Patch15:        openssh-CVE-2021-41617.patch
 Patch16:        openssh-CVE-2020-14145.patch
 Patch17:        0001-sshd_config-Avoid-duplicate-entry.patch
+Patch18:        CVE-2023-38408-1.patch
+Patch19:        CVE-2023-38408-2.patch
+Patch20:        CVE-2023-38408-3.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -100,6 +103,9 @@ This provides the ssh server daemons, utilities, configuration and service files
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 %build
 sh ./configure \
@@ -214,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+* Tue Aug 01 2023 Shivani Agarwal <shivania2@vmware.com> 7.8p1-16
+- Fix CVE-2023-38408
 * Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-15
 - Add systemd to Requires of server
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-14
