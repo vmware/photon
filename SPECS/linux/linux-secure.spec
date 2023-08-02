@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.10
-Release:        21%{?kat_build:.kat}%{?dist}
+Release:        22%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -406,6 +406,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-22
+- Zero the runtime_hmac in fips_integrity after use
 * Mon Jul 24 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-21
 - Remove DES/DES3 from canister
 * Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-20
