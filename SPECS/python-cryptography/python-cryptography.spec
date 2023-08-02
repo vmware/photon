@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        3.3.2
-Release:        5%{?dist}
+Version:        41.0.3
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -9,19 +9,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha512  cryptography=55f6ee13342b3209b1fcb310f4c4d33d22856ee785cb2347e6ad36c34e9b42f6e0d5bece8e458b09663a5b78e34c4567fe7a211b51ca71f55ccc93e3f62dc5e4
-
-Patch0:         0001-openssl-3.0.0-support.patch
-Patch1:         0002-openssl-3.0.0-support.patch
-Patch2:         CVE-2023-23931.patch
+%define sha512  cryptography=84f79f72be3646c1e9a932ba8aba514471f6c0e50462a0bb3a927622ce67c7932e71d44e187db8928b05f04b803b958284f785c0dc297a0c9453846af1ac1aca
 
 BuildRequires:  openssl-devel
-BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools-rust
 BuildRequires:  python3-xml
+BuildRequires:  rust
+BuildRequires:  ca-certificates
 
 %if 0%{?with_check}
 BuildRequires:  python3-pip
@@ -78,6 +76,8 @@ python3 -m pytest
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 01 2023 Prashant S Chauhan <psinghchauha@vmware.com> 41.0.3-1
+- Update to v41.0.3
 * Tue May 23 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.2-5
 - Fix CVE-2023-23931
 * Thu Jun 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.2-4
