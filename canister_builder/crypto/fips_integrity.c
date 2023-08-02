@@ -466,9 +466,11 @@ free_tfm:
 		linebuf[sizeof(linebuf) - 1] = '\0';
 
 		fcw_printk("FIPS canister HMAC: %s\n", linebuf);
+		memzero_explicit(linebuf, sizeof(linebuf));
 	}
 
 	err = memcmp (canister_hmac, runtime_hmac, sizeof(runtime_hmac)) ? -EACCES: 0;
+	memzero_explicit(runtime_hmac, sizeof(runtime_hmac));
 	if (!err)
 		fcw_printk("FIPS canister verification passed!");
 	else
