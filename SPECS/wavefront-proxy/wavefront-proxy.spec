@@ -1,16 +1,14 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
-Version:          12.0
-Release:          2%{?dist}
+Version:          13.0
+Release:          1%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512    wavefront=d67b61f80d91a2355389588b71c8bb1c4ae25d7c84f36ac7892cf303a2ef6f680aae45cd36791648f228fa19b13f2511d008100c15750ab64de333eba5a44cf0
-Patch0:           0001-Added-Main-class-for-proxy-11.3-jar-with-dependencies.patch
-Patch1:           0002-proxy-pom.xml-skip-format-code-plugin.patch
+Source0:          https://github.com/wavefrontHQ/wavefront-proxy/archive/refs/tags/proxy-%{version}.tar.gz
+%define sha512    proxy=67e185c7d000344bda581bfb6f66718ab42ffbebc2559326733207fd273cdfeedfc42f984ea1b4e9353800cea7372d0799323d0fd6c8c46f061dbd204f44af56
 BuildRequires:    apache-maven
 BuildRequires:    openjdk11
 BuildRequires:    systemd-devel
@@ -57,7 +55,7 @@ install -m 755 -D pkg/etc/wavefront/%{name}/log4j2.xml.default %{buildroot}/%{_s
 install -m 755 -D pkg/etc/wavefront/%{name}/preprocessor_rules.yaml.default %{buildroot}/%{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
 install -m 755 -D pkg/etc/wavefront/%{name}/wavefront.conf.default %{buildroot}%{_sysconfdir}/wavefront/%{name}/wavefront.conf
 install -m 755 -D pkg%{_docdir}/%{name}/copyright %{buildroot}%{_docdir}/%name/copyright
-install -m 755 -D proxy/target/proxy-%{version}-jar-with-dependencies.jar %{buildroot}/opt/wavefront-push-agent.jar
+install -m 755 -D proxy/target/proxy-%{version}-spring-boot.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
@@ -72,12 +70,9 @@ log_dir="/var/log/wavefront"
 [[ -d $spool_dir ]] || mkdir -p $spool_dir && chown $user:$group $spool_dir
 [[ -d $log_dir ]] || mkdir -p $log_dir && chown $user:$group $log_dir
 
-touch $log_dir/wavefront-daemon.log
-touch $log_dir/wavefront-error.log
-chown $user:$group $log_dir/wavefront-daemon.log
-chown $user:$group $log_dir/wavefront-error.log
-chmod 644 $log_dir/wavefront-daemon.log
-chmod 644 $log_dir/wavefront-error.log
+touch $log_dir/wavefront.log
+chown $user:$group $log_dir/wavefront.log
+chmod 644 $log_dir/wavefront.log
 
 %post
 chown -R wavefront:wavefront /opt/wavefront
@@ -108,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Mon Jul 31 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.0-1
+- Update to 13.0
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.0-2
 - Bump version as a part of openjdk11 upgrade
 * Mon Oct 24 2022 Prashant S Chauhan <psinghchauha@vmware.com> 12.0-1
