@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.41
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -418,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.41-3
+- Zero the runtime_hmac in fips_integrity after use
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
 - Fix: unconditional preserve CR4.MCE
 * Thu Jul 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
