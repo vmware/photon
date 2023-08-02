@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -27,6 +27,7 @@ Patch1:         systemd-247-default-dns-from-env.patch
 Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
 Patch4:         systemd-ignore-DEVICE_FOUND_UDEV-bit-on-switching-root.patch
+Patch5:         network-attempt-to-trigger-kernel-IPv6LL-address-gen.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -679,6 +680,9 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-5
+- Fix inet6 issue
+- Fixes: https://github.com/systemd/systemd/issues/22424
 * Thu Jun 08 2023 Harinadh D <hdommaraju@vmware.com> 247.13-4
 - Fix unmounts issue on first boot
 - issue: On first boot systemd believes some successfully
