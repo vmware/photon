@@ -22,7 +22,6 @@ BuildRequires: python3-incremental
 BuildRequires: python3-zope.interface
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
-BuildRequires: python3-automat
 
 %if 0%{?with_check}
 BuildRequires: net-tools
