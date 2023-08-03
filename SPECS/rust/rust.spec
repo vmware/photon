@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.64.0
-Release:        7%{?dist}
+Version:        1.71.1
+Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
-%define sha512 %{name}c-%{version}-src=919f40acd8c6eaaef399aa3248503bea19feb96697ab221aaede9ee789ce340b47cb899d1e0e41a31e5d7756653968a10d2faaa4aee83294c9f1243949b43516
+%define sha512 %{name}c-%{version}-src=fd0e5a16bdbeb539184513583089e55f681cb772810df357b6b1464853f7022ac02edab3dd155b2262ed0047e2a25dea3808dd078dcdfce9d399384465009db4
 
 BuildRequires:  git
 BuildRequires:  cmake
@@ -85,23 +85,24 @@ rm -rf %{buildroot}/*
 %{_libdir}/lib*.so
 %{_libdir}/rustlib/*
 %{_libexecdir}/cargo-credential-1password
-%{_libexecdir}/rust-analyzer-proc-macro-srv
 %{_bindir}/rust-gdb
 %{_bindir}/rust-gdbgui
 %doc %{_docdir}/%{name}/html/*
-%exclude %{_docdir}/%{name}/html/.stamp
 %doc %{_docdir}/%{name}/README.md
 %doc %{_docdir}/%{name}/COPYRIGHT
 %doc %{_docdir}/%{name}/LICENSE-APACHE
 %doc %{_docdir}/%{name}/LICENSE-MIT
 %doc src/tools/rustfmt/{README,CHANGELOG,Configurations}.md
 %doc src/tools/clippy/{README.md,CHANGELOG.md}
+%exclude %{_docdir}/%{name}/html/.stamp
 %{_bindir}/cargo
 %{_datadir}/zsh/*
 %doc %{_docdir}/%{name}/LICENSE-THIRD-PARTY
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.71.1-1
+- Fix CVE-2023-38497.
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.64.0-7
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.64.0-6

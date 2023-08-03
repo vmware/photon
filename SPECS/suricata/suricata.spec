@@ -1,7 +1,7 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        6.0.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -171,6 +171,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 6.0.12-4
+- Bump version as a part of rust upgrade.
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.12-3
 - Bump version as a part of lua upgrade
 * Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-2
