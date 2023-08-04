@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.186
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.188
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=748f37b7d5b072f02b2fe74ec40eb48abe7b6386b4ee8e9a614ef78c286c67ae979809a7eaecc34afa6f4e19f8cdce296435d423ddd9ccd7f88236a779e63139
+%define sha512 linux=b8f8f560a03ba9a95ccff0eb820286fbb6f17730f3e5959d26dd60ad4c3f4e9344ed7bdf5f7ff3558b52cdcda51a2c9141d0e2901e00d32ed1ece690437148f5
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -439,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 01 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.188-1
+- Update to version 5.10.188
 * Fri Jul 28 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2
 - Fix: SEV: Guest should not disabled CR4.MCE
 * Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1

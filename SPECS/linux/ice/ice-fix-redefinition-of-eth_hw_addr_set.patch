@@ -1,0 +1,40 @@
+From 1030ba56e8372d3f370623d4a9a4f866258dae31 Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <nkuntal@vmware.com>
+Date: Wed, 2 Aug 2023 22:00:25 +0000
+Subject: [PATCH] ice-v1.11.14: Fix redefinition of eth_hw_addr_set
+ in kernel upgrade 5.10.188
+
+eth_hw_addr_set was added by upstream commit
+48eab831ae8b ("net: create netdev->dev_addr assignment helpers")
+in ice-1.11.14 driver package.
+
+Function definition is adapted in kernel 5.10 and 5.4 stable
+trees. Hence it does not need to be defined in ice-1.11.14 when
+using kernel versions >=5.10.188 or >=5.4.251. Unsetting the
+MACRO to prevent redefinition of eth_hw_addr_set.
+---
+ src/kcompat_std_defs.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 00f3e4d..07afc24 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -307,6 +307,14 @@
+ #define NEED_DEVLINK_ALLOC_SETS_DEV
+ #define HAVE_DEVLINK_REGISTER_SETS_DEV
+ #define NEED_ETH_HW_ADDR_SET
++#if (LINUX_VERSION_CODE > KERNEL_VERSION(5,10,187) && \
++     LINUX_VERSION_CODE < KERNEL_VERSION(5,11,0))
++#undef NEED_ETH_HW_ADDR_SET
++#endif /* > 5.10.187 && < 5.11.0 */
++#if (LINUX_VERSION_CODE > KERNEL_VERSION(5,4,250) && \
++     LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0))
++#undef NEED_ETH_HW_ADDR_SET
++#endif /* > 5.4.250 && < 5.5.0 */
+ #else /* >= 5.15.0 */
+ #define HAVE_ETHTOOL_COALESCE_EXTACK
+ #define HAVE_NDO_ETH_IOCTL
+-- 
+2.39.0
+
