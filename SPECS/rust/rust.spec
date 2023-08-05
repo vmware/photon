@@ -1,16 +1,17 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.58.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=4f0a92434484b8ede9d96b76dc09d0a983a00832c973942224967d09228e3f985fd9d3cb757e2b768bb6b5f0d3b848e01ef5ea5d9ca33551976ab8f1793280a2
-
+Source0:        https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
+%define sha512  %{name}c-%{version}-src=eff3279d2e519343cea542a9ae2daab592e44f35af344e33ff43ed55fc7c824511790d1991dd36a603d12465de8c3688e7194c2b9557f288c587ffa04738c2ce
+Patch0:         0001-fix-respect-umask-when-unpacking-.crate-files.patch
+Patch1:         0002-fix-clear-cache-for-old-.cargo-ok-format.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -26,17 +27,19 @@ BuildRequires:  xz-devel
 BuildRequires:  libxml2-devel
 
 Requires:  glibc
+Requires:  glibc-devel
 Requires:  gcc
 Requires:  libstdc++
 Requires:  openssl
 Requires:  zlib
 Requires:  libgcc
+Requires:  binutils
 
 %description
 Rust Programming Language
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}c-%{version}-src
 
 rm -rf src/llvm-project/
 mkdir -p src/llvm-project/libunwind/
@@ -92,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Fri Aug 04 2023 Piyush Gupta <gpiyush@vmware.com> 1.58.1-4
+- Fix CVE-2023-38497.
 * Fri May 05 2023 Harinadh D <hdommaraju@vmware.com> 1.58.1-3
 - Version bump to use libssh2 1.10.0
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.58.1-2
