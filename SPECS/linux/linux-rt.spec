@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -31,7 +31,9 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
+%ifarch x86_64
 Source1:    config-rt
+%endif
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source4:    scriptlets.inc
@@ -940,6 +942,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 30 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com>  5.10.190-2
+- Disable CONFIG_SCSI_DPT_I2O to fix CVE-2023-2007
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2

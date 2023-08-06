@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -439,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 30 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com>  5.10.190-2
+- Disable CONFIG_SCSI_DPT_I2O to fix CVE-2023-2007
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2
