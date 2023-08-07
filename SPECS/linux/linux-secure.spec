@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,16 +126,15 @@ Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 
 # Crypto:
-# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+# Patch to invoke crypto self-tests and add missing test vectors to testmgr
+Patch500: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch504: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -154,18 +153,21 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # in both places until final canister binary is released
 Patch10000: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-# Below patches are specific to canister_build flag
-Patch10002: 0002-FIPS-canister-creation.patch
-Patch10003: 0003-aesni_intel-Remove-static-call.patch
-Patch10004: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
-Patch10005: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10006: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
-Patch10007: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
-Patch10008: 0008-Move-kernel-structures-usage.patch
 %endif
 
 %ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+Patch10002: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
+%if 0%{?canister_build}
+# Below patches are specific to canister_build flag
+Patch10003: 0002-FIPS-canister-creation.patch
+Patch10004: 0003-aesni_intel-Remove-static-call.patch
+Patch10005: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10006: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
+Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch10009: 0008-Move-kernel-structures-usage.patch
 %endif
 
 BuildArch:      x86_64
@@ -263,7 +265,7 @@ The kernel fips-canister
 %autopatch -p1 -m100 -M101
 
 # crypto
-%autopatch -p1 -m500 -M505
+%autopatch -p1 -m500 -M504
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
@@ -273,11 +275,15 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10008
+%autopatch -p1 -m10000 -M10001
 %endif
 
 %ifarch x86_64
-%autopatch -p1 -m10010 -M10010
+%autopatch -p1 -m10002 -M10002
+%endif
+
+%if 0%{?canister_build}
+%autopatch -p1 -m10003 -M10009
 %endif
 
 %build
@@ -459,6 +465,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-6
+- LKCM 5.0 specific changes to crypto self-tests and tcrypt
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-5
 - Build with jitterentropy v3.4.1
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4

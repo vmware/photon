@@ -398,7 +398,7 @@ index 8bbb00f7b..375ad4ff6 100644
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
 +canister += drbg.o
- obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
+ obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1-1/ jitterentropy-3.4.1-1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1-1/jitterentropy_canister_wrapper_asm.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
 @@ -163,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
