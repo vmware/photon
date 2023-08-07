@@ -1,14 +1,14 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
-Version:          12.1
-Release:          4%{?dist}
+Version:          13.0
+Release:          1%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha512    wavefront=64b88266da47e468c26b7009f5027f71d2ce15bf6a0630102db951632fb8d285af2ebbc78fa18cce2fed273a286bdce9d2925e6a09752d49c3d63582725b4b66
+Source0:          https://github.com/wavefrontHQ/wavefront-proxy/archive/refs/tags/proxy-%{version}.tar.gz
+%define sha512    proxy=67e185c7d000344bda581bfb6f66718ab42ffbebc2559326733207fd273cdfeedfc42f984ea1b4e9353800cea7372d0799323d0fd6c8c46f061dbd204f44af56
 Source1:          %{name}.sysusers
 BuildRequires:    apache-maven
 BuildRequires:    openjdk11
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Jul 31 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.0-1
+- Update to 13.0
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.1-4
 - Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 12.1-3
