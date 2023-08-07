@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.45
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -201,16 +201,15 @@ Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 Patch716: Guest-timer-Advancement-Feature.patch
 
 # Crypto:
-# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+# Patch to invoke crypto self-tests and add missing test vectors to testmgr
+Patch1000: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch1001: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch1002: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch1003: 6.0-0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch1004: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch1003: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch1005: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch1004: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -331,7 +330,7 @@ The Linux package contains the Linux kernel doc files
 # RT
 %autopatch -p1 -m301 -M717
 
-%autopatch -p1 -m1000 -M1005
+%autopatch -p1 -m1000 -M1004
 
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1010
@@ -550,6 +549,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 11 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-6
+- LKCM 5.0 specific changes to crypto self-tests and tcrypt
 * Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-5
 - Build with jitterentropy v3.4.1
 * Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
