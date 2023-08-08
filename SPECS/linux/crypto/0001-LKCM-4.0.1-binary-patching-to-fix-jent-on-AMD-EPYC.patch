@@ -1,0 +1,154 @@
+From 39a423bede454d8bc261ee7997059673b82d7fc8 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 2 Oct 2023 22:21:48 +0000
+Subject: [PATCH] LKCM 4.0.1 binary patching to fix jent on AMD EPYC
+
+The customer face kernel panic on AMD EPYC 7343 CPU when FIPS
+mode is enabled.
+
+The issue and the fix are described in commit 552d03a223eda3df84526
+("crypto: jitter - consider 32 LSB for APT ")
+
+Since jitterentropy is baked in LKCM 4.0.1 canister, source patching
+is not feasible. So, let's binary patch instead.
+
+Fix as a source patch:
+---------------------------
+static int jent_stuck(struct rand_data *ec, __u64 current_delta)
+{
+	__u64 delta2 = jent_delta(ec->last_delta, current_delta);
+	__u64 delta3 = jent_delta(ec->last_delta2, delta2);
+-	unsigned int delta_masked = current_delta & JENT_APT_WORD_MASK;
+
+	ec->last_delta = current_delta;
+	ec->last_delta2 = delta2;
+@@ -274,7 +273,7 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
+	 * Insert the result of the comparison of two back-to-back time
+	 * deltas.
+	 */
+-	jent_apt_insert(ec, delta_masked);
++	jent_apt_insert(ec, current_delta);
+
+	if (!current_delta || !delta2 || !delta3) {
+		/* RCT with a stuck bit */
+---------------------------
+
+Corresponding binary patch:
+---------------------------
+0000000000063f1f <jent_stuck>:
+   63f1f:       55                      push   %rbp
+   63f20:       48 89 e5                mov    %rsp,%rbp
+   63f23:       48 83 ec 28             sub    $0x28,%rsp
+   63f27:       48 89 7d e0             mov    %rdi,-0x20(%rbp)
+   63f2b:       48 89 75 d8             mov    %rsi,-0x28(%rbp)     <- current_delta saved on frame
+   63f2f:       48 8b 45 e0             mov    -0x20(%rbp),%rax
+   63f33:       48 8b 40 18             mov    0x18(%rax),%rax
+   63f37:       48 8b 55 d8             mov    -0x28(%rbp),%rdx
+   63f3b:       48 89 d6                mov    %rdx,%rsi
+   63f3e:       48 89 c7                mov    %rax,%rdi
+   63f41:       e8 b7 ff ff ff          call   63efd <jent_delta>
+   63f46:       48 89 45 f0             mov    %rax,-0x10(%rbp)
+   63f4a:       48 8b 45 e0             mov    -0x20(%rbp),%rax
+   63f4e:       48 8b 40 20             mov    0x20(%rax),%rax
+   63f52:       48 89 c2                mov    %rax,%rdx
+   63f55:       48 8b 45 f0             mov    -0x10(%rbp),%rax
+   63f59:       48 89 c6                mov    %rax,%rsi
+   63f5c:       48 89 d7                mov    %rdx,%rdi
+   63f5f:       e8 99 ff ff ff          call   63efd <jent_delta>
+   63f64:       48 89 45 f8             mov    %rax,-0x8(%rbp)
+   63f68:       48 8b 45 d8             mov    -0x28(%rbp),%rax
+   63f6c:       83 e0 0f                and    $0xf,%eax
+   63f6f:       89 45 ec                mov    %eax,-0x14(%rbp)	    <- delta_masked saved on frame
+   63f72:       48 8b 45 e0             mov    -0x20(%rbp),%rax
+   63f76:       48 8b 55 d8             mov    -0x28(%rbp),%rdx
+   63f7a:       48 89 50 18             mov    %rdx,0x18(%rax)
+   63f7e:       48 8b 55 f0             mov    -0x10(%rbp),%rdx
+   63f82:       48 8b 45 e0             mov    -0x20(%rbp),%rax
+   63f86:       48 89 50 20             mov    %rdx,0x20(%rax)
+-  63f8a:       8b 55 ec                mov    -0x14(%rbp),%edx     <- delta_masked
++  63f8a:       8b 55 d8                mov    -0x28(%rbp),%edx     <- current_delta
+   63f8d:       48 8b 45 e0             mov    -0x20(%rbp),%rax
+   63f91:       89 d6                   mov    %edx,%esi
+   63f93:       48 89 c7                mov    %rax,%rdi
+   63f96:       e8 0b fe ff ff          call   63da6 <jent_apt_insert>
+---------------------------
+
+The one byte at address of canister .text start plus offset 0x63f8c should
+be replaced by 0xd8 to pass current_delta instead of delta_masked as a
+second argument for jent_apt_insert().
+
+Do this replacement right after the first step of FIPS integrity, so, it
+will not affect resulting HMAC. As a senity check before replacement, add
+a verification of LKCM HMAC and +/- 2 bytes of the code around patching
+place.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ init/main.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+
+diff --git a/init/main.c b/init/main.c
+index d15139f6d..975fee487 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -97,6 +97,7 @@
+ #include <linux/jump_label.h>
+ #include <linux/kcsan.h>
+ #include <linux/init_syscalls.h>
++#include <linux/fips.h>
+ 
+ #include <asm/io.h>
+ #include <asm/setup.h>
+@@ -894,6 +895,49 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 			   NULL, 0, -1, -1, NULL, set_init_arg);
+ 
+ 	fips_integrity_init();
++	if (fips_enabled && boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
++		u8 *s, *hmac;
++
++		/*
++		 * Verify LKCM 4.0.1 signature before patching.
++		 * Ref: https://seccerts.org/fips/ea4284b8fb98fd27/target.pdf
++		 * 3.1.1 Initial Setup
++		 */
++		hmac = (unsigned char *)kallsyms_lookup_name("canister_hmac");
++		if (!hmac || memcmp (hmac, "\xf4\x47\xff\xc8\x75\xb3\xc9\x76"
++					   "\xd1\x7c\x0d\x8c\x2e\xaf\x7b\x25"
++					   "\x30\x76\x13\xbc\xd5\xdb\xf5\x1c"
++					   "\x74\x3b\x78\x5c\xcd\x0e\xa2\x02", 32)) {
++			pr_warn("LKCM 4.0.1 not found\n");
++			goto quit;
++		}
++
++		/* Patch location: <canister text start> + 0x63f8c */
++		s = (u8 *)kallsyms_lookup_name("__canister_stext");
++		if (!s) {
++			pr_warn("LKCM 4.0.1 patching failed\n");
++			goto quit;
++		}
++		s += 0x63f8c;
++
++		/* Patch surrounding:
++		 *   63f86:       48 89 50 20             mov    %rdx,0x20(%rax)
++		 * -  63f8a:       8b 55 ec                mov    -0x14(%rbp),%edx # delta_masked
++		 * +  63f8a:       8b 55 d8                mov    -0x28(%rbp),%edx # current_delta
++		 *   63f8d:       48 8b 45 e0             mov    -0x20(%rbp),%rax
++		 *   63f91:       89 d6                   mov    %edx,%esi
++		 *   63f93:       48 89 c7                mov    %rax,%rdi
++		 *   63f96:       e8 0b fe ff ff          call   63da6 <jent_apt_insert>
++		 */
++		if (memcmp(s - 2, "\x8b\x55\xec\x48\x8b", 5)) {
++			pr_warn("LKCM 4.0.1 patching failed\n");
++			goto quit;
++		}
++
++		*s = 0xd8;
++		pr_info("LKCM 4.0.1 was patched successfully\n");
++	}
++quit:
+ 	/*
+ 	 * These use large bootmem allocations and must precede
+ 	 * kmem_cache_init()
+-- 
+2.35.6
+

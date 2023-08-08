@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.194
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -63,10 +63,11 @@ Source17:        modify_kernel_configs.inc
 Source18:        fips_canister-kallsyms
 Source19:        FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:        Add-alg_request_report-cmdline.patch
+Source21:       0001-LKCM-4.0.1-binary-patching-to-fix-jent-on-AMD-EPYC.patch
 %endif
 
-Source21:        spec_install_post.inc
-Source22:        %{name}-dracut.conf
+Source22:        spec_install_post.inc
+Source23:        %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -564,6 +565,9 @@ Patch715: 0001-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 #Patch to add timer padding on guest
 Patch716: 0001-timer-padding-on-guest.patch
 
+# Provide mixed cpusets guarantees for processes placement
+Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -646,6 +650,8 @@ BuildRequires:  python3-macros
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
+# i40e build scripts require getopt
+BuildRequires:  util-linux
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -717,7 +723,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # RT
-%autopatch -p1 -m301 -M716
+%autopatch -p1 -m301 -M717
 
 %autopatch -p1 -m1000 -M1007
 
@@ -785,6 +791,7 @@ cp %{SOURCE18} crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE19}
 patch -p1 < %{SOURCE20}
+patch -p1 < %{SOURCE21}
 %else
 %if 0%{?kat_build}
 # Change m to y for modules in katbuild
@@ -919,11 +926,11 @@ ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE4}
-%include %{SOURCE21}
+%include %{SOURCE22}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -960,6 +967,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
+- LKCM: jitterentropy fix.
+- Enable and enhance sched isolation.
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
 - Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4

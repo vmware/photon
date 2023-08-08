@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.194
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -77,10 +77,11 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 Source18:       fips_canister-kallsyms
 Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
+Source21:       0001-LKCM-4.0.1-binary-patching-to-fix-jent-on-AMD-EPYC.patch
 %endif
 
-Source21:       spec_install_post.inc
-Source22:       %{name}-dracut-%{_arch}.conf
+Source22:       spec_install_post.inc
+Source23:       %{name}-dracut-%{_arch}.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -595,6 +596,7 @@ cp %{SOURCE18} crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE19}
 patch -p1 < %{SOURCE20}
+patch -p1 < %{SOURCE21}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -784,11 +786,11 @@ make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
 make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE6}
-%include %{SOURCE21}
+%include %{SOURCE22}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -915,6 +917,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
+- LKCM: jitterentropy fix
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
 - Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.194
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -38,10 +38,11 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 Source18:       fips_canister-kallsyms
 Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
+Source21:       0001-LKCM-4.0.1-binary-patching-to-fix-jent-on-AMD-EPYC.patch
 %endif
 
-Source21:       spec_install_post.inc
-Source22:       %{name}-dracut.conf
+Source22:       spec_install_post.inc
+Source23:       %{name}-dracut.conf
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -361,6 +362,7 @@ cp %{SOURCE18} crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE19}
 patch -p1 < %{SOURCE20}
+patch -p1 < %{SOURCE21}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -405,7 +407,7 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE22} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
@@ -429,7 +431,7 @@ ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 %include %{SOURCE2}
 %include %{SOURCE3}
-%include %{SOURCE21}
+%include %{SOURCE22}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -457,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
+- LKCM: jitterentropy fix
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
 - Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4
