@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.41
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -75,6 +75,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
+Source20:       photon_sb2020.pem
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -409,6 +410,7 @@ popd
 %build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
+cp %{SOURCE20} photon_sb2020.pem
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
@@ -711,6 +713,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-3
+- Enable Kconfig CONFIG_KEXEC_FILE for kexec signature verify
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
 - Fix: unconditional preserve CR4.MCE
 * Wed Nov 22 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
