@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.288
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -660,25 +660,28 @@ Patch639: 0001-sched_core-Disable-tasks-distribution-within-cpumask.patch
 # Allow cpuidle subsystem to use acpi_idle driver when only one C-state is available
 Patch640: 0001-ACPI-processor-idle-Allow-probing-on-platforms-with-.patch
 
+# Provide mixed cpusets guarantees for processes placement
+Patch641: 0001-Enable-and-enhance-SCHED-isolation.patch
+
 # Fix for CVE-2021-4204
-Patch641: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+Patch700: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2023-1611
-Patch642: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
+Patch701: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 #Fix for CVE-2023-1076
-Patch643: 0001-net-add-sock_init_data_uid.patch
-Patch644: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
-Patch645: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
+Patch702: 0001-net-add-sock_init_data_uid.patch
+Patch703: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
+Patch704: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
 #Fix for CVE-2023-1077
-Patch646: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
+Patch705: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
 
 #Fix for CVE-2021-3759
-Patch647: 0001-memcg-enable-accounting-of-ipc-resources.patch
+Patch706: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
-Patch648: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
+Patch707: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -774,6 +777,8 @@ BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
 BuildRequires:  gettext
+# i40e build scripts require getopt
+BuildRequires:  util-linux
 
 Requires:       filesystem
 Requires:       kmod
@@ -947,10 +952,10 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M639
+%autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m640 -M648
+%autopatch -p1 -m700 -M707
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1377,6 +1382,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Aug 07 2023 Alexey Makhalov <amakhalov@vmware.com> 4.19.288-5
+- Enable and enhance sched isolation.
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
 - Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
