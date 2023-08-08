@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -268,7 +268,7 @@ The kernel fips-canister
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M101
+%autopatch -p1 -m100 -M129
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -471,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.45-9
+- Apply patches introduced by previous commimt
 * Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-8
 - Fix: net: roundup issue in kmalloc_reserve()
 * Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-7
