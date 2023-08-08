@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.45
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -209,6 +209,9 @@ Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 #Patch to add timer padding on guest
 Patch716: Guest-timer-Advancement-Feature.patch
 
+# Provide mixed cpusets guarantees for processes placement
+Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
+
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch1000: 6.0-0002-FIPS-crypto-self-tests.patch
@@ -263,6 +266,8 @@ BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
+# i40e build scripts require getopt
+BuildRequires:  util-linux
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -332,7 +337,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M101
+%autopatch -p1 -m100 -M129
 
 # RT
 %autopatch -p1 -m301 -M717
@@ -555,6 +560,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.45-8
+- Enable and enhance sched isolation.
+- Apply patches introduced by previous commimt
 * Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-7
 - Fix: net: roundup issue in kmalloc_reserve()
 * Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-6
