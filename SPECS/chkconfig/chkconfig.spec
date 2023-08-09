@@ -1,29 +1,34 @@
-Summary: A system tool for maintaining the /etc/rc*.d hierarchy
-Name: chkconfig
-Version: 1.21
-Release: 2%{?dist}
-License: GPLv2
-Vendor: VMware, Inc.
+Summary:    A system tool for maintaining the /etc/rc*.d hierarchy
+Name:       chkconfig
+Version:    1.21
+Release:    2%{?dist}
+License:    GPLv2
+Group:      System Environment/Base
+URL:        https://git.fedorahosted.org/git/chkconfig.git
+Vendor:     VMware, Inc.
 Distribution: Photon
-Group: System Environment/Base
-URL: https://git.fedorahosted.org/git/chkconfig.git
-Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
+
+Source0: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
+%define sha512 %{name}=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+
 Patch0: chkconfig-shortopt.patch
 Patch1: ignore-priorities.patch
 Patch2: chkconfig-runlevel.patch
 Patch3: print-service-on-off.patch
-%define sha512 chkconfig=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+
 Requires: libselinux
 Requires: libsepol
 Requires: newt
 Requires: popt
 Requires: slang
 Requires: systemd
+
 BuildRequires: systemd-devel
 BuildRequires: newt-devel
 BuildRequires: gettext
 BuildRequires: popt-devel
 BuildRequires: libselinux-devel
+
 Conflicts: initscripts <= 5.30-1
 
 %description
@@ -34,8 +39,8 @@ of the drudgery of manually editing the symbolic links.
 
 %package -n ntsysv
 Summary: A tool to set the stop/start of system services in a runlevel
-Group: System Environment/Base
-Requires: chkconfig
+Group:      System Environment/Base
+Requires:   chkconfig
 
 %description -n ntsysv
 Ntsysv provides a simple interface for setting which system services
@@ -48,19 +53,21 @@ page), ntsysv configures the current runlevel (5 if you're using X).
 %autosetup -p1
 
 %build
-%{make_build} RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS"
+%make_build
 
 %install
-rm -rf %{buildroot}
-%{make_install} MANDIR=%{_mandir} SBINDIR=%{_sbindir}
+%make_install %{?_smp_mflags} \
+        MANDIR=%{_mandir} SBINDIR=%{_sbindir}
 
-mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d
-ln -s rc.d/init.d %{buildroot}%{_sysconfdir}/init.d
+ln -sv rc.d/init.d %{buildroot}%{_sysconfdir}/init.d
+
+mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d \
+         %{buildroot}%{_sysconfdir}/rc.d/rc{0..6}.d \
+         %{buildroot}%{_sysconfdir}/chkconfig.d
+
 for n in 0 1 2 3 4 5 6; do
-    mkdir -p %{buildroot}%{_sysconfdir}/rc.d/rc${n}.d
-    ln -s rc.d/rc${n}.d %{buildroot}%{_sysconfdir}/rc${n}.d
+ ln -s rc.d/rc${n}.d %{buildroot}%{_sysconfdir}/rc${n}.d
 done
-mkdir -p %{buildroot}%{_sysconfdir}/chkconfig.d
 
 %find_lang %{name}
 
@@ -81,11 +88,11 @@ rm -rf %{buildroot}
 %{_sysconfdir}/rc.d/init.d
 %{_sysconfdir}/rc[0-6].d
 %{_sysconfdir}/rc.d/rc[0-6].d
-%dir /var/lib/alternatives
+%dir %{_sharedstatedir}/alternatives
 %{_mandir}/*/chkconfig*
 %{_mandir}/*/update-alternatives*
 %{_mandir}/*/alternatives*
-%{_lib}/systemd/systemd-sysv-install
+%{_libdir}/systemd/systemd-sysv-install
 
 %files -n ntsysv
 %defattr(-,root,root)
