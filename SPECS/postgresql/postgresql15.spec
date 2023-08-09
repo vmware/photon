@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -662,6 +662,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 15.3-2
+- Bump version as a part of krb5 upgrade
 * Tue May 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.3-1
 - Upgrade to v15.3
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.2-3

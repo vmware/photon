@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 8.1.2-2
+- Bump version as a part of krb5 upgrade
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.1.2-1
 - Upgrade to v8.1.2
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.86.0-3
