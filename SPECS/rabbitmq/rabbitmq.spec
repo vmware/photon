@@ -12,7 +12,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.11.3
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -138,6 +138,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.11.3-4
+- Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.11.3-3
 - Use systemd-rpm-macros for user creation
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.3-2

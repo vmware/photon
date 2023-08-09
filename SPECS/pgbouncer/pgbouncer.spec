@@ -1,7 +1,7 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
@@ -74,31 +74,33 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-3
+- Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
 - Use systemd-rpm-macros for user creation
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
--   Automatic Version Bump
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2
--   Bump up release for openssl
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-2
--   openssl 1.1.1
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.9.0-1
--   Updated to version 1.9.0
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.2-7
--   Remove shadow from requires and use explicit tools for post actions
-*   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.7.2-6
--   Seperate the service file from the spec file
-*   Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
--   Add RuntimeDirectory and Type=forking
-*   Thu Apr 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
--   Fixed the requires.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
--   GA - Bump release of all rpms
-*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
--   Edit scriptlets.
-*   Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
--   Initial Version.
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
+- Automatic Version Bump
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2
+- Bump up release for openssl
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-2
+- openssl 1.1.1
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.9.0-1
+- Updated to version 1.9.0
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.2-7
+- Remove shadow from requires and use explicit tools for post actions
+* Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.7.2-6
+- Seperate the service file from the spec file
+* Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
+- Add RuntimeDirectory and Type=forking
+* Thu Apr 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
+- Fixed the requires.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
+- GA - Bump release of all rpms
+* Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
+- Edit scriptlets.
+* Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
+- Initial Version.

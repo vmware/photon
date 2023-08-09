@@ -1,7 +1,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 13.0-2
+- Resolving systemd-rpm-macros for group creation
 * Mon Jul 31 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.0-1
 - Update to 13.0
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.1-4

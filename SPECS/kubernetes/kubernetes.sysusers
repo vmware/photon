@@ -1,2 +1,2 @@
-g kube
+g kube -
 u kube - "Kubernetes user" / /sbin/nologin

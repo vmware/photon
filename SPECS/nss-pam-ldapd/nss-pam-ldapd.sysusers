@@ -1,2 +1,2 @@
-g ldap
+g ldapi -
 u nslcd - "nslcd ldap user" / /usr/sbin/nologin

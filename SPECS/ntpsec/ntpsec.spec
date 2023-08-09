@@ -1,7 +1,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND NTP AND BSD-3-Clause AND MIT
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -9,6 +9,8 @@ Distribution:   Photon
 Url:            https://www.ntpsec.org/
 Source0:        https://ftp.ntpsec.org/pub/releases/%{name}-%{version}.tar.gz
 %define sha512  ntpsec=929f07e4183cf7f4c24c15f99391fb6d4d87eeb267ea767adbff0b58d44c419490c52174a01a5819f133e479602bb9343e4853c5a016ff41c04d3c6e76caa958
+Source1:        %{name}.sysusers
+
 Patch0:         ntpstats_path.patch
 
 BuildRequires:  binutils
@@ -70,6 +72,7 @@ mkdir -p %{buildroot}/{%{_sysconfdir}/logrotate.d,%{_libdir}/systemd/ntp-units.d
 install -p -m755 attic/ntpdate %{buildroot}%{_sbindir}/ntpdate
 install -p -m644 etc/logrotate-config.ntpd \
         %{buildroot}%{_sysconfdir}/logrotate.d/ntpsec.conf
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 touch %{buildroot}%{_sharedstatedir}/ntp/ntp.drift
 echo 'ntpd.service' > %{buildroot}%{_libdir}/systemd/ntp-units.d/60-ntpd.list
 
@@ -88,12 +91,8 @@ rm %{buildroot}%{_bindir}/runtests
 python3 ./waf check --verbose %{?_smp_mflags}
 
 %pre
-if ! getent group ntp >/dev/null; then
-    groupadd -g 87 ntp
-fi
-if ! getent passwd ntp >/dev/null; then
-    useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
-fi
+%sysusers_create_compat %{SOURCE1}
+
 %post
 %{_sbindir}/ldconfig
 %systemd_post ntpd.service ntp-wait.service
@@ -122,11 +121,14 @@ rm -rf %{buildroot}/*
 %{_prefix}/lib/systemd/ntp-units.d/*ntpd.list
 %dir %attr(-,ntp,ntp) %{_sharedstatedir}/ntp
 %dir %attr(-,ntp,ntp) %{_localstatedir}/log/ntpstats
+%{_sysusersdir}/%{name}.sysusers
 
 %files -n python3-ntp
 %defattr(-,root,root)
 %{python3_sitearch}/ntp*
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.2.2-2
+- Use systemd-rpm-macros for user creation
 * Fri May 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.2-1
 - ntpsec initial build
