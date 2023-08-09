@@ -1,2 +1,2 @@
-g named
+g named -
 u named - "" /var/lib/bind /bin/false

@@ -4,7 +4,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -97,10 +97,6 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %postun
 %{_sbindir}/ldconfig
 %systemd_postun_with_restart %{name}.service
-if [ $1 -eq 0 ] ; then
-  /usr/sbin/userdel %{name}
-  /usr/sbin/groupdel %{name}
-fi
 
 %files
 %defattr(-,root,root)
@@ -118,6 +114,8 @@ fi
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-4
+- Resolving systemd-rpm-macros for group creation
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-3
 - Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-2

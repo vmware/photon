@@ -2,7 +2,7 @@
 
 Name:           consul
 Version:        1.15.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -63,15 +63,6 @@ if [ $1 -ge 1 ]; then
 fi
 
 %postun
-if [ $1 -eq 0 ]; then
-  # this is delete operation
-  if getent passwd %{name} >/dev/null; then
-    userdel %{name}
-  fi
-  if getent group %{name} >/dev/null; then
-    groupdel %{name}
-  fi
-fi
 /sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
 
@@ -91,6 +82,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.15.4-3
+- Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.4-2
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Nitesh Kumar <kunitesh@vmware.com> 1.15.4-1

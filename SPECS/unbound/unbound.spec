@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.17.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -81,8 +81,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
-* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
-- Use systemd-rpm-macros for user creation
+*  Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-3
+-  Resolving systemd-rpm-macros for group creation
+*  Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
+-  Use systemd-rpm-macros for user creation
 *  Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.17.0-1
 -  Automatic Version Bump
 *  Tue Sep 27 2022 Gerrit Photon <photon-checkins@vmware.com> 1.16.3-1

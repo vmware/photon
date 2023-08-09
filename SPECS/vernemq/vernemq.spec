@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          1.12.6.2
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -120,6 +120,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.12.6.2-4
+- Resolving systemd-rpm-macros for group creation
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.12.6.2-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.12.6.2-2

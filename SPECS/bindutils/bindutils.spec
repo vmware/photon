@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -87,14 +87,6 @@ fi
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ]; then
-  if getent passwd named >/dev/null; then
-    userdel named
-  fi
-  if getent group named >/dev/null; then
-    groupdel named
-  fi
-fi
 
 %files
 %defattr(-,root,root)
@@ -132,6 +124,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 9.19.14-3
+- Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.19.14-2
 - Bump version as a part of krb5 upgrade
 * Thu Jun 22 2023 Dweep Advani <dadvani@vmware.com> 9.19.14-1

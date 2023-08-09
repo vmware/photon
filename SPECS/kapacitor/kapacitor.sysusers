@@ -1,2 +1,2 @@
-g kapacitor
+g kapacitor -
 u kapacitor - "Kapacitor" /var/lib/kapacitor /sbin/nologin

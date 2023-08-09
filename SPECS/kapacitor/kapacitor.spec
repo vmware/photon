@@ -1,6 +1,6 @@
 Name:           kapacitor
 Version:        1.6.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -76,11 +76,6 @@ chown -R %{name}:%{name} /var/log/%{name}
 
 %postun
 %systemd_postun_with_restart kapacitor.service
-if [ $1 -eq 0 ]; then
-    # Package deletion
-    userdel %{name}
-    groupdel %{name}
-fi
 
 %files
 %defattr(-,root,root,755)
@@ -97,6 +92,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.6.6-3
+- Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
 - Bump up version to compile with new go
 * Mon Jul 03 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.6-1

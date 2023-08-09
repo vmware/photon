@@ -1,15 +1,16 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.14p3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d4af836e3316c35d8b81a2c869ca199e8f2d5cb26dbd98b8ad031f29be62b154452afdf5a506ddabad21b80e5988a49f1f7c8f1ec44718ffcbd7e89ccbdef612
+Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
+%define sha512  %{name}=d4af836e3316c35d8b81a2c869ca199e8f2d5cb26dbd98b8ad031f29be62b154452afdf5a506ddabad21b80e5988a49f1f7c8f1ec44718ffcbd7e89ccbdef612
+Source1:        %{name}.sysusers
 
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
@@ -63,14 +64,15 @@ mkdir -p %{buildroot}%{_tmpfilesdir}
 touch %{buildroot}%{_tmpfilesdir}/sudo.conf
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %check
 make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
-if [ $1 -eq 1 ]; then
-  getent group wheel > /dev/null || groupadd wheel
+if [ $1 -eq 1 ] ; then
+  %sysusers_create_compat %{SOURCE1}
 fi
 
 %postun -p /sbin/ldconfig
@@ -97,8 +99,11 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %attr(0644,root,root) %{_tmpfilesdir}/sudo.conf
 %exclude %{_sysconfdir}/sudoers.dist
+%{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-2
+- Resolving systemd-rpm-macros for group creation
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
 - Version update
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.12p1-2

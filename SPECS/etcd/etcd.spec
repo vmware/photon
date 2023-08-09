@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
@@ -68,10 +68,6 @@ install -vdm755 %{buildroot}%{_sharedstatedir}/etcd
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-  /usr/sbin/userdel %{name}
-  /usr/sbin/groupdel %{name}
-fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -89,6 +85,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.5.9-3
+- Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-2
 - Bump up version to compile with new go
 * Thu Jul 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.9-1

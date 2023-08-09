@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       12%{?dist}
+Release:       13%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -21,6 +21,7 @@ Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 
 Source1: systemtap-runtime.sysusers
 Source2: systemtap-server.sysusers
+Source3: systemtap.sysusers
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -203,6 +204,7 @@ touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.sysusers
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/systemtap.sysusers
 rm -rf %{buildroot}%{_mandir}/cs/
 
 %find_lang %{name}
@@ -216,8 +218,7 @@ make %{?_smp_mflags} check
 rm -rf %{buildroot}
 
 %pre
-getent group stap-server >/dev/null || \
-    groupadd -g 155 -r stap-server || groupadd -r stap-server
+%sysusers_create_compat %{SOURCE3}
 
 %pre runtime
 %sysusers_create_compat %{SOURCE1}
@@ -322,6 +323,7 @@ fi
 %{_mandir}/man8/stapbpf.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
+%{_sysusersdir}/%{name}.sysusers
 
 %files initscript
 %defattr(-,root,root)
@@ -389,6 +391,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.8-13
+- Resolving systemd-rpm-macros for group creation
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-12
 - Bump version as a part of elfutils upgrade
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-11

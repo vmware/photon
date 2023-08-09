@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.0.12
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       BSD
 URL:           http://redis.io
 Group:         Applications/Databases
@@ -90,6 +90,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 7.0.12-2
+- Resolving systemd-rpm-macros for group creation
 * Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.12-1
 - Upgrade to v7.0.12 to fix following CVE's:
 - CVE-2022-24834, CVE-2023-36824

@@ -5,7 +5,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.3.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -89,11 +89,6 @@ rm -rf %{buildroot}
 
 %postun
 %systemd_postun %{name}.service
-if [ $1 -eq 0 ]
-then
-    /usr/sbin/userdel %{name}
-    /usr/sbin/groupdel %{name}
-fi
 
 %files
 %defattr(-,root,root)
@@ -107,6 +102,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-4
+- Resolving systemd-rpm-macros for group creation
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-3
 - Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-2

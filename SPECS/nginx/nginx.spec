@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.23.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -118,6 +118,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-5
+- Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-4
 - Use systemd-rpm-macros for user creation
 * Mon Feb 20 2023 Harinadh D <hdommaraju@vmware.com> 1.23.1-3

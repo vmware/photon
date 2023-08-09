@@ -10,7 +10,7 @@
 Summary:    A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:       openresty
 Version:    1.21.4.1
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    BSD
 URL:        https://openresty.org/en
 Group:      Applications/System
@@ -223,6 +223,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.21.4.1-8
+- Resolving systemd-rpm-macros for group creation
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-7
 - Bump version as a part of lua upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-6
