@@ -1,93 +1,92 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python-etcd
 Version:        0.4.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/python-etcd
-Source0:        %{name}-%{version}.tar.gz
-Patch0:         auth-api-compatibility.patch
-%define sha1    python-etcd=9e79ae82429cf2ffbe2b5647e14bc29571afd766
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python2
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-setuptools
-%if %{with_check}
-BuildRequires:  python-dnspython
-BuildRequires:  python-urllib3
-BuildRequires:  python-pyOpenSSL
-BuildRequires:  etcd
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  libffi-devel
+Source0: https://github.com/jplana/python-etcd/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=c59d7a67492a2e4e72b1ae3ea73ac85a073b9d4516d1ebc48601ba67ac9609fbc45574d97e8dfae3ed4f511f090343ff980160043676252125ce2e2edc7bd154
+
+Patch0: auth-api-compatibility.patch
+
+BuildRequires: python2-devel
+BuildRequires: python-setuptools
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+
+%if 0%{?with_check}
+BuildRequires: python-pip
+BuildRequires: python-dnspython
+BuildRequires: python-urllib3
+BuildRequires: python-pyOpenSSL
+BuildRequires: etcd
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: libffi-devel
+BuildRequires: python3-dnspython
+BuildRequires: python3-urllib3
+BuildRequires: python3-pyOpenSSL
+BuildRequires: python3-pip
 %endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-setuptools
-BuildArch:      noarch
+
+Requires: python2
+Requires: python-setuptools
+
+BuildArch: noarch
 
 %description
 Python API for etcd
 
 %package -n     python3-etcd
-Summary:        Python3 API for etcd
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools
-%if %{with_check}
-BuildRequires:  python3-dnspython
-BuildRequires:  python3-urllib3
-BuildRequires:  python3-pyOpenSSL
-%endif
+Summary: Python3 API for etcd
+Requires: python3
+Requires: python3-setuptools
+Requires: python3-dnspython
+Requires: python3-urllib3
 
 %description -n python3-etcd
 Python3 API for etcd
 
 %prep
-%setup -n %{name}-%{version}
-%patch0 -p1
+%autosetup -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
 %build
-python2 setup.py build
+%py_build
 pushd ../p3dir
-python3 setup.py build
+%py3_build
 popd
 
 %install
-pushd ../p3dir
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py_install
 
+pushd ../p3dir
+%py3_install
+popd
+
+%if 0%{?with_check}
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 nose
-python2 setup.py test
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
+pip3 install nose mock
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/*
+%{python_sitelib}/*
 
 %files -n python3-etcd
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2
--   Add %check
-*   Sat Aug 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.5-1
--   Initial version of python etcd for PhotonOS.
+* Wed Aug 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.5-3
+- Add python3-dnspython to requires
+* Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2
+- Add %check
+* Sat Aug 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.5-1
+- Initial version of python etcd for PhotonOS.
