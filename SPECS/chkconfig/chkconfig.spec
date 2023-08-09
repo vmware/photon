@@ -3,9 +3,9 @@ Name:       chkconfig
 Version:    1.21
 Release:    2%{?dist}
 License:    GPLv2
-Vendor:     VMware, Inc.
-URL:        https://git.fedorahosted.org/git/chkconfig.git
 Group:      System Environment/Base
+URL:        https://git.fedorahosted.org/git/chkconfig.git
+Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
@@ -39,8 +39,8 @@ of the drudgery of manually editing the symbolic links.
 
 %package -n ntsysv
 Summary: A tool to set the stop/start of system services in a runlevel
-Group: System Environment/Base
-Requires: chkconfig
+Group:      System Environment/Base
+Requires:   chkconfig
 
 %description -n ntsysv
 Ntsysv provides a simple interface for setting which system services
@@ -53,18 +53,21 @@ page), ntsysv configures the current runlevel (5 if you're using X).
 %autosetup -p1
 
 %build
-%{make_build} RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS"
+%make_build
 
 %install
-%{make_install} MANDIR=%{_mandir} SBINDIR=%{_sbindir}
+%make_install %{?_smp_mflags} \
+        MANDIR=%{_mandir} SBINDIR=%{_sbindir}
 
-mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d
-ln -s rc.d/init.d %{buildroot}%{_sysconfdir}/init.d
+ln -sv rc.d/init.d %{buildroot}%{_sysconfdir}/init.d
+
+mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d \
+         %{buildroot}%{_sysconfdir}/rc.d/rc{0..6}.d \
+         %{buildroot}%{_sysconfdir}/chkconfig.d
+
 for n in 0 1 2 3 4 5 6; do
-    mkdir -p %{buildroot}%{_sysconfdir}/rc.d/rc${n}.d
-    ln -s rc.d/rc${n}.d %{buildroot}%{_sysconfdir}/rc${n}.d
+ ln -s rc.d/rc${n}.d %{buildroot}%{_sysconfdir}/rc${n}.d
 done
-mkdir -p %{buildroot}%{_sysconfdir}/chkconfig.d
 
 %find_lang %{name}
 
