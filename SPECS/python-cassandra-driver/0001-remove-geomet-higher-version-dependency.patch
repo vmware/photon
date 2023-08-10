@@ -1,0 +1,26 @@
+From 593796b25dd578baa06bf9845a5faf63c341ac90 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 10 Aug 2023 22:50:04 +0530
+Subject: [PATCH] remove geomet higher version dependency
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/setup.py b/setup.py
+index 745d05d..c768ee1 100644
+--- a/setup.py
++++ b/setup.py
+@@ -404,7 +404,7 @@ def run_setup(extensions):
+             sys.stderr.write("Bypassing Cython setup requirement\n")
+ 
+     dependencies = ['six >=1.9',
+-                    'geomet>=0.1,<0.3']
++                    'geomet>=0.1']
+ 
+     if not PY3:
+         dependencies.append('futures')
+-- 
+2.25.1
+

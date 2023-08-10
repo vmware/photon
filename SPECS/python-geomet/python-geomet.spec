@@ -1,49 +1,60 @@
+%define srcname geomet
+
 Name:           python3-geomet
-Version:        0.1.2
-Release:        2%{?dist}
+Version:        0.3.0
+Release:        1%{?dist}
 Summary:        GeoJSON <-> WKT/WKB conversion utilities
 License:        Apache Software License
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/s/geomet/geomet-%{version}.tar.gz
-Source0:        geomet-%{version}.tar.gz
-%define sha1    geomet=3b89e10c60ac9abee726dc696a1117d5427d5517
+URL:            https://github.com/geomet/geomet
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-macros
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-six
-Requires:       python3-click
-Requires:       python3-setuptools
+Source0: https://github.com/geomet/geomet/archive/refs/tags/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=85380ed30adc027c6a97fa3b6e95034a9452617d26c6fb18d6700d5d4069acfde976a094a1a3f6e7240b9357e69f5dca85fa1c81d78102fa8a49b3186ccb82ac
 
-BuildArch:      noarch
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+
+%if 0%{?with_check}
+BuildRequires: python3-pip
+%endif
+
+Requires: python3
+Requires: python3-six
+Requires: python3-click
+Requires: python3-setuptools
+
+BuildArch: noarch
 
 %description
 Convert GeoJSON to WKT/WKB (Well-Known Text/Binary), and vice versa.
 
 %prep
-%autosetup -n geomet-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%py3_install
 
+%if 0%{?with_check}
 %check
-python3 setup.py test
+# this doesn't exist in current source archive
+# will help in future
+bash build-scripts/02-test.sh
+%endif
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/geomet
+%{_bindir}/%{srcname}
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.2-2
--   Bump up to compile with python 3.10
-*   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 0.1.2-1
--   Initial packaging for Photon
+* Thu Aug 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.3.0-1
+- Upgrade to v0.3.0
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.2-2
+- Bump up to compile with python 3.10
+* Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 0.1.2-1
+- Initial packaging for Photon
