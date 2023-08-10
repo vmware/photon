@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.290
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -44,17 +44,17 @@ Source9: genhmac.inc
 Source10: https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{dcap_version}.tar.gz
 %define sha512 DCAP=264c2c9e6554e533c41df34291d5809bd18b32384c5d871687dae7d3587b200459fcfffe0a95d93063cb29c6b5a50feebc99612e3d7403c24c410c43b0e2f64c
 
-%define i40e_version 2.22.18
+%define i40e_version 2.23.17
 Source11: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
+%define sha512 i40e=5dbe5186f23d14aac185f74283377d9bfc0837ab16b145a107f735d5439a207e27db871e278656cd06ba595f426d7095a294d39110df5ad6b30ea9f6d3a2a3a7
 
-%define iavf_version 4.8.2
+%define iavf_version 4.9.1
 Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
+%define sha512 iavf=6a52b06373eda09824fc2674ce5a5ff488dc86331c9022faf2857c38a3002a969c6bb039271fc31e70310589701ac65d57d310d08459aa3402acbec9af1f7683
 
-%define ice_version 1.11.14
+%define ice_version 1.12.6
 Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
+%define sha512 ice=566d769f1691e725f1d381202a986966be4af9f4b4110dcfa15a5ba64df3cd2e4dd590510d1b181a37d79dd9ae45d3075b3bcaae0cd4888de55146aaa5c66486
 
 # common
 Patch1: double-tcp_mem-limits.patch
@@ -503,19 +503,20 @@ Patch816: 0017-tools-power-turbostat-Restore-ability-to-execute-in-.patch
 Patch817: 0018-tools-power-turbostat-reduce-debug-output.patch
 
 #Patches for i40e driver
-Patch1502: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1503: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
-Patch1504: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1505: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
+Patch1502: i40e-v2.23.17-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1503: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
+Patch1504: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1505: i40e-v2.23.17-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
-Patch1511: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1512: iavf-v4.8.2-no-aux-symvers.patch
-Patch1513: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1511: iavf-v4.9.1-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1512: iavf-v4.9.1-no-aux-symvers.patch
+Patch1513: iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
 
 #Patches for ice driver
-Patch1521: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1522: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
+Patch1521: ice-v1.12.6-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1522: ice-v1.12.6-Remove-inline-from-ethtool_sprintf.patch
+Patch1523: ice-v1.12.6-don-t-install-auxiliary-module-on-modul.patch
 %endif
 
 # Usermode helper fixes
@@ -596,6 +597,7 @@ BuildRequires:  slang-devel
 BuildRequires:  python3-devel
 BuildRequires:  bison
 BuildRequires:  gettext
+BuildRequires:  which
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 %endif
@@ -758,7 +760,7 @@ popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-%autopatch -p1 -m1521 -M1522
+%autopatch -p1 -m1521 -M1523
 popd
 
 %endif
@@ -1159,6 +1161,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2
+- Add i40e-2.23.17, iavf-4.9.1 and ice-1.12.6 driver subpackages
+- Enable CONFIG_CRYPTO_XCBC
 * Thu Aug 10 2023 Ajay Kaher <akaher@vmware.com> 4.19.290-1
 - Update to version 4.19.290
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4

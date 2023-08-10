@@ -1,0 +1,40 @@
+From e9b61867921a816b7122878753af3209e621d610 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Fri, 10 Mar 2023 18:33:53 +0000
+Subject: [PATCH] ice-1.11.14: don't install auxiliary module on
+ modules_install_no_aux
+
+modules_install_no_aux inconveniently installs the auxiliary module
+despite what the name would suggest.
+
+This happens because the auxiliary module is saved to the same location
+as the normal driver module, so when the driver Makefile calls
+modules_install with the Linux kernel Makefile, both modules are installed.
+
+The Linux kernel modules_install reads the .mod files generated
+during the module build process to determine the modules to install.
+These .mod files are simply text files with the path to the .ko file.
+(and also a .o file).
+
+Avoid installing the auxiliary module during modules_install_no_aux
+by removing the .mod file that tells modules_install that it exists.
+
+---
+ src/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/Makefile b/src/Makefile
+index 7cf1e17..49ded46 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -207,6 +207,7 @@ endif
+ # RPM specfile when  generating binary RPMs, and is not expected to modify
+ # files outside of the build root. Thus, it must not update initramfs, or run depmod.
+ modules_install_no_aux:
++	@rm -f .tmp_versions/intel_auxiliary.mod
+ 	@+$(call kernelbuild,modules_install)
+ ifneq (${DDP_PKG_ORIGIN},)
+ 	@# Install DDP package file if provided/required with ice module
+--
+2.35.6
+
