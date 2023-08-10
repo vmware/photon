@@ -1,3 +1,5 @@
+%define srcname zope.interface
+
 Name:           python3-zope.interface
 Version:        5.4.0
 Release:        2%{?dist}
@@ -7,34 +9,48 @@ License:        ZPL 2.1
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
-%define sha512  zope.interface=ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
+
+Source0: https://pypi.python.org/packages/source/z/zope.interface/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
+%if 0%{?with_check}
+BuildRequires: python3-pip
+%endif
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-setuptools
 
 %description
-This package is intended to be independently reusable in any Python project. It is maintained by the Zope Toolkit project.
+This package is intended to be independently reusable in any Python project.
+It is maintained by the Zope Toolkit project.
 
-This package provides an implementation of “object interfaces” for Python. Interfaces are a mechanism for labeling objects as conforming to a given API or contract. So, this package can be considered as implementation of the Design By Contract methodology support in Python.
+This package provides an implementation of “object interfaces” for Python.
+Interfaces are a mechanism for labeling objects as conforming to a given
+API or contract. So, this package can be considered as implementation of
+the Design By Contract methodology support in Python.
 
-For detailed documentation, please see http://docs.zope.org/zope.interface
+For detailed documentation, please visit http://docs.zope.org/zope.interface
 
 %prep
-%autosetup -n zope.interface-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
+%{py3_install}
 
+%if 0%{?with_check}
 %check
-python3 setup.py test
+pip3 install zope.testing
+pushd %{buildroot}%{python3_sitelib}
+PURE_PYTHON=1 %{python3} -m unittest discover -s zope/interface -t .
+popd
+%endif
 
 %files
 %defattr(-,root,root,-)
