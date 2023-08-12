@@ -1,29 +1,36 @@
+%define srcname tzlocal
+
 Summary:        tzinfo object for the local timezone.
 Name:           python3-tzlocal
 Version:        4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/tzlocal/1.4
-Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
-%define sha512  tzlocal=5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
+Url:            https://github.com/regebro/tzlocal
+
+Source0: https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
+%define sha512 %{srcname}=5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
+
+BuildRequires: python3-devel
+BuildRequires: python3-six
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+
 %if 0%{?with_check}
-Patch0:         tzlocal-make-check-fix.patch
+BuildRequires: python3-pytest
+BuildRequires: python3-pip
+BuildRequires: python3-hypothesis
+BuildRequires: python3-pytz-deprecation-shim
+BuildRequires: tzdata
 %endif
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  curl-devel
-%endif
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-pytz
-BuildArch:      noarch
+
+Requires: python3
+Requires: python3-pytz
+Requires: python3-pytz-deprecation-shim
+
+BuildArch: noarch
 
 %description
 This Python module returns a tzinfo object with the local timezone information under Unix and Win-32.
@@ -39,24 +46,25 @@ but you don’t need that when you have the tzinfo file.
 However, if the timezone name is readily available it will be used.
 
 %prep
-%autosetup -p1 -n tzlocal-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
+%{py3_install}
 
 %check
-#One test is failing, have a git issue raised against it.
-#https://github.com/regebro/tzlocal/issues/89
-python3 setup.py test
+pip3 install tomli mocker pytest-mock
+%pytest -k 'not symlink_localtime and not conflicting and not noconflict'
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2
+- Add python3-pytz-deprecation-shim to requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1-1

@@ -1,34 +1,45 @@
+%define srcname numpy
+
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
 Version:        1.23.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
-Source0:        https://files.pythonhosted.org/packages/64/8e/9929b64e146d240507edaac2185cd5516f00b133be5b39250d253be25a64/numpy-1.23.4.tar.gz
-%define sha512  numpy=727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-devel
-BuildRequires:  lapack-devel
-BuildRequires:  unzip
-BuildRequires:  cython3
-%if %{with_check}
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
+Source0: https://files.pythonhosted.org/packages/64/8e/9929b64e146d240507edaac2185cd5516f00b133be5b39250d253be25a64/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
+
+BuildRequires: python3-setuptools
+BuildRequires: python3-devel
+BuildRequires: lapack-devel
+BuildRequires: unzip
+BuildRequires: cython3
+
+%if 0%{?with_check}
+BuildRequires: python3-pytest
+BuildRequires: python3-hypothesis
+BuildRequires: python3-test
+BuildRequires: python3-typing-extensions
 %endif
-Requires:       python3
-Requires:       python3-libs
+
+Requires: python3
+Requires: lapack
 
 %description
-NumPy is a general-purpose array-processing package designed to efficiently manipulate large multi-dimensional arrays of arbitrary records without sacrificing too much speed for small multi-dimensional arrays. NumPy is built on the Numeric code base and adds features introduced by numarray as well as an extended C-API and the ability to create arrays of arbitrary type which also makes NumPy suitable for interfacing with general-purpose data-base applications.
+NumPy is a general-purpose array-processing package designed to efficiently
+manipulate large multi-dimensional arrays of arbitrary records without
+sacrificing too much speed for small multi-dimensional arrays.
+NumPy is built on the Numeric code base and adds features introduced by
+numarray as well as an extended C-API and the ability to create arrays of
+arbitrary type which also makes NumPy suitable for interfacing with
+general-purpose data-base applications.
 
 %prep
-%autosetup -n numpy-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 %py3_build
@@ -37,14 +48,9 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 %py3_install
 
 %check
-mkdir test
-pushd test
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose pytest
-PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 -c "import numpy; numpy.test()"
-popd
-
-rm -rf test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+  PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  %python3 runtests.py --no-build
 
 %files
 %defattr(-,root,root,-)
@@ -54,6 +60,8 @@ rm -rf test
 %{python3_sitelib}/*
 
 %changelog
+* Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.4-2
+- Add lapack to requires
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.4-1
 - Update to 1.23.4
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.4-1
