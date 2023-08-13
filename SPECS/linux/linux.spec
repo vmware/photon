@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.288
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.290
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=33428794d84a114fc909f053760d09ef1ad1c745921c274cdf5f0b42f0038901b84217ec68aa56ac1d0aa4ed6375cff97201c043420f72bef22b8bdd6392afd1
+%define sha512 linux=5b63dbe871ea2588e8b847189e855b0d88b483466dbc6f96d3ec753c1b1df0aa5b15c29aa452b305b5e904128ada5c6e6819e216c938e7415399ed2b8ee9fa64
 
 %ifarch x86_64
 Source1: config
@@ -1159,6 +1159,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Aug 10 2023 Ajay Kaher <akaher@vmware.com> 4.19.290-1
+- Update to version 4.19.290
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
 - Fix: SEV: Guest should not disabled CR4.MCE
 * Mon Jul 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.288-3
