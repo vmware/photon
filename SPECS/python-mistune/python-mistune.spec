@@ -1,46 +1,54 @@
+%define srcname mistune
+
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
-Version:        2.0.4
-Release:        2%{?dist}
+Version:        2.0.5
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/mistune/
-Source0:        https://files.pythonhosted.org/packages/source/m/mistune/mistune-%{version}.tar.gz
-%define sha512  mistune=4d000c5791c29069b5f252f2aa5d361eb9cdf717d33f8d66dee8b4aa3bfe1242a572af63ca3dfd57324fac457fb9b5a9dff18e7da15f9036becd14cb27882dba
+Url:            https://pypi.python.org/pypi/mistune
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
+Source0: https://files.pythonhosted.org/packages/source/m/mistune/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=109447977a441ebbedfca2abbe62415139d94c48ae56c3d8cae04df3f93ccd1e8333b3dbb8bf61a2096b903df6c3aab2fadd0893fb82815416f17555465e98c7
 
-Requires:       python3
-Requires:       python3-libs
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
 
-BuildArch:      noarch
+%if 0%{?with_check}
+BuildRequires: python3-pytest
+BuildRequires: python3-pip
+%endif
+
+Requires: python3
+
+BuildArch: noarch
 
 %description
-The fastest markdown parser in pure Python
-
 The fastest markdown parser in pure Python with renderer features, inspired by marked.
 
 %prep
-%autosetup -n mistune-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
+%{py3_install}
 
 %check
-python3 setup.py test
+pip3 install tomli
+%{pytest}
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.5-1
+- Upgrade to v2.0.5
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.4-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.4-1
