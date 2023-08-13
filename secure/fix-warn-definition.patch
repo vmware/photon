@@ -1,0 +1,62 @@
+From 2c3dd15357b628de25b2dd2ffeab55f5b2837f68 Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <nkuntal@vmware.com>
+Date: Mon, 7 Aug 2023 23:57:44 +0000
+Subject: [PATCH] fix conflicting definition of warn()
+
+RAP uses function signature (ret type, args) to create hash objects
+during compilation. arch/x86/purgatory/ has two definitions
+of warn() and generates two __rap_hash_warn. This results
+in failure of linking 'purgatory'. Please find details of
+conflicting objects below.
+
+#  nm purgatory.o | grep warn
+0000000000000170 T __cfi_warn
+000000006c29e01a A __rap_hash_warn
+0000000000000179 T warn
+
+# nm string.o | grep warn
+0000000058cf6023 A __rap_hash_warn
+                 U warn
+
+Fixing the definition used by 'string' to create matching
+signature of warn function for the directory.
+
+Modifying the definition in 'string' because it uses __putstr
+having <const char *> argument.
+arch/x86/boot/compressed/misc.h:56
+void __putstr(const char *s);
+
+---
+ arch/x86/boot/compressed/error.c | 2 +-
+ arch/x86/boot/compressed/error.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/error.c b/arch/x86/boot/compressed/error.c
+index c881878e5..ce5ed7d82 100644
+--- a/arch/x86/boot/compressed/error.c
++++ b/arch/x86/boot/compressed/error.c
+@@ -7,7 +7,7 @@
+ #include "misc.h"
+ #include "error.h"
+ 
+-void warn(char *m)
++void warn(const char *m)
+ {
+ 	error_putstr("\n\n");
+ 	error_putstr(m);
+diff --git a/arch/x86/boot/compressed/error.h b/arch/x86/boot/compressed/error.h
+index 1de582118..87062dea9 100644
+--- a/arch/x86/boot/compressed/error.h
++++ b/arch/x86/boot/compressed/error.h
+@@ -4,7 +4,7 @@
+ 
+ #include <linux/compiler.h>
+ 
+-void warn(char *m);
++void warn(const char *m);
+ void error(char *m) __noreturn;
+ 
+ #endif /* BOOT_COMPRESSED_ERROR_H */
+-- 
+2.39.0
+

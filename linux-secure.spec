@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.41
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -58,6 +58,8 @@ Source28: testmgr_fips_canister_wrapper.c
 
 Source29: spec_install_post.inc
 Source30: %{name}-dracut.conf
+
+Source31:       photon_sb2020.pem
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -101,6 +103,7 @@ Patch42: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch51: 0002-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch52: 0003-gcc-rap-plugin-with-kcfi.patch
 Patch53: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch54: fix-warn-definition.patch
 
 # SEV-ES, TDX
 %ifarch x86_64
@@ -229,7 +232,7 @@ The kernel fips-canister
 %endif
 
 #Secure
-%autopatch -p1 -m50 -M53
+%autopatch -p1 -m50 -M54
 
 %ifarch x86_64
 #SEV-ES, TDX
@@ -256,6 +259,7 @@ The kernel fips-canister
 %build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
+cp %{SOURCE31} photon_sb2020.pem
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
@@ -424,6 +428,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-3
+- Enable Kconfig CONFIG_KEXEC_FILE for kexec signature verify
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
 - Fix: unconditional preserve CR4.MCE
 * Wed Nov 22 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.41-1
