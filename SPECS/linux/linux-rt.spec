@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.41
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -66,6 +66,8 @@ Source18:        modify_kernel_configs.inc
 Source19:        spec_install_post.inc
 
 Source20:       %{name}-dracut.conf
+
+Source21:       photon_sb2020.pem
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -336,6 +338,7 @@ popd
 
 %build
 make %{?_smp_mflags} mrproper
+cp %{SOURCE21} photon_sb2020.pem
 
 %ifarch x86_64
 cp %{SOURCE1} .config
@@ -517,6 +520,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-4
+- Enable Kconfig CONFIG_KEXEC_FILE for kexec signature verify
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.41-3
 - Enable CONFIG_DEBUG_INFO_BTF=y
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
