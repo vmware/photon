@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253
-Release:        7%{?dist}
+Version:        254.1
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=85bc9a3715d9ccc80df2c5678b74a4a3b72569643d1779511ea631d692dea0fa1da255ef18b1c4fd477a777c036ea2afe9c0ffb29101c09c608933455002f029
+%define sha512 %{name}=eb2f4a95c890792fe11080e8dafc1eb4588ee98a3084d28083c4dd1f97962f56188c41641708c23267d01f1431821e823e1b89012f90d6ede80a12a0ce11a6d7
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -55,7 +55,6 @@ Requires:       libgpg-error
 
 BuildRequires:  libgpg-error-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  gnu-efi
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
@@ -84,6 +83,7 @@ BuildRequires:  pkg-config
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  python3-jinja2
+BuildRequires:  python3-pyelftools
 BuildRequires:  shadow
 BuildRequires:  util-linux-devel
 BuildRequires:  XML-Parser
@@ -163,6 +163,36 @@ Provides:         udev = %{version}-%{release}
 This package contains systemd-udev and the rules and hardware database
 needed to manage device nodes. This package is necessary on physical
 machines and in virtual machines, but not in containers.
+
+%package ukify
+Summary:        Tool to build Unified Kernel Images
+Requires:       %{name} = %{version}-%{release}
+
+Requires:       (llvm or binutils)
+Recommends:     llvm
+
+Requires:       python3-pyelftools
+BuildArch:      noarch
+
+%description ukify
+This package provides ukify, a script that combines a kernel image, an initrd,
+with a command line, and possibly PCR measurements and other metadata, into a
+Unified Kernel Image (UKI).
+
+%package boot-unsigned
+Summary: UEFI boot manager (unsigned version)
+
+Provides: systemd-boot-unsigned-%{efi_arch} = %version-%release
+Provides: systemd-boot = %version-%release
+Provides: version(systemd-boot-unsigned) = %version
+
+%description boot-unsigned
+systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
+graphical menu to select the entry to boot and an editor for the kernel command
+line. systemd-boot supports systems with UEFI firmware only.
+
+This package contains the unsigned version. Install systemd-boot instead to get
+the version that works with Secure Boot.
 
 %package container
 Summary: Tools for containers and VMs
@@ -258,7 +288,6 @@ CONFIGURE_OPTS=(
        -Dservice-watchdog=
        -Dblkid=true
        -Dseccomp=true
-       -Ddefault-dnssec=no
        -Dfirstboot=false
        -Dldconfig=false
        -Dxz=true
@@ -275,8 +304,11 @@ CONFIGURE_OPTS=(
        -Dselinux=true
        -Dlibcurl=true
        -Dgnutls=true
-       -Ddefault-dns-over-tls=opportunistic
        -Ddns-over-tls=true
+       -Ddefault-dnssec=no
+       -Ddefault-dns-over-tls=no
+       -Ddefault-mdns=no
+       -Ddefault-llmnr=resolve
        -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
@@ -292,15 +324,18 @@ CONFIGURE_OPTS=(
        -Ddefault-hierarchy=hybrid
        -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
        -Drc-local=%{_sysconfdir}/rc.d/rc.local
-       -Dfallback-hostname=photon
+       -Dfallback-hostname=localhost
        -Doomd=false
        -Dhomed=false
+       -Dbootloader=true
        -Dversion-tag=v%{version}-%{release}
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
        -Defi=true
-       -Dgnu-efi=true
+       -Dstatus-unit-format-default=combined
+       -Ddefault-timeout-sec=45
+       -Ddefault-user-timeout-sec=45
        $CROSS_COMPILE_CONFIG
 )
 
@@ -428,6 +463,7 @@ fi
 %{_sbindir}/shutdown
 %{_sbindir}/telinit
 %{_sbindir}/resolvconf
+%{_sbindir}/mount.ddi
 
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
@@ -439,6 +475,7 @@ fi
 %{_bindir}/portablectl
 %{_bindir}/resolvectl
 %{_bindir}/systemctl
+%{_bindir}/%{name}-confext
 %{_bindir}/%{name}-sysusers
 %{_bindir}/%{name}-analyze
 %{_bindir}/%{name}-ask-password
@@ -548,6 +585,7 @@ fi
 %defattr(-,root,root)
 %dir %{_sysconfdir}/udev
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%{_sysconfdir}/udev/iocost.conf
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
 %{_sysconfdir}/%{name}/pstore.conf
@@ -562,6 +600,7 @@ fi
 
 %{_libdir}/udev/v4l_id
 %{_libdir}/udev/dmi_memory_id
+%{_libdir}/udev/iocost
 %{_libdir}/kernel
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
@@ -588,7 +627,6 @@ fi
 %{_unitdir}/%{name}-backlight@.service
 %{_unitdir}/%{name}-fsck-root.service
 %{_unitdir}/%{name}-fsck@.service
-%{_unitdir}/%{name}-hibernate-resume@.service
 %{_unitdir}/%{name}-hibernate.service
 %{_unitdir}/%{name}-hwdb-update.service
 %{_unitdir}/%{name}-hybrid-sleep.service
@@ -663,6 +701,25 @@ fi
 %{_libdir}/security/pam_systemd.so
 %{_libdir}/pam.d/%{name}-user
 
+%files boot-unsigned
+%defattr(-,root,root)
+%dir %{_systemd_util_dir}/boot
+%dir %{_systemd_util_dir}/boot/efi
+%{_bindir}/bootctl
+%{_systemd_util_dir}/boot/efi/linux*.efi.stub
+%{_systemd_util_dir}/boot/efi/systemd-boot*.efi
+%{_systemd_util_dir}/systemd-bless-boot
+%{_systemdgeneratordir}/systemd-bless-boot-generator
+%{_unitdir}/sysinit.target.wants/systemd-boot-random-seed.service
+%{_unitdir}/systemd-bless-boot.service
+%{_unitdir}/systemd-boot-random-seed.service
+%{_unitdir}/systemd-boot-update.service
+
+%files ukify
+%defattr(-,root,root)
+%{_libdir}/kernel/install.d/60-ukify.install
+%{_libdir}/systemd/ukify
+
 %files container
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
@@ -707,6 +764,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Aug 14 2023 Susant Sahani <ssahani@vmware.com> 254.1-1
+- Version bump.
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 253-7
 - Revert https://github.com/systemd/systemd/pull/26494.patch.
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 253-6

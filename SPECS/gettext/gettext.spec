@@ -1,7 +1,7 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
-Version:        0.21.1
-Release:        2%{?dist}
+Version:        0.22
+Release:        1%{?dist}
 License:        GPL-3.0-or-later and LGPL-2.0-or-later and GFDL-1.2-or-later
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha512 %{name}=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
+%define sha512 %{name}=c6368344aa4e0f6fd7c4a93023a5f7b377c7bb97b8ea688fd54f4c385c069d9ff27611d8763b1aed6328b6d3c4db7b34bd89bfbf6525ecaef11eb58434a4d4fa
 
 Requires: libgcc
 Requires: libstdc++
@@ -52,7 +52,10 @@ This package contains libraries used internationalization support.
 %build
 %configure \
     --docdir=%{_docdir}/%{name}-%{version} \
-    --disable-silent-rules
+    --disable-silent-rules \
+    --disable-static \
+    --enable-shared \
+    --without-emacs
 
 %make_build
 
@@ -93,13 +96,14 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %exclude %{_libdir}/libgettextlib-0.*.so
 %exclude %{_libdir}/libgettextsrc-0.*.so
-%{_libdir}/*.a
 %{_includedir}/*
 %{_datadir}/aclocal/*
 %{_mandir}/*
 %{_docdir}/*
 
 %changelog
+* Mon Aug 14 2023 Susant Sahani <ssahani@vmware.com> 0.22-1
+- Version bump.
 * Mon May 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-2
 - Introduce deve & libs sub packages
 * Thu Jan 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21.1-1
