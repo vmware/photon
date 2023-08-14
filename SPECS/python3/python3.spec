@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -283,6 +283,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Aug 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.11-2
+- Add wheel macros macros.python
 * Tue Jun 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-1
 - Update to version 3.10.11, separate pip & setuptools
 - Fix CVE-2023-27043

@@ -1,0 +1,27 @@
+From a8ee1daf7911c813662e962bf53dc8cfff6952bd Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 14 Aug 2023 12:09:28 +0530
+Subject: [PATCH] remove unnecessary dependencies
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ setup.cfg | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/setup.cfg b/setup.cfg
+index 2e34aab..c64e4c7 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -31,9 +31,7 @@ project_urls =
+ [options]
+ packages = pytz_deprecation_shim
+ install_requires =
+-    backports.zoneinfo;python_version>="3.6" and python_version<"3.9"
+     python-dateutil;python_version<"3.6"
+-    tzdata;python_version>="3.6"
+ python_requires = >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*
+ package_dir =
+     =src
+-- 
+2.25.1
+

@@ -1,57 +1,62 @@
+%define srcname Js2Py
+
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
-Version:        0.70
-Release:        2%{?dist}
+Version:        0.74
+Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py
 
-Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
-%define         sha1 Js2Py=cf6cd95d87d331dec2e99747b926a3340e79e4ba
+Source0: https://files.pythonhosted.org/packages/source/J/Js2Py/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=cb2f42c2bec0c15dadc301ee0a7ac452cc8c4bba4669e95f1155863590d6d00781883b54d4dab755a0f66eb6e30990fedca732494b1f8b6c07dc29f5203a8c8c
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-six
-BuildRequires:  python3-py
-%if %{with_check}
-BuildRequires:  python3-pyjsparser
+Patch0: 0001-Use-fips-compatible-algorithm.patch
+
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-setuptools_scm
+BuildRequires: python3-six
+BuildRequires: python3-py
+BuildRequires: python3-packaging
+
+%if 0%{?with_check}
+BuildRequires: python3-pyjsparser
+BuildRequires: python3-numpy
 %endif
 
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-six
-Requires:       python3-tzlocal
-Requires:       python3-pyjsparser
+Requires: python3
+Requires: python3-numpy
+Requires: python3-six
+Requires: python3-tzlocal
+Requires: python3-pyjsparser
 
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 Pure Python JavaScript Translator/Interpreter.
 Everything is done in 100% pure Python so it's extremely easy to install and use. Supports Python 2 & 3. Full support for ECMAScript 5.1, ECMA 6 support is still experimental.
 
 %prep
-%autosetup -p1 -n Js2Py-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-python3 setup.py build
+%{py3_build}
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{py3_install}
 
-#%%check
-#This package does not come with a test suite.
+%check
+%{python3} simple_test.py
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
-* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.70-2
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.74-1
 - Bump up to compile with python 3.10
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.70-1
 - Automatic Version Bump
