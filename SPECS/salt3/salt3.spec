@@ -1,9 +1,7 @@
 %global include_tests 1
 
-%define _salttesting_ver 2016.5.11
-
 Name:           salt3
-Version:	3005.1
+Version:        3005.2
 Release:        1%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
@@ -13,9 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha512  salt=391f995f0129f3d7104a0eea4fd83b18aa6ecae0fd7a2c77c1154e24b0bcd52cef4b63db12597c85737bb33ddf605e0c23370cef3bf47f9ea85af5b77d74dc50
-Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-%{_salttesting_ver}.tar.gz
-%define sha512  SaltTesting=5fc362ba6cf41efd0d3197c832f05b14267c9d92bbb0c34d872bd3ae1383996e0918dc6b01052076ecea70bbf4687fde3d5de2915aab7d07f961f2b6badac6ff
+%define sha512  salt=07e7afc732a97006557d4556d60aa1854934893d0566bf8c295d4b1c01515988a1bf2798ce228f6b37e657de8fdfff51153ad2ea8d54baa6a5c377e30794f317
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service
@@ -166,7 +162,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/salt-%{version}/LICENSE
 %{python3_sitelib}/salt/*
-%{python3_sitelib}/salt-*-py%{python3_version}.egg-info
+%{python3_sitelib}/salt-*-py3.10.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_var}/cache/salt
 
@@ -301,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Aug 15 2023 Derek Ardolf <saltstack_operations@vmware.com> 3005.2-1
+- Update to version 3005.2
 * Tue Oct 04 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005.1-1
 - Update to version 3005.1
 * Tue Aug 23 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005-1
