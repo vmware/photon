@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -14,6 +14,7 @@ Patch2:         0001-tuned-fix-bug-in-sysctl-verify.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 Patch5:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
+Patch6:         0001-add-support-for-sched-kernel-cmdline-parameter.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -143,6 +144,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Mon Aug 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-5
+-   Add support for the 'sched' kernel cmdline parameter
 *   Mon May 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-4
 -   Skip verification of irq 0 on x86
 *   Thu Oct 21 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-3

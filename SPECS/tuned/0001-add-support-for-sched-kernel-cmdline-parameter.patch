@@ -1,0 +1,54 @@
+From ea34ae54e9d2c582efa1644199ac50462ff743c7 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Mon, 14 Aug 2023 17:36:56 +0000
+Subject: [PATCH] add support for sched kernel cmdline parameter
+
+Add a new variable "sched_isolation" to manage the new
+'sched' parameter on the kernel cmdline
+---
+ profiles/realtime/realtime-variables.conf | 7 +++++++
+ profiles/realtime/tuned.conf              | 6 +++++-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/realtime/realtime-variables.conf b/profiles/realtime/realtime-variables.conf
+index c2da595..450e4f9 100644
+--- a/profiles/realtime/realtime-variables.conf
++++ b/profiles/realtime/realtime-variables.conf
+@@ -9,3 +9,10 @@
+ # kernel supports it.
+ #
+ # isolate_managed_irq=Y
++#
++
++# Uncomment the 'sched_isolation=Y' below to improve initial process placement
++# away from isolated cores when scheduled under a cpuset containing both
++# isolated and non-isolated cores. This does not affect realtime processes.
++#
++# sched_isolation=Y
+diff --git a/profiles/realtime/tuned.conf b/profiles/realtime/tuned.conf
+index f9c6883..df05963 100644
+--- a/profiles/realtime/tuned.conf
++++ b/profiles/realtime/tuned.conf
+@@ -35,6 +35,10 @@ assert2=${f:assertion:isolated_cores contains online CPU(s):${isolated_cores_exp
+ isolate_managed_irq = ${isolate_managed_irq}
+ managed_irq=${f:regex_search_ternary:${isolate_managed_irq}:\b[y,Y,1,t,T]\b:managed_irq,domain,:}
+ 
++# Set sched_isolation
++sched_isolation = ${sched_isolation}
++sched=${f:regex_search_ternary:${sched_isolation}:\b[y,Y,1,t,T]\b:sched,:}
++
+ [sysctl]
+ kernel.hung_task_timeout_secs = 30
+ kernel.hung_task_warnings = -1
+@@ -49,7 +53,7 @@ kernel.timer_migration = 0
+ /sys/devices/system/machinecheck/machinecheck*/ignore_ce = 1
+ 
+ [bootloader]
+-cmdline_realtime=+isolcpus=${managed_irq}${isolated_cores} intel_pstate=disable nosoftlockup tsc=nowatchdog
++cmdline_realtime=+isolcpus=${managed_irq}${sched}${isolated_cores} intel_pstate=disable nosoftlockup tsc=nowatchdog
+ 
+ [irqbalance]
+ banned_cpus=${isolated_cores}
+-- 
+2.39.0
+
