@@ -2,7 +2,7 @@
 
 Name:       python3-pytz-deprecation-shim
 Version:    0.1.0.post0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Shims to help you safely remove pytz
 License:    Apache-2.0
 Group:      Development/Languages/Python
@@ -26,8 +26,10 @@ BuildRequires: python3-pytz
 %endif
 
 Requires: python3
+Requires: python3-dateutil
+Requires: tzdata
 
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 pytz has served the Python community well for many years, but it is no longer
@@ -66,5 +68,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Aug 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.1.0.post0-2
+- Add tzdata, dateutil to requires
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.1.0.post0-1
 - New addition, needed by python3-tzlocal
