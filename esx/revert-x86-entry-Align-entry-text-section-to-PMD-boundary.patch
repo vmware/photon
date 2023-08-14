@@ -1,6 +1,6 @@
-From 2f7412ba9c6af5ab16bdbb4a3fdb1dcd2b4fd3c2 Mon Sep 17 00:00:00 2001
+From 91ad0689c9d94c1b12b47fac687b860e85593775 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
-Date: Mon, 4 Dec 2017 15:07:46 +0100
+Date: Wed, 30 Aug 2023 11:38:29 +0530
 Subject: [PATCH] x86/entry: Align entry text section to PMD boundary
 
 The (irq)entry text must be visible in the user space page tables. To allow
@@ -16,6 +16,9 @@ but little increase "visible" .text area in addition to just entry
 code. There is no security risk of doing that. As a bonus, we reduce
 kernel size by 40%. 2MB aligning increases kernel .text size from
 6MB to 10MB, by adding padding between and after entry text.
+
+[Ajay] Reverting only ALIGN_ENTRY_TEXT_END, ALIGN_ENTRY_TEXT_BEGIN
+requires for SRSO (Speculative Return Stack Overflow).
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
@@ -40,42 +43,37 @@ Cc: hughd@google.com
 Cc: keescook@google.com
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 ---
- arch/x86/kernel/vmlinux.lds.S | 7 -------
- 1 file changed, 7 deletions(-)
+ arch/x86/kernel/vmlinux.lds.S | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index d2a8b5a24a44..1e413a9326aa 100644
+index fd03f5a..478857c 100644
 --- a/arch/x86/kernel/vmlinux.lds.S
 +++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -66,9 +66,6 @@ jiffies = jiffies_64;
- 		__end_rodata_hpage_align = .;			\
+@@ -67,7 +67,6 @@ jiffies = jiffies_64;
  		__end_rodata_aligned = .;
  
--#define ALIGN_ENTRY_TEXT_BEGIN	. = ALIGN(PMD_SIZE);
+ #define ALIGN_ENTRY_TEXT_BEGIN	. = ALIGN(PMD_SIZE);
 -#define ALIGN_ENTRY_TEXT_END	. = ALIGN(PMD_SIZE);
--
+ 
  /*
   * This section contains data which will be mapped as decrypted. Memory
-  * encryption operates on a page basis. Make this section PMD-aligned
-@@ -93,8 +90,6 @@ jiffies = jiffies_64;
- 		. = ALIGN(PAGE_SIZE);				\
+@@ -94,7 +93,6 @@ jiffies = jiffies_64;
  		__end_rodata_aligned = .;
  
--#define ALIGN_ENTRY_TEXT_BEGIN
+ #define ALIGN_ENTRY_TEXT_BEGIN
 -#define ALIGN_ENTRY_TEXT_END
  #define BSS_DECRYPTED
  
  #endif
-@@ -132,9 +127,7 @@ SECTIONS
- 		CPUIDLE_TEXT
- 		LOCK_TEXT
- 		KPROBES_TEXT
--		ALIGN_ENTRY_TEXT_BEGIN
- 		ENTRY_TEXT
+@@ -147,7 +145,6 @@ SECTIONS
+ 		. = srso_untrain_ret_alias | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
+ 		*(.text.__x86.rethunk_safe)
+ #endif
 -		ALIGN_ENTRY_TEXT_END
  		SOFTIRQENTRY_TEXT
  		STATIC_CALL_TEXT
  		*(.gnu.warning)
 -- 
-2.11.0
+2.7.4
 

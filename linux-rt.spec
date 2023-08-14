@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.41
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        6.1.45
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -29,7 +29,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=82101034257f746e1b6717d374a7960c1a83f93e8c2912e159c6eda6ea7605ff3c8505d37cc55ee0aadaddc964475c7ece4c26ed60407877d6eeaa7938de7c91
+%define sha512 linux=9a30afa4dbbf899aab8722574a3b914b2547beb0b36a7d80bd45f694f1649e974c6769700d3b5494bbd71964ba4f6b1ab430588266a08a38bc940871bb963e81
 
 %ifarch x86_64
 Source1:    config-rt
@@ -520,6 +520,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-1
+- Update to version 6.1.45
 * Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-4
 - Enable Kconfig CONFIG_KEXEC_FILE for kexec signature verify
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.41-3
