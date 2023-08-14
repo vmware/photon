@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -19,6 +19,7 @@ Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 Patch5:         0001-tuned-expand-functions-for-variables-in-plugin_net.patch
 Patch6:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
 Patch7:         0001-plugin-bootloader-Support-for-ostree-boot.patch
+Patch8:         0001-add-support-for-sched-kernel-cmdline-parameter.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
@@ -149,6 +150,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-10
+- Add support for the 'sched' kernel cmdline parameter
 * Fri Aug 25 2023 Ankit Jain <ankitja@vmware.com> 2.19.0-9
 - Enable support for ostree-boot
 * Wed Apr 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-8
