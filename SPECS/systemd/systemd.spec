@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          47%{?dist}
+Release:          48%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -15,7 +15,10 @@ Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 Source4:          99-dhcp-en.network
+
+%ifarch x86_64
 Source5:          10-rdrand-rng.conf
+%endif
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
@@ -281,7 +284,7 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev
 %dir %{_sysconfdir}/udev/rules.d
 %dir %{_sysconfdir}/udev/hwdb.d
-%{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%config(noreplace) %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
 %config(noreplace) /boot/systemd.cfg
 %{_sysconfdir}/systemd/system/*
@@ -341,6 +344,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 239-48
+- Add noreplace for 99-vmware-hotplug.rules
 * Wed Mar 01 2023 Shivani Agarwal <shivania2@vmware.com> 239-47
 - Add timedated back support for ntp units directory
 * Mon Feb 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 239-46
