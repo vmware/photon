@@ -235,8 +235,8 @@ diff --git a/init/main.c b/init/main.c
 index d8bfe61b5..65b9b8015 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -841,6 +841,8 @@ static void __init mm_init(void)
- 	pti_init();
+@@ -838,6 +838,8 @@ static void __init mm_init(void)
+ 	mm_cache_init();
  }
  
 +extern int fips_integrity_init(void);
@@ -279,17 +279,7 @@ index 26be2bbe0..280b9ce13 100644
  obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
  libarc4-y					:= arc4.o
  
-@@ -26,17 +23,14 @@ libcurve25519-generic-y				+= curve25519-generic.o
- obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
- libcurve25519-y					+= curve25519.o
- 
--obj-$(CONFIG_CRYPTO_LIB_DES)			+= libdes.o
--libdes-y					:= des.o
-+obj-$(CONFIG_CRYPTO_LIB_DES)                    += libdes.o
-+libdes-y                                        := des.o
- 
- obj-$(CONFIG_CRYPTO_LIB_POLY1305_GENERIC)	+= libpoly1305.o
- libpoly1305-y					:= poly1305-donna32.o
+@@ -34,9 +31,6 @@ libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
  libpoly1305-y					+= poly1305.o
  

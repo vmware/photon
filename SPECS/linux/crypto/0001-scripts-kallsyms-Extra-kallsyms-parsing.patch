@@ -1,18 +1,18 @@
-From 32957298010e50c83e355aba5980d60d3ab6805a Mon Sep 17 00:00:00 2001
+From 09d552cdd9ad119b6e296e6251c6287552e4c975 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
-Date: Fri, 17 Jun 2022 14:32:26 +0000
+Date: Wed, 16 Aug 2023 17:42:03 +0530
 Subject: [PATCH] scripts-kallsyms: Extra kallsyms parsing
 
 Adding new option "--extra-symbols=<kallsyms-file>" to scripts/kallsyms.c
 This helps in adding required symbols to vmlinux when CONFIG_KALLSYMS_ALL
 is disabled.
 ---
- scripts/kallsyms.c      | 94 +++++++++++++++++++++++++++++++++++++----
- scripts/link-vmlinux.sh |  2 +
- 2 files changed, 87 insertions(+), 9 deletions(-)
+ scripts/kallsyms.c      | 107 +++++++++++++++++++++++++++++++++++++++++++-----
+ scripts/link-vmlinux.sh |   2 +
+ 2 files changed, 99 insertions(+), 10 deletions(-)
 
 diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 54ad86d13..d528beacb 100644
+index 54ad86d..d528bea 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
 @@ -24,6 +24,8 @@
@@ -184,10 +184,10 @@ index 54ad86d13..d528beacb 100644
  	return 0;
  }
 diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 6eded325c..80f97d31c 100755
+index acd07a7..80e5b29 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
-@@ -186,6 +186,8 @@ kallsyms()
+@@ -192,6 +192,8 @@ kallsyms()
  		kallsymopt="${kallsymopt} --base-relative"
  	fi
  
@@ -196,6 +196,6 @@ index 6eded325c..80f97d31c 100755
  	info KSYMS ${2}
  	${NM} -n ${1} | scripts/kallsyms ${kallsymopt} > ${2}
  }
----
-2.28.0
+-- 
+2.7.4
 

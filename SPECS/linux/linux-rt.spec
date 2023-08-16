@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.183
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.10.190
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt88
+%define rt_version rt91
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
+%define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
 Source1:    config-rt
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -496,16 +496,16 @@ Patch609: 0309-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
 Patch610: 0310-eventfd-Make-signal-recursion-protection-a-task-bit.patch
 Patch611: 0311-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
 Patch612: 0312-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
-Patch613: 0313-Linux-5.10.111-rt66-REBASE.patch
-Patch614: 0314-rt-remove-extra-parameter-from-__trace_stack.patch
-Patch615: 0315-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
-Patch616: 0316-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
-Patch617: 0317-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
-Patch618: 0318-printk-ignore-consoles-without-write-callback.patch
-Patch619: 0319-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
-Patch620: 0320-rt-printk-remove-new-references-to-deferred-printing.patch
+Patch614: 0313-rt-remove-extra-parameter-from-__trace_stack.patch
+Patch615: 0314-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
+Patch616: 0315-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
+Patch617: 0316-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
+Patch618: 0317-printk-ignore-consoles-without-write-callback.patch
+Patch619: 0318-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
+Patch620: 0319-Revert-mm-page_alloc-fix-potential-deadlock-on-zonel.patch
+Patch621: 0320-Revert-printk-declare-printk_deferred_-enter-safe-in.patch
 # Keep rt_version matched up with this patch.
-Patch621: 0321-Linux-5.10.180-rt88-REBASE.patch
+Patch622: 0321-Linux-5.10.186-rt91-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -565,9 +565,6 @@ Patch1011: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
-# Fix proc01 LTP test failure
-Patch1012: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
-
 #Patches for i40e driver
 Patch1500: i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501: 0001-Add-support-for-gettimex64-interface.patch
@@ -579,6 +576,7 @@ Patch1512: no-aux-symvers.patch
 
 #Patches for ice driver
 Patch1513: ice-don-t-install-auxiliary-module-on-modul.patch
+Patch1514: ice-fix-redefinition-of-eth_hw_addr_set.patch
 
 #Patches for vmci driver
 Patch1521:       001-return-correct-error-code.patch
@@ -705,9 +703,6 @@ The Linux package contains the Linux kernel doc files
 %endif
 %endif
 
-#Fix proc01 LTP test failure
-%autopatch -p1 -m1012 -M1012
-
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %autopatch -p1 -m1500 -M1503
@@ -721,6 +716,7 @@ popd
 #Patches for ice driver
 pushd ../ice-%{ice_version}
 %patch1513 -p1
+%patch1514 -p1
 popd
 
 # vmci
@@ -949,6 +945,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 27 2023 Keerthana K <keerthanak@vmware.com> 5.10.190-1
+- Update to version 5.10.190
 * Fri Sep 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.183-6
 - Use canister version 5.0.0-6.1.45-7
 * Tue Sep 12 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-5

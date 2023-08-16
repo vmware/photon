@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.183
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        5.10.190
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8cd3ff0511cd46b97e2fbcf891c49c3e22e3531da1429c9dcb75dff9f4896df731a0d30a2e34e6ca58250dd42b9c5a007b3d015b2032ee2e70b9a2616ee82c25
+%define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -190,9 +190,6 @@ Patch512: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
-# Fix proc01 LTP test failure
-Patch513: 0001-tcp-fix-tcp_min_tso_segs-sysctl.patch
-
 #Patches for vmci driver
 Patch1521:       001-return-correct-error-code.patch
 Patch1522:       002-switch-to-kvfree_rcu-API.patch
@@ -304,9 +301,6 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m511 -M512
 %endif
 %endif
-
-#Fix proc01 LTP test failure
-%autopatch -p1 -m513 -M513
 
 # vmci
 %patch1521 -p1
@@ -450,6 +444,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 27 2023 Keerthana K <keerthanak@vmware.com> 5.10.190-1
+- Update to version 5.10.190
 * Fri Sep 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.183-7
 - Use canister version 5.0.0-6.1.45-7
 * Tue Sep 12 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-6

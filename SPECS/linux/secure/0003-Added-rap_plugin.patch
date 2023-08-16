@@ -4589,16 +4589,6 @@ index 53f36bbaf..6454b2a20 100644
  	struct hrtimer *timer = &cpuctx->hrtimer;
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
-@@ -10772,8 +10773,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
- 		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
- 		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
- 
--		cpu_function_call(cpu,
--			(remote_function_f)perf_mux_hrtimer_restart, cpuctx);
-+		cpu_function_call(cpu, perf_mux_hrtimer_restart, cpuctx);
- 	}
- 	cpus_read_unlock();
- 	mutex_unlock(&mux_interval_mutex);
 diff --git a/kernel/module.c b/kernel/module.c
 index 33d1dc6d4..9f8c9a6cb 100644
 --- a/kernel/module.c
