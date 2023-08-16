@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        10.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -12,6 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
 Patch1:         0001-skip-inaccessible.patch
+Patch2:         0001-CVE-2021-3549.patch
+Patch3:         0001-CVE-2022-4285.patch
+Patch4:         0001-CVE-2022-38533.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -96,6 +99,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_sysconfdir}/gdbinit.d
 
 %changelog
+* Thu Aug 10 2023 Anmol Jain <anmolja@vmware.com> 10.1-4
+- Fix for CVE-2021-3549, CVE-2022-38533 & CVE-2022-4285
 * Wed Jul 12 2023 Anmol Jain <anmolja@vmware.com> 10.1-3
 - Using system zlib to fix CVE-2018-25032
 * Mon Feb 20 2023 Ajay Kaher <akaher@vmware.com> 10.1-2
