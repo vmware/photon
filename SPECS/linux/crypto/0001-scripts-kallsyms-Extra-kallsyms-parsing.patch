@@ -1,7 +1,7 @@
 From 32957298010e50c83e355aba5980d60d3ab6805a Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 17 Jun 2022 14:32:26 +0000
-Subject: [PATCH] scripts-kallsyms: Extra kallsyms parsing
+Subject: [PATCH 1/8] scripts-kallsyms: Extra kallsyms parsing
 
 Adding new option "--extra-symbols=<kallsyms-file>" to scripts/kallsyms.c
 This helps in adding required symbols to vmlinux when CONFIG_KALLSYMS_ALL
@@ -208,4 +208,4 @@ index 918470d76..58d3210e5 100755
  	scripts/kallsyms ${kallsymopt} ${1} > ${2}
  }
 -- 
-2.39.1
+2.41.0

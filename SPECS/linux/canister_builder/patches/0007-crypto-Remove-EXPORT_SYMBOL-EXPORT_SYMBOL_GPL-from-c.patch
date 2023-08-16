@@ -1,7 +1,7 @@
 From 45555b8e8ae2d97bf2e7f9425491e6bb83aa8b57 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Date: Mon, 22 May 2023 13:27:58 +0530
-Subject: [PATCH 8/8] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
+Subject: [PATCH 7/8] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
  canister
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
@@ -16,10 +16,9 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/sha512_generic.c |  4 ----
  crypto/testmgr.c        |  2 --
  lib/crypto/aes.c        |  6 ------
- lib/crypto/des.c        |  6 ------
  lib/crypto/sha1.c       |  2 --
  lib/crypto/sha256.c     |  5 -----
- 13 files changed, 1 insertion(+), 66 deletions(-)
+ 12 files changed, 1 insertion(+), 60 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
 index 27ab27931..f73022bed 100644
@@ -317,7 +316,7 @@ index bf147b01e..c1147386d 100644
  static struct shash_alg sha256_algs[2] = { {
  	.digestsize	=	SHA256_DIGEST_SIZE,
 diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index 3e4069935..7d107460b 100644
+index a18bf7046..7d107460b 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
 @@ -171,7 +171,6 @@ int crypto_sha3_init(struct shash_desc *desc)
@@ -381,10 +380,10 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 65fcb40b4..b8d9fe797 100644
+index 7899ab3cd..94279afed 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5904,5 +5904,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5976,5 +5976,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
@@ -428,57 +427,6 @@ index 827fe8992..30a61e0d4 100644
  
  MODULE_DESCRIPTION("Generic AES library");
  MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
-diff --git a/lib/crypto/des.c b/lib/crypto/des.c
-index ef5bb8822..bc9e7c386 100644
---- a/lib/crypto/des.c
-+++ b/lib/crypto/des.c
-@@ -703,7 +703,6 @@ int des_expand_key(struct des_ctx *ctx, const u8 *key, unsigned int keylen)
- 
- 	return des_ekey(ctx->expkey, key) ? 0 : -ENOKEY;
- }
--EXPORT_SYMBOL_GPL(des_expand_key);
- 
- /*
-  * Decryption key expansion
-@@ -797,7 +796,6 @@ void des_encrypt(const struct des_ctx *ctx, u8 *dst, const u8 *src)
- 	put_unaligned_le32(R, dst);
- 	put_unaligned_le32(L, dst + 4);
- }
--EXPORT_SYMBOL_GPL(des_encrypt);
- 
- void des_decrypt(const struct des_ctx *ctx, u8 *dst, const u8 *src)
- {
-@@ -818,7 +816,6 @@ void des_decrypt(const struct des_ctx *ctx, u8 *dst, const u8 *src)
- 	put_unaligned_le32(R, dst);
- 	put_unaligned_le32(L, dst + 4);
- }
--EXPORT_SYMBOL_GPL(des_decrypt);
- 
- int des3_ede_expand_key(struct des3_ede_ctx *ctx, const u8 *key,
- 			unsigned int keylen)
-@@ -839,7 +836,6 @@ int des3_ede_expand_key(struct des3_ede_ctx *ctx, const u8 *key,
- 
- 	return err;
- }
--EXPORT_SYMBOL_GPL(des3_ede_expand_key);
- 
- void des3_ede_encrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src)
- {
-@@ -868,7 +864,6 @@ void des3_ede_encrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src)
- 	put_unaligned_le32(R, dst);
- 	put_unaligned_le32(L, dst + 4);
- }
--EXPORT_SYMBOL_GPL(des3_ede_encrypt);
- 
- void des3_ede_decrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src)
- {
-@@ -897,6 +892,5 @@ void des3_ede_decrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src)
- 	put_unaligned_le32(R, dst);
- 	put_unaligned_le32(L, dst + 4);
- }
--EXPORT_SYMBOL_GPL(des3_ede_decrypt);
- 
- MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha1.c b/lib/crypto/sha1.c
 index 1aebe7be9..9b2f423f0 100644
 --- a/lib/crypto/sha1.c
@@ -538,5 +486,4 @@ index 12fb96b0f..9e14f49b5 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.19.0
-
+2.41.0

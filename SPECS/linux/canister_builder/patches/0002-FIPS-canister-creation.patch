@@ -24,7 +24,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
- crypto/Makefile                    |  86 +++++++++++++++++++++++
+ crypto/Makefile                    |  85 +++++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -42,7 +42,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/testmgr.c                   | 108 ++++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 268 insertions(+), 139 deletions(-)
+ 19 files changed, 267 insertions(+), 139 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index a5b0cb3ef..10420b2aa 100644
@@ -324,7 +324,7 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, 0);
  	}
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 4f6f373dc..6807a0179 100644
+index ad810d945..a402a4f0d 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,6 +40,7 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -388,15 +388,7 @@ index 4f6f373dc..6807a0179 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -110,6 +127,7 @@ CFLAGS_aegis128-neon-inner.o += -isystem $(shell $(CC) -print-file-name=include)
- 
- obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
- obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
-+canister += des_generic.o
- obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
- obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
- obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
-@@ -117,6 +135,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -118,6 +135,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -404,7 +396,7 @@ index 4f6f373dc..6807a0179 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -147,10 +166,12 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -148,10 +166,12 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -417,7 +409,7 @@ index 4f6f373dc..6807a0179 100644
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
  obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
-@@ -161,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -162,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -431,7 +423,7 @@ index 4f6f373dc..6807a0179 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -189,6 +212,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -190,6 +212,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -447,7 +439,7 @@ index 4f6f373dc..6807a0179 100644
 +crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep)
 +	$(call if_changed_rule,as_o_S)
 +
-+lib-crypto-y := aes.o des.o sha256.o sha1.o
++lib-crypto-y := aes.o sha256.o sha1.o
 +crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
 +	$(call cmd,force_checksrc)
 +	$(call if_changed_rule,cc_o_c)
@@ -1567,5 +1559,4 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.19.0
-
+2.41.0
