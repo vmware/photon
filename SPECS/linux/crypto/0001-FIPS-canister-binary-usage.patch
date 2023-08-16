@@ -1,6 +1,6 @@
-From 6210be8ad27fcc388eeb4f38526e517ff17e42a0 Mon Sep 17 00:00:00 2001
+From a7304be3fbe5364b74ebabe81d6a10997b4c8441 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
-Date: Mon, 11 Jan 2021 16:46:43 +0000
+Date: Wed, 16 Aug 2023 17:40:05 +0530
 Subject: [PATCH 1/2] FIPS canister binary usage
 
 Build with fips canister and skip building crypto algorithms.
@@ -13,14 +13,14 @@ This patch can be used at two stages:
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/crypto/Makefile |  4 ---
- crypto/Makefile          | 91 +++++++++++++++++++++++++++++++++++++++---------
+ crypto/Makefile          | 88 ++++++++++++++++++++++++++++++++++++++----------
  init/main.c              |  3 ++
  lib/Makefile             |  2 +-
  lib/crypto/Makefile      |  9 -----
- 5 files changed, 78 insertions(+), 31 deletions(-)
+ 5 files changed, 75 insertions(+), 31 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index a31de0c6ccde..610a027493fa 100644
+index 66f25c2..1d39b6e 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -50,10 +50,6 @@ obj-$(CONFIG_CRYPTO_CHACHA20_X86_64) += chacha-x86_64.o
@@ -35,7 +35,7 @@ index a31de0c6ccde..610a027493fa 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b7861fc22d33..af4cdacf7506 100644
+index 644cfa3..3190695 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -207,11 +207,11 @@ index b7861fc22d33..af4cdacf7506 100644
 +endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index d9d914111251..1b906b43567b 100644
+index 298989b..d15139f 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -840,6 +840,8 @@ static void __init mm_init(void)
- 	pti_init();
+@@ -838,6 +838,8 @@ static void __init mm_init(void)
+ 	mm_cache_init();
  }
  
 +extern int fips_integrity_init(void);
@@ -219,7 +219,7 @@ index d9d914111251..1b906b43567b 100644
  void __init __weak arch_call_rest_init(void)
  {
  	rest_init();
-@@ -893,6 +895,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+@@ -891,6 +893,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
  		parse_args("Setting extra init args", extra_init_args,
  			   NULL, 0, -1, -1, NULL, set_init_arg);
  
@@ -228,7 +228,7 @@ index d9d914111251..1b906b43567b 100644
  	 * These use large bootmem allocations and must precede
  	 * kmem_cache_init()
 diff --git a/lib/Makefile b/lib/Makefile
-index d415fc7067c5..d4590b81f595 100644
+index a803e15..fc6c915 100644
 --- a/lib/Makefile
 +++ b/lib/Makefile
 @@ -32,7 +32,7 @@ KCSAN_SANITIZE_random32.o := n
@@ -241,7 +241,7 @@ index d415fc7067c5..d4590b81f595 100644
  	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 3a435629d9ce..acb4d9d80e3b 100644
+index 26be2bb..c127a84 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -4,9 +4,6 @@
@@ -254,7 +254,7 @@ index 3a435629d9ce..acb4d9d80e3b 100644
  obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
  libarc4-y					:= arc4.o
  
-@@ -27,17 +24,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
+@@ -26,17 +23,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
  obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
  libcurve25519-y					+= curve25519.o
  
@@ -273,5 +273,5 @@ index 3a435629d9ce..acb4d9d80e3b 100644
  libblake2s-y					+= blake2s-selftest.o
  libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
-2.11.0
+2.7.4
 

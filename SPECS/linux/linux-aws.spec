@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.188
-Release:        2%{?dist}
+Version:        5.10.190
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=b8f8f560a03ba9a95ccff0eb820286fbb6f17730f3e5959d26dd60ad4c3f4e9344ed7bdf5f7ff3558b52cdcda51a2c9141d0e2901e00d32ed1ece690437148f5
+%define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -155,14 +155,6 @@ Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 #Fix for CVE-2023-0597
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-
-#Fix for CVE-2023-4147
-Patch139: 0001-netfilter-nf_tables-disallow-rule-addition-to-bound-.patch
-
-#Fix for CVE-2023-4128
-Patch140: 0001-net-sched-cls_u32-No-longer-copy-tcf_result-on-updat.patch
-Patch141: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
-Patch142: 0001-net-sched-cls_route-No-longer-copy-tcf_result-on-upd.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -326,7 +318,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M142
+%autopatch -p1 -m100 -M138
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %patch150 -p1
@@ -505,6 +497,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1
+- Update to version 5.10.190
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2
 - Patched CVE-2023-4147, CVE-2023-4128
 * Tue Aug 01 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.188-1
