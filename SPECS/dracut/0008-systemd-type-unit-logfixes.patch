@@ -1,0 +1,150 @@
+From 5859d3288a0777f5686b86e2b4b7253bc52f04ca Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 17 Aug 2023 10:45:53 +0530
+Subject: [PATCH] systemd type unit logfixes
+
+As of v246 of systemd "syslog" and "syslog-console" switches have been
+deprecated.
+
+Upstream reference: https://github.com/dracutdevs/dracut/pull/859/files
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ modules.d/90stratis/stratisd-init.service             | 2 --
+ modules.d/98dracut-systemd/dracut-cmdline.service     | 3 +--
+ modules.d/98dracut-systemd/dracut-initqueue.service   | 3 +--
+ modules.d/98dracut-systemd/dracut-mount.service       | 3 +--
+ modules.d/98dracut-systemd/dracut-pre-mount.service   | 3 +--
+ modules.d/98dracut-systemd/dracut-pre-pivot.service   | 3 +--
+ modules.d/98dracut-systemd/dracut-pre-trigger.service | 3 +--
+ modules.d/98dracut-systemd/dracut-pre-udev.service    | 3 +--
+ modules.d/99squash/squash-mnt-clear.service           | 4 ++--
+ 9 files changed, 9 insertions(+), 18 deletions(-)
+
+diff --git a/modules.d/90stratis/stratisd-init.service b/modules.d/90stratis/stratisd-init.service
+index 318e8c2..1be2e33 100644
+--- a/modules.d/90stratis/stratisd-init.service
++++ b/modules.d/90stratis/stratisd-init.service
+@@ -8,8 +8,6 @@ DefaultDependencies=no
+ Type=simple
+ ExecStart=/sbin/stratisd-init --debug
+ KillSignal=SIGINT
+-StandardOutput=syslog
+-StandardError=syslog
+ 
+ [Install]
+ WantedBy=sysinit.target
+diff --git a/modules.d/98dracut-systemd/dracut-cmdline.service b/modules.d/98dracut-systemd/dracut-cmdline.service
+index e577ec8..a8078bd 100644
+--- a/modules.d/98dracut-systemd/dracut-cmdline.service
++++ b/modules.d/98dracut-systemd/dracut-cmdline.service
+@@ -23,8 +23,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-cmdline
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-initqueue.service b/modules.d/98dracut-systemd/dracut-initqueue.service
+index 207d545..3a8679a 100644
+--- a/modules.d/98dracut-systemd/dracut-initqueue.service
++++ b/modules.d/98dracut-systemd/dracut-initqueue.service
+@@ -21,8 +21,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-initqueue
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-mount.service b/modules.d/98dracut-systemd/dracut-mount.service
+index 77d34f6..c88e6d8 100644
+--- a/modules.d/98dracut-systemd/dracut-mount.service
++++ b/modules.d/98dracut-systemd/dracut-mount.service
+@@ -19,8 +19,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-mount
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-pre-mount.service b/modules.d/98dracut-systemd/dracut-pre-mount.service
+index d390968..18c9730 100644
+--- a/modules.d/98dracut-systemd/dracut-pre-mount.service
++++ b/modules.d/98dracut-systemd/dracut-pre-mount.service
+@@ -19,8 +19,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-pre-mount
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-pre-pivot.service b/modules.d/98dracut-systemd/dracut-pre-pivot.service
+index 9a1f085..e893d1d 100644
+--- a/modules.d/98dracut-systemd/dracut-pre-pivot.service
++++ b/modules.d/98dracut-systemd/dracut-pre-pivot.service
+@@ -27,8 +27,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-pre-pivot
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-pre-trigger.service b/modules.d/98dracut-systemd/dracut-pre-trigger.service
+index 7bf1616..6f1ba52 100644
+--- a/modules.d/98dracut-systemd/dracut-pre-trigger.service
++++ b/modules.d/98dracut-systemd/dracut-pre-trigger.service
+@@ -20,8 +20,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-pre-trigger
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/98dracut-systemd/dracut-pre-udev.service b/modules.d/98dracut-systemd/dracut-pre-udev.service
+index 570ec02..e4092e3 100644
+--- a/modules.d/98dracut-systemd/dracut-pre-udev.service
++++ b/modules.d/98dracut-systemd/dracut-pre-udev.service
+@@ -24,8 +24,7 @@ Environment=NEWROOT=/sysroot
+ Type=oneshot
+ ExecStart=-/bin/dracut-pre-udev
+ StandardInput=null
+-StandardOutput=syslog
+-StandardError=syslog+console
++StandardError=journal+console
+ KillMode=process
+ RemainAfterExit=yes
+ 
+diff --git a/modules.d/99squash/squash-mnt-clear.service b/modules.d/99squash/squash-mnt-clear.service
+index 84441f6..9d94c52 100644
+--- a/modules.d/99squash/squash-mnt-clear.service
++++ b/modules.d/99squash/squash-mnt-clear.service
+@@ -12,6 +12,6 @@ ConditionPathExists=/squash/root
+ Type=oneshot
+ RemainAfterExit=no
+ StandardInput=null
+-StandardOutput=syslog+console
+-StandardError=syslog+console
++StandardOutput=journal+console
++StandardError=journal+console
+ ExecStart=/squash/clear-squash.sh
+-- 
+2.25.1
+

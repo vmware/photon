@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -23,6 +23,7 @@ Patch3: 0004-fix-hostonly.patch
 Patch4: 0005-mkinitrd-verbose-fix.patch
 Patch5: 0006-dracut.sh-validate-instmods-calls.patch
 Patch6: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch7: 0008-systemd-type-unit-logfixes.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -152,6 +153,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-12
+- Patch service files to mitigate warnings from systemd
 * Fri Jul 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-11
 - Fix a bug in finding installed kernel versions during mkinitrd
 * Mon Apr 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-10
