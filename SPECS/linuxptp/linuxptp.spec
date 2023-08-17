@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        3.1.1
-Release:        4%{?dist}
+Version:        4.0
+Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha512  linuxptp=c3c40987fe68480a8473097ebc3c506fb4f8f3b6456bbe637b2b3cb0b3e0182f1513b511fdc04b3607d5f7d8bd1bd22502bb86eb13f9fa4fa63a3331846b33ec
+%define sha512  linuxptp=763de5654f0426f2f489223e02fb3dd39a3a830751b366406657efe33bb923b5b38edada7b62de3efed6d257d5d386ece0d42a5eb92da5e5d443eac9b32e105d
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        ts2phc.service
@@ -22,21 +22,6 @@ Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
 Requires:       tzdata >= 2022g-1
-Patch0:         0001-Clock-Class-Threshold-Feature-addition-for-PTP4L.patch
-Patch1:         0002-clock-Reset-state-when-switching-port-with-same-best.patch
-Patch2:         0003-clock-Reset-clock-check-on-best-clock-port-change.patch
-Patch3:         0004-port-Don-t-check-timestamps-from-non-slave-ports.patch
-Patch4:         0005-port-Don-t-renew-raw-transport.patch
-Patch5:         0006-clockcheck-Increase-minimum-interval.patch
-Patch6:         0007-phc2sys-move-read_phc-into-clock_adj.c.patch
-Patch7:         0008-clockadj-Change-clockadj_compare-to-return-errno.patch
-Patch8:         0009-sysoff-Change-sysoff_measure-to-return-errno.patch
-Patch9:         0010-sysoff-Change-log-level-of-ioctl-error-messages.patch
-Patch10:        0011-sysoff-Retry-on-EBUSY-when-probing-supported-ioctls.patch
-Patch11:        0012-phc2sys-Don-t-exit-when-reading-of-PHC-fails-with-EB.patch
-Patch12:        0013-sk-Handle-EINTR-when-waiting-for-transmit-timestamp.patch
-Patch13:        0014-servo-stop-rounding-initial-frequency-to-nearest-ppb.patch
-Patch14:        0015-Don-t-re-arm-fault-clearing-timer-on-unrelated-netli.patch
 
 %description
 This software is an implementation of the Precision Time Protocol (PTP)
@@ -108,6 +93,7 @@ rm -rf %{buildroot}
 %{_sbindir}/ptp4l
 %{_sbindir}/timemaster
 %{_sbindir}/ts2phc
+%{_sbindir}/tz2alt
 %{_mandir}/man8/hwstamp_ctl.8.gz
 %{_mandir}/man8/phc2sys.8.gz
 %{_mandir}/man8/phc_ctl.8.gz
@@ -116,8 +102,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/timemaster.8.gz
 %{_mandir}/man8/nsm.8.gz
 %{_mandir}/man8/ts2phc.8.gz
+%{_mandir}/man8/tz2alt.8.gz
 
 %changelog
+*   Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 4.0-1
+-   Port linuxptp 4.0 update from Photon 3.0 (from Brennan Lamoreaux)
 *   Fri Jun 02 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-4
 -   Backport upstream patches
 *   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-3
