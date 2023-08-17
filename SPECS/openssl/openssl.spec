@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -196,6 +196,11 @@ if [ "$1" = 0 ]; then
 fi
 %endif
 
+%post libs
+if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
+  sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
+fi
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -257,6 +262,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-2
+- Re-enable fips in distro.cnf if fips is enabled
 * Fri Jun 23 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-1
 - Update to openssl-3.0.9
 * Fri Jun 16 2023 Mukul Sikka <msikka@vmware.com> 3.0.8-3
