@@ -2,9 +2,6 @@
     "installer": {
         "hostname": "photon-machine",
         "packagelist_file": "packages_ova.json",
-        "postinstallscripts": [
-            "../relocate-rpmdb.sh"
-        ],
         "password": {
             "age": 0,
             "crypted": false,

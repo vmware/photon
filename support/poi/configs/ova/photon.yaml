@@ -25,7 +25,7 @@ hardware:
     rootdisk:
         type: hard_disk
         parent: scsi1
-        disk_image: !param disk0
+        disk_image: !param disk
     usb1:
         type: usb_controller
     ethernet1:

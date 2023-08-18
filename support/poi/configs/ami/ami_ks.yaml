@@ -1,0 +1,18 @@
+live: false
+
+hostname: photon-machine
+
+disks:
+    default:
+        filename: !param imgfile=photon-ami.img
+        size: 8192
+
+postinstallscripts:
+- ami-patch.sh
+
+additional_files:
+- cloud-photon.cfg: /etc/cloud/cloud.cfg
+
+packagelist_file: packages_ami.json
+
+linux_flavor: linux
