@@ -1,16 +1,19 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.6
+Version:        3.14
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Source download URL: https://github.com/esnet/iperf/archive/3.6.tar.gz
+
+#Source download URL: https://github.com/esnet/iperf/archive/%{version}.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
+%define sha512 iperf=a90fbaddd73e5b721a84cee71cefb63391c13f64107f5785e954e7c44e9a8c5072e402b6fe45434966d3cc58ac97227c608ca9719161fc23459c5e5efcf8232b
+
 Patch1:         disablepg.patch
-%define sha1 iperf=a92382c168f183a276e7a812b94417392871a5bf
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -32,7 +35,7 @@ Requires:       %{name} = %{version}-%{release}
 %build
 echo "VDBG optflags: " %{optflags}
 ./bootstrap.sh
-%configure
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -54,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Fri Aug 11 2023 Roye Eshed <eshedr@vmware.com> 3.14-1
+- Update iperf version and absorb CVE-2023-38403 fix
 * Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
 - Upgraded to version 3.6
 * Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
