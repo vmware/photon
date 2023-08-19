@@ -13,6 +13,9 @@ declare -A replaced_pkgs_map=(
   [postgresql10]=postgresql15
   [postgresql10-libs]=postgresql15-libs
   [postgresql10-devel]=postgresql15-devel
+  [repmgr]=repmgr14
+  [repmgr10]=repmgr15
+  [apache-tomcat]=apache-tomcat-9
 )
 
 # Residual pkgs to remove post upgrade

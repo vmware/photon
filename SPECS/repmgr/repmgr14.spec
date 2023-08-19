@@ -1,67 +1,60 @@
+%define srcname repmgr
+
+%define _pg14basedir    %{_usr}/pgsql/14
+
 Summary:        Replication Manager for PostgreSQL Clusters
-Name:           repmgr
+Name:           repmgr14
 Version:        5.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://repmgr.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1b3c64a9746b7b3f7faf4475750913822b918d415fb0fc19fff5ee8f51c92aeb886d1c6f35b749fc76895b4512ca40c3b5bece57eb012d7d77467c4da72bb8db
+Source0: https://repmgr.org/download/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=1b3c64a9746b7b3f7faf4475750913822b918d415fb0fc19fff5ee8f51c92aeb886d1c6f35b749fc76895b4512ca40c3b5bece57eb012d7d77467c4da72bb8db
 
-BuildRequires:  postgresql14-devel
-BuildRequires:  readline-devel
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  cpio
-BuildRequires:  libedit-devel
+BuildRequires: postgresql14-devel
+BuildRequires: cyrus-sasl
+BuildRequires: openldap
+BuildRequires: krb5-devel
 
-Requires:       (postgresql14-libs or postgresql13-libs or postgresql10-libs)
-Requires:       readline
-Requires:       openssl
-Requires:       zlib
-Requires:       libedit
+Requires: postgresql14
+Requires: openssl
+Requires: krb5
+Requires: openldap
+Requires: cyrus-sasl
+
+Provides: repmgr = %{version}-%{release}
 
 %description
-repmgr is an open-source tool suite for managing replication and failover in a cluster of PostgreSQL servers.
+repmgr is an open-source tool suite for managing replication and failover
+in a cluster of PostgreSQL servers.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%configure CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+%configure
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_usr}
-
-pg_ver="$(pg_config --version | cut -d' ' -f2 | cut -d. -f1)"
-
-pushd %{buildroot}%{_usr}/pgsql/"${pg_ver}"
-mv bin share lib %{buildroot}%{_usr}
-popd
-
-rmdir %{buildroot}%{_usr}/pgsql/"${pg_ver}" \
-      %{buildroot}%{_usr}/pgsql
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
 %clean
-rm -rf %{buildroot}/*
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/postgresql/*
 %exclude %dir %{_libdir}/debug
-%{_datadir}/*
+%{_pg14basedir}/bin/*
+%{_pg14basedir}/lib/*
+%{_pg14basedir}/share/*
 
 %changelog
+* Sat Aug 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-5
+- repmgr14 for pgsql14
 * Fri Dec 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-4
 - Fix pgsql requires
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-3
