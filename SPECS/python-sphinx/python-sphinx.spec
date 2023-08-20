@@ -1,15 +1,17 @@
+%define srcname Sphinx
+
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       5.1.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/Sphinx-%{version}.tar.gz
-%define sha512 Sphinx=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
+Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -23,7 +25,6 @@ BuildRequires: python3-imagesize
 BuildRequires: python3-requests
 BuildRequires: python3-snowballstemmer
 BuildRequires: python3-typing
-BuildRequires: python3-pip
 BuildRequires: python3-packaging
 BuildRequires: python3-sphinxcontrib-applehelp
 BuildRequires: python3-sphinxcontrib-devhelp
@@ -34,28 +35,29 @@ BuildRequires: python3-sphinxcontrib-serializinghtml
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
+BuildRequires: python3-pip
 %endif
 
-Requires:      python3-sphinxcontrib-applehelp
-Requires:      python3-sphinxcontrib-devhelp
-Requires:      python3-sphinxcontrib-qthelp
-Requires:      python3-sphinxcontrib-htmlhelp
-Requires:      python3-sphinxcontrib-jsmath
-Requires:      python3-sphinxcontrib-serializinghtml
-Requires:      python3-packaging
-Requires:      python3
-Requires:      python3-babel
-Requires:      python3-docutils
-Requires:      python3-jinja2
-Requires:      python3-Pygments
-Requires:      python3-six
-Requires:      python3-alabaster
-Requires:      python3-imagesize
-Requires:      python3-requests
-Requires:      python3-snowballstemmer
-Requires:      python3-typing
+Requires: python3-sphinxcontrib-applehelp
+Requires: python3-sphinxcontrib-devhelp
+Requires: python3-sphinxcontrib-qthelp
+Requires: python3-sphinxcontrib-htmlhelp
+Requires: python3-sphinxcontrib-jsmath
+Requires: python3-sphinxcontrib-serializinghtml
+Requires: python3-packaging
+Requires: python3
+Requires: python3-babel
+Requires: python3-docutils
+Requires: python3-jinja2
+Requires: python3-Pygments
+Requires: python3-six
+Requires: python3-alabaster
+Requires: python3-imagesize
+Requires: python3-requests
+Requires: python3-snowballstemmer
+Requires: python3-typing
 
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 Sphinx is a tool that makes it easy to create intelligent and
@@ -66,36 +68,37 @@ documentation, but has now been cleaned up in the hope that it will be
 useful to many other projects.
 
 %prep
-%autosetup -p1 -n Sphinx-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
-mv %{buildroot}%{_bindir}/sphinx-quickstart %{buildroot}%{_bindir}/sphinx-quickstart3
-mv %{buildroot}%{_bindir}/sphinx-build %{buildroot}%{_bindir}/sphinx-build3
-mv %{buildroot}%{_bindir}/sphinx-autogen %{buildroot}%{_bindir}/sphinx-autogen3
-mv %{buildroot}%{_bindir}/sphinx-apidoc %{buildroot}%{_bindir}/sphinx-apidoc3
+%{py3_install}
 
-%if 0%{?with_check}
+for fn in quickstart build autogen apidoc; do
+  mv %{buildroot}%{_bindir}/sphinx-${fn} %{buildroot}%{_bindir}/sphinx-${fn}3
+  ln -sv sphinx-${fn}3 %{buildroot}%{_bindir}/sphinx-${fn}
+done
+
 %check
 pip3 install html5lib
-%pytest
-%endif
+%{pytest}
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/sphinx-quickstart3
-%{_bindir}/sphinx-build3
-%{_bindir}/sphinx-autogen3
-%{_bindir}/sphinx-apidoc3
+%{_bindir}/sphinx-quickstart*
+%{_bindir}/sphinx-build*
+%{_bindir}/sphinx-autogen*
+%{_bindir}/sphinx-apidoc*
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-3
+- Fix file packaging
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.1-2
 - Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-1
