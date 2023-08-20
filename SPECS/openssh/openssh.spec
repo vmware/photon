@@ -115,7 +115,6 @@ sh ./configure \
     --with-md5-passwords \
     --with-privsep-path=%{privsep_path} \
     --with-pam \
-    --with-maintype=man \
     --enable-strip=no \
     --with-kerberos5=%{_usr}
 
