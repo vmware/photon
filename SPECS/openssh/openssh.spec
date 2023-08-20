@@ -77,7 +77,6 @@ sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --program-prefix= \
-    --disable-dependency-tracking \
     --prefix=%{_prefix} \
     --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
@@ -91,10 +90,8 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --sharedstatedir=%{_sharedstatedir} \
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
-    --with-md5-passwords \
     --with-privsep-path=%{privsep_path} \
     --with-pam \
-    --with-maintype=man \
     --enable-strip=no \
     --with-kerberos5=%{_usr} \
     --with-sandbox=seccomp_filter
