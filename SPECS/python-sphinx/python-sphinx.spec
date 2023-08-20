@@ -1,18 +1,18 @@
+%define srcname Sphinx
+
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       3.3.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/Sphinx-%{version}.tar.gz
-%define sha1   Sphinx=15924dc4fce887ce7d42900d82b77ada2c360ad8
+Source0: https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=661487fa5af29eb66c97ee29b234fe69de5bb05a8ef8728b543f9d14bdedb3b78ba92ae35facff55b70730292cd38ee2912a72ecbb0e68e11671cf819d3c0a21
 
-BuildRequires: python3
-BuildRequires: python3-libs
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-babel
@@ -23,43 +23,41 @@ BuildRequires: python3-six
 BuildRequires: python3-alabaster
 BuildRequires: python3-imagesize
 BuildRequires: python3-requests
-BuildRequires: python3-snowballstemmer
 BuildRequires: python3-typing
-BuildRequires: python3-pip
 BuildRequires: python3-packaging
+BuildRequires: python3-snowballstemmer
 BuildRequires: python3-sphinxcontrib-applehelp
 BuildRequires: python3-sphinxcontrib-devhelp
 BuildRequires: python3-sphinxcontrib-qthelp
 BuildRequires: python3-sphinxcontrib-htmlhelp
 BuildRequires: python3-sphinxcontrib-jsmath
 BuildRequires: python3-sphinxcontrib-serializinghtml
-BuildRequires: python3-packaging
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
+BuildRequires: python3-pip
 %endif
 
-Requires:      python3-sphinxcontrib-applehelp
-Requires:      python3-sphinxcontrib-devhelp
-Requires:      python3-sphinxcontrib-qthelp
-Requires:      python3-sphinxcontrib-htmlhelp
-Requires:      python3-sphinxcontrib-jsmath
-Requires:      python3-sphinxcontrib-serializinghtml
-Requires:      python3-packaging
-Requires:      python3
-Requires:      python3-libs
-Requires:      python3-babel
-Requires:      python3-docutils
-Requires:      python3-jinja2
-Requires:      python3-Pygments
-Requires:      python3-six
-Requires:      python3-alabaster
-Requires:      python3-imagesize
-Requires:      python3-requests
-Requires:      python3-snowballstemmer
-Requires:      python3-typing
+Requires: python3-sphinxcontrib-applehelp
+Requires: python3-sphinxcontrib-devhelp
+Requires: python3-sphinxcontrib-qthelp
+Requires: python3-sphinxcontrib-htmlhelp
+Requires: python3-sphinxcontrib-jsmath
+Requires: python3-sphinxcontrib-serializinghtml
+Requires: python3-packaging
+Requires: python3
+Requires: python3-babel
+Requires: python3-docutils
+Requires: python3-jinja2
+Requires: python3-Pygments
+Requires: python3-six
+Requires: python3-alabaster
+Requires: python3-imagesize
+Requires: python3-requests
+Requires: python3-snowballstemmer
+Requires: python3-typing
 
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 Sphinx is a tool that makes it easy to create intelligent and
@@ -70,34 +68,37 @@ documentation, but has now been cleaned up in the hope that it will be
 useful to many other projects.
 
 %prep
-%autosetup -p1 -n Sphinx-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{py3_build}
 
 %install
-%py3_install
-mv %{buildroot}%{_bindir}/sphinx-quickstart %{buildroot}%{_bindir}/sphinx-quickstart3
-mv %{buildroot}%{_bindir}/sphinx-build %{buildroot}%{_bindir}/sphinx-build3
-mv %{buildroot}%{_bindir}/sphinx-autogen %{buildroot}%{_bindir}/sphinx-autogen3
-mv %{buildroot}%{_bindir}/sphinx-apidoc %{buildroot}%{_bindir}/sphinx-apidoc3
+%{py3_install}
+
+for fn in quickstart build autogen apidoc; do
+  mv %{buildroot}%{_bindir}/sphinx-${fn} %{buildroot}%{_bindir}/sphinx-${fn}3
+  ln -sv sphinx-${fn}3 %{buildroot}%{_bindir}/sphinx-${fn}
+done
 
 %check
-%if 0%{?with_check}
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%endif
+pip3 install html5lib
+%{pytest}
 
 %clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/sphinx-quickstart3
-%{_bindir}/sphinx-build3
-%{_bindir}/sphinx-autogen3
-%{_bindir}/sphinx-apidoc3
+%{_bindir}/sphinx-quickstart*
+%{_bindir}/sphinx-build*
+%{_bindir}/sphinx-autogen*
+%{_bindir}/sphinx-apidoc*
 %{python3_sitelib}/*
 
 %changelog
+* Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-5
+- Fix file packaging
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.0-4
 - Bump up to compile with python 3.10
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-3
