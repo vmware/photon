@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.290
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -294,6 +294,9 @@ Patch1547: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
 Patch1548: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
 Patch1549: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
 
+# Fix TCP slab memory leak
+Patch1550: 0001-netfilter-nf_queue-fix-socket-leak.patch
+
 BuildArch: x86_64
 
 BuildRequires:  bc
@@ -383,6 +386,9 @@ popd
 
 # bpfilter patches
 %autopatch -p1 -m1545 -M1549
+
+# Fix TCP slab memory leak
+%autopatch -p1 -m1550 -M1550
 
 %build
 make mrproper %{?_smp_mflags}
@@ -546,6 +552,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-2
+- Fix TCP slab memory leak
 * Thu Aug 10 2023 Ajay Kaher <akaher@vmware.com> 4.19.290-1
 - Update to version 4.19.290
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4

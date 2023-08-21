@@ -1,0 +1,37 @@
+From b0a3bd9362b5a19d2cff268c2352c10b6ba83166 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Fri, 25 Aug 2023 20:30:42 +0000
+Subject: [PATCH] netfilter: nf_queue: fix socket leak
+
+Removal of the sock_hold got lost when backporting commit c3873070247d
+("netfilter: nf_queue: fix possible use-after-free") to 4.19
+
+Fixes: 34dc4a6a7f26 ("netfilter: nf_queue: fix possible use-after-free") in 4.19
+
+Fixed in 4.14 with
+https://lore.kernel.org/all/20221024112958.115275475@linuxfoundation.org/
+
+Signed-off-by: Vimal Agrawal <vimal.agrawal@sophos.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+[vbrahmajosyula: The fix to the backport was missed in 4.19]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ net/netfilter/nf_queue.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
+index 84c59de27882..b3a0385290a1 100644
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -93,8 +93,6 @@ bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
+ 		dev_hold(state->in);
+ 	if (state->out)
+ 		dev_hold(state->out);
+-	if (state->sk)
+-		sock_hold(state->sk);
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	if (entry->skb->nf_bridge) {
+ 		struct net_device *physdev;
+-- 
+2.39.2
+

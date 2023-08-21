@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.290
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -788,6 +788,9 @@ Patch1551: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
 Patch1552: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
 Patch1553: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
 
+# Fix TCP slab memory leak
+Patch1554: 0001-netfilter-nf_queue-fix-socket-leak.patch
+
 BuildArch: x86_64
 
 BuildRequires:  bc
@@ -1123,6 +1126,9 @@ popd
 
 # bpfilter patches
 %autopatch -p1 -m1549 -M1553
+
+# Fix TCP slab memory leak
+%autopatch -p1 -m1554 -M1554
 
 %build
 make mrproper %{?_smp_mflags}
@@ -1516,6 +1522,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-3
+- Fix TCP slab memory leak
 * Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2
 - Add i40e-2.23.17, iavf-4.9.1 and ice-1.12.6 driver subpackages
 - Enable CONFIG_CRYPTO_XCBC

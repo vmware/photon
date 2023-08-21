@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.290
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -573,6 +573,9 @@ Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+# Fix TCP slab memory leak
+Patch1567: 0001-netfilter-nf_queue-fix-socket-leak.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -773,6 +776,9 @@ popd
 
 # CVE Patches
 %autopatch -p1 -m1550 -M1566
+
+# Fix TCP slab memory leak
+%autopatch -p1 -m1567 -M1567
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1161,6 +1167,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-3
+- Fix TCP slab memory leak
 * Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2
 - Add i40e-2.23.17, iavf-4.9.1 and ice-1.12.6 driver subpackages
 - Enable CONFIG_CRYPTO_XCBC

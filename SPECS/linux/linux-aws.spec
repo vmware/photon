@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.290
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -259,6 +259,9 @@ Patch407: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
 Patch408: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
 Patch409: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
 
+# Fix TCP slab memory leak
+Patch500: 0001-netfilter-nf_queue-fix-socket-leak.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -366,6 +369,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 # bpfilter patches
 %autopatch -p1 -m405 -M409
+
+# Fix TCP slab memory leak
+%autopatch -p1 -m500 -M500
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -566,6 +572,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-2
+- Fix TCP slab memory leak
 * Thu Aug 10 2023 Ajay Kaher <akaher@vmware.com> 4.19.290-1
 - Update to version 4.19.290
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 4.19.288-4
