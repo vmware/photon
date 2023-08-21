@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dc1be96d433223e764f20fc7807f46baf44d2ec23a54edcf570251f0fec4b5040a311f62521e6fb4cd96723a4b791c51fa1f5fb5bc86b478e89b587ea36b46a4
+%define sha512 %{name}=dc1be96d433223e764f20fc7807f46baf44d2ec23a54edcf570251f0fec4b5040a311f62521e6fb4cd96723a4b791c51fa1f5fb5bc86b478e89b587ea36b46a4
 
 Source1: macros
 Source2: macros.php
@@ -66,8 +66,12 @@ RPM package manager
 %package devel
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
-Requires:       %{name} = %{version}-%{release}
 Requires:       zstd-devel
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-sign-libs = %{version}-%{release}
+Requires:       %{name}-build-libs = %{version}-%{release}
+
+Conflicts: %{name}-build < 4.16.1.3-18%{?dist}
 
 %description devel
 Static libraries and header files for the support library for rpm
@@ -91,15 +95,33 @@ Conflicts:  libsolv < 0.7.19
 %description    libs
 Shared libraries librpm and librpmio
 
+%package build-libs
+Summary:  Libraries for building RPM packages
+Requires: %{name}-libs = %{version}-%{release}
+Conflicts: %{name}-build < 4.16.1.3-18%{?dist}
+
+%description build-libs
+This package contains the RPM shared libraries for building packages.
+
+%package sign-libs
+Summary:  Libraries for signing RPM packages
+Requires: %{name}-libs = %{version}-%{release}
+
+Conflicts: %{name}-devel < 4.16.1.3-18%{?dist}
+
+%description sign-libs
+This package contains the RPM shared libraries for signing packages.
+
 %package build
 Summary:    Binaries, scripts and libraries needed to build rpms.
 Requires:   perl
 Requires:   lua
-Requires:   %{name}-devel = %{version}-%{release}
 Requires:   elfutils-libelf
 Requires:   cpio
 Requires:   systemd-rpm-macros
 Requires:   python3-macros
+Requires:   %{name}-devel = %{version}-%{release}
+Requires:   %{name}-build-libs = %{version}-%{release}
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -117,8 +139,10 @@ Summary:    Python 3 bindings for rpm.
 Group:      Development/Libraries
 Requires:   python3
 Requires:   python3-setuptools
+Requires:   %{name}-build-libs = %{version}-%{release}
+Requires:   %{name}-sign-libs = %{version}-%{release}
 
-%description -n python3-rpm
+%description -n python3-%{name}
 Python3 rpm.
 
 %package plugin-systemd-inhibit
@@ -173,10 +197,8 @@ pushd python
 %py3_build
 popd
 
-%if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %install
 %make_install %{?_smp_mflags}
@@ -267,12 +289,18 @@ rm -rf %{buildroot}
 %{_unitdir}/rpmdb-rebuild.service
 %config(noreplace) %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
 
+%files build-libs
+%defattr(-,root,root)
+%{_libdir}/librpmbuild.so.*
+
+%files sign-libs
+%defattr(-,root,root)
+%{_libdir}/librpmsign.so.*
+
 %files build
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
-%{_libdir}/librpmbuild.so
-%{_libdir}/librpmbuild.so.*
 %{_rpmmacrodir}/*
 %{rpmhome}/perl.req
 %{rpmhome}/find-debuginfo.sh
@@ -310,7 +338,7 @@ rm -rf %{buildroot}
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
-%{_libdir}/librpmsign.so.*
+%{_libdir}/librpmbuild.so
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -325,6 +353,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-18
+- Add build-libs, sign-libs sub packages
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.16.1.3-17
 - Fix for requires
 * Fri Mar 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-16

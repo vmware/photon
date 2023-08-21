@@ -235,6 +235,8 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
+        "rpm-build-libs",
+        "rpm-sign-libs",
         "cpio"]
 
     # List of packages that will be installed in addition for each
