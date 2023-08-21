@@ -1,23 +1,25 @@
 Summary:        Software library for fast, message-based applications
 Name:           python3-zmq
-Version:        19.0.2
+Version:        23.2.0
 Release:        1%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyzmq
-Source0:        https://pypi.python.org/packages/af/37/8e0bf3800823bc247c36715a52e924e8f8fd5d1432f04b44b8cd7a5d7e55/pyzmq-%{version}.tar.gz
-%define sha512  pyzmq=aca37b54e07fe6c3c16be56aa5bd856bbf0f4d7bebd11bd9fdecc6e74b7f996572f1dc52e32ae94562c5a63391975a1caeb04d3c0af9f82f780dbee37aae1a9f
+Source0:        https://files.pythonhosted.org/packages/36/80/50962c33a3ad813b086fe2bf023bb8b79cb232f8e15b1b54a4d5b05b62ff/pyzmq-23.2.0.tar.gz
+%define sha512  pyzmq=f2709a1f18301696266a8c4fe0fad57ec116be71b1feb245576c53159476d574def9e61ec4c511293068c52e27d5f2d121308f0c0af53c92bac48d29fb31b784
 
 BuildRequires:  zeromq-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  cython3
+BuildRequires:  python3-packaging
+BuildRequires:  python3-setuptools
 Requires:       python3
 Provides:       python%{python3_version}dist(pyzmq)
 Provides:       python-zmq = %{version}-%{release}
-Obsoletes:      python-zmq < 19.0.2-1
+Obsoletes:      python-zmq < 23.2.0-1
 
 %description
 python bindings for zeromq
@@ -38,6 +40,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+* Mon Aug 21 2023 Derek Ardolf <dereka@vmware.com> 23.2.0-1
+- Updated to 23.2.0
 * Fri Dec 16 2022 Prashant S Chauhan <psinghchauha@vmware.com> 19.0.2-1
 - Updated to 19.0.2
 * Thu Sep 20 2018 Tapas Kundu <tkundu@vmware.com> 17.1.2-1
