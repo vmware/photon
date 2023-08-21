@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1o
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -24,7 +24,8 @@ Patch8:         0006-CVE-2023-0286-Fix-GENERAL_NAME_cmp-for-x400Address-1.patch
 Patch9:         0001-x509_Excessive_Resource_Use_Verifying_Policy_Constraints.patch
 Patch10:        0001-Ensure_That_EXFLAG_INVALID_POLICY_is_Checked_Even_in_leaf_certs.patch
 Patch11:        nxtgn-openssl-CVE-2023-2650.patch
-Patch12:        nxtgn-openssl-CVE-2023-3817.patch
+Patch12:        nxtgn-openssl-CVE-2023-3446.patch
+Patch13:        nxtgn-openssl-CVE-2023-3817.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -134,6 +135,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Mon Aug 21 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-8
+-   Fix for CVE-2023-3446
 *   Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-7
 -   Fix for CVE-2023-3817
 *   Wed Jun 21 2023 Mukul Sikka <msikka@vmware.com> 1.1.1o-6
