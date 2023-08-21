@@ -244,6 +244,8 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
+        "rpm-build-libs",
+        "rpm-sign-libs",
         "cpio",
         "debugedit",
         "pcre-libs"]
