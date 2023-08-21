@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.6.0
-Release:        3%{?dist}
+Version:        2.6.15
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.haproxy.org/download/2.6/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7bb70bfb5606bbdac61d712bc510c5e8d5a5126ed8827d699b14a2f4562b3bd57f8f21344d955041cee0812c661350cca8082078afe2f277ff1399e461ddb7bb
+%define sha512 %{name}=e308f8f89df06503e10132afcaf7df9d0253122f38c44acd1ddf3e2a3d769f7721dd361d12db5948248ae42bcd7aab368e6515ccfe1e38c7bd78df764a6833eb
 
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -17,10 +17,6 @@ BuildRequires: lua-devel
 BuildRequires: pkg-config
 BuildRequires: zlib-devel
 BuildRequires: systemd-devel
-
-Patch0: %{name}-CVE-2023-25725.patch
-Patch1: %{name}-CVE-2023-0056.patch
-Patch2: %{name}-CVE-2023-0836.patch
 
 Requires:systemd
 
@@ -65,6 +61,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Mon Aug 21 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.15-1
+- Version upgrade to v2.6.15 to fix CVE-2023-40225
 * Wed Apr 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.0-3
 - Fix CVE-2023-0056, CVE-2023-0836
 * Mon Feb 27 2023 Harinadh D <hdommaraju@vmware.com> 2.6.0-2
