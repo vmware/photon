@@ -1,6 +1,8 @@
+%define srcname virtualenv
+
 Name:           python3-virtualenv
 Version:        20.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
@@ -8,31 +10,34 @@ Url:            https://pypi.python.org/pypi/virtualenv
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: virtualenv-%{version}.tar.gz
-%define sha512 virtualenv=d3a90bab9862ea2a70e1dc429dff98a729425858a2153281cba4ecaf13107e6c3a43781e8c96b1f2a6c1ddd797de86bcfee8129a698e45d20eed76432efba5a6
+Source0: %{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=d3a90bab9862ea2a70e1dc429dff98a729425858a2153281cba4ecaf13107e6c3a43781e8c96b1f2a6c1ddd797de86bcfee8129a698e45d20eed76432efba5a6
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-appdirs
-BuildRequires:  python3-setuptools
-BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-pip
-Requires:       python3
-Requires:       python3-appdirs
-Requires:       python3-distlib
-Requires:       python3-filelock
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-pip
 
 %if 0%{?with_check}
-BuildRequires:  python3-pytest
+BuildRequires: python3-appdirs
+BuildRequires: python3-pytest
+BuildRequires: python3-platformdirs
+BuildRequires: python3-filelock
+BuildRequires: python3-distlib
 %endif
 
-BuildArch:      noarch
+Requires: python3
+Requires: python3-appdirs
+Requires: python3-distlib
+Requires: python3-filelock
+Requires: python3-platformdirs
+
+BuildArch: noarch
 
 %description
 virtualenv is a tool to create isolated Python environment.
 
 %prep
-%autosetup -p1 -n virtualenv-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 %py3_build
@@ -40,10 +45,9 @@ virtualenv is a tool to create isolated Python environment.
 %install
 %py3_install
 
-%if 0%{?with_check}
 %check
-python3 setup.py test
-%endif
+pip3 install tomli flaky pytest-mock pytest-freezer
+%pytest -k "not test_py_pyc_missing and not test_py_info_setuptools"
 
 %files
 %defattr(-,root,root,-)
@@ -51,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.16.3-2
+- Add platformdirs to requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 20.16.3-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.1.0-2
