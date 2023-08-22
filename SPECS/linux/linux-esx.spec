@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.290
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.292
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5b63dbe871ea2588e8b847189e855b0d88b483466dbc6f96d3ec753c1b1df0aa5b15c29aa452b305b5e904128ada5c6e6819e216c938e7415399ed2b8ee9fa64
+%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -488,6 +488,9 @@ Patch712: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+#Fix for CVE-2023-4128
+Patch714: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+
 # Patches for i40e driver
 Patch802: i40e-v2.23.17-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
@@ -616,7 +619,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M713
+%autopatch -p1 -m700 -M714
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -853,6 +856,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
+- Update to version 4.19.292
+- Patched CVE-2023-4128
 * Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-3
 - Fix TCP slab memory leak
 * Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2

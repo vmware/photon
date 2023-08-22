@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.290
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.292
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5b63dbe871ea2588e8b847189e855b0d88b483466dbc6f96d3ec753c1b1df0aa5b15c29aa452b305b5e904128ada5c6e6819e216c938e7415399ed2b8ee9fa64
+%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
 
 %ifarch x86_64
 Source1: config
@@ -573,8 +573,11 @@ Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+#Fix for CVE-2023-4128
+Patch1567: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+
 # Fix TCP slab memory leak
-Patch1567: 0001-netfilter-nf_queue-fix-socket-leak.patch
+Patch1568: 0001-netfilter-nf_queue-fix-socket-leak.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -775,10 +778,10 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1566
+%autopatch -p1 -m1550 -M1567
 
 # Fix TCP slab memory leak
-%autopatch -p1 -m1567 -M1567
+%autopatch -p1 -m1568 -M1568
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1167,6 +1170,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
+- Update to version 4.19.292
+- Patched CVE-2023-4128
 * Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-3
 - Fix TCP slab memory leak
 * Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2

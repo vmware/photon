@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.290
-Release:        3%{?kat_build:.%kat}%{?dist}
+Version:        4.19.292
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -11,12 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt126
+%define rt_version rt128
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5b63dbe871ea2588e8b847189e855b0d88b483466dbc6f96d3ec753c1b1df0aa5b15c29aa452b305b5e904128ada5c6e6819e216c938e7415399ed2b8ee9fa64
+%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
 
 %ifarch x86_64
 Source1: config-rt
@@ -613,7 +613,7 @@ Patch550: 0350-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch551: 0351-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 Patch552: 0352-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 # Keep rt_version matched up with this patch.
-Patch553: 0353-Linux-4.19.288-rt126-REBASE.patch
+Patch553: 0353-Linux-4.19.292-rt128-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch599: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -695,6 +695,9 @@ Patch706: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch707: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+#Fix for CVE-2023-4128
+Patch708: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -740,56 +743,59 @@ Patch1521: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch1522: iavf-v4.5.3-no-aux-symvers.patch
 Patch1523: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
 Patch1524: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1525: iavf-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for iavf v4.4.2 driver
-Patch1525: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1526: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1527: iavf-v4.4.2-introduce-modules-install-no-aux.patch
+Patch1526: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1527: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1528: iavf-v4.4.2-introduce-modules-install-no-aux.patch
 
 # Patches for iavf v4.2.7 driver
-Patch1528: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1529: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1530: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1531: iavf-v4.2.7-add-alias-to-modules_install_no_aux.patch
+Patch1529: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1530: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1531: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1532: iavf-v4.2.7-add-alias-to-modules_install_no_aux.patch
 
 # Patch for ice v1.12.6 driver
-Patch1532: ice-v1.12.6-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1533: ice-v1.12.6-Remove-inline-from-ethtool_sprintf.patch
-Patch1534: ice-v1.12.6-don-t-install-auxiliary-module-on-modul.patch
+Patch1533: ice-v1.12.6-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1534: ice-v1.12.6-Remove-inline-from-ethtool_sprintf.patch
+Patch1535: ice-v1.12.6-don-t-install-auxiliary-module-on-modul.patch
 
 # Patch for ice v1.11.14 driver
-Patch1535: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1536: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
+Patch1536: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1537: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
+Patch1538: ice-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for ice v1.9.11 driver
-Patch1537: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1538: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1539: ice-v1.9.11-don-t-install-auxiliary-module-on-module.patch
+Patch1539: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1540: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1541: ice-v1.9.11-don-t-install-auxiliary-module-on-module.patch
+Patch1542: ice-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for ice v1.8.3 driver
-Patch1540: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1541: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1542: ice-v1.8.3-introduce-modules_install_no_aux.patch
+Patch1543: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1544: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1545: ice-v1.8.3-introduce-modules_install_no_aux.patch
 
 # Patches for ice v1.6.4 driver
-Patch1543: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
-Patch1544: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1545: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1546: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
+Patch1546: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
+Patch1547: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1548: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1549: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
 
 # Usermode helper patches
-Patch1547: 0001-umh-Add-command-line-to-user-mode-helpers.patch
-Patch1548: 0002-umh-add-exit-routine-for-UMH-process-rt.patch
+Patch1550: 0001-umh-Add-command-line-to-user-mode-helpers.patch
+Patch1551: 0002-umh-add-exit-routine-for-UMH-process-rt.patch
 
 # bpfilter patches
-Patch1549: 0001-net-bpfilter-use-cleanup-callback-to-release-umh_inf.patch
-Patch1550: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
-Patch1551: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
-Patch1552: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
-Patch1553: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
+Patch1552: 0001-net-bpfilter-use-cleanup-callback-to-release-umh_inf.patch
+Patch1553: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
+Patch1554: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
+Patch1555: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
+Patch1556: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
 
 # Fix TCP slab memory leak
-Patch1554: 0001-netfilter-nf_queue-fix-socket-leak.patch
+Patch1557: 0001-netfilter-nf_queue-fix-socket-leak.patch
 
 BuildArch: x86_64
 
@@ -1045,7 +1051,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M707
+%autopatch -p1 -m700 -M708
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1083,52 +1089,52 @@ popd
 
 # Patches for iavf v4.5.3 driver
 pushd ../iavf-%{iavf_version_4_5_3}
-%autopatch -p1 -m1521 -M1524
+%autopatch -p1 -m1521 -M1525
 popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-%autopatch -p1 -m1525 -M1527
+%autopatch -p1 -m1526 -M1528
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-%autopatch -p1 -m1528 -M1531
+%autopatch -p1 -m1529 -M1532
 popd
 
 # Patches for ice v1.12.6 driver
 pushd ../ice-%{ice_version_1_12_6}
-%autopatch -p1 -m1532 -M1534
+%autopatch -p1 -m1533 -M1535
 popd
 
 # Patches for ice v1.11.14 driver
 pushd ../ice-%{ice_version_1_11_14}
-%autopatch -p1 -m1535 -M1536
+%autopatch -p1 -m1536 -M1538
 popd
 
 # Patches for ice v1.9.11 driver
 pushd ../ice-%{ice_version_1_9_11}
-%autopatch -p1 -m1537 -M1539
+%autopatch -p1 -m1539 -M1542
 popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-%autopatch -p1 -m1540 -M1542
+%autopatch -p1 -m1543 -M1545
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-%autopatch -p1 -m1543 -M1546
+%autopatch -p1 -m1546 -M1549
 popd
 
 # Usermode helper patches
-%autopatch -p1 -m1547 -M1548
+%autopatch -p1 -m1550 -M1551
 
 # bpfilter patches
-%autopatch -p1 -m1549 -M1553
+%autopatch -p1 -m1552 -M1556
 
 # Fix TCP slab memory leak
-%autopatch -p1 -m1554 -M1554
+%autopatch -p1 -m1557 -M1557
 
 %build
 make mrproper %{?_smp_mflags}
@@ -1522,6 +1528,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
+- Update to version 4.19.292
+- Patched CVE-2023-4128
 * Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-3
 - Fix TCP slab memory leak
 * Mon Aug 14 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.290-2

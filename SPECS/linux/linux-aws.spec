@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.290
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.292
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5b63dbe871ea2588e8b847189e855b0d88b483466dbc6f96d3ec753c1b1df0aa5b15c29aa452b305b5e904128ada5c6e6819e216c938e7415399ed2b8ee9fa64
+%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
 
 %ifarch x86_64
 Source1: config-aws
@@ -248,6 +248,9 @@ Patch312: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+#Fix for CVE-2023-4128
+Patch314: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -362,7 +365,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M313
+%autopatch -p1 -m300 -M314
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -572,6 +575,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
+- Update to version 4.19.292
+- Patched CVE-2023-4128
 * Tue Aug 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.290-2
 - Fix TCP slab memory leak
 * Thu Aug 10 2023 Ajay Kaher <akaher@vmware.com> 4.19.290-1

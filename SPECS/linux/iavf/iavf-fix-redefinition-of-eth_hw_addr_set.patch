@@ -1,0 +1,35 @@
+From bfff762db7123ad368e296cacc90f27fa1077546 Mon Sep 17 00:00:00 2001
+From: Srish Srinivasan <ssrish@vmware.com>
+Date: Tue, 22 Aug 2023 08:13:35 +0000
+Subject: [PATCH] iavf-v4.5.3: Fix redefinition of eth_hw_addr_set
+ in kernel upgrade to v4.19.292
+
+eth_hw_addr_set was added by upstream commit
+48eab831ae8b ("net: create netdev->dev_addr assignment helpers")
+in iavf-4.5.3 driver package.
+
+Function definition is adapted in kernel 4.19 stable tree starting with v4.19.291.
+Hence it does not need to be defined in iavf-4.5.3 when
+using kernel versions = 4.19.x after 4.19.290. Unsetting the MACRO
+to prevent redefinition of eth_hw_addr_set.
+---
+ src/kcompat_std_defs.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index a751779..9117fac 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -263,6 +263,9 @@
+ #define NEED_DEVLINK_ALLOC_SETS_DEV
+ #define HAVE_DEVLINK_REGISTER_SETS_DEV
+ #define NEED_ETH_HW_ADDR_SET
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,20,0))
++#undef NEED_ETH_HW_ADDR_SET
++#endif /* > 4.19.290  && < 4.20.0 */
+ #else /* >= 5.15.0 */
+ #define HAVE_ETHTOOL_COALESCE_EXTACK
+ #define HAVE_NDO_ETH_IOCTL
+--
+2.35.6
+

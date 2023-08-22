@@ -1,0 +1,37 @@
+From 1030ba56e8372d3f370623d4a9a4f866258dae31 Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <nkuntal@vmware.com>
+Date: Wed, 2 Aug 2023 22:00:25 +0000
+Subject: [PATCH] ice-v1.11.14: Fix redefinition of eth_hw_addr_set
+ in kernel upgrade 4.19.292
+
+eth_hw_addr_set was added by upstream commit
+48eab831ae8b ("net: create netdev->dev_addr assignment helpers")
+in ice-1.11.14 driver package.
+
+Function definition is adapted in kernel 4.19 stable tree starting with v4.19.291.
+Hence it does not need to be defined in ice-1.11.14 when
+using kernel versions = 4.19.x after 4.19.290. Unsetting the MACRO
+to prevent redefinition of eth_hw_addr_set.
+
+[ssrish: Ported the change to Ph3 from Ph4, for kernel versions after 4.19.290]
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+src/kcompat_std_defs.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 00f3e4d..1184171 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -307,6 +307,9 @@
+ #define NEED_DEVLINK_ALLOC_SETS_DEV
+ #define HAVE_DEVLINK_REGISTER_SETS_DEV
+ #define NEED_ETH_HW_ADDR_SET
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,20,0))
++#undef NEED_ETH_HW_ADDR_SET
++#endif /* > 4.19.290  && < 4.20.0 */
+ #else /* >= 5.15.0 */
+ #define HAVE_ETHTOOL_COALESCE_EXTACK
+ #define HAVE_NDO_ETH_IOCTL
+--
+2.39.0
