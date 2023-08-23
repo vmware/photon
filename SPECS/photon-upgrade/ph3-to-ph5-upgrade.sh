@@ -27,8 +27,8 @@ declare -a deprecated_packages_arr=(
   rubygem-connection_pool rubygem-net-http-persistent rubygem-zeitwerk salt3
   sqlite2 sshfs tiptop ulogd uriparser urw-fonts xtrans-devel
   yarn zsh-html
-  # dcerpc dcerpc-devel
-  # openjdk10 openjre10
+  # recently deprecated packages
+  libcalico libsoup-doc python3-m2r python3-subprocess32
 )
 
 # This hashtable maps package name changes

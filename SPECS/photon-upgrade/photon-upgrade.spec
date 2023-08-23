@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -48,6 +48,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Fri Sep 01 2023 Dweep Advani <dadvani@vmware.com> 1.0-12
+- Reordering service configuration resetting and enahncing pre upgrade package error reporting
 * Mon Jun 19 2023 Dweep Advani <dadvani@vmware.com> 1.0-11
 - Fix stig-hardening issue
 * Thu Jun 15 2023 Dweep Advani <dadvani@vmware.com> 1.0-10

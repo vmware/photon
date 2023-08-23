@@ -35,12 +35,12 @@ function create_core_pkgs_list() {
 
 function update_core_packages()
 {
-  local rc=0
   create_core_pkgs_list
-
-  if ! ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install ${core_packages[@]}; then
-    rc=$?
-    abort $rc "Error upgrading rpm package to use the new location."
+  echo "Upgrading package manager by upgrading - ${core_packages[@]}".
+  if ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install ${core_packages[@]}; then
+    echo "Package manager upgrade was successful."
+  else
+    abort $? "Error upgrading rpm package to use the new location."
   fi
 }
 
