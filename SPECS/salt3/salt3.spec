@@ -6,7 +6,7 @@
 
 Name: salt3
 Version: 3005.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -45,6 +45,7 @@ Requires: python3-setuptools
 Requires: python3-xml
 Requires: python3-distro
 Requires: python3-psutil
+Requires: python3-jmespath
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -291,11 +292,13 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Mon Aug 14 2023 Derek Ardolf <saltstack_operations@vmware.com> 3005.2-1
+* Wed Aug 23 2023 Derek Ardolf <dereka@vmware.com> 3005.2-2
+- Add python3-jmespath as required dependency
+* Mon Aug 14 2023 Derek Ardolf <dereka@vmware.com> 3005.2-1
 - Update to version 3005.2
-* Tue Oct 04 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005.1-1
+* Tue Oct 04 2022 Derek Ardolf <dereka@vmware.com> 3005.1-1
 - Update to version 3005.1
-* Tue Aug 23 2022 Derek Ardolf <saltstack_operations@vmware.com> 3005-1
+* Tue Aug 23 2022 Derek Ardolf <dereka@vmware.com> 3005-1
 - Update to version 3005
 * Tue Jun 21 2022 Kirill Ponomarev <kponomarev@vmware.com> 3004.2-1
 - Update to version 3004.2
