@@ -6,7 +6,7 @@
 
 Summary:        Google RPC
 Name:           grpc
-Version:        1.54.2
+Version:        1.54.3
 Release:        1%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
@@ -15,7 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4e0527b3968b0b19991477037ef519a62961025d4f7823e32faaec517049feca96da3fd678d1fca69c1d81538f493e60a9a686643e11963bffe589460b9ef755
+%define sha512  %{name}=320db48567ca08a56e5f548976d2d741ae5f2b9804b0a776728d12690dc53e7eab24dba24930874b070c57072d129d6bb65ea8aee58b587e426ddf799272e186
 
 Source1:        https://github.com/abseil/abseil-cpp/archive/abseil-cpp-%{abseil_ver}.tar.gz
 %define sha512  abseil=ab4fccd9a2bfa0c5ad4b56c8e8f8b7ec7a8eca8b6cc6959802acadd1da785e1feb078c6ac621808cd699c82717a9e637dc426d94b70a8db7f2a807059d41cbc2
@@ -115,6 +115,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 1.54.3-1
+- Updated to 1.54.3 to fix CVE-2023-33953
 * Wed Jul 26 2023 Mukul Sikka <msikka@vmware.com> 1.54.2-1
 - Updated to latest version
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-4
