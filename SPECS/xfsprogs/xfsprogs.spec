@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
-Version:        6.0.0
-Release:        2%{?dist}
+Version:        6.4.0
+Release:        1%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
-%define sha512  %{name}=a3ddccdea1129038420d933f1e9ae8f9e75b3ad59fd0fe4c61b7a4dc6145f47b4262f68aefc3216d37cc33ee5643cd6f260ec83cd39d6b61a1cd046c03674ad8
+%define sha512  %{name}=831e7747640bc2964b182226d8bb6f637610b123aeec9b3cb97a5de5d5b65bde30c6b40ad2e78de6a5214e823dd75de3a2bdfddd8ab1638f5c7340a760c91b3f
 
 BuildRequires: gettext-devel
 BuildRequires: inih-devel
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 23 2023 Susant Sahani <ssahani@vmware.com> 6.4.0-1
+- update to 6.4.0
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.0-2
 - Bump version as a part of gettext upgrade
 * Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 6.0.0-1
