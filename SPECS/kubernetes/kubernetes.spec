@@ -8,11 +8,12 @@
 %define debug_package %{nil}
 %define __strip /bin/true
 %define contrib_ver 0.7.0
+%define isolcpu_ver c15e3e1a3a
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -28,6 +29,14 @@ Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.g
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 Source4:        %{name}.sysusers
+
+# Sources for isolcpu device plugin
+# Source tarball of https://opendev.org/starlingx/integ/src/commit/c15e3e1a3af2c797caa1bc408315beb0101ae623/kubernetes/plugins/isolcpus-device-plugin/files
+Source5:        isolcpu-plugin-%{isolcpu_ver}.tar.bz2
+%define sha512 isolcpu=9b7f8f45b4b27d9507f37b41547cd0e3204ca6b6b4101c33b17d7272235d56a36f47d33d403377a193af3806ca1ea82eba73e4afa2e0d8f9d1ceeab0a13c0950
+
+Patch0:         0001-kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
+Patch1:         0001-Use-vmware.com-isolcpu-property-name.patch
 
 BuildRequires:  go
 BuildRequires:  rsync
@@ -63,8 +72,20 @@ Group:          Development/Tools
 %description    pause
 A pod setup process that holds a pod's namespace.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%package        isolcpu-plugin
+Summary:        isolcpu plugin service
+Group:          Development/Tools
+# Relaxed dependency on kubelet
+Requires:       %{name} >= 1.27.3
+%description    isolcpu-plugin
+A kubelet device plugin for isolcpu resource.
+
+%prep
+%autosetup -b0 -b5 -N
+%patch0 -p1
+cd ../isolcpu-plugin-%{isolcpu_ver}
+%patch1 -p1
+
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-%{contrib_ver}/init/systemd/environ/apiserver
@@ -79,10 +100,16 @@ make WHAT="cmd/kubeadm" %{?_smp_mflags}
 make WHAT="cmd/kube-scheduler" %{?_smp_mflags}
 make WHAT="cmd/kubectl" %{?_smp_mflags}
 make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
+
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
+popd
+
+# Build static isolcpu_plugin binary
+pushd ../isolcpu-plugin-%{isolcpu_ver}
+CGO_ENABLED=0 go build -mod=vendor
 popd
 
 %install
@@ -132,6 +159,11 @@ cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
 d %{_var}/run/%{name} 0755 kube kube -
 EOF
 
+pushd isolcpu-plugin-%{isolcpu_ver}
+install -p -m 755 -t %{buildroot}%{_bindir} isolcpu_plugin
+install -m 0644 -t %{buildroot}%{_unitdir} isolcpu_plugin.service
+popd
+
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
@@ -156,9 +188,19 @@ systemctl daemon-reload
 systemctl stop kubelet
 systemctl enable kubelet
 
+%post isolcpu-plugin
+touch /etc/kubernetes/respect_isolcpus
+systemctl daemon-reload
+systemctl enable isolcpu_plugin
+
 %preun kubeadm
 if [ $1 -eq 0 ]; then
     systemctl stop kubelet
+fi
+
+%preun isolcpu-plugin
+if [ $1 -eq 0 ]; then
+    systemctl stop isolcpu_plugin
 fi
 
 %postun
@@ -169,6 +211,12 @@ fi
 
 %postun kubeadm
 if [ $1 -eq 0 ]; then
+    systemctl daemon-reload
+fi
+
+%postun isolcpu-plugin
+if [ $1 -eq 0 ]; then
+    rm -f /etc/kubernetes/respect_isolcpus
     systemctl daemon-reload
 fi
 
@@ -209,7 +257,15 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
+%files isolcpu-plugin
+%defattr(-,root,root)
+%{_bindir}/isolcpu_plugin
+%{_unitdir}/isolcpu_plugin.service
+
 %changelog
+* Wed Aug 23 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-4
+- Introduction of vmware.com/isolcpu POD property.
+- isolcpus allocations support for RT workloads.
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.27.3-3
 - Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-2
