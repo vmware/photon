@@ -1,14 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        16.20.1
-Release:        2%{?dist}
+Version:        16.20.2
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha512 node=0f4b33d75ff5b74dfb97ee2e7e8aea930a1c20067ba70a27571395a20792947f33bc429fe9c5711600e602f27a3707b50b64d8b778df1678e9613ba14ce51a15
+%define         sha512 node=dff6f61c323b56e2c4b1b512c388d58009e37e55340dabc748eb8508f990f12424543dd88482a8a87838ca33a33fba8a4624b5489056457120dad5b115b737d1
 Patch0:         CVE-2022-25881-http-cache-semantics-4.1.1.patch
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -69,6 +69,8 @@ make cctest %{?_smp_mflags}
 %{_docdir}/node/gdbinit
 
 %changelog
+*   Thu Aug 24 2023 Shivani Agarwal <shivania2@vmware.com> 16.20.2-1
+-   Upgrade to 16.20.2 to CVE-2023-32006
 *   Wed Jul 19 2023 Siju Maliakkal <smaliakkal@vmware.com> 16.20.1-2
 -   Update http-cache-semantics dependency to 4.1.1 for CVE-2022-25881
 *   Tue Jun 27 2023 Siju Maliakkal <smaliakkal@vmware.com> 16.20.1-1
