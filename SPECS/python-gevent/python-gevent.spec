@@ -2,16 +2,16 @@
 
 Summary:        Coroutine-based network library
 Name:           python3-gevent
-Version:        22.10.2
-Release:        2%{?dist}
+Version:        23.7.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 
-Source0: https://github.com/gevent/gevent/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=e4cf1ca94269a7418cd8c1fcc7efaa1b393921ec4d9f50b9a29f1059db102d6a41b6d7f4602b215b877d29696bf235c883ea7e3e52480133366afa839ec4bcd8
+Source0: https://pypi.org/project/%{srcname}/%{version}/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=d452e58e96ba5b7f995b9a762fe378cef24a728a5291b3df069ff50815b336c6ad7bdbe0341c6c9c821dea6fc1a6601aec9d8c9c18aea8045bbcddb2f9240198
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -24,6 +24,9 @@ BuildRequires: curl-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-test
 BuildRequires: python3-pip
+BuildRequires: python3-greenlet
+BuildRequires: python3-zope.event
+BuildRequires: python3-zope.interface
 %endif
 
 Requires: python3
@@ -50,16 +53,20 @@ Features include:
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
-pip3 install nose
-python3 setup.py develop
-nosetests
+export PYTHONPATH=%{buildroot}%{python3_sitelib}
+%{__python3} -m gevent.tests
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Aug 24 2023 Nitesh Kumar <kunitesh@vmware.com> 23.7.0-1
+- Version upgrade to v23.7.0 to fix following CVE's:
+- CVE-2023-31130, CVE-2023-31147, CVE-2023-32067, CVE-2023-31124
 * Thu Aug 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.2-2
 - Add zope.interface to requires
 * Mon Nov 07 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.2-1
