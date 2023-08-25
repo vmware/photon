@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.188
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -169,6 +169,14 @@ Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
 #Fix for CVE-2023-0597
 Patch135: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch136: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix for CVE-2023-4147
+Patch137: 0001-netfilter-nf_tables-disallow-rule-addition-to-bound-.patch
+
+#Fix for CVE-2023-4128
+Patch138: 0001-net-sched-cls_u32-No-longer-copy-tcf_result-on-updat.patch
+Patch139: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+Patch140: 0001-net-sched-cls_route-No-longer-copy-tcf_result-on-upd.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -684,7 +692,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M140
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -940,6 +948,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2
+- Patched CVE-2023-4147, CVE-2023-4128
 * Tue Aug 01 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.188-1
 - Update to version 5.10.188
 * Fri Jul 28 2023 Ajay Kaher <akaher@vmware.com> 5.10.186-2

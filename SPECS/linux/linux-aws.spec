@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.188
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -155,6 +155,14 @@ Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 #Fix for CVE-2023-0597
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix for CVE-2023-4147
+Patch139: 0001-netfilter-nf_tables-disallow-rule-addition-to-bound-.patch
+
+#Fix for CVE-2023-4128
+Patch140: 0001-net-sched-cls_u32-No-longer-copy-tcf_result-on-updat.patch
+Patch141: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
+Patch142: 0001-net-sched-cls_route-No-longer-copy-tcf_result-on-upd.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -318,7 +326,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M138
+%autopatch -p1 -m100 -M142
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %patch150 -p1
@@ -497,6 +505,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2
+- Patched CVE-2023-4147, CVE-2023-4128
 * Tue Aug 01 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.188-1
 - Update to version 5.10.188
 * Fri Jul 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.186-1

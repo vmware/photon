@@ -1,0 +1,49 @@
+From b4256c99a7116c9514224847e8aaee2ecf110a0a Mon Sep 17 00:00:00 2001
+From: valis <sec@valis.email>
+Date: Sat, 29 Jul 2023 08:32:00 -0400
+Subject: net/sched: cls_u32: No longer copy tcf_result on update to avoid
+ use-after-free
+
+[ Upstream commit 3044b16e7c6fe5d24b1cdbcf1bd0a9d92d1ebd81 ]
+
+When u32_change() is called on an existing filter, the whole
+tcf_result struct is always copied into the new instance of the filter.
+
+This causes a problem when updating a filter bound to a class,
+as tcf_unbind_filter() is always called on the old instance in the
+success path, decreasing filter_cnt of the still referenced class
+and allowing it to be deleted, leading to a use-after-free.
+
+Fix this by no longer copying the tcf_result struct from the old filter.
+
+Fixes: de5df63228fc ("net: sched: cls_u32 changes to knode must appear atomic to readers")
+Reported-by: valis <sec@valis.email>
+Reported-by: M A Ramdhan <ramdhan@starlabs.sg>
+Signed-off-by: valis <sec@valis.email>
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Reviewed-by: Victor Nogueira <victor@mojatatu.com>
+Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
+Reviewed-by: M A Ramdhan <ramdhan@starlabs.sg>
+Link: https://lore.kernel.org/r/20230729123202.72406-2-jhs@mojatatu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sched/cls_u32.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+(limited to 'net/sched/cls_u32.c')
+
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 04e933530cade..b2d2ba561eba1 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -812,7 +812,6 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+ 
+ 	new->ifindex = n->ifindex;
+ 	new->fshift = n->fshift;
+-	new->res = n->res;
+ 	new->flags = n->flags;
+ 	RCU_INIT_POINTER(new->ht_down, ht);
+ 
+-- 
+cgit
