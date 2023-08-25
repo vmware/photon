@@ -3,7 +3,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    11%{?dist}
+Release:    12%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org
 Group:      System Environment/Libraries
@@ -34,7 +34,10 @@ Group:      Development/Libraries
 Summary:    APR utility library development kit
 Requires:   apr-devel
 Requires:   expat-devel
+Requires:   util-linux-devel
+Requires:   openldap-devel
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 This package provides the support files which can be used to
 build applications using the APR utility library.
@@ -86,10 +89,8 @@ This package provides the SQLite driver for the %{name} DBD
 %install
 %make_install %{?_smp_mflags}
 
-%if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %clean
 rm -rf %{buildroot}
@@ -126,6 +127,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-12
+- Fix devel package requires
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-11
 - Bump version as a part of nss upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-10
