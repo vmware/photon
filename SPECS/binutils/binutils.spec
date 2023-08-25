@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -30,6 +30,7 @@ Patch11:        binutils-CVE-38128-dwarf-abbrev-parsing.patch
 Patch12:        binutils-CVE-2022-38533.patch
 Patch13:        binutils-CVE-2023-1972.patch
 Patch14:        binutils-CVE-2022-4285.patch
+Patch15:        binutils-CVE-2023-1579.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -154,6 +155,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Sat Aug 26 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-5
+- Fix CVE-2023-1579
 * Sat Aug 19 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-4
 - Fix CVE-2022-4285
 * Tue Jun 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-3
