@@ -1,0 +1,70 @@
+From efe406282bb2be057c81a156812952f865256b19 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Fri, 25 Aug 2023 11:57:42 +0000
+Subject: [PATCH] plugin: bootloader: Support for ostree-boot
+
+- plugin_bootloader uses "rpm-ostree kargs"
+  command to append or delete additional param
+  Thus, after applying tuned profile to make
+  changes in cmdline, it is mandatory to reboot
+  to reflect the changes.
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ tuned/consts.py                    |  3 ++-
+ tuned/plugins/plugin_bootloader.py | 11 +++++++++--
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/tuned/consts.py b/tuned/consts.py
+index a9d0be2..166f136 100644
+--- a/tuned/consts.py
++++ b/tuned/consts.py
+@@ -44,7 +44,8 @@ PETITBOOT_DETECT_DIR = "/sys/firmware/opal"
+ MACHINE_ID_FILE = "/etc/machine-id"
+ KERNEL_UPDATE_HOOK_FILE = "/usr/lib/kernel/install.d/92-tuned.install"
+ BLS_ENTRIES_PATH = "/boot/loader/entries"
+-PHOTON_TUNED_CFG_FILE = "/boot/tuned.cfg"
++OSTREE_BOOT_DIR = "/usr/lib/ostree-boot"
++PHOTON_TUNED_CFG_FILE = "tuned.cfg"
+ 
+ # scheduler plugin configuration
+ # how many times retry to move tasks to parent cgroup on cgroup cleanup
+diff --git a/tuned/plugins/plugin_bootloader.py b/tuned/plugins/plugin_bootloader.py
+index 4da3065..0475cc3 100644
+--- a/tuned/plugins/plugin_bootloader.py
++++ b/tuned/plugins/plugin_bootloader.py
+@@ -188,7 +188,8 @@ class BootloaderPlugin(base.Plugin):
+ 	"""
+ 
+ 	def __init__(self, *args, **kwargs):
+-		if not os.path.isfile(consts.PHOTON_TUNED_CFG_FILE):
++		self._photon_tuned_cfg_file = self._get_tuned_cfg_files()
++		if not os.path.isfile(self._photon_tuned_cfg_file):
+ 			raise exceptions.NotSupportedPluginException("Required GRUB2 tuned config not found, disabling plugin.")
+ 		super(BootloaderPlugin, self).__init__(*args, **kwargs)
+ 		self._cmd = commands()
+@@ -348,6 +349,12 @@ class BootloaderPlugin(base.Plugin):
+ 			effective["cmdline"] = cmdline
+ 		return effective
+ 
++	def _get_tuned_cfg_files(self):
++		photon_tuned_cfg_file = consts.OSTREE_BOOT_DIR + "/" + consts.PHOTON_TUNED_CFG_FILE
++		if os.path.isfile(photon_tuned_cfg_file):
++			return photon_tuned_cfg_file
++		return consts.BOOT_DIR + "/" + consts.PHOTON_TUNED_CFG_FILE
++
+ 	def _get_grub2_cfg_files(self):
+ 		cfg_files = []
+ 		for f in consts.GRUB2_CFG_FILES:
+@@ -365,7 +372,7 @@ class BootloaderPlugin(base.Plugin):
+ 			flags = re.MULTILINE) is not None
+ 
+ 	def _patch_photon_tuned_cfg(self, d):
+-		return self._cmd.add_modify_option_woquotes_in_file(consts.PHOTON_TUNED_CFG_FILE, d)
++		return self._cmd.add_modify_option_woquotes_in_file(self._photon_tuned_cfg_file, d)
+ 
+ 	def _patch_bootcmdline(self, d):
+ 		return self._cmd.add_modify_option_in_file(consts.BOOT_CMDLINE_FILE, d)
+-- 
+2.23.1
+
