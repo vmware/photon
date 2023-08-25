@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.4
+Version:        3.5.5
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=c273271fc01e81f05a308a60447d6982574f66bf39212dcb00bbee3ae36beb8ec036c1b6ee714a09805715d4fd0c9e6b8ac333e0bec35152cd8925a1191e812e
+%define sha512  %{name}=83ea7823684df34e8b11995ffddcc9937ef2725ab1682de4aa15b2fe8c1a33d8a4277d61d566791ac36cfc082fc62fab93884c7b25ce80e8b67f23f8c8b0bada
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -294,6 +294,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Aug 25 2023 Oliver Kurth <okurth@vmware.com> 3.5.5-1
+- update to 3.5.5
+- checksum check for packages and other minor fixes
 * Wed Jul 26 2023 Oliver Kurth <okurth@vmware.com> 3.5.4-1
 - update to 3.5.4
 - fix rpm verbosity default, and fix rpm scriptlet output when json is enabled #438
