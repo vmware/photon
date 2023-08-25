@@ -1,3 +1,16 @@
+From 7e59b7e3ed45bf8c4e9992e343d49733bad1d170 Mon Sep 17 00:00:00 2001
+From: Anish Swaminathan <anishs@vmware.com>
+Date: Mon, 9 Nov 2015 19:57:04 +0000
+Subject: [PATCH] disable pg flags
+
+Disable the pg flags for LDFLAGS
+and CFLAGS
+
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
+--
+ src/Makefile.am b/src/Makefile.am | ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
 diff --git a/src/Makefile.am b/src/Makefile.am
 index 11d3e17..4058cff 100644
 --- a/src/Makefile.am
