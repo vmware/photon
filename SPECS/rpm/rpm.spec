@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.0
-Release:    15%{?dist}
+Release:    16%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -54,8 +54,12 @@ RPM package manager
 %package devel
 Summary:    Libraries and header files for rpm
 Provides:   pkgconfig(%{name})
-Requires:   %{name} = %{version}-%{release}
 Requires:   zstd-devel
+Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}-sign-libs = %{version}-%{release}
+Requires:   %{name}-build-libs = %{version}-%{release}
+
+Conflicts: %{name}-build < 4.18.0-14%{?dist}
 
 %description devel
 Static libraries and header files for the support library for rpm
@@ -79,11 +83,28 @@ Conflicts:  libsolv < 0.7.19
 %description  libs
 Shared libraries librpm and librpmio
 
+%package build-libs
+Summary:  Libraries for building RPM packages
+Requires: %{name}-libs = %{version}-%{release}
+
+Conflicts: %{name}-build < 4.18.0-14%{?dist}
+
+%description build-libs
+This package contains the RPM shared libraries for building packages.
+
+%package sign-libs
+Summary:  Libraries for signing RPM packages
+Requires: %{name}-libs = %{version}-%{release}
+
+Conflicts: %{name}-devel < 4.18.0-14%{?dist}
+
+%description sign-libs
+This package contains the RPM shared libraries for signing packages.
+
 %package build
 Summary:  Binaries, scripts and libraries needed to build rpms.
 Requires: perl
 Requires: lua
-Requires: %{name}-devel = %{version}-%{release}
 Requires: elfutils-libelf
 Requires: cpio
 Requires: systemd-rpm-macros
@@ -97,6 +118,8 @@ Requires: bzip2
 Requires: tar
 Requires: gzip
 Requires: file
+Requires: %{name}-devel = %{version}-%{release}
+Requires: %{name}-build-libs = %{version}-%{release}
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -114,8 +137,10 @@ Summary:  Python 3 bindings for rpm.
 Group:    Development/Libraries
 Requires: python3
 Requires: python3-setuptools
+Requires: %{name}-sign-libs = %{version}-%{release}
+Requires: %{name}-build-libs = %{version}-%{release}
 
-%description -n python3-rpm
+%description -n python3-%{name}
 Python3 rpm.
 
 %package plugin-systemd-inhibit
@@ -153,7 +178,6 @@ sh autogen.sh --noconfigure
     --enable-bdb-ro \
     --enable-plugins \
     --with-crypto=openssl \
-    --with-lua \
     --enable-nls
 
 %make_build
@@ -182,11 +206,9 @@ pushd python
 %py3_install
 popd
 
-%if 0%{?with_check}
 %check
 make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
-make clean %{?_smp_mflags}
-%endif
+%make_build clean
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -247,14 +269,20 @@ rm -rf %{buildroot}
 %{rpmhome}/rpmdb_*
 %{_bindir}/rpmdb
 
+%files build-libs
+%defattr(-,root,root)
+%{_libdir}/librpmbuild.so.*
+
+%files sign-libs
+%defattr(-,root,root)
+%{_libdir}/librpmsign.so.*
+
 %files build
 %defattr(-,root,root)
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
 %{_bindir}/rpmlua
-%{_libdir}/librpmbuild.so
-%{_libdir}/librpmbuild.so.*
 %{_rpmmacrodir}/*
 %{rpmhome}/perl.req
 %{rpmhome}/find-lang.sh
@@ -291,7 +319,7 @@ rm -rf %{buildroot}
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
-%{_libdir}/librpmsign.so.*
+%{_libdir}/librpmbuild.so
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -306,6 +334,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-16
+- Add build-libs, sign-libs sub packages
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-15
 - Bump version as a part of elfutils upgrade
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-14
