@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.19.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -18,6 +18,7 @@ Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 Patch5:         0001-tuned-expand-functions-for-variables-in-plugin_net.patch
 Patch6:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
+Patch7:         0001-plugin-bootloader-Support-for-ostree-boot.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
@@ -148,6 +149,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Fri Aug 25 2023 Ankit Jain <ankitja@vmware.com> 2.19.0-9
+- Enable support for ostree-boot
 * Wed Apr 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-8
 - Patch tuned to ignore verification of smp affinity for irq 0 on x86.
 * Thu Mar 16 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-7
