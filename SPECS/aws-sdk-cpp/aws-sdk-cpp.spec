@@ -4,7 +4,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.11.117
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -27,6 +27,7 @@ Requires: zlib-devel
 Requires: aws-sdk-core = %{version}-%{release}
 Requires: aws-sdk-kinesis = %{version}-%{release}
 Requires: aws-sdk-s3 = %{version}-%{release}
+Requires: aws-crt-cpp = %{version}-%{release}
 
 BuildRequires: cmake
 BuildRequires: curl-devel
@@ -40,6 +41,7 @@ The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface fo
 Summary:        aws sdk core
 Group:          Development/Libraries
 Requires:       aws-core-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-core
 aws sdk cpp core
@@ -59,6 +61,7 @@ Summary:        aws sdk kinesis
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-kinesis-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-kinesis
 aws sdk cpp for kinesis
@@ -76,6 +79,7 @@ Summary:        aws sdk s3
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-s3-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-s3
 aws sdk cpp for s3
@@ -87,6 +91,14 @@ Requires:       aws-core-libs = %{version}-%{release}
 
 %description -n aws-s3-libs
 aws s3 libs
+
+%package -n     aws-crt-cpp
+Summary:        aws crt cpp
+Group:          Development/Libraries
+
+%description -n aws-crt-cpp
+C++ wrapper around the aws-c-* libraries.
+Provides Cross-Platform Transport Protocols and SSL/TLS implementations for C++.
 
 %prep
 %autosetup -p1
@@ -104,6 +116,10 @@ pushd ./src/aws-cpp-sdk-core
 %make_build
 popd
 
+pushd ./crt/aws-crt-cpp/
+%make_build
+popd
+
 for component in "kinesis" "s3"; do
   pushd ./generated/src/aws-cpp-sdk-${component}
   %make_build
@@ -114,6 +130,10 @@ done
 cd %{__cmake_builddir}
 
 pushd ./src/aws-cpp-sdk-core
+%make_install %{?_smp_mflags}
+popd
+
+pushd ./crt/aws-crt-cpp/
 %make_install %{?_smp_mflags}
 popd
 
@@ -165,7 +185,41 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,0755)
 %{_libdir}/libaws-cpp-sdk-s3.so
 
+%files -n aws-crt-cpp
+%defattr(-,root,root,0755)
+%{_includedir}/aws/auth/*
+%{_includedir}/aws/cal/*
+%{_includedir}/aws/checksums/*
+%{_includedir}/aws/common/*
+%{_includedir}/aws/compression/*
+%{_includedir}/aws/crt/*
+%{_includedir}/aws/event-stream/*
+%{_includedir}/aws/http/*
+%{_includedir}/aws/io/*
+%{_includedir}/aws/iot/*
+%{_includedir}/aws/mqtt/*
+%{_includedir}/aws/sdkutils/*
+%{_includedir}/aws/testing/*
+%{_includedir}/s2n.h
+%{_includedir}/s2n/*
+%{_libdir}/aws-c-auth/cmake/*
+%{_libdir}/aws-c-cal/cmake/*
+%{_libdir}/aws-c-common/cmake/*
+%{_libdir}/aws-c-compression/cmake/*
+%{_libdir}/aws-c-event-stream/cmake/*
+%{_libdir}/aws-c-http/cmake/*
+%{_libdir}/aws-c-io/cmake/*
+%{_libdir}/aws-c-mqtt/cmake/*
+%{_libdir}/aws-c-s3/cmake/*
+%{_libdir}/aws-c-sdkutils/cmake/*
+%{_libdir}/aws-checksums/cmake/*
+%{_libdir}/aws-crt-cpp/cmake/*
+%{_libdir}/s2n/cmake/*
+%exclude %{_libdir}/*.a
+
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-2
+- Build CRT deps
 * Wed Jul 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-1
 - Upgrade to v1.11.117
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 1.11.58-1
