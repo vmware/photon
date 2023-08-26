@@ -1,7 +1,7 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
 Version:        2.46.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
 Group:          System Environment/Libraries
@@ -41,6 +41,7 @@ Requires:       libX11-devel
 Requires:       libXtst-devel
 Requires:       libXext-devel
 Requires:       libXi-devel
+Requires:       atk-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -91,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.46.0-5
+- Add atk-devel to devel package requires
 * Wed Jun 21 2023 Kuntal Nayak <nkuntal@vmware.com> 2.46.0-4
 - Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.46.0-3
