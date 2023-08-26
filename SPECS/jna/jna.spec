@@ -1,23 +1,26 @@
 #need to deactivate debuginfo till we bring in x11 deps
 %define debug_package %{nil}
+%define _prefix %{_var}/opt/%{name}-%{version}
 
 Summary:        Java Native Access
 Name:           jna
 Version:        5.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
-Patch0:         jna_remove_clover_jar.patch
+
+Source0: https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}=6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
+
+Patch0: jna_remove_clover_jar.patch
+
 BuildRequires:  openjdk11
 BuildRequires:  apache-ant
-Requires:       openjdk11
 
-%define _prefix /var/opt/%{name}-%{version}
+Requires: (openjdk11-jre or openjdk17-jre)
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -33,11 +36,8 @@ Sources for JNA
 %prep
 %autosetup -p1
 
-%clean
-rm -rf %{buildroot}
-
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 
 # Intermittent issue happens:
 #
@@ -50,7 +50,7 @@ ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelea
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
@@ -59,8 +59,12 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 
 %check
 #ignore a unicode name test which fails in chroot checks
-sed -i 's/testLoadLibraryWithUnicodeName/ignore_testLoadLibraryWithUnicodeName/' test/com/sun/jna/LibraryLoadTest.java
+sed -i 's/testLoadLibraryWithUnicodeName/ignore_testLoadLibraryWithUnicodeName/' \
+        test/com/sun/jna/LibraryLoadTest.java
 ant
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -80,6 +84,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-4
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-3
 - Bump version as a part of openjdk11 upgrade
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 5.12.1-2

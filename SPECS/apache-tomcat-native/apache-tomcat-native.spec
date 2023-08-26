@@ -1,19 +1,23 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        2.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      x86_64
-Source0:        https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
-%define sha512  tomcat-native=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
+
+Source0: https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
+%define sha512 tomcat-native=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
+
 Patch0:         openssl_3_0_7_compatibility.patch
+
 BuildRequires:  openjdk11
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  apr-devel
+
 Requires:       apr
 Requires:       openssl
 
@@ -25,6 +29,8 @@ that allows Tomcat to use certain native resources for performance, compatibilit
 Summary:        Apache Tomcat Native development package
 Requires:       %{name} = %{version}-%{release}
 
+Conflicts:      %{name} < 2.0.3-4%{?dist}
+
 %description    devel
 Apache Tomcat Native development package
 
@@ -32,17 +38,18 @@ Apache Tomcat Native development package
 %autosetup -p1 -n tomcat-native-%{version}-src
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-1.11.0
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+
 cd native
 %configure --with-apr=%{_prefix} \
            --with-java-home=$JAVA_HOME \
            --with-ssl=%{_prefix}
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 cd native
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -53,15 +60,16 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libtcnative*.so.0.*
+%{_libdir}/libtcnative*.so.*
 %exclude %{_libdir}/libtcnative-2.a
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/libtcnative*.so
-%{_libdir}/libtcnative*.so.0
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-4
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-3
 - Bump version as a part of openjdk11 upgrade
 * Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.3-2

@@ -2,27 +2,34 @@
 %define _conf_dir     %{_sysconfdir}/%{name}
 %define _log_dir      %{_var}/log/%{name}
 %define _data_dir     %{_sharedstatedir}/%{name}
+
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
-Source0:       %{name}-%{version}-src.tgz
-%define sha512 kafka=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
-Source1:       %{name}.service
-Source2:       %{name}.sysusers
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Provides:      kafka kafka-server
-BuildRequires: systemd
+
+Source0: %{name}-%{version}-src.tgz
+%define sha512 %{name}=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
+
+Source1:       %{name}.service
+Source2:       %{name}.sysusers
+
+Provides:   kafka
+Provides:   kafka-server
+
 BuildRequires: systemd-devel
-BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
-Requires:      zookeeper
-Requires:      systemd-rpm-macros
+BuildRequires: openjdk11
+
+Requires: zookeeper
+Requires: systemd-rpm-macros
+Requires: (openjdk11-jre or openjdk17-jre)
 
 %{?systemd_requires}
 
@@ -33,10 +40,10 @@ Data streams are partitioned and spread over a cluster of machines to allow data
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
 ./gradlew jar
 ./gradlew srcJar
 ./gradlew javadoc
@@ -46,12 +53,14 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
 ./gradlew docsJar
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
-mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config}
-mkdir -p %{buildroot}/%{_log_dir}
-mkdir -p %{buildroot}/%{_data_dir}
-mkdir -p %{buildroot}/%{_unitdir}
-mkdir -p %{buildroot}/%{_conf_dir}/
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+
+mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config} \
+         %{buildroot}/%{_log_dir} \
+         %{buildroot}/%{_data_dir} \
+         %{buildroot}/%{_unitdir} \
+         %{buildroot}/%{_conf_dir}/
+
 cp -pr config/* %{buildroot}/%{_prefix}/%{name}/config
 install -p -D -m 755 bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
 install -p -D -m 644 config/server.properties %{buildroot}/%{_conf_dir}/
@@ -102,6 +111,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-4
+- Require jdk11 or jdk17
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.4.0-3
 - Resolving systemd-rpm-macros for group creation
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-2

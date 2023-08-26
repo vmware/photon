@@ -3,7 +3,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.21.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -60,7 +60,7 @@ This contains %{name} python3 libraries.
 %package        java
 Summary:        %{name} java
 Group:          Development/Libraries
-Requires:       openjdk11
+Requires:       (openjdk11-jre or openjdk17-jre)
 
 %description    java
 This contains %{name} java package.
@@ -130,6 +130,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-3
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-2
 - Bump version as a part of openjdk11 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.21.12-1

@@ -4,26 +4,28 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha512  apache-%{name}=986b79556e5d375ee6f385919509555bb79a6ae3c3dd338003ca8bb2145d2311a170eee17e98025f08b61b0ea0bc3712da696207644c6db05f15d0ec54c1022a
+Source0: http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha512 apache-%{name}=986b79556e5d375ee6f385919509555bb79a6ae3c3dd338003ca8bb2145d2311a170eee17e98025f08b61b0ea0bc3712da696207644c6db05f15d0ec54c1022a
+
 Source1:        %{name}.service
 Source2:        %{name}.sysusers
 
 BuildRequires:  apache-ant
-BuildRequires:  unzip zip
+BuildRequires:  unzip
+BuildRequires:  zip
 BuildRequires:  openjdk11
 BuildRequires:  wget
 BuildRequires:  git
 BuildRequires:  systemd-devel
 
-Requires:       openjdk11
+Requires:       openjdk11-jre
 Requires:       gawk
 Requires:       shadow
 Requires(pre): systemd-rpm-macros
@@ -114,6 +116,10 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.10-4
+- Require jdk11
+- cassandra doesn't work with jdk17 yet
+- https://issues.apache.org/jira/browse/CASSANDRA-16895
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.0.10-3
 - Resolving systemd-rpm-macros for group creation
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.10-2

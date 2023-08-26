@@ -4,18 +4,28 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://bazel.build/
-Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
-%define sha512  bazel=a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
-BuildRequires:  openjdk11 zlib-devel which findutils tar gzip zip unzip
+
+Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
+%define sha512 %{name}=a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
+
+BuildRequires:  openjdk11
+BuildRequires:  zlib-devel
+BuildRequires:  which
+BuildRequires:  findutils
+BuildRequires:  tar
+BuildRequires:  gzip
+BuildRequires:  zip
+BuildRequires:  unzip
 BuildRequires:  gcc
 BuildRequires:  python3
-Requires:       openjdk11
+
+Requires: (openjdk11 or openjdk17)
 
 %description
 Bazel is Google's own build tool, now publicly available in Beta. Bazel has
@@ -24,13 +34,16 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%autosetup -c -n %{name}-%{version}
+%autosetup -p1 -c -n %{name}-%{version}
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
-mkdir /usr/tmp
-export TMPDIR=/usr/tmp
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+export TMPDIR=%{_usr}/tmp
+
+mkdir $TMPDIR
+
 ./compile.sh
+
 pushd output
 ./bazel
 popd
@@ -44,6 +57,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-4
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3
 - Bump version as a part of openjdk11 upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.3.2-2
