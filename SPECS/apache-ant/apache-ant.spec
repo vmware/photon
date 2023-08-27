@@ -1,39 +1,41 @@
 %define hamcrest_ver 2.2
 %define maven_tasks_ver 2.1.3
 
+%define ant_prefix %{_var}/opt/%{name}
+%define ant_bindir %{ant_prefix}/bin
+%define ant_libdir %{ant_prefix}/lib
+
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
-%define sha512  %{name}=1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
-Source1:    https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/hamcrest-%{hamcrest_ver}.jar
-%define sha512  hamcrest=6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
-Source2:    https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
-%define sha512  maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
+Source0: http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
+%define sha512 %{name}=1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
 
-Requires:      openjdk11
+Source1: https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/hamcrest-%{hamcrest_ver}.jar
+%define sha512 hamcrest=6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
+
+Source2: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
+%define sha512 maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 
 BuildRequires: openjdk11
 
-BuildArch:      noarch
+Requires: (openjdk11 or openjdk17)
 
-%define ant_prefix /var/opt/%{name}
-%define ant_bindir %{ant_prefix}/bin
-%define ant_libdir %{ant_prefix}/lib
+BuildArch:      noarch
 
 %description
 The Ant package contains binaries for a build system
 
 %package -n ant-scripts
 Summary:        Additional scripts for ant
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
 %description -n ant-scripts
@@ -53,7 +55,8 @@ export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 mkdir -p -m 700 ${ANT_DIST_DIR}
 ./bootstrap.sh && ./build.sh -Ddist.dir=${ANT_DIST_DIR}
 
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-%{maven_tasks_ver}/maven-ant-tasks-%{maven_tasks_ver}.jar %{buildroot}%{ant_libdir}
+cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-%{maven_tasks_ver}/maven-ant-tasks-%{maven_tasks_ver}.jar \
+       %{buildroot}%{ant_libdir}
 
 mkdir -p %{buildroot}%{_datadir}/java/ant %{buildroot}%{_bindir}
 
@@ -82,7 +85,6 @@ cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-%{maven_tasks_ver}/LICENSE \
 chown -R root:root ${MAVEN_ANT_TASKS_DIR}
 chmod 644 ${MAVEN_ANT_TASKS_DIR}/*
 
-%if 0%{?with_check}
 %check
 # Disable following tests which are currently failing in chrooted environment -
 #   - org.apache.tools.ant.types.selectors.OwnedBySelectorTest
@@ -98,9 +100,8 @@ if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
         src/tests/junit/org/apache/tools/ant/taskdefs/optional/XsltTest.java
 fi
 
-export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 bootstrap/bin/ant -v run-tests
-%endif
 
 %clean
 rm -rf %{buildroot}
@@ -133,6 +134,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-3
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-2
 - Bump version as a part of openjdk11 upgrade
 * Mon Nov 07 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.10.12-1

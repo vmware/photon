@@ -3,7 +3,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -17,7 +17,7 @@ BuildRequires: openjdk11
 BuildRequires: apache-ant
 BuildRequires: wget
 
-Requires: openjdk11
+Requires: (openjdk11 or openjdk17)
 Requires: /usr/bin/which
 
 %define ExtraBuildRequires apache-maven
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.9.0-3
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.9.0-2
 - Bump version as a part of openjdk11 upgrade
 * Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 3.9.0-1

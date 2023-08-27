@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        10.1.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -27,7 +27,7 @@ BuildArch: noarch
 BuildRequires: openjdk11
 BuildRequires: apache-ant
 
-Requires: openjdk11
+Requires: (openjdk11-jre or openjdk17-jre)
 Requires: apache-ant
 
 %define _prefix /var/opt/%{name}
@@ -125,6 +125,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.1.8-3
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.1.8-2
 - Bump version as a part of openjdk11 upgrade
 * Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.8-1

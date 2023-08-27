@@ -1,24 +1,28 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source:           %{name}-%{version}.tar.gz
-%define sha512    zookeeper=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
-Source1:          zookeeper.service
-Source2:          zkEnv.sh
-Source3:          %{name}.sysusers
-Patch0:           zkSever_remove_cygwin_cypath.patch
-BuildRequires:    systemd
-BuildRequires:    systemd-devel
-Requires:         systemd
-Requires:         openjdk11
-Requires(pre):    systemd-rpm-macros
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
+
+Source1: zookeeper.service
+Source2: zkEnv.sh
+Source3: %{name}.sysusers
+
+Patch0: zkSever_remove_cygwin_cypath.patch
+
+BuildRequires: systemd-devel
+
+Requires: systemd
+Requires: (openjdk11-jre or openjdk17-jre)
+Requires(pre): systemd-rpm-macros
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming,
@@ -30,17 +34,17 @@ which make them brittle in the presence of change and difficult to manage.
 Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%autosetup -p1 -n apache-zookeeper-%{version}-bin
+%autosetup -p1 -n apache-%{name}-%{version}-bin
 
 %install
-mkdir -p %{buildroot}%{_prefix}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_libdir}/java/zookeeper
-mkdir -p %{buildroot}%{_libdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/log/zookeeper
-mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
-mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
-mkdir -p %{buildroot}%{_var}/zookeeper
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{_libdir}/java/zookeeper \
+         %{buildroot}%{_libdir}/zookeeper \
+         %{buildroot}%{_var}/log/zookeeper \
+         %{buildroot}%{_sysconfdir}/zookeeper \
+         %{buildroot}%{_prefix}/share/zookeeper/templates/conf \
+         %{buildroot}%{_var}/zookeeper \
+         %{buildroot}%{_unitdir}
 
 cp lib/zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
@@ -54,12 +58,11 @@ pushd ..
 rm -rf %{buildroot}/%{name}-%{version}
 popd
 
-mkdir -p %{buildroot}/lib/systemd/system
-cp %{SOURCE1} %{buildroot}/lib/systemd/system/zookeeper.service
+cp %{SOURCE1} %{buildroot}%{_unitdir}
 cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
 
-install -vdm755 %{buildroot}/lib/systemd/system-preset
-echo "disable zookeeper.service" > %{buildroot}/lib/systemd/system-preset/50-zookeeper.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable zookeeper.service" > %{buildroot}%{_presetdir}/50-zookeeper.preset
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
@@ -80,12 +83,14 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %defattr(-,root,root)
 %attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
 %config(noreplace) %{_sysconfdir}/zookeeper/*
-/lib/systemd/system/zookeeper.service
-/lib/systemd/system-preset/50-zookeeper.preset
+%{_unitdir}/zookeeper.service
+%{_presetdir}/50-zookeeper.preset
 %{_sysusersdir}/%{name}.sysusers
-%{_prefix}
+%{_prefix}/*
 
 %changelog
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-5
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-4
 - Bump version as a part of openjdk11 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.8.0-3
