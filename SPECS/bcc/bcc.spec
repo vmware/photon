@@ -2,8 +2,8 @@
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
-Version:         0.25.0
-Release:         4%{?dist}
+Version:         0.28.0
+Release:         1%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -11,22 +11,22 @@ Group:           Development/Languages
 URL:             https://github.com/iovisor/bcc
 
 Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9f71f6c21d1f66054985562168d5848352f5029383e9c65c907a6f044258bc23df842cc65db20bfaaf33789e69c9b8e7b606a32dc882cbdf093b71768c8b521d
+%define sha512 %{name}=792ce93dba64b1f87390b2602dcaeba04ac8b2863652b06eb9a907b93bc6137a944b856cc6fa9c7a38671c89814740967561ca4f3b29c267babca7dc5e78aa02
 
-Source1: https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule-%{version}.tar.gz
-%define sha512 %{name}-src-with-submodule=842e0957dd3a7cbb60e8aba497ae0841bfa564306ba27effca5348466dae6735557dc0a871d63a2519e3bba105632bcb279af7cfacf378dff9de2638484dac63
-
-BuildRequires:   cmake
-BuildRequires:   build-essential
-BuildRequires:   libstdc++
-BuildRequires:   elfutils-libelf
-BuildRequires:   elfutils-libelf-devel-static
-BuildRequires:   python3-devel
-BuildRequires:   llvm-devel
-BuildRequires:   clang-devel
-BuildRequires:   pkg-config
-BuildRequires:   ncurses-devel
-BuildRequires:   curl-devel
+BuildRequires: cmake
+BuildRequires: build-essential
+BuildRequires: libstdc++
+BuildRequires: elfutils-libelf-devel-static
+BuildRequires: elfutils-libelf-devel
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: llvm-devel
+BuildRequires: clang-devel
+BuildRequires: pkg-config
+BuildRequires: ncurses-devel
+BuildRequires: curl-devel
+BuildRequires: libbpf-devel
+BuildRequires: zip
 
 Requires: curl-libs
 
@@ -40,6 +40,7 @@ Much of what BCC uses requires Linux 4.1 and above.
 %package         devel
 Summary:         Shared Library for BPF Compiler Collection (BCC)
 Requires:        %{name} = %{version}-%{release}
+
 %description     devel
 %{name}-devel contains shared libraries and header files for
 developing application.
@@ -66,20 +67,15 @@ Requires:        python3-%{name} = %{version}-%{release}
 Command line tools for BPF Compiler Collection (BCC)
 
 %prep
-# Using autosetup is not feasible
-%setup -q -n %{name}-%{version}
-# Using autosetup is not feasible
-%setup -q -D -c -T -a1 -n %{name}-%{version}
-cp -rf %{name}/* .
-rm -r %{name}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %cmake -DREVISION_LAST=%{version} \
        -DREVISION=%{version} \
        -DPYTHON_CMD=%{python3} \
-       %{?with_llvm_shared:-DENABLE_LLVM_SHARED=1} \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-       -DCMAKE_BUILD_TYPE=Debug
+       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+       -DCMAKE_USE_LIBBPF_PACKAGE=TRUE
 
 %cmake_build
 
@@ -126,6 +122,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.28.0-1
+- Upgrade to v0.28.0
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 0.25.0-4
 - Bump up to use curl 8.0.1
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.25.0-3
