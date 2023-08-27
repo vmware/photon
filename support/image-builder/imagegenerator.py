@@ -156,7 +156,7 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
             in_file.close()
             out_file.close()
         else:
-            tarout = tarfile.open(outputfile, formatstring)
+            tarout = tarfile.open(outputfile, formatstring, format=tarfile.GNU_FORMAT)
             tarout.add(inputfile, arcname=os.path.basename(inputfile))
             tarout.close()
     except Exception as e:
