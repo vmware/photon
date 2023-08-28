@@ -3,7 +3,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.38.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -14,6 +14,7 @@ Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
 %define sha512 %{name}=6f515a7782bfb5414702721fc78ada5bf388f4bf8b3e3c2ec269df33a2e372859f682d028c30084e89847705c7050ea80790d51fbcc4decea8fbb0a35b89c0b3
 
 Patch0:         0001-Fix-for-CVE-2022-46908.patch
+Patch1:         Fix-CLI-seg-fault-on-missing-nonce.patch
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -95,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Fri Aug 25 2023 Kuntal Nayak <nkuntal@vmware.com> 3.38.5-3
+- Fix for CVE-2023-36191
 * Wed Dec 14 2022 Srish Srinivasan <ssrish@vmware.com> 3.38.5-2
 - Fix for CVE-2022-46908
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.38.5-1
