@@ -1,6 +1,12 @@
+# The post hooks strip the binary which removes
+# the BEGIN_trigger and END_trigger functions
+# which are needed for the BEGIN and END probes
+%global __os_install_post       %{nil}
+%global _find_debuginfo_opts    -g
+
 Name:           bpftrace
-Version:        0.16.0
-Release:        5%{?dist}
+Version:        0.18.0
+Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -9,7 +15,7 @@ Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 
 Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=52ca4fea4e2f8d2cbf0f9f1bc69af0ee3408201f019006dd2e838b9458cfc01761eba3df24c39e05cf93220d85d0cecc69bb44ec72f9f44cec0eb94479bff734
+%define sha512 %{name}=b7da273d251f03a81b3a7097407352e7ad1d023972852bdb883176e97bab7046f9f327bd03bca51fe853ecaab5f60adc6994e75cb450a033a5b91118f719c36d
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -18,11 +24,16 @@ BuildRequires:  elfutils-libelf-devel
 BuildRequires:  zlib-devel
 BuildRequires:  llvm-devel
 BuildRequires:  clang-devel
-BuildRequires:  bcc-devel >= 0.11.0-2
 BuildRequires:  libbpf-devel
 BuildRequires:  binutils-devel
 BuildRequires:  cereal-devel
 BuildRequires:  curl-devel
+BuildRequires:  libbpf-devel
+BuildRequires:  bcc-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  libffi-devel
+BuildRequires:  libpcap-devel
+BuildRequires:  systemtap-sdt-devel
 
 Requires:       bcc
 Requires:       bcc-tools
@@ -44,18 +55,20 @@ and predecessor tracers such as DTrace and SystemTap
 %autosetup -p1
 
 %build
-%cmake \
+export LDFLAGS="-lz"
+%{cmake} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DBUILD_TESTING:BOOL=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DENABLE_TESTS:BOOL=OFF \
     -DBUILD_DEPS=OFF \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DUSE_SYSTEM_BPF_BCC=ON
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
   sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
@@ -79,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Mon Aug 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.18.0-1
+- Upgrade to v0.18.0
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-5
 - Bump version as a part of elfutils upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.16.0-4
