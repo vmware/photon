@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.7
+Version:        4.0.8
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512 %{name}=98f609405f20a3714e7c5e4f806cae5cc842daaf0219bd92d3130d2930758cce244edca4529db59300b5ca1e1e98d1aa632bc5c85c92f26aa2e0c124e691a5ab
+%define sha512 %{name}=f6de0f86bb1eac82f7ed2d98d7f4fe3189107b1f0da441abd9077593f8e624989c33aaf8b4ef4b3c460fe787c64c4b8fdb3168de9f5661802fed6b06d71c5c65
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -74,6 +74,7 @@ and plugins.
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+       -DBUILD_sharkd=off \
        -DCMAKE_BUILD_TYPE=Debug
 
 %cmake_build
@@ -98,6 +99,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Aug 28 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1
+- Update version and fix CVE-2023-4513
 * Mon Jul 17 2023 Susant Sahani <ssahani@vmware.com> 4.0.7-1
 - Update version and fix CVE-2023-3649, CVE-2023-2952
 - CVE-2023-0666, CVE-2023-3648
