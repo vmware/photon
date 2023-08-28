@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.6
-Release:        2%{?dist}
+Version:        4.0.8
+Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=651b760d05518a914ffbb2fe1ced84e877ebc40d7b03500586e009609064761bef7810654b1321e08aeea403867450be289227a9e43937e9f777693a8f4c901b
+%define sha512  %{name}=f6de0f86bb1eac82f7ed2d98d7f4fe3189107b1f0da441abd9077593f8e624989c33aaf8b4ef4b3c460fe787c64c4b8fdb3168de9f5661802fed6b06d71c5c65
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -74,8 +74,9 @@ and plugins.
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-        -DCMAKE_BUILD_TYPE=Debug
+       -DBUILD_sharkd=off \
+       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+       -DCMAKE_BUILD_TYPE=Debug
 
 %cmake_build
 
@@ -99,6 +100,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Aug 28 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1
+- Update version and fix CVE-2023-4513
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.6-2
 - Bump version as a part of elfutils upgrade
 * Tue Jun 06 2023 Susant Sahani <ssahani@vmware.com> 4.0.6-1
