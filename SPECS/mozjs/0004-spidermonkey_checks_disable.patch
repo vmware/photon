@@ -1,0 +1,28 @@
+From 4efaa7e0a8d12c79bb795844f1b6e8937dbc8e7e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Aug 2023 18:52:50 +0530
+Subject: [PATCH 04/11] spidermonkey_checks_disable
+
+Taken from:
+https://src.fedoraproject.org/rpms/mozjs78/blob/f38/f/spidermonkey_checks_disable.patch
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ config/run_spidermonkey_checks.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/config/run_spidermonkey_checks.py b/config/run_spidermonkey_checks.py
+index 9323fdf126..11f1c9cc2b 100644
+--- a/config/run_spidermonkey_checks.py
++++ b/config/run_spidermonkey_checks.py
+@@ -12,5 +12,5 @@ def main(output, lib_file, *scripts):
+     for script in scripts:
+         retcode = subprocess.call(
+             [sys.executable, script], cwd=buildconfig.topsrcdir)
+-        if retcode != 0:
+-            raise Exception(script + " failed")
++        #if retcode != 0:
++        #    raise Exception(script + " failed")
+-- 
+2.25.1
+

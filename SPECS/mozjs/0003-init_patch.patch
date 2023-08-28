@@ -1,0 +1,31 @@
+From 6e8beed03656f62d990206701cc128d04698d2eb Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Aug 2023 18:52:31 +0530
+Subject: [PATCH 03/11] init_patch
+
+Taken from:
+https://src.fedoraproject.org/rpms/mozjs78/blob/f38/f/init_patch.patch
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ python/mozbuild/mozbuild/configure/__init__.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/python/mozbuild/mozbuild/configure/__init__.py b/python/mozbuild/mozbuild/configure/__init__.py
+index a10d659ae1..ff458685cf 100644
+--- a/python/mozbuild/mozbuild/configure/__init__.py
++++ b/python/mozbuild/mozbuild/configure/__init__.py
+@@ -490,8 +490,8 @@ class ConfigureSandbox(dict):
+             msg = 'Unknown option: %s' % without_value
+             if self._help:
+                 self._logger.warning(msg)
+-            else:
+-                raise InvalidOptionError(msg)
++            #else:
++            #    raise InvalidOptionError(msg)
+ 
+         # Run the execution queue
+         for func, args in self._execution_queue:
+-- 
+2.25.1
+

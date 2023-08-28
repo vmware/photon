@@ -1,0 +1,29 @@
+From 0180c147b71ac5d3defa50d91dcaecf560dc8cdd Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 29 Aug 2023 09:07:47 +0530
+Subject: [PATCH 08/11] FixSharedArray
+
+Taken from:
+https://src.fedoraproject.org/rpms/mozjs78/blob/f38/f/FixSharedArray.diff
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ js/public/StructuredClone.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/public/StructuredClone.h b/js/public/StructuredClone.h
+index cb3cd5b0a5..06da4dd43d 100644
+--- a/js/public/StructuredClone.h
++++ b/js/public/StructuredClone.h
+@@ -381,7 +381,7 @@ enum OwnTransferablePolicy {
+ namespace js {
+ class SharedArrayRawBuffer;
+ 
+-class SharedArrayRawBufferRefs {
++class JS_PUBLIC_API SharedArrayRawBufferRefs {
+  public:
+   SharedArrayRawBufferRefs() = default;
+   SharedArrayRawBufferRefs(SharedArrayRawBufferRefs&& other) = default;
+-- 
+2.25.1
+

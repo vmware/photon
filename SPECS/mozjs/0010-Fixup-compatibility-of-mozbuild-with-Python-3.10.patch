@@ -1,0 +1,297 @@
+From cff6e4ec4e3d04124ed8998da490a6d743d03868 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Franti=C5=A1ek=20Zatloukal?= <fzatlouk@redhat.com>
+Date: Tue, 13 Jul 2021 11:46:20 +0200
+Subject: [PATCH 10/11] Fixup compatibility of mozbuild with Python 3.10
+
+---
+ python/mach/mach/config.py                                    | 4 ++--
+ python/mach/mach/decorators.py                                | 2 +-
+ python/mozbuild/mozbuild/backend/configenvironment.py         | 3 ++-
+ python/mozbuild/mozbuild/makeutil.py                          | 2 +-
+ python/mozbuild/mozbuild/util.py                              | 2 +-
+ testing/marionette/client/marionette_driver/wait.py           | 2 +-
+ testing/mozbase/manifestparser/manifestparser/filters.py      | 3 ++-
+ testing/mozbase/versioninfo.py                                | 2 +-
+ testing/web-platform/tests/tools/manifest/vcs.py              | 2 +-
+ .../web-platform/tests/tools/third_party/h2/h2/settings.py    | 2 +-
+ .../tests/tools/third_party/html5lib/html5lib/_trie/_base.py  | 2 +-
+ .../tools/third_party/html5lib/html5lib/treebuilders/dom.py   | 2 +-
+ .../tests/tools/third_party/hyper/hyper/common/headers.py     | 2 +-
+ .../tests/tools/third_party/hyper/hyper/h2/settings.py        | 2 +-
+ .../tests/tools/third_party/hyper/hyper/http11/connection.py  | 4 ++--
+ .../third_party/hyper/hyper/packages/hyperframe/flags.py      | 2 +-
+ .../tests/tools/third_party/hyperframe/hyperframe/flags.py    | 2 +-
+ testing/web-platform/tests/tools/wptserve/wptserve/config.py  | 3 ++-
+ testing/web-platform/tests/webdriver/tests/support/sync.py    | 2 +-
+ 19 files changed, 24 insertions(+), 21 deletions(-)
+
+diff --git a/python/mach/mach/config.py b/python/mach/mach/config.py
+index 7210eca823..edb4d2e93b 100644
+--- a/python/mach/mach/config.py
++++ b/python/mach/mach/config.py
+@@ -144,7 +144,7 @@ def reraise_attribute_error(func):
+     return _
+ 
+ 
+-class ConfigSettings(collections.Mapping):
++class ConfigSettings(collections.abc.Mapping):
+     """Interface for configuration settings.
+ 
+     This is the main interface to the configuration.
+@@ -190,7 +190,7 @@ class ConfigSettings(collections.Mapping):
+     will result in exceptions being raised.
+     """
+ 
+-    class ConfigSection(collections.MutableMapping, object):
++    class ConfigSection(collections.abc.MutableMapping, object):
+         """Represents an individual config section."""
+         def __init__(self, config, name, settings):
+             object.__setattr__(self, '_config', config)
+diff --git a/python/mach/mach/decorators.py b/python/mach/mach/decorators.py
+index 27f7f34a6d..5f63271a3d 100644
+--- a/python/mach/mach/decorators.py
++++ b/python/mach/mach/decorators.py
+@@ -140,7 +140,7 @@ def CommandProvider(cls):
+               'Conditions argument must take a list ' + \
+               'of functions. Found %s instead.'
+ 
+-        if not isinstance(command.conditions, collections.Iterable):
++        if not isinstance(command.conditions, collections.abc.Iterable):
+             msg = msg % (command.name, type(command.conditions))
+             raise MachError(msg)
+ 
+diff --git a/python/mozbuild/mozbuild/backend/configenvironment.py b/python/mozbuild/mozbuild/backend/configenvironment.py
+index 20d1a9fa69..8747958bd2 100644
+--- a/python/mozbuild/mozbuild/backend/configenvironment.py
++++ b/python/mozbuild/mozbuild/backend/configenvironment.py
+@@ -9,7 +9,8 @@ import six
+ import sys
+ import json
+ 
+-from collections import Iterable, OrderedDict
++from collections import OrderedDict
++from collections.abc import Iterable
+ from types import ModuleType
+ 
+ import mozpack.path as mozpath
+diff --git a/python/mozbuild/mozbuild/makeutil.py b/python/mozbuild/mozbuild/makeutil.py
+index 4da1a3b268..4ce56848cd 100644
+--- a/python/mozbuild/mozbuild/makeutil.py
++++ b/python/mozbuild/mozbuild/makeutil.py
+@@ -7,7 +7,7 @@ from __future__ import absolute_import, print_function, unicode_literals
+ import os
+ import re
+ import six
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ 
+ class Makefile(object):
+diff --git a/python/mozbuild/mozbuild/util.py b/python/mozbuild/mozbuild/util.py
+index 044cf645c1..98ed3ef521 100644
+--- a/python/mozbuild/mozbuild/util.py
++++ b/python/mozbuild/mozbuild/util.py
+@@ -782,7 +782,7 @@ class HierarchicalStringList(object):
+         self._strings = StrictOrderingOnAppendList()
+         self._children = {}
+ 
+-    class StringListAdaptor(collections.Sequence):
++    class StringListAdaptor(collections.abc.Sequence):
+         def __init__(self, hsl):
+             self._hsl = hsl
+ 
+diff --git a/testing/marionette/client/marionette_driver/wait.py b/testing/marionette/client/marionette_driver/wait.py
+index eeaa1e23da..c147f463fa 100644
+--- a/testing/marionette/client/marionette_driver/wait.py
++++ b/testing/marionette/client/marionette_driver/wait.py
+@@ -82,7 +82,7 @@ class Wait(object):
+ 
+         exceptions = []
+         if ignored_exceptions is not None:
+-            if isinstance(ignored_exceptions, collections.Iterable):
++            if isinstance(ignored_exceptions, collections.abc.Iterable):
+                 exceptions.extend(iter(ignored_exceptions))
+             else:
+                 exceptions.append(ignored_exceptions)
+diff --git a/testing/mozbase/manifestparser/manifestparser/filters.py b/testing/mozbase/manifestparser/manifestparser/filters.py
+index 287ee033b2..b1d6080031 100644
+--- a/testing/mozbase/manifestparser/manifestparser/filters.py
++++ b/testing/mozbase/manifestparser/manifestparser/filters.py
+@@ -12,7 +12,8 @@ from __future__ import absolute_import
+ 
+ import itertools
+ import os
+-from collections import defaultdict, MutableSequence
++from collections import defaultdict
++from collections.abc import MutableSequence
+ 
+ import six
+ from six import string_types
+diff --git a/testing/mozbase/versioninfo.py b/testing/mozbase/versioninfo.py
+index 91d1a04732..8c1680069d 100755
+--- a/testing/mozbase/versioninfo.py
++++ b/testing/mozbase/versioninfo.py
+@@ -11,7 +11,7 @@ from commit messages.
+ 
+ from __future__ import absolute_import, print_function
+ 
+-from collections import Iterable
++from collections.abc import Iterable
+ from distutils.version import StrictVersion
+ import argparse
+ import os
+diff --git a/testing/web-platform/tests/tools/manifest/vcs.py b/testing/web-platform/tests/tools/manifest/vcs.py
+index 7c0feeb816..05ee19c7c8 100644
+--- a/testing/web-platform/tests/tools/manifest/vcs.py
++++ b/testing/web-platform/tests/tools/manifest/vcs.py
+@@ -3,7 +3,7 @@ import json
+ import os
+ import stat
+ from collections import deque
+-from collections import MutableMapping
++from collections.abc import MutableMapping
+ 
+ from six import with_metaclass, PY2
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/h2/h2/settings.py b/testing/web-platform/tests/tools/third_party/h2/h2/settings.py
+index 3da720329c..e097630e9f 100644
+--- a/testing/web-platform/tests/tools/third_party/h2/h2/settings.py
++++ b/testing/web-platform/tests/tools/third_party/h2/h2/settings.py
+@@ -88,7 +88,7 @@ class ChangedSetting:
+         )
+ 
+ 
+-class Settings(collections.MutableMapping):
++class Settings(collections.abc.MutableMapping):
+     """
+     An object that encapsulates HTTP/2 settings state.
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/html5lib/html5lib/_trie/_base.py b/testing/web-platform/tests/tools/third_party/html5lib/html5lib/_trie/_base.py
+index a1158bbbfa..a9295a2ba5 100644
+--- a/testing/web-platform/tests/tools/third_party/html5lib/html5lib/_trie/_base.py
++++ b/testing/web-platform/tests/tools/third_party/html5lib/html5lib/_trie/_base.py
+@@ -1,6 +1,6 @@
+ from __future__ import absolute_import, division, unicode_literals
+ 
+-from collections import Mapping
++from collections.abc import Mapping
+ 
+ 
+ class Trie(Mapping):
+diff --git a/testing/web-platform/tests/tools/third_party/html5lib/html5lib/treebuilders/dom.py b/testing/web-platform/tests/tools/third_party/html5lib/html5lib/treebuilders/dom.py
+index dcfac220bf..818a33433e 100644
+--- a/testing/web-platform/tests/tools/third_party/html5lib/html5lib/treebuilders/dom.py
++++ b/testing/web-platform/tests/tools/third_party/html5lib/html5lib/treebuilders/dom.py
+@@ -1,7 +1,7 @@
+ from __future__ import absolute_import, division, unicode_literals
+ 
+ 
+-from collections import MutableMapping
++from collections.abc import MutableMapping
+ from xml.dom import minidom, Node
+ import weakref
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/hyper/hyper/common/headers.py b/testing/web-platform/tests/tools/third_party/hyper/hyper/common/headers.py
+index 655a591ac2..6454f550a1 100644
+--- a/testing/web-platform/tests/tools/third_party/hyper/hyper/common/headers.py
++++ b/testing/web-platform/tests/tools/third_party/hyper/hyper/common/headers.py
+@@ -10,7 +10,7 @@ import collections
+ from hyper.common.util import to_bytestring, to_bytestring_tuple
+ 
+ 
+-class HTTPHeaderMap(collections.MutableMapping):
++class HTTPHeaderMap(collections.abc.MutableMapping):
+     """
+     A structure that contains HTTP headers.
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/hyper/hyper/h2/settings.py b/testing/web-platform/tests/tools/third_party/hyper/hyper/h2/settings.py
+index fedc5e3c44..040afea921 100755
+--- a/testing/web-platform/tests/tools/third_party/hyper/hyper/h2/settings.py
++++ b/testing/web-platform/tests/tools/third_party/hyper/hyper/h2/settings.py
+@@ -151,7 +151,7 @@ class ChangedSetting:
+         )
+ 
+ 
+-class Settings(collections.MutableMapping):
++class Settings(collections.abc.MutableMapping):
+     """
+     An object that encapsulates HTTP/2 settings state.
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/hyper/hyper/http11/connection.py b/testing/web-platform/tests/tools/third_party/hyper/hyper/http11/connection.py
+index 61361c3580..a214311d2b 100644
+--- a/testing/web-platform/tests/tools/third_party/hyper/hyper/http11/connection.py
++++ b/testing/web-platform/tests/tools/third_party/hyper/hyper/http11/connection.py
+@@ -10,7 +10,7 @@ import os
+ import socket
+ import base64
+ 
+-from collections import Iterable, Mapping
++from collections.abc import Iterable, Mapping
+ 
+ import collections
+ from hyperframe.frame import SettingsFrame
+@@ -295,7 +295,7 @@ class HTTP11Connection(object):
+                 return
+ 
+             # Iterables that set a specific content length.
+-            elif isinstance(body, collections.Iterable):
++            elif isinstance(body, collections.abc.Iterable):
+                 for item in body:
+                     try:
+                         self._sock.send(item)
+diff --git a/testing/web-platform/tests/tools/third_party/hyper/hyper/packages/hyperframe/flags.py b/testing/web-platform/tests/tools/third_party/hyper/hyper/packages/hyperframe/flags.py
+index e8f6300566..8f2ea689b2 100644
+--- a/testing/web-platform/tests/tools/third_party/hyper/hyper/packages/hyperframe/flags.py
++++ b/testing/web-platform/tests/tools/third_party/hyper/hyper/packages/hyperframe/flags.py
+@@ -11,7 +11,7 @@ import collections
+ Flag = collections.namedtuple("Flag", ["name", "bit"])
+ 
+ 
+-class Flags(collections.MutableSet):
++class Flags(collections.abc.MutableSet):
+     """
+     A simple MutableSet implementation that will only accept known flags as elements.
+ 
+diff --git a/testing/web-platform/tests/tools/third_party/hyperframe/hyperframe/flags.py b/testing/web-platform/tests/tools/third_party/hyperframe/hyperframe/flags.py
+index 05b35017e7..14c352e10d 100644
+--- a/testing/web-platform/tests/tools/third_party/hyperframe/hyperframe/flags.py
++++ b/testing/web-platform/tests/tools/third_party/hyperframe/hyperframe/flags.py
+@@ -11,7 +11,7 @@ import collections
+ Flag = collections.namedtuple("Flag", ["name", "bit"])
+ 
+ 
+-class Flags(collections.MutableSet):
++class Flags(collections.abc.MutableSet):
+     """
+     A simple MutableSet implementation that will only accept known flags as
+     elements.
+diff --git a/testing/web-platform/tests/tools/wptserve/wptserve/config.py b/testing/web-platform/tests/tools/wptserve/wptserve/config.py
+index 7766565fe4..3c1c36d6f6 100644
+--- a/testing/web-platform/tests/tools/wptserve/wptserve/config.py
++++ b/testing/web-platform/tests/tools/wptserve/wptserve/config.py
+@@ -2,7 +2,8 @@ import copy
+ import logging
+ import os
+ 
+-from collections import defaultdict, Mapping
++from collections import defaultdict
++from collections.abc import Mapping
+ from six import integer_types, iteritems, itervalues, string_types
+ 
+ from . import sslutils
+diff --git a/testing/web-platform/tests/webdriver/tests/support/sync.py b/testing/web-platform/tests/webdriver/tests/support/sync.py
+index 3fc77131c7..8e8f6b8192 100644
+--- a/testing/web-platform/tests/webdriver/tests/support/sync.py
++++ b/testing/web-platform/tests/webdriver/tests/support/sync.py
+@@ -81,7 +81,7 @@ class Poll(object):
+ 
+         exceptions = []
+         if ignored_exceptions is not None:
+-            if isinstance(ignored_exceptions, collections.Iterable):
++            if isinstance(ignored_exceptions, collections.abc.Iterable):
+                 exceptions.extend(iter(ignored_exceptions))
+             else:
+                 exceptions.append(ignored_exceptions)
+-- 
+2.25.1
+

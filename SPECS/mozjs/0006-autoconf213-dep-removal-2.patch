@@ -1,0 +1,153 @@
+From 706d824a82a08c907e7377e0dc84abf4d25c67e2 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 29 Aug 2023 09:06:50 +0530
+Subject: [PATCH 06/11] autoconf213-dep-removal-2
+
+Taken from:
+https://src.fedoraproject.org/rpms/mozjs78/blob/f38/f/0003-D94538-autoconf2.diff
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ python/mozboot/mozboot/archlinux.py    | 1 -
+ python/mozboot/mozboot/centosfedora.py | 1 -
+ python/mozboot/mozboot/debian.py       | 1 -
+ python/mozboot/mozboot/freebsd.py      | 1 -
+ python/mozboot/mozboot/gentoo.py       | 1 -
+ python/mozboot/mozboot/openbsd.py      | 1 -
+ python/mozboot/mozboot/opensuse.py     | 1 -
+ python/mozboot/mozboot/osx.py          | 2 --
+ python/mozboot/mozboot/solus.py        | 1 -
+ python/mozboot/mozboot/windows.py      | 1 -
+ 10 files changed, 11 deletions(-)
+
+diff --git a/python/mozboot/mozboot/archlinux.py b/python/mozboot/mozboot/archlinux.py
+index 8dd72e44bb..76bacbdc24 100644
+--- a/python/mozboot/mozboot/archlinux.py
++++ b/python/mozboot/mozboot/archlinux.py
+@@ -26,7 +26,6 @@ class ArchlinuxBootstrapper(
+     '''Archlinux experimental bootstrapper.'''
+ 
+     SYSTEM_PACKAGES = [
+-        'autoconf2.13',
+         'base-devel',
+         'nodejs',
+         'python2',
+diff --git a/python/mozboot/mozboot/centosfedora.py b/python/mozboot/mozboot/centosfedora.py
+index 1656ae58bf..1514757411 100644
+--- a/python/mozboot/mozboot/centosfedora.py
++++ b/python/mozboot/mozboot/centosfedora.py
+@@ -26,7 +26,6 @@ class CentOSFedoraBootstrapper(
+         # For CentOS 7, later versions of nodejs come from nodesource
+         # and include the npm package.
+         self.packages = [
+-            'autoconf213',
+             'nodejs',
+             'which',
+         ]
+diff --git a/python/mozboot/mozboot/debian.py b/python/mozboot/mozboot/debian.py
+index 728f030530..af70fbea37 100644
+--- a/python/mozboot/mozboot/debian.py
++++ b/python/mozboot/mozboot/debian.py
+@@ -32,7 +32,6 @@ class DebianBootstrapper(
+     # These are common packages for all Debian-derived distros (such as
+     # Ubuntu).
+     COMMON_PACKAGES = [
+-        'autoconf2.13',
+         'build-essential',
+         'nodejs',
+         'python-setuptools',
+diff --git a/python/mozboot/mozboot/freebsd.py b/python/mozboot/mozboot/freebsd.py
+index 906179dc83..8cfd5d32fa 100644
+--- a/python/mozboot/mozboot/freebsd.py
++++ b/python/mozboot/mozboot/freebsd.py
+@@ -15,7 +15,6 @@ class FreeBSDBootstrapper(BaseBootstrapper):
+         self.flavor = flavor.lower()
+ 
+         self.packages = [
+-            'autoconf213',
+             'gmake',
+             'gtar',
+             'pkgconf',
+diff --git a/python/mozboot/mozboot/gentoo.py b/python/mozboot/mozboot/gentoo.py
+index a18f79c9ea..234133da30 100644
+--- a/python/mozboot/mozboot/gentoo.py
++++ b/python/mozboot/mozboot/gentoo.py
+@@ -36,7 +36,6 @@ class GentooBootstrapper(
+     def ensure_system_packages(self):
+         self.run_as_root(['emerge', '--noreplace', '--quiet',
+                           'app-arch/zip',
+-                          'sys-devel/autoconf:2.1'
+                           ])
+ 
+     def ensure_browser_packages(self, artifact_mode=False):
+diff --git a/python/mozboot/mozboot/openbsd.py b/python/mozboot/mozboot/openbsd.py
+index 707246e172..3129f7ffb9 100644
+--- a/python/mozboot/mozboot/openbsd.py
++++ b/python/mozboot/mozboot/openbsd.py
+@@ -12,7 +12,6 @@ class OpenBSDBootstrapper(BaseBootstrapper):
+         BaseBootstrapper.__init__(self, **kwargs)
+ 
+         self.packages = [
+-            'autoconf-2.13',
+             'gmake',
+             'gtar',
+             'rust',
+diff --git a/python/mozboot/mozboot/opensuse.py b/python/mozboot/mozboot/opensuse.py
+index f984543570..4abb5e05a7 100644
+--- a/python/mozboot/mozboot/opensuse.py
++++ b/python/mozboot/mozboot/opensuse.py
+@@ -13,7 +13,6 @@ class OpenSUSEBootstrapper(
+     '''openSUSE experimental bootstrapper.'''
+ 
+     SYSTEM_PACKAGES = [
+-        'autoconf213',
+         'nodejs',
+         'npm',
+         'which',
+diff --git a/python/mozboot/mozboot/osx.py b/python/mozboot/mozboot/osx.py
+index bd6badf912..383e709844 100644
+--- a/python/mozboot/mozboot/osx.py
++++ b/python/mozboot/mozboot/osx.py
+@@ -353,7 +353,6 @@ class OSXBootstrapper(BaseBootstrapper):
+         # least on 10.8) and because the build system wants a version
+         # newer than what Apple ships.
+         packages = [
+-            'autoconf@2.13',
+             'git',
+             'gnu-tar',
+             'node',
+@@ -428,7 +427,6 @@ class OSXBootstrapper(BaseBootstrapper):
+             'python27',
+             'python36',
+             'py27-gnureadline',
+-            'autoconf213',
+             'gnutar',
+             'watchman',
+             'nodejs8'
+diff --git a/python/mozboot/mozboot/solus.py b/python/mozboot/mozboot/solus.py
+index fc66a80c48..7f202224d4 100644
+--- a/python/mozboot/mozboot/solus.py
++++ b/python/mozboot/mozboot/solus.py
+@@ -23,7 +23,6 @@ class SolusBootstrapper(
+     '''Solus experimental bootstrapper.'''
+ 
+     SYSTEM_PACKAGES = [
+-        'autoconf213',
+         'nodejs',
+         'python',
+         'python3',
+diff --git a/python/mozboot/mozboot/windows.py b/python/mozboot/mozboot/windows.py
+index c62046209d..8d4fbd68bc 100644
+--- a/python/mozboot/mozboot/windows.py
++++ b/python/mozboot/mozboot/windows.py
+@@ -48,7 +48,6 @@ class WindowsBootstrapper(BaseBootstrapper):
+         'patch',
+         'patchutils',
+         'diffutils',
+-        'autoconf2.13',
+         'tar',
+         'zip',
+         'unzip',
+-- 
+2.25.1
+

@@ -1,0 +1,38 @@
+From 856c9d08b529febd24726d528b15fedbc6c6fb25 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Franti=C5=A1ek=20Zatloukal?= <fzatlouk@redhat.com>
+Date: Wed, 15 Jul 2020 08:27:39 +0200
+Subject: [PATCH 01/11] build: Copy headers on install instead of symlinking
+
+Patch by Philip Chimento ported forward to mozjs78
+---
+ python/mozbuild/mozbuild/backend/recursivemake.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/python/mozbuild/mozbuild/backend/recursivemake.py b/python/mozbuild/mozbuild/backend/recursivemake.py
+index e3fc8fe242..bed5ae9006 100644
+--- a/python/mozbuild/mozbuild/backend/recursivemake.py
++++ b/python/mozbuild/mozbuild/backend/recursivemake.py
+@@ -1457,9 +1457,9 @@ class RecursiveMakeBackend(MakeBackend):
+                                 raise Exception("Wildcards are only supported in the filename part"
+                                                 " of srcdir-relative or absolute paths.")
+ 
+-                            install_manifest.add_pattern_link(basepath, wild, path)
++                            install_manifest.add_pattern_copy(basepath, wild, path)
+                         else:
+-                            install_manifest.add_pattern_link(f.srcdir, f, path)
++                            install_manifest.add_pattern_copy(f.srcdir, f, path)
+                     elif isinstance(f, AbsolutePath):
+                         if not f.full_path.lower().endswith(('.dll', '.pdb', '.so')):
+                             raise Exception("Absolute paths installed to FINAL_TARGET_FILES must"
+@@ -1468,7 +1468,7 @@ class RecursiveMakeBackend(MakeBackend):
+                         install_manifest.add_optional_exists(dest)
+                         absolute_files.append(f.full_path)
+                     else:
+-                        install_manifest.add_link(f.full_path, dest)
++                        install_manifest.add_copy(f.full_path, dest)
+                 else:
+                     install_manifest.add_optional_exists(dest)
+                     objdir_files.append(self._pretty_path(f, backend_file))
+-- 
+2.25.1
+

@@ -1,3 +1,13 @@
+From a2d7f049f10df0e35ddb81a2ddd133189793027e Mon Sep 17 00:00:00 2001
+From: Franti A1ek Zatloukal <fzatlouk@redhat.com>
+Date: Mon, 28 Aug 2023 18:50:58 +0530
+Subject: [PATCH 02/11] emitter patch
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ python/mozbuild/mozbuild/frontend/emitter.py | 6 ------
+ 1 file changed, 6 deletions(-)
+
 diff --git a/python/mozbuild/mozbuild/frontend/emitter.py b/python/mozbuild/mozbuild/frontend/emitter.py
 index 8d5ab8eb30..65c43ff48e 100644
 --- a/python/mozbuild/mozbuild/frontend/emitter.py
@@ -15,3 +25,6 @@ index 8d5ab8eb30..65c43ff48e 100644
              include_obj = LocalInclude(context, local_include)
              local_includes.append(include_obj.path.full_path)
              yield include_obj
+-- 
+2.25.1
+
