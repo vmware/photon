@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.20
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0:        http://projects.unbit.it/downloads/uwsgi-%{version}.tar.gz
 Source1:        photon.ini
 Source2:        uwsgi.service
 Source3:        uwsgi.ini
+Patch0:         CVE-2023-27522.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  jansson-devel
@@ -86,7 +87,7 @@ Requires:       %{name} = %{version}-%{release}
 This package contains support for Python 3 applications via the WSGI protocol.
 
 %prep
-%autosetup
+%autosetup -p1
 cp -p %{SOURCE1} buildconf/
 
 %build
@@ -233,6 +234,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Tue Aug 29 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.20-6
+- Fix CVE-2023-27522.
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 2.0.20-5
 - Version bump to use curl 8.1.1
 * Tue Apr 04 2023 Harinadh D <hdommaraju@vmware.com> 2.0.20-4
