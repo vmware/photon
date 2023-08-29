@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        29%{?dist}
+Release:        30%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -45,6 +45,7 @@ Patch25:        CVE-2022-48560.patch
 Patch26:        CVE-2022-48564.patch
 Patch27:        CVE-2022-48565.patch
 Patch28:        CVE-2022-48566.patch
+Patch29:        CVE-2007-4559.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -285,6 +286,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Tue Sep 05 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-30
+- Fix CVE-2007-4559
 * Mon Sep 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-29
 - Fix CVE-2022-48565, CVE-2022-48566, CVE-2022-48560, CVE-2022-48564
 * Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.7.5-28
