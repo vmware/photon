@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -286,7 +286,6 @@ The kernel fips-canister
 %autopatch -p1 -m10003 -M10009
 %endif
 
-%build
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_version}/ crypto/
 cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
@@ -355,6 +354,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE4}
 
+%build
 make V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
@@ -465,6 +465,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-7
+- Move all prep to %prep section
 * Thu Nov 23 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-6
 - LKCM 5.0 specific changes to crypto self-tests and tcrypt
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-5

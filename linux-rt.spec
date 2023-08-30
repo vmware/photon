@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.45
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -359,7 +359,6 @@ popd
 %autopatch -p1 -m10010 -M10010
 %endif
 
-%build
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_version}/ crypto/
 cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
@@ -372,7 +371,6 @@ cp %{SOURCE21} photon_sb2020.pem
 
 %ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
 %endif
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
@@ -401,7 +399,8 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE5}
 
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+%build
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -550,6 +549,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-6
+- Move all prep to %prep section
 * Thu Nov 23 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-5
 - LKCM 5.0 specific changes to crypto self-tests and tcrypt
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
