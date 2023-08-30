@@ -3,8 +3,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        9.1p1
-Release:        10%{?dist}
+Version:        9.3p2
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a1f02c407f6b621b1d0817d1a0c9a6839b67e416c84f3b76c63003b119035b24c19a1564b22691d1152e1d2d55f4dc7eb1af2d2318751e431a99c4efa77edc70
+%define sha512 %{name}=15b8c57aa120186f1d1c3c2b8dc6ffd26733e12f755a6b0a4255d9ec1815a61506275ff5723b4ac029e44bc2ad22852ac36e1101f292348fbfa79aa1a4cd3f35
 
 # These sources are taken from:
 # http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz
@@ -22,7 +22,9 @@ Source2: sshd.service
 Source3: sshd-keygen.service
 Source4: sshdat.service
 Source5: %{name}.sysusers
+
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -193,6 +195,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-1
+- Upgrade to v9.3p2
+- Keyscan fips mode fix
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.1p1-10
 - Bump version as a part of krb5 upgrade
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 9.1p1-9
