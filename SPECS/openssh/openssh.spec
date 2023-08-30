@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -41,6 +41,7 @@ Patch17:        0001-sshd_config-Avoid-duplicate-entry.patch
 Patch18:        CVE-2023-38408-1.patch
 Patch19:        CVE-2023-38408-2.patch
 Patch20:        CVE-2023-38408-3.patch
+Patch21:        0001-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -86,26 +87,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 # Using autosetup is not feasible
 %setup -q -a0 -a1
 %patch0 -p0
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
+%autopatch -p1 -m1 -M21
 
 %build
 sh ./configure \
@@ -219,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+* Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-17
+- Keyscan fips mode fix
 * Tue Aug 01 2023 Shivani Agarwal <shivania2@vmware.com> 7.8p1-16
 - Fix CVE-2023-38408
 * Fri Mar 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-15
