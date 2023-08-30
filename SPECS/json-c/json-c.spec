@@ -3,7 +3,7 @@
 Summary:       A JSON implementation in C
 Name:          json-c
 Version:       0.15
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       MIT
 URL:           https://github.com/json-c/json-c/wiki
 Group:         System Environment/Base
@@ -14,6 +14,8 @@ Source0: https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.ta
 %define sha512 %{name}-%{version}=35cb3ef403ff5e8905144978ea0a22c9151b63e6bf749a50ca63b3d9320e5018be18aef236490295388d1be2ead7fcf8946d248b28b7ca109a057daaaada2162
 
 BuildRequires: cmake
+
+Patch0: json-c-CVE-2021-32292.patch
 
 %description
 JSON-C implements a reference counting object model that allows you to easily construct JSON objects in C,
@@ -68,6 +70,8 @@ make %{?_smp_mflags} check
 %{_libdir}/cmake/%{name}
 
 %changelog
+* Wed Aug 30 2023 Ankit Jain <ankitja@vmware.com> 0.15-4
+- Fix for CVE-2021-32292
 * Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.15-3
 - Move from lib64 to lib
 * Tue Sep 01 2020 Ankit Jain <ankitja@vmware.com> 0.15-2
