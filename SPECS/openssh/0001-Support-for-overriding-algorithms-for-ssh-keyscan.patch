@@ -1,0 +1,100 @@
+From 1b06827bd408d77b66c28516e6e320fb7e7f6c75 Mon Sep 17 00:00:00 2001
+From: Damien Miller <djm@mindrot.org>
+Date: Wed, 30 Aug 2023 18:57:19 +0530
+Subject: [PATCH] Support for overriding algorithms for ssh-keyscan
+
+Based on patch from Shreenidhi Shedi in bz3599
+
+[sshedi: ported the changes to openssh-9.1p1]
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ ssh-keyscan.c | 38 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 35 insertions(+), 3 deletions(-)
+
+diff --git a/ssh-keyscan.c b/ssh-keyscan.c
+index d29a03b..d71e0b6 100644
+--- a/ssh-keyscan.c
++++ b/ssh-keyscan.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include "includes.h"
+- 
++
+ #include <sys/types.h>
+ #include "openbsd-compat/sys-queue.h"
+ #include <sys/resource.h>
+@@ -79,6 +79,10 @@ int print_sshfp = 0;		/* Print SSHFP records instead of known_hosts */
+ 
+ int found_one = 0;		/* Successfully found a key */
+ 
++char *ciphers = NULL;   /* Ciphers or NULL for default list */
++char *macs = NULL;	    /* MACs or NULL for default list */
++char *kexalgs = NULL;   /* KexAlgorithms or NULL for default list */
++
+ #define MAXMAXFD 256
+ 
+ /* The number of seconds after which to give up on a TCP connection */
+@@ -232,6 +236,17 @@ keygrab_ssh2(con *c)
+ 	char *myproposal[PROPOSAL_MAX] = { KEX_CLIENT };
+ 	int r;
+ 
++	if (kexalgs != NULL)
++		myproposal[PROPOSAL_KEX_ALGS] = kexalgs;
++	if (ciphers != NULL) {
++		myproposal[PROPOSAL_ENC_ALGS_CTOS] = ciphers;
++		myproposal[PROPOSAL_ENC_ALGS_STOC] = ciphers;
++	}
++	if (macs != NULL) {
++		myproposal[PROPOSAL_MAC_ALGS_CTOS] = macs;
++		myproposal[PROPOSAL_MAC_ALGS_CTOS] = macs;
++	}
++
+ 	switch (c->c_keytype) {
+ 	case KT_DSA:
+ 		myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = get_cert ?
+@@ -647,7 +662,7 @@ static void
+ usage(void)
+ {
+ 	fprintf(stderr,
+-	    "usage: %s [-46cDHv] [-f file] [-p port] [-T timeout] [-t type]\n"
++	    "usage: %s [-46cDHv] [-f file] [-O option(ciphers|kexalgorithms|macs)] [-p port] [-T timeout] [-t type]\n"
+ 	    "\t\t   [host | addrlist namelist]\n",
+ 	    __progname);
+ 	exit(1);
+@@ -675,7 +690,7 @@ main(int argc, char **argv)
+ 	if (argc <= 1)
+ 		usage();
+ 
+-	while ((opt = getopt(argc, argv, "cDHv46p:T:t:f:")) != -1) {
++	while ((opt = getopt(argc, argv, "cDHv46O:p:T:t:f:")) != -1) {
+ 		switch (opt) {
+ 		case 'H':
+ 			hash_hosts = 1;
+@@ -715,6 +730,23 @@ main(int argc, char **argv)
+ 				optarg = NULL;
+ 			argv[fopt_count++] = optarg;
+ 			break;
++        case 'O':
++            if (strncasecmp(optarg, "ciphers=", 8) == 0) {
++                ciphers = xstrdup(optarg + 8);
++                if (!ciphers_valid(ciphers))
++                    fatal("Unsupported ciphers");
++            } else if (strncasecmp(optarg, "macs=", 5) == 0) {
++                macs = xstrdup(optarg + 5);
++                if (!mac_valid(macs))
++                    fatal("Unsupported MACs");
++            } else if (strncasecmp(optarg, "kexalgorithms=", 14) == 0) {
++                kexalgs = xstrdup(optarg + 14);
++                if (!kex_names_valid(kexalgs))
++                    fatal("Unsupported KexAlgorithms");
++            } else {
++                fatal("Unsupported -O option");
++            }
++            break;
+ 		case 't':
+ 			get_keytypes = 0;
+ 			tname = strtok(optarg, ",");
+-- 
+2.41.0
+
