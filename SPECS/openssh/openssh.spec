@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -22,7 +22,9 @@ Source2: sshd.service
 Source3: sshd-keygen.service
 Source4: sshdat.service
 Source5: %{name}.sysusers
+
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -193,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
+- Keyscan fips mode fix
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.3p2-2
 - Bump version as a part of krb5 upgrade
 * Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 9.3p2-1
