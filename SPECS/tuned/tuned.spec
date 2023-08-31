@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.15.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -13,6 +13,7 @@ Patch2:         tuned-fix-bug-in-sysctl-verify.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 Patch5:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
+Patch6:         0001-plugin-bootloader-Support-for-ostree-boot.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -144,33 +145,35 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
-*   Mon May 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-7
--   Skip verification of irq 0 on x86
-*   Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-6
--   Fix tuned daemon startup failure by moving tuned's dbus config file
--   to the correct location
-*   Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 2.15.0-5
--   Add /var/lib/tuned folder to rpm
-*   Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-4
--   Bump up to build with updated dbus-python3
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-3
--   Bump up to compile with python 3.10
-*   Thu Nov 18 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-2
--   realtime: modified hung_task detection sysctl param
--   to log D-state tasks
-*   Thu Sep 23 2021 Keerthana K <keerthanak@vmware.com> 2.15.0-1
--   Update to version 2.15.0
--   Schedule perf events iff scheduler per process configurations are set
-*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.14.0-4
--   Replacement of ITS suggested words.
-*   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
--   Re-enable tuned as it was deactivated due to openssl 1.1.1
-*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
--   Bootloader plugin support for Photon
--   sysctl plugin verify bug fix
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
--   Automatic Version Bump
-*   Wed May 13 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-2
--   Replaced requires from python3-perf to linux-python3-perf.
-*   Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
--   Initial release.
+* Fri Aug 25 2023 Ankit Jain <ankitja@vmware.com> 2.15.0-8
+- Enable support for ostree-boot
+* Mon May 08 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-7
+- Skip verification of irq 0 on x86
+* Tue Feb 21 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.15.0-6
+- Fix tuned daemon startup failure by moving tuned's dbus config file
+- to the correct location
+* Fri Jul 15 2022 Keerthana K <keerthanak@vmware.com> 2.15.0-5
+- Add /var/lib/tuned folder to rpm
+* Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-4
+- Bump up to build with updated dbus-python3
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-3
+- Bump up to compile with python 3.10
+* Thu Nov 18 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-2
+- realtime: modified hung_task detection sysctl param
+- to log D-state tasks
+* Thu Sep 23 2021 Keerthana K <keerthanak@vmware.com> 2.15.0-1
+- Update to version 2.15.0
+- Schedule perf events iff scheduler per process configurations are set
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.14.0-4
+- Replacement of ITS suggested words.
+* Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
+- Re-enable tuned as it was deactivated due to openssl 1.1.1
+* Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
+- Bootloader plugin support for Photon
+- sysctl plugin verify bug fix
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
+- Automatic Version Bump
+* Wed May 13 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-2
+- Replaced requires from python3-perf to linux-python3-perf.
+* Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
+- Initial release.
