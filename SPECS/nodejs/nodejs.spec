@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.16.1
+Version:        18.17.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=752079767478b2fee4ca4930577120589320429789abec77e4e10f28a8cd196ba97561cc0f3db625369e461f676550ac531f9d6371b744b1d22a9d54833543e7
+%define sha512  node=aeafa150c2f523cca96b137a5a6d607095d3f564246668790c9c812efc378080b98bf5eb5da2dd0d4902d164dc5c7b03d45d322f668f779aad6d076e45cc1cf6
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -84,6 +84,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Thu Aug 24 2023 Shivani Agarwal <shivania2@vmware.com> 18.17.1-1
+- Upgrade to 18.17.1 to CVE-2023-32006, CVE-2023-32002
 * Tue Jun 27 2023 Siju Maliakkal <smaliakkal@vmware.com> 18.16.1-1
 - Upgrade to 18.16.1 to fix CVE-2023-30581, CVE-2023-30585
 - CVE-2023-30588, CVE-2023-30589, CVE-2023-30590
