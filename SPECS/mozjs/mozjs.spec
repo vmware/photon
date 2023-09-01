@@ -2,7 +2,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.15.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -22,6 +22,8 @@ Patch6: 0008-FixSharedArray.patch
 Patch7: 0009-Add-soname-switch-to-linker-regardless-of-Operating-.patch
 Patch8: 0010-Fixup-compatibility-of-mozbuild-with-Python-3.10.patch
 Patch9: 0011-icu_sources_data.py-Decouple-from-Mozilla-build-syst.patch
+Patch10: CVE-2021-43539.patch
+Patch11: CVE-2022-42928.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -100,6 +102,8 @@ rm -rf %{buildroot}%{_libdir}/libjs_static.ajs \
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+* Fri Sep 01 2023 Mukul Sikka <msikka@vmware.com> 78.15.0-2
+- Multiple CVE fix
 * Mon Aug 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-1
 - Upgrade to v78.15.0 to fix CVE-2022-38476
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 78.3.1-6
