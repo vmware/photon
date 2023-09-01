@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -30,6 +30,7 @@ Source14:       sysusers.generate-pre.sh
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
+Patch3: execute-suppress-credentials-mount-if-empty.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -707,6 +708,9 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Sep 01 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-7
+- Remove systemd.setenv=SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST=20
+- https://github.com/systemd/systemd/commit/21dd1de
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 253-6
 - Revert https://github.com/systemd/systemd/pull/26494.patch.
 * Fri Jun 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-5
