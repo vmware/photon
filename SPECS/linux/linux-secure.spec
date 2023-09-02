@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.28
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -69,6 +69,9 @@ Patch5:  6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch6:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch7:  0002-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
+
+Patch8: Performance-over-security-model.patch
+
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch10:  6.0-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
@@ -405,6 +408,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
+- Cherry pick performance over security option for RETBleed (pos=1)
+- patch from Photon 4.0
 * Wed Sep 20 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
 - Update to version 6.1.28
 * Wed Aug 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.10-22
