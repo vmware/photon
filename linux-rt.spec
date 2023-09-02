@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.28
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -83,6 +83,8 @@ Patch9: 6.0-0001-cgroup-v1-cgroup_stat-support.patch
 
 # ttyXRUSB support
 Patch10: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
+
+Patch11: Performance-over-security-model.patch
 
 Patch12: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
@@ -501,6 +503,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
+- Cherry pick performance over security option for RETBleed (pos=1)
+- patch from Photon 4.0
 * Wed Sep 20 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
 - Update to version 6.1.28
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-12

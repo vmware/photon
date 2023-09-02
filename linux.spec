@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.28
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -104,6 +104,7 @@ Patch13: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
 
+Patch16: Performance-over-security-model.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
@@ -706,6 +707,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
+- Cherry pick performance over security option for RETBleed (pos=1)
+- patch from Photon 4.0
 * Wed Sep 20 2023 Ankit Jain <ankitja@vmware.com> 6.1.28-1
 - Update to version 6.1.28
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 6.1.10-15
