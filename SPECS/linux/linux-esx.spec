@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.45
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -92,6 +92,7 @@ Patch13: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 Patch14: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 6.0-0002-apparmor-af_unix-mediation.patch
 Patch16: 0001-Control-MEMCG_KMEM-config.patch
+Patch17: Performance-over-security-model.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch18: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Enable AUXILIARY BUS, to make building other out-of-tree intel NIC drivers easier
@@ -501,6 +502,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Sep 02 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.45-2
+- Cherry pick performance over security option for RETBleed (pos=1)
+- patch from Photon 4.0
 * Mon Aug 14 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-1
 - Update to version 6.1.45
 * Mon Jul 31 2023 Ajay Kaher <akaher@vmware.com> 6.1.41-2
