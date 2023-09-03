@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
@@ -9,7 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    %{name}=2929bc64f0cf7b2db997eef79b7187658e47230d
+%define sha512  %{name}=bc83ccc1941e7be8266588fdfbba17e2424b30163a215873ee6dee96215d66249f5d5e46fec2278d030b42bd7599861c4878360042dacec4c221ce411453747c
+
+Patch0: CVE-2023-4016.patch
 
 BuildRequires:  ncurses-devel
 
@@ -109,6 +111,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Sep 01 2023 Srish Srinivasan <ssrish@vmare.com> 3.3.15-4
+- fix CVE-2023-4016
 * Mon Dec 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.15-3
 - Fix file packaging paths
 * Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.15-2
