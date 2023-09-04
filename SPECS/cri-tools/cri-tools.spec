@@ -3,16 +3,19 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.22.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/kubernetes-incubator/%{name}/releases/tag/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}.tar.gz=4a2751ebe0b1ed7cb739a71230272ace0cbddc516abba39c6bf07d5e2648bd60e2139935b77a5388028887915162c957f652ea05434ff7865256721d10f863df
+
+Source0: https://github.com/kubernetes-incubator/%{name}/releases/tag/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}-%{version}.tar.gz=4a2751ebe0b1ed7cb739a71230272ace0cbddc516abba39c6bf07d5e2648bd60e2139935b77a5388028887915162c957f652ea05434ff7865256721d10f863df
+
 BuildRequires:  go
-BuildRequires:  git
+
+Requires: calico-cni
 
 %description
 cri-tools aims to provide a series of debugging and validation tools for Kubelet CRI, which includes:
@@ -20,27 +23,34 @@ crictl: CLI for kubelet CRI.
 critest: validation test suites for kubelet CRI.
 
 %prep
-%autosetup -Sgit -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
+export GO111MODULE=on
+export GOFLAGS="-mod=vendor"
+# BUILDTAGS can be removed after cri-tools >= v1.24.1
+# https://github.com/kubernetes-sigs/cri-tools/pull/931
+export BUILDTAGS="selinux seccomp"
+
+%make_build VERSION="%{version}-%{release}"
 
 %install
-make install BUILD_BIN_PATH=%{buildroot}%{_bindir} BUILD_PATH=%{buildroot} %{?_smp_mflags}
+mkdir -p %{buildroot}%{_bindir}
+mv build/bin/crictl %{buildroot}%{_bindir}
 
 %clean
 rm -rf %{buildroot}/*
 
 %check
-%if 0%{?with_check}
-make test-e2e %{?_smp_mflags}
-%endif
+%make_build test-e2e
 
 %files
 %defattr(-,root,root)
 %{_bindir}/crictl
-%exclude %{_bindir}/critest
 
 %changelog
+* Mon Sep 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.22.0-9
+- Add calico-cni to requires
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.22.0-8
 - Bump up version to compile with new go
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.22.0-7
