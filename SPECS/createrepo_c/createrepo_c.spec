@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -25,12 +25,12 @@ BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
 BuildRequires:  drpm-devel
 BuildRequires:  zchunk-devel
+%if 0%{?with_check}
+BuildRequires:  libxml2
+%endif
 
 Requires:       drpm
 Requires:       zchunk-libs
-%if 0%{?with_check}
-Requires:       libxml2
-%endif
 
 Obsoletes:      createrepo
 
@@ -44,6 +44,9 @@ C implementation of the createrepo.
 %package devel
 Summary:    Library for repodata manipulation
 Requires:   %{name} = %{version}-%{release}
+Requires:   glib-devel
+Requires:   sqlite-devel
+Requires:   libxml2-devel
 
 %description devel
 headers and libraries for createrepo_c
@@ -87,6 +90,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Sep 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-6
+- Fix devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.20.1-5
 - Bump version as a part of libxml2 upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 0.20.1-4
