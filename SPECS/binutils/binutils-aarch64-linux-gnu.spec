@@ -1,7 +1,7 @@
 Name:       binutils-aarch64-linux-gnu
 Summary:    Cross Binutils for Aarch64
 Version:    2.35
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -29,6 +29,8 @@ Patch15:        binutils-CVE-2021-20197-3.patch
 Patch16:        binutils-CVE-2021-20197-4.patch
 Patch17:        binutils-CVE-2020-35448.patch
 Patch18:        binutils-CVE-2021-3549.patch
+Patch19:        binutils-CVE-2022-47695.patch
+Patch20:        binutils-CVE-2021-46174.patch
 
 BuildArch: x86_64
 
@@ -68,6 +70,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Mon Aug 14 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-6
+- Fix CVE-2022-47695 and CVE-2021-46174
 * Mon Aug 14 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-5
 - Fix CVE-2020-35448 and CVE-2021-3549
 * Tue Jul 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-4
