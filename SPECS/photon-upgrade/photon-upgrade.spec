@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -13,13 +13,15 @@ Source1: constants.sh
 Source2: ph4-to-ph5-upgrade.sh
 Source3: utils.sh
 Source4: common.sh
+Source5: ph4-to-ph5-deprecated-pkgs.txt
 
 BuildArch:      noarch
 
-Requires:       tdnf
 Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
 Requires:       sed
+Requires:       rpm
+Requires:       tdnf
 
 %description
 Photon upgrade scripts for updating the packages and
@@ -36,6 +38,7 @@ install -m440 %{SOURCE1} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE2} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE3} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE4} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE5} %{buildroot}%{_libdir}/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -46,6 +49,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Mon Sep 04 2023 Dweep Advani <dadvani@vmware.com> 1.0-8
+- Reordering service configuration resetting and enahncing pre upgrade package error reporting
 * Tue Jun 20 2023 Dweep Advani <dadvani@vmware.com> 1.0-7
 - Support --to-ver, --rm-pkgs-pre and --rm-pkgs-post
 * Fri Jun 09 2023 Dweep Advani <dadvani@vmware.com> 1.0-6

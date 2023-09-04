@@ -57,10 +57,13 @@ function get_services_by_state() {
 function rebuilddb() {
   local rc=0
 
-  if ! ${RPM} --rebuilddb; then
-    rc=$?
+  echo "Rebuilding RPMDB."
+  ${RPM} --rebuilddb
+  rc=$?
+  if [ $rc -ne 0 ]; then
     abort $rc "Failed rebuilding installed package database."
   fi
+  echo "successfully rebuilt RPMDB."
 }
 
 # Finds packages which are installed from the provided package names in args

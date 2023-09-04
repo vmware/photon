@@ -1,21 +1,12 @@
-declare -a deprecated_packages_arr=(
-  binutils-aarch64-linux-gnu  c-rest-engine c-rest-engine-devel cgroup-utils
-  dcerpc dcerpc-devel fcgi fcgi-devel gcc-aarch64-linux-gnu
-  glib-doc glib-networking-lang glog-docs gmock-static gtest-static
-  json_spirit json_spirit-devel libnss-ato lightstep-tracer-cpp lightwave
-  lightwave-client lightwave-client-libs lightwave-devel lightwave-post
-  lightwave-samples lightwave-server likewise-open likewise-open-devel linux-aws
-  linux-aws-devel linux-aws-docs linux-aws-drivers-gpu linux-aws-oprofile
-  linux-aws-sound linux-drivers-intel-sgx linux-oprofile ndsend netmgmt
-  netmgmt-cli-devel netmgmt-devel openjdk8 openjdk8-doc openjdk8-sample
-  openjdk8-src openjre8 openjre8 pmd pmd-cli pmd-devel pmd-gssapi-unix pmd-libs
-  pmd-python3 python3-backports_abc python3-PyPAM salt3 salt3-api salt3-cloud
-  salt3-master salt3-minion salt3-proxy salt3-spm salt3-ssh salt3-syndic
-  sqlite2 sqlite2-devel sshfs tiptop ulogd ulogd-mysql ulogd-pcap ulogd-sqlite
-)
+read -d "\n" -a deprecated_packages_arr < "$1/ph4-to-ph5-deprecated-pkgs.txt"
 
 # This hashtable maps package name changes
 declare -A replaced_pkgs_map=(
+  [ansible]=ansible               # This & next 4 lines handle ansible removal
+  [ansible-community-general]=ansible-community-general
+  [ansible-devel]=ansible-devel
+  [ansible-posix]=ansible-posix
+  [stig-hardening]=stig-hardening
   [postgresql]=postgresql14
   [postgresql-libs]=postgresql14-libs
   [postgresql-devel]=postgresql14-devel
