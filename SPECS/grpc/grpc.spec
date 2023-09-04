@@ -1,14 +1,14 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.15.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha1 grpc=0c5ab74d3f64800dbf6005ec337e4291f04df438
+%define sha512  grpc=c34313abede4993119e69e8aacaf7d700cc54d2a1844ade75a087848ea78777a530628328c198ab06c8a0247afa322092f21fcc7eeddf86f599687950cb3f8dd
 Patch0:         grpc-CVE-2020-7768.patch
 BuildRequires:  build-essential
 BuildRequires:  which
@@ -40,14 +40,13 @@ The grpc-devel package contains libraries and header files for
 developing applications that use grpc.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 make  %{_smp_mflags} prefix=%{_prefix} libdir=%{_libdir}
 
 %install
-make install prefix=%{buildroot}%{_prefix} libdir=%{buildroot}%{_libdir}
+make install prefix=%{buildroot}%{_prefix} libdir=%{buildroot}%{_libdir} %{_smp_mflags}
 ln -sf libgrpc++.so.6 %{buildroot}%{_libdir}/libgrpc++.so.1
 ln -sf libgrpc++_reflection.so.6 %{buildroot}%{_libdir}/libgrpc++_reflection.so.1
 ln -sf libgrpc++_unsecure.so.6 %{buildroot}%{_libdir}/libgrpc++_unsecure.so.1
@@ -66,6 +65,8 @@ ln -sf libgrpc++_error_details.so.6 %{buildroot}%{_libdir}/libgrpc++_error_detai
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Mon Sep 11 2023 Harinadh D <hdommaraju@vmware.com> 1.15.1-3
+- Version bump to use updated c-ares
 * Tue Dec 08 2020 Dweep Advani <dadvani@vmware.com> 1.15.1-2
 - Consuming fix of CVE-2020-7768 in grpc-node
 * Thu Oct 04 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.15.1-1

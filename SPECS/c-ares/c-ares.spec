@@ -1,6 +1,6 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.19.0
+Version:        1.19.1
 Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  c-ares=a7f5988bef393afec08a225be92f6eee54a3e67170fb26cbe00dcc5c5a457b27037bbcfeccc39fb855ed72f100196958d6cbbe251bf1ccfbdd353be18f098359
+%define sha512  c-ares=466a94efda626e815a6ef7a890637056339f883d549ea6055e289fd8cd2391130e5682c905c0fb3bd7e955af7f6deb793562c170eb0ee066a4a62085a82ba470
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -68,6 +68,8 @@ rm -rf %{buildroot}
 %doc README.md README.msvc README.cares CHANGES NEWS
 
 %changelog
+*   Fri Sep 01 2023 Harinadh D <hdommaraju@vmware.com> 1.19.1-1
+-   Fix for CVE-2023-32067
 *   Sat Mar 11 2023 Anmol Jain <anmolja@vmware.com> 1.19.0-1
 -   Fix for CVE-2022-4904
 *   Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2
