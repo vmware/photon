@@ -1,9 +1,8 @@
-%define GCORE_VERSION   1.6.3
 %define GDB_VERSION     10.2
 
 Name:          crash
 Version:       8.0.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -11,20 +10,13 @@ Distribution:  Photon
 URL:           http://people.redhat.com/anderson
 License:       GPL
 
-Source0: http://people.redhat.com/anderson/crash-%{version}.tar.gz
+Source0: http://people.redhat.com/anderson/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
-
-Source1: http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha512 crash-gcore=697952b7c55af5e4a7528cdd6fe616411d5147979fc90da55c0a3cee44510f39846e99bff3ac701c1ed98ee2c5d125e77c332b1f5b0be6e0ea1d98cf5d547a15
 
 Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
 %define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
 
-%ifarch aarch64
-Patch0: gcore_defs.patch
-%endif
-
-BuildRequires: binutils
+BuildRequires: binutils-devel
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
@@ -41,6 +33,7 @@ The core analysis suite is a self-contained tool that can be used to investigate
 Group:         Development/Libraries
 Summary:       Libraries and headers for %{name}
 Requires:      %{name} = %{version}-%{release}
+Requires:      zlib-devel
 
 %description devel
 The core analysis suite is a self-contained tool that can be used to investigate either live systems, kernel core dumps created from the netdump, diskdump and kdump packages from Red Hat Linux, the mcore kernel patch offered by Mission Critical Linux, or the LKCD kernel patch.
@@ -48,40 +41,27 @@ The core analysis suite is a self-contained tool that can be used to investigate
 This package contains libraries and header files need for development.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -n %{name}-%{version}
-# Using autosetup is not feasible
-%setup -q -a 1
-%ifarch aarch64
-pushd crash-gcore-command-%{GCORE_VERSION}
-%patch0 -p1
-popd
-%endif
+%autosetup -p1
+cp %{SOURCE2} .
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
-cp %{SOURCE2} .
-make %{?_smp_mflags} GDB=gdb-%{GDB_VERSION} RPMPKG=%{version}-%{release}
-cd crash-gcore-command-%{GCORE_VERSION}
-%ifarch x86_64
-make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
-%endif
-%ifarch aarch64
-make %{?_smp_mflags} -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
-%endif
+
+%make_build \
+    GDB=gdb-%{GDB_VERSION} \
+    RPMPKG=%{version}-%{release}
 
 %install
 mkdir -p %{buildroot}%{_bindir} \
          %{buildroot}%{_mandir}/man8 \
-         %{buildroot}%{_includedir}/crash \
-         %{buildroot}%{_libdir}/crash
+         %{buildroot}%{_includedir}/%{name} \
+         %{buildroot}%{_libdir}/%{name}
 
 %make_install %{?_smp_mflags}
 
-install -pm 644 crash.8 %{buildroot}%{_mandir}/man8/crash.8
+install -pm 644 %{name}.8 %{buildroot}%{_mandir}/man8/%{name}.8
 chmod 0644 defs.h
-cp -p defs.h %{buildroot}%{_includedir}/crash
-install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_libdir}/crash/
+cp -p defs.h %{buildroot}%{_includedir}/%{name}
 
 %clean
 rm -rf "%{buildroot}"
@@ -94,16 +74,17 @@ rm -rf "%{buildroot}"
 
 %files
 %defattr(-,root,root)
-%{_bindir}/crash
-%{_libdir}/crash/gcore.so
-%{_mandir}/man8/crash.8.gz
+%{_bindir}/%{name}
+%{_mandir}/man8/%{name}.8.gz
 
 %files devel
 %defattr(-,root,root)
-%dir %{_includedir}/crash
-%{_includedir}/crash/*.h
+%dir %{_includedir}/%{name}
+%{_includedir}/%{name}/*.h
 
 %changelog
+* Mon Sep 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.2-5
+- Fix devel package requires
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.2-4
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.2-3
