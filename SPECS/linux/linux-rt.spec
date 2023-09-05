@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.190
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -174,6 +174,9 @@ Patch136: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 #Fix CVE-2023-2176
 Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
+
+#Fix CVE-2023-22995
+Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -689,7 +692,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M137
+%autopatch -p1 -m100 -M138
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -945,6 +948,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-4
+- Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
 - Fixes CVE-2023-2176
 * Wed Aug 30 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com>  5.10.190-2

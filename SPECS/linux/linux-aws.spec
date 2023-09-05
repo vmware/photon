@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.190
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -158,6 +158,9 @@ Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 #Fix CVE-2023-2176
 Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
+
+#Fix CVE-2023-22995
+Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -321,7 +324,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M139
+%autopatch -p1 -m100 -M140
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %autopatch -p1 -m150 -M150
@@ -500,6 +503,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
+- Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-2
 - Fixes CVE-2023-2176
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1

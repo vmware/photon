@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.190
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -171,6 +171,9 @@ Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 #Fix CVE-2023-2176
 Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
+#Fix CVE-2023-22995
+Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -298,7 +301,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M139
+%autopatch -p1 -m100 -M140
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -442,6 +445,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-4
+- Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
 - Fixes CVE-2023-2176
 * Wed Aug 30 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com>  5.10.190-2

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.190
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -227,6 +227,9 @@ Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 #Fix CVE-2023-2176
 Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
+#Fix CVE-2023-22995
+Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -397,7 +400,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M96
 
 # CVE
-%autopatch -p1 -m100 -M139
+%autopatch -p1 -m100 -M140
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -663,6 +666,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
+- Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-2
 - Fixes CVE-2023-2176
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1

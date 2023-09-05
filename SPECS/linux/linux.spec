@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.190
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -208,6 +208,9 @@ Patch137: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 #Fix CVE-2023-2176
 Patch138: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
+
+#Fix CVE-2023-22995
+Patch139: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -469,7 +472,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M138
+%autopatch -p1 -m100 -M139
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -900,6 +903,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-4
+- Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
 - Fixes CVE-2023-2176
 * Wed Aug 30 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com>  5.10.190-2
