@@ -156,17 +156,9 @@ function remove_unsupported_packages() {
   fi
 }
 
-function upgrade_photon_release() {
-  local rc=0
-
-  echo "Upgrading the photon-release package"
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT update photon-release \
-    --releasever=$TO_VERSION --refresh; then
-    echo "The photon-release package upgraded successfully."
-  else
-    rc=$?
-    abort $ERETRY_EAGAIN "Could not upgrade photon-release package (tdnf error code: $rc)."
-  fi
+function tdnf_makecache() {
+  echo "Generating tdnf cache on Photon OS $(/usr/bin/lsb_release -s -r)"
+  ${TDNF} $REPOS_OPT $ASSUME_YES_OPT makecache
 }
 
 function distro_upgrade() {
@@ -180,14 +172,18 @@ function distro_upgrade() {
     echo "Upgrading Photon OS to $TO_VERSION from $FROM_VERSION"
   fi
 
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh; then
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh; then
       echo "All packages were upgraded to latest versions successfully."
+      [ "$ver" = "$TO_VERSION" ] && \
+      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT reinstall photon-release --releasever=$ver --refresh && \
+      tdnf_makecache && \
+      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install systemd-udev
   else
     rc=$?
     if [ "$ver" = "$FROM_VERSION" ]; then
       abort $ERETRY_EAGAIN "Error in upgrading all packages to latest versions (tdnf error code: $rc)."
     else
-      abort $rc "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION."
+      abort $ERETRY_EAGAIN "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION ((tdnf error code: $rc)."
     fi
   fi
 }
@@ -391,6 +387,7 @@ function verify_version_and_upgrade() {
       find_wrongly_enabled_services # Terminates upgrade on finding any regular
                                     # file in multi-user.target.wants under /etc
       backup_rpms_list_n_db $RPM_DB_LOC
+      tdnf_makecache
       if [ "$UPDATE_PKGS" = 'y' ]; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances may not need this.
@@ -404,15 +401,13 @@ function verify_version_and_upgrade() {
       rebuilddb
       record_enabled_disabled_services
       remove_replaced_packages
-      upgrade_photon_release
-      update_core_packages
+      fix_pre_upgrade_config
+      distro_upgrade $TO_VERSION
       if [ "$TO_VERSION" = "5.0" ]; then
         relocate_rpmdb
       else
         rebuilddb
       fi
-      fix_pre_upgrade_config
-      distro_upgrade $TO_VERSION
       install_replacement_packages
       rebuilddb
       remove_residual_pkgs
@@ -536,6 +531,7 @@ elif [ "$UPDATE_PKGS" = 'y' ]; then
   # Upgrading all installed RPMs to latest versions.
   backup_rpms_list_n_db $RPM_DB_LOC
   pre_upgrade_rm_pkgs
+  tdnf_makecache
   distro_upgrade $FROM_VERSION
   rebuilddb
   post_upgrade_rm_pkgs

@@ -1,7 +1,3 @@
-declare -a core_packages=(
-  rpm
-)
-
 function prepare_for_upgrade() {
   # Refer https://bugzilla.redhat.com/show_bug.cgi?id=1936422
   if [ -L "/usr/share/squid/errors/es-mx" ]; then
@@ -24,23 +20,6 @@ function prepare_for_upgrade() {
     ${TDNF} $ASSUME_YES_OPT $REPOS_OPT reinstall coreutils
   else
     ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install coreutils
-  fi
-}
-
-function create_core_pkgs_list() {
-  if ${RPM} -q --quiet systemd; then
-    core_packages+=(systemd systemd-udev)
-  fi
-}
-
-function update_core_packages()
-{
-  create_core_pkgs_list
-  echo "Upgrading package manager by upgrading - ${core_packages[@]}".
-  if ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install ${core_packages[@]}; then
-    echo "Package manager upgrade was successful."
-  else
-    abort $? "Error upgrading rpm package to use the new location."
   fi
 }
 

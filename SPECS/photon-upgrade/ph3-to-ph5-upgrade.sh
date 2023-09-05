@@ -28,7 +28,7 @@ declare -a deprecated_packages_arr=(
   sqlite2 sshfs tiptop ulogd uriparser urw-fonts xtrans-devel
   yarn zsh-html
   # recently deprecated packages
-  libcalico libsoup-doc python3-m2r python3-subprocess32
+  libcalico libsoup-doc python3-m2r
 )
 
 # This hashtable maps package name changes
