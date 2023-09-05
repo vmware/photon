@@ -1,7 +1,7 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.10.4
-Release:        2%{?dist}
+Version:        0.10.5
+Release:        1%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,24 +9,24 @@ Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
 Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
-%define sha512 %{name}=01ee52d480201d9886c15e81137c185334b404d1c8e8b743ddf58e95fe8619c8c013616a49807bd1111fde72fa177cd35f3c22b66cbf5d720b5abfacdf7601ed
+%define sha512 %{name}=2b758f9df2b5937865d4aee775ffeafafe3ae6739a89dfc470e38c7394e3c3cb5fcf8f842fdae04929890ee7e47bf8f50e3a38e82dfd26a009f3aae009d589e0
 
-Source1:        libssh_client.config
-Source2:        libssh_server.config
+Source1: libssh_client.config
+Source2: libssh_server.config
 
-BuildRequires:  build-essential
-BuildRequires:  cmake
-BuildRequires:  krb5-devel
-BuildRequires:  nmap-ncat
-BuildRequires:  openssh-clients
-BuildRequires:  openssh-server
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  libpcap-devel
+BuildRequires: build-essential
+BuildRequires: cmake
+BuildRequires: krb5-devel
+BuildRequires: nmap-ncat
+BuildRequires: openssh-clients
+BuildRequires: openssh-server
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: libpcap-devel
 
-Requires:       %{name}-config = %{version}-%{release}
-Requires:       e2fsprogs-libs
-Requires:       krb5
+Requires: %{name}-config = %{version}-%{release}
+Requires: e2fsprogs-libs
+Requires: krb5
 
 %description
 The ssh library was designed to be used by programmers needing a working SSH
@@ -81,8 +81,7 @@ install -d -m755 %{buildroot}%{_sysconfdir}/%{name}
 install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/%{name}_client.config
 install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.config
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %if 0%{?with_check}
 %check
@@ -110,6 +109,9 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_server.config
 
 %changelog
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 0.10.5-1
+- Version upgrade to v0.10.5 to fix follwing CVE's:
+- CVE-2023-2023-1667, CVE-2023-2283
 * Fri Jul 28 2023 Shivani Agarwal <shivania2@vmware.com> 0.10.4-2
 - Bump version as part of openssh upgrade
 * Wed Apr 19 2023 Harinadh D <hdommaraju@vmware.com> - 0.10.4-1

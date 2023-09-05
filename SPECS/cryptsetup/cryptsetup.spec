@@ -1,35 +1,35 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 URL:            https://gitlab.com/cryptsetup/cryptsetup
 Distribution:   Photon
 
-Source0:        %{name}-v%{version}.tar.gz
+Source0: %{name}-v%{version}.tar.gz
 %define sha512 cryptsetup=19fcc155388207f3fb03d57c415467d0062361be787899595a053cf1d3564aad68ed306480c6bb85e525fa56729c0397348f35c51f82b02712693154df2115ff
 
-Patch0:         CVE-2021-4122.patch
+Patch0: CVE-2021-4122.patch
 
-BuildRequires:  systemd-devel
-BuildRequires:  openssl-devel
-BuildRequires:  popt-devel
-BuildRequires:  device-mapper-devel
-BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  json-c-devel
-BuildRequires:  libpwquality-devel
-BuildRequires:  libargon2-devel
-BuildRequires:  libssh-devel
+BuildRequires: systemd-devel
+BuildRequires: openssl-devel
+BuildRequires: popt-devel
+BuildRequires: device-mapper-devel
+BuildRequires: gcc
+BuildRequires: make
+BuildRequires: json-c-devel
+BuildRequires: libpwquality-devel
+BuildRequires: libargon2-devel
+BuildRequires: libssh-devel
 
-Requires:       cryptsetup-libs = %{version}-%{release}
-Requires:       libpwquality
-Requires:       util-linux-libs
-Requires:       openssl
-Requires:       device-mapper-libs
-Requires:       device-mapper
+Requires: cryptsetup-libs = %{version}-%{release}
+Requires: libpwquality
+Requires: util-linux-libs
+Requires: openssl
+Requires: device-mapper-libs
+Requires: device-mapper
 
 %description
 Cryptsetup is a utility used to conveniently set up disk encryption based
@@ -151,6 +151,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %{_sbindir}/cryptsetup-ssh
 
 %changelog
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.2-3
+- Version bump up to use libssh v0.10.5
 * Wed Apr 19 2023 Harinadh D <hdommaraju@vmware.com> 2.4.2-2
 - version bump to use libssh version 0.10.4
 * Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
