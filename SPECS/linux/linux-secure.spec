@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -111,6 +111,8 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # CVE:
 # Fix CVE-2017-1000252
 Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+#Fix CVE-2023-28464
+Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -238,7 +240,7 @@ The kernel fips-canister
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M100
+%autopatch -p1 -m100 -M101
 
 # crypto
 %autopatch -p1 -m500 -M505
@@ -425,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-3
+- Fix for CVE-2023-28464
 * Sat Sep 02 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.45-2
 - Cherry pick performance over security option for RETBleed (pos=1)
 - patch from Photon 4.0

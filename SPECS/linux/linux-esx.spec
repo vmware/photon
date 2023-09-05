@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.45
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -155,6 +155,8 @@ Patch85: 0001-Adding-SBX-kernel-driver.patch
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+#Fix CVE-2023-28464
+Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -502,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-3
+- Fix for CVE-2023-28464
 * Sat Sep 02 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.45-2
 - Cherry pick performance over security option for RETBleed (pos=1)
 - patch from Photon 4.0
