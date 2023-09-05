@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.45
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -132,6 +132,8 @@ Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+#Fix CVE-2023-28464
+Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -714,6 +716,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 22 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-2
+- Fix for CVE-2023-28464
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-1
 - Update to version 6.1.45
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.41-4

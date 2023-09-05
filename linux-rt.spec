@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.45
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -121,6 +121,8 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 
 # CVE:
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+#Fix CVE-2023-28464
+Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -307,7 +309,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M100
+%autopatch -p1 -m100 -M101
 
 # RT
 %autopatch -p1 -m301 -M717
@@ -520,6 +522,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-2
+- Fix for CVE-2023-28464
 * Wed Nov 22 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-1
 - Update to version 6.1.45
 * Wed Nov 22 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.41-4
