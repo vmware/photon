@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -224,6 +224,9 @@ Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
+#Fix CVE-2023-2176
+Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -394,7 +397,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M96
 
 # CVE
-%autopatch -p1 -m100 -M138
+%autopatch -p1 -m100 -M139
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -660,6 +663,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-2
+- Fixes CVE-2023-2176
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2

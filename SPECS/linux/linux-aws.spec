@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.190
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -155,6 +155,9 @@ Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 #Fix for CVE-2023-0597
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix CVE-2023-2176
+Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -318,10 +321,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M138
+%autopatch -p1 -m100 -M139
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
-%patch150 -p1
+%autopatch -p1 -m150 -M150
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -497,6 +500,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-2
+- Fixes CVE-2023-2176
 * Tue Aug 29 2023 Ajay Kaher <akaher@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.188-2
