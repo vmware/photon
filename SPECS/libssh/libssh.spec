@@ -1,32 +1,32 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.9.6
-Release:        7%{?dist}
+Version:        0.10.5
+Release:        1%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
-Source0:        https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
-%define sha512  %{name}=4040ec4af937e95be2e41313ef6d4db60b46b8d4dea10c09402398127c1d1ca8843392d207088aeee3c7ef631c6ae7b66861327dcebf78ed3af0723777619fd1
+Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
+%define sha512 %{name}=2b758f9df2b5937865d4aee775ffeafafe3ae6739a89dfc470e38c7394e3c3cb5fcf8f842fdae04929890ee7e47bf8f50e3a38e82dfd26a009f3aae009d589e0
 
-Source1:        %{name}_client.config
-Source2:        %{name}_server.config
+Source1: libssh_client.config
+Source2: libssh_server.config
 
-BuildRequires:  build-essential
-BuildRequires:  cmake
-BuildRequires:  krb5-devel
-BuildRequires:  nmap-ncat
-BuildRequires:  openssh-clients
-BuildRequires:  openssh-server
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  libpcap-devel
+BuildRequires: build-essential
+BuildRequires: cmake
+BuildRequires: krb5-devel
+BuildRequires: nmap-ncat
+BuildRequires: openssh-clients
+BuildRequires: openssh-server
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: libpcap-devel
 
-Requires:       %{name}-config = %{version}-%{release}
-Requires:       e2fsprogs-libs
-Requires:       krb5
+Requires: %{name}-config = %{version}-%{release}
+Requires: e2fsprogs-libs
+Requires: krb5
 
 %description
 The ssh library was designed to be used by programmers needing a working SSH
@@ -81,8 +81,7 @@ install -d -m755 %{buildroot}%{_sysconfdir}/%{name}
 install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/%{name}_client.config
 install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.config
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %if 0%{?with_check}
 %check
@@ -90,11 +89,13 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %endif
 
 %files
-%doc AUTHORS BSD ChangeLog README
+%defattr(-,root,root)
+%doc AUTHORS BSD README
 %license COPYING
 %{_libdir}/%{name}.so.4*
 
 %files devel
+%defattr(-,root,root)
 %{_includedir}/%{name}/
 %dir %{_libdir}/cmake/
 %{_libdir}/cmake/%{name}/
@@ -102,11 +103,15 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %{_libdir}/%{name}.so
 
 %files config
+%defattr(-,root,root)
 %attr(0755,root,root) %dir %{_sysconfdir}/%{name}
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_client.config
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 0.10.5-1
+- Version upgrade to v0.10.5 to fix follwing CVE's:
+- CVE-2023-2023-1667, CVE-2023-2283
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 0.9.6-7
 - Bump version as a part of krb5 upgrade
 * Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 0.9.6-6
