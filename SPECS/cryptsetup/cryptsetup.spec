@@ -1,30 +1,34 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-v%{version}.tar.gz
-%define sha1    cryptsetup=00d84178c4d0c51cabe02bd275bc83a806bb50f8
 URL:            https://gitlab.com/cryptsetup/cryptsetup
-Patch0:         CVE-2021-4122.patch
-BuildRequires:  systemd-devel
-BuildRequires:  openssl-devel
-BuildRequires:  popt-devel
-BuildRequires:  device-mapper-devel
-BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  json-c-devel
-BuildRequires:  libpwquality-devel
-BuildRequires:  libargon2-devel
-BuildRequires:  libssh-devel
-Requires:       cryptsetup-libs = %{version}-%{release}
-Requires:       libpwquality
-Requires:       util-linux-libs
-Requires:       openssl
-Requires:       device-mapper-libs
+
+Source0: %{name}-v%{version}.tar.gz
+%define sha512 %{name}=19fcc155388207f3fb03d57c415467d0062361be787899595a053cf1d3564aad68ed306480c6bb85e525fa56729c0397348f35c51f82b02712693154df2115ff
+
+Patch0: CVE-2021-4122.patch
+
+BuildRequires: systemd-devel
+BuildRequires: openssl-devel
+BuildRequires: popt-devel
+BuildRequires: device-mapper-devel
+BuildRequires: gcc
+BuildRequires: make
+BuildRequires: json-c-devel
+BuildRequires: libpwquality-devel
+BuildRequires: libargon2-devel
+BuildRequires: libssh-devel
+
+Requires: cryptsetup-libs = %{version}-%{release}
+Requires: libpwquality
+Requires: util-linux-libs
+Requires: openssl
+Requires: device-mapper-libs
 
 %description
 Cryptsetup is a utility used to conveniently set up disk encryption based
@@ -147,8 +151,10 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %exclude %{_libdir}/%{name}/libcryptsetup-token-ssh.la
 
 %changelog
-*   Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
--   Fix CVE-2021-4122
--   Update to 2.4.2
-*   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.5-1
--   Initial package
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.2-2
+- Version bump up to use libssh v0.9.7
+* Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
+- Fix CVE-2021-4122
+- Update to 2.4.2
+* Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.5-1
+- Initial package

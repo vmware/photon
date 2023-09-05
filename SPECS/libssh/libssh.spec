@@ -1,28 +1,31 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.9.6
-Release:        2%{?dist}
+Version:        0.9.7
+Release:        1%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
-Source0:        https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
-%define sha1    libssh=1b2dd673b58e1eaf20fde45cd8de2197cfab2f78
-Source3:        libssh_client.config
-Source4:        libssh_server.config
-BuildRequires:  build-essential
-BuildRequires:  cmake
-BuildRequires:  krb5-devel
-BuildRequires:  nmap-ncat
-BuildRequires:  openssh-clients
-BuildRequires:  openssh-server
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  libpcap-devel
-Requires:       %{name}-config = %{version}-%{release}
-Requires:       e2fsprogs-libs
-Requires:       krb5
+
+Source0: https://www.libssh.org/files/0.9/%{name}-%{version}.tar.xz
+%define sha512 %{name}=a69a98735ef751b9efbc1a21cbb4f9173b477016a9673d3cab46a24135970acca98fe2defd6ec1c6c86ce89f1a350e7053b97eafd372b375bd592781175ad0e6
+Source1: libssh_client.config
+Source2: libssh_server.config
+
+BuildRequires: build-essential
+BuildRequires: cmake
+BuildRequires: krb5-devel
+BuildRequires: nmap-ncat
+BuildRequires: openssh-clients
+BuildRequires: openssh-server
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: libpcap-devel
+
+Requires: %{name}-config = %{version}-%{release}
+Requires: e2fsprogs-libs
+Requires: krb5
 
 %description
 The ssh library was designed to be used by programmers needing a working SSH
@@ -78,8 +81,8 @@ popd
 pushd build
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 install -d -m755 %{buildroot}%{_sysconfdir}/libssh
-install -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/libssh/libssh_client.config
-install -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/libssh/libssh_server.config
+install -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/libssh/libssh_client.config
+install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/libssh/libssh_server.config
 popd
 
 %post -p /sbin/ldconfig
@@ -106,6 +109,9 @@ ctest --output-on-failure
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_server.config
 
 %changelog
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.7-1
+- Version upgrade to v0.9.7 to fix follwing CVE's:
+- CVE-2023-2023-1667, CVE-2023-2283
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.9.6-2
 - Version Bump to build with new version of cmake
 * Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> - 0.9.6-1
