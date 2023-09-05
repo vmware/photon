@@ -1,24 +1,24 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        2.1.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
 
-BuildRequires:  cmake
-BuildRequires:  make
-BuildRequires:  gcc
-BuildRequires:  libssh-devel
-BuildRequires:  openssl-devel
-BuildRequires:  libyang-devel
-BuildRequires:  pcre2-devel
-BuildRequires:  Linux-PAM-devel
+BuildRequires: cmake
+BuildRequires: make
+BuildRequires: gcc
+BuildRequires: libssh-devel
+BuildRequires: openssl-devel
+BuildRequires: libyang-devel
+BuildRequires: pcre2-devel
+BuildRequires: Linux-PAM-devel
 
 Requires: pcre2
 Requires: libyang
@@ -99,6 +99,8 @@ popd
 %dir %{_includedir}/%{name}
 
 %changelog
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.1.18-4
+- Version bump up to use libssh v0.10.5
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.18-3
 - Version bump as part of pcre2 update
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.18-2

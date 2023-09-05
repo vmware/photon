@@ -1,30 +1,33 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
-Distribution:   Photon
-Source0:        %{name}-v%{version}.tar.gz
-%define sha512  cryptsetup=c3d56a9d89253ad56e729a7faa334ca2b1650229e0527123f5fdb77e6801b920b9e2b5154db6247fadc08591c25c458666f5369e7a894f7ae635e1e31c09d2cf
 URL:            https://gitlab.com/cryptsetup/cryptsetup
-BuildRequires:  systemd-devel
-BuildRequires:  openssl-devel
-BuildRequires:  popt-devel
-BuildRequires:  device-mapper-devel
-BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  json-c-devel
-BuildRequires:  libpwquality-devel
-BuildRequires:  libargon2-devel
-BuildRequires:  libssh-devel
-Requires:       cryptsetup-libs = %{version}-%{release}
-Requires:       libpwquality
-Requires:       util-linux-libs
-Requires:       openssl
-Requires:       device-mapper-libs
-Requires:       device-mapper
+Distribution:   Photon
+
+Source0: %{name}-v%{version}.tar.gz
+%define sha512 %{name}=c3d56a9d89253ad56e729a7faa334ca2b1650229e0527123f5fdb77e6801b920b9e2b5154db6247fadc08591c25c458666f5369e7a894f7ae635e1e31c09d2cf
+
+BuildRequires: systemd-devel
+BuildRequires: openssl-devel
+BuildRequires: popt-devel
+BuildRequires: device-mapper-devel
+BuildRequires: gcc
+BuildRequires: make
+BuildRequires: json-c-devel
+BuildRequires: libpwquality-devel
+BuildRequires: libargon2-devel
+BuildRequires: libssh-devel
+
+Requires: cryptsetup-libs = %{version}-%{release}
+Requires: libpwquality
+Requires: util-linux-libs
+Requires: openssl
+Requires: device-mapper-libs
+Requires: device-mapper
 
 %description
 Cryptsetup is a utility used to conveniently set up disk encryption based
@@ -147,13 +150,15 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %exclude %{_libdir}/%{name}/libcryptsetup-token-ssh.la
 
 %changelog
-*   Wed Apr 20 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.3-1
--   Automatic Version Bump
-*   Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
--   Fix CVE-2021-4122
--   Update to 2.4.2
-*   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.5-2
--   bump up version for openssl 3.0.0 compatibility
--   Add device-mapper package dependency
-*   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.5-1
--   Initial package.
+* Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.3-2
+- Version bump up to use libssh v0.10.5
+* Wed Apr 20 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.3-1
+- Automatic Version Bump
+* Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
+- Fix CVE-2021-4122
+- Update to 2.4.2
+* Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.5-2
+- bump up version for openssl 3.0.0 compatibility
+- Add device-mapper package dependency
+* Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.5-1
+- Initial package.
