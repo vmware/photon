@@ -334,13 +334,19 @@ class SpecParser(object):
                 dpkg = dependentPackageData()
                 compare = None
                 packageName = listContents[i]
+                provider = constants.providedBy.get(listContents[i], None)
                 if listContents[i].startswith("/"):
-                    provider = constants.providedBy.get(listContents[i], None)
-                    if provider is not None:
-                        packageName = provider
-                    else:
-                        raise Exception("Error in {0}\nWhat package does provide {1} ? Please modify providedBy in constants.py".format(self.specfile, listContents[i]))
+                    if not provider:
+                        raise Exception(
+                            f"Error in {self.specfile}\n"
+                            f"What package does provide {listContents[i]} ? "
+                            "Please modify providedBy in constants.py"
+                        )
+                    packageName = provider
                     i += 1
+                elif provider:
+                    packageName = provider
+                    i += 2
                 if i + 2 < len(listContents):
                     if listContents[i+1] in (">=", "<=", "=", "<", ">"):
                         compare = listContents[i+1]
