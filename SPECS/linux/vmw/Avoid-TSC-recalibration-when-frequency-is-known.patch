@@ -1,0 +1,37 @@
+From 0b4a285e2c65c2c9449c6eccb87298e385213e7b Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 4 Jan 2021 16:47:52 -0800
+Subject: [PATCH] x86/vmware: Avoid TSC recalibration when frequency is known
+
+When the TSC frequency is known because it is retrieved from the
+hypervisor, skip TSC refined calibration by setting X86_FEATURE_TSC_KNOWN_FREQ.
+
+[nkuntal] Photon3 patch for linux, linux-esx
+https://github.com/vmware/photon/commit/788eb91b76408a39ad0a7ddf675fe80ea9a859cd
+
+Required to generate separate patch for linux-rt due to hunk failures while
+applying patch used in above commit.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20210105004752.131069-1-amakhalov@vmware.com
+---
+ arch/x86/kernel/cpu/vmware.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index d805202c6..5030044b7 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -129,6 +129,8 @@ static void __init vmware_set_capabilities(void)
+ {
+ 	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
+ 	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
++	if (vmware_tsc_khz)
++		setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ);
+ }
+ 
+ static void __init vmware_platform_setup(void)
+-- 
+2.39.0
+

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.292
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -202,6 +202,9 @@ Patch102: 0001-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
 # Next 2 patches are about to be merged into stable
 Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
+
+# TSC calibration optimization
+Patch108: Avoid-TSC-recalibration-when-frequency-is-known.patch
 
 # Update vmxnet3 driver to version 6
 Patch110: 0001-vmxnet3-fix-cksum-offload-issues-for-tunnels-with-no.patch
@@ -1528,6 +1531,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Sep 06 2023 Kuntal Nayak <nkuntal@vmware.com> 4.19.292-3
+- Avoid TSC recalibration
 * Fri Sep 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.292-2
 - Disable CONFIG_SCSI_DPT_I2O to fix CVE-2023-2007
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
