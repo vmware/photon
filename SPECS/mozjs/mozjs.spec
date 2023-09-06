@@ -3,7 +3,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -24,17 +24,16 @@ Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
-BuildRequires: python3-libs
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
 BuildRequires: clang-devel
 BuildRequires: icu-devel >= 70.1
 BuildRequires: rust
-BuildRequires: autoconf = 2.13
+BuildRequires: autoconf
+BuildRequires: nss-devel
 
 Requires:      icu >= 70.1
 Requires:      python3
-Requires:      python3-libs
 
 Obsoletes:     mozjs60
 Obsoletes:     js
@@ -55,7 +54,7 @@ developing applications that use %{name}.
 
 %prep
 %autosetup -p1 -n firefox-%{version}
-rm -rf modules/zlib
+rm -rf modules/zlib security/nss
 
 %build
 export CC=gcc
@@ -71,16 +70,19 @@ chmod +x configure
 
 %configure \
   --with-system-icu \
+  --with-system-nss \
   --with-system-zlib \
   --disable-tests \
   --disable-strip \
   --with-intl-api \
-  --enable-readline \
   --enable-shared-js \
   --enable-optimize \
   --disable-debug \
   --enable-pie \
-  --disable-jemalloc
+  --disable-jemalloc \
+  --disable-strip \
+  --without-intl-api \
+  --enable-readline
 
 %make_build
 
@@ -113,6 +115,7 @@ rm %{buildroot}%{_bindir}/js%{major}-config %{buildroot}%{_libdir}/libjs_static.
 # Rename library and create symlinks, following fix-soname.patch
 mv %{buildroot}%{_libdir}/libmozjs-%{major}.so \
    %{buildroot}%{_libdir}/libmozjs-%{major}.so.0.0.0
+
 ln -s libmozjs-%{major}.so.0.0.0 %{buildroot}%{_libdir}/libmozjs-%{major}.so.0
 ln -s libmozjs-%{major}.so.0 %{buildroot}%{_libdir}/libmozjs-%{major}.so
 
@@ -131,6 +134,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-3
+- Remove autoconf-2.13 dependency
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 102.12.0-2
 - Bump up version as part of rust upgrade.
 * Mon Jun 19 2023 Mukul Sikka <msikka@vmware.com> 102.12.0-1
