@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 %define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
+
+Source1: %{name}.sysusers
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -62,8 +64,31 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
       %{buildroot}%{_libdir}/*.a \
       %{buildroot}%{_libdir}/*.la
 
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
 %check
 %make_build check
+
+%pre
+%sysusers_create_compat %{SOURCE1}
+
+%post
+%systemd_post %{name}.socket
+%systemd_user_post %{name}.socket
+%systemd_post %{name}.service
+%systemd_user_post %{name}.service
+
+%preun
+%systemd_preun %{name}.socket
+%systemd_user_preun %{name}.socket
+%systemd_preun %{name}.service
+%systemd_user_preun %{name}.service
+
+%postun
+%systemd_postun %{name}.socket
+%systemd_user_postun %{name}.socket
+%systemd_postun %{name}.service
+%systemd_user_postun %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -75,6 +100,7 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
 %exclude %{_sysusersdir}
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
+%{_sysusersdir}/%{name}.sysusers
 
 %files devel
 %defattr(-,root,root)
@@ -93,6 +119,8 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Fri Sep 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-4
+- Create dbus user
 * Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-3
 - Use /run for runstatedir
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-2
