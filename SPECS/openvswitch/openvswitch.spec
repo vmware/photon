@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -17,7 +17,7 @@ Patch1:         openvswitch-CVE-2020-27827.patch
 Patch2:         openvswitch-CVE-2021-36980.patch
 Patch3:         openvswitch-CVE-2021-3905.patch
 Patch4:         openvswitch-CVE-2022-4337-CVE-2022-4338.patch
-
+Patch5:         openvswitch-CVE-2023-1668.patch
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -79,37 +79,37 @@ Requires:       %{name} = %{version}-%{release}
 %description    doc
 It contains the documentation and manpages for openvswitch.
 
-%package -n	ovn-common
-Summary:	Common files for OVN
-Requires:	%{name} = %{version}-%{release}
+%package -n     ovn-common
+Summary:        Common files for OVN
+Requires:       %{name} = %{version}-%{release}
 %description -n ovn-common
 It contains the common userspace components for OVN.
 
-%package -n	ovn-host
-Summary:	Host components of OVN
-Requires:	ovn-common = %{version}-%{release}
+%package -n     ovn-host
+Summary:        Host components of OVN
+Requires:       ovn-common = %{version}-%{release}
 %description -n ovn-host
 It contains the userspace components for OVN to be run on each hypervisor.
 
-%package -n	ovn-central
-Summary:	Central components of OVN
-Requires:	ovn-common = %{version}-%{release}
+%package -n     ovn-central
+Summary:        Central components of OVN
+Requires:       ovn-common = %{version}-%{release}
 %description -n ovn-central
 It contains the user space components for OVN to be run on central host.
 
-%package -n	ovn-controller-vtep
-Summary:	OVN VTEP controller binaries
-Requires:	ovn-common = %{version}-%{release}
+%package -n     ovn-controller-vtep
+Summary:        OVN VTEP controller binaries
+Requires:       ovn-common = %{version}-%{release}
 %description -n ovn-controller-vtep
 It contains the user space components for OVN Controller VTEP.
 
-%package -n	ovn-docker
-Summary:	OVN drivers for docker
-Requires:	ovn-common = %{version}-%{release}
+%package -n     ovn-docker
+Summary:        OVN drivers for docker
+Requires:       ovn-common = %{version}-%{release}
 %description -n ovn-docker
 It contains the OVN drivers for docker networking.
 
-%package -n	ovn-doc
+%package -n     ovn-doc
 Summary:        Documentation for OVN
 Requires:       ovn-common = %{version}-%{release}
 %description -n ovn-doc
@@ -140,7 +140,7 @@ install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.templ
 
 /usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
 for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do
-	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
+       install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
 
 mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
@@ -270,6 +270,8 @@ make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Wed Sep 06 2023 Anmol Jain <anmolja@vmware.com> 2.12.0-8
+-   Fix for CVE-2023-1668
 *   Wed Jan 18 2023 Dweep Advani <dadvani@vmware.com> 2.12.0-7
 -   Fixed CVE-2022-4337 and CVE-2022-4338
 *   Tue Oct 18 2022 Harinadh D <hdommaraju@vmware.com> 2.12.0-6
