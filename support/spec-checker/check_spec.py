@@ -100,6 +100,7 @@ def check_spec_header(spec, err_dict):
         "Summary": spec.summary,
         "Group": spec.group,
         "Distribution": spec.distribution,
+        "URL": spec.url,
     }
 
     for key, val in header.items():
