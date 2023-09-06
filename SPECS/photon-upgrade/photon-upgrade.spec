@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -18,6 +18,7 @@ Source5:        common.sh
 BuildArch:      noarch
 
 Requires:       tdnf
+Requires:       rpm
 Requires:       coreutils
 Requires:       gawk
 Requires:       sed
@@ -48,6 +49,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Sep 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-14
+- Handle repmgr, apache-tomcat during OS upgrades
+- Add rpm to requires
 * Tue Sep 05 2023 Dweep Advani <dadvani@vmware.com> 1.0-13
 - Single transaction OS upgrade
 * Fri Sep 01 2023 Dweep Advani <dadvani@vmware.com> 1.0-12

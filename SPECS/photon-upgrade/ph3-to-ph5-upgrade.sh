@@ -38,6 +38,7 @@ declare -A replaced_pkgs_map=(
   [ansible-posix]=ansible-posix   # This & next 2 lines handle ansible removal
   [ansible-community-general]=ansible-community-general  # handle ansible removal
   [stig-hardening]=stig-hardening                        # handle ansible removal
+  [apache-tomcat]=apache-tomcat-9
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
   [openjdk8]=openjdk11
@@ -54,6 +55,7 @@ declare -A replaced_pkgs_map=(
   [python3-gcovr]=gcovr
   [python3-google-compute-engine]=google-compute-engine
   [python3-pycrypto]=python3-pycryptodome
+  [repmgr]=repmgr15
 )
 
 # Residual pkgs to remove post upgrade
