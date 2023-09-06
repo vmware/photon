@@ -1,22 +1,25 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.6.3
-Release:          2%{?dist}
+Version:          3.8.0
+Release:          1%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source:           %{name}-%{version}.tar.gz
-%define sha1      zookeeper=c8dea35165f276cb8e23372b74c3f3149809202f
-Source1:          zookeeper.service
+%define sha512    zookeeper=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
+Source1:          %{name}.service
 Source2:          zkEnv.sh
 Patch0:           zkSever_remove_cygwin_cypath.patch
 BuildRequires:    systemd
+BuildRequires:    systemd-devel
 Requires:         systemd
 Requires:         openjre8
+Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming,
 providing distributed synchronization, and providing group services.
@@ -27,36 +30,36 @@ which make them brittle in the presence of change and difficult to manage.
 Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%autosetup -n apache-zookeeper-%{version}-bin -p1
+%autosetup -p1 -n apache-%{name}-%{version}-bin
 
 %install
 mkdir -p %{buildroot}%{_prefix}
 mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_libdir}/java/zookeeper
-mkdir -p %{buildroot}%{_libdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/log/zookeeper
-mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
-mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
-mkdir -p %{buildroot}%{_var}/zookeeper
+mkdir -p %{buildroot}%{_libdir}/java/%{name}
+mkdir -p %{buildroot}%{_libdir}/%{name}
+mkdir -p %{buildroot}%{_var}/log/%{name}
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+mkdir -p %{buildroot}%{_prefix}/share/%{name}/templates/conf
+mkdir -p %{buildroot}%{_var}/%{name}
 
-cp lib/zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
-cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
+cp lib/%{name}-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
+cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/%{name}/templates/conf/zoo.cfg
 
 mv bin/* %{buildroot}%{_bindir}
-mv lib/*.jar %{buildroot}%{_libdir}/java/zookeeper
-mv lib/* %{buildroot}%{_libdir}/zookeeper
-mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
-mv conf/* %{buildroot}%{_sysconfdir}/zookeeper
+mv lib/*.jar %{buildroot}%{_libdir}/java/%{name}
+mv lib/* %{buildroot}%{_libdir}/%{name}
+mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/%{name}/zoo.cfg
+mv conf/* %{buildroot}%{_sysconfdir}/%{name}
 pushd ..
 rm -rf %{buildroot}/%{name}-%{version}
 popd
 
 mkdir -p %{buildroot}/lib/systemd/system
-cp %{SOURCE1} %{buildroot}/lib/systemd/system/zookeeper.service
+cp %{SOURCE1} %{buildroot}/lib/systemd/system/%{name}.service
 cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
 
 install -vdm755 %{buildroot}/lib/systemd/system-preset
-echo "disable zookeeper.service" > %{buildroot}/lib/systemd/system-preset/50-zookeeper.preset
+echo "disable zookeeper.service" > %{buildroot}/lib/systemd/system-preset/50-%{name}.preset
 
 %pre
 getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
@@ -79,13 +82,15 @@ fi
 
 %files
 %defattr(-,root,root)
-%attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
-%config(noreplace) %{_sysconfdir}/zookeeper/*
-/lib/systemd/system/zookeeper.service
-/lib/systemd/system-preset/50-zookeeper.preset
+%attr(0755,zookeeper,hadoop) %{_var}/log/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/*
+/lib/systemd/system/%{name}.service
+/lib/systemd/system-preset/50-%{name}.preset
 %{_prefix}
 
 %changelog
+*   Tue Sep 5 2023 Michelle Wang <michellew@vmware.com> 3.8.0-1
+-   Update zookeeper to 3.8.0
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 3.6.3-2
 -   Replacement of ITS suggested words.
 *   Thu May 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.3-1
@@ -136,4 +141,4 @@ fi
 *   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
 -   Adding ldconfig in post section.
 *   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
--   Initial build. First version	Initial build. First version
+-   Initial build. First version. Initial build. First version
