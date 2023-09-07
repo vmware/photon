@@ -1,22 +1,26 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          https://github.com/wavefrontHQ/wavefront-proxy/archive/refs/tags/proxy-%{version}.tar.gz
-%define sha512    proxy=899e61245e06ad34d05a873eff18b0f73cfa3b715a29b0719db64d6ef9dde4b85b31b188dc019f26109ae03352808ad602917ccbeb1a8c39760e2112c2fcbb87
+
+Source0: https://github.com/wavefrontHQ/wavefront-proxy/archive/refs/tags/proxy-%{version}.tar.gz
+%define sha512 proxy=899e61245e06ad34d05a873eff18b0f73cfa3b715a29b0719db64d6ef9dde4b85b31b188dc019f26109ae03352808ad602917ccbeb1a8c39760e2112c2fcbb87
+
 BuildRequires:    apache-maven
-BuildRequires:    openjdk11
+BuildRequires:    openjdk8
 BuildRequires:    systemd-devel
+
 Requires:         systemd
-Requires:         openjdk11
+Requires:         (openjre8 or openjdk11-jre or openjdk17-jre)
 Requires:         commons-daemon
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 BuildArch:        noarch
 
 %description
@@ -45,7 +49,7 @@ sed -i 's/-jar \/opt\/wavefront\/%{name}\/bin\/wavefront-push-agent.jar/-jar \/o
 sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
-export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*11.0*)
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*)
 mvn -f proxy install -DskipTests -DskipFormatCode
 
 %install
@@ -83,10 +87,6 @@ chown -R wavefront:wavefront /etc/wavefront
 %systemd_preun %{name}.service
 
 %postun
-if [ $1 -eq 0 ] ; then
-    getent passwd wavefront >/dev/null && userdel wavefront
-    getent group wavefront >/dev/null && groupdel wavefront
-fi
 %systemd_postun_with_restart %{name}.service
 
 %clean
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.1-2
+- Require jre8 or jdk11-jre or jdk17-jre
 * Thu Sep 07 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.1-1
 - Update to 13.1
 * Mon Jul 31 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.0-1

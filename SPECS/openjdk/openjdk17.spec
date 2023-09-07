@@ -1,23 +1,19 @@
 %global security_hardening  none
-%define subversion          20
-%define bootstrapjdkversion 1.8.0.112
-%define jdk_major_version   1.11.0
+%define jdk_major_version   17
 %define _use_internal_dependency_generator 0
 
-Summary:        OpenJDK
-Name:           openjdk11
-Version:        11.0.20
-Release:        3%{?dist}
-License:        GNU General Public License V2
-URL:            https://github.com/openjdk/jdk11u
-Group:          Development/Tools
-Vendor:         VMware, Inc.
+Summary:    OpenJDK
+Name:       openjdk17
+Version:    17.0.8
+Release:    4%{?dist}
+License:    GNU General Public License V2
+URL:        https://github.com/openjdk/jdk17u
+Group:      Development/Tools
+Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
-%define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
-
-BuildArch: x86_64
+Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-5.tar.gz
+%define sha512 jdk-17=af6ae3759dda8e7612b8860ccc9c69df260ffa18c80fd73ca71737854aa926442c02e1f56d7bd39dc6ec7f24095a47fc1e448bdcf6f0531ad8bbf403056c0dec
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -34,22 +30,47 @@ BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
 
 Requires: chkconfig
-Requires: libstdc++
+Requires(postun): chkconfig
+
+Requires: %{name}-jre = %{version}-%{release}
 
 Obsoletes: openjdk <= %{version}
 
 AutoReqProv: no
 
-%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjre10, openjdk10
+%ifarch x86_64
+%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk17
+%endif
+
+%ifarch aarch64
+%define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk17, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
+%endif
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
+
+%package        jre
+Summary:        JRE subset files from jdk11
+Requires:       chkconfig
+Requires(postun): chkconfig
+Requires:       alsa-lib
+Requires:       freetype2
+Requires:       libstdc++
+Requires:       libgcc
+Requires:       zlib
+
+Provides: libjli.so()(64bit)
+Conflicts: %{name} < 17.0.8-4%{?dist}
+
+%description    jre
+%{summary}
 
 %package        doc
 Summary:        Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
+
 %description    doc
 It contains the documentation and demo applications for openjdk
 
@@ -58,28 +79,29 @@ Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
+
 %description    src
 This package provides the runtime library class sources.
 
-%prep -p exit
-%autosetup -p1 -n jdk11u-jdk-%{version}-6
+%prep
+%autosetup -p1 -n jdk17u-jdk-%{version}-5
 
 %build
 chmod a+x ./configur*
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
-./configur* \
+sh ./configur* \
     --with-target-bits=64 \
     --enable-headless-only \
-    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cxxflags="-Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
     --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
     --with-freetype-include=%{_includedir}/freetype2 \
     --with-freetype-lib=%{_libdir} \
     --with-stdc++lib=dynamic \
     --disable-warnings-as-errors
 
-mkdir %{_datadir}/java -p
+mkdir -p %{_datadir}/java
 # make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -101,16 +123,26 @@ chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
 
 mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
-            %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
-            %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+        %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+
+%post jre
+alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java 30000 \
+  --slave %{_bindir}/keytool keytool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool \
+  --slave %{_bindir}/pack200 pack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200 \
+  --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
+
+%postun jre
+if [ $1 -eq 0 ]; then
+  alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
+fi
 
 %post
-alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 20000 \
+alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 30000 \
   --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/appletviewer \
   --slave %{_bindir}/idlj idlj %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj \
-  --slave %{_bindir}/jaotc jaotc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jaotc \
   --slave %{_bindir}/jar jar %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jar \
   --slave %{_bindir}/jarsigner jarsigner %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jarsigner \
   --slave %{_bindir}/jhsdb jhsdb %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhsdb \
@@ -132,47 +164,28 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
   --slave %{_bindir}/jstack jstack %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstack \
   --slave %{_bindir}/jstat jstat %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstat \
   --slave %{_bindir}/jstatd jstatd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstatd \
-  --slave %{_bindir}/rmic rmic %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmic \
   --slave %{_bindir}/schemagen schemagen %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/schemagen \
   --slave %{_bindir}/serialver serialver %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver \
   --slave %{_bindir}/wsgen wsgen %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsgen \
   --slave %{_bindir}/wsimport wsimport %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsimport \
-  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
-
-alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java 20000 \
-  --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jjs \
-  --slave %{_bindir}/keytool keytool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool \
-  --slave %{_bindir}/pack200 pack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200 \
-  --slave %{_bindir}/rmid rmid %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmid \
-  --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry \
-  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
-/sbin/ldconfig
+  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc \
+  --slave %{_bindir}/jpackage jpackage %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jpackage
 
 %postun
 # Do alternative remove only in case of uninstall
 if [ $1 -eq 0 ]; then
   alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
-  alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
 fi
-/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/ASSEMBLY_EXCEPTION
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/LICENSE
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/README.md
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jaotc
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jar
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhsdb
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jimage
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jarsigner
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdeprscan
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javadoc
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javap
@@ -190,18 +203,26 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstack
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstat
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstatd
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmic
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhsdb
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jimage
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdeprscan
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jpackage
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/ct.sym
+
+%files jre
+%defattr(-,root,root)
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/ASSEMBLY_EXCEPTION
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
+%exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/ct.sym
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/conf
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jmods
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jjs
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmid
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
 %exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/*.debuginfo
 
 %files doc
@@ -215,21 +236,31 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.20-3
+* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.8-4
+- Add jre subpackage
+- Change alternatives accordingly
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.8-3
 - Bump version as a part of cups upgrade
-* Mon Jun 26 2023 Kuntal Nayak <nkuntal@vmware.com> 11.0.20-2
+* Mon Jun 26 2023 Kuntal Nayak <nkuntal@vmware.com> 17.0.8-2
 - Version upgrade for CVE-2016-7945 fix
-* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
-- Upgrade to v11.0.20
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-2
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 17.0.8-1
+- Update to jdk-17.0.8-5 to fix CVE-2023-21937, CVE-2023-21938, CVE-2023-21930, CVE-2023-21968, CVE-2023-21967,
+- CVE-2023-21939, CVE-2022-21360, CVE-2023-21843, CVE-2023-21835, CVE-2023-21954
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-2
 - Bump version as a part of freetype2 upgrade
-* Tue Feb 14 2023 Mukul Sikka <msikka@vmware.com> 11.0.18-1
-- Updating to jdk-11.0.18-ga
-* Mon Nov 07 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
-- Add missing requires on libstdc++
-* Wed Sep 07 2022 Piyush Gupta <gpiyush@vmware.com> 11.0.12-3
-- Fix for CVE-2022-34169.
-* Tue May 17 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
+* Mon Feb 20 2023 Mukul Sikka <msikka@vmware.com> 17.0.6-1
+- changing source name convention from openjdk-VERSION to jdk-VERSION
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.5-3
+- Bump version as a part of icu upgrade
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-2
+- Bump up due to change in elfutils
+* Fri Oct 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-1
+- Update to tag jdk-17.0.5-ga
+* Thu Oct 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
+- Rebuild with latest toolchain
+* Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-3
+- Bump version as a part of icu upgrade
+* Wed May 18 2022 Mukul Sikka <msikka@vmware.com> 11.0.12-2
 - Added alternative for java
 * Wed Mar 23 2022 Tapas Kundu <tkundu@vmware.com> 11.0.12-1
 - Update to tag jdk-11.0.12-ga

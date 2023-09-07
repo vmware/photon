@@ -4,18 +4,28 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        6.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            http://bazel.build/
-Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
-%define sha512  bazel=3b84139d383f47607db92f3f59504b2e07409140ebfad7d540a81638619ba67eb870285c9b9c6db8dd50a8971ba871365d583bdf9754ff0038d5b6c39af9d013
-BuildRequires:  openjdk11 zlib-devel which findutils tar gzip zip unzip
+URL:            http://bazel.build
+
+Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
+%define sha512 %{name}=3b84139d383f47607db92f3f59504b2e07409140ebfad7d540a81638619ba67eb870285c9b9c6db8dd50a8971ba871365d583bdf9754ff0038d5b6c39af9d013
+
+BuildRequires:  openjdk11
+BuildRequires:  zlib-devel
+BuildRequires:  which
+BuildRequires:  findutils
+BuildRequires:  tar
+BuildRequires:  gzip
+BuildRequires:  zip
+BuildRequires:  unzip
 BuildRequires:  gcc
 BuildRequires:  python3
-Requires:       openjdk11
+
+Requires:   (openjdk11 or openjdk17)
 
 %description
 Bazel is Google's own build tool, now publicly available in Beta. Bazel has
@@ -24,11 +34,11 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%autosetup -p1 -c -n %{name}-%{version}
+%autosetup -p1 -c
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
-mkdir /usr/tmp
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
+mkdir -p /usr/tmp
 export TMPDIR=/usr/tmp
 ./compile.sh
 pushd output
@@ -39,11 +49,16 @@ popd
 mkdir -p %{buildroot}%{_bindir}
 cp output/bazel %{buildroot}%{_bindir}
 
+%clean
+rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-3
+- Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-2
 - Bump version as a part of openjdk11 upgrade
 * Tue May 09 2023 Harinadh D <hdommaraju@vmware.com> 6.1.2-1

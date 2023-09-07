@@ -1,41 +1,44 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  kubernetes-dashboard=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
-Source1:        dashboard-dist-%{version}.tar.gz
-%define sha512  dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
+
+Source1: dashboard-dist-%{version}.tar.gz
+%define sha512 dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
+
 BuildArch:      x86_64
+
 BuildRequires:  gcc
-BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
 BuildRequires:  nodejs
-BuildRequires:  openjre8
 BuildRequires:  which
 BuildRequires:  ncurses-terminfo
 BuildRequires:  bc
+BuildRequires:  openjdk8
+
 Requires:       nodejs
-Requires:       openjre8
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %description
 Kubernetes Dashboard UI.
 
 %prep
-%autosetup -p1 -n dashboard-%{version}
+%autosetup -p1 -n dashboard-%{version} -a1
 # Change the npm default registry to enterprise registry
 #sed -i 's#https://registry.npmjs.org#http://<url>#g' *.json
 #npm config set registry http://<url>
 
 %build
-export PATH=${PATH}:/usr/bin
 # During building, it looks .git/hooks in the root path
 # But tar.gz file  from github/kibana/tag doesn't provide .git/hooks
 # inside it. so did below steps to create the tar
@@ -50,18 +53,14 @@ export PATH=${PATH}:/usr/bin
 
 #npm run build
 
-tar xf %{SOURCE1} --no-same-owner
-
 %install
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}/opt/k8dashboard
-cp -p -r ./dist/amd64/dashboard %{buildroot}%{_bindir}/
-cp -p -r ./dist/amd64/locale_conf.json %{buildroot}/opt/k8dashboard/
-cp -p -r ./dist/amd64/public %{buildroot}/opt/k8dashboard/
-cp -p -r ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
+mkdir -p %{buildroot}%{_bindir} \
+          %{buildroot}/opt/k8dashboard
 
-%check
-# dashboard unit tests require chrome browser binary not present in PhotonOS
+pushd ./dist/amd64/
+cp -pr dashboard %{buildroot}%{_bindir}/
+cp -pr locale_conf.json public Dockerfile %{buildroot}/opt/k8dashboard/
+popd
 
 %files
 %defattr(-,root,root)
@@ -71,6 +70,8 @@ cp -p -r ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-2
+- Require jre8 or jdk11-jre or jdk17-jre
 * Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-1
 - Update to 2.7.0, Fixes multiple second level CVE
 * Tue Jun 20 2023 Piyush Gupta <gpiyush@vmware.com> 2.3.1-17

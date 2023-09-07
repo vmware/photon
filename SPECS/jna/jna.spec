@@ -1,25 +1,27 @@
 #need to deactivate debuginfo till we bring in x11 deps
 %define debug_package %{nil}
+%define _prefix %{_var}/opt/%{name}-%{version}
 
 Summary:        Java Native Access
 Name:           jna
 Version:        5.6.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
+
+Source0: https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=645dd13f1ab8b36277fcd2af1557ca9fe15a72aaf78564ed9c2fb027a1b7d4fa93731aa2986d08fabb5af472f79b6cd1d2a260bddb966eac7e50dcd9d3158729
-Patch0:         jna_remove_clover_jar.patch
-Patch1:         jna-gcc-10.patch
-BuildRequires: openjre8
+
+Patch0: jna_remove_clover_jar.patch
+Patch1: jna-gcc-10.patch
+
 BuildRequires: openjdk8
 BuildRequires: apache-ant
-Requires:      openjre8
 
-%define _prefix /var/opt/%{name}-%{version}
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -35,11 +37,8 @@ Sources for JNA
 %prep
 %autosetup -p1
 
-%clean
-rm -rf %{buildroot}
-
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
 
 # Intermittent issue happens:
 #
@@ -48,11 +47,17 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 # Re-run this build after checking /usr/src/photon/BUILD/jna-4.4.0/build/native-linux-x86-64/jni.checksum or updating jni.version and jni.md5 in build.xml
 #
 # Rerun the build will pass it
-ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true || \
-ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
+ant \
+    -Dcflags_extra.native=-DNO_JAWT \
+    -Dtests.exclude-patterns="**/*.java" \
+    -Drelease=true || \
+ant \
+    -Dcflags_extra.native=-DNO_JAWT \
+    -Dtests.exclude-patterns="**/*.java" \
+    -Drelease=true
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
@@ -61,8 +66,13 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 
 %check
 #ignore a unicode name test which fails in chroot checks
-sed -i 's/testLoadLibraryWithUnicodeName/ignore_testLoadLibraryWithUnicodeName/' test/com/sun/jna/LibraryLoadTest.java
+sed -i 's/testLoadLibraryWithUnicodeName/ignore_testLoadLibraryWithUnicodeName/' \
+        test/com/sun/jna/LibraryLoadTest.java
+
 ant
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -70,7 +80,6 @@ ant
 %{_prefix}/*.jar
 %exclude %{_prefix}/*javadoc.jar
 %exclude %{_prefix}/*sources.jar
-
 %exclude %{_prefix}/jnacontrib/*
 
 %files devel
@@ -83,57 +92,59 @@ ant
 %{_prefix}/*.aar
 
 %changelog
-*   Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.6.0-4
--   Bump version as a part of openjdk8 upgrade
-*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-3
--   Replacement of ITS suggested words.
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
--   GCC-10 support.
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.6.0-1
--   Automatic Version Bump
-*   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-4
--   Fix compilation issue with gcc-8.4.0
-*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-3
--   Removed dependency on JAVA8_VERSION macro
-*   Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-2
--   Removed clover.jar from jna-devel source-full.zip file
-*   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-1
--   Updated to version 4.5.2
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-9
--   Remove BuildArch
-*   Thu Sep 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4.0-8
--   Makecheck for jna
-*   Tue Sep 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-7
--   Rerun the build on failure
-*   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-6
--   Removed clover.jar from jna-devel source-full.zip file
-*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-5
--   Removed dependency on ANT_HOME
-*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
--   Renamed openjdk to openjdk8
-*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
--   deactivate debuginfo temporarily - wait for x11 deps
-*   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
--   use java rpm macros to determine versions
-*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1
--   Updated package to version 4.4.0
-*   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-6
--   Updated JAVA_HOME path to point to latest JDK.
-*   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
--   Updated JAVA_HOME path to point to latest JDK.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-4
--   GA - Bump release of all rpms
-*   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 4.2.1-3
--   Updated JAVA_HOME path to point to latest JDK.
-*   Thu Mar 03 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-2
--   Updated the apache-ant version to 1.9.6
-*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
--   Updating version
-*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 4.1.0-3
--   Changing path to /var/optttt.
-*   Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.0-2
--   Disabling tests
-*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.1.0-1
--   Updated dependencies after repackaging openjdk.
-*   Fri May 29 2015 Sriram Nambakam <snambakam@vmware.com> 4.1.0-0
--   Initial commit
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.6.0-5
+- Require jre8 or jdk11-jre or jdk17-jre
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.6.0-4
+- Bump version as a part of openjdk8 upgrade
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-3
+- Replacement of ITS suggested words.
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
+- GCC-10 support.
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.6.0-1
+- Automatic Version Bump
+* Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-4
+- Fix compilation issue with gcc-8.4.0
+* Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-3
+- Removed dependency on JAVA8_VERSION macro
+* Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-2
+- Removed clover.jar from jna-devel source-full.zip file
+* Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-1
+- Updated to version 4.5.2
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-9
+- Remove BuildArch
+* Thu Sep 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4.0-8
+- Makecheck for jna
+* Tue Sep 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-7
+- Rerun the build on failure
+* Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-6
+- Removed clover.jar from jna-devel source-full.zip file
+* Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-5
+- Removed dependency on ANT_HOME
+* Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
+- Renamed openjdk to openjdk8
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
+- deactivate debuginfo temporarily - wait for x11 deps
+* Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
+- use java rpm macros to determine versions
+* Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1
+- Updated package to version 4.4.0
+* Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-6
+- Updated JAVA_HOME path to point to latest JDK.
+* Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
+- Updated JAVA_HOME path to point to latest JDK.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-4
+- GA - Bump release of all rpms
+* Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 4.2.1-3
+- Updated JAVA_HOME path to point to latest JDK.
+* Thu Mar 03 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-2
+- Updated the apache-ant version to 1.9.6
+* Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
+- Updating version
+* Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 4.1.0-3
+- Changing path to /var/optttt.
+* Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.0-2
+- Disabling tests
+* Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.1.0-1
+- Updated dependencies after repackaging openjdk.
+* Fri May 29 2015 Sriram Nambakam <snambakam@vmware.com> 4.1.0-0
+- Initial commit

@@ -1,23 +1,27 @@
+%define _prefix %{_var}/opt/%{name}
+
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    16%{?dist}
+Release:    17%{?dist}
 License:    Apache
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:    https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
-%define sha512 ant-contrib=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
-Patch0:         use-system-provided-commons-httpclient-jar.patch
-BuildRequires: openjre8
+
+Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
+%define sha512 %{name}=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
+
+Patch0: use-system-provided-commons-httpclient-jar.patch
+
 BuildRequires: openjdk8
 BuildRequires: apache-ant
 BuildRequires: commons-httpclient
-Requires: openjre8
+
 Requires: apache-ant
-%define _prefix /var/opt/ant-contrib
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %description
 The Ant Contrib project is a collection of tasks for Apache Ant.
@@ -29,17 +33,21 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 cp %{_datadir}/java/commons-httpclient/commons-httpclient.jar lib/commons-httpclient/jars/commons-httpclient-3.1.jar
 
-%clean
-rm -rf %{buildroot}
-
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-ant -Ddist.dir="." -Dproject.version=%{version} dist
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
+ant \
+    -Ddist.dir="." \
+    -Dproject.version=%{version} \
+    dist
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-mkdir -p -m 700 %{buildroot}/var/opt
-cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
+mkdir -p -m 700 %{buildroot}%{_var}/opt
+cd %{buildroot}%{_var}/opt
+tar xzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -49,6 +57,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-17
+- Require jre8 or jdk11-jre or jdk17-jre
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-16
 - Bump version as a part of openjdk8 upgrade
 * Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.0b3-15

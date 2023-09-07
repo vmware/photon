@@ -53,11 +53,9 @@ sh ./autogen.sh
 %install
 %make_install %{?_smp_mflags} prefix=%{_prefix}
 
-%if 0%{?with_check}
 %check
 pip3 install awscli
 %make_build check
-%endif
 
 %clean
 rm -rf %{buildroot}

@@ -2,30 +2,35 @@
 %define _conf_dir    %{_sysconfdir}/%{name}
 %define _log_dir     %{_var}/log/%{name}
 %define _data_dir    %{_sharedstatedir}/%{name}
+%define dep_libs_ver 2.13.10
+
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       %{name}-%{version}-src.tgz
-%define sha512 kafka=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
-Source1:       %{name}.service
-Source2:       %{name}-build-jars-%{version}.tar.gz
+Source0: %{name}-%{version}-src.tgz
+%define sha512 %{name}=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
+
+Source1: %{name}.service
+
+Source2: %{name}-build-jars-%{version}.tar.gz
 %define sha512 %{name}-build-jars=2a932bcccac8c1fe1dfa6b18e397bdb728275b06a397b0e484d735c96f53854db7f94ae18989cbc6fad0643b1d087486128c08479429c6a9f3dee9e2fe87b0c3
 
-Provides:      kafka kafka-server
+Provides: %{name}-server = %{version}-%{release}
 
-BuildRequires: systemd
-BuildRequires: openjdk11
+BuildRequires: systemd-devel
+BuildRequires: openjdk8
 BuildRequires: curl
 BuildRequires: zookeeper
 
-Requires:      zookeeper
+Requires: zookeeper
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %{?systemd_requires}
 
@@ -33,10 +38,9 @@ Requires:      zookeeper
 Kafka is designed to allow a single cluster to serve as the central data backbone for a large organization. It can be elastically and transparently expanded without downtime. Data streams are partitioned and spread over a cluster of machines to allow data streams larger than the capability of any single machine and to allow clusters of co-ordinated consumers. Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src -a2
 
 %build
-tar -xf %{SOURCE2}
 #Keeping the below code for future reference.
 #export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
 #./gradlew jar
@@ -48,33 +52,36 @@ tar -xf %{SOURCE2}
 #./gradlew docsJar
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-1.11.0`
-mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config}
-mkdir -p %{buildroot}/%{_log_dir}
-mkdir -p %{buildroot}/%{_data_dir}
-mkdir -p %{buildroot}/%{_unitdir}
-mkdir -p %{buildroot}/%{_conf_dir}/
-cp -pr config/* %{buildroot}/%{_prefix}/%{name}/config
-install -p -D -m 755 bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
-install -p -D -m 644 config/server.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 config/zookeeper.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
-install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/basic-auth-extension/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/upgrade-system-tests-0110/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*)
+
+mkdir -p %{buildroot}%{_prefix}/%{name}/{libs,bin,config} \
+         %{buildroot}%{_log_dir} \
+         %{buildroot}%{_data_dir} \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_conf_dir}
+
+cp -pr config/* %{buildroot}%{_prefix}/%{name}/config
+
+install -p -D -m 755 bin/*.sh %{buildroot}%{_prefix}/%{name}/bin
+install -p -D -m 644 config/server.properties %{buildroot}%{_conf_dir}/
+install -p -D -m 644 config/zookeeper.properties %{buildroot}%{_conf_dir}/
+install -p -D -m 755 %{S:1} %{buildroot}%{_unitdir}/
+install -p -D -m 644 config/log4j.properties %{buildroot}%{_conf_dir}/
+install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 tools/build/dependant-libs-%{dep_libs_ver}/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/dependant-libs-%{dep_libs_ver}/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 clients/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/api/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/basic-auth-extension/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/json/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/file/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/examples/build/dependant-libs-%{dep_libs_ver}/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/upgrade-system-tests-0110/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/build/libs/* %{buildroot}%{_prefix}/%{name}/libs
 
 %clean
 rm -rf %{buildroot}
@@ -92,22 +99,20 @@ rm -rf %{buildroot}
 
 %postun
 %systemd_postun %{name}.service
-if [ $1 -eq 0 ]; then
-    /usr/sbin/userdel %{name}
-    /usr/sbin/groupdel %{name}
-fi
 
 %files
 %defattr(-,root,root)
+%doc NOTICE
+%doc LICENSE
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_conf_dir}/*
 %{_prefix}/%{name}
 %attr(0755,kafka,kafka) %dir %{_log_dir}
 %attr(0700,kafka,kafka) %dir %{_data_dir}
-%doc NOTICE
-%doc LICENSE
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-3
+- Require jre8 or jdk11-jre or jdk17-jre
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-2
 - Bump version as a part of openjdk11 upgrade
 * Mon Feb 13 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1

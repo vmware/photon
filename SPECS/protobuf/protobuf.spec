@@ -3,7 +3,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.19.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -20,9 +20,10 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  chkconfig
-BuildRequires:  openjre8 >= %{java_min_ver_needed}
-BuildRequires:  openjdk8 >= %{java_min_ver_needed}
-BuildRequires:  apache-maven >= 3.3.3
+BuildRequires:  openjdk8
+BuildRequires:  apache-maven
+
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -57,7 +58,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-Requires:       openjre8 >= %{java_min_ver_needed}
+Requires:       (openjre8 >= %{java_min_ver_needed} or openjdk11-jre or openjdk17-jre)
 
 %description    java
 This contains protobuf java package.
@@ -129,6 +130,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-3
+- Require jre8 or jdk11-jre or jdk17-jre
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-2
 - Bump version as a part of openjdk8 upgrade
 * Wed Jun 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-1

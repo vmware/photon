@@ -1,7 +1,15 @@
+%define _prefix %{_var}/opt/%{name}
+%define _bindir %{_prefix}/bin
+%define _confdir %{_prefix}/conf
+%define _libdir %{_prefix}/lib
+%define _webappsdir %{_prefix}/webapps
+%define _logsdir %{_prefix}/logs
+%define _tempdir %{_prefix}/temp
+
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.93
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -10,6 +18,7 @@ Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
 %define sha512 %{name}=655752367585e7aa4af7b9b1392edb2c6e40dbda739aa459d81929ab0376648b8731baa469acaa8886bc3c859f8c8485f6826e86f59c3ac2bc1d876d17c2ce9b
+
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -22,22 +31,13 @@ Source1: base-for-%{name}-%{version}.tar.gz
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
-BuildArch: noarch
-
-BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
 
-Requires: openjre8
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 Requires: apache-ant
 
-%define _prefix /var/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _confdir %{_prefix}/conf
-%define _libdir %{_prefix}/lib
-%define _webappsdir %{_prefix}/webapps
-%define _logsdir %{_prefix}/logs
-%define _tempdir %{_prefix}/temp
+BuildArch: noarch
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
@@ -51,14 +51,15 @@ Requires:       apache-tomcat = %{version}-%{release}
 The web application for Apache Tomcat.
 
 %prep
-%autosetup -n %{name}-%{version}-src -p1
+%autosetup -n %{name}-%{version}-src -p1 -a1
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
-%autosetup -D -b 1 -n %{name}-%{version}-src -p1
 
 %build
-ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
+ant \
+    -Dbase.path="../base-for-%{name}-%{version}" \
+    deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -77,15 +78,14 @@ cp %{_builddir}/%{name}-%{version}-src/LICENSE %{buildroot}%{_prefix}
 cp %{_builddir}/%{name}-%{version}-src/NOTICE %{buildroot}%{_prefix}
 
 touch %{buildroot}%{_logsdir}/catalina.out
-rm -rf %{buildroot}%{_prefix}/webapps/examples
-rm -rf %{buildroot}%{_prefix}/webapps/docs
+
+rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat/${jarname}.jar
+for jar in %{buildroot}/%{_libdir}/*.jar; do
+  jarname=$(basename $jar .jar)
+  ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat/${jarname}.jar
 done
 
 %clean
@@ -126,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.93-2
+- Require jre8 or jdk11-jre or jdk17-jre
 * Mon Sep 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 8.5.93-1
 - Update to v8.5.93, Fixes CVE-2023-34981
 * Wed Jun 28 2023 Prashant S Chauhan <psinghchauha@vmware.com> 8.5.88-3

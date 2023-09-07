@@ -1,25 +1,27 @@
+%define ExtraBuildRequires apache-maven
+
+%define _prefix %{_var}/opt/%{name}
+%define _bindir %{_prefix}/bin
+%define _libdir %{_prefix}/lib
+
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.6.3
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
+
+Source0: http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
 %define sha512 %{name}=14eef64ad13c1f689f2ab0d2b2b66c9273bf336e557d81d5c22ddb001c47cf51f03bb1465d6059ce9fdc2e43180ceb0638ce914af1f53af9c2398f5d429f114c
-BuildRequires: openjre8
+
 BuildRequires: openjdk8
 BuildRequires: apache-ant
-BuildRequires: wget >= 1.15
-Requires: openjre8
-Requires: /usr/bin/which
-%define ExtraBuildRequires apache-maven
 
-%define _prefix /var/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _libdir %{_prefix}/lib
+Requires: (openjdk8 or openjdk11 or openjdk17)
+Requires: /usr/bin/which
 
 %description
 The Maven package contains binaries for a build system
@@ -37,14 +39,14 @@ mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 mkdir -p %{buildroot}%{_datadir}/java/maven
 for jar in %{buildroot}/%{_libdir}/*.jar; do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
+  jarname=$(basename $jar .jar)
+  ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
 done
 
 mkdir -p %{buildroot}/bin
 for b in %{buildroot}%{_bindir}/*; do
-    binaryname=$(basename $b)
-    ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+  binaryname=$(basename $b)
+  ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
 done
 
 %clean
@@ -72,6 +74,8 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/jansi-native
 
 %changelog
+* Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-4
+- Require jre8 or jdk11-jre or jdk17-jre
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-3
 - Bump version as a part of openjdk8 upgrade
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-2
