@@ -8,8 +8,8 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512    bind=7cafb7aeb6471d9b219db7a3fb3ce8a428bf661eb8fa532b16fa2a9054b67661c30eff97f6ff18fdef340e9b717c82b01d55bb0297ccca2388915d5ebfc188bb
+Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
+%define sha512 bind=7cafb7aeb6471d9b219db7a3fb3ce8a428bf661eb8fa532b16fa2a9054b67661c30eff97f6ff18fdef340e9b717c82b01d55bb0297ccca2388915d5ebfc188bb
 
 Source1:        %{name}.sysusers
 
@@ -19,7 +19,7 @@ Requires:       openssl
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       userspace-rcu
 Requires(pre):  systemd-rpm-macros
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -60,10 +60,10 @@ Upstream no longer supports nor recommends bind libraries for third party applic
     --without-python \
     --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
