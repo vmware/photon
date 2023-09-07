@@ -1,7 +1,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
-Version:        1.10.0
-Release:        3%{?dist}
+Version:        1.11.0
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.libssh2.org
 Group:          System Environment/NetworkingLibraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.libssh2.org/download/libssh2-%{version}.tar.gz
-%define sha512  libssh2=e064ee1089eb8e6cd5fa2617f4fd8ff56c2721c5476775a98bdb68c6c4ee4d05c706c3bb0eb479a27a8ec0b17a8a5ef43e1d028ad3f134519aa582d3981a3a30
+%define sha512  libssh2=ef85e152dc252bd9b1c05276972b9c22313f5d492743dde090235742746d67f634f2a419eff9162132e2274c8582113b75279b074e0c7b34b2526b92fd1a1e8e
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -60,6 +60,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Thu Sep 07 2023 Harinadh D <hdommaraju@vmware.com> 1.11.0-1
+- Version upgrade to fix CVE-2020-22218
+- fix VCDA fails to perform SFTP upload of its backups to SFTP servers
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-3
 - Bump version as a part of zlib upgrade
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-2
