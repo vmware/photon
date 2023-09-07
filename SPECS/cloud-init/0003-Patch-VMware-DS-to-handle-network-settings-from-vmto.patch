@@ -1,20 +1,20 @@
-From a93d363e23f42a7fbf95ed44b31082c4195ec0be Mon Sep 17 00:00:00 2001
+From 133930012096c20c3baa958b87a843ba76a555bf Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
-Subject: [PATCH] Patch VMware DS to handle network settings from vmtoolsd
+Subject: [PATCH 3/5] Patch VMware DS to handle network settings from vmtoolsd
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- cloudinit/sources/DataSourceVMware.py | 128 +++++++++++++++++++++++++-
- 1 file changed, 125 insertions(+), 3 deletions(-)
+ cloudinit/sources/DataSourceVMware.py | 132 +++++++++++++++++++++++++-
+ 1 file changed, 129 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 07a8022..6ac4f54 100644
+index 616a08f..5677631 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
 @@ -75,6 +75,7 @@ import netifaces
  
- from cloudinit import dmi
+ from cloudinit import atomic_helper, dmi
  from cloudinit import log as logging
 +from cloudinit.net import network_state
  from cloudinit import net, sources, util
@@ -28,7 +28,7 @@ index 07a8022..6ac4f54 100644
  
  VMWARE_RPCTOOL = which("vmware-rpctool")
  REDACT = "redact"
-@@ -161,6 +163,106 @@ class DataSourceVMware(sources.DataSource):
+@@ -161,6 +163,110 @@ class DataSourceVMware(sources.DataSource):
              (DATA_ACCESS_METHOD_IMC, self.get_imc_data_fn, True),
          ]
  
@@ -38,9 +38,9 @@ index 07a8022..6ac4f54 100644
 +
 +        dev_index = 0
 +        while True:
-+            key_prefix = 'interface.' + str(dev_index)
++            key_prefix = f"interface.{dev_index}"
 +
-+            iface_name = guestinfo(key_prefix + '.name')
++            iface_name = guestinfo(f"{key_prefix}.name")
 +            if not iface_name:
 +                break
 +
@@ -48,11 +48,11 @@ index 07a8022..6ac4f54 100644
 +            iface_cfg = eth_cfg[iface_name]
 +            iface_cfg['match'].update({'name': iface_name})
 +
-+            mac = guestinfo(key_prefix + '.mac')
++            mac = guestinfo(f"{key_prefix}.mac")
 +            if mac:
 +                iface_cfg['match'].update({'macaddress': mac})
 +
-+            key_proto = key_prefix + '.dhcp'
++            key_proto = f"{key_prefix}.dhcp"
 +            dhcp_val = guestinfo(key_proto)
 +
 +            dhcp_cfg_map = {
@@ -62,16 +62,16 @@ index 07a8022..6ac4f54 100644
 +                'no': {'dhcp4': False, 'dhcp6': False},
 +            }
 +
-+            address = guestinfo(key_prefix + '.address')
++            address = guestinfo(f"{key_prefix}.address")
 +            if dhcp_val and dhcp_val in {'yes', 'ipv4', 'ipv6', 'no'}:
 +                iface_cfg.update(dhcp_cfg_map[dhcp_val])
 +
 +            if (dhcp_val and dhcp_val == 'no') or address:
 +                if address:
-+                    netmask = guestinfo(key_prefix + '.netmask')
++                    netmask = guestinfo(f"{key_prefix}.netmask")
 +                    if netmask:
 +                        netmask = network_state.mask_to_net_prefix(netmask)
-+                        address += '/' + netmask
++                        address = f"{address}/{netmask}"
 +
 +                    iface_cfg['addresses'] = [address]
 +                    iface_cfg.update(dhcp_cfg_map['no'])
@@ -101,7 +101,7 @@ index 07a8022..6ac4f54 100644
 +            route_index = 0
 +            default_destination_set = False
 +            while True:
-+                key_route = key_prefix + '.route.' + str(route_index)
++                key_route = f"{key_prefix}.route.{route_index}"
 +                route = guestinfo(key_route)
 +                if not route:
 +                    break
@@ -110,9 +110,11 @@ index 07a8022..6ac4f54 100644
 +                route = [x.strip() for x in route.split(',')]
 +                len_route = len(route)
 +                if len_route > 2:
-+                    LOG.debug("Route information for %s route in %s device \
-+                              incorrect - expected 2 values",
-+                              route_index, dev_index)
++                    LOG.debug(
++                        f"Route information for {route_index} "
++                        f"route in {dev_index} device incorrect - "
++                        "expected 2 values"
++                    )
 +                    continue
 +
 +                if len_route == 2:
@@ -125,8 +127,10 @@ index 07a8022..6ac4f54 100644
 +                        d = {'via': route[0], 'to': '0.0.0.0'}
 +                        default_destination_set = True
 +                    else:
-+                        LOG.debug("Default destination set previously, not \
-+                                  setting route %s", route_index)
++                        LOG.debug(
++                            "Default destination set previously, not "
++                            f"setting route {route_index}"
++                        )
 +                route_index += 1
 +            dev_index += 1
 +
@@ -135,7 +139,7 @@ index 07a8022..6ac4f54 100644
      def __str__(self):
          root = sources.DataSource.__str__(self)
          return "%s [seed=%s]" % (root, self.data_access_method)
-@@ -197,6 +299,24 @@ class DataSourceVMware(sources.DataSource):
+@@ -197,6 +303,24 @@ class DataSourceVMware(sources.DataSource):
                  self.data_access_method = data_access_method
                  break
  
@@ -160,7 +164,7 @@ index 07a8022..6ac4f54 100644
          if not self.data_access_method:
              LOG.error("failed to find a valid data access method")
              return False
-@@ -204,7 +324,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -204,7 +328,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
  
          # Get the metadata.
@@ -170,7 +174,7 @@ index 07a8022..6ac4f54 100644
  
          # Get the user data.
          self.userdata_raw = ud
-@@ -219,8 +340,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -219,8 +344,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
@@ -180,7 +184,7 @@ index 07a8022..6ac4f54 100644
  
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -258,6 +378,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -258,6 +382,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_IMC:
              get_key_name_fn = get_imc_key_name
@@ -190,4 +194,5 @@ index 07a8022..6ac4f54 100644
              return sources.METADATA_UNKNOWN
  
 -- 
-2.39.0
+2.25.1
+
