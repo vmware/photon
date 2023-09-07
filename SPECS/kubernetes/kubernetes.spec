@@ -13,7 +13,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -81,11 +81,8 @@ Requires:       %{name} >= 1.27.3
 A kubelet device plugin for isolcpu resource.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
+%autosetup -b0 -b5 -N
 %patch0 -p1
-# Using autosetup is not feasible
-%setup -q -b 5
 cd ../isolcpu-plugin-%{isolcpu_ver}
 %patch1 -p1
 
@@ -266,6 +263,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Thu Sep 07 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-5
+- Fix for previous change to apply all patches.
 * Wed Aug 23 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-4
 - Introduction of vmware.com/isolcpu POD property.
 - isolcpus allocations support for RT workloads.
