@@ -3,7 +3,7 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.2.5
+Version:        12.3.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=368d1a5e79af721ab7207bd9567f813d73da9587fc26b323dda4177bf15ccb2b12aa5e457db2e41c2c3338fe4d02e537c27e777f1e656c40b0649334ffebf393
+%define sha512 %{name}=c10e0aad49c1ca604ac738f985cca944659ac01206d3652c0ca72c693dc231e0547b8298e427f0ad460a9fb50799032813de15d628c26531b0bbcc80c93dfeb3
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
@@ -179,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.0-1
+- Upgrade to v12.3.0
 * Tue Jun 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-1
 - Upgrade to version 12.2.5
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 12.2.0-2
