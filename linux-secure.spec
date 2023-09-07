@@ -7,11 +7,6 @@
 # Set this flag to 0 to build without canister
 %global fips 1
 
-# If kat_build is enabled, canister is not used.
-%if 0%{?kat_build}
-%global fips 0
-%endif
-
 %if 0%{?canister_build}
 %global fips 0
 %endif
@@ -19,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.60
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -157,10 +152,6 @@ Patch508: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
-%if 0%{?kat_build}
-Patch511: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch512: 0003-FIPS-broken-kattest.patch
-%endif
 
 %if 0%{?canister_build}
 # Below patches are common for fips and canister_build flags
@@ -177,6 +168,10 @@ Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
 Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10009: 0008-Move-kernel-structures-usage.patch
 Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+
+%if 0%{?kat_build}
+Patch10011: 0003-FIPS-broken-kattest.patch
+%endif
 %endif
 
 BuildArch:      x86_64
@@ -282,12 +277,13 @@ The kernel fips-canister
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
 %endif
-%if 0%{?kat_build}
-%autopatch -p1 -m511 -M512
-%endif
 
 %if 0%{?canister_build}
 %autopatch -p1 -m10000 -M10010
+
+%if 0%{?kat_build}
+%autopatch -p1 -m10011 -M10011
+%endif
 %endif
 
 %ifarch x86_64
@@ -351,10 +347,10 @@ sed -i "s/CONFIG_PRINTK_INDEX=y/# CONFIG_PRINTK_INDEX is not set/" .config
 
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
-%endif
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
 %endif
 
 %ifarch x86_64
@@ -477,6 +473,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
+- Create a non-production canister for katbuild kernels when kat_build is
+  enabled along with canister_build
 * Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.60-2
 - Jitterentropy sample collection support in ACVP Build.
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.60-1
