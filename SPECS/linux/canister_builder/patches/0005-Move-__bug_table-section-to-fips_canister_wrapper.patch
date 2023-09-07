@@ -1,4 +1,4 @@
-From 426a6da48e195c99d2b217611cf99da054d917b2 Mon Sep 17 00:00:00 2001
+From 6ab5b27a964704c642becc242c7880e5d88efbb4 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 17 May 2023 16:11:40 +0000
 Subject: [PATCH 5/8] Move __bug_table section to fips_canister_wrapper
@@ -21,14 +21,13 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/ecdsa.c                     |   6 +-
  crypto/gcm.c                       |  26 +++----
  crypto/hmac.c                      |   4 +-
- crypto/jitterentropy-kcapi.c       |   2 +-
  crypto/rsa-pkcs1pad.c              |   6 +-
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
  crypto/testmgr.c                   | 110 ++++++++++++++---------------
  crypto/xts.c                       |   2 +-
- lib/crypto/sha256.c                |   6 +-
- 23 files changed, 171 insertions(+), 164 deletions(-)
+ lib/crypto/sha256.c                |  10 +++
+ 22 files changed, 176 insertions(+), 161 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 0628c2bca..6a4378bac 100644
@@ -866,19 +865,6 @@ index 7c289df3b..b3e099505 100644
  
  	for (i = 0; i < bs; i++) {
  		ipad[i] ^= HMAC_IPAD_VALUE;
-diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
-index 0130987ca..e7cd467b0 100644
---- a/crypto/jitterentropy-kcapi.c
-+++ b/crypto/jitterentropy-kcapi.c
-@@ -63,7 +63,7 @@ void jent_zfree(void *ptr)
- 
- void jent_memcpy(void *dest, const void *src, unsigned int n)
- {
--	memcpy(dest, src, n);
-+	fcw_memcpy(dest, src, n);
- }
- 
- /*
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
 index 1c9d29552..ab144392a 100644
 --- a/crypto/rsa-pkcs1pad.c
@@ -1356,7 +1342,7 @@ index f548992c2..12edd6525 100644
  			goto err_free_inst;
  
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 72a4b0b1d..12fb96b0f 100644
+index 72a4b0b1d..555ba2070 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
 @@ -37,6 +37,8 @@ static const u32 SHA256_K[] = {
@@ -1368,23 +1354,30 @@ index 72a4b0b1d..12fb96b0f 100644
  static inline u32 Ch(u32 x, u32 y, u32 z)
  {
  	return z ^ (x & (y ^ z));
-@@ -133,7 +135,7 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+@@ -133,7 +135,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
  	if ((partial + len) > 63) {
  		if (partial) {
  			done = -partial;
--			memcpy(sctx->buf + partial, data, done + 64);
++#ifdef FIPS_CANISTER
 +			fcw_memcpy(sctx->buf + partial, data, done + 64);
++#else
+ 			memcpy(sctx->buf + partial, data, done + 64);
++#endif
  			src = sctx->buf;
  		}
  
-@@ -147,7 +149,7 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+@@ -147,7 +153,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
  
  		partial = 0;
  	}
--	memcpy(sctx->buf + partial, src, len - done);
++#ifdef FIPS_CANISTER
 +	fcw_memcpy(sctx->buf + partial, src, len - done);
++#else
+ 	memcpy(sctx->buf + partial, src, len - done);
++#endif
  }
  EXPORT_SYMBOL(sha256_update);
  
 -- 
-2.41.0
+2.19.0
+

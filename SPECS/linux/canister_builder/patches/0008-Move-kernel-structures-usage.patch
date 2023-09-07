@@ -1,4 +1,4 @@
-From 1f5db4fd3f2d26d3520126abff8587678e26d1e5 Mon Sep 17 00:00:00 2001
+From d7ee41b846bd353285be0b9add9300089d53fb34 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 28 Jun 2023 10:18:48 +0000
 Subject: [PATCH 8/8] Move kernel structures usage from canister to wrapper
@@ -40,7 +40,6 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/gcm.c                       |  15 +-
  crypto/hmac.c                      |  11 +-
  crypto/internal.h                  |   7 +-
- crypto/jitterentropy-kcapi.c       |  27 +-
  crypto/rsa-pkcs1pad.c              |   1 -
  crypto/rsa.c                       |  10 +-
  crypto/rsa_helper.c                |   3 +-
@@ -61,7 +60,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  include/linux/crypto.h             |   8 +
  include/linux/rtattr.h             |   6 +
  include/linux/swait.h              |   4 +
- 39 files changed, 383 insertions(+), 838 deletions(-)
+ 38 files changed, 370 insertions(+), 824 deletions(-)
  create mode 100644 include/linux/rtattr.h
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
@@ -1307,81 +1306,6 @@ index c08385571..edee7e0d5 100644
  }
  
  static inline int crypto_is_larval(struct crypto_alg *alg)
-diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
-index e7cd467b0..88fd863ab 100644
---- a/crypto/jitterentropy-kcapi.c
-+++ b/crypto/jitterentropy-kcapi.c
-@@ -39,7 +39,6 @@
- 
- #include <linux/fips.h>
- #include <linux/kernel.h>
--#include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/time.h>
- #include <crypto/internal/rng.h>
-@@ -134,6 +133,9 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
- {
- 	struct jitterentropy *rng = crypto_rng_ctx(tfm);
- 	int ret = 0;
-+#ifdef CONFIG_PRINTK
-+	static void *rs = NULL;
-+#endif
- 
- 	fcw_mutex_lock(rng->jent_lock);
- 
-@@ -150,11 +152,16 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
- 		if (fips_enabled)
- 			panic("Jitter RNG permanent health test failure\n");
- 
--		pr_err("Jitter RNG permanent health test failure\n");
-+		fcw_printk(KERN_ERR pr_fmt() "Jitter RNG permanent health test failure\n");
- 		ret = -EFAULT;
- 	} else if (ret == -2) {
- 		/* Handle intermittent health test error */
--		pr_warn_ratelimited("Reset Jitter RNG due to intermittent health test failure\n");
-+#ifdef CONFIG_PRINTK
-+		rs = fcw_init_ratelimit_state(rs);
-+		if (fcw_ratelimit(rs, __func__)) {
-+			fcw_printk(KERN_WARNING pr_fmt() "Reset Jitter RNG due to intermittent health test failure\n");
-+		}
-+#endif
- 		ret = -EAGAIN;
- 	} else if (ret == -1) {
- 		/* Handle other errors */
-@@ -188,7 +195,7 @@ static struct rng_alg jent_alg = {
- 	}
- };
- 
--static int __init jent_mod_init(void)
-+int __init jent_mod_init(void)
- {
- 	int ret = 0;
- 
-@@ -198,22 +205,14 @@ static int __init jent_mod_init(void)
- 		if (fips_enabled)
- 			panic("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
- 
--		pr_info("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
-+		fcw_printk(KERN_INFO pr_fmt() "jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
- 		return -EFAULT;
- 	}
- 	return crypto_register_rng(&jent_alg);
- }
- 
--static void __exit jent_mod_exit(void)
-+void __exit jent_mod_exit(void)
- {
- 	crypto_unregister_rng(&jent_alg);
- }
- 
--/* Must be initialized before tcrypt */
--subsys_initcall(jent_mod_init);
--module_exit(jent_mod_exit);
--
--MODULE_LICENSE("Dual BSD/GPL");
--MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
--MODULE_DESCRIPTION("Non-physical True Random Number Generator based on CPU Jitter");
--MODULE_ALIAS_CRYPTO("jitterentropy_rng");
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
 index cb54c382d..5464d13ad 100644
 --- a/crypto/rsa-pkcs1pad.c
@@ -3467,4 +3391,5 @@ index 6a8c22b8c..d4faea8b0 100644
  };
  
 -- 
-2.41.0
+2.19.0
+

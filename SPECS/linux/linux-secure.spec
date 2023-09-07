@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -141,7 +141,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.41-2-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.45-4-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10002: 0002-FIPS-canister-creation.patch
@@ -427,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 07 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
+- Remove jitterentropy from FIPS canister
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-3
 - Fix for CVE-2023-28464
 * Sat Sep 02 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.45-2

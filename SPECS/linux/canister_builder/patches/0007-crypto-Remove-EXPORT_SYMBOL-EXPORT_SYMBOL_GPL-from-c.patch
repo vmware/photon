@@ -447,12 +447,12 @@ index 1aebe7be9..9b2f423f0 100644
  
  MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 12fb96b0f..9e14f49b5 100644
+index 555ba2070..c0656c6f3 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
-@@ -151,13 +151,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 	}
- 	fcw_memcpy(sctx->buf + partial, src, len - done);
+@@ -159,13 +159,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ 	memcpy(sctx->buf + partial, src, len - done);
+ #endif
  }
 -EXPORT_SYMBOL(sha256_update);
  
@@ -464,7 +464,7 @@ index 12fb96b0f..9e14f49b5 100644
  
  static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_words)
  {
-@@ -190,13 +188,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
+@@ -198,13 +196,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
  {
  	__sha256_final(sctx, out, 8);
  }
@@ -478,7 +478,7 @@ index 12fb96b0f..9e14f49b5 100644
  
  void sha256(const u8 *data, unsigned int len, u8 *out)
  {
-@@ -206,6 +202,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+@@ -214,6 +210,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
  	sha256_update(&sctx, data, len);
  	sha256_final(&sctx, out);
  }
@@ -486,4 +486,5 @@ index 12fb96b0f..9e14f49b5 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.41.0
+2.19.0
+

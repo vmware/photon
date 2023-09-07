@@ -15,10 +15,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/Makefile |   4 --
- crypto/Makefile          | 112 +++++++++++++++++++++++++++++++--------
+ crypto/Makefile          | 111 +++++++++++++++++++++++++++++++--------
  init/main.c              |   3 ++
  lib/crypto/Makefile      |   9 ----
- 4 files changed, 92 insertions(+), 36 deletions(-)
+ 4 files changed, 92 insertions(+), 35 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 3b1d701a4..3836c4e30 100644
@@ -36,7 +36,7 @@ index 3b1d701a4..3836c4e30 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index d7fcab76d..ad810d945 100644
+index d7fcab76d..ed84f7821 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -114,16 +114,15 @@ index d7fcab76d..ad810d945 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -167,8 +148,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -167,7 +148,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
 -obj-$(CONFIG_CRYPTO_DRBG) += drbg.o
--obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
+ obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
- UBSAN_SANITIZE_jitterentropy.o = n
-@@ -183,13 +162,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -183,13 +163,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -137,7 +136,7 @@ index d7fcab76d..ad810d945 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -213,3 +190,92 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -213,3 +191,89 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -196,9 +195,6 @@ index d7fcab76d..ad810d945 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DRBG_CTR)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_DRBG_CTR=y)
 +endif
-+ifneq ($(subst Y,y,$(CONFIG_CRYPTO_JITTERENTROPY)),y)
-+  $(error FIPS canister requires CONFIG_CRYPTO_JITTERENTROPY=y)
-+endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECC)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_ECC=y)
 +endif
@@ -231,10 +227,10 @@ index d7fcab76d..ad810d945 100644
 +endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index aa21add5f..4db7e4edd 100644
+index fe378351e..962edcc54 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -885,6 +885,8 @@ static int __init early_randomize_kstack_offset(char *buf)
+@@ -882,6 +882,8 @@ static int __init early_randomize_kstack_offset(char *buf)
  early_param("randomize_kstack_offset", early_randomize_kstack_offset);
  #endif
  
@@ -243,7 +239,7 @@ index aa21add5f..4db7e4edd 100644
  void __init __weak arch_call_rest_init(void)
  {
  	rest_init();
-@@ -986,6 +988,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+@@ -983,6 +985,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
  	/* Architectural and non-timekeeping rng init, before allocator init */
  	random_init_early(command_line);
  

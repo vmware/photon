@@ -1,4 +1,4 @@
-From f39f08830588a6fc9beb9f14217aed41dbbc888d Mon Sep 17 00:00:00 2001
+From f213042c01585e02b0eefb3d4afd7b7d19b69d3a Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 25 Jan 2021 19:34:10 -0800
 Subject: [PATCH 2/8] FIPS canister creation
@@ -15,7 +15,6 @@ Canister creation patch.
  - Move cond_resched function to the wrapper.
  - Add internal static functions to eliminate glue helpers calls.
  - Redo DO_ONCE as it is not supported by integrity code.
- - Initialize jitterentropy earlier.
  - Do not use latent entropy GCC plugin for canister objects
  - Do not check indirect call destination signatures from canister
 
@@ -24,7 +23,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
- crypto/Makefile                    |  85 +++++++++++++++++++++++
+ crypto/Makefile                    |  84 ++++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -36,13 +35,12 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/ecdsa.c                     |   3 +-
  crypto/gcm.c                       |  11 +--
  crypto/hmac.c                      |   3 +-
- crypto/jitterentropy-kcapi.c       |  18 +++--
  crypto/rsa-pkcs1pad.c              |  13 ++--
  crypto/sha3_generic.c              |   5 +-
  crypto/testmgr.c                   | 108 ++++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 267 insertions(+), 139 deletions(-)
+ 18 files changed, 255 insertions(+), 132 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index a5b0cb3ef..10420b2aa 100644
@@ -324,7 +322,7 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, 0);
  	}
 diff --git a/crypto/Makefile b/crypto/Makefile
-index ad810d945..a402a4f0d 100644
+index ed84f7821..3711707ab 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,6 +40,7 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -396,20 +394,15 @@ index ad810d945..a402a4f0d 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -148,10 +166,12 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -148,6 +166,7 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
 +canister += drbg.o
+ obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
- UBSAN_SANITIZE_jitterentropy.o = n
- jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
-+canister += $(jitterentropy_rng-y)
- obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
- obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
- obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
-@@ -162,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -163,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -423,7 +416,7 @@ index ad810d945..a402a4f0d 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -190,6 +212,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -191,6 +212,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -955,80 +948,6 @@ index 3610ff0b6..7c289df3b 100644
  	if (!inst)
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
-diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
-index b892685e1..0130987ca 100644
---- a/crypto/jitterentropy-kcapi.c
-+++ b/crypto/jitterentropy-kcapi.c
-@@ -45,6 +45,7 @@
- #include <crypto/internal/rng.h>
- 
- #include "jitterentropy.h"
-+#include "fips_canister_wrapper.h"
- 
- /***************************************************************************
-  * Helper function
-@@ -52,7 +53,7 @@
- 
- void *jent_zalloc(unsigned int len)
- {
--	return kzalloc(len, GFP_KERNEL);
-+	return fcw_kzalloc(len, GFP_KERNEL);
- }
- 
- void jent_zfree(void *ptr)
-@@ -96,7 +97,7 @@ void jent_get_nstime(__u64 *out)
-  ***************************************************************************/
- 
- struct jitterentropy {
--	spinlock_t jent_lock;
-+	void *jent_lock;
- 	struct rand_data *entropy_collector;
- };
- 
-@@ -109,7 +110,9 @@ static int jent_kcapi_init(struct crypto_tfm *tfm)
- 	if (!rng->entropy_collector)
- 		ret = -ENOMEM;
- 
--	spin_lock_init(&rng->jent_lock);
-+	rng->jent_lock = fcw_mutex_init();
-+	if (!rng->jent_lock)
-+		return -ENOMEM;
- 	return ret;
- }
- 
-@@ -117,11 +120,12 @@ static void jent_kcapi_cleanup(struct crypto_tfm *tfm)
- {
- 	struct jitterentropy *rng = crypto_tfm_ctx(tfm);
- 
--	spin_lock(&rng->jent_lock);
-+	fcw_mutex_lock(rng->jent_lock);
- 	if (rng->entropy_collector)
- 		jent_entropy_collector_free(rng->entropy_collector);
- 	rng->entropy_collector = NULL;
--	spin_unlock(&rng->jent_lock);
-+	fcw_mutex_unlock(rng->jent_lock);
-+	kfree(rng->jent_lock);
- }
- 
- static int jent_kcapi_random(struct crypto_rng *tfm,
-@@ -131,7 +135,7 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
- 	struct jitterentropy *rng = crypto_rng_ctx(tfm);
- 	int ret = 0;
- 
--	spin_lock(&rng->jent_lock);
-+	fcw_mutex_lock(rng->jent_lock);
- 
- 	ret = jent_read_entropy(rng->entropy_collector, rdata, dlen);
- 
-@@ -157,7 +161,7 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
- 		ret = -EINVAL;
- 	}
- 
--	spin_unlock(&rng->jent_lock);
-+	fcw_mutex_unlock(rng->jent_lock);
- 
- 	return ret;
- }
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
 index 3237b50ba..1c9d29552 100644
 --- a/crypto/rsa-pkcs1pad.c
@@ -1559,4 +1478,5 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.41.0
+2.19.0
+
