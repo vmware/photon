@@ -10,19 +10,27 @@ Subject: [PATCH] crypto: kattest - break KAT fips intentionally
    to break a particular algorithm in fips power on self tests.
    you can specify values [1,2,3...18]. each value corresponds to
    an algorithm for which the test vectors are tampered.
+4. Extended test coverage for newly included algorithms LKCM 5.0
+
+   * newly included algorithms: gcm, gcm-rfc4106, ccm, cfb, cts, cmac, ecdsa, sha3, hmac-sha3, and
+     rsa-pkcs1pad (earlier missed out combinations)
+
+   * kernel cmdline parameter "katbuild" now ranges from [1,2,3,...60]
+
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/Kconfig   | 19 +++++++++++++
- crypto/Makefile  |  1 +
- crypto/kattest.c | 74 ++++++++++++++++++++++++++++++++++++++++++++++++
- crypto/testmgr.c | 29 +++++++++++++++++++
- 4 files changed, 123 insertions(+)
+ crypto/Kconfig   |  28 ++++++++++++
+ crypto/Makefile  |   1 +
+ crypto/kattest.c | 114 +++++++++++++++++++++++++++++++++++++++++++++++
+ crypto/testmgr.c |  72 ++++++++++++++++++++++++++++++
+ 4 files changed, 215 insertions(+)
  create mode 100644 crypto/kattest.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
 index aa15d8ee0..d720dc794 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -220,6 +220,25 @@ config CRYPTO_SELF_TEST
+@@ -250,6 +250,34 @@ config CRYPTO_SELF_TEST
  	help
  	  Crypto self test module for FIPS.
  
@@ -34,7 +42,6 @@ index aa15d8ee0..d720dc794 100644
 +	select CRYPTO_CBC
 +	select CRYPTO_ECB
 +	select CRYPTO_CTR
-+	select CRYPTO_DES
 +	select CRYPTO_XTS
 +	select CRYPTO_HMAC
 +	select CRYPTO_SHA256
@@ -42,6 +49,16 @@ index aa15d8ee0..d720dc794 100644
 +	select CRYPTO_RSA
 +	select CRYPTO_DRBG
 +	select CRYPTO_ECDH
++	select CRYPTO_ECDSA
++	select CRYPTO_GCM
++	select CRYPTO_CCM
++	select CRYPTO_CFB
++	select CRYPTO_CTS
++	select CRYPTO_CMAC
++	select CRYPTO_SHA1
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	select CRYPTO_SHA3
 +	help
 +	  Crypto Broken Known Answer Test for FIPS testing
 +
@@ -52,20 +69,20 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index b4d3850f2..875bf89e7 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -50,6 +50,7 @@ sm2_generic-y += sm2.o
+@@ -232,6 +232,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
+ 	$(call if_changed_rule,cc_o_c)
  
- obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
- obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
-+obj-$(CONFIG_CRYPTO_BROKEN_KAT) += kattest.o
+ canister += crypto_self_test.o
++canister += kattest.o
  
- crypto_acompress-y := acompress.o
- crypto_acompress-y += scompress.o
+ canister += fips_integrity.o
+ 
 diff --git a/crypto/kattest.c b/crypto/kattest.c
 new file mode 100644
 index 000000000..e2a9eb893
 --- /dev/null
 +++ b/crypto/kattest.c
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,114 @@
 +/*
 + * kattest module
 + *
@@ -76,16 +93,16 @@ index 000000000..e2a9eb893
 +#include <linux/init.h>
 +#include <linux/kernel.h>
 +#include <linux/export.h>
++#include "fips_canister_wrapper.h"
 +
 +int kat_testbuild;
-+EXPORT_SYMBOL_GPL(kat_testbuild);
 +/* Process kernel command-line parameter at boot time.
 ++ * katbuild=1 katbuild=2 etc
 ++ */
 +static int kat_test(char *str)
 +{
 +	kat_testbuild = simple_strtol(str, NULL, 0);
-+	printk(KERN_INFO "kat build : %d\n", kat_testbuild);
++	fcw_printk(KERN_INFO "kat build : %d\n", kat_testbuild);
 +	return 1;
 +}
 +
@@ -103,12 +120,56 @@ index 000000000..e2a9eb893
 +	"hmac(sha384)",
 +	"hmac(sha512)",
 +	"rsa",
++	"pkcs1pad(rsa,sha1)",
++	"pkcs1pad(rsa,sha224)",
 +	"pkcs1pad(rsa,sha256)",
++	"pkcs1pad(rsa,sha384)",
++	"pkcs1pad(rsa,sha512)",
 +	"drbg_pr_ctr_aes128",
++	"drbg_pr_ctr_aes192",
++	"drbg_pr_ctr_aes256",
++	"drbg_pr_sha1",
++	"drbg_pr_sha256",
++	"drbg_pr_sha384",
++	"drbg_pr_sha512",
++	"drbg_pr_hmac_sha1",
 +	"drbg_pr_hmac_sha256",
++	"drbg_pr_hmac_sha384",
++	"drbg_pr_hmac_sha512",
++	"drbg_nopr_ctr_aes128",
++	"drbg_nopr_ctr_aes192",
 +	"drbg_nopr_ctr_aes256",
++	"drbg_nopr_sha1",
++	"drbg_nopr_sha256",
++	"drbg_nopr_sha384",
++	"drbg_nopr_sha512",
++	"drbg_nopr_hmac_sha1",
 +	"drbg_nopr_hmac_sha256",
-+	"ecdh",
++	"drbg_nopr_hmac_sha384",
++	"drbg_nopr_hmac_sha512",
++	"ecdh-nist-p256",
++	"ecdh-nist-p384",
++	"ecdsa-nist-p256",
++	"ecdsa-nist-p384",
++	"gcm(aes)",
++	"rfc4106(gcm(aes))",
++	"ccm(aes)",
++	"cfb(aes)",
++	"cts(cbc(aes))",
++	"cmac(aes)",
++	"hmac(sha3-224)",
++	"hmac(sha3-256)",
++	"hmac(sha3-384)",
++	"hmac(sha3-512)",
++	"sha1",
++	"sha224",
++	"sha256",
++	"sha384",
++	"sha512",
++	"sha3-224",
++	"sha3-256",
++	"sha3-384",
++	"sha3-512",
 +};
 +
 +void tamper_input_vector(const char *alg, const char *driver, const char *vector)
@@ -117,7 +178,7 @@ index 000000000..e2a9eb893
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
 +	switch (kat_testbuild) {
-+		case 1 ... 18:
++		case 1 ... 60:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
 +
@@ -126,11 +187,9 @@ index 000000000..e2a9eb893
 +	}
 +}
 +
-+EXPORT_SYMBOL_GPL(tamper_input_vector);
-+
 +static int __init kattest_init(void)
 +{
-+	printk(KERN_INFO "Kattest Init\n");
++	fcw_printk(KERN_INFO "Kattest Init\n");
 +	return 1;
 +}
 +
@@ -142,10 +201,10 @@ diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index b505d0286..7f59f18a6 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -36,6 +36,29 @@
- #include <crypto/internal/simd.h>
+@@ -39,11 +39,79 @@
+ #include "fips_canister_wrapper.h"
+ #include "fips_canister_wrapper_internal.h"
  
- #include "internal.h"
 +#include "testmgr.h"
 +
 +extern int kat_testbuild;
@@ -157,21 +216,64 @@ index b505d0286..7f59f18a6 100644
 +   (const char **)&hmac_sha1_tv_template[0].digest,
 +   (const char **)&hmac_sha224_tv_template[2].digest,
 +   (const char **)&hmac_sha256_tv_template[0].digest,
-+   (const char **)&hmac_sha384_tv_template[1].digest,
++   (const char **)&hmac_sha384_tv_template[0].digest,
 +   (const char **)&hmac_sha512_tv_template[0].digest,
 +   (const char **)&rsa_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_sha1_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_sha224_tv_template[0].c,
 +   (const char **)&pkcs1pad_rsa_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_sha384_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_sha512_tv_template[0].c,
 +   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
++   (const char **)&drbg_pr_ctr_aes192_tv_template[0].expected,
++   (const char **)&drbg_pr_ctr_aes256_tv_template[0].expected,
++   (const char **)&drbg_pr_sha1_tv_template[0].expected,
++   (const char **)&drbg_pr_sha256_tv_template[0].expected,
++   (const char **)&drbg_pr_sha384_tv_template[0].expected,
++   (const char **)&drbg_pr_sha512_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha1_tv_template[0].expected,
 +   (const char **)&drbg_pr_hmac_sha256_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha384_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha512_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes128_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes192_tv_template[0].expected,
 +   (const char **)&drbg_nopr_ctr_aes256_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha1_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha256_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha384_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha512_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha1_tv_template[0].expected,
 +   (const char **)&drbg_nopr_hmac_sha256_tv_template[0].expected,
-+   (const char **)&ecdh_tv_template[0].expected_ss,
++   (const char **)&drbg_nopr_hmac_sha384_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha512_tv_template[0].expected,
++   (const char **)&ecdh_p256_tv_template[0].expected_ss,
++   (const char **)&ecdh_p384_tv_template[0].expected_ss,
++   (const char **)&ecdsa_nist_p256_tv_template[0].c,
++   (const char **)&ecdsa_nist_p384_tv_template[0].c,
++   (const char **)&aes_gcm_tv_template[0].ctext,
++   (const char **)&aes_gcm_rfc4106_tv_template[0].ctext,
++   (const char **)&aes_ccm_tv_template[0].ctext,
++   (const char **)&aes_cfb_tv_template[0].ctext,
++   (const char **)&cts_mode_tv_template[0].ctext,
++   (const char **)&aes_cmac128_tv_template[0].digest,
++   (const char **)&hmac_sha3_224_tv_template[0].digest,
++   (const char **)&hmac_sha3_256_tv_template[0].digest,
++   (const char **)&hmac_sha3_384_tv_template[0].digest,
++   (const char **)&hmac_sha3_512_tv_template[0].digest,
++   (const char **)&sha1_tv_template[0].digest,
++   (const char **)&sha224_tv_template[0].digest,
++   (const char **)&sha256_tv_template[0].digest,
++   (const char **)&sha384_tv_template[0].digest,
++   (const char **)&sha512_tv_template[0].digest,
++   (const char **)&sha3_224_tv_template[0].digest,
++   (const char **)&sha3_256_tv_template[0].digest,
++   (const char **)&sha3_384_tv_template[0].digest,
++   (const char **)&sha3_512_tv_template[0].digest,
 +};
- 
- static bool notests;
- module_param(notests, bool, 0644);
-@@ -57,6 +80,8 @@ DEFINE_PER_CPU(bool, crypto_simd_disabled_for_test);
- EXPORT_PER_CPU_SYMBOL_GPL(crypto_simd_disabled_for_test);
++
+ #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
+ static bool noextratests;
+ static unsigned int fuzz_iterations = 100;
  #endif
  
 +extern void tamper_input_vector(const char *alg, const char *driver, const char *vector);
@@ -179,11 +281,11 @@ index b505d0286..7f59f18a6 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -5713,6 +5738,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
- 			     (j >= 0 && !alg_test_descs[j].fips_allowed)))
- 		goto non_fips_alg;
+@@ -5650,6 +5718,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+ 			goto non_fips_alg;
+ 	}
  
-+	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 19) {
++	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 61) {
 +		tamper_input_vector(alg, driver, *poison_alg_strs[kat_testbuild-1]);
 +	}
 +
@@ -191,5 +293,4 @@ index b505d0286..7f59f18a6 100644
  	if (i >= 0)
  		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
 -- 
-2.28.0
-
+2.35.6
