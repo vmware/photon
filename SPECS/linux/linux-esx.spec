@@ -10,11 +10,6 @@
 
 # Set this flag to 0 to build without canister
 %global fips 1
-
-# If kat_build is enabled, canister is not used.
-%if 0%{?kat_build}
-%global fips 0
-%endif
 %endif
 
 %ifarch aarch64
@@ -26,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.60
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -221,10 +216,6 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch508: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-%else
-%if 0%{?kat_build}
-Patch511: 0003-FIPS-broken-kattest.patch
-%endif
 %endif
 
 %ifarch x86_64
@@ -349,9 +340,6 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
 %endif
-%if 0%{?kat_build}
-%autopatch -p1 -m511 -M511
-%endif
 
 %ifarch x86_64
 # SEV on VMware
@@ -397,10 +385,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 patch -p1 < %{SOURCE18}
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
-
-%if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
-%endif
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -558,6 +542,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 27 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
+- Remove kat_build and its associated spec changes
 * Fri Oct 27 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.60-2
 - Jitterentropy sample collection support in ACVP Build.
 * Fri Oct 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.60-1
