@@ -1,7 +1,7 @@
-From 6d1fee7d28166676b9726f2d4a8d1c81b1f4da4a Mon Sep 17 00:00:00 2001
+From a95b4cae7f7a3f2d49a59e4f500e0cac439f90b3 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 25 Aug 2021 19:14:01 +0530
-Subject: [PATCH] Add default DS list & few other changes to cloud.cfg
+Subject: [PATCH 4/5] Add default DS list & few other changes to cloud.cfg
 
 Add mount_default_fields to avoid contention with systemd default
 services at random intervals.
@@ -10,26 +10,27 @@ Comments in the file describe why they are needed
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- config/cloud.cfg.tmpl | 7 +++++++
- 1 file changed, 7 insertions(+)
+ config/cloud.cfg.tmpl | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index d148dd5..2086e88 100644
+index de0bf7b..4a7d205 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -59,6 +59,8 @@ preserve_hostname: false
- # This should not be required, but leave it in place until the real cause of
- # not finding -any- datasources is resolved.
- datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
-+{% elif variant in ["photon"] %}
+@@ -87,12 +87,21 @@ apt:
+ 
+ # If you use datasource_list array, keep array items in a single line.
+ # If you use multi line array, ds-identify script won't read array items.
++{% if variant in ["photon"] %}
 +datasource_list: ['NoCloud', 'ConfigDrive', 'OpenStack', 'VMware', None]
- {% endif %}
++{% endif -%}
++
  # Example datasource config
  # datasource:
-@@ -67,6 +69,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
- #      timeout: 5 # (defaults to 50 seconds)
- #      max_wait: 10 # (defaults to 120 seconds)
- 
+ #   Ec2:
+ #     metadata_urls: [ 'blah.com' ]
+ #     timeout: 5 # (defaults to 50 seconds)
+ #     max_wait: 10 # (defaults to 120 seconds)
 +# Set allow_raw_data to true if you want VMware to support raw data feature
 +# this will wait 15 sec for cust.cfg
 +datasource:
@@ -39,4 +40,5 @@ index d148dd5..2086e88 100644
  {% if variant == "amazon" %}
  # Amazon Linux relies on ec2-net-utils for network configuration
 -- 
-2.39.0
+2.25.1
+

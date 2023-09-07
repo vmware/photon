@@ -1,7 +1,7 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
 
 Name:           cloud-init
-Version:        23.2.2
+Version:        23.3.1
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,15 +11,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5a3788d3bad568b502bc4776472ca58d2543da2340a1cfcffd69429d44b1a00ba904d9986fac9babb0b4f58f0d1d326a497e56239e9c10fa35f2668de5a77dba
+%define sha512 %{name}=c25f35bd393f6c927ba412f69255eaca38c78ff23f9440061e63a76f3ad4a008654bc6e448f6614ec9995192a4711bb5ab55046ad14b5f0f0830a949afe63c53
 
-Patch0: cloud-init-azureds.patch
-Patch1: ds-identify.patch
-Patch2: ds-vmware-photon.patch
-Patch3: cloud-cfg.patch
+Patch0: 0001-azure-ds.patch
+Patch1: 0002-Change-default-policy.patch
+Patch2: 0003-Patch-VMware-DS-to-handle-network-settings-from-vmto.patch
+Patch3: 0004-Add-default-DS-list-few-other-changes-to-cloud.cfg.patch
 
 %if 0%{?with_check}
-Patch4: test_vmware.py-fix-pkg-test-failure.patch
+Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 BuildRequires: python3-devel
@@ -108,13 +108,11 @@ sed -i -e "0,/'OpenStack', / s/'OpenStack', //" \
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
          %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
-%if 0%{?with_check}
 %check
-%define pkglist pytest-metadata unittest2 responses pytest-mock
+%define pkglist pytest-metadata unittest2 responses pytest-mock passlib
 
 pip3 install --upgrade %{pkglist}
 %make_build check
-%endif
 
 %clean
 rm -rf %{buildroot}
@@ -148,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.1-1
+- Upgrade to v23.3.1
 * Thu Jul 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2.2-1
 - Upgrade to v23.2.2
 * Fri Jun 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.2-1

@@ -3,8 +3,8 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.2.5
-Release:        2%{?dist}
+Version:        12.3.0
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,7 +12,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=368d1a5e79af721ab7207bd9567f813d73da9587fc26b323dda4177bf15ccb2b12aa5e457db2e41c2c3338fe4d02e537c27e777f1e656c40b0649334ffebf393
+%define sha512 %{name}=c10e0aad49c1ca604ac738f985cca944659ac01206d3652c0ca72c693dc231e0547b8298e427f0ad460a9fb50799032813de15d628c26531b0bbcc80c93dfeb3
+
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 
@@ -23,7 +24,6 @@ Source3: vgauthd.service
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
-Patch2: CVE-2023-20900.patch
 
 %ifarch aarch64
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
@@ -90,7 +90,7 @@ GOSC scripts
 
 %build
 cd %{name}
-autoreconf -i
+autoreconf -vif
 %configure --enable-photon-gosc \
            --without-x \
            --without-kernel-modules \
@@ -175,6 +175,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Tue Sep 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.0-1
+- Upgrade to v12.3.0
 * Tue Aug 29 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-2
 - Fix CVE-2023-20900
 * Tue Jun 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-1
