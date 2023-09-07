@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -25,7 +25,7 @@ BuildRequires: python3
 Requires: ca-certificates
 Requires: openssl
 Requires: krb5
-Requires: libssh2
+Requires: libssh2 >= 1.11.0
 Requires: %{name}-libs = %{version}-%{release}
 
 %description
@@ -47,7 +47,7 @@ Static libraries and header files for the support library for curl
 Summary:        Libraries for curl
 Group:          System Environment/Libraries
 Requires:       ca-certificates-pki
-Requires:       libssh2
+Requires:       libssh2 >= 1.11.0
 Requires:       krb5
 
 %description    libs
@@ -106,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Wed Sep 06 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-4
+- fix libssh2 incompatability
 * Wed Aug 30 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-3
 - Version bump to use libssh2 1.11.0
 * Fri Jul 14 2023 Shivani Agarwal <shivania2@vmware.com> 8.1.2-2
