@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.45
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -68,9 +68,9 @@ Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.37-2%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.45-4%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=034485970dec88400350a3bb14796c2a9b7c369651bf99083d670b33bb6b31216ab42fb14617c8120b4c3d53441a4a04caeca2a0bd479970b1965872c68099b1
+%define sha512 fips-canister=4cf975dbf73a18288cb991493d86a23c0574f402c419b7e6c6fd229e026ce6c15780c6afabff98f59aee104b61332a6974196cec21735e178ad48ccef517b886
 %endif
 
 Source18:       spec_install_post.inc
@@ -191,7 +191,7 @@ Patch505: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.37-2-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.45-4-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %else
@@ -712,6 +712,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
+- Update fips_canister version 6.1.45-4
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-3
 - Fix for CVE-2023-28464
 * Sat Sep 02 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.45-2
