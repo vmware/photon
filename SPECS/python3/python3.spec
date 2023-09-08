@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -16,7 +16,8 @@ Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.t
 
 Source1:        macros.python
 
-Patch0:         cgi3.patch
+Patch0: cgi3.patch
+Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -320,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Sep 08 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-8
+- Add patch for multiprocessing library to use sha256  in FIPS mode
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 3.11.0-7
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-6

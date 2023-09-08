@@ -1,0 +1,42 @@
+From 481ca5869e7ded9587be808aa5338cabb7ede5ad Mon Sep 17 00:00:00 2001
+From: Prashant S Chauhan <psinghchauha@vmware.com>
+Date: Fri, 8 Sep 2023 05:06:43 +0000
+Subject: [PATCH] multiprocessing library use HMAC-SHA256  in FIPS mode
+
+---
+ Lib/multiprocessing/connection.py | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/Lib/multiprocessing/connection.py b/Lib/multiprocessing/connection.py
+index b08144f7a1..457d7320c1 100644
+--- a/Lib/multiprocessing/connection.py
++++ b/Lib/multiprocessing/connection.py
+@@ -735,7 +735,11 @@ def deliver_challenge(connection, authkey):
+             "Authkey must be bytes, not {0!s}".format(type(authkey)))
+     message = os.urandom(MESSAGE_LENGTH)
+     connection.send_bytes(CHALLENGE + message)
+-    digest = hmac.new(authkey, message, 'md5').digest()
++    try:
++        digest = hmac.new(authkey, message, 'md5').digest()
++    except ValueError:
++        # If FIPS mode i.e MD5 is not supported use SHA-256 protocol
++        digest = hmac.new(authkey, message, 'sha256').digest()
+     response = connection.recv_bytes(256)        # reject large message
+     if response == digest:
+         connection.send_bytes(WELCOME)
+@@ -751,7 +755,11 @@ def answer_challenge(connection, authkey):
+     message = connection.recv_bytes(256)         # reject large message
+     assert message[:len(CHALLENGE)] == CHALLENGE, 'message = %r' % message
+     message = message[len(CHALLENGE):]
+-    digest = hmac.new(authkey, message, 'md5').digest()
++    try:
++        digest = hmac.new(authkey, message, 'md5').digest()
++    except ValueError:
++        # If FIPS mode i.e MD5 is not supported use SHA-256 protocol
++        digest = hmac.new(authkey, message, 'sha256').digest()
+     connection.send_bytes(digest)
+     response = connection.recv_bytes(256)        # reject large message
+     if response != WELCOME:
+-- 
+2.35.6
+
