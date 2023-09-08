@@ -1,14 +1,14 @@
 Summary:        Intrusion Detection System
 Name:           suricata
-Version:        6.0.12
-Release:        3%{?dist}
+Version:        7.0.0
+Release:        1%{?dist}
 License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
 Group:          System Environment/Security
 Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=aa8a51e0c6b04640a9df3ca46d736c23f213561a0f47e9022f0bd10cf4652b6912ff576fb6db0b663fcae5ab5a80ef5048da3a8888323326fb2b6d56d8ef7c0c
+%define sha512 %{name}=b512a8d9e7ce26b362be4e4b1e27b97c0fd6dad109e440d6227916a373e85341336782c0870a2b380fa215f4d2e8d86728f105a6af75d8662d746cee1752347d
 
 Source1: suricata.sysconfig
 Source2: photon.notes
@@ -22,9 +22,7 @@ Patch2: 0002-suricata-service.patch
 #Patches from Fedora
 # The log path has an extra '/' at the end
 Patch3: 0003-suricata-log-path-fixup.patch
-# Build fails with ambiguous python shebang
-Patch4: 0004-suricata-python.patch
-Patch5: 0005-suricata-sysconfig.patch
+Patch4: 0005-suricata-sysconfig.patch
 
 BuildRequires: build-essential
 BuildRequires: libmnl-devel
@@ -171,6 +169,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Fri Sep 08 2023 Mukul Sikka <msikka@vmware.com> 7.0.0-1
+- Update to v7.0.0 to fix multiple CVEs
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 6.0.12-3
 - Bump version as a part of rust upgrade.
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.12-2
