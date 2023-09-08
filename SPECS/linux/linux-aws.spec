@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.183
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,9 +37,9 @@ Source4:    check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.37-2.ph5-secure
+%define fips_canister_version 5.0.0-6.1.45-4.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=034485970dec88400350a3bb14796c2a9b7c369651bf99083d670b33bb6b31216ab42fb14617c8120b4c3d53441a4a04caeca2a0bd479970b1965872c68099b1
+%define sha512 fips-canister=4cf975dbf73a18288cb991493d86a23c0574f402c419b7e6c6fd229e026ce6c15780c6afabff98f59aee104b61332a6974196cec21735e178ad48ccef517b886
 %endif
 
 Source21:       spec_install_post.inc
@@ -486,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-4
+- Use canister version 5.0.0-6.1.45-4
 * Mon Jul 17 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-3
 - Use canister version 5.0.0-6.1.37-2
 * Tue Jul 04 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-2

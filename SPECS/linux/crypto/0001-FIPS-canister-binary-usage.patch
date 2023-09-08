@@ -17,8 +17,8 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/Makefile          | 113 +++++++++++++++++++++++++++++++--------
  init/main.c              |   3 ++
  lib/Makefile             |   2 +-
- lib/crypto/Makefile      |   9 ----
- 5 files changed, 94 insertions(+), 37 deletions(-)
+ lib/crypto/Makefile      |  10 +---
+ 5 files changed, 96 insertions(+), 36 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 66f25c293..1d39b6e49 100644
@@ -267,7 +267,7 @@ index a803e1527..fc6c915a3 100644
  	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 26be2bbe0..c127a84d4 100644
+index 26be2bbe0..280b9ce13 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -4,9 +4,6 @@
@@ -280,13 +280,15 @@ index 26be2bbe0..c127a84d4 100644
  obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
  libarc4-y					:= arc4.o
  
-@@ -26,17 +23,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
+@@ -26,17 +23,14 @@ libcurve25519-generic-y				+= curve25519-generic.o
  obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
  libcurve25519-y					+= curve25519.o
  
 -obj-$(CONFIG_CRYPTO_LIB_DES)			+= libdes.o
 -libdes-y					:= des.o
--
++obj-$(CONFIG_CRYPTO_LIB_DES)                    += libdes.o
++libdes-y                                        := des.o
+ 
  obj-$(CONFIG_CRYPTO_LIB_POLY1305_GENERIC)	+= libpoly1305.o
  libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
