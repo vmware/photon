@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -11,16 +11,18 @@ Distribution:   Photon
 Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.gz
 %define sha512 %{name}=df1c6486e80f0fcf3c506f3599bcfb94b620c00d0b5d26831bc983daa78d58ec58b5057b1ec7c1a26c694f40199c6234ee2a6dcabf65abfa10c447cb5705abbd
 
-Patch0: 0001-Work-around-lxml-API.patch
-Patch1: libxml2-CVE-2022-23308.patch
-Patch2: libxml2-CVE-2022-29824.patch
-Patch3: libxml2-CVE-2022-2309-fix1.patch
-Patch4: libxml2-CVE-2022-2309-fix2.patch
-Patch5: libxml2-CVE-2022-40303.patch
-Patch6: libxml2-CVE-2022-40304.patch
-Patch7: libxml2-CVE-2023-29469.patch
-Patch8: libxml2-CVE-2023-28484-1.patch
-Patch9: libxml2-CVE-2023-28484-2.patch
+Patch0:  0001-Work-around-lxml-API.patch
+Patch1:  libxml2-CVE-2022-23308.patch
+Patch2:  libxml2-CVE-2022-29824.patch
+Patch3:  libxml2-CVE-2022-2309-fix1.patch
+Patch4:  libxml2-CVE-2022-2309-fix2.patch
+Patch5:  libxml2-CVE-2022-40303.patch
+Patch6:  libxml2-CVE-2022-40304.patch
+Patch7:  libxml2-CVE-2023-29469.patch
+Patch8:  libxml2-CVE-2023-28484-1.patch
+Patch9:  libxml2-CVE-2023-28484-2.patch
+Patch10: libxml2-CVE-2023-39615-1.patch
+Patch11: libxml2-CVE-2023-39615-2.patch
 
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
@@ -101,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Sep 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-11
+- Fix for CVE-2023-39615
 * Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.12-10
 - Fix library file packaging
 * Thu Apr 27 2023 Ankit Jain <ankitja@vmware.com> 2.9.12-9
