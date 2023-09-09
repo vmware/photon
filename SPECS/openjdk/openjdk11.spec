@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.20
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -60,6 +60,8 @@ Requires:       libgcc
 Requires:       zlib
 
 Conflicts:      %{name} < 11.0.20-4%{?dist}
+
+Provides:       jre = %{version}
 
 %description    jre
 %{summary}
@@ -244,6 +246,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-5
+- Add provides java for jre subpackage
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-4
 - Add jre subpackage
 - Change alternatives accordingly
