@@ -354,7 +354,8 @@ class constants(object):
         "/usr/bin/rm":"coreutils",
         "/usr/bin/mv":"coreutils",
         "/sbin/ldconfig":"glibc",
-        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
+        "/usr/bin/containerd-shim-runc-v2":"containerd-extras",
+        "jre":"openjdk11"
     }
 
     @staticmethod
