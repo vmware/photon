@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
 
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
-%define         sha1 ecdsa=52b4b3e423662f90c4bbbbdcf0fd6bcf52fdee01
+%define         sha512 ecdsa=94ccefe19899a5e56393bb0e6624e9af66bdc60ad370d65900a24a0465c430a3a001ed9c25970e48834cb25ca730bc9279af98d17ecd3ad66189c64c8f864b42
 
 BuildArch:      noarch
 
@@ -17,7 +17,6 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
-
 
 %description
 This is an easy-to-use implementation of ECDSA cryptography (Elliptic Curve

@@ -7,21 +7,22 @@ License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
-Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
+
+Source0: https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
+%define sha512 PyGObject=92a53824688d91516ccadeec42fd72c2598afb2d26cd46229a88e6b2fbf915bd7cab75d4cfd63594f54b7277d8f209e1dd225c4b87df2d2615abf7b9d8dd3ddf
+
 Patch0:         pygobject-makecheck-fixes.patch
-%define sha1    PyGObject=9d87678c9b8e8771280f074d107e1e0cd612f307
+
 Requires:       python3
 Requires:       gobject-introspection
 Requires:       glib
+
 BuildRequires:  python3-setuptools
 BuildRequires:  glib-devel
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  which
-BuildRequires:  python3
-%if %{with_check}
-BuildRequires:  python3-setuptools
+%if 0%{?with_check}
 BuildRequires:  python3-gobject-introspection
 BuildRequires:  python3-test
 BuildRequires:  glib-schemas
@@ -30,15 +31,15 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
+BuildRequires:  python3-pytest
 %endif
 
 %description
 Python bindings for GLib and GObject.
 
-
 %package        devel
 Summary:        Development files for embedding PyGObject introspection support
-Requires:       python3-pygobject = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 Development files for pygobject.
@@ -55,7 +56,6 @@ export PYGOBJECT_WITHOUT_PYCAIRO='True'
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pip3 install pytest
 python3 setup.py test
 
 %clean
