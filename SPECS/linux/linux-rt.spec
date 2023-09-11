@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.45
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -68,6 +68,15 @@ Source19:        spec_install_post.inc
 Source20:       %{name}-dracut.conf
 
 Source21:       photon_sb2020.pem
+
+%ifarch x86_64
+%define jent_version 3.4.1-1
+Source32: jitterentropy-%{jent_version}.tar.bz2
+%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+Source33: jitterentropy_canister_wrapper.c
+Source34: jitterentropy_canister_wrapper.h
+Source35: jitterentropy_canister_wrapper_asm.S
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -228,6 +237,10 @@ Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 # Patches for ice v1.11.14 driver [1520..1529]
 Patch1520: ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
 
+%ifarch x86_64
+Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -298,6 +311,11 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
+%ifarch x86_64
+# Using autosetup is not feasible
+%setup -q -T -D -b 32 -n linux-%{version}
+%endif
+
 %autopatch -p1 -m0 -M23
 
 #VMW
@@ -338,7 +356,18 @@ pushd ../ice-%{ice_version}
 %autopatch -p1 -m1520 -M1529
 popd
 
+%ifarch x86_64
+%autopatch -p1 -m10010 -M10010
+%endif
+
 %build
+%ifarch x86_64
+cp -r ../jitterentropy-%{jent_version}/ crypto/
+cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE34} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE35} crypto/jitterentropy-%{jent_version}/
+%endif
+
 make %{?_smp_mflags} mrproper
 cp %{SOURCE21} photon_sb2020.pem
 
@@ -522,6 +551,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
+- Build with jitterentropy v3.4.1
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-3
 - Update fips_canister version 6.1.45-4
 * Wed Nov 22 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-2

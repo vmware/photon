@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.45
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -76,6 +76,15 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
+
+%ifarch x86_64
+%define jent_version 3.4.1-1
+Source32: jitterentropy-%{jent_version}.tar.bz2
+%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+Source33: jitterentropy_canister_wrapper.c
+Source34: jitterentropy_canister_wrapper.h
+Source35: jitterentropy_canister_wrapper_asm.S
+%endif
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -226,6 +235,10 @@ Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice v1.11.14 driver [1520..1529]
 
+%ifarch x86_64
+Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
@@ -352,6 +365,11 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
+%ifarch x86_64
+# Using autosetup is not feasible
+%setup -q -T -D -b 32 -n linux-%{version}
+%endif
+
 # common
 %autopatch -p1 -m0 -M49
 
@@ -410,7 +428,18 @@ pushd ../ice-%{ice_version}
 popd
 %endif
 
+%ifarch x86_64
+%autopatch -p1 -m10010 -M10010
+%endif
+
 %build
+%ifarch x86_64
+cp -r ../jitterentropy-%{jent_version}/ crypto/
+cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE34} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE35} crypto/jitterentropy-%{jent_version}/
+%endif
+
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 cp %{SOURCE20} photon_sb2020.pem
@@ -716,6 +745,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
+- Build with jitterentropy v3.4.1
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-3
 - Update fips_canister version 6.1.45-3
 * Wed Nov 22 2023 Ankit Jain <ankitja@vmware.com> 6.1.45-2

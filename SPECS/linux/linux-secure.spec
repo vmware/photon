@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -60,6 +60,15 @@ Source29: spec_install_post.inc
 Source30: %{name}-dracut.conf
 
 Source31:       photon_sb2020.pem
+
+%ifarch x86_64
+%define jent_version 3.4.1-1
+Source32: jitterentropy-%{jent_version}.tar.bz2
+%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+Source33: jitterentropy_canister_wrapper.c
+Source34: jitterentropy_canister_wrapper.h
+Source35: jitterentropy_canister_wrapper_asm.S
+%endif
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -155,6 +164,10 @@ Patch10007: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10008: 0008-Move-kernel-structures-usage.patch
 %endif
 
+%ifarch x86_64
+Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -226,6 +239,11 @@ The kernel fips-canister
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
+%ifarch x86_64
+# Using autosetup is not feasible
+%setup -q -T -D -b 32 -n linux-%{version}
+%endif
+
 %autopatch -p1 -m0 -M33
 
 %ifarch x86_64
@@ -258,7 +276,18 @@ The kernel fips-canister
 %autopatch -p1 -m10000 -M10008
 %endif
 
+%ifarch x86_64
+%autopatch -p1 -m10010 -M10010
+%endif
+
 %build
+%ifarch x86_64
+cp -r ../jitterentropy-%{jent_version}/ crypto/
+cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE34} crypto/jitterentropy-%{jent_version}/
+cp %{SOURCE35} crypto/jitterentropy-%{jent_version}/
+%endif
+
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 cp %{SOURCE31} photon_sb2020.pem
@@ -430,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-5
+- Build with jitterentropy v3.4.1
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-4
 - Update fips_canister version 6.1.45-3
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.45-3
