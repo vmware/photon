@@ -1,14 +1,14 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.libssh2.org/
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.libssh2.org/download/libssh2-%{version}.tar.gz
-%define sha1    libssh2=21e98282b103307a16792e5e2d4c99beaf0b3b9c
+%define sha512  libssh2=41a3ebcf84e32eab69b7411ffb0a3b6e6db71491c968602b17392cfe3490ef00239726ec28acb3d25bf0ed62700db7f4d0bb5a9175618f413865f40badca6e17
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 
@@ -16,6 +16,7 @@ Requires:       openssl
 Requires:       zlib
 
 Patch0:         CVE-2019-17498.patch
+Patch1:         CVE-2020-22218.patch
 
 %description
 libssh2 is a client-side C library implementing the SSH2 protocol.
@@ -28,17 +29,15 @@ Requires: libssh2
 These are the header files of libssh2.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure --disable-static \
     --enable-shared
-make
+make %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+make DESTDIR=%{buildroot} install %{_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -52,6 +51,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Sep 11 2023 Harinadh D <hdommaraju@vmware.com> 1.9.0-3
+-   Add Patch to fix CVE-2020-22218
 *   Tue Dec 17 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 1.9.0-2
 -   Add Patch to fix CVE-2019-17498
 *   Tue Jul 30 2019 Ashwin H <ashwinh@vmware.com> 1.9.0-1
@@ -62,4 +63,3 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 -   Fix for CVE-2019-3855
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.0-1
 -   Add libssh2 1.8.0 package.
-
