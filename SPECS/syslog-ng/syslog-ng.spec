@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.37.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -11,8 +11,21 @@ Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{v
 %define sha512    %{name}=beebd89c54a415469dc58630ac1900d632ef351f6a13fad4a95ce7bb1760b16d6cfdcede02225a35e97ebce7dae151c6aa228f3d378463e8b873c4f71ed86ab7
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
+
 Patch0:         fix_autogen_issue.patch
 Patch1:         OCSP_stapling_support.patch
+# Fix for CVE-2022-38725
+# https://github.com/syslog-ng/syslog-ng/pull/4110
+Patch2: 0001-syslogformat-fix-out-of-bounds-reading-of-data-buffe.patch
+Patch3: 0002-syslogformat-add-bug-reproducer-test-for-non-zero-te.patch
+Patch4: 0003-syslogformat-fix-reading-cisco-sequence-id-out-of-bo.patch
+Patch5: 0004-timeutils-fix-iterating-out-of-the-range-of-timestam.patch
+Patch6: 0005-timeutils-add-tests-for-non-zero-terminated-inputs.patch
+Patch7: 0006-timeutils-name-repeating-constant.patch
+Patch8: 0007-timeutils-fix-invalid-calculation-of-ISO-timestamp-l.patch
+Patch9: 0008-timeutils-fix-out-of-bounds-reading-of-data-buffer.patch
+Patch10: 0009-news-add-entry-for-4110.patch
+
 Requires:       glib
 Requires:       openssl
 Requires:       glibc
@@ -166,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Sep 11 2023 Ankit Jain <ankitja@vmware.com> 3.37.1-3
+-   Fix for CVE-2022-38725
 *   Thu Jul 28 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-2
 -   add OCSP stapling support
 *   Thu Jun 09 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
