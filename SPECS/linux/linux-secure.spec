@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.183
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -39,6 +39,16 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 
 Source21:       spec_install_post.inc
 Source22:       %{name}-dracut.conf
+
+%ifarch x86_64
+%define jent_major_version 3.4.1
+%define jent_ph_version 1
+Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
+%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+Source33: jitterentropy_canister_wrapper.c
+Source34: jitterentropy_canister_wrapper.h
+Source35: jitterentropy_canister_wrapper_asm.S
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -203,6 +213,10 @@ Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
 
+%ifarch x86_64
+Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -262,6 +276,11 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
+%ifarch x86_64
+# Using autosetup is not feasible
+%setup -q -T -D -b 32 -n linux-%{version}
+%endif
+
 %autopatch -p1 -m0 -M46
 
 %ifarch x86_64
@@ -309,7 +328,19 @@ The Linux package contains the Linux kernel doc files
 %patch1543 -p1
 %patch1544 -p1
 
+%ifarch x86_64
+%autopatch -p1 -m10010 -M10010
+%endif
+
 %build
+%ifarch x86_64
+cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
+      crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+%endif
+
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 
@@ -419,6 +450,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 12 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-6
+- Build with jitterentropy v3.4.1-1
 * Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-5
 - Use canister version 5.0.0-6.1.45-4
 * Wed Jul 19 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-4

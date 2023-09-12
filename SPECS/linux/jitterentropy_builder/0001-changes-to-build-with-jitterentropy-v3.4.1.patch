@@ -1,0 +1,193 @@
+From db312763fa2c2dae70780a0358ae8280f4580dd5 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 12 Sep 2023 07:43:18 +0000
+Subject: [PATCH] changes to build with jitterentropy v3.4.1
+
+- includes changes to jitterentropy-kcapi.c to match
+  with v6.1.x kernel
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ crypto/Makefile              |  4 +-
+ crypto/jitterentropy-kcapi.c | 88 ++++++++++++------------------------
+ 2 files changed, 31 insertions(+), 61 deletions(-)
+
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 148eacd82..85246b8f5 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -139,11 +139,11 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+ obj-$(CONFIG_CRYPTO_842) += 842.o
+ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+ obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
+-obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1/ jitterentropy-3.4.1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1/jitterentropy_canister_wrapper_asm.o
+ CFLAGS_jitterentropy.o = -O0
+ KASAN_SANITIZE_jitterentropy.o = n
+ UBSAN_SANITIZE_jitterentropy.o = n
+-jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
++jitterentropy_rng-y := jitterentropy-kcapi.o
+ obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
+ obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
+ obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index 48d475e72..af872ea1c 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -2,7 +2,7 @@
+  * Non-physical true random number generator based on timing jitter --
+  * Linux Kernel Crypto API specific code
+  *
+- * Copyright Stephan Mueller <smueller@chronox.de>, 2015
++ * Copyright Stephan Mueller <smueller@chronox.de>, 2023
+  *
+  * Redistribution and use in source and binary forms, with or without
+  * modification, are permitted provided that the following conditions
+@@ -44,7 +44,8 @@
+ #include <linux/time.h>
+ #include <crypto/internal/rng.h>
+ 
+-#include "jitterentropy.h"
++#include "jitterentropy-3.4.1/jitterentropy.h"
++#include "jitterentropy-3.4.1/jitterentropy-timer.h"
+ 
+ /***************************************************************************
+  * Helper function
+@@ -55,51 +56,17 @@ void *jent_zalloc(unsigned int len)
+ 	return kzalloc(len, GFP_KERNEL);
+ }
+ 
+-void jent_zfree(void *ptr)
++void jent_zfree(void *ptr, unsigned int len)
+ {
++	memzero_explicit(ptr, len);
+ 	kfree_sensitive(ptr);
+ }
+ 
+-int jent_fips_enabled(void)
+-{
+-	return fips_enabled;
+-}
+-
+-void jent_panic(char *s)
+-{
+-	panic("%s", s);
+-}
+-
+ void jent_memcpy(void *dest, const void *src, unsigned int n)
+ {
+ 	memcpy(dest, src, n);
+ }
+ 
+-/*
+- * Obtain a high-resolution time stamp value. The time stamp is used to measure
+- * the execution time of a given code path and its variations. Hence, the time
+- * stamp must have a sufficiently high resolution.
+- *
+- * Note, if the function returns zero because a given architecture does not
+- * implement a high-resolution time stamp, the RNG code's runtime test
+- * will detect it and will not produce output.
+- */
+-void jent_get_nstime(__u64 *out)
+-{
+-	__u64 tmp = 0;
+-
+-	tmp = random_get_entropy();
+-
+-	/*
+-	 * If random_get_entropy does not return a value, i.e. it is not
+-	 * implemented for a given architecture, use a clock source.
+-	 * hoping that there are timers we can work with.
+-	 */
+-	if (tmp == 0)
+-		tmp = ktime_get_ns();
+-
+-	*out = tmp;
+-}
+ 
+ /***************************************************************************
+  * Kernel crypto API interface
+@@ -108,7 +75,6 @@ void jent_get_nstime(__u64 *out)
+ struct jitterentropy {
+ 	spinlock_t jent_lock;
+ 	struct rand_data *entropy_collector;
+-	unsigned int reset_cnt;
+ };
+ 
+ static int jent_kcapi_init(struct crypto_tfm *tfm)
+@@ -144,35 +110,34 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
+ 
+ 	spin_lock(&rng->jent_lock);
+ 
+-	/* Return a permanent error in case we had too many resets in a row. */
+-	if (rng->reset_cnt > (1<<10)) {
+-		ret = -EFAULT;
+-		goto out;
+-	}
+-
+ 	ret = jent_read_entropy(rng->entropy_collector, rdata, dlen);
+ 
+-	/* Reset RNG in case of health failures */
+-	if (ret < -1) {
+-		pr_warn_ratelimited("Reset Jitter RNG due to health test failure: %s failure\n",
+-				    (ret == -2) ? "Repetition Count Test" :
+-						  "Adaptive Proportion Test");
+-
+-		rng->reset_cnt++;
+-
++	if (ret == -3) {
++		/* Handle permanent health test error */
++		/*
++		 * If the kernel was booted with fips=1, it implies that
++		 * the entire kernel acts as a FIPS 140 module. In this case
++		 * an SP800-90B permanent health test error is treated as
++		 * a FIPS module error.
++		 */
++		if (fips_enabled)
++			panic("Jitter RNG permanent health test failure\n");
++		pr_err("Jitter RNG permanent health test failure\n");
++		ret = -EFAULT;
++	} else if (ret == -2) {
++		/* Handle intermittent health test error */
++		pr_warn_ratelimited("Reset Jitter RNG due to intermittent health test failure\n");
+ 		ret = -EAGAIN;
+ 	} else {
+-		rng->reset_cnt = 0;
+-
+-		/* Convert the Jitter RNG error into a usable error code */
+-		if (ret == -1)
++		if (ret < 0) {
++			/* Handle other errors */
+ 			ret = -EINVAL;
++		}
+ 	}
+ 
+-out:
+ 	spin_unlock(&rng->jent_lock);
+ 
+-	return ret;
++	return ret > 0 ? 0 : ret;
+ }
+ 
+ static int jent_kcapi_reset(struct crypto_rng *tfm,
+@@ -203,6 +168,10 @@ static int __init jent_mod_init(void)
+ 
+ 	ret = jent_entropy_init();
+ 	if (ret) {
++		/* Handle permanent health test error */
++		if (fips_enabled)
++			panic("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
++
+ 		pr_info("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
+ 		return -EFAULT;
+ 	}
+@@ -220,5 +189,6 @@ module_exit(jent_mod_exit);
+ 
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
++MODULE_AUTHOR("Srinidhi Rao <srinidhir@vmware.com>");
+ MODULE_DESCRIPTION("Non-physical True Random Number Generator based on CPU Jitter");
+ MODULE_ALIAS_CRYPTO("jitterentropy_rng");
+-- 
+2.19.0
+
