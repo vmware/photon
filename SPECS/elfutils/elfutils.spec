@@ -1,13 +1,14 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.176
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Source0:        https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
 %define         sha512 %{name}=7f032913be363a43229ded85d495dcf7542b3c85974aaaba0d984228dc9ac1721da3dc388d3fa02325a80940161db7e9ad2c9e4521a424ad8a7d050c0902915b
-Patch0:         0001-readelf-Sanity-check-verneed-and-verdef-offsets-in-h.patch
+Patch0:         CVE-2021-33294.patch
+Patch1:         CVE-2020-21047.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -195,6 +196,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Tue Sep 12 2023 Oliver Kurth <okurth@vmware.com> 0.176-3
+- fix for CVE-2020-21047
 * Wed Aug 30 2023 Oliver Kurth <okurth@vmware.com> 0.176-2
 - fix for CVE-2021-33294
 * Mon Jun 10 2019 Sujay G <gsujay@vmware.com> 0.176-1
