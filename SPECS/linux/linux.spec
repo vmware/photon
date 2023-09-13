@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.190
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.194
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
+%define sha512 linux=cb3f9de70c61d98287d766bd03e4055bad86aaad39dccc628da12bf461831fa9a4daa817689fdfa5d326a7fdcf584fef3b9ccc6ef875349cfbbcfff53cb855bd
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -903,6 +903,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Sep 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.194-1
+- Update to version 5.10.194
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-4
 - Fixes CVE-2023-22995
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
