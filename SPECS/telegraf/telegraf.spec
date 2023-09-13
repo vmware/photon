@@ -1,11 +1,11 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.27.1
-Release:         2%{?dist}
+Version:         1.28.1
+Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512   telegraf=0f28d5c6edb0b1d8ed6a3b223412bc5f7dc27fdb643c94bc0d8f03d03d05ec58d333c5e4a5fc269ea22f137f655ab9b1c8cadb1bc649d0856a48554f9185fb2c
+%define sha512   telegraf=ab5d84ed665c16e90fa0a5c97cc4e34580f6f2079007328cba9c0b579245e0dbdae712e5d4079221d7b1bbaf674ae2994b68a37567ea5f9a6600787a31ab0082
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha512   telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -21,7 +21,6 @@ BuildRequires:   unzip
 Requires:        systemd
 Requires:        logrotate
 Requires(pre):   /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics.
@@ -64,20 +63,23 @@ popd
 
 %install
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} %{buildroot}%{_bindir}/%{name}
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
-install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+install -m 644 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 644 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+install -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 
 %clean
 rm -rf %{buildroot}/*
 
 %pre
-getent group telegraf >/dev/null || groupadd -r telegraf
-getent passwd telegraf >/dev/null || useradd -c "Telegraf" -d %{_localstatedir}/lib/%{name} -g %{name} \
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || useradd -c "Telegraf" -d %{_sharedstatedir}/%{name} -g %{name} \
         -s /sbin/nologin -M -r %{name}
 
 %post
+chown -R root:%{name} %{_sharedstatedir}/%{name}
+chmod 0770 %{_sharedstatedir}/%{name}
 chown -R telegraf:telegraf /etc/telegraf
 %systemd_post %{name}.service
 systemctl daemon-reload
@@ -86,20 +88,20 @@ systemctl daemon-reload
 %systemd_preun %{name}.service
 
 %postun
-if [ $1 -eq 0 ] ; then
-    getent passwd telegraf >/dev/null && userdel telegraf
-    getent group telegraf >/dev/null && groupdel telegraf
-fi
 %systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
-%{_bindir}/telegraf
-%{_unitdir}/telegraf.service
+%{_bindir}/%{name}
+%{_unitdir}/%{name}.service
 %{_sysconfdir}/logrotate.d/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
+%{_sharedstatedir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Sep 12 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.28.1-1
+- Upgrade telegraf to latest, Fixes some second level CVEs
+- Home directory should be owned by telegraf user
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-2
 - Bump up version to compile with new go
 * Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.1-1
