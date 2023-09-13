@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -708,6 +708,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 253-8
+- Version bump as a part of libmicrohttpd version update
 * Fri Sep 01 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-7
 - Remove systemd.setenv=SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST=20
 - https://github.com/systemd/systemd/commit/21dd1de
