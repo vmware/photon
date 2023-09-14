@@ -1,15 +1,16 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.39
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1    file=a5a8941a8e4c436fe22933db6a71c5161c3fb10b
+%define sha512  file=9cf1a7b769c56eb6f5b25c66ce85fa1300128396e445b2e53dbbd8951e5da973a7a07c4ef9f7ebd1fe945d47bdaf2cd9ef09bd2be6c217a0bcb907d9449835e6
 Patch0:         file-5.39-CLOEXEC.patch
+Patch1:         CVE-2022-48554.patch
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 %description
@@ -36,7 +37,7 @@ autoreconf -fi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
@@ -63,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Thu Sep 14 2023 Siju Maliakkal <smaliakkal@vmware.com> 5.39-3
+-   Apply patch for CVE-2022-48554
 *   Thu Feb 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.39-2
 -   Fix close_on_exec multithreaded decompression issue
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.39-1
