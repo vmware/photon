@@ -1,7 +1,7 @@
 Summary:        Thin layer of types for graphic libraries.
 Name:           graphene
 Version:        1.10.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/ebassi/graphene
 Group:          System Environment/Libraries
@@ -24,6 +24,7 @@ libraries that deal with 2D and 3D transformations and projections.
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+Requires:       glib-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -68,5 +69,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/
 
 %changelog
+* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-2
+- Fix devel package requires
 * Mon Sep 5 2022 Shivani Agarwal <shivania2@vmware.com> 1.10.8-1
 - Initial version
