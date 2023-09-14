@@ -3,7 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv3+
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
@@ -36,6 +36,7 @@ Summary:        Development libraries and header files for guile
 Requires:       %{name} = %{version}-%{release}
 Requires:       libltdl-devel
 Requires:       libunistring-devel
+Requires:       gc-devel
 
 %description    devel
 The package contains libraries and header files for
@@ -58,10 +59,8 @@ rm -f %{buildroot}%{_libdir}/*.scm \
       %{buildroot}%{_infodir}/* \
       %{buildroot}%{_libdir}/*.la
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -83,6 +82,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-6
+- Fix devel package requires
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-5
 - Bump version as a part of readline upgrade
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-4
