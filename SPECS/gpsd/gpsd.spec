@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -71,7 +71,7 @@ applications, and commonly useful python applications for use with gpsd.
 
 %package devel
 Summary: Development files for the gpsd library
-Requires: %{name}-libs = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 This package provides C header files for the gpsd shared libraries that
@@ -228,6 +228,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-2
+- Fix devel package requires
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.25-1
 - Initial addition to Photon. Adapted from provided spec file
 - in the gpsd gitlab repository.
