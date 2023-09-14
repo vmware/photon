@@ -1,7 +1,7 @@
 Summary:    High-Level Crypto API
 Name:       gpgme
 Version:    1.18.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:      System Environment/Security
@@ -27,8 +27,9 @@ The GPGME package is a C language library that allows to add support for cryptog
 Group:      Development/Libraries
 Summary:    Static libraries and header files from GPGME, GnuPG Made Easy.
 Requires:   %{name} = %{version}-%{release}
-Requires:    libassuan-devel
+Requires:   libassuan-devel
 Requires:   libgpg-error-devel >= 1.32
+Requires:   glib-devel
 
 %description    devel
 Static libraries and header files from GPGME, GnuPG Made Easy.
@@ -44,18 +45,17 @@ Static libraries and header files from GPGME, GnuPG Made Easy.
     --enable-languages=cl \
     --disable-gpgsm-test
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} %{?_smp_mflags} install
+%make_install %{?_smp_mflags}
 
 rm -rf %{buildroot}%{_libdir}/*.la \
        %{buildroot}/%{_infodir}
 
-%if 0%{?with_check}
 %check
-cd tests && make check-TESTS %{?_smp_mflags}
-%endif
+cd tests
+%make_build check-TESTS
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -74,6 +74,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.18.0-3
+- Fix devel package requires
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.18.0-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.0-1
