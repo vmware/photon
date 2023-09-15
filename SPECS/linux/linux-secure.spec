@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.183
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,9 +32,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.45-4.ph5-secure
+%define fips_canister_version 5.0.0-6.1.45-7.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=4cf975dbf73a18288cb991493d86a23c0574f402c419b7e6c6fd229e026ce6c15780c6afabff98f59aee104b61332a6974196cec21735e178ad48ccef517b886
+%define sha512 fips-canister=809215f6f03532623a7ae4d8d3f513073059179871da3c0c19e5bb8fb5613570dc8150e4d34ed6bbb4fc95a47ab5e90c4e33fd1a8fa1f6ad46138f0f7fabcc05
 %endif
 
 Source21:       spec_install_post.inc
@@ -450,6 +450,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.183-7
+- Use canister version 5.0.0-6.1.45-7
 * Tue Sep 12 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-6
 - Build with jitterentropy v3.4.1-1
 * Fri Sep 08 2023 Keerthana K <keerthanak@vmware.com> 5.10.183-5
