@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.45
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -143,6 +143,12 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+
+# Fix: net: roundup issue in kmalloc_reserve()
+Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
+Patch112: 0002-net-remove-osize-variable-in-__alloc_skb.patch
+Patch113: 0003-net-factorize-code-in-kmalloc_reserve.patch
+Patch114: 0004-net-deal-with-integer-overflows-in-kmalloc_reserve.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -744,6 +750,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-7
+- Fix: net: roundup issue in kmalloc_reserve()
 * Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-6
 - Move all prep to %prep section
 * Thu Nov 23 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-5
