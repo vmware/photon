@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.45
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -122,6 +122,12 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+
+# Fix: net: roundup issue in kmalloc_reserve()
+Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
+Patch112: 0002-net-remove-osize-variable-in-__alloc_skb.patch
+Patch113: 0003-net-factorize-code-in-kmalloc_reserve.patch
+Patch114: 0004-net-deal-with-integer-overflows-in-kmalloc_reserve.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -462,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 15 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-9
+- Fix: net: roundup issue in kmalloc_reserve()
 * Mon Sep 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-8
 - Move all prep to %prep section
 * Mon Sep 11 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.45-7
