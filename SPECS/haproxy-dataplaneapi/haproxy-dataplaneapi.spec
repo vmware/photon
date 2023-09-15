@@ -11,7 +11,7 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        2.7.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
@@ -41,7 +41,7 @@ and provides API endpoints for managing HAProxy.
 # - the work-around https://github.com/aws/amazon-ssm-agent/issues/268
 %define build_id %(head -c20 /dev/urandom|od -An -tx1|tr -d '[:space:]')
 %define ldflags_for_build_id -s -w -B 0x%{build_id} -extldflags=-Wl,-z,now,-z,relro,-z,defs
-%define ldflags_for_build_metadata -X main.GitRepo=%{Source0} -X main.GitTag=v%{version} -X main.GitCommit=%{commit} -X main.GitDirty= -X main.BuildTime=%{build_date}
+%define ldflags_for_build_metadata -X main.GitRepo=%{SOURCE0} -X main.GitTag=v%{version} -X main.GitCommit=%{commit} -X main.GitDirty= -X main.BuildTime=%{build_date}
 %define ldflags %{ldflags_for_build_id} %{ldflags_for_build_metadata}
 export CGO_ENABLED=0
 go build -gcflags "%{gcflags}" -ldflags "%{ldflags}" -o %{cmd} ./cmd/%{cmd}/
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
+* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.1-8
+- Fix a source0 mishap while building
 * Mon Aug 21 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-7
 - Version bump up to use haproxy v2.7.10
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-6
