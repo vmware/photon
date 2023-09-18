@@ -1,20 +1,23 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.8.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://lasso.entrouvert.org/
-Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
-%define sha512 lasso=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
+Url:            https://lasso.entrouvert.org
+
+Source0: http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
+%define sha512 %{name}=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
+
 BuildRequires: libxml2-devel
 BuildRequires: glib-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-six
 BuildRequires: which
 BuildRequires: xmlsec1-devel
+
 Requires:      xmlsec1
 
 %description
@@ -27,6 +30,7 @@ for multiple languages.
 Summary: Lasso development headers and documentation
 Group: Development/Libraries/C++
 Requires: %{name} = %{version}-%{release}
+Requires: glib-devel
 
 %description devel
 This package contains the header files, static libraries and development
@@ -50,7 +54,7 @@ sh ./autogen.sh --disable-java \
 find %{buildroot} -name '*.a' -delete
 
 %check
-%make_build %{?_smp_mflags} check
+%make_build check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -67,6 +71,8 @@ find %{buildroot} -name '*.a' -delete
 %{_docdir}/%{name}
 
 %changelog
+* Mon Sep 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-5
+- Fix devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4
 - Bump version as a part of libxml2 upgrade
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-3
