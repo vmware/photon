@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.8.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -52,7 +52,9 @@ mkdir -p %{buildroot}%{_prefix}/lib/systemd/system
 mkdir -p %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_sharedstatedir}/influxdb
 mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
+mkdir -m 755 -p %{buildroot}%{_libdir}/influxdb/scripts
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -m 0755 %{name}/scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
 cp -r ${GOPATH}/bin/influx* %{buildroot}%{_bindir}
 cp %{name}/etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
 cp %{name}/scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
@@ -91,6 +93,7 @@ chown -R %{name}:%{name} /var/log/%{name}
 %dir %{_localstatedir}/log/influxdb
 %config(noreplace) %{_sysconfdir}/influxdb/influxdb.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/influxdb
+%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
 %{_prefix}/lib/systemd/system/influxdb.service
 %{_bindir}/influxd
 %{_bindir}/influx
@@ -101,6 +104,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.8.10-5
+- Bump up version to compile with new go
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.8.10-4
 - Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.8.10-3
