@@ -1,7 +1,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.6.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
@@ -41,6 +41,8 @@ make tests %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-5
+- Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-4
 - Bump up version to compile with new go
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-3

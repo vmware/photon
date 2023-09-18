@@ -1,11 +1,11 @@
 Name:           influxdb
-Version:        1.8.2
-Release:        13%{?dist}
+Version:        1.8.10
+Release:        1%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d45d96a1efa39f4896724c21be7992a4cd47b5e5eac97fe8b8fde87f4d9c6ed4d89e4a92e5c6957728f73fb58fbf01dbaf28a33b1f179535976aad83239c1f1c
+%define sha512  %{name}=4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
 Source1:        golang-dep-0.3.0.tar.gz
 %define sha512  golang-dep-0.3.0=377869d69838a826499b9bc063eacc4b9db0d130d785901ae7fcbf28645276ba6bead33d251837646ded5f0a078e56b4a378c5227054b738cd6d581224977dc2
 Source2:        %{name}.sysusers
@@ -52,7 +52,9 @@ mkdir -p %{buildroot}%{_prefix}/lib/systemd/system
 mkdir -p %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_sharedstatedir}/influxdb
 mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
+mkdir -m 755 -p %{buildroot}%{_libdir}/influxdb/scripts
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -m 0755 %{name}/scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
 cp -r ${GOPATH}/bin/influx* %{buildroot}%{_bindir}
 cp %{name}/etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
 cp %{name}/scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
@@ -60,7 +62,6 @@ cp %{name}/scripts/influxdb.service %{buildroot}%{_prefix}/lib/systemd/system
 cp %{name}/man/influx.txt %{buildroot}%{_mandir}/man1/influx.1
 cp %{name}/man/influx_inspect.txt %{buildroot}%{_mandir}/man1/influx_inspect.1
 cp %{name}/man/influx_stress.txt %{buildroot}%{_mandir}/man1/influx_stress.1
-cp %{name}/man/influx_tsm.txt %{buildroot}%{_mandir}/man1/influx_tsm.1
 cp %{name}/man/influxd-backup.txt %{buildroot}%{_mandir}/man1/influxd-backup.1
 cp %{name}/man/influxd-config.txt %{buildroot}%{_mandir}/man1/influxd-config.1
 cp %{name}/man/influxd-restore.txt %{buildroot}%{_mandir}/man1/influxd-restore.1
@@ -92,17 +93,19 @@ chown -R %{name}:%{name} /var/log/%{name}
 %dir %{_localstatedir}/log/influxdb
 %config(noreplace) %{_sysconfdir}/influxdb/influxdb.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/influxdb
+%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
 %{_prefix}/lib/systemd/system/influxdb.service
 %{_bindir}/influxd
 %{_bindir}/influx
 %{_bindir}/influx_inspect
 %{_bindir}/influx_stress
 %{_bindir}/influx_tools
-%{_bindir}/influx_tsm
 %{_mandir}/man1/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.8.10-1
+- Upgrade to 1.8.10
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.8.2-13
 - Resolving systemd-rpm-macros for group creation
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.8.2-12

@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-2
+- Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-1
 - Upgrade to v24.0.5.
 * Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-3
