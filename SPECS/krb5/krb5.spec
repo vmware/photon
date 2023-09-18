@@ -1,8 +1,9 @@
 %define minor_ver 1.20
+
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -30,6 +31,7 @@ practice of clear text passwords.
 %package devel
 Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
+Requires:   e2fsprogs-devel
 
 %description devel
 Static libraries and header files for the support library for krb5
@@ -111,6 +113,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/locale/*
 
 %changelog
+* Mon Sep 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.2-2
+- Fix devel package requires
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.20.2-1
 - Update to v1.20.2 to fix CVE-2023-36054
 * Sun May 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-4
