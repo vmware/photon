@@ -1,6 +1,6 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
-Version:       0.3.1
+Version:       0.3.2
 Release:       1%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -9,7 +9,7 @@ URL:           https://github.com/vmware/open-vmdk
 Group:         Development/Tools
 
 Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f1f3ad9e7f627bd9fb2459df1235851c8fff521f3bc8ecaf29d1606796428fbdedca2f2345f35ebdc609ee8690f0420dd0c4a64df6f3309c1d4eeff15aa81bea
+%define sha512 %{name}=20d02b907b00329dde2e76de64e1ff4e4660bd1691af3a3f0a9964b62da0632c9913942aac86bf72863c4d77e85ad5fb3199092c0722f98dda2352113c73543d
 
 BuildRequires: zlib-devel
 
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Tue Sep 19 2023 Oliver Kurth <okurth@vmware.com> 0.3.2-1
+- update to 0.3.2
 * Wed Jul 26 2023 Oliver Kurth <okurth@vmware.com> 0.3.1-1
 - update to 0.3.1
 * Wed Jul 12 2023 Oliver Kurth <okurth@vmware.com> 0.3.0-1
