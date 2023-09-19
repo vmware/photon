@@ -4,7 +4,7 @@
 
 Name:           libldb
 Version:        2.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
 Distribution:   Photon
@@ -31,9 +31,9 @@ BuildRequires: python3-tdb
 BuildRequires: python3-talloc-devel
 BuildRequires: python3-tevent
 
-Requires:   libtalloc >= %{talloc_version}
-Requires:   libtdb >= %{tdb_version}
-Requires:   libtevent >= %{tevent_version}
+Requires: libtalloc >= %{talloc_version}
+Requires: libtdb >= %{tdb_version}
+Requires: libtevent >= %{tevent_version}
 
 Provides: bundled(libreplace)
 
@@ -152,6 +152,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.1-3
+- Bump version as a part of openldap v2.6.4 upgrade
 * Fri May 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.1-2
 - Remove _isa entries
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.6.1-1

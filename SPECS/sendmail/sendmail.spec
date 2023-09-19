@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.17.1
-Release:          8%{?dist}
+Release:          9%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -11,25 +11,26 @@ Distribution:     Photon
 Source0: https://ftp.sendmail.org/sendmail.%{version}.tar.gz
 %define sha512 %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
 Source1: %{name}.sysusers
+
 Patch0: fix-compatibility-with-openssl-3.0.patch
 
-BuildRequires:    systemd-devel
-BuildRequires:    openldap-devel
-BuildRequires:    openssl-devel
-BuildRequires:    shadow
-BuildRequires:    tinycdb-devel
-BuildRequires:    cyrus-sasl-devel
+BuildRequires: systemd-devel
+BuildRequires: openldap-devel
+BuildRequires: openssl-devel
+BuildRequires: shadow
+BuildRequires: tinycdb-devel
+BuildRequires: cyrus-sasl-devel
 
-Requires:         cyrus-sasl
-Requires:         tinycdb
-Requires:         (coreutils or coreutils-selinux)
-Requires:         systemd
-Requires:         m4
-Requires:         openldap
-Requires(pre):    systemd-rpm-macros
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires:         /bin/sed
-Requires:         net-tools
+Requires(pre): systemd-rpm-macros
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires: cyrus-sasl
+Requires: tinycdb
+Requires: (coreutils or coreutils-selinux)
+Requires: systemd
+Requires: m4
+Requires: openldap
+Requires: /bin/sed
+Requires: net-tools
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -190,6 +191,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-9
+- Bump version as a part of openldap v2.6.4 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 8.17.1-8
 - Use systemd-rpm-macros for user creation
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-7

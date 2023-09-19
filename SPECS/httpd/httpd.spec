@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.56
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -17,26 +17,26 @@ Source1: %{name}.sysusers
 Patch0: %{name}-%{version}-blfs_layout-1.patch
 Patch1: %{name}-uncomment-ServerName.patch
 
-BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
-BuildRequires:  apr
-BuildRequires:  apr-util-devel
-BuildRequires:  openldap-devel
-BuildRequires:  expat-devel
-BuildRequires:  lua-devel
-BuildRequires:  nghttp2-devel
-BuildRequires:  systemd-devel
+BuildRequires: openssl-devel
+BuildRequires: pcre-devel
+BuildRequires: apr
+BuildRequires: apr-util-devel
+BuildRequires: openldap-devel
+BuildRequires: expat-devel
+BuildRequires: lua-devel
+BuildRequires: nghttp2-devel
+BuildRequires: systemd-devel
 
-Requires:       nghttp2
-Requires:       pcre
-Requires:       apr-util
-Requires:       openssl
-Requires:       openldap
-Requires:       lua
-Requires(pre):  systemd-rpm-macros
+Requires: nghttp2
+Requires: pcre
+Requires: apr-util
+Requires: openssl
+Requires: openldap
+Requires: lua
+Requires(pre): systemd-rpm-macros
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
-Provides:       apache2
+Provides: apache2
 
 %description
 The Apache HTTP Server.
@@ -198,6 +198,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-3
+- Bump version as a part of openldap v2.6.4 upgrade
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.56-2
 - Bump version as a part of lua upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-1

@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -14,39 +14,40 @@ Distribution:   Photon
 Source0: http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
 %define sha512 %{name}=624a39041a6ceda6c470dc0937616f1aa67200f3db02b4d74095d8d706ed31d6df5e0417dcacde45f6be40b617bee018849793d52c96a626aab32a2b182972aa
 
-Source1:        %{name}.sysconfig
-Source2:        %{name}.pam
-Source3:        %{name}.service
-Source4:        cache_swap.sh
-Source5:        %{name}.logrotate
-Source6:        %{name}.sysusers
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  ed
-BuildRequires:  expat-devel
-BuildRequires:  build-essential
-BuildRequires:  gnupg
-BuildRequires:  krb5-devel
-BuildRequires:  libcap-devel
-BuildRequires:  libecap-devel
-BuildRequires:  libgpg-error-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  nettle-devel
-BuildRequires:  openldap-devel
-BuildRequires:  openssl-devel
-BuildRequires:  systemd-devel
-BuildRequires:  systemd-rpm-macros
-BuildRequires:  cyrus-sasl-devel
+Source1: %{name}.sysconfig
+Source2: %{name}.pam
+Source3: %{name}.service
+Source4: cache_swap.sh
+Source5: %{name}.logrotate
+Source6: %{name}.sysusers
 
-Requires:       openssl
-Requires:       shadow
-Requires:       perl-URI
-Requires:       systemd
-Requires:       libxml2
-Requires:       nettle
-Requires:       perl
-Requires:       Linux-PAM
-Requires:       cyrus-sasl
-Requires:       openldap
+BuildRequires: Linux-PAM-devel
+BuildRequires: ed
+BuildRequires: expat-devel
+BuildRequires: build-essential
+BuildRequires: gnupg
+BuildRequires: krb5-devel
+BuildRequires: libcap-devel
+BuildRequires: libecap-devel
+BuildRequires: libgpg-error-devel
+BuildRequires: libxml2-devel
+BuildRequires: nettle-devel
+BuildRequires: openldap-devel
+BuildRequires: openssl-devel
+BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
+BuildRequires: cyrus-sasl-devel
+
+Requires: openssl
+Requires: shadow
+Requires: perl-URI
+Requires: systemd
+Requires: libxml2
+Requires: nettle
+Requires: perl
+Requires: Linux-PAM
+Requires: cyrus-sasl
+Requires: openldap
 Requires(pre): systemd-rpm-macros
 
 %description
@@ -231,6 +232,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 5.7-10
+- Bump version as a part of openldap v2.6.4 upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 5.7-9
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 5.7-8

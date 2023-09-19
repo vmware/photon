@@ -25,17 +25,17 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 sssd=10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
 
-Source1:    sssd.conf
+Source1: sssd.conf
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
 
@@ -1080,6 +1080,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.8.2-6
+- Bump version as a part of openldap v2.6.4 upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.8.2-5
 - Bump version as a part of krb5 upgrade
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-4

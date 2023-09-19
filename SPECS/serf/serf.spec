@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
@@ -13,14 +13,14 @@ Source0: https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
 
 Patch0: 0001-openssl-3.0.0-compatibility.patch
 
-Requires:       openldap
+Requires: openldap
 
-BuildRequires:  python3-setuptools
-BuildRequires:  apr-devel
-BuildRequires:  apr-util-devel
-BuildRequires:  scons
-BuildRequires:  openssl-devel
-BuildRequires:  openldap-devel
+BuildRequires: python3-setuptools
+BuildRequires: apr-devel
+BuildRequires: apr-util-devel
+BuildRequires: scons
+BuildRequires: openssl-devel
+BuildRequires: openldap-devel
 
 %description
 The Apache Serf library is a C-based HTTP client library built upon the Apache
@@ -63,6 +63,8 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-8
+- Bump version as a part of openldap v2.6.4 upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-7
 - Bump version as a part of openldap upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.9-6

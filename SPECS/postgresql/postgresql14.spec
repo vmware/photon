@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -22,43 +22,43 @@ Distribution:   Photon
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=8a7f74c5fd1ec5339085f357b3044dd0d763e3368bd42b5d68497eba5cbf71e9c76a329580d8aa3145aa98a157f28df548c4a6dc2d880db5c0156baa231f5d24
 
-BuildRequires:  clang-devel
-BuildRequires:  diffutils
-BuildRequires:  gcc
-BuildRequires:  gettext-devel
-BuildRequires:  krb5-devel
-BuildRequires:  icu-devel
-BuildRequires:  libedit-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  libxslt-devel
-BuildRequires:  linux-api-headers
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  llvm-devel
-BuildRequires:  lz4-devel
-BuildRequires:  openldap-devel
-BuildRequires:  perl
-BuildRequires:  perl-IPC-Run
-BuildRequires:  python3-devel
-BuildRequires:  readline-devel
-BuildRequires:  openssl-devel
-BuildRequires:  systemtap-sdt-devel
-BuildRequires:  boost-devel
-BuildRequires:  systemd-devel
-BuildRequires:  tar
-BuildRequires:  tcl-devel
-BuildRequires:  tzdata
-BuildRequires:  util-linux-libs
-BuildRequires:  zlib-devel
+BuildRequires: clang-devel
+BuildRequires: diffutils
+BuildRequires: gcc
+BuildRequires: gettext-devel
+BuildRequires: krb5-devel
+BuildRequires: icu-devel
+BuildRequires: libedit-devel
+BuildRequires: libxml2-devel
+BuildRequires: libxslt-devel
+BuildRequires: linux-api-headers
+BuildRequires: Linux-PAM-devel
+BuildRequires: llvm-devel
+BuildRequires: lz4-devel
+BuildRequires: openldap-devel
+BuildRequires: perl
+BuildRequires: perl-IPC-Run
+BuildRequires: python3-devel
+BuildRequires: readline-devel
+BuildRequires: openssl-devel
+BuildRequires: systemtap-sdt-devel
+BuildRequires: boost-devel
+BuildRequires: systemd-devel
+BuildRequires: tar
+BuildRequires: tcl-devel
+BuildRequires: tzdata
+BuildRequires: util-linux-libs
+BuildRequires: zlib-devel
 
-Requires:   icu
-Requires:   libedit
-Requires:   libxml2
-Requires:   lz4
-Requires:   readline
-Requires:   systemd
-Requires:   tzdata
-Requires:   zlib
-Requires:   %{name}-libs = %{version}-%{release}
+Requires: icu
+Requires: libedit
+Requires: libxml2
+Requires: lz4
+Requires: readline
+Requires: systemd
+Requires: tzdata
+Requires: zlib
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 PostgreSQL is an advanced Object-Relational database management system (DBMS).
@@ -658,6 +658,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 14.9-2
+- Bump version as a part of openldap v2.6.4 upgrade
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.9-1
 - Upgrade to v14.9
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 14.8-2

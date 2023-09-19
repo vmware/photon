@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -11,50 +11,51 @@ Url:            https://github.com/unbit/uwsgi
 Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
 %define sha512 %{name}=36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
 
-Source1:        photon.ini
-Source2:        %{name}.service
-Source3:        %{name}.ini
-Source4:        %{name}.sysusers
-BuildRequires:  python3-devel
-BuildRequires:  jansson-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  curl-devel
-BuildRequires:  libyaml-devel
-BuildRequires:  libedit-devel
-BuildRequires:  krb5-devel
-BuildRequires:  openssl-devel
-BuildRequires:  bzip2-devel
-BuildRequires:  gmp-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  libcap-devel
-BuildRequires:  httpd-devel
-BuildRequires:  curl-libs
-BuildRequires:  libstdc++-devel
-BuildRequires:  openldap-devel
-BuildRequires:  boost-devel
-BuildRequires:  attr-devel
-BuildRequires:  libxslt-devel
-BuildRequires:  systemd-devel
-BuildRequires:  tcp_wrappers-devel
-BuildRequires:  ruby
+Source1: photon.ini
+Source2: %{name}.service
+Source3: %{name}.ini
+Source4: %{name}.sysusers
 
-Requires(pre):  systemd-rpm-macros
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires:       jansson
-Requires:       libstdc++
-Requires:       libxslt
-Requires:       libyaml
-Requires:       openldap
-Requires:       pcre
-Requires:       python3
-Requires:       ruby
-Requires:       util-linux
-Requires:       tcp_wrappers
-Requires:       libxml2
-Requires:       openssl
-Requires:       libcap
-Requires:       systemd
+BuildRequires: python3-devel
+BuildRequires: jansson-devel
+BuildRequires: libxml2-devel
+BuildRequires: curl-devel
+BuildRequires: libyaml-devel
+BuildRequires: libedit-devel
+BuildRequires: krb5-devel
+BuildRequires: openssl-devel
+BuildRequires: bzip2-devel
+BuildRequires: gmp-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: sqlite-devel
+BuildRequires: libcap-devel
+BuildRequires: httpd-devel
+BuildRequires: curl-libs
+BuildRequires: libstdc++-devel
+BuildRequires: openldap-devel
+BuildRequires: boost-devel
+BuildRequires: attr-devel
+BuildRequires: libxslt-devel
+BuildRequires: systemd-devel
+BuildRequires: tcp_wrappers-devel
+BuildRequires: ruby
+
+Requires(pre): systemd-rpm-macros
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires: jansson
+Requires: libstdc++
+Requires: libxslt
+Requires: libyaml
+Requires: openldap
+Requires: pcre
+Requires: python3
+Requires: ruby
+Requires: util-linux
+Requires: tcp_wrappers
+Requires: libxml2
+Requires: openssl
+Requires: libcap
+Requires: systemd
 
 %description
 The uWSGI project aims at developing a full stack for building hosting services.
@@ -234,6 +235,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-11
+- Bump version as a part of openldap v2.6.4 upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 2.0.21-10
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.21-9

@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -21,25 +21,25 @@ Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 Patch0: audit-3.0.8-flex-array-workaround.patch
 Patch1: audit-3.0.8-undo-flex-array.patch
 
-BuildRequires:  krb5-devel
-BuildRequires:  openldap-devel
-BuildRequires:  tcp_wrappers-devel
-BuildRequires:  libcap-ng-devel
-BuildRequires:  swig
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  python3-devel
-BuildRequires:  systemd-devel
+BuildRequires: krb5-devel
+BuildRequires: openldap-devel
+BuildRequires: tcp_wrappers-devel
+BuildRequires: libcap-ng-devel
+BuildRequires: swig
+BuildRequires: e2fsprogs-devel
+BuildRequires: python3-devel
+BuildRequires: systemd-devel
 
 %if 0%{?with_golang}
-BuildRequires:  go
+BuildRequires: go
 %endif
 
-Requires:       systemd
-Requires:       krb5
-Requires:       openldap
-Requires:       tcp_wrappers
-Requires:       libcap-ng
-Requires:       gawk
+Requires: systemd
+Requires: krb5
+Requires: openldap
+Requires: tcp_wrappers
+Requires: libcap-ng
+Requires: gawk
 
 %description
 The audit package contains the user space utilities for
@@ -171,6 +171,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 3.0.9-13
+- Bump version as a part of openldap v2.6.4 upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.0.9-12
 - Bump version as a part of krb5 upgrade
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-11

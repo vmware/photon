@@ -2,7 +2,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        nsswitch module which uses directory servers
 License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
@@ -13,22 +13,23 @@ Distribution:   Photon
 Source0: http://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-%{version}.tar.gz
 %define sha512 %{name}=da154303ba2f86b8653d978acfbba4633d0190afd353b6a57386391078c531bf7b11195fbabbe53cf6f36545c6f1c71b9567fd042892a73251bf0016c5f018ee
 
-Source1:        nslcd.tmpfiles
-Source2:        nslcd.service
-Source3:        %{name}.sysusers
-BuildRequires:  openldap-devel
-BuildRequires:  krb5-devel
-BuildRequires:  automake
-BuildRequires:  autoconf
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  systemd-devel
+Source1: nslcd.tmpfiles
+Source2: nslcd.service
+Source3: %{name}.sysusers
+
+BuildRequires: openldap-devel
+BuildRequires: krb5-devel
+BuildRequires: automake
+BuildRequires: autoconf
+BuildRequires: Linux-PAM-devel
+BuildRequires: systemd-devel
 %{?systemd_requires}
 
-Requires:       systemd
-Requires:       openldap
-Requires:       krb5
-Requires:       Linux-PAM
-Requires:       systemd-rpm-macros
+Requires: systemd
+Requires: openldap
+Requires: krb5
+Requires: Linux-PAM
+Requires: systemd-rpm-macros
 
 %description
 The nss-pam-ldapd daemon, nslcd, uses a directory server to look up name
@@ -96,6 +97,8 @@ rm -rf %{buildroot}/*
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.12-7
+- Bump version as a part of openldap v2.6.4 upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 0.9.12-6
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 0.9.12-5

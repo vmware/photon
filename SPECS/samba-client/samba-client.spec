@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.17.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -43,30 +43,30 @@ BuildRequires: libtevent-devel
 BuildRequires: bison
 BuildRequires: perl-JSON
 
-Requires:      %{name}-libs = %{samba_ver}
-Requires:      libtirpc
-Requires:      python3
-Requires:      libarchive
-Requires:      Linux-PAM
-Requires:      libxslt
-Requires:      gnutls
-Requires:      jansson
-Requires:      libxml2
-Requires:      lmdb
-Requires:      openldap
-Requires:      perl-Parse-Yapp
-Requires:      dbus
-Requires:      libtalloc
-Requires:      ncurses-libs
-Requires:      popt
-Requires:      bindutils
-Requires:      libtdb
-Requires:      libldb
-Requires:      libtevent
+Requires: %{name}-libs = %{samba_ver}
+Requires: libtirpc
+Requires: python3
+Requires: libarchive
+Requires: Linux-PAM
+Requires: libxslt
+Requires: gnutls
+Requires: jansson
+Requires: libxml2
+Requires: lmdb
+Requires: openldap
+Requires: perl-Parse-Yapp
+Requires: dbus
+Requires: libtalloc
+Requires: ncurses-libs
+Requires: popt
+Requires: bindutils
+Requires: libtdb
+Requires: libldb
+Requires: libtevent
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-Provides:      samba4-client = %{samba_ver}
+Provides: samba4-client = %{samba_ver}
 
 # Samba Client
 %description
@@ -578,6 +578,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-5
+- Bump version as a part of openldap v2.6.4 upgrade
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 4.17.5-4
 - Upgrade to 1.9.14p3 to fix CVE-2023-28486 and CVE-2023-28487
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-3
