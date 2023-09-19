@@ -1,7 +1,7 @@
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
-Version:        0.9.75
-Release:        2%{?dist}
+Version:        0.9.76
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4dc62ed191342a61cc2767171bb1ff4050f390db14ef7100299888237b52ea0b04b939c843878fe7f5daec2b35a47b3c1b7e7c11fb32d458184fe6b19986a37c
+%define sha512  %{name}=9ff8a837892142376eaeaf50c0b0dba76697d0ff44b908434cba8db4324c57dfb8bbcc1a922b97d825891ac10f50693dee9388531856e0fa81fa2cfeac538581
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -62,6 +62,8 @@ rm -f %{buildroot}%{_libdir}/*.la \
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 0.9.76-1
+- Update to v0.9.76 to fix CVE-2023-27371
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.75-2
 - Bump version as a part of gnutls upgrade
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 0.9.75-1
