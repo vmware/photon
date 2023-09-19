@@ -1,9 +1,9 @@
 %global _default_patch_fuzz 2
 %global debug_package       %{nil}
 
-Summary:        OpenLdap-2.4.43
+Summary:        OpenLdap-2.6.4
 Name:           openldap
-Version:        2.6.3
+Version:        2.6.4
 Release:        1%{?dist}
 License:        OpenLDAP
 URL:            https://www.openldap.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.openldap.org/software/download/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha512 %{name}=56efbbfc68779ad635d2c25228eb9c4f1553b107b96e8a438029b1c5d2f2647cf4d437770554392b436718ea44a4813e17f5195049f67fc09d063a981096cd85
+%define sha512 %{name}=4be49c4866e47e96677d0e1f7caa380791917c9df8d6bb343d032aba45031c87db3bd4f6b953e914a1f40044fa68f4886ae96929a410b7188c0ed9bb75073a30
 
 # Patch0 is downloaded from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.4-1
+- Version upgrade to v2.6.4 to fix CVE-2023-2953
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.3-1
 - Upgrade to v2.6.3
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.58-2

@@ -1,19 +1,20 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.18.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
-%define samba_ver %{version}-%{release}
-Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512  samba=c12b7cd7aba0941bf178c89604f926347bee4f5bb6ea651930cc93bcd8a2cfa983b1f10a0ccb55f99c5b34b9f158d1059d06d7f39f7bc261c7dd0d8c89c5a6f5
-%define samba_ver %{version}-%{release}
-Source1:        smb.conf.vendor
 
-Patch1:         0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
+%define samba_ver %{version}-%{release}
+
+Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
+%define sha512 samba=c12b7cd7aba0941bf178c89604f926347bee4f5bb6ea651930cc93bcd8a2cfa983b1f10a0ccb55f99c5b34b9f158d1059d06d7f39f7bc261c7dd0d8c89c5a6f5
+Source1: smb.conf.vendor
+
+Patch1: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -44,29 +45,29 @@ BuildRequires: perl-JSON
 BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
 
-Requires:      %{name}-libs = %{samba_ver}
-Requires:      libtirpc
-Requires:      python3
-Requires:      libarchive
-Requires:      Linux-PAM
-Requires:      libxslt
-Requires:      gnutls
-Requires:      jansson
-Requires:      libxml2
-Requires:      lmdb
-Requires:      openldap
-Requires:      perl-Parse-Yapp
-Requires:      dbus
-Requires:      libtalloc
-Requires:      ncurses-libs
-Requires:      popt
-Requires:      bindutils
-Requires:      libtdb >= 1.4.8
-Requires:      libldb >= 2.7.2
-Requires:      libtalloc >= 2.4.0
-Requires:      libtevent >= 0.14.1
-Requires:      zlib
-Requires:      ncurses
+Requires: %{name}-libs = %{samba_ver}
+Requires: libtirpc
+Requires: python3
+Requires: libarchive
+Requires: Linux-PAM
+Requires: libxslt
+Requires: gnutls
+Requires: jansson
+Requires: libxml2
+Requires: lmdb
+Requires: openldap
+Requires: perl-Parse-Yapp
+Requires: dbus
+Requires: libtalloc
+Requires: ncurses-libs
+Requires: popt
+Requires: bindutils
+Requires: libtdb >= 1.4.8
+Requires: libldb >= 2.7.2
+Requires: libtalloc >= 2.4.0
+Requires: libtevent >= 0.14.1
+Requires: zlib
+Requires: ncurses
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -584,6 +585,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 4.18.5-3
+- Bump version as a part of openldap v2.6.4 upgrade
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 4.18.5-2
 - Bump version as a part of sudo upgrade
 * Thu Jul 27 2023 Oliver Kurth <okurth@vmware.com> 4.18.5-1
