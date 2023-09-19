@@ -1,7 +1,7 @@
 From e4f40ae862b5389c8cc7d4f938a34238421456a1 Mon Sep 17 00:00:00 2001
 From: Nicholas Bishop <nicholasbishop@google.com>
 Date: Tue, 20 Dec 2022 14:40:39 -0500
-Subject: [PATCH 5/6] pe: Add IS_PAGE_ALIGNED macro
+Subject: [PATCH 05/35] pe: Add IS_PAGE_ALIGNED macro
 
 This makes some checks in `get_mem_attrs` and `update_mem_attrs`
 clearer.
@@ -91,5 +91,5 @@ index 0000000..d576548
 +	return status;
 +}
 -- 
-2.35.5
+2.39.0
 

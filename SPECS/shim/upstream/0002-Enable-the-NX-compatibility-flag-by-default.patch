@@ -1,7 +1,7 @@
 From 7c7642530fab73facaf3eac233cfbce29e10b0ef Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Thu, 17 Nov 2022 12:31:31 -0500
-Subject: [PATCH 2/6] Enable the NX compatibility flag by default.
+Subject: [PATCH 02/35] Enable the NX compatibility flag by default.
 
 Currently by default, when we build shim we do not set the PE
 NX-compatibility DLL Characteristic flag.  This signifies to the
@@ -83,5 +83,5 @@ index de8f4a3..f39fddd 100644
  typedef uint8_t UINT8;
  typedef uint16_t UINT16;
 -- 
-2.35.5
+2.39.0
 

@@ -1,7 +1,7 @@
 From 657b2483ca6e9fcf2ad8ac7ee577ff546d24c3aa Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 5 Dec 2022 17:57:36 -0500
-Subject: [PATCH 1/6] Make sbat_var.S parse right with buggy gcc/binutils
+Subject: [PATCH 01/35] Make sbat_var.S parse right with buggy gcc/binutils
 
 In https://github.com/rhboot/shim/issues/533 , iokomin noticed that
 gas in binutils before 2.36 appears to be incorrectly concatenating
@@ -100,5 +100,5 @@ index 72bebe7..65bc6a8 100644
  }
  
 -- 
-2.35.5
+2.39.0
 

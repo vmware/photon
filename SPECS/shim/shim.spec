@@ -13,7 +13,7 @@
 Summary:       UEFI shim loader
 Name:          shim
 Version:       15.7
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       BSD-2-Clause
 Group:         System/Boot
 URL:           https://github.com/rhboot/shim
@@ -25,13 +25,14 @@ Source0: https://github.com/rhboot/%{name}/releases/download/%{version}/%{name}-
 
 Source1:       photon_sb2020.der
 Source2:       sbat.photon.csv.in
+Source3:       release-to-main.patches
 
-Patch1:        0001-Make-sbat_var.S-parse-right-with-buggy-gcc-binutils.patch
-Patch2:        0002-Enable-the-NX-compatibility-flag-by-default.patch
-Patch3:        0003-CryptoPkg-BaseCryptLib-Fix-buffer-overflow-issue-in-.patch
-Patch4:        0004-pe-Align-section-size-up-to-page-size-for-mem-attrs.patch
-Patch5:        0005-pe-Add-IS_PAGE_ALIGNED-macro.patch
-Patch6:        0006-Don-t-loop-forever-in-load_certs-with-buggy-firmware.patch
+# Release to main patches
+%include %{SOURCE3}
+
+# No needs to bump up generation of 'shim.photon' as our previous shim
+# has already been revoked by upstream 'shim' generation bump 1 -> 3
+Patch100:      0001-Enforce-SBAT-presence-in-every-image.patch
 
 BuildRequires: dos2unix
 
@@ -71,5 +72,8 @@ make %{?_smp_mflags} test
 %{_datadir}/%{name}/shim%{efiarch}.efi
 
 %changelog
+* Tue Sep 19 2023 Alexey Makhalov <amakhalov@vmware.com> 15.7-2
+- Enforce SBAT
+- SBAT entry bump up: "shim,1" to "shim,3"
 * Wed Mar 08 2023 Alexey Makhalov <amakhalov@vmware.com> 15.7-1
 - Initial version

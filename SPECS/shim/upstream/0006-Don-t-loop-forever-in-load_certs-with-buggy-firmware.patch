@@ -1,7 +1,7 @@
 From f23883ccf78f1f605a272f9e5700f47e5494a71d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Renaud=20M=C3=A9trich?= <rmetrich@redhat.com>
 Date: Mon, 16 Jan 2023 07:49:44 +0100
-Subject: [PATCH 6/6] Don't loop forever in load_certs() with buggy firmware
+Subject: [PATCH 06/35] Don't loop forever in load_certs() with buggy firmware
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,5 +56,5 @@ index 4437898..27a8c11 100644
  			perror(L"Failed to read directory %s - %r\n", PathName,
  			       efi_status);
 -- 
-2.35.5
+2.39.0
 

@@ -1,7 +1,7 @@
 From 89972ae25c133df31290f394413c19ea903219ad Mon Sep 17 00:00:00 2001
 From: Long Qin <qin.long@intel.com>
 Date: Wed, 1 Nov 2017 16:10:04 +0800
-Subject: [PATCH 3/6] CryptoPkg/BaseCryptLib: Fix buffer overflow issue in
+Subject: [PATCH 03/35] CryptoPkg/BaseCryptLib: Fix buffer overflow issue in
  realloc wrapper
 
 There is one long-standing problem in CRT realloc wrapper, which will
@@ -157,5 +157,5 @@ index 792b29e..7a565ff 100644
    }
  }
 -- 
-2.35.5
+2.39.0
 

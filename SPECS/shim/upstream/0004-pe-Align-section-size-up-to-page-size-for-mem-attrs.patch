@@ -1,7 +1,7 @@
 From c7b305152802c8db688605654f75e1195def9fd6 Mon Sep 17 00:00:00 2001
 From: Nicholas Bishop <nicholasbishop@google.com>
 Date: Mon, 19 Dec 2022 18:56:13 -0500
-Subject: [PATCH 4/6] pe: Align section size up to page size for mem attrs
+Subject: [PATCH 04/35] pe: Align section size up to page size for mem attrs
 
 Setting memory attributes is generally done at page granularity, and
 this is enforced by checks in `get_mem_attrs` and
@@ -32,5 +32,5 @@ index 9a3679e..5ad0914 100644
  		if (Section->Characteristics & EFI_IMAGE_SCN_MEM_WRITE) {
  			set_attrs |= MEM_ATTR_W;
 -- 
-2.35.5
+2.39.0
 
