@@ -4,28 +4,29 @@
 Summary:        OpenLdap
 Name:           openldap
 Version:        2.4.57
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
+Source0: ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
 %define sha512 openldap=b929bced0f5ba9a90e015a24b8037c8958fbb7282db272bd0cacf43b5f7540ab42159a3c4441148074340228bb5f07f93651c0dbb2affde961be156058f99ce5
 
-Patch0:         openldap-2.4.51-consolidated-2.patch
-Patch1:         openldap-CVE-2021-27212.patch
-Patch2:         openldap-CVE-2022-29155.patch
+Patch0: openldap-2.4.51-consolidated-2.patch
+Patch1: openldap-CVE-2021-27212.patch
+Patch2: openldap-CVE-2022-29155.patch
+Patch3: openldap-CVE-2023-2953.patch
 
-Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
+Requires: openssl >= 1.0.1, cyrus-sasl >= 2.1
 
-BuildRequires:  cyrus-sasl >= 2.1
-BuildRequires:  openssl-devel >= 1.0.1
-BuildRequires:  groff
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  libtool
-BuildRequires:  systemd
+BuildRequires: cyrus-sasl >= 2.1
+BuildRequires: openssl-devel >= 1.0.1
+BuildRequires: groff
+BuildRequires: e2fsprogs-devel
+BuildRequires: libtool
+BuildRequires: systemd
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -110,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.57-4
+- Fix CVE-2023-2953
 * Tue May 17 2022 Dweep Advani <dadvani@vmware.com> 2.4.57-3
 - Fix CVE-2022-29155
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
