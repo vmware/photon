@@ -1,7 +1,7 @@
 Summary:        VMware Photon OS 4.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-1 tag in the repo. Eg 1.1.1 = v1r1-1
-Version:        1.4
+Version:        1.4.1
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/4.0/ansible/vmware-photon-4.0-stig-ansible-hardening
@@ -13,7 +13,7 @@ Distribution:   Photon
 # .gitattributes .gitignore .gitlab-ci.yml .yamllint .ansible-lint vars-cap.yml vars-vc8u2.yml
 # Update this URL to github URL once the source code is available in github
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=1a40b0f5079d0a84bf943f5e4f877d61b4dac4b68a863f17bd531c74dfe37885faf666e1ccf3f29e9ea80add3080999936cd269afb9dd59e25ec28bc28e40e10
+%define sha512 %{name}-%{version}=5514be0243c05b92e8bdac5668e9e32b83352317865cd206c48fd65805025ae41c383f03fcee97afece35444d07d704332d4fd3cebde0bcf396631050e83eb98
 
 BuildArch: noarch
 
@@ -37,6 +37,8 @@ cp -rp %{_builddir}/%{name}-%{version}/ %{buildroot}%{_datadir}/ansible/%{name}
 %{_datadir}/ansible/
 
 %changelog
+* Sat Sep 16 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.4.1-1
+- Vesion update to 1.4.1
 * Wed Aug 09 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.4-1
 - Vesion update to 1.4
 * Mon Jul 17 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.3.2-1
