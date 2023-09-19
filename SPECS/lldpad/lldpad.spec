@@ -1,16 +1,17 @@
 Summary:       Intel LLDP Agent
 Name:          lldpad
 Version:       1.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://open-lldp.org/
-Source:        %{name}-%{version}.tar.gz
-%define sha512   lldpad=794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-BuildRequires: libconfig
+Source: %{name}-%{version}.tar.gz
+%define sha512 %{name}=794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
+
+BuildRequires: libconfig-devel
 BuildRequires: libnl-devel
 BuildRequires: readline-devel
 BuildRequires: systemd-rpm-macros
@@ -40,10 +41,9 @@ that use lldpad.
 %build
 ./bootstrap.sh
 %configure --disable-static
-make %{?_smp_mflags}
-
+%make_build
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 %post
@@ -65,8 +65,8 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %dir %{_sharedstatedir}/%{name}
 %{_mandir}/man3/*
 %{_mandir}/man8/*
-%{_unitdir}/lldpad.service
-%{_unitdir}/lldpad.socket
+%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}.socket
 
 %files devel
 %{_includedir}/*
@@ -74,6 +74,8 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %{_libdir}/liblldp_clif.so
 
 %changelog
+* Tue Sep 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1-4
+- BuildRequires adjustment after libconfig-devel segregation
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1-3
 - Bump release as a part of readline upgrade
 * Wed Aug 25 2021 Susant Sahani <ssahani@vmware.com> 1.1-2
