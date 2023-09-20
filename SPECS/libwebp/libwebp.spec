@@ -1,7 +1,7 @@
 Summary:        Library to encode and decode webP format images
 Name:           libwebp
 Version:        1.0.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 URL:            http://webmproject.org/
 Group:          System Environment/Libraries
@@ -11,6 +11,8 @@ Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version
 %define sha512  libwebp=ddc0a9555fdffc2c46ccefdf7484fd0f1fe913dcdf6b198cae717d568fae0d8fd2f152c5b1ff3121596328ec19fe3aea46c4b4bc36dbed09d879321893d24a60
 
 Patch0: CVE-2023-1999.patch
+Patch1: CVE-2023-4863.patch
+Patch2: libwebp-Fix-invalid-incremental-decoding-check.patch
 
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libtiff-devel
@@ -65,6 +67,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 1.0.3-8
+- Fixed CVE-2023-4863 with patch
 * Tue Sep 19 2023 Shivani Agarwal <shivania2@vmware.com> 1.0.3-7
 - Bump version as a part of libpng upgrade
 * Fri Jul 28 2023 Kuntal Nayak <nkuntal@vmware.com> 1.0.3-6
