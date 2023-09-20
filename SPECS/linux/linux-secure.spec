@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -42,9 +42,9 @@ Source22:       %{name}-dracut.conf
 
 %ifarch x86_64
 %define jent_major_version 3.4.1
-%define jent_ph_version 1
+%define jent_ph_version 3
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+%define sha512 jitterentropy=b5aa389d331e0a8b22e696e83cccaddb17f98da06fe9592e75cd7efb24877e1cb65b24c2f909e82d247e0dcbb77043b0235f8df94d40d6cb4c4f9a7c113b4f18
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
@@ -444,6 +444,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 29 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.190-2
+- Jitterentropy wrapper changes.
 * Wed Sep 27 2023 Keerthana K <keerthanak@vmware.com> 5.10.190-1
 - Update to version 5.10.190
 * Fri Sep 15 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.183-7
