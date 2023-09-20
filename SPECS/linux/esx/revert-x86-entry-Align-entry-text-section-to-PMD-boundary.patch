@@ -20,6 +20,7 @@ kernel size by 40%. 2MB aligning increases kernel .text size from
 [Ajay] Reverting only ALIGN_ENTRY_TEXT_END, ALIGN_ENTRY_TEXT_BEGIN
 requires for SRSO (Speculative Return Stack Overflow).
 
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Andy Lutomirski <luto@kernel.org>
@@ -66,9 +67,7 @@ index fd03f5a..478857c 100644
  #define BSS_DECRYPTED
  
  #endif
-@@ -147,7 +145,6 @@ SECTIONS
- 		. = srso_untrain_ret_alias | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
- 		*(.text.__x86.rethunk_safe)
+@@ -147,5 +145,4 @@ SECTIONS
  #endif
 -		ALIGN_ENTRY_TEXT_END
  		SOFTIRQENTRY_TEXT

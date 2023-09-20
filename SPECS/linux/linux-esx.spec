@@ -6,7 +6,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.45
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        6.1.53
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -34,14 +34,13 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=9a30afa4dbbf899aab8722574a3b914b2547beb0b36a7d80bd45f694f1649e974c6769700d3b5494bbd71964ba4f6b1ab430588266a08a38bc940871bb963e81
+%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
-Source5:        modify_kernel_configs.inc
 
 %ifarch x86_64
 %define i40e_version 2.22.18
@@ -199,6 +198,10 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
+%ifarch x86_64
+Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
@@ -225,10 +228,6 @@ Patch1501: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.pa
 Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice v1.11.14 driver [1520..1529]
-%endif
-
-%ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 %endif
 
 BuildRequires: bc
@@ -326,6 +325,10 @@ The Linux package contains the Linux kernel doc files
 # crypto
 %autopatch -p1 -m500 -M504
 
+%ifarch x86_64
+%autopatch -p1 -m505 -M505
+%endif
+
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
 %endif
@@ -354,10 +357,6 @@ popd
 %endif
 
 %ifarch x86_64
-%autopatch -p1 -m10010 -M10010
-%endif
-
-%ifarch x86_64
 cp -r ../jitterentropy-%{jent_version}/ crypto/
 cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
 cp %{SOURCE34} crypto/jitterentropy-%{jent_version}/
@@ -378,13 +377,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE18}
-# Change m to y for modules that are in the canister
-%include %{SOURCE5}
-%else
-%if 0%{?kat_build}
-# Change m to y for modules in katbuild
-%include %{SOURCE5}
-%endif
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
@@ -541,6 +533,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
+- Update to version 6.1.53
 * Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-7
 - Fix: net: roundup issue in kmalloc_reserve()
 * Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-6

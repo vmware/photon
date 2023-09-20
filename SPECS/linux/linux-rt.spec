@@ -5,7 +5,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.45
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        6.1.53
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -24,12 +24,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt12
+%define rt_version rt14
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=9a30afa4dbbf899aab8722574a3b914b2547beb0b36a7d80bd45f694f1649e974c6769700d3b5494bbd71964ba4f6b1ab430588266a08a38bc940871bb963e81
+%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
 
 %ifarch x86_64
 Source1:    config-rt
@@ -62,7 +62,6 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=6964d330a60181127c25e32ad102a5b83130f4209b5c86a18e9c8dbb3d33dda4be7c883a9a98a680a3e0c3b7e090a39d12073e9c06f66265b74144d09c37ad8e
 %endif
 
-Source18:        modify_kernel_configs.inc
 Source19:        spec_install_post.inc
 
 Source20:       %{name}-dracut.conf
@@ -192,7 +191,19 @@ Patch348: 0048-powerpc-stackprotector-work-around-stack-guard-init-.patch
 Patch349: 0049-POWERPC-Allow-to-enable-RT.patch
 Patch350: 0050-sysfs-Add-sys-kernel-realtime-entry.patch
 Patch351: 0051-Add-localversion-for-RT-release.patch
-Patch352: 0052-Linux-6.1.38-rt12-REBASE.patch
+Patch352: 0052-Linux-6.1.46-rt13-REBASE.patch
+Patch353: 0053-io-mapping-don-t-disable-preempt-on-RT-in-io_mapping.patch
+Patch354: 0054-locking-rwbase-Mitigate-indefinite-writer-starvation.patch
+Patch355: 0055-revert-softirq-Let-ksoftirqd-do-its-job.patch
+Patch356: 0056-kernel-fork-beware-of-__put_task_struct-calling-cont.patch
+Patch357: 0057-debugobjects-locking-Annotate-debug_object_fill_pool.patch
+Patch358: 0058-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
+Patch359: 0059-seqlock-Do-the-lockdep-annotation-before-locking-in-.patch
+Patch360: 0060-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
+Patch361: 0061-bpf-Remove-in_atomic-from-bpf_link_put.patch
+Patch362: 0062-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
+Patch363: 0063-drm-i915-Do-not-disable-preemption-for-resets.patch
+Patch364: 0064-Linux-6.1.46-rt14-REBASE.patch
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -223,6 +234,10 @@ Patch1003: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch1004: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
+%ifarch x86_64
+Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1008: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
@@ -244,10 +259,6 @@ Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice v1.11.14 driver [1520..1529]
 Patch1520: ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
-
-%ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
 
 BuildArch:      x86_64
 
@@ -344,6 +355,10 @@ The Linux package contains the Linux kernel doc files
 
 %autopatch -p1 -m1000 -M1004
 
+%ifarch x86_64
+%autopatch -p1 -m1005 -M1005
+%endif
+
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1010
 %endif
@@ -365,10 +380,6 @@ popd
 pushd ../ice-%{ice_version}
 %autopatch -p1 -m1520 -M1529
 popd
-
-%ifarch x86_64
-%autopatch -p1 -m10010 -M10010
-%endif
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_version}/ crypto/
@@ -393,13 +404,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
    ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
    crypto/
-# Change m to y for modules that are in the canister
-%include %{SOURCE18}
-%else
-%if 0%{?kat_build}
-# Change m to y for modules in katbuild
-%include %{SOURCE18}
-%endif
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -560,6 +564,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
+- Update to version 6.1.53
 * Thu Nov 23 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.45-8
 - Enable and enhance sched isolation.
 - Apply patches introduced by previous commimt
