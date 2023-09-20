@@ -1,29 +1,38 @@
-From 2ce15405fec8033db4a795d8dfbfddd5d397b74f Mon Sep 17 00:00:00 2001
+From 6cedb34f1d91166e5ac34e87ab29afaf7f9965d7 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 8 Sep 2023 06:09:50 +0000
-Subject: [PATCH] changes to build with jitterentropy v3.4.1
+Subject: [PATCH ] changes to build with jitterentropy v3.4.1
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- crypto/Makefile              |  4 ++--
+ crypto/Makefile              |  6 +++--
  crypto/jitterentropy-kcapi.c | 44 ++++++++++--------------------------
- 2 files changed, 14 insertions(+), 34 deletions(-)
+ 2 files changed, 16 insertions(+), 34 deletions(-)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 375ad4ff6..f7b02952e 100644
+index d7fcab76d..ea47aeeb1 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -148,11 +148,11 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
- obj-$(CONFIG_CRYPTO_842) += 842.o
+@@ -6,6 +6,10 @@
+ obj-$(CONFIG_CRYPTO) += crypto.o
+ crypto-y := api.o cipher.o compress.o
+ 
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy-3.4.1-1/ jitterentropy-3.4.1-1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1-1/jitterentropy_canister_wrapper_asm.o
++
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy-kcapi.o
++
+ obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
+ obj-$(CONFIG_CRYPTO_FIPS) += fips.o
+ 
+@@ -168,11 +172,9 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
+ obj-$(CONFIG_CRYPTO_DRBG) += drbg.o
 -obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
-+obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1-1/ jitterentropy-3.4.1-1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1-1/jitterentropy_canister_wrapper_asm.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
 -jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
-+jitterentropy_rng-y := jitterentropy-kcapi.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
  obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o

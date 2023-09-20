@@ -6,7 +6,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.45
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        6.1.53
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=9a30afa4dbbf899aab8722574a3b914b2547beb0b36a7d80bd45f694f1649e974c6769700d3b5494bbd71964ba4f6b1ab430588266a08a38bc940871bb963e81
+%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -207,6 +207,10 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
+%ifarch x86_64
+Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
@@ -239,10 +243,6 @@ Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 %endif
 
 # Patches for ice v1.11.14 driver [1520..1529]
-
-%ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -399,6 +399,10 @@ manipulation of eBPF programs and maps.
 # crypto
 %autopatch -p1 -m500 -M504
 
+%ifarch x86_64
+%autopatch -p1 -m505 -M505
+%endif
+
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
 %endif
@@ -431,10 +435,6 @@ popd
 pushd ../ice-%{ice_version}
 %autopatch -p1 -m1520 -M1529
 popd
-%endif
-
-%ifarch x86_64
-%autopatch -p1 -m10010 -M10010
 %endif
 
 %ifarch x86_64
@@ -750,6 +750,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
+- Update to version 6.1.53
 * Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-7
 - Fix: net: roundup issue in kmalloc_reserve()
 * Thu Nov 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.45-6

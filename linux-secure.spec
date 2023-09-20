@@ -2,7 +2,7 @@
 %global lkcm_version 5.0.0
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.1.45
-Release:        9%{?kat_build:.kat}%{?dist}
+Version:        6.1.53
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=9a30afa4dbbf899aab8722574a3b914b2547beb0b36a7d80bd45f694f1649e974c6769700d3b5494bbd71964ba4f6b1ab430588266a08a38bc940871bb963e81
+%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -142,6 +142,10 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
+%ifarch x86_64
+Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
+
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
@@ -159,13 +163,6 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # in both places until final canister binary is released
 Patch10000: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-%endif
-
-%ifarch x86_64
-Patch10002: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
-
-%if 0%{?canister_build}
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
 Patch10004: 0003-aesni_intel-Remove-static-call.patch
@@ -273,6 +270,10 @@ The kernel fips-canister
 # crypto
 %autopatch -p1 -m500 -M504
 
+%ifarch x86_64
+%autopatch -p1 -m505 -M505
+%endif
+
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
 %endif
@@ -281,15 +282,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10001
-%endif
-
-%ifarch x86_64
-%autopatch -p1 -m10002 -M10002
-%endif
-
-%if 0%{?canister_build}
-%autopatch -p1 -m10003 -M10009
+%autopatch -p1 -m10000 -M10009
 %endif
 
 %ifarch x86_64
@@ -471,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
+- Update to version 6.1.53
 * Thu Nov 23 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.45-9
 - Apply patches introduced by previous commimt
 * Thu Nov 23 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-8
