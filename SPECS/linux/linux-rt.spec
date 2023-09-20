@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.194
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -177,6 +177,9 @@ Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
+#Fix CVE-2023-42753
+Patch139: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -692,7 +695,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M138
+%autopatch -p1 -m100 -M139
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -948,6 +951,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 20 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-2
+- Fix CVE-2023-42753
 * Mon Sep 11 2023 Roye Eshed <eshedr@vmware.com> 5.10.194-1
 - Update to version 5.10.194
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-4

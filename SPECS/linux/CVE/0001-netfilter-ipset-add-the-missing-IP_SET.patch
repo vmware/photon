@@ -1,0 +1,37 @@
+From 83091f8ac03f118086596f17c9a52d31d6ca94b3 Mon Sep 17 00:00:00 2001
+From: Kyle Zeng <zengyhkyle@gmail.com>
+Date: Tue, 5 Sep 2023 15:04:09 -0700
+Subject: [PATCH] netfilter: ipset: add the missing IP_SET_HASH_WITH_NET0 macro
+ for ip_set_hash_netportnet.c
+
+commit 050d91c03b28ca479df13dfb02bcd2c60dd6a878 upstream.
+
+The missing IP_SET_HASH_WITH_NET0 macro in ip_set_hash_netportnet can
+lead to the use of wrong `CIDR_POS(c)` for calculating array offsets,
+which can lead to integer underflow. As a result, it leads to slab
+out-of-bound access.
+This patch adds back the IP_SET_HASH_WITH_NET0 macro to
+ip_set_hash_netportnet to address the issue.
+
+Fixes: 886503f34d63 ("netfilter: ipset: actually allow allowable CIDR 0 in hash:net,port,net")
+Suggested-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Signed-off-by: Kyle Zeng <zengyhkyle@gmail.com>
+Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/netfilter/ipset/ip_set_hash_netportnet.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/netfilter/ipset/ip_set_hash_netportnet.c b/net/netfilter/ipset/ip_set_hash_netportnet.c
+index 144346faffc130..b8ec2c414a5fbd 100644
+--- a/net/netfilter/ipset/ip_set_hash_netportnet.c
++++ b/net/netfilter/ipset/ip_set_hash_netportnet.c
+@@ -35,6 +35,7 @@ MODULE_ALIAS("ip_set_hash:net,port,net");
+ #define IP_SET_HASH_WITH_PROTO
+ #define IP_SET_HASH_WITH_NETS
+ #define IPSET_NET_COUNT 2
++#define IP_SET_HASH_WITH_NET0
+ 
+ /* IPv4 variant */
+ 

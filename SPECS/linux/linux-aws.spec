@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.194
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -161,6 +161,9 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
+#Fix CVE-2023-42753
+Patch141: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -324,7 +327,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M140
+%autopatch -p1 -m100 -M141
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %autopatch -p1 -m150 -M150
@@ -503,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 20 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-2
+- Fix CVE-2023-42753
 * Wed Sep 13 2023 Roye Eshed <eshedr@vmware.com> 5.10.194-1
 - Update to version 5.10.194
 * Tue Sep 05 2023 Ankit Jain <ankitja@vmware.com> 5.10.190-3
