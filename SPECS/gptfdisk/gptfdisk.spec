@@ -1,7 +1,7 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
@@ -15,6 +15,7 @@ Source0: http://downloads.sourceforge.net/project/gptfdisk/%{version}/%{name}-%{
 # http://ftp.oregonstate.edu/.1/blfs/conglomeration/gptfdisk/gptfdisk-1.0.9-convenience-1.patch
 Patch0: %{name}-%{version}-convenience-1.patch
 Patch1: gptfdisk-Makefile.patch
+Patch2: 0001-Updated-guid.cc-to-deal-with-minor-change-in-libuuid.patch
 
 BuildRequires: popt-devel
 BuildRequires: ncurses-devel
@@ -58,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Wed Sep 20 2023 Oliver Kurth <okurth@vmware.com> 1.0.9-3
+- add patch to fix "Unable to generate a proper UUID" error
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.0.9-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-1
