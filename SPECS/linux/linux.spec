@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.292
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -111,6 +111,9 @@ Patch42: secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43: secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44: secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45: secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
+
+# Fix for CVE-2023-42753
+Patch46: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 #Fix for CVE-2019-19338
 Patch47: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
@@ -1170,6 +1173,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-3
+- Fix for CVE-2023-42753
 * Fri Sep 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.292-2
 - Disable CONFIG_SCSI_DPT_I2O to fix CVE-2023-2007
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1

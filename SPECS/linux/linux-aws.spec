@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.292
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -107,6 +107,9 @@ Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 Patch72: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch73: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch74: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
+
+# Fix for CVE-2023-42753
+Patch75: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch76: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
@@ -575,6 +578,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-2
+- Fix for CVE-2023-42753
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
 - Update to version 4.19.292
 - Patched CVE-2023-4128

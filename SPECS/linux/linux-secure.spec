@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.292
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -102,6 +102,9 @@ Patch68: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 # CVE-2022-1789
 Patch69: 0001-KVM-x86-mmu-fix-NULL-pointer-dereference-on-guest-IN.patch
+
+# Fix for CVE-2023-42753
+Patch70: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2022-39189
 Patch72: 0001-KVM-x86-do-not-report-a-vCPU-as-preempted-outside-in.patch
@@ -555,6 +558,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-3
+- Fix for CVE-2023-42753
 * Fri Sep 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.292-2
 - Disable CONFIG_SCSI_DPT_I2O to fix CVE-2023-2007
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1

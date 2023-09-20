@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.292
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -125,6 +125,9 @@ Patch62: 0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch63: 0002-fs-9p-Add-read_cache_pages_inchunks.patch
 # 9p improve write pages cache
 Patch64: 0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
+
+# Fix for CVE-2023-42753
+Patch72: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2020-16119
 Patch73: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -856,6 +859,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-2
+- Fix for CVE-2023-42753
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
 - Update to version 4.19.292
 - Patched CVE-2023-4128

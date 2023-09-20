@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.292
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -134,6 +134,9 @@ Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
 Patch55: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
 Patch56: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
+
+# Fix for CVE-2023-42753
+Patch57: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2020-16119
 Patch58: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -1531,6 +1534,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-4
+- Fix for CVE-2023-42753
 * Wed Sep 06 2023 Kuntal Nayak <nkuntal@vmware.com> 4.19.292-3
 - Avoid TSC recalibration
 * Fri Sep 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.292-2
