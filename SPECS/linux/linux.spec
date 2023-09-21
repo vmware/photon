@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.198
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -225,16 +225,19 @@ Patch204: 0001-Add-rpi-poe-fan-driver.patch
 %endif
 
 # Crypto:
-# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+# Patch to invoke crypto self-tests and add missing test vectors to testmgr
+Patch500: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch503: 0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch504: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch505: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+
+%ifarch x86_64
+Patch506: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -292,10 +295,6 @@ Patch1541:       0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
 Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
-
-%ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
 
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness patches.
@@ -480,7 +479,11 @@ manipulation of eBPF programs and maps.
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M505
+%autopatch -p1 -m500 -M504
+
+%ifarch x86_64
+%autopatch -p1 -m506 -M506
+%endif
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
@@ -531,10 +534,6 @@ popd
 %patch1542 -p1
 %patch1543 -p1
 %patch1544 -p1
-
-%ifarch x86_64
-%autopatch -p1 -m10010 -M10010
-%endif
 
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness patches.
@@ -900,6 +899,11 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Oct 13 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-2
+- Ensure all the necessary crypto self-tests are run irrespective
+  of whether the canister is used in the kernel build or not
+- Fix tcrypt tests
+- Apply jitterentropy builder patch before canister binary usage patch
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
 - Update to version 5.10.198
 - Fix CVE-2023-4244

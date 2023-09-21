@@ -7,26 +7,36 @@ Subject: [PATCH] changes to build with jitterentropy v3.4.1
   with v6.1.x kernel
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/Makefile              |  4 +-
+ crypto/Makefile              |  6 ++-
  crypto/jitterentropy-kcapi.c | 88 ++++++++++++------------------------
- 2 files changed, 31 insertions(+), 61 deletions(-)
+ 2 files changed, 33 insertions(+), 61 deletions(-)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
 index 148eacd82..85246b8f5 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -139,11 +139,11 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
- obj-$(CONFIG_CRYPTO_842) += 842.o
+@@ -6,6 +6,10 @@
+ obj-$(CONFIG_CRYPTO) += crypto.o
+ crypto-y := api.o cipher.o compress.o
+ 
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1/ jitterentropy-3.4.1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1/jitterentropy_canister_wrapper_asm.o
++
++jitterentropy_rng-y := jitterentropy-kcapi.o
++
+ obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
+ obj-$(CONFIG_CRYPTO_FIPS) += fips.o
+ 
+@@ -159,11 +163,9 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
+ obj-$(CONFIG_CRYPTO_DRBG) += drbg.o
 -obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
-+obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1/ jitterentropy-3.4.1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1/jitterentropy_canister_wrapper_asm.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
 -jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
-+jitterentropy_rng-y := jitterentropy-kcapi.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
  obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
@@ -190,4 +200,3 @@ index 48d475e72..af872ea1c 100644
  MODULE_ALIAS_CRYPTO("jitterentropy_rng");
 -- 
 2.19.0
-

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.198
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -540,16 +540,19 @@ Patch715: 0001-sched-features-Distinguish-between-NORMAL-and-DEADLI.patch
 Patch716: 0001-timer-padding-on-guest.patch
 
 # Crypto:
-# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch1000: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+# Patch to invoke crypto self-tests and add missing test vectors to testmgr
+Patch1000: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch1001: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch1002: 0001-Initialize-jitterentropy-before-ecdh.patch
-Patch1003: 0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
-Patch1004: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+Patch1003: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch1005: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch1004: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+
+%ifarch x86_64
+Patch1006: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+%endif
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -594,10 +597,6 @@ Patch1541:       0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
 Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
-
-%ifarch x86_64
-Patch10010: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
 
 BuildArch:      x86_64
 
@@ -690,7 +689,11 @@ The Linux package contains the Linux kernel doc files
 # RT
 %autopatch -p1 -m301 -M716
 
-%autopatch -p1 -m1000 -M1005
+%autopatch -p1 -m1000 -M1004
+
+%ifarch x86_64
+%autopatch -p1 -m1006 -M1006
+%endif
 
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1010
@@ -735,10 +738,6 @@ popd
 %patch1542 -p1
 %patch1543 -p1
 %patch1544 -p1
-
-%ifarch x86_64
-%autopatch -p1 -m10010 -M10010
-%endif
 
 %build
 %ifarch x86_64
@@ -935,6 +934,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 13 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-2
+- Ensure all the necessary crypto self-tests are run irrespective
+  of whether the canister is used in the kernel build or not
+- Fix tcrypt tests
+- Apply jitterentropy builder patch before canister binary usage patch
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
 - Update to version 5.10.198
 - Fix CVE-2023-4244
