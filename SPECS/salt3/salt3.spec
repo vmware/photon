@@ -5,8 +5,8 @@
 %{!?pythonpath: %global pythonpath %(python3 -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 Name: salt3
-Version: 3005.2
-Release: 2%{?dist}
+Version: 3005.3
+Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -14,7 +14,7 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha512 salt=07e7afc732a97006557d4556d60aa1854934893d0566bf8c295d4b1c01515988a1bf2798ce228f6b37e657de8fdfff51153ad2ea8d54baa6a5c377e30794f317
+%define sha512 salt=41cf556faf9b50cd0dfad5cdecbcdf058316c27862b70f837bf5987faadc4ede2fc808f7588629c3699f39e7e06aa6aed3ef458bda590cf92995d2f5693ed6c9
 Source2: salt-master.service
 Source3: salt-syndic.service
 Source4: salt-minion.service
@@ -292,6 +292,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Sep 21 2023 Felippe Burk <saltstack_operations@vmware.com> 3005.3-1
+- Update to version 3005.3
 * Wed Aug 23 2023 Derek Ardolf <dereka@vmware.com> 3005.2-2
 - Add python3-jmespath as required dependency
 * Mon Aug 14 2023 Derek Ardolf <dereka@vmware.com> 3005.2-1
