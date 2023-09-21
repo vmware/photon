@@ -1,7 +1,7 @@
 Name:       binutils-aarch64-linux-gnu
 Summary:    Cross Binutils for Aarch64
 Version:    2.35
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -31,6 +31,14 @@ Patch17:        binutils-CVE-2020-35448.patch
 Patch18:        binutils-CVE-2021-3549.patch
 Patch19:        binutils-CVE-2022-47695.patch
 Patch20:        binutils-CVE-2021-46174.patch
+Patch21:        binutils-CVE-2022-44840.patch
+Patch22:        binutils-CVE-2022-48064.patch
+Patch23:        binutils-CVE-2022-48063.patch
+Patch24:        binutils-CVE-2022-47008.patch
+Patch25:        binutils-CVE-2022-47007.patch
+Patch26:        binutils-CVE-2022-47011.patch
+Patch27:        binutils-CVE-2022-47010.patch
+Patch28:        binutils-CVE-2022-48065.patch
 
 BuildArch: x86_64
 
@@ -70,6 +78,10 @@ rm -rf %{buildroot}%{_infodir} \
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Fri Sep 22 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-7
+- Fixes CVE-2022-44840, CVE-2022-48064, CVE-2022-47008, CVE-2022-48063
+- CVE-2022-47011, CVE-2022-47010 and CVE-2022-47007
+- CVE-2022-48065
 * Mon Aug 14 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-6
 - Fix CVE-2022-47695 and CVE-2021-46174
 * Mon Aug 14 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.35-5
