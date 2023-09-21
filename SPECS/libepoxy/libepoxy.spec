@@ -1,7 +1,7 @@
 Summary:        library for handling OpenGL function pointer management.
 Name:           libepoxy
 Version:        1.5.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            https://github.com/anholt/libepoxy
 Group:          System Environment/Libraries
@@ -34,6 +34,7 @@ libepoxy is a library for handling OpenGL function pointer management.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       libglvnd-devel
+Requires:       libX11-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -72,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/
 
 %changelog
+* Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.10-3
+- Fix devel package requires
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.5.10-2
 - Bump version as a part of libX11 upgrade
 * Tue Aug 23 2022 Shivani Agarwal <shivania2@vmware.com> 1.5.10-1
