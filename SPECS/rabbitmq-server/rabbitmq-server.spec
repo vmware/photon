@@ -1,5 +1,10 @@
-%global _rabbit_libdir  %{_libdir}/rabbitmq
-%global _rabbit_user    rabbitmq
+%define erlang_minver       25.0
+%define erlang_maxver       27.0
+%define _rabbitmq_user      rabbitmq
+%define _rabbitmq_group     rabbitmq
+%define _rabbit_libdir      %{_libdir}/rabbitmq
+%define _rabbit_erllibdir   %{_rabbit_libdir}/lib/rabbitmq_server-%{version}
+%define _plugins_state_dir  %{_sharedstatedir}/rabbitmq/plugins
 
 # Be careful while doing major version upgrades of this package
 # Refer https://www.rabbitmq.com/upgrade.html
@@ -11,7 +16,7 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.11.0
+Version:       3.11.18
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -21,11 +26,13 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=2cbdeb9288dd5b18ab97ba941075e96c51c258bc6ffb49a97b7bf5dee9e8ebd033d449c94b7ce305976478d1a142c82d1aaf0a2b64a14f802ac4c21b72858e4d
+%define sha512 rabbitmq=ba8583fa27151c679449aafd8dc5e944aa12f24c2ae8e80404aa410c26ade5c0252860f49bb72edeb6858abf49d0978dba07b43c9013528a12c141e1bd7200be
 
 Source1: %{name}.tmpfiles
+Source2: %{name}.logrotate
+Source3: %{name}.service
 
-BuildRequires: erlang
+BuildRequires: erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 BuildRequires: python3-devel
 BuildRequires: python3-xml
 BuildRequires: rsync
@@ -37,7 +44,7 @@ BuildRequires: elixir
 BuildRequires: systemd-devel
 BuildRequires: which
 
-Requires:      erlang >= 24
+Requires:      erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 Requires:      erlang-sd_notify
 Requires:      /bin/sed
 Requires:      socat
@@ -55,74 +62,70 @@ rabbitmq messaging server
 %build
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 export PROJECT_VERSION="%{version}"
-# https://github.com/rabbitmq/rabbitmq-server/discussions/5246
-export DIST_AS_EZS=1
 %make_build
 
 %install
 export PROJECT_VERSION="%{version}"
-export RMQ_ROOTDIR="%{_rabbit_libdir}"
-export DIST_AS_EZS=1
+export RMQ_ROOTDIR=%{_rabbit_libdir}
+export RMQ_ERLAPP_DIR=%{_rabbit_erllibdir}
+
+mkdir -p %{buildroot}%{_sharedstatedir}/rabbitmq/mnesia \
+         %{buildroot}%{_var}/log/rabbitmq \
+         %{buildroot}%{_sysconfdir}/rabbitmq
+
 %make_install %{?_smp_mflags}
 
-install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
-install -vdm755 %{buildroot}%{_sysconfdir}/rabbitmq
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 
-mkdir -p %{buildroot}%{_var}/log \
-         %{buildroot}%{_var}/opt/rabbitmq/log \
-         %{buildroot}%{_unitdir}
+sed -i \
+    -e "s|@RMQ_USER@|%{_rabbitmq_user}|" \
+    -e "s|@RMQ_GROUP@|%{_rabbitmq_group}|" \
+    -e "s|@RMQ_ROOTDIR@|%{_rabbit_libdir}/lib/rabbitmq_server-%{version}|" \
+    %{buildroot}%{_unitdir}/%{name}.service
 
-ln -sfv %{_var}/opt/rabbitmq/log %{buildroot}%{_var}/log/rabbitmq
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
-cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
-[Unit]
-Description=RabbitMQ broker
-After=network.target epmd@0.0.0.0.socket
-Wants=network.target epmd@0.0.0.0.socket
-
-[Service]
-Type=notify
-User=%{_rabbit_user}
-Group=%{_rabbit_user}
-NotifyAccess=all
-TimeoutStartSec=3600
-WorkingDirectory=%{_sharedstatedir}/rabbitmq
-ExecStart=%{_rabbit_libdir}/lib/rabbitmq_server-%{version}/sbin/%{name}
-ExecStop=%{_rabbit_libdir}/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
-
-[Install]
-WantedBy=multi-user.target
-EOF
+install -p -D -m 0755 scripts/rabbitmqctl-autocomplete.sh \
+            %{buildroot}%{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
             %{buildroot}%{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} tests
-%endif
+%make_build tests
 
 %pre
-if ! getent group %{_rabbit_user} >/dev/null; then
-  groupadd -r %{_rabbit_user}
+[ -L /var/log/rabbitmq ] && rm -f /var/log/rabbitmq
+
+# create rabbitmq group
+if ! getent group %{_rabbitmq_group} > /dev/null; then
+  groupadd -r %{_rabbitmq_group}
 fi
 
-if ! getent passwd %{_rabbit_user} >/dev/null; then
-  useradd -r -g %{_rabbit_user} -d %{_sharedstatedir}/rabbitmq %{_rabbit_user} \
-      -s /sbin/nologin -c "RabbitMQ messaging server"
+# create rabbitmq user
+if ! getent passwd %{_rabbitmq_user} > /dev/null; then
+  useradd -r -g %{_rabbitmq_group} -d %{_sharedstatedir}/rabbitmq -s /sbin/nologin \
+      %{_rabbitmq_user} -c "RabbitMQ messaging server"
 fi
 
 %post
 /sbin/ldconfig
-chown -R %{_rabbit_user}:%{_rabbit_user} %{_sharedstatedir}/rabbitmq
-chown -R %{_rabbit_user}:%{_rabbit_user} %{_sysconfdir}/rabbitmq
+chown -R %{_rabbitmq_user}:%{_rabbitmq_group} %{_sharedstatedir}/rabbitmq
+chown -R %{_rabbitmq_user}:%{_rabbitmq_group} %{_sysconfdir}/rabbitmq
 chmod g+s %{_sysconfdir}/rabbitmq
+chmod -R o-rwx,g-w %{_sharedstatedir}/rabbitmq/mnesia
+chgrp %{_rabbitmq_group} %{_sysconfdir}/rabbitmq
+
 %systemd_post %{name}.service
+systemctl daemon-reload
 
 %preun
 %systemd_preun %{name}.service
+# Clean out plugin activation state, both on uninstall and upgrade
+rm -rf %{_plugins_state_dir} \
+       %{_rabbit_erllibdir}/ebin/rabbit.{rel,script,boot}
 
 %postun
 /sbin/ldconfig
@@ -133,15 +136,25 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, %{_rabbit_user}, %{_rabbit_user}) %{_var}/opt/rabbitmq/log
-%{_var}/log/rabbitmq
-%{_rabbit_libdir}/*
+%doc LICENSE*
+%doc deps/rabbit/docs/set_rabbitmq_policy.sh.example
+%attr(0755,%{_rabbitmq_user},%{_rabbitmq_group}) %dir %{_sharedstatedir}/rabbitmq
+%attr(0750,%{_rabbitmq_user},%{_rabbitmq_group}) %dir %{_sharedstatedir}/rabbitmq/mnesia
+%attr(0755,%{_rabbitmq_user},%{_rabbitmq_group}) %dir %{_var}/log/rabbitmq
+%attr(2755,-,%{_rabbitmq_group}) %dir %{_sysconfdir}/rabbitmq
+%config(noreplace) %{_sysconfdir}/logrotate.d/rabbitmq-server
+%config(noreplace) %attr(0644,%{_rabbitmq_user},%{_rabbitmq_group}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
 %{_unitdir}/*
-%{_tmpfilesdir}/%{name}.conf
-%{_sharedstatedir}/*
-%config(noreplace) %attr(0644, %{_rabbit_user}, %{_rabbit_user}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
+%{_tmpfilesdir}/*
+%{_rabbit_libdir}/*
+%{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Mon Sep 18 2023 Harinadh D <hdommaraju@vmware.com> 3.11.18-1
+- Upgrade to v3.11.18
+- Modified spec similar to below page
+- https://github.com/rabbitmq/rabbitmq-packaging/blob/main/RPMS/Fedora/rabbitmq-server.spec
+- Disabled DIST_AS_EZS to add schema files in rpm deliverables
 * Sat Apr 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-1
 - Upgrade to v3.11.0
 * Mon Nov 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.7-5
