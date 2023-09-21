@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -47,24 +47,23 @@ simple interprocess messaging system (systemd --user integration)
     --enable-libaudit=no \
     --enable-selinux=no \
     --with-console-auth-dir=/run/console \
-    --enable-user-session
+    --enable-user-session \
+    --runstatedir=/run
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_lib}
-
-rm -f %{buildroot}%{_libdir}/*.la
+install -vdm755 %{buildroot}%{_libdir}
 
 mkdir -p %{buildroot}%{_userunitdir}
 
-rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
+rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
+      %{buildroot}%{_libdir}/*.a \
+      %{buildroot}%{_libdir}/*.la
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %files
 %defattr(-,root,root)
@@ -86,7 +85,6 @@ make %{?_smp_mflags} check
 %dir %{_libdir}/%{name}-1.0
 %{_libdir}/%{name}-1.0/include/
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
 %{_libdir}/*.so
 
 %files user-session
@@ -95,6 +93,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-3
+- Use /run for runstatedir
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-2
 - Enable user-session config flag
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 1.15.4-1
