@@ -1,7 +1,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -51,7 +51,7 @@ decisions.  Required for any applications that use the SELinux API.
 %package        utils
 Summary:        SELinux libselinux utilies
 Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    utils
 The libselinux-utils package contains the utilities
@@ -59,10 +59,10 @@ The libselinux-utils package contains the utilities
 %package        devel
 Summary:        Header files and libraries used to build SELinux
 Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       libsepol-devel = %{version}
 Requires:       pcre2-devel
-Provides:       pkgconfig(libselinux)
+Provides:       pkgconfig(%{name})
 
 %description    devel
 The libselinux-devel package contains the libraries and header files
@@ -71,9 +71,8 @@ needed for developing SELinux applications.
 %package        python3
 Summary:        SELinux python3 bindings for libselinux
 Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3
-Requires:       python3-libs
 
 %description    python3
 The libselinux-python package contains the python3 bindings for developing
@@ -83,26 +82,26 @@ SELinux applications.
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
-make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=%{_bindir}/python3 pywrap
+%make_build
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bindir}" \
-     SBINDIR="%{_sbindir}" PYTHON=%{_bindir}/python3 install install-pywrap %{?_smp_mflags}
+%make_install %{?_smp_mflags} install install-pywrap \
+        SHLIBDIR="%{_libdir}"
 
-mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
-echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
-# do not package ru man pages
-rm -rf %{buildroot}%{_mandir}/ru
+mkdir -p %{buildroot}%{_tmpfilesdir}
+echo "d /run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
+rm -rf %{buildroot}%{_mandir}/ru \
+       %{buildroot}%{_libdir}/%{name}.a
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%ghost /var/run/setrans
-%{_libdir}/libselinux.so.1
-%{_tmpfilesdir}/libselinux.conf
+%ghost /run/setrans
+%{_libdir}/%{name}.so.1
+%{_tmpfilesdir}/%{name}.conf
 
 %files utils
 %defattr(-,root,root,-)
@@ -112,11 +111,10 @@ rm -rf %{buildroot}%{_mandir}/ru
 
 %files devel
 %defattr(-,root,root,-)
-%{_libdir}/libselinux.so
-%{_libdir}/pkgconfig
+%{_libdir}/%{name}.so
+%{_libdir}/pkgconfig/*
 %dir %{_includedir}/selinux
 %{_includedir}/selinux/*
-%{_libdir}/libselinux.a
 %{_mandir}/man3/*
 
 %files python3
@@ -124,6 +122,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5-3
+- Spec cleanups & use /run instead of /var/run
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.5-2
 - Version bump as part of pcre2 update
 * Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
