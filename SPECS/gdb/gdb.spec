@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        10.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -15,6 +15,10 @@ Patch1:         0001-skip-inaccessible.patch
 Patch2:         0001-CVE-2021-3549.patch
 Patch3:         0001-CVE-2022-4285.patch
 Patch4:         0001-CVE-2022-38533.patch
+Patch5:         0001-CVE-2023-1972.patch
+Patch6:         0001-CVE-2023-25584.patch
+Patch7:         0001-CVE-2023-25585.patch
+Patch8:         0001-CVE-2023-25588.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -99,6 +103,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_sysconfdir}/gdbinit.d
 
 %changelog
+* Fri Sep 22 2023 Anmol Jain <anmolja@vmware.com> 10.1-5
+- Fix for CVE-2023-1972, CVE-2023-25584, CVE-2023-25585 & CVE-2023-25588
 * Thu Aug 10 2023 Anmol Jain <anmolja@vmware.com> 10.1-4
 - Fix for CVE-2021-3549, CVE-2022-38533 & CVE-2022-4285
 * Wed Jul 12 2023 Anmol Jain <anmolja@vmware.com> 10.1-3
