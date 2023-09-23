@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.197
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -354,7 +354,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m511 -M511
 %endif
 
-%build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
@@ -375,6 +374,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE4}
 
+%build
 make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
@@ -511,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.197-2
+- Move kernel prep to %prep
 * Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
 - Update to version 5.10.197
 - Undo commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c as it breaks canister usage.

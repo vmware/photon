@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.197
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -770,12 +770,10 @@ popd
 %patch1543 -p1
 %patch1544 -p1
 
-%build
 make %{?_smp_mflags} mrproper
 
 %ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
 %endif
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
@@ -802,8 +800,9 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 
 %include %{SOURCE5}
 
+%build
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+    KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -962,6 +961,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.197-3
+- Move kernel prep to %prep
 * Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.197-2
 - Fix issues in Guest timer Advancement feature
 * Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
