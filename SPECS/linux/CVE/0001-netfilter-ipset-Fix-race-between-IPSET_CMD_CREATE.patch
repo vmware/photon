@@ -1,0 +1,59 @@
+From 7433b6d2afd512d04398c73aa984d1e285be125b Mon Sep 17 00:00:00 2001
+From: Jozsef Kadlecsik <kadlec@netfilter.org>
+Date: Tue, 19 Sep 2023 20:04:45 +0200
+Subject: [PATCH] netfilter: ipset: Fix race between IPSET_CMD_CREATE and
+ IPSET_CMD_SWAP
+
+commit 7433b6d2afd512d04398c73aa984d1e285be125b upstream
+
+Kyle Zeng reported that there is a race between IPSET_CMD_ADD and IPSET_CMD_SWAP
+in netfilter/ip_set, which can lead to the invocation of `__ip_set_put` on a
+wrong `set`, triggering the `BUG_ON(set->ref == 0);` check in it.
+
+The race is caused by using the wrong reference counter, i.e. the ref counter instead
+of ref_netlink.
+
+Fixes: 24e227896bbf ("netfilter: ipset: Add schedule point in call_ad().")
+Reported-by: Kyle Zeng <zengyhkyle@gmail.com>
+Closes: https://lore.kernel.org/netfilter-devel/ZPZqetxOmH+w%2Fmyc@westworld/#r
+Tested-by: Kyle Zeng <zengyhkyle@gmail.com>
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ net/netfilter/ipset/ip_set_core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index e564b517426115..35d2f9c9ada025 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -682,6 +682,14 @@ __ip_set_put(struct ip_set *set)
+ /* set->ref can be swapped out by ip_set_swap, netlink events (like dump) need
+  * a separate reference counter
+  */
++static void
++__ip_set_get_netlink(struct ip_set *set)
++{
++	write_lock_bh(&ip_set_ref_lock);
++	set->ref_netlink++;
++	write_unlock_bh(&ip_set_ref_lock);
++}
++
+ static void
+ __ip_set_put_netlink(struct ip_set *set)
+ {
+@@ -1693,11 +1701,11 @@ call_ad(struct net *net, struct sock *ctnl, struct sk_buff *skb,
+ 
+ 	do {
+ 		if (retried) {
+-			__ip_set_get(set);
++			__ip_set_get_netlink(set);
+ 			nfnl_unlock(NFNL_SUBSYS_IPSET);
+ 			cond_resched();
+ 			nfnl_lock(NFNL_SUBSYS_IPSET);
+-			__ip_set_put(set);
++			__ip_set_put_netlink(set);
+ 		}
+ 
+ 		ip_set_lock(set);
