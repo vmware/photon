@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.194
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -233,6 +233,9 @@ Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 #Fix CVE-2023-42753
 Patch141: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
+#Fix CVE-2023-42755
+Patch142: net-sched-retire-rsvp-classifier.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -403,7 +406,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M96
 
 # CVE
-%autopatch -p1 -m100 -M141
+%autopatch -p1 -m100 -M142
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -669,6 +672,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-3
+- Fix CVE-2023-42755
 * Wed Sep 20 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-2
 - Fix CVE-2023-42753
 * Tue Sep 12 2023 Roye Eshed <eshedr@vmware.com> 5.10.194-1
