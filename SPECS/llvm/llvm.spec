@@ -56,11 +56,19 @@ mv cmake-%{version}.src/Modules/*.cmake cmake/modules
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
 
+%ifarch aarch64
+%define build_concurrency 4
+%define link_concurrency 2
+%else
+%define build_concurrency $(nproc)
+%define link_concurrency 4
+%endif
+
 %cmake -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
       -DBUILD_SHARED_LIBS:BOOL=OFF \
-      -DLLVM_PARALLEL_LINK_JOBS=4 \
-      -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
+      -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
+      -DLLVM_PARALLEL_COMPILE_JOBS=%{build_concurrency} \
       -DLLVM_ENABLE_FFI:BOOL=ON \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
