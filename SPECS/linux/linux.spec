@@ -1,9 +1,17 @@
 %global security_hardening none
 
+%ifarch x86_64
+%define arch x86_64
+%endif
+
+%ifarch aarch64
+%define arch arm64
+%endif
+
 Summary:        Kernel
 Name:           linux
 Version:        4.19.295
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -775,25 +783,23 @@ popd
 %patch1000 -p1
 %endif
 
-%build
 make mrproper %{?_smp_mflags}
 
 %ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
 %endif
 
 %ifarch aarch64
 cp %{SOURCE4} .config
-arch="arm64"
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %include %{SOURCE7}
 
+%build
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
-        KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+        KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 make -C tools perf PYTHON=python3 %{?_smp_mflags}
 
@@ -801,7 +807,7 @@ bldroot="${PWD}"
 
 %ifarch x86_64
 #build turbostat and cpupower
-make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3 %{?_smp_mflags}
+make ARCH=%{?arch} -C tools turbostat cpupower PYTHON=python3 %{?_smp_mflags}
 
 # build ENA module
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
@@ -1011,12 +1017,12 @@ cp arch/arm64/kernel/module.lds \
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} \
         perf_install PYTHON=python3 %{?_smp_mflags}
 
-make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} \
+make -C tools/perf ARCH=%{?arch} JOBS=1 DESTDIR=%{buildroot} \
         prefix=%{_prefix} PYTHON=python3 \
         install-python_ext %{?_smp_mflags}
 
 %ifarch x86_64
-make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} \
+make -C tools ARCH=%{?arch} JOBS=1 DESTDIR=%{buildroot} \
         prefix=%{_prefix} mandir=%{_mandir} \
         turbostat_install cpupower_install \
         PYTHON=python3 %{?_smp_mflags}
@@ -1158,6 +1164,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
+- Move kernel prep to %prep
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
 - Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-3

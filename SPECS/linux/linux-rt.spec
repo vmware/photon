@@ -1,9 +1,14 @@
 %global security_hardening none
 
+%ifarch x86_64
+%define arch x86_64
+%define archdir x86
+%endif
+
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.295
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -1127,20 +1132,19 @@ popd
 # bpfilter patches
 %autopatch -p1 -m1552 -M1556
 
-%build
 make mrproper %{?_smp_mflags}
 
 %ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
 
 %include %{SOURCE5}
 
+%build
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
-        KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+        KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 bldroot="${PWD}"
 
@@ -1194,10 +1198,6 @@ for MODULE in $(find %{buildroot}%{_modulesdir} -name *.ko); do \
 %{nil}
 
 %install
-%ifarch x86_64
-archdir="x86"
-%endif
-
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
@@ -1348,11 +1348,11 @@ rm -rf %{buildroot}%{_modulesdir}/source \
 
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find arch/${archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{?archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{?archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find arch/${archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{?archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
@@ -1519,6 +1519,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
+- Move kernel prep to %prep
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
 - Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-4

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.295
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -381,7 +381,6 @@ popd
 # bpfilter patches
 %autopatch -p1 -m1545 -M1549
 
-%build
 make mrproper %{?_smp_mflags}
 cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -391,6 +390,7 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
+%build
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
             KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
@@ -543,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
+- Move kernel prep to %prep
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
 - Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-3

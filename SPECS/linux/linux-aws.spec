@@ -1,9 +1,14 @@
 %global security_hardening none
 
+%ifarch x86_64
+%define arch x86_64
+%define archdir x86
+%endif
+
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.295
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -368,21 +373,19 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch1000 -p1
 %endif
 
-%build
 make %{?_smp_mflags} mrproper
 
 %ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
-archdir="x86"
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .config
 
 %include %{SOURCE4}
 
+%build
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
-        KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+        KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 bldroot="${PWD}"
 
@@ -473,11 +476,11 @@ rm -rf %{buildroot}%{_modulesdir}/source \
 
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find arch/${archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{?archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{?archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
-find arch/${archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{?archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
@@ -563,6 +566,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
+- Move kernel prep to %prep
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
 - Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-2
