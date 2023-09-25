@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.53
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -124,6 +124,8 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+#Fix CVE-2023-42755
+Patch102: net-sched-retire-rsvp-classifier.patch
 
 # Fix: net: roundup issue in kmalloc_reserve()
 Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
@@ -464,6 +466,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-2
+- Fix for CVE-2023-42755
 * Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
 - Update to version 6.1.53
 * Thu Nov 23 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.45-9
