@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.292
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.295
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
+%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
 
 %ifarch x86_64
 Source1: config-aws
@@ -107,9 +107,6 @@ Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 Patch72: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch73: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch74: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
-# Fix for CVE-2023-42753
-Patch75: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch76: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
@@ -242,17 +239,11 @@ Patch308: 0001-net-add-sock_init_data_uid.patch
 Patch309: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch310: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
-#Fix for CVE-2023-1077
-Patch311: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
-
 #Fix for CVE-2021-3759
 Patch312: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
 Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
-
-#Fix for CVE-2023-4128
-Patch314: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
 
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
@@ -264,9 +255,6 @@ Patch406: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
 Patch407: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
 Patch408: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
 Patch409: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
-
-# Fix TCP slab memory leak
-Patch500: 0001-netfilter-nf_queue-fix-socket-leak.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -368,16 +356,13 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M314
+%autopatch -p1 -m300 -M313
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
 
 # bpfilter patches
 %autopatch -p1 -m405 -M409
-
-# Fix TCP slab memory leak
-%autopatch -p1 -m500 -M500
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -578,6 +563,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
+- Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-2
 - Fix for CVE-2023-42753
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1

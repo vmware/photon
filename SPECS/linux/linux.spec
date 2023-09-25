@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.292
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.295
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
+%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
 
 %ifarch x86_64
 Source1: config
@@ -111,9 +111,6 @@ Patch42: secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43: secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44: secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45: secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-
-# Fix for CVE-2023-42753
-Patch46: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 #Fix for CVE-2019-19338
 Patch47: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
@@ -567,20 +564,11 @@ Patch1561: 0001-net-add-sock_init_data_uid.patch
 Patch1562: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch1563: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
-#Fix for CVE-2023-1077
-Patch1564: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
-
 #Fix for CVE-2021-3759
 Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
-
-#Fix for CVE-2023-4128
-Patch1567: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
-
-# Fix TCP slab memory leak
-Patch1568: 0001-netfilter-nf_queue-fix-socket-leak.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -781,10 +769,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1567
-
-# Fix TCP slab memory leak
-%autopatch -p1 -m1568 -M1568
+%autopatch -p1 -m1550 -M1566
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1173,6 +1158,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
+- Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-3
 - Fix for CVE-2023-42753
 * Fri Sep 01 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.292-2

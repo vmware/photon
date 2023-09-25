@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.292
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.295
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=5a086295302eb98e6300ad44855dab0cda8e479e869db8c36393ce4985ce6b6c22699022ab512668ac6fafd4be97403819b6bf689364d7789658b4b4fd0b2b96
+%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -125,9 +125,6 @@ Patch62: 0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch63: 0002-fs-9p-Add-read_cache_pages_inchunks.patch
 # 9p improve write pages cache
 Patch64: 0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
-
-# Fix for CVE-2023-42753
-Patch72: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
 
 # Fix for CVE-2020-16119
 Patch73: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -482,17 +479,11 @@ Patch708: 0001-net-add-sock_init_data_uid.patch
 Patch709: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch710: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
-#Fix for CVE-2023-1077
-Patch711: 0001-sched-rt-pick_next_rt_entity-check-list_entry.patch
-
 #Fix for CVE-2021-3759
 Patch712: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
 Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
-
-#Fix for CVE-2023-4128
-Patch714: 0001-net-sched-cls_fw-No-longer-copy-tcf_result-on-update.patch
 
 # Patches for i40e driver
 Patch802: i40e-v2.23.17-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
@@ -528,9 +519,6 @@ Patch1546: 0002-net-bpfilter-restart-bpfilter_umh-when-error-occurre.patch
 Patch1547: 0003-net-bpfilter-disallow-to-remove-bpfilter-module-whil.patch
 Patch1548: 0004-net-bpfilter-dont-use-module_init-in-non-modular-cod.patch
 Patch1549: 0005-net-bpfilter-fallback-to-netfilter-if-failed-to-load.patch
-
-# Fix TCP slab memory leak
-Patch1550: 0001-netfilter-nf_queue-fix-socket-leak.patch
 
 BuildArch:     x86_64
 
@@ -622,7 +610,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M714
+%autopatch -p1 -m700 -M713
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -651,9 +639,6 @@ popd
 
 # bpfilter patches
 %autopatch -p1 -m1545 -M1549
-
-# Fix TCP slab memory leak
-%autopatch -p1 -m1550 -M1550
 
 %build
 make mrproper %{?_smp_mflags}
@@ -859,6 +844,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
+- Update to version 4.19.295
 * Wed Sep 20 2023 Roye Eshed <eshedr@vmware.com> 4.19.292-2
 - Fix for CVE-2023-42753
 * Wed Aug 30 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1
