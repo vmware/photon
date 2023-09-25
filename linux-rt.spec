@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.53
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -133,6 +133,8 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 #Fix CVE-2023-42755
 Patch102: net-sched-retire-rsvp-classifier.patch
+# Fix CVE-2023-42756
+Patch103: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
 
 # Fix: net: roundup issue in kmalloc_reserve()
 Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
@@ -566,6 +568,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-3
+- Fix CVE-2023-42756
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-2
 - Fix for CVE-2023-42755
 * Thu Nov 23 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
