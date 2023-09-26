@@ -1,6 +1,6 @@
-From f39f08830588a6fc9beb9f14217aed41dbbc888d Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Mon, 25 Jan 2021 19:34:10 -0800
+From d863587511e25b09e941d7743d3b6112b2600aed Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 20 Sep 2023 07:43:34 +0000
 Subject: [PATCH 2/8] FIPS canister creation
 
 Canister creation patch.
@@ -321,10 +321,10 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, 0);
  	}
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 8bbb00f7b..375ad4ff6 100644
+index 1c6775c9a..7f7957e8f 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -40,6 +40,7 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -44,6 +44,7 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -332,7 +332,7 @@ index 8bbb00f7b..375ad4ff6 100644
  
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -53,22 +54,30 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
+@@ -57,22 +58,30 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
  ecdsa_generic-y += ecdsa.o
  ecdsa_generic-y += ecdsasignature.asn1.o
@@ -363,7 +363,7 @@ index 8bbb00f7b..375ad4ff6 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -77,13 +86,21 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -81,13 +90,21 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
@@ -385,7 +385,7 @@ index 8bbb00f7b..375ad4ff6 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -118,6 +135,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -122,6 +139,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -393,21 +393,14 @@ index 8bbb00f7b..375ad4ff6 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -148,6 +166,7 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
- obj-$(CONFIG_CRYPTO_842) += 842.o
- obj-$(CONFIG_CRYPTO_RNG2) += rng.o
- obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
-+canister += drbg.o
- obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1-1/ jitterentropy-3.4.1-1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1-1/jitterentropy_canister_wrapper_asm.o
- CFLAGS_jitterentropy.o = -O0
- KASAN_SANITIZE_jitterentropy.o = n
-@@ -163,11 +182,13 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -165,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
 +canister += ecc.o
  obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
++canister += drbg.o
  
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o
@@ -415,7 +408,7 @@ index 8bbb00f7b..375ad4ff6 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -191,6 +212,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -193,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -948,7 +941,7 @@ index 3610ff0b6..7c289df3b 100644
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 3237b50ba..1c9d29552 100644
+index 1cf267bc6..e3a77b398 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -15,6 +15,7 @@
@@ -1004,7 +997,7 @@ index 3237b50ba..1c9d29552 100644
  	if (!req_ctx->out_buf)
  		return -ENOMEM;
  
-@@ -607,7 +608,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -611,7 +612,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -1014,7 +1007,7 @@ index 3237b50ba..1c9d29552 100644
  		return -ENOMEM;
  
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 14aea8714..783c006d0 100644
+index 5e4be63ba..5fb27ae33 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -37,6 +37,7 @@
@@ -1380,7 +1373,7 @@ index 14aea8714..783c006d0 100644
  	if (!outbuf_dec) {
  		err = -ENOMEM;
  		goto free_all;
-@@ -5886,13 +5887,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5885,13 +5886,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int i;
  	int j;
  	int rc;
