@@ -1,7 +1,7 @@
 From b0e7888d1fa2dbd2d9e1645ec8c796abf78880b9 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Sun, 28 Aug 2022 16:52:53 -0300
-Subject: [PATCH] syslog: Fix large messages (BZ#29536)
+Subject: [PATCH 016/118] syslog: Fix large messages (BZ#29536)
 
 The a583b6add407c17cd change did not handle large messages that
 would require a heap allocation correctly, where the message itself
@@ -20,7 +20,7 @@ Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
  2 files changed, 142 insertions(+), 28 deletions(-)
 
 diff --git a/misc/syslog.c b/misc/syslog.c
-index 554089bfc4..b88f66c835 100644
+index 554089bfc45244e87c08eb0482e61c35dd0fa3ca..b88f66c8359b17aa48f4900ab7d3d41eb4159c2e 100644
 --- a/misc/syslog.c
 +++ b/misc/syslog.c
 @@ -193,28 +193,32 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
@@ -64,7 +64,7 @@ index 554089bfc4..b88f66c835 100644
        else
          {
 diff --git a/misc/tst-syslog.c b/misc/tst-syslog.c
-index e550d15796..1d332ece53 100644
+index e550d157967d2c57dfa57cd555582c81286996dc..1d332ece537d56987ea63fceb7a9599ccc675493 100644
 --- a/misc/tst-syslog.c
 +++ b/misc/tst-syslog.c
 @@ -68,21 +68,19 @@ static const int priorities[] =
@@ -332,5 +332,5 @@ index e550d15796..1d332ece53 100644
    return 0;
  }
 -- 
-2.39.0
+2.41.0
 

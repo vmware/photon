@@ -1,12 +1,18 @@
-From ec6b95c3303c700eb89eebeda2d7264cc184a796 Mon Sep 17 00:00:00 2001
+From 856bac55f98dc840e7c27cfa82262b933385de90 Mon Sep 17 00:00:00 2001
 From: Romain Geissler <romain.geissler@amadeus.com>
 Date: Mon, 25 Sep 2023 01:21:51 +0100
-Subject: [PATCH] Fix leak in getaddrinfo introduced by the fix for
+Subject: [PATCH 116/118] Fix leak in getaddrinfo introduced by the fix for
  CVE-2023-4806 [BZ #30843]
 
 This patch fixes a very recently added leak in getaddrinfo.
 
+This was assigned CVE-2023-5156.
+
+Resolves: BZ #30884
+Related: BZ #30842
+
 Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+(cherry picked from commit ec6b95c3303c700eb89eebeda2d7264cc184a796)
 ---
  nss/Makefile                    | 20 ++++++++++++++++++++
  nss/tst-nss-gai-hv2-canonname.c |  3 +++
@@ -14,10 +20,10 @@ Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
  3 files changed, 24 insertions(+), 3 deletions(-)
 
 diff --git a/nss/Makefile b/nss/Makefile
-index 8a5126ecf3..668ba34b18 100644
+index f0af87e6f1ab6a9b13b2894762dd7e8e027192f7..7a52c6879143e46d0ec7ed98edc98d02736abeac 100644
 --- a/nss/Makefile
 +++ b/nss/Makefile
-@@ -149,6 +149,15 @@ endif
+@@ -148,6 +148,15 @@ endif
  extra-test-objs		+= nss_test1.os nss_test2.os nss_test_errno.os \
  			   nss_test_gai_hv2_canonname.os
  
@@ -33,7 +39,7 @@ index 8a5126ecf3..668ba34b18 100644
  include ../Rules
  
  ifeq (yes,$(have-selinux))
-@@ -217,6 +226,17 @@ endif
+@@ -216,6 +225,17 @@ endif
  $(objpfx)tst-nss-files-alias-leak.out: $(objpfx)/libnss_files.so
  $(objpfx)tst-nss-files-alias-truncated.out: $(objpfx)/libnss_files.so
  
@@ -52,7 +58,7 @@ index 8a5126ecf3..668ba34b18 100644
  # functions can load testing NSS modules via DT_RPATH.
  LDFLAGS-tst-nss-test1 = -Wl,--disable-new-dtags
 diff --git a/nss/tst-nss-gai-hv2-canonname.c b/nss/tst-nss-gai-hv2-canonname.c
-index d5f10c07d6..7db53cf09d 100644
+index d5f10c07d6a9077325cee56c9920b845052e3c68..7db53cf09da8dcb6ba0186391ac9c273de81aca4 100644
 --- a/nss/tst-nss-gai-hv2-canonname.c
 +++ b/nss/tst-nss-gai-hv2-canonname.c
 @@ -21,6 +21,7 @@
@@ -73,7 +79,7 @@ index d5f10c07d6..7db53cf09d 100644
  
    struct addrinfo hints = {};
 diff --git a/sysdeps/posix/getaddrinfo.c b/sysdeps/posix/getaddrinfo.c
-index 47f421fddf..531124958d 100644
+index 7a43a3bf4c098fa6195b625d45060bc398b62538..f975dcd2bcfaf585fad88e3f43a2ac7ea407f06d 100644
 --- a/sysdeps/posix/getaddrinfo.c
 +++ b/sysdeps/posix/getaddrinfo.c
 @@ -1196,9 +1196,7 @@ free_and_return:
@@ -88,5 +94,5 @@ index 47f421fddf..531124958d 100644
    return result;
  }
 -- 
-2.39.0
+2.41.0
 

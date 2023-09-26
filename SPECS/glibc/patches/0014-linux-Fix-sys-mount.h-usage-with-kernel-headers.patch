@@ -1,7 +1,7 @@
-From d245a3229865a6bf7e6b4a8e17b2085f0e1e5cb8 Mon Sep 17 00:00:00 2001
+From bb1e8b0ca99b5cbedfae3e6245528a87d95ff3e2 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
-Date: Sun, 21 Aug 2022 15:42:22 +0530
-Subject: [PATCH] linux: Fix sys/mount.h usage with kernel headers
+Date: Wed, 10 Aug 2022 14:24:47 -0300
+Subject: [PATCH 014/118] linux: Fix sys/mount.h usage with kernel headers
 
 Now that kernel exports linux/mount.h and includes it on linux/fs.h,
 its definitions might clash with glibc exports sys/mount.h.  To avoid
@@ -27,17 +27,16 @@ linux/mount.h after and before sys/mount.h does work.
 Checked on x86_64-linux-gnu.
 
 Reviewed-by: Florian Weimer <fweimer@redhat.com>
-
-Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+(cherry picked from commit 774058d72942249f71d74e7f2b639f77184160a6)
 ---
  sysdeps/unix/sysv/linux/Makefile             |  8 +++
- sysdeps/unix/sysv/linux/sys/mount.h          | 70 +++++++++++++++++---
+ sysdeps/unix/sysv/linux/sys/mount.h          | 71 +++++++++++++++++---
  sysdeps/unix/sysv/linux/tst-mount-compile.py | 66 ++++++++++++++++++
- 3 files changed, 136 insertions(+), 8 deletions(-)
+ 3 files changed, 137 insertions(+), 8 deletions(-)
  create mode 100755 sysdeps/unix/sysv/linux/tst-mount-compile.py
 
 diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
-index a139a165..3ceda9fd 100644
+index a139a1653207df96bb22a471031ed885a7dd633d..3ceda9fdbfeec8c09cc2abe94108a8d67953044c 100644
 --- a/sysdeps/unix/sysv/linux/Makefile
 +++ b/sysdeps/unix/sysv/linux/Makefile
 @@ -265,6 +265,14 @@ $(objpfx)tst-mount-consts.out: ../sysdeps/unix/sysv/linux/tst-mount-consts.py
@@ -56,10 +55,10 @@ index a139a165..3ceda9fd 100644
  
  endif # $(subdir) == misc
 diff --git a/sysdeps/unix/sysv/linux/sys/mount.h b/sysdeps/unix/sysv/linux/sys/mount.h
-index f965986b..2b2f7845 100644
+index df6b0dbb425fbf2e441696ce680369c4448125ea..2e3fd6a7fe6b38f32c2563512719a4ad76d73794 100644
 --- a/sysdeps/unix/sysv/linux/sys/mount.h
 +++ b/sysdeps/unix/sysv/linux/sys/mount.h
-@@ -27,6 +27,12 @@
+@@ -27,6 +27,13 @@
  #include <stddef.h>
  #include <sys/ioctl.h>
  
@@ -69,10 +68,11 @@ index f965986b..2b2f7845 100644
 +# endif
 +#endif
 +
- #define BLOCK_SIZE	1024
++
  #define BLOCK_SIZE_BITS	10
+ #define BLOCK_SIZE	(1<<BLOCK_SIZE_BITS)
  
-@@ -35,69 +41,98 @@
+@@ -35,69 +42,98 @@
     supported  */
  enum
  {
@@ -171,7 +171,7 @@ index f965986b..2b2f7845 100644
  #define MS_MGC_VAL 0xc0ed0000	/* Magic flag number to indicate "new" flags */
  #define MS_MGC_MSK 0xffff0000	/* Magic flag number mask */
  
-@@ -106,20 +141,35 @@ enum
+@@ -106,20 +142,35 @@ enum
     is probably as bad and I don't want to create yet another include
     file.  */
  
@@ -207,7 +207,7 @@ index f965986b..2b2f7845 100644
  #define BLKGETSIZE64 _IOR(0x12,114,size_t) /* return device size.  */
  
  
-@@ -157,6 +207,7 @@ enum
+@@ -157,6 +208,7 @@ enum
  #define MOUNT_ATTR_NOSYMFOLLOW  0x00200000 /* Do not follow symlinks.  */
  
  
@@ -215,7 +215,7 @@ index f965986b..2b2f7845 100644
  /* For mount_setattr.  */
  struct mount_attr
  {
-@@ -165,6 +216,7 @@ struct mount_attr
+@@ -165,6 +217,7 @@ struct mount_attr
    uint64_t propagation;
    uint64_t userns_fd;
  };
@@ -223,7 +223,7 @@ index f965986b..2b2f7845 100644
  
  #define MOUNT_ATTR_SIZE_VER0    32 /* sizeof first published struct */
  
-@@ -185,26 +237,28 @@ struct mount_attr
+@@ -185,26 +238,28 @@ struct mount_attr
  #define FSPICK_EMPTY_PATH       0x00000008
  
  
@@ -262,7 +262,7 @@ index f965986b..2b2f7845 100644
  #define OPEN_TREE_CLONE    1         /* Clone the target tree and attach the clone */
 diff --git a/sysdeps/unix/sysv/linux/tst-mount-compile.py b/sysdeps/unix/sysv/linux/tst-mount-compile.py
 new file mode 100755
-index 00000000..0ec74d4e
+index 0000000000000000000000000000000000000000..0ec74d4e0b607147667fa317c31a8d9b81ce9357
 --- /dev/null
 +++ b/sysdeps/unix/sysv/linux/tst-mount-compile.py
 @@ -0,0 +1,66 @@
@@ -333,5 +333,5 @@ index 00000000..0ec74d4e
 +if __name__ == '__main__':
 +    main()
 -- 
-2.37.2
+2.41.0
 
