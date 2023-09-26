@@ -424,13 +424,14 @@ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
 	if (msg == CRYPTO_MSG_ALG_REGISTER) {
 		struct crypto_alg *alg = (struct crypto_alg *)data;
 		/* Disable non FIPS approved algos */
-		if (fcw_fips_not_allowed_alg(alg->cra_name))
-			return NOTIFY_OK;
 		if (fcw_fips_not_allowed_alg(alg->cra_driver_name)) {
 			pr_err("alg: %s (%s) not certified", alg->cra_driver_name, alg->cra_name);
 			crypto_alg_tested(alg->cra_driver_name, -EINVAL);
 			return NOTIFY_STOP;
 
+		}
+		else if (fips_enabled == 1) {
+			pr_notice("alg: %s (%s) is registered in FIPS mode\n", alg->cra_driver_name, alg->cra_name);
 		}
 	}
 

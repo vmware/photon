@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.53
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -137,14 +137,14 @@ Patch114: 0004-net-deal-with-integer-overflows-in-kmalloc_reserve.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
-Patch500: 6.0-0002-FIPS-crypto-self-tests.patch
+Patch500: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch501: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 # Patch to remove urandom usage in rng module
 Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch504: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
@@ -165,7 +165,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.45-3-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.53-1-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -178,7 +178,6 @@ Patch10009: 0008-Move-kernel-structures-usage.patch
 %endif
 
 BuildArch:      x86_64
-
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -468,6 +467,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-4
+- canister build for 6.1.53
+- Add pkcs1pad test vectors in crytpo_self_test module
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-3
 - Fix CVE-2023-42756
 * Thu Nov 23 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-2

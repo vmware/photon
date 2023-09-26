@@ -11,8 +11,8 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/tcrypt.c | 83 +++++++++++++++++++++++++++++--------------------
- 1 file changed, 50 insertions(+), 33 deletions(-)
+ crypto/tcrypt.c | 91 +++++++++++++++++++++++++++++++------------------
+ 1 file changed, 58 insertions(+), 33 deletions(-)
 
 diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
 index b23235d58..e15ece765 100644
@@ -37,7 +37,7 @@ index b23235d58..e15ece765 100644
  	case 37:
  		ret = min(ret, tcrypt_test("ccm(aes)"));
  		break;
-@@ -1754,10 +1749,60 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -1754,10 +1749,68 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  		ret = min(ret, tcrypt_test("hmac(sha3-512)"));
  		break;
  
@@ -95,10 +95,18 @@ index b23235d58..e15ece765 100644
 +		ret += tcrypt_test("drbg_nopr_sha512");
 +		break;
 +
++	case 134:
++		ret += tcrypt_test("pkcs1pad(rsa,sha1)");
++		ret += tcrypt_test("pkcs1pad(rsa,sha224)");
++		ret += tcrypt_test("pkcs1pad(rsa,sha256)");
++		ret += tcrypt_test("pkcs1pad(rsa,sha384)");
++		ret += tcrypt_test("pkcs1pad(rsa,sha512)");
++		break;
++
  	case 116:
  		ret = min(ret, tcrypt_test("hmac(streebog512)"));
  		break;
-@@ -2421,10 +2466,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2421,10 +2474,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  				   speed_template_16_24_32);
  		test_acipher_speed("cfb(aes)", DECRYPT, sec, NULL, 0,
  				   speed_template_16_24_32);
@@ -109,7 +117,7 @@ index b23235d58..e15ece765 100644
  		test_acipher_speed("rfc3686(ctr(aes))", ENCRYPT, sec, NULL, 0,
  				   speed_template_20_28_36);
  		test_acipher_speed("rfc3686(ctr(aes))", DECRYPT, sec, NULL, 0,
-@@ -2450,12 +2491,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2450,12 +2499,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  		test_acipher_speed("cfb(des3_ede)", DECRYPT, sec,
  				   des3_speed_template, DES3_SPEED_VECTORS,
  				   speed_template_24);
@@ -122,7 +130,7 @@ index b23235d58..e15ece765 100644
  		break;
  
  	case 502:
-@@ -2471,10 +2506,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2471,10 +2514,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  				   speed_template_8);
  		test_acipher_speed("cfb(des)", DECRYPT, sec, NULL, 0,
  				   speed_template_8);
@@ -133,7 +141,7 @@ index b23235d58..e15ece765 100644
  		break;
  
  	case 503:
-@@ -2663,10 +2694,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2663,10 +2702,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  				       speed_template_16_24_32, num_mb);
  		test_mb_skcipher_speed("cfb(aes)", DECRYPT, sec, NULL, 0,
  				       speed_template_16_24_32, num_mb);
@@ -144,7 +152,7 @@ index b23235d58..e15ece765 100644
  		test_mb_skcipher_speed("rfc3686(ctr(aes))", ENCRYPT, sec, NULL,
  				       0, speed_template_20_28_36, num_mb);
  		test_mb_skcipher_speed("rfc3686(ctr(aes))", DECRYPT, sec, NULL,
-@@ -2692,12 +2719,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2692,12 +2727,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  		test_mb_skcipher_speed("cfb(des3_ede)", DECRYPT, sec,
  				       des3_speed_template, DES3_SPEED_VECTORS,
  				       speed_template_24, num_mb);
@@ -157,7 +165,7 @@ index b23235d58..e15ece765 100644
  		break;
  
  	case 602:
-@@ -2713,10 +2734,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -2713,10 +2742,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  				       speed_template_8, num_mb);
  		test_mb_skcipher_speed("cfb(des)", DECRYPT, sec, NULL, 0,
  				       speed_template_8, num_mb);
