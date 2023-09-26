@@ -11,7 +11,7 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        1.2.5
-Release:        22%{?dist}
+Release:        23%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
+* Tue Sep 26 2023 Piyush Gupta <gpiyush@vmware.com> 1.2.5-23
+- Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.2.5-22
 - Bump up version to compile with new go
 * Wed Jul 26 2023 Nitesh Kumar <kunitesh@vmware.com> 1.2.5-21

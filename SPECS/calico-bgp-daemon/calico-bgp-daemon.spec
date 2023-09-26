@@ -1,7 +1,7 @@
 Summary:       GoBGP based Calico BGP Daemon
 Name:          calico-bgp-daemon
 Version:       0.2.2
-Release:       26%{?dist}
+Release:       27%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -44,6 +44,8 @@ install ${GOPATH}/src/github.com/projectcalico/calico-bgp-daemon/dist/calico-bgp
 %{_bindir}/calico-bgp-daemon
 
 %changelog
+* Tue Sep 26 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.2-27
+- Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.2-26
 - Bump up version to compile with new go
 * Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.2.2-25
