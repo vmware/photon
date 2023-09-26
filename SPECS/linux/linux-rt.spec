@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.53
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -226,14 +226,14 @@ Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
-Patch1000: 6.0-0002-FIPS-crypto-self-tests.patch
+Patch1000: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch1001: 6.1-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch1001: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch1002: 0001-Initialize-jitterentropy-before-ecdh.patch
 # Patch to remove urandom usage in rng module
 Patch1003: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
-Patch1004: 6.0-0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch1004: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
@@ -567,6 +567,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 26 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-4
+- Add pkcs1pad test vectors in crytpo_self_test module
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-3
 - Fix CVE-2023-42756
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-2
