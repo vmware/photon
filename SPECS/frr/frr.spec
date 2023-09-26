@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -129,7 +129,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/{%{name},rc.d/init.d,sysconfig,logrotate.d,p
          %{buildroot}%{_tmpfilesdir} \
          %{buildroot}%{_sysusersdir}
 
-%make_install
+%make_install %{?_smp_mflags}
 
 install -p -m 644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
@@ -151,10 +151,8 @@ rm -rf %{buildroot}%{_libdir}/%{name}/*.so \
        %{buildroot}%{_includedir}/%{name}/ \
        %{buildroot}%{_infodir}/dir
 
-%if 0%{?with_check}
 %check
-%make_build check %{?_smp_mflags}
-%endif
+%make_build check
 
 %pre
 %sysusers_create_compat %{SOURCE2}
@@ -188,10 +186,6 @@ if [ $1 -ne 0 ]; then
   %systemd_postun_with_restart %{name}.service
 fi
 
-if [ $1 -eq 0 ]; then
-  %systemd_postun %{name}.service
-fi
-
 %files
 %defattr(-,root,root)
 %license COPYING
@@ -220,6 +214,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Sep 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.2-2
+- Remove systemd_postun from postun section
 * Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1
 - Update to latest version
 * Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-6
