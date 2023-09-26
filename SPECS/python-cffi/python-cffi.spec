@@ -3,15 +3,15 @@
 
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.11.5
-Release:        4%{?dist}
+Version:        1.12.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=1686e6689a691414d3d22626c837adeee3996dd9
+%define sha512    cffi=af4fe47cf5d6f1126222898365cfa21e9f11d0e71b87d869014dbb37af30dca9ddf50c989030d0f610f50e8099e8dfd08a688d8c3629abbcc4f0294f5f91b817
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -25,12 +25,10 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-pycparser
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	openssl-devel
+BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python-pip
 BuildRequires:  python3-pip
-%endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pycparser
@@ -48,6 +46,7 @@ Requires:       python3-pycparser
 Python 3 version.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n cffi-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
@@ -81,6 +80,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 26 2023 Felippe Burk <burkf@vmware.com> 1.12.2-1
+-   Updating to 1.12.2
 *   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 1.11.5-4
 -   Fixed make check errors.
 *   Thu Sep 05 2019 Shreyas B. <shreyasb@vmware.com> 1.11.5-3
