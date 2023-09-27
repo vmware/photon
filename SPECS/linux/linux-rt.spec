@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.53
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -112,12 +112,15 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
-# VMW:
+# VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch57: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Kernel lockdown
+Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 
 # SEV-ES, TDX
 %ifarch x86_64
@@ -345,7 +348,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M23
 
 #VMW
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m55 -M60
 
 #SEV-ES, TDX
 %ifarch x86_64
@@ -569,6 +572,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.53-7
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
 - Fix for CVE-2023-42754
 * Fri Sep 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5

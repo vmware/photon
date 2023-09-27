@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.53
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -132,6 +132,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
+
+# Kernel lockdown
+Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 # CVE: [100..129]
@@ -752,6 +755,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.53-7
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
 - Fix for CVE-2023-42754
 * Fri Sep 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5

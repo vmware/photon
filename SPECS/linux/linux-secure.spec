@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.53
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -99,10 +99,13 @@ Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# VMW:
+# VMW: [40..49]
 %ifarch x86_64
 Patch40: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
+
+# Kernel lockdown
+Patch42: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 #Secure:
@@ -256,7 +259,7 @@ The kernel fips-canister
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m40 -M41
+%autopatch -p1 -m40 -M49
 %endif
 
 #Secure
@@ -464,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.53-7
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
 - Fix for CVE-2023-42754
 * Fri Sep 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
