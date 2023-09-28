@@ -1,22 +1,26 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
-%define sha1    serf=26015c63e3bbb108c1689bf2090e4c26351db674
-Patch0:         0001-openssl-3.0.0-compatibility.patch
-Requires:       openldap
-BuildRequires:  python3-setuptools
-BuildRequires:  apr-devel
-BuildRequires:  apr-util-devel
-BuildRequires:  scons
-BuildRequires:  openssl-devel
-BuildRequires:  openldap
+
+Source0: https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
+
+Patch0: 0001-openssl-3.0.0-compatibility.patch
+
+Requires: openldap
+
+BuildRequires: python3-setuptools
+BuildRequires: apr-devel
+BuildRequires: apr-util-devel
+BuildRequires: scons
+BuildRequires: openssl-devel
+BuildRequires: openldap
 
 %description
 The Apache Serf library is a C-based HTTP client library built upon the Apache
@@ -58,17 +62,19 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.9-6
--   Bump up to compile with python 3.10
-*   Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-5
--   openssl 3.0.0 compatibility
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-4
--   openssl 1.1.1
-*   Sat Aug 15 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-3
--   Add setuptools in requires
-*   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-2
--   Build with python3
--   Mass removal python2
--   Remove static
-*   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.9-1
--   Initial build. First version
+* Tue Nov 07 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-7
+- Version bump as a part of apr-util v1.6.3 upgrade
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.9-6
+- Bump up to compile with python 3.10
+* Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-5
+- openssl 3.0.0 compatibility
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-4
+- openssl 1.1.1
+* Sat Aug 15 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-3
+- Add setuptools in requires
+* Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-2
+- Build with python3
+- Mass removal python2
+- Remove static
+* Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.9-1
+- Initial build. First version

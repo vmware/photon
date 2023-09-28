@@ -1,39 +1,41 @@
 %define     apuver    1
 
-Summary:    The Apache Portable Runtime Utility Library
-Name:       apr-util
-Version:    1.6.1
-Release:    8%{?dist}
-License:    Apache License 2.0
-URL:        https://apr.apache.org
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
+Summary:      The Apache Portable Runtime Utility Library
+Name:         apr-util
+Version:      1.6.3
+Release:      1%{?dist}
+License:      Apache License 2.0
+URL:          https://apr.apache.org
+Group:        System Environment/Libraries
+Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha512 %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
+%define sha512 %{name}=25f078413dc552b3391845b3dc1da72773efe181634deb2f88a9c72a1a49c82883113704bf97db8327012ccafb84a68370267925e3c7cc092ed82fc33fd7954e
 
-BuildRequires:   apr-devel
-BuildRequires:   sqlite-devel
-BuildRequires:   openssl-devel
-BuildRequires:   nss-devel
-BuildRequires:   expat-devel
-BuildRequires:   openldap
-BuildRequires:   postgresql14-devel
+BuildRequires: apr-devel
+BuildRequires: sqlite-devel
+BuildRequires: openssl-devel
+BuildRequires: nss-devel
+BuildRequires: expat-devel
+BuildRequires: openldap
+BuildRequires: postgresql14-devel
 
-Requires:   apr
-Requires:   openssl
-Requires:   expat
-Requires:   nss
+Requires: apr
+Requires: openssl
+Requires: expat
+Requires: nss
 
 %description
 The Apache Portable Runtime Utility Library.
 
 %package devel
-Group: Development/Libraries
-Summary: APR utility library development kit
+Group:    Development/Libraries
+Summary:  APR utility library development kit
 Requires: apr-devel
 Requires: expat-devel
+Requires: util-linux-devel
+Requires: openldap
 Requires: %{name} = %{version}-%{release}
 %description devel
 This package provides the support files which can be used to
@@ -126,6 +128,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Tue Nov 07 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.3-1
+- Version upgrade to v1.6.3 to fix CVE-2022-25147
 * Fri Dec 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-8
 - Fix pgsql requires
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-7
