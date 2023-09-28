@@ -11,9 +11,9 @@ FROM_VERSION="$(/usr/bin/lsb_release -s -r)"
 TO_VERSION=''       # non-blank value indicates an os-upgrade, otherwise, update
 ASSUME_YES_OPT=''   # value '-y' denotes non-interactive invocation
 REPOS_OPT=''        # --disablerepo=* --enablerepo=repo, repo is given in --repo
-UPDATE_PKGS=y       # If 'y', update packages before upgrade. Appliances may not
-                    # provide repos to update packages in currently installed OS
-                    # need this skipping for appliances
+UPDATE_PKGS=y       # If 'y', update packages. Appliances may not provide repos
+                    # to update packages in currently installed OS and may need
+                    # this skipping capability for appliances
 RM_PKGS_PRE=''      # Comma separated list of packages to remove before upgrade
 RM_PKGS_POST=''     # Comma separated list of packages to remove afer upgrade
 INSTALL_ALL=''      # non-empty value signifies that all packages from provided
@@ -50,7 +50,8 @@ This script upgrades or updates Photon OS based upon the options provided.
 --assume-yes   : Runs the script non-interactively and assumes yes for responses
 --skip-update  : Skip updating tdnf & packages before upgrading (for appliances)
 --install-all  : Install all packages from provided repos from --repos option,
-                --repos must be specified for --install-all
+                --repos must be specified for --install-all.
+                (This option works from Photon OS 4.0 and later)
 --rm-pkgs-pre  : Comma separated list of packages to remove before upgrade
 --rm-pkgs-post : Comma separated list of packages to remove afer upgrade
 "
@@ -59,20 +60,30 @@ This script upgrades or updates Photon OS based upon the options provided.
 
 # Remember what services are enabled or disabled before upgrade
 function record_enabled_disabled_services() {
+  echo "Determining enabled systemd units to be enabled post upgrade of OS..."
   enabled_services_arr+=( $(get_services_by_state enabled) )
+  echo "Enabled systemd utils are: ( ${enabled_services_arr[@]} )"
+
+  echo "Determining disabled systemd units to be disabled post upgrade of OS..."
   disabled_services_arr+=( $(get_services_by_state disabled) )
+  echo "Disabled systemd utils are: ( ${disabled_services_arr[@]} )"
 }
 
 # Reset states of services where they were before upgrade
 function reset_enabled_disabled_services() {
   local s=''
 
-  for s in ${enabled_services_arr[@]}; do
-    ${SYSTEMCTL} enable ${s}
-  done
+  echo "Resetting systemd units' enabled/disabled configuration."
+  # The disabled services are reset first and then enabled services
 
   for s in ${disabled_services_arr[@]}; do
+    echo "Disabling systemd unit $s."
     ${SYSTEMCTL} disable ${s}
+  done
+
+  for s in ${enabled_services_arr[@]}; do
+    echo "Enabling systemd unit $s."
+    ${SYSTEMCTL} enable ${s}
   done
 }
 
@@ -82,9 +93,9 @@ function remove_debuginfo_packages() {
   local rc=0
   [ -z "$installed_debuginfo_pkgs" ] && return 0
   echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
-  if ! ${TDNF} -q --disablerepo=* $ASSUME_YES_OPT \
-         erase $installed_debuginfo_pkgs; then
-    rc=$?
+  ${TDNF} -q --disablerepo=* $ASSUME_YES_OPT erase $installed_debuginfo_pkgs
+  rc=$?
+  if [ $rc -ne 0 ]; then
     abort $ERETRY_EAGAIN "Error removing debuginfo packages (tdnf error: $rc)"
   fi
   echo "All debuginfo packages were successfully removed."
@@ -93,19 +104,14 @@ function remove_debuginfo_packages() {
 # The replacing packages correspoinding to any of the installed packages will
 # be installed with the call to this method
 function install_replacement_packages() {
-  #local pkgs="${!replaced_pkgs_map[@]}"
-  #local p=''
   local rc=0
-
-#  for p in $pkgs; do
-#    ${RPM} -q --quiet $p && installed_pkgs_map+=([$p]=${replaced_pkgs_map[$p]})
-#  done
 
   if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
     echo -ne "Installing following packages which are replacing removed" \
              "packages -\n${installed_pkgs_map[@]}\n"
-    if ! ${TDNF} $REPOS_OPT -y install ${installed_pkgs_map[@]}; then
-      rc=$?
+    ${TDNF} $REPOS_OPT -y install ${installed_pkgs_map[@]}
+    rc=$?
+    if [ $rc -ne 0 ]; then
       abort $rc "Error installing replacement packages '${installed_pkgs_map[@]}'."
     fi
     echo "Replacement packages '${installed_pkgs_map[@]}' are successfully installed"
@@ -127,15 +133,16 @@ function remove_replaced_packages() {
   if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
     echo -ne "Removing following packages which will be replaced by other "\
              "packages -\n${!installed_pkgs_map[@]}\n"
-    if ! ${TDNF} $REPOS_OPT -y erase ${!installed_pkgs_map[@]}; then
-      rc=$?
+    ${TDNF} $REPOS_OPT -y erase ${!installed_pkgs_map[@]}
+    rc=$?
+    if [ $rc -ne 0 ]; then
       abort $rc "Error removing replaced packages '${!installed_pkgs_map[@]}'."
     fi
     echo "Removal of replaced packages '${!installed_pkgs_map[@]}' succeeded."
   fi
 }
 
-#Some packages are deprecaed in 4.0 or 5.0, lets remove them before upgrading
+# Some packages are deprecaed in 4.0 or 5.0, lets remove them before upgrading
 function remove_unsupported_packages() {
   local rc=0
 
@@ -150,17 +157,9 @@ function remove_unsupported_packages() {
   fi
 }
 
-function upgrade_photon_release() {
-  local rc=0
-
-  echo "Upgrading the photon-release package"
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT update photon-release \
-    --releasever=$TO_VERSION --refresh; then
-    echo "The photon-release package upgraded successfully."
-  else
-    rc=$?
-    abort $ERETRY_EAGAIN "Could not upgrade photon-release package (tdnf error code: $rc)."
-  fi
+function tdnf_makecache() {
+  echo "Generating tdnf cache on Photon OS $(/usr/bin/lsb_release -s -r)"
+  ${TDNF} $REPOS_OPT --refresh makecache
 }
 
 function distro_upgrade() {
@@ -174,30 +173,36 @@ function distro_upgrade() {
     echo "Upgrading Photon OS to $TO_VERSION from $FROM_VERSION"
   fi
 
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh; then
-      echo "All packages were upgraded to latest versions successfully."
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh; then
+    echo "All packages were upgraded to latest versions successfully."
+    if [ "$ver" = "$TO_VERSION" ]; then
+      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT reinstall photon-release "--releasever=$ver" --refresh
+      tdnf_makecache
+      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install systemd-udev
+    fi
   else
     rc=$?
     if [ "$ver" = "$FROM_VERSION" ]; then
       abort $ERETRY_EAGAIN "Error in upgrading all packages to latest versions (tdnf error code: $rc)."
     else
-      abort $rc "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION."
+      abort $ERETRY_EAGAIN "Error in upgrading to Photon OS $TO_VERSION from $FROM_VERSION."
     fi
   fi
 }
 
 # Removes any residual packages which weren't removed during distro_upgrade()
-function post_upgrade_remove_pkgs() {
+function remove_residual_pkgs() {
   local err_rm_pkg_list=''
   local rc=0
   local p=''
 
   for p in ${residual_pkgs_arr[@]}; do
     if $RPM -q --quiet $p; then
-      if ! ${TDNF} -q --disablerepo=* -y erase $p; then
-        rc=$?
+      ${TDNF} -q --disablerepo=* -y erase $p
+      rc=$?
+      if [ $rc -ne 0 ]; then
         err_rm_pkg_list="$err_rm_pkg_list $p"
-        echo -e "Warning: Could not remove deprecated package '$p' post upgrade, error code: $rc."
+        echo -e "Warning: Could not remove package '$p' post upgrade, (tdnf error code: $rc)."
       fi
     fi
   done
@@ -209,8 +214,7 @@ function post_upgrade_remove_pkgs() {
 
 # If user specifies --install-all and --repos then install all packages
 # from the provided repos which are not installed
-function install_all_from_repo()
-{
+function install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
         ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
@@ -235,39 +239,50 @@ function install_all_from_repo()
 }
 
 # Removes those packages named in --rm-pkgs-pre option before upgrading
-function pre_upgrade_rm_pkgs()
-{
+function pre_upgrade_rm_pkgs() {
   local pkglist=''
-  local p
+  local p=''
+
+  [ -z "$RM_PKGS_PRE" ] && return 0
+
+  echo "Removing following user specified packages before upgrade - $RM_PKGS_PRE"
 
   for p in $(echo "$RM_PKGS_PRE" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+      if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+        echo "Successfully removed user named pacakge $p."
+      else
         pkglist="$pkglist $p"
       fi
     fi
   done
   if [ -n "$pkglist" ]; then
-     echoerr "Error removing following user named packages before upgrade:" \
-             "$pkglist"
+    abort $ERETRY_EAGAIN \
+      "Error removing following user named packages before upgrade: $pkglist" \
+      "\nPlease remove those packages and retry the photon-upgrade.sh."
   fi
 }
 
 # Removes those packages named in --rm-pkgs-post after upgrade
-function post_upgrade_rm_pkgs()
-{
+function post_upgrade_rm_pkgs() {
   local pkglist=''
-  local p
+  local p=''
+
+  [ -z "$RM_PKGS_POST" ] && return 0
+
+  echo "Removing following user specified packages after upgrade - $RM_PKGS_POST"
 
   for p in $(echo "$RM_PKGS_POST" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if ! ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+      if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+        echo "Successfully removed user named pacakge $p."
+      else
         pkglist="$pkglist $p"
       fi
     fi
   done
   if [ -n "$pkglist" ]; then
-     echoerr "Error removing following user named packages post upgrade:" \
+     echoerr "Warning: following user specified packages icould not be removed post upgrade: " \
              "$pkglist"
   fi
 }
@@ -364,7 +379,7 @@ function verify_version_and_upgrade() {
     echo -n "Please backup your data before proceeding. Continue (y/n)?"
     read yn
   else
-    # -y or --assme-yes was given on command line; non-interactive invocation
+    # -y or --assume-yes was given on command line; non-interactive invocation
     echo "Upgrading Photon OS from $FROM_VERSION to $TO_VERSION." \
          "Assuming that data backup has already been done."
     yn=y    # script is run non-interactively to do upgrade
@@ -373,6 +388,11 @@ function verify_version_and_upgrade() {
   echo
   case "$yn" in
     [Yy]*)
+      find_wrongly_enabled_services # Terminates upgrade on finding any regular
+                                    # file in multi-user.target.wants under /etc
+      backup_rpms_list_n_db "$OLD_RPMDB_PATH"
+      remove_debuginfo_packages
+      tdnf_makecache
       if [ "$UPDATE_PKGS" = 'y' ]; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances may not need this.
@@ -385,18 +405,12 @@ function verify_version_and_upgrade() {
       rebuilddb
       record_enabled_disabled_services
       remove_replaced_packages
-      upgrade_photon_release
-      update_core_packages
-      if [ "$TO_VERSION" = "5.0" ]; then
-        relocate_rpmdb
-      else
-        rebuilddb
-      fi
+      rebuilddb
       fix_pre_upgrade_config
       distro_upgrade $TO_VERSION
       install_replacement_packages
       rebuilddb
-      post_upgrade_remove_pkgs
+      remove_residual_pkgs
       reset_enabled_disabled_services
       fix_post_upgrade_config
       if [ -n "$INSTALL_ALL" ]; then
@@ -508,11 +522,13 @@ remove_debuginfo_packages
 if [ "$UPGRADE_OS" = "y" ]; then
   # The script is run with --upgrade-os option, upgrading Photon OS
   verify_version_and_upgrade
-else
+elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
   backup_rpms_list_n_db $RPM_DB_LOC
   pre_upgrade_rm_pkgs
+  tdnf_makecache
+  rebuilddb
   distro_upgrade $FROM_VERSION
   rebuilddb
   if [ -n "$INSTALL_ALL" ]; then

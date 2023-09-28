@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -16,6 +16,7 @@ Source4:        common.sh
 
 BuildArch:      noarch
 
+Requires:       rpm
 Requires:       tdnf
 Requires:       coreutils
 Requires:       gawk
@@ -46,5 +47,7 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Sep 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2
+- Reordering service configuration resetting and enhancing pre upgrade package error reporting
 * Thu Jun 08 2023 Dweep Advani <dadvani@vmware.com> 1.0-1
 - Initial photon-upgrade package for Photon OS 5.0
