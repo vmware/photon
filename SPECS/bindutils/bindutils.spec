@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.42
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
@@ -9,6 +9,9 @@ Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.t
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Patch0:         bindutils-CVE-2023-3341.patch
+
 Requires:       openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
@@ -86,6 +89,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Thu Sep 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 9.16.42-2
+-   Fix CVE-2023-3341
 *   Fri Jul 14 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 9.16.42-1
 -   Fix CVE-2023-2829 by upgrading to version 9.16.42
 *   Wed Jun 21 2023 Dweep Advani <dadvani@vmware.com> 9.16.38-2
