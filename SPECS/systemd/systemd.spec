@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -157,6 +157,7 @@ Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
 Requires(post):   grep
 Requires:         kmod
+Requires:         kbd
 Provides:         udev = %{version}-%{release}
 
 %description udev
@@ -764,6 +765,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 254.1-4
+- Add kbd in Requires for systemd-udev
 * Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 254.1-3
 - Version bump as a part of libmicrohttpd version update
 * Wed Sep 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 254.1-2
