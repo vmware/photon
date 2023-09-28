@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -152,6 +152,7 @@ Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
 Requires(post):   grep
 Requires:         kmod
+Requires:         kbd
 Provides:         udev = %{version}-%{release}
 
 %description udev
@@ -680,6 +681,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 247.13-6
+- Add kbd in Requires for systemd-udev
 * Wed Aug 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-5
 - Fix inet6 issue
 - Fixes: https://github.com/systemd/systemd/issues/22424
