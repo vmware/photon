@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -11,22 +11,22 @@ Distribution:   Photon
 Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
 
-Requires:       apr
-Requires:       apr-util
-Requires:       serf
-Requires:       cyrus-sasl
-Requires:       utf8proc
+Requires: apr
+Requires: apr-util
+Requires: serf
+Requires: cyrus-sasl
+Requires: utf8proc
 
-BuildRequires:  cyrus-sasl-devel
-BuildRequires:  apr-devel
-BuildRequires:  apr-util-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  libtool
-BuildRequires:  expat-devel
-BuildRequires:  serf-devel
-BuildRequires:  lz4
-BuildRequires:  utf8proc-devel
-BuildRequires:  swig
+BuildRequires: cyrus-sasl-devel
+BuildRequires: apr-devel
+BuildRequires: apr-util-devel
+BuildRequires: sqlite-devel
+BuildRequires: libtool
+BuildRequires: expat-devel
+BuildRequires: serf-devel
+BuildRequires: lz4
+BuildRequires: utf8proc-devel
+BuildRequires: swig
 
 %description
 The Apache version control system.
@@ -101,6 +101,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-8
+- Bump version as a part of apr-util v1.6.3 upgrade
 * Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.14.2-7
 - Bump version as a part of apr version upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.2-6

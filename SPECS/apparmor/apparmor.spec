@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -11,25 +11,25 @@ Group:          Productivity/Security
 Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
 
-BuildRequires:  perl
-BuildRequires:  python3-devel
-BuildRequires:  swig
-BuildRequires:  build-essential
-BuildRequires:  gawk
-BuildRequires:  which
-BuildRequires:  libstdc++-devel
-BuildRequires:  httpd
-BuildRequires:  httpd-devel
-BuildRequires:  httpd-tools
-BuildRequires:  apr
-BuildRequires:  apr-util-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  dejagnu
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  bison
+BuildRequires: perl
+BuildRequires: python3-devel
+BuildRequires: swig
+BuildRequires: build-essential
+BuildRequires: gawk
+BuildRequires: which
+BuildRequires: libstdc++-devel
+BuildRequires: httpd
+BuildRequires: httpd-devel
+BuildRequires: httpd-tools
+BuildRequires: apr
+BuildRequires: apr-util-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: dejagnu
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: bison
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
@@ -221,6 +221,9 @@ done
 %clean
 rm -rf %{buildroot}
 
+%files
+%defattr(-,root,root)
+
 %files -n libapparmor
 %defattr(-,root,root)
 %{_libdir}/libapparmor.so.*
@@ -332,6 +335,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-8
+- Bump version as a part of apr-util v1.6.3 upgrade
 * Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 3.1.2-7
 - Bump version as a part of apr version upgrade
 * Tue Apr 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-6
