@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.200
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -153,11 +153,14 @@ Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
 %ifarch x86_64
-# VMW:
+# VMW: [55..65]
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
+
+#Kernel lockdown
+Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 # CVE:
@@ -468,7 +471,7 @@ manipulation of eBPF programs and maps.
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M58
+%autopatch -p1 -m55 -M65
 %endif
 
 # CVE
@@ -904,6 +907,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1
 - Update to version 5.10.200
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1

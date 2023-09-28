@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.200
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -121,12 +121,15 @@ Patch51: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch52: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch53: 0004-linux-esx-Makefile-Add-kernel-flavor-info-to-the-gen.patch
 
-# VMW:
+# VMW: [54..59]
 Patch54: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch55: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch57: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
+
+#Kernel lockdown
+Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 
 # -esx
 Patch60: init-do_mounts-recreate-dev-root.patch
@@ -390,7 +393,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M42
 
 # VMW
-%autopatch -p1 -m50 -M58
+%autopatch -p1 -m50 -M59
 
 # -esx
 %autopatch -p1 -m60 -M96
@@ -663,6 +666,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1
 - Update to version 5.10.200
 * Wed Oct 25 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.198-2

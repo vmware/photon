@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.200
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -104,11 +104,14 @@ Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 
-# VMW:
+# VMW: [55..60]
 %ifarch x86_64
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
+
+#Kernel lockdown
+Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 # SEV, TDX:
@@ -290,7 +293,7 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m55 -M60
 %endif
 
 # SEV, TDX
@@ -447,6 +450,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1
 - Update to version 5.10.200
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
