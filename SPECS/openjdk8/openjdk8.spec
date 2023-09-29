@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk8
 Version:    1.8.0.382
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
 Group:      Development/Tools
@@ -282,6 +282,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 1.8.0.382-3
+- Version bump as a part of cups upgrade
 * Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.382-2
 - Bump version as a part of cups upgrade
 * Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.382-1
