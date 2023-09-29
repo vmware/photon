@@ -14,7 +14,9 @@ while read line; do
 done <fips_canister_symbols
 
 awk -i inplace '!seen[$0]++' fips-canister-symbols-gdbcmds
-ignore_list='void \*module;\|struct module \*module;\|raw_spinlock_t lock;\|void \*lock;\|void \*drbg_mutex;\|struct mutex drbg_mutex;\|void \*cra_type;\|const struct crypto_type \*cra_type;\|void \*cra_module;\|struct module \*cra_module;\|void \*jent_lock;\|spinlock_t jent_lock;'
+
+ignore_list='void \*module;\|struct module \*module;\|raw_spinlock_t lock;\|void \*lock;\|void \*drbg_mutex;\|struct mutex drbg_mutex;\|void \*cra_type;\|const struct crypto_type \*cra_type;\|void \*cra_module;\|struct module \*cra_module;'
+
 #
 ## Loop through the symbols and compare with vmlinux
 echo "Comparing the symbols between canister and vmlinux"
