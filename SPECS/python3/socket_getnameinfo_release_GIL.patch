@@ -1,0 +1,50 @@
+Issue: Stateless AutoDeploy ESXi hosts take a long time to reconnect to VCSA after reboot
+Suggested fix: https://github.com/python/cpython/pull/104307
+
+From 01a232b6d3c1a2fbc2c88214d7359fb308455c51 Mon Sep 17 00:00:00 2001
+From: "Nathaniel J. Smith" <njs@pobox.com>
+Date: Mon, 8 May 2023 13:45:56 -0700
+Subject: [PATCH] socket.getnameinfo should release the GIL
+
+---
+ Modules/socketmodule.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Modules/socketmodule.c b/Modules/socketmodule.c
+index a9ef7e2..1606e89 100644
+--- a/Modules/socketmodule.c
++++ b/Modules/socketmodule.c
+@@ -6391,8 +6391,10 @@ socket_getnameinfo(PyObject *self, PyObject *args)
+         }
+ #endif
+     }
++    Py_BEGIN_ALLOW_THREADS
+     error = getnameinfo(res->ai_addr, (socklen_t) res->ai_addrlen,
+                     hbuf, sizeof(hbuf), pbuf, sizeof(pbuf), flags);
++    Py_END_ALLOW_THREADS
+     if (error) {
+         set_gaierror(error);
+         goto fail;
+
+
+From a91f5fb7d9b20760db13ee50489f6e788a9df98e Mon Sep 17 00:00:00 2001
+From: "blurb-it[bot]" <43283697+blurb-it[bot]@users.noreply.github.com>
+Date: Mon, 8 May 2023 20:57:18 +0000
+Subject: [PATCH] =?UTF-8?q?=F0=9F=93=9C=F0=9F=A4=96=20Added=20by=20blurb?=
+ =?UTF-8?q?=5Fit.?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../next/Library/2023-05-08-20-57-17.gh-issue-104307.DSB93G.rst  | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 Misc/NEWS.d/next/Library/2023-05-08-20-57-17.gh-issue-104307.DSB93G.rst
+
+diff --git a/Misc/NEWS.d/next/Library/2023-05-08-20-57-17.gh-issue-104307.DSB93G.rst b/Misc/NEWS.d/next/Library/2023-05-08-20-57-17.gh-issue-104307.DSB93G.rst
+new file mode 100644
+index 0000000000000..03775845450ca
+--- /dev/null
++++ b/Misc/NEWS.d/next/Library/2023-05-08-20-57-17.gh-issue-104307.DSB93G.rst
+@@ -0,0 +1 @@
++:func:`socket.getnameinfo` now releases the GIL while contacting the DNS server
