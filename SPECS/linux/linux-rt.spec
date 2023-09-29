@@ -5,7 +5,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build}
@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.53
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -57,9 +57,9 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.45-4%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.53-4%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=4cf975dbf73a18288cb991493d86a23c0574f402c419b7e6c6fd229e026ce6c15780c6afabff98f59aee104b61332a6974196cec21735e178ad48ccef517b886
+%define sha512 fips-canister=2192a68b4e6e2ea86966837771f604bd3b75689778e5322f50a3871835608e25e7106aa8503d3e3ac94c9d84d3017c71ac995df626dd2c6ecc41d9167401f1a6
 %endif
 
 Source19:        spec_install_post.inc
@@ -241,7 +241,7 @@ Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch1008: 6.1.45-4-0001-FIPS-canister-binary-usage.patch
+Patch1008: 6.1.53-4-0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch1010: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
@@ -567,6 +567,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
+- Enable fips and update canister binary version 5.0.0-6.1.53-4
+- Removed jent_lock struct from ignore list of check_fips_canister
 * Tue Sep 26 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-4
 - Add pkcs1pad test vectors in crytpo_self_test module
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-3
