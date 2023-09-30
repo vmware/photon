@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.53
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -537,6 +537,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-6
+- Revert crypto_test (tcrypt) config to 'm'
 * Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
 - Enable fips and update canister binary version 5.0.0-6.1.53-4
 - Removed jent_lock struct from ignore list of check_fips_canister
