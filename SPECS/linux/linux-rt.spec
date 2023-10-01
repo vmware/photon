@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.53
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -135,6 +135,8 @@ Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 Patch102: net-sched-retire-rsvp-classifier.patch
 # Fix CVE-2023-42756
 Patch103: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
+#Fix for CVE-2023-42754
+Patch104: ipv4-fix-null-deref-in-ipv4_link_failure.patch
 
 # Fix: net: roundup issue in kmalloc_reserve()
 Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
@@ -568,6 +570,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
+- Fix for CVE-2023-42754
 * Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
 - Enable fips and update canister binary version 5.0.0-6.1.53-4
 - Removed jent_lock struct from ignore list of check_fips_canister
