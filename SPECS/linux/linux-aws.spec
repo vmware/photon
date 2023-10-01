@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.194
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -170,6 +170,9 @@ Patch142: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch143: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
+
+#Fix for CVE-2023-42754
+Patch144: ipv4-fix-null-deref-in-ipv4_link_failure.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -333,7 +336,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M58
 
 # CVE
-%autopatch -p1 -m100 -M143
+%autopatch -p1 -m100 -M144
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %autopatch -p1 -m150 -M150
@@ -512,6 +515,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
+- Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4
 - Fix CVE-2023-42756
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-3

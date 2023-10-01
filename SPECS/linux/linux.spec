@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.194
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -220,6 +220,9 @@ Patch141: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch142: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
+
+#Fix for CVE-2023-42754
+Patch143: ipv4-fix-null-deref-in-ipv4_link_failure.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -481,7 +484,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M142
+%autopatch -p1 -m100 -M143
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -912,6 +915,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
+- Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4
 - Fix CVE-2023-42756
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-3

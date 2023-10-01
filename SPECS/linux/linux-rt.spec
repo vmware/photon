@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.194
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -186,6 +186,9 @@ Patch140: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch141: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
+
+#Fix for CVE-2023-42754
+Patch142: ipv4-fix-null-deref-in-ipv4_link_failure.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -701,7 +704,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M57
 
 # CVE
-%autopatch -p1 -m100 -M141
+%autopatch -p1 -m100 -M142
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -957,6 +960,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
+- Fix for CVE-2023-42754
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-4
 - Fix CVE-2023-42756
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 5.10.194-3
