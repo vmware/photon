@@ -1,7 +1,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
 Version:        18.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -110,6 +110,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.0.0-5
+- Bump version as a part of cryptography upgrade
 * Mon Oct 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 18.0.0-4
 - Fix python-pyOpenSSL requires
 * Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 18.0.0-3
