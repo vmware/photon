@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        3.1.1
-Release:        3%{?dist}
+Version:        4.0
+Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha512  linuxptp=c3c40987fe68480a8473097ebc3c506fb4f8f3b6456bbe637b2b3cb0b3e0182f1513b511fdc04b3607d5f7d8bd1bd22502bb86eb13f9fa4fa63a3331846b33ec
+%define sha512  linuxptp=763de5654f0426f2f489223e02fb3dd39a3a830751b366406657efe33bb923b5b38edada7b62de3efed6d257d5d386ece0d42a5eb92da5e5d443eac9b32e105d
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        ts2phc.service
@@ -30,7 +30,7 @@ a robust implementation of the standard and to use the most relevant and modern
 Application Programming Interfaces (API) offered by the Linux kernel.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 %make_build
@@ -93,6 +93,7 @@ rm -rf %{buildroot}
 %{_sbindir}/ptp4l
 %{_sbindir}/timemaster
 %{_sbindir}/ts2phc
+%{_sbindir}/tz2alt
 %{_mandir}/man8/hwstamp_ctl.8.gz
 %{_mandir}/man8/phc2sys.8.gz
 %{_mandir}/man8/phc_ctl.8.gz
@@ -101,8 +102,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/timemaster.8.gz
 %{_mandir}/man8/nsm.8.gz
 %{_mandir}/man8/ts2phc.8.gz
+%{_mandir}/man8/tz2alt.8.gz
 
 %changelog
+*   Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 4.0-1
+-   Port linuxptp 4.0 update from Photon 3.0 (from Brennan Lamoreaux)
 *   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-3
 -   Add service for ts2phc
 *   Mon Jan 23 2023 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1.1-2
