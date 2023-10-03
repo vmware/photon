@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -31,15 +31,19 @@ BuildRequires:  asciidoc3
 BuildRequires:  systemd-rpm-macros
 
 Requires:       bash >= 4
-Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
+Requires:       sed
+Requires:       grep
+Requires:       xz
+Requires:       gzip
+Requires:       cpio
+Requires:       filesystem
 Requires:       util-linux
+Requires:       findutils
+Requires:       procps-ng
 Requires:       systemd
 Requires:       systemd-udev
-Requires:       /bin/sed
-Requires:       /bin/grep
-Requires:       findutils
-Requires:       cpio
+Requires:       (coreutils or coreutils-selinux)
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -56,13 +60,14 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1
 
 %build
-%configure --systemdsystemunitdir=%{_unitdir} \
-           --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_libdir} \
-           --disable-documentation
+%configure \
+  --systemdsystemunitdir=%{_unitdir} \
+  --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
+  --libdir=%{_libdir} \
+  --disable-documentation
 
 %make_build
 
@@ -153,6 +158,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-9
+- Add gzip, procps-ng, xz to requires
 * Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-8
 - fix(dracut-systemd): rootfs-generator cannot write outside of generator dir
 * Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
