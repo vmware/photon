@@ -3,16 +3,20 @@
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.linux.org.uk/pub/linux/Networking/netkit/%{name}-%{version}.tar.gz
-%define sha1    netkit-telnet=41213dedaf242126b54a3ac51b905a351eb22b15
+%define sha512  netkit-telnet=e2cfabed12326af5e288def1821353eacffb4586008263dcd1bed1a9dd9d8548e51e68d7ede58ea75927783ba534ea8807ec722271843a77146f064f3d826dd3
+
+Patch0:         CVE-2022-39028.patch
+
 BuildRequires:  ncurses-devel
 Requires:       ncurses
+
 %description
 Telnet is an protocal that allows you to connect to remote comuters over internet. This package provides a telnet client.
 
@@ -63,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/in.telnetd.8.gz
 
 %changelog
+* Tue Oct 03 2023 Shivani Agarwal <shivania2@vmware.com> 0.17-4
+- Fix CVE-2022-39028
 * Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 0.17-3
 - Removed %check due to no test existence
 * Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
