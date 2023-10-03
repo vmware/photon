@@ -1,9 +1,13 @@
-# pylint: disable=invalid-name,missing-docstring
+#!/usr/bin/env python3
+
 import os
 import re
+
 from StringUtils import StringUtils
-from SpecStructures import dependentPackageData, Package, SpecObject
 from constants import constants
+from SpecStructures import dependentPackageData, Package, SpecObject
+
+strUtils = StringUtils()
 
 
 class SpecParser(object):
@@ -40,92 +44,88 @@ class SpecParser(object):
         with open(file) as specFile:
             lines = specFile.readlines()
             totalLines = len(lines)
-            i = 0
-            while i < totalLines:
-                line = lines[i].strip()
-                if self._isConditionalArch(line):
-                    if self.arch != self._readConditionalArch(line):
-                        # skip conditional body
-                        deep = 1
-                        while i < totalLines and deep != 0:
-                            i = i + 1
-                            line = lines[i].strip()
-                            if self._isConditionalMacroStart(line):
-                                deep = deep + 1
-                            elif self._isConditionalMacroEnd(line):
-                                deep = deep - 1
-                elif self._isIfCondition(line):
-                    if not self._isConditionTrue(line, file):
-                        # skip conditional body
-                        deep = 1
-                        while i < totalLines and deep != 0:
-                            i = i + 1
-                            line = lines[i].strip()
-                            if self._isConditionalMacroStart(line):
-                                deep = deep + 1
-                            elif self._isConditionalMacroEnd(line):
-                                deep = deep - 1
-                elif self._isSpecMacro(line):
-                    macro, i = self._readMacroFromFile(i, lines)
-                    self._updateSpecMacro(macro)
-                elif self._isPackageMacro(line):
-                    defaultpkg = self.packages.get("default")
-                    returnVal, packageName = self._readPkgNameFromPackageMacro(
-                        line, defaultpkg.name
-                    )
-                    packageName = self._replaceMacros(packageName)
-                    if not returnVal:
-                        return False
-                    if line.startswith("%package"):
-                        pkg = Package(self.arch, defaultpkg)
-                        pkg.name = packageName
-                        self.currentPkg = packageName
-                        self.packages[pkg.name] = pkg
-                    else:
-                        if defaultpkg.name == packageName:
-                            packageName = "default"
-                        macro, i = self._readMacroFromFile(i, lines)
-                        if packageName not in self.packages:
-                            i = i + 1
-                            continue
-                        self.packages[packageName].updatePackageMacro(macro)
-                elif self._isPackageHeaders(line):
-                    self._readPackageHeaders(
-                        line, self.packages[self.currentPkg]
-                    )
-                elif self._isGlobalSecurityHardening(line):
-                    self._readSecurityHardening(line)
-                elif self._isChecksum(line):
-                    self._readChecksum(line, self.packages[self.currentPkg])
-                elif self._isExtraBuildRequires(line):
-                    self._readExtraBuildRequires(
-                        line, self.packages[self.currentPkg]
-                    )
-                elif self._isBuildRequiresNative(line):
-                    self._readBuildRequiresNative(
-                        line, self.packages[self.currentPkg]
-                    )
-                elif self._isDefinition(line):
-                    self._readDefinition(line)
-                elif self._isConditionalCheckMacro(line):
-                    self.conditionalCheckMacroEnabled = True
-                elif (
-                    self.conditionalCheckMacroEnabled
-                    and self._isConditionalMacroEnd(line)
-                ):
-                    self.conditionalCheckMacroEnabled = False
-                elif self._isInclude(line):
-                    include = line.split()
-                    if len(include) == 2:
-                        includeFile = os.path.join(
-                            os.path.dirname(file),
-                            self._replaceMacros(include[1]),
-                        )
-                        # recursive parsing
-                        self._parseSpecFile(includeFile)
-                else:
-                    self.specAdditionalContent += f"{line}\n"
+
+        i = 0
+        def skip_conditional_body(line):
+            deep = 1
+            nonlocal i
+            while i < totalLines and deep:
                 i += 1
+                line = lines[i].strip()
+                if self._isConditionalMacroStart(line):
+                    deep += 1
+                elif self._isConditionalMacroEnd(line):
+                    deep -= 1
+
+        while i < totalLines:
+            line = lines[i].strip()
+            if self._isConditionalArch(line):
+                if self.arch != self._readConditionalArch(line):
+                    skip_conditional_body(line)
+            elif self._isIfCondition(line):
+                if not self._isConditionTrue(line, file):
+                    skip_conditional_body(line)
+            elif self._isSpecMacro(line):
+                macro, i = self._readMacroFromFile(i, lines)
+                self._updateSpecMacro(macro)
+            elif self._isPackageMacro(line):
+                defaultpkg = self.packages.get("default")
+                returnVal, packageName = self._readPkgNameFromPackageMacro(
+                    line, defaultpkg.name
+                )
+                packageName = self._replaceMacros(packageName)
+                if not returnVal:
+                    return False
+                if line.startswith("%package"):
+                    pkg = Package(self.arch, defaultpkg)
+                    pkg.name = packageName
+                    self.currentPkg = packageName
+                    self.packages[pkg.name] = pkg
+                else:
+                    if defaultpkg.name == packageName:
+                        packageName = "default"
+                    macro, i = self._readMacroFromFile(i, lines)
+                    if packageName not in self.packages:
+                        i += 1
+                        continue
+                    self.packages[packageName].updatePackageMacro(macro)
+            elif self._isPackageHeaders(line):
+                self._readPackageHeaders(
+                    line, self.packages[self.currentPkg]
+                )
+            elif self._isGlobalSecurityHardening(line):
+                self._readSecurityHardening(line)
+            elif self._isChecksum(line):
+                self._readChecksum(line, self.packages[self.currentPkg])
+            elif self._isExtraBuildRequires(line):
+                self._readExtraBuildRequires(
+                    line, self.packages[self.currentPkg]
+                )
+            elif self._isBuildRequiresNative(line):
+                self._readBuildRequiresNative(
+                    line, self.packages[self.currentPkg]
+                )
+            elif self._isDefinition(line):
+                self._readDefinition(line)
+            elif self._isConditionalCheckMacro(line):
+                self.conditionalCheckMacroEnabled = True
+            elif (
+                self.conditionalCheckMacroEnabled
+                and self._isConditionalMacroEnd(line)
+            ):
+                self.conditionalCheckMacroEnabled = False
+            elif self._isInclude(line):
+                include = line.split()
+                if len(include) == 2:
+                    includeFile = os.path.join(
+                        os.path.dirname(file),
+                        self._replaceMacros(include[1]),
+                    )
+                    # recursive parsing
+                    self._parseSpecFile(includeFile)
+            else:
+                self.specAdditionalContent += f"{line}\n"
+            i += 1
 
     def _readPkgNameFromPackageMacro(self, data, basePkgName=None):
         data = " ".join(data.split())
@@ -142,7 +142,7 @@ class SpecParser(object):
             else:
                 pkgName = f"{basePkgName}-{pkgHeaderName[i]}"
                 break
-        if pkgName is None:
+        if not pkgName:
             return True, basePkgName
         return True, pkgName
 
@@ -182,9 +182,11 @@ class SpecParser(object):
         def _get_macro(macro):
             if macro in self.defs.keys():
                 return self.defs[macro]
-            elif macro in constants.userDefinedMacros.keys():
+
+            if macro in constants.userDefinedMacros.keys():
                 return constants.userDefinedMacros[macro]
-            elif (
+
+            if (
                 macro
                 in constants.getAdditionalMacros(
                     self.packages["default"].name
@@ -193,6 +195,7 @@ class SpecParser(object):
                 return constants.getAdditionalMacros(
                     self.packages["default"].name
                 )[macro]
+
             raise Exception(f"Unknown macro: {macro}")
 
         def _macro_repl(match):
@@ -207,7 +210,7 @@ class SpecParser(object):
                             retv = parts[1]
                         else:
                             retv = _get_macro(parts[0])
-                else:  # !
+                else:
                     if not _is_macro_defined(parts[0]):
                         if len(parts) == 2:
                             retv = parts[1]
@@ -279,24 +282,18 @@ class SpecParser(object):
         )
 
     def _isConditionalArch(self, line):
-        if re.search("^%ifarch", line):
-            return True
-        return False
+        return re.search("^%ifarch", line)
 
     def _isSpecMacro(self, line):
-        if line.startswith(
+        return line.startswith(
             ("%clean", "%prep", "%build", "%install", "%changelog", "%check")
-        ):
-            return True
-        return False
+        )
 
     def _isPackageMacro(self, line):
         line = line.strip()
-        if line.startswith(
+        return line.startswith(
             ("%post", "%postun", "%files", "%description", "%package")
-        ):
-            return True
-        return False
+        )
 
     def _isPackageHeaders(self, line):
         headersPatterns = [
@@ -319,32 +316,24 @@ class SpecParser(object):
             "^buildprovides:",
             "^buildarch:",
         ]
-        if any(
+        return any(
             [re.search(r, line, flags=re.IGNORECASE) for r in headersPatterns]
-        ):
-            return True
-        return False
+        )
 
     def _isGlobalSecurityHardening(self, line):
-        if re.search(
+        return re.search(
             "^%global *security_hardening", line, flags=re.IGNORECASE
-        ):
-            return True
-        return False
+        )
 
     def _isExtraBuildRequires(self, line):
-        if re.search(
+        return re.search(
             "^%define *extrabuildrequires", line, flags=re.IGNORECASE
-        ):
-            return True
-        return False
+        )
 
     def _isBuildRequiresNative(self, line):
-        if re.search(
+        return re.search(
             "^%define *buildrequiresnative", line, flags=re.IGNORECASE
-        ):
-            return True
-        return False
+        )
 
     def _isChecksum(self, line):
         w = line.split()
@@ -353,9 +342,7 @@ class SpecParser(object):
         return re.match(".*=[a-z0-9]+$", w[2])
 
     def _isDefinition(self, line):
-        if line.startswith(("%define", "%global")):
-            return True
-        return False
+        return line.startswith(("%define", "%global"))
 
     def _readConditionalArch(self, line):
         w = line.split()
@@ -380,7 +367,6 @@ class SpecParser(object):
         return True, headerName, headerContent
 
     def _readDependentPackageData(self, line):
-        strUtils = StringUtils()
         listPackages = line.split(",")
         listdependentpkgs = []
         for line in listPackages:
@@ -409,13 +395,12 @@ class SpecParser(object):
                     if listContents[i + 1] in (">=", "<=", "=", "<", ">"):
                         compare = listContents[i + 1]
 
-                if compare is not None:
-                    dpkg.package = packageName
+                dpkg.package = packageName
+                if compare:
                     dpkg.compare = compare
                     dpkg.version = listContents[i + 2]
                     i += 3
                 else:
-                    dpkg.package = packageName
                     i += 1
                 listdependentpkgs.append(dpkg)
         return listdependentpkgs
@@ -476,17 +461,17 @@ class SpecParser(object):
             or headerName == "buildprovides"
         ):
             dpkg = self._readDependentPackageData(headerContent)
-            if dpkg is None:
+            if not dpkg:
                 return False
             if headerName.startswith("requires"):
                 pkg.requires.extend(dpkg)
-            if headerName == "provides":
-                pkg.provides.extend(dpkg)
             if headerName == "obsoletes":
                 pkg.obsoletes.extend(dpkg)
-            if headerName == "conflicts":
+            elif headerName == "conflicts":
                 pkg.conflicts.extend(dpkg)
-            if headerName == "buildrequires":
+            elif headerName == "provides":
+                pkg.provides.extend(dpkg)
+            elif headerName == "buildrequires":
                 if self.conditionalCheckMacroEnabled:
                     pkg.checkbuildrequires.extend(dpkg)
                 else:
@@ -517,7 +502,7 @@ class SpecParser(object):
             print(f"Error: Unable to parse line: {line}")
             return False
         dpkg = self._readDependentPackageData(words[2])
-        if dpkg is None:
+        if not dpkg:
             return False
         pkg.extrabuildrequires.extend(dpkg)
         return True
@@ -529,13 +514,12 @@ class SpecParser(object):
             print(f"Error: Unable to parse line: {line}")
             return False
         dpkg = self._readDependentPackageData(words[2])
-        if dpkg is None:
+        if not dpkg:
             return False
         pkg.buildrequiresnative.extend(dpkg)
         return True
 
     def _readChecksum(self, line, pkg):
-        strUtils = StringUtils()
         line = self._replaceMacros(line)
         data = line.strip()
         words = data.split()
@@ -655,7 +639,6 @@ class SpecParser(object):
 
     def _getSourceNames(self):
         sourceNames = []
-        strUtils = StringUtils()
         pkg = self.packages.get("default")
         for source in pkg.sources:
             sourceName = strUtils.getFileNameFromURL(source)
@@ -664,7 +647,6 @@ class SpecParser(object):
 
     def _getPatchNames(self):
         patchNames = []
-        strUtils = StringUtils()
         pkg = self.packages.get("default")
         for patch in pkg.patches:
             patchName = strUtils.getFileNameFromURL(patch)
