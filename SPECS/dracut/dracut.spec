@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -32,15 +32,19 @@ BuildRequires:  asciidoc3
 BuildRequires:  systemd-devel
 
 Requires:       bash >= 4
-Requires:       (coreutils or coreutils-selinux)
 Requires:       kmod
+Requires:       sed
+Requires:       grep
+Requires:       xz
+Requires:       gzip
+Requires:       cpio
+Requires:       filesystem
 Requires:       util-linux
+Requires:       findutils
+Requires:       procps-ng
 Requires:       systemd
 Requires:       systemd-udev
-Requires:       /bin/sed
-Requires:       /bin/grep
-Requires:       findutils
-Requires:       cpio
+Requires:       (coreutils or coreutils-selinux)
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -153,6 +157,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-13
+- Add gzip, procps-ng, xz to requires
 * Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-12
 - Patch service files to mitigate warnings from systemd
 * Fri Jul 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 050-11
