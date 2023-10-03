@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -24,6 +24,8 @@ Patch1:         0002-malloc-arena-fix.patch
 Patch2:         Fix-sys-mount.h-usage-with-kernel-headers.patch
 Patch3:         0001-CVE-2022-39046.patch
 Patch4:         0002-CVE-2022-39046.patch
+Patch5:         0001-CVE-2023-4806.patch
+Patch6:         0001-CVE-2023-5156.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -357,6 +359,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 03 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.36-7
+- Fix for CVE-2023-4806/2023-5156
 * Tue Jun 27 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.36-6
 - Fix for CVE-2022-39046
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-5
