@@ -2,7 +2,7 @@
 
 Name:           salt3
 Version:        3005.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha512  salt=41cf556faf9b50cd0dfad5cdecbcdf058316c27862b70f837bf5987faadc4ede2fc808f7588629c3699f39e7e06aa6aed3ef458bda590cf92995d2f5693ed6c9
+%define sha512  salt=4a40b21f0ee8ac31d3ca3d4d43706c3a484b9e19bd5797764475772af42fe682476b19f9097f003c838683529f15a757aab769eb0a15578cbc2fc449d8216604
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service
@@ -297,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Oct 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3005.3-2
+- Fix invalid checksum
 * Thu Sep 21 2023 Felippe Burk <saltstack_operations@vmware.com> 3005.3-1
 - Update to version 3005.3
 * Tue Aug 15 2023 Derek Ardolf <saltstack_operations@vmware.com> 3005.2-1
