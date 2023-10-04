@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.190
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.197
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=9f82f1d64a72be7c50462518a69cd265df429741c01ac0f5deeb9a2226ed8f40b121fd0f3ae9df9a944898b382c1a4551d59cc8c7d360954f84a1c6ebd90fcfa
+%define sha512 linux=5a8dcf7788e556b4a416bc7425e9684d1a6c40c483eb549dae975e3ff99cca9bfa2237106ba618c787b7d819940b90e29bad396108068ddc95aeb7d3529d9a38
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -70,9 +70,9 @@ Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.45-7.ph5-secure
+%define fips_canister_version 5.0.0-6.1.53-4.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=809215f6f03532623a7ae4d8d3f513073059179871da3c0c19e5bb8fb5613570dc8150e4d34ed6bbb4fc95a47ab5e90c4e33fd1a8fa1f6ad46138f0f7fabcc05
+%define sha512 fips-canister=2192a68b4e6e2ea86966837771f604bd3b75689778e5322f50a3871835608e25e7106aa8503d3e3ac94c9d84d3017c71ac995df626dd2c6ecc41d9167401f1a6
 %endif
 
 Source21:       spec_install_post.inc
@@ -201,9 +201,6 @@ Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-
-#Fix for CVE-2023-1989
-Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
 
 #Fix for CVE-2021-3699
 Patch135: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
@@ -903,6 +900,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 12 2023 Keerthana K <keerthanak@vmware.com> 5.10.197-1
+- Update to version 5.10.197
 * Wed Oct 11 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.190-3
 - Jitterentropy wrapper changes.
 * Tue Oct 03 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.190-2

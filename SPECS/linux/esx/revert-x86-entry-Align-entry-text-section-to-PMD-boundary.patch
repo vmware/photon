@@ -67,8 +67,8 @@ index 4955cb5..6389de8 100644
  
  #endif
 @@ -147,7 +145,6 @@ SECTIONS
- 		. = srso_untrain_ret_alias | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
- 		*(.text.__x86.rethunk_safe)
+ 		. = srso_alias_untrain_ret | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
+ 		*(.text..__x86.rethunk_safe)
  #endif
 -		ALIGN_ENTRY_TEXT_END
  		SOFTIRQENTRY_TEXT
