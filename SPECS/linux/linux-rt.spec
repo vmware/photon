@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.28
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -102,12 +102,15 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
-# VMW:
+# VMW: [55..65]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch57: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+#Kernel lockdown
+Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 
 # CVE:
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -288,7 +291,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M23
 
 #VMW
-%autopatch -p1 -m55 -M57
+%autopatch -p1 -m55 -M65
 
 # CVE
 %autopatch -p1 -m100 -M100
@@ -503,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.28-3
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
 - Cherry pick performance over security option for RETBleed (pos=1)
 - patch from Photon 4.0

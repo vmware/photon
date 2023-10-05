@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.28
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -122,6 +122,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
+
+#Kernel lockdown
+Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 # CVE: [100..129]
@@ -707,6 +710,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.28-3
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
 - Cherry pick performance over security option for RETBleed (pos=1)
 - patch from Photon 4.0
