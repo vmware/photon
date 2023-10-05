@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.28
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -121,6 +121,9 @@ Patch52: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch53: 6.0-x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch54: 07-vmware-only.patch
 Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+
+# Kernel lockdown
+Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
 # linux-esx [60..89]
@@ -501,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.28-3
+- Kconfig to lockdown kernel in UEFI Secure Boot
 * Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
 - Cherry pick performance over security option for RETBleed (pos=1)
 - patch from Photon 4.0
