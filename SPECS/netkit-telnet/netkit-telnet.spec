@@ -69,7 +69,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/in.telnetd.8.gz
 
 %changelog
-* Tue oct 03 2023 Shivani Agarwal <shivania2@vmware.com> 0.17-4
+* Tue Oct 03 2023 Shivani Agarwal <shivania2@vmware.com> 0.17-4
 - Fix CVE-2022-39028
 * Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 0.17-3
 - Removed %check due to no test existence
