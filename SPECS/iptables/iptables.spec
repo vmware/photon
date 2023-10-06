@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -59,38 +59,20 @@ like %{name}. There are no known incompatibility issues.
 %autosetup -p1
 
 %build
-sh ./configure --host=%{_host} --build=%{_build} \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --program-prefix= \
-    --disable-dependency-tracking \
-    --prefix=%{_prefix} \
-    --exec-prefix= \
-    --bindir=%{_bindir} \
-    --sbindir=%{_sbindir} \
-    --sysconfdir=%{_sysconfdir} \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --libexecdir=%{_libexecdir} \
-    --localstatedir=%{_localstatedir} \
-    --sharedstatedir=%{_sharedstatedir} \
-    --mandir=%{_mandir} \
-    --infodir=%{_infodir} \
+%configure\
     --disable-silent-rules \
     --with-xtlibdir=%{_libdir}/%{name} \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --enable-nftables \
     --enable-libipq \
-    --enable-devel
+    --enable-devel \
+    --disable-static
 
-make V=0 %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/%{name}-xml
-#   Install daemon scripts
+%make_install %{?_smp_mflags}
+# Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}
 install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_sysconfdir}/systemd/scripts
@@ -99,7 +81,6 @@ install -m 755 %{SOURCE3} %{buildroot}%{_sysconfdir}/systemd/scripts
 install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/systemd/scripts
 install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/systemd/scripts
 
-find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
@@ -129,7 +110,6 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 %{_libdir}/%{name}/libip*.so
 %{_libdir}/%{name}/libxt*.so
-%{_libdir}/%{name}-xml
 %{_libdir}/*.so.*
 %{_mandir}/man1/*
 %{_mandir}/man8/ip*.gz
@@ -156,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/arptables*.gz
 
 %changelog
+* Fri Oct 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.3-8
+- Remove dead symlink iptables-xml from libdir
 * Fri Jul 28 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.3-7
 - Fix ebtables-nft conflict with ebtables.
 * Wed Jul 13 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.3-6
