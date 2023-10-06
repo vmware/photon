@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.53
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        6.1.56
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -24,12 +24,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt14
+%define rt_version rt15
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
+%define sha512 linux=4f03c0991f6d2985411885b6026b76ce0bdaccb94edf3a0352f8be31cc5056bee9729089af2be4e946b1405d922afc5d6fbda6b1117eef35fd4a0cac6dcb51ec
 
 %ifarch x86_64
 Source1:    config-rt
@@ -131,18 +131,6 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 #Fix CVE-2023-28464
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
-#Fix CVE-2023-42755
-Patch102: net-sched-retire-rsvp-classifier.patch
-# Fix CVE-2023-42756
-Patch103: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
-#Fix for CVE-2023-42754
-Patch104: ipv4-fix-null-deref-in-ipv4_link_failure.patch
-
-# Fix: net: roundup issue in kmalloc_reserve()
-Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
-Patch112: 0002-net-remove-osize-variable-in-__alloc_skb.patch
-Patch113: 0003-net-factorize-code-in-kmalloc_reserve.patch
-Patch114: 0004-net-deal-with-integer-overflows-in-kmalloc_reserve.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -201,15 +189,15 @@ Patch352: 0052-Linux-6.1.46-rt13-REBASE.patch
 Patch353: 0053-io-mapping-don-t-disable-preempt-on-RT-in-io_mapping.patch
 Patch354: 0054-locking-rwbase-Mitigate-indefinite-writer-starvation.patch
 Patch355: 0055-revert-softirq-Let-ksoftirqd-do-its-job.patch
-Patch356: 0056-kernel-fork-beware-of-__put_task_struct-calling-cont.patch
-Patch357: 0057-debugobjects-locking-Annotate-debug_object_fill_pool.patch
-Patch358: 0058-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
-Patch359: 0059-seqlock-Do-the-lockdep-annotation-before-locking-in-.patch
-Patch360: 0060-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
-Patch361: 0061-bpf-Remove-in_atomic-from-bpf_link_put.patch
-Patch362: 0062-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
-Patch363: 0063-drm-i915-Do-not-disable-preemption-for-resets.patch
-Patch364: 0064-Linux-6.1.46-rt14-REBASE.patch
+# skipped 0056-kernel-fork-beware-of-__put_task_struct-calling-cont.patch
+Patch356: 0056-debugobjects-locking-Annotate-debug_object_fill_pool.patch
+Patch357: 0057-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
+# skipped 0059-seqlock-Do-the-lockdep-annotation-before-locking-in-.patch
+Patch358: 0058-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
+Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
+Patch360: 0060-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
+Patch361: 0061-drm-i915-Do-not-disable-preemption-for-resets.patch
+Patch362: 0062-Linux-6.1.54-rt15-REBASE.patch
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -570,6 +558,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-1
+- Upgrade to 6.1.56
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
 - Fix for CVE-2023-42754
 * Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
