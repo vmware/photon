@@ -6,9 +6,11 @@
  *
  */
 
+#include <linux/string.h>
 #include <linux/cacheinfo.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
+#include <linux/fips.h>
 #include "jitterentropy.h"
 
 void *jcw_mutex_init(void)
@@ -40,6 +42,11 @@ void *jcw_memcpy(void *dst, const void *src, size_t len)
 	return memcpy(dst, src, len);
 }
 
+void jcw_memzero_explicit(void *s, size_t count)
+{
+	return memzero_explicit(s, count);
+}
+
 unsigned int jcw_cache_size_roundup(void)
 {
 	unsigned int i = 0, size = 0;
@@ -67,3 +74,23 @@ unsigned int jcw_cache_size_roundup(void)
 	return size;
 }
 
+int jcw_fips_enabled(void)
+{
+	return fips_enabled;
+}
+
+void jcw_zfree(void *ptr, unsigned int len)
+{
+	memzero_explicit(ptr, len);
+	kfree_sensitive(ptr);
+}
+
+u64 jcw_ktime_get_ns(void)
+{
+	return ktime_get_ns();
+}
+
+unsigned long jcw_random_get_entropy(void)
+{
+	return random_get_entropy();
+}
