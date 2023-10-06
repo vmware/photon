@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.1.53
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        6.1.56
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
+%define sha512 linux=4f03c0991f6d2985411885b6026b76ce0bdaccb94edf3a0352f8be31cc5056bee9729089af2be4e946b1405d922afc5d6fbda6b1117eef35fd4a0cac6dcb51ec
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -124,18 +124,6 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
-#Fix CVE-2023-42755
-Patch102: net-sched-retire-rsvp-classifier.patch
-# Fix CVE-2023-42756
-Patch103: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
-#Fix for CVE-2023-42754
-Patch104: ipv4-fix-null-deref-in-ipv4_link_failure.patch
-
-# Fix: net: roundup issue in kmalloc_reserve()
-Patch111: 0001-net-add-SKB_HEAD_ALIGN-helper.patch
-Patch112: 0002-net-remove-osize-variable-in-__alloc_skb.patch
-Patch113: 0003-net-factorize-code-in-kmalloc_reserve.patch
-Patch114: 0004-net-deal-with-integer-overflows-in-kmalloc_reserve.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -469,6 +457,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-1
+- Upgrade to 6.1.56
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6
 - Fix for CVE-2023-42754
 * Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.53-5
