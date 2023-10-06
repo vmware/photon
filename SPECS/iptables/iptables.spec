@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -10,9 +10,10 @@ Distribution:   Photon
 
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.xz
 %define sha512  %{name}-%{version}=e367bf286135e39b7401e852de25c1ed06d44befdffd92ed1566eb2ae9704b48ac9196cb971f43c6c83c6ad4d910443d32064bcdf618cfcef6bcab113e31ff70
-Source1:        iptables.service
-Source2:        iptables
-Source3:        iptables.stop
+
+Source1:        %{name}.service
+Source2:        %{name}
+Source3:        %{name}.stop
 Source4:        ip4save
 Source5:        ip6save
 
@@ -40,6 +41,7 @@ Iptables if you intend on using any form of a firewall.
 %package        devel
 Summary:        Header and development files for iptables
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
 
@@ -49,75 +51,74 @@ It contains the libraries and header files to create applications.
 %build
 %configure \
     --disable-silent-rules \
-    --with-xtlibdir=%{_libdir}/iptables \
+    --with-xtlibdir=%{_libdir}/%{name} \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --enable-libipq \
     --enable-devel  \
-    --enable-bpf-compiler
+    --enable-bpf-compiler \
+    --disable-static
 
-make %{?_smp_mflags} V=0
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
+%make_install %{?_smp_mflags}
 
-#   Install daemon scripts
+# Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}
 install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -vdm755 %{buildroot}/etc/systemd/scripts
-install -m 755 %{SOURCE2} %{buildroot}/etc/systemd/scripts
-install -m 755 %{SOURCE3} %{buildroot}/etc/systemd/scripts
-install -m 644 %{SOURCE4} %{buildroot}/etc/systemd/scripts
-install -m 644 %{SOURCE5} %{buildroot}/etc/systemd/scripts
+install -vdm755 %{buildroot}%{_sysconfdir}/systemd/scripts
+install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/scripts
+install -m 755 %{SOURCE3} %{buildroot}%{_sysconfdir}/systemd/scripts
+install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/systemd/scripts
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/systemd/scripts
 
-find %{buildroot} -name '*.a'  -delete
-find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %post
-for target in iptables \
+for target in %{name} \
               ip6tables \
               ebtables \
               arptables; do
-alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-nft 30000 \
-  --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-nft-save \
-  --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
+  alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-nft 30000 \
+    --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-nft-save \
+    --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
 done
 
-for target in iptables \
+for target in %{name} \
               ip6tables; do
-alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-legacy 10000 \
-  --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-legacy-save \
-  --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-legacy-restore
+  alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-legacy 10000 \
+    --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-legacy-save \
+    --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-legacy-restore
 done
 
-%systemd_post iptables.service
+/sbin/ldconfig
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun iptables.service
+%systemd_preun %{name}.service
 
 %postun
 # Do alternative remove only in case of uninstall
 if [ $1 -eq 0 ]; then
-  for target in iptables \
+  for target in %{name} \
               ip6tables \
               ebtables \
               arptables; do
   alternatives --remove ${target} %{_sbindir}/${target}-nft
   done
-  alternatives --remove iptables %{_sbindir}/iptables-legacy
+  alternatives --remove %{name} %{_sbindir}/%{name}-legacy
   alternatives --remove ip6tables %{_sbindir}/ip6tables-legacy
 fi
-%?ldconfig
-%systemd_postun_with_restart iptables.service
+/sbin/ldconfig
+%systemd_postun_with_restart %{name}.service
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/systemd/scripts/iptables
-%config(noreplace) %{_sysconfdir}/systemd/scripts/iptables.stop
+%config(noreplace) %{_sysconfdir}/systemd/scripts/%{name}
+%config(noreplace) %{_sysconfdir}/systemd/scripts/%{name}.stop
 %config(noreplace) %{_sysconfdir}/systemd/scripts/ip4save
 %config(noreplace) %{_sysconfdir}/systemd/scripts/ip6save
 %config(noreplace) %{_sysconfdir}/ethertypes
@@ -125,22 +126,24 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/iptables/*
-%{_libdir}/iptables-xml
-%{_libdir}/systemd/system/iptables.service
+%{_libdir}/%{name}/*
+%{_unitdir}/%{name}.service
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-%{_datadir}/xtables/iptables.xslt
+%{_datadir}/xtables/%{name}.xslt
 %ghost %{_sbindir}/ip{,6}tables{,-save,-restore}
 %ghost %{_sbindir}/{eb,arp}tables{,-save,-restore}
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri Oct 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.9-2
+- Remove dead symlink iptables-xml from libdir
 * Sun Jan 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.9-1
 - Enable arptables
 - Upgrade to latest
