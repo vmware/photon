@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.56
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -78,9 +78,10 @@ Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
 
 %ifarch x86_64
-%define jent_version 3.4.1-1
-Source32: jitterentropy-%{jent_version}.tar.bz2
-%define sha512 jitterentropy=33790cee67b4ca78c74b9dc804451a6ca8db5fb3ffe718156ce28c8c9cb12632ae569cff00211cf16bfab01e208b145faa47a2f4c6bddc9d451f099cfa406cca
+%define jent_major_version 3.4.1
+%define jent_ph_version 3
+Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
+%define sha512 jitterentropy=b5aa389d331e0a8b22e696e83cccaddb17f98da06fe9592e75cd7efb24877e1cb65b24c2f909e82d247e0dcbb77043b0235f8df94d40d6cb4c4f9a7c113b4f18
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
@@ -432,10 +433,11 @@ popd
 %endif
 
 %ifarch x86_64
-cp -r ../jitterentropy-%{jent_version}/ crypto/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_version}/
-cp %{SOURCE35} crypto/jitterentropy-%{jent_version}/
+cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
+      crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 %endif
 
 make %{?_smp_mflags} mrproper
@@ -744,6 +746,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.56-2
+- Jitterentropy wrapper changes.
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-1
 - Upgrade to 6.1.56
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.53-6

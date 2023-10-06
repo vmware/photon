@@ -1,7 +1,7 @@
-From 6cedb34f1d91166e5ac34e87ab29afaf7f9965d7 Mon Sep 17 00:00:00 2001
+From 4217ea9f4c392beed90737da46ca90ba059e2328 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 8 Sep 2023 06:09:50 +0000
-Subject: [PATCH ] changes to build with jitterentropy v3.4.1
+Subject: [PATCH] changes to build with jitterentropy v3.4.1
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
@@ -10,21 +10,21 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  2 files changed, 16 insertions(+), 34 deletions(-)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index d7fcab76d..ea47aeeb1 100644
+index 2b425a563..e894f796c 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -6,6 +6,10 @@
  obj-$(CONFIG_CRYPTO) += crypto.o
  crypto-y := api.o cipher.o compress.o
  
-+obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy-3.4.1-1/ jitterentropy-3.4.1-1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1-1/jitterentropy_canister_wrapper_asm.o
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy-3.4.1/ jitterentropy-3.4.1/jitterentropy_canister_wrapper.o jitterentropy-3.4.1/jitterentropy_canister_wrapper_asm.o
 +
-+obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy-kcapi.o
++jitterentropy_rng-y := jitterentropy-kcapi.o
 +
  obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
  obj-$(CONFIG_CRYPTO_FIPS) += fips.o
  
-@@ -168,11 +172,9 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
+@@ -149,11 +153,9 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
  obj-$(CONFIG_CRYPTO_DRBG) += drbg.o
@@ -37,7 +37,7 @@ index d7fcab76d..ea47aeeb1 100644
  obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
 diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
-index b892685e1..8188fa403 100644
+index b892685e1..8b98d2e29 100644
 --- a/crypto/jitterentropy-kcapi.c
 +++ b/crypto/jitterentropy-kcapi.c
 @@ -2,7 +2,7 @@
@@ -54,8 +54,8 @@ index b892685e1..8188fa403 100644
  #include <crypto/internal/rng.h>
  
 -#include "jitterentropy.h"
-+#include "jitterentropy-3.4.1-1/jitterentropy.h"
-+#include "jitterentropy-3.4.1-1/jitterentropy-timer.h"
++#include "jitterentropy-3.4.1/jitterentropy.h"
++#include "jitterentropy-3.4.1/jitterentropy-timer.h"
  
  /***************************************************************************
   * Helper function
@@ -131,4 +131,5 @@ index b892685e1..8188fa403 100644
  MODULE_DESCRIPTION("Non-physical True Random Number Generator based on CPU Jitter");
  MODULE_ALIAS_CRYPTO("jitterentropy_rng");
 -- 
-2.19.0
+2.23.3
+
