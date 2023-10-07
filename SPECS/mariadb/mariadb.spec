@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -10,6 +10,7 @@ Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
+
 Source1:          %{name}.sysusers
 
 BuildRequires:    cmake
@@ -78,15 +79,15 @@ Summary:    errmsg for mariadb
 errmsg for maridb
 
 %prep
-%autosetup -p1 %{name}-%{version}
+%autosetup -p1
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
 %build
-%cmake \
+%{cmake} \
       -DCMAKE_BUILD_TYPE=Release \
-      -DINSTALL_DOCDIR=share/doc/mariadb-%{version} \
-      -DINSTALL_DOCREADMEDIR=share/doc/mariadb-%{version} \
+      -DINSTALL_DOCDIR=share/doc/%{name}-%{version} \
+      -DINSTALL_DOCREADMEDIR=share/doc/%{name}-%{version} \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_MYSQLSHAREDIR="share/mysql" \
       -DINSTALL_SYSCONFDIR="%{_sysconfdir}" \
@@ -104,30 +105,29 @@ rm -rf storage/tokudb/PerconaFT
       -DSKIP_TESTS=ON \
       -DTOKUDB_OK=0
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sharedstatedir}/mysql
 
-mv %{buildroot}%{_datadir}/systemd/mariadb.service \
-    %{buildroot}%{_datadir}/systemd/mariadb@.service \
+mv %{buildroot}%{_datadir}/systemd/%{name}.service \
+    %{buildroot}%{_datadir}/systemd/%{name}@.service \
     %{buildroot}%{_datadir}/systemd/mysql.service \
     %{buildroot}%{_datadir}/systemd/mysqld.service \
-    %{buildroot}%{_datadir}/systemd/mariadb-extra@.socket \
-    %{buildroot}%{_datadir}/systemd/mariadb@.socket \
+    %{buildroot}%{_datadir}/systemd/%{name}-extra@.socket \
+    %{buildroot}%{_datadir}/systemd/%{name}@.socket \
     %{buildroot}%{_unitdir}
+
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
-echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
-%if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-make test %{?_smp_mflags}
-%endif
+%make_build test
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -139,16 +139,16 @@ fi
 
 %post server
 /sbin/ldconfig
-chown mysql:mysql %{_sharedstatedir}mysql || :
-mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/dev/null || :
-%systemd_post mariadb.service
+chown mysql:mysql %{_sharedstatedir}/mysql || :
+mysql_install_db --datadir="%{_sharedstatedir}/mysql" --user="mysql" --basedir="/usr" >/dev/null || :
+%systemd_post %{name}.service
 
 %postun server
 /sbin/ldconfig
-%systemd_postun_with_restart mariadb.service
+%systemd_postun_with_restart %{name}.service
 
 %preun server
-%systemd_preun mariadb.service
+%systemd_preun %{name}.service
 
 %clean
 rm -rf %{buildroot}
@@ -160,31 +160,31 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadb.so.*
 %{_libdir}/libmariadbd.so.*
 %{_bindir}/aria_s3_copy
-%{_bindir}/mariadb
-%{_bindir}/mariadb-config
+%{_bindir}/%{name}
+%{_bindir}/%{name}-config
 %{_bindir}/mariadb_config
-%{_bindir}/mariadb-access
-%{_bindir}/mariadb-admin
-%{_bindir}/mariadb-binlog
-%{_bindir}/mariadb-check
-%{_bindir}/mariadb-client-test
-%{_bindir}/mariadb-client-test-embedded
-%{_bindir}/mariadb-conv
-%{_bindir}/mariadb-convert-table-format
-%{_bindir}/mariadb-dump
-%{_bindir}/mariadb-dumpslow
-%{_bindir}/mariadb-embedded
-%{_bindir}/mariadb-find-rows
-%{_bindir}/mariadb-fix-extensions
-%{_bindir}/mariadb-import
-%{_bindir}/mariadb-ldb
-%{_bindir}/mariadb-plugin
-%{_bindir}/mariadb-setpermission
-%{_bindir}/mariadb-show
-%{_bindir}/mariadb-slap
-%{_bindir}/mariadb-test
-%{_bindir}/mariadb-test-embedded
-%{_bindir}/mariadb-upgrade
+%{_bindir}/%{name}-access
+%{_bindir}/%{name}-admin
+%{_bindir}/%{name}-binlog
+%{_bindir}/%{name}-check
+%{_bindir}/%{name}-client-test
+%{_bindir}/%{name}-client-test-embedded
+%{_bindir}/%{name}-conv
+%{_bindir}/%{name}-convert-table-format
+%{_bindir}/%{name}-dump
+%{_bindir}/%{name}-dumpslow
+%{_bindir}/%{name}-embedded
+%{_bindir}/%{name}-find-rows
+%{_bindir}/%{name}-fix-extensions
+%{_bindir}/%{name}-import
+%{_bindir}/%{name}-ldb
+%{_bindir}/%{name}-plugin
+%{_bindir}/%{name}-setpermission
+%{_bindir}/%{name}-show
+%{_bindir}/%{name}-slap
+%{_bindir}/%{name}-test
+%{_bindir}/%{name}-test-embedded
+%{_bindir}/%{name}-upgrade
 %{_bindir}/mariadbd-safe
 %{_bindir}/mariadbd-safe-helper
 %{_bindir}/msql2mysql
@@ -214,7 +214,7 @@ rm -rf %{buildroot}
 %{_bindir}/mytop
 %{_bindir}/perror
 %{_bindir}/sst_dump
-%{_bindir}/mariadb-waitpid
+%{_bindir}/%{name}-waitpid
 %{_bindir}/myrocks_hotbackup
 %{_datadir}/mysql/charsets/*
 %{_datadir}/magic
@@ -245,29 +245,29 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mysql_tzinfo_to_sql.1.gz
 %{_mandir}/man1/mysql_waitpid.1.gz
 %{_mandir}/man1/perror.1.gz
-%{_mandir}/man1/mariadb-access.1.gz
-%{_mandir}/man1/mariadb-binlog.1.gz
-%{_mandir}/man1/mariadb-check.1.gz
-%{_mandir}/man1/mariadb-client-test.1.gz
-%{_mandir}/man1/mariadb-client-test-embedded.1.gz
-%{_mandir}/man1/mariadb-test-embedded.1.gz
+%{_mandir}/man1/%{name}-access.1.gz
+%{_mandir}/man1/%{name}-binlog.1.gz
+%{_mandir}/man1/%{name}-check.1.gz
+%{_mandir}/man1/%{name}-client-test.1.gz
+%{_mandir}/man1/%{name}-client-test-embedded.1.gz
+%{_mandir}/man1/%{name}-test-embedded.1.gz
 %{_mandir}/man1/mysql_embedded.1.gz
-%{_mandir}/man1/mariadb-embedded.1.gz
-%{_mandir}/man1/mariadb-conv.1.gz
-%{_mandir}/man1/mariadb-convert-table-format.1.gz
-%{_mandir}/man1/mariadb-dump.1.gz
-%{_mandir}/man1/mariadb-dumpslow.1.gz
-%{_mandir}/man1/mariadb-find-rows.1.gz
-%{_mandir}/man1/mariadb-fix-extensions.1.gz
-%{_mandir}/man1/mariadb-import.1.gz
+%{_mandir}/man1/%{name}-embedded.1.gz
+%{_mandir}/man1/%{name}-conv.1.gz
+%{_mandir}/man1/%{name}-convert-table-format.1.gz
+%{_mandir}/man1/%{name}-dump.1.gz
+%{_mandir}/man1/%{name}-dumpslow.1.gz
+%{_mandir}/man1/%{name}-find-rows.1.gz
+%{_mandir}/man1/%{name}-fix-extensions.1.gz
+%{_mandir}/man1/%{name}-import.1.gz
 %{_mandir}/man1/mysql_ldb.1.gz
-%{_mandir}/man1/mariadb-ldb.1.gz
-%{_mandir}/man1/mariadb-plugin.1.gz
-%{_mandir}/man1/mariadb-setpermission.1.gz
-%{_mandir}/man1/mariadb-show.1.gz
-%{_mandir}/man1/mariadb-slap.1.gz
-%{_mandir}/man1/mariadb-test.1.gz
-%{_mandir}/man1/mariadb-waitpid.1.gz
+%{_mandir}/man1/%{name}-ldb.1.gz
+%{_mandir}/man1/%{name}-plugin.1.gz
+%{_mandir}/man1/%{name}-setpermission.1.gz
+%{_mandir}/man1/%{name}-show.1.gz
+%{_mandir}/man1/%{name}-slap.1.gz
+%{_mandir}/man1/%{name}-test.1.gz
+%{_mandir}/man1/%{name}-waitpid.1.gz
 %{_mandir}/man1/mariadbd-safe-helper.1.gz
 %{_mandir}/man1/mariadbd-safe.1.gz
 %config(noreplace) %{_sysconfdir}/my.cnf.d/s3.cnf
@@ -276,7 +276,7 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 %exclude %{_datadir}/mysql/bench
 %exclude %{_datadir}/mysql/test
-%exclude %{_datadir}/doc/mariadb-%{version}/*
+%exclude %{_datadir}/doc/%{name}-%{version}/*
 
 %files server
 %config(noreplace) %{_sysconfdir}/logrotate.d/mysql
@@ -289,9 +289,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/hashicorp_key_management.cnf
 %dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
-%{_bindir}/mariadb-install-db
-%{_bindir}/mariadb-backup
-%{_bindir}/mariadb-hotcopy
+%{_bindir}/%{name}-install-db
+%{_bindir}/%{name}-backup
+%{_bindir}/%{name}-hotcopy
 %{_bindir}/aria_chk
 %{_bindir}/aria_dump_log
 %{_bindir}/aria_ftdump
@@ -300,9 +300,9 @@ rm -rf %{buildroot}
 %{_bindir}/mysql_upgrade
 %{_bindir}/innochecksum
 %{_bindir}/mariabackup
-%{_bindir}/mariadb-service-convert
-%{_bindir}/mariadb-secure-installation
-%{_bindir}/mariadb-tzinfo-to-sql
+%{_bindir}/%{name}-service-convert
+%{_bindir}/%{name}-secure-installation
+%{_bindir}/%{name}-tzinfo-to-sql
 %{_bindir}/mbstream
 %{_bindir}/myisam_ftdump
 %{_bindir}/myisamchk
@@ -314,7 +314,7 @@ rm -rf %{buildroot}
 %{_bindir}/mysql_tzinfo_to_sql
 %{_bindir}/mysqld_safe
 %{_bindir}/mysqld_multi
-%{_bindir}/mariadb-upgrade
+%{_bindir}/%{name}-upgrade
 %{_bindir}/mysqld_safe_helper
 %{_bindir}/mysqldumpslow
 %{_bindir}/mysqlhotcopy
@@ -331,7 +331,7 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 %{_unitdir}/*.service
 %{_unitdir}/*.socket
-%{_presetdir}/50-mariadb.preset
+%{_presetdir}/50-%{name}.preset
 %{_datadir}/binary-configure
 %{_datadir}/mysql-log-rotate
 %{_datadir}/mysql.server
@@ -340,9 +340,9 @@ rm -rf %{buildroot}
 %{_datadir}/policy/apparmor/usr.sbin.mysqld
 %{_datadir}/policy/apparmor/usr.sbin.mysqld.local
 %{_datadir}/policy/selinux/README
-%{_datadir}/policy/selinux/mariadb-server.fc
-%{_datadir}/policy/selinux/mariadb-server.te
-%{_datadir}/policy/selinux/mariadb.te
+%{_datadir}/policy/selinux/%{name}-server.fc
+%{_datadir}/policy/selinux/%{name}-server.te
+%{_datadir}/policy/selinux/%{name}.te
 %{_datadir}/wsrep.cnf
 %{_datadir}/wsrep_notify
 %{_datadir}/mini-benchmark
@@ -353,7 +353,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/aria_pack.1.gz
 %{_mandir}/man1/aria_read_log.1.gz
 %{_mandir}/man1/innochecksum.1.gz
-%{_mandir}/man1/mariadb-service-convert.1.gz
+%{_mandir}/man1/%{name}-service-convert.1.gz
 %{_mandir}/man1/myisamchk.1.gz
 %{_mandir}/man1/myisam_ftdump.1.gz
 %{_mandir}/man1/myisamlog.1.gz
@@ -368,7 +368,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mysql_upgrade.1.gz
 %{_mandir}/man1/mysql_install_db.1.gz
 %{_mandir}/man1/mysql.server.1.gz
-%{_mandir}/man1/mariadb-install-db.1.gz
+%{_mandir}/man1/%{name}-install-db.1.gz
 %{_mandir}/man1/replace.1.gz
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
@@ -380,17 +380,17 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mbstream.1.gz
 %{_mandir}/man1/wsrep_sst_mariabackup.1.gz
 %{_mandir}/man1/wsrep_sst_rsync_wan.1.gz
-%{_mandir}/man1/mariadb-admin.1.gz
-%{_mandir}/man1/mariadb-backup.1.gz
-%{_mandir}/man1/mariadb-hotcopy.1.gz
-%{_mandir}/man1/mariadb-tzinfo-to-sql.1.gz
-%{_mandir}/man1/mariadb-upgrade.1.gz
-%{_mandir}/man1/mariadb.1.gz
+%{_mandir}/man1/%{name}-admin.1.gz
+%{_mandir}/man1/%{name}-backup.1.gz
+%{_mandir}/man1/%{name}-hotcopy.1.gz
+%{_mandir}/man1/%{name}-tzinfo-to-sql.1.gz
+%{_mandir}/man1/%{name}-upgrade.1.gz
+%{_mandir}/man1/%{name}.1.gz
 %{_mandir}/man1/mariadb_config.1.gz
 %{_mandir}/man1/mariadbd-multi.1.gz
 %{_mandir}/man1/myrocks_hotbackup.1.gz
 %{_mandir}/man1/mytop.1.gz
-%{_mandir}/man1/mariadb-secure-installation.1.gz
+%{_mandir}/man1/%{name}-secure-installation.1.gz
 %{_mandir}/man8/*
 %{_datadir}/mysql/fill_help_tables.sql
 %{_datadir}/mysql/maria_add_gis_sp.sql
@@ -423,7 +423,7 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadb.so
 %{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
-%{_libdir}/pkgconfig/mariadb.pc
+%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/pkgconfig/libmariadb.pc
 %{_mandir}/man3/*.3.gz
 
@@ -457,6 +457,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Sat Oct 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-6
+- Fix error in post install
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 10.9.4-5
 - Bump version as a part of krb5 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.9.4-4
