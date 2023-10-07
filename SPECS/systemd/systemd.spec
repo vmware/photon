@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253
-Release:        9%{?dist}
+Version:        253.12
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=85bc9a3715d9ccc80df2c5678b74a4a3b72569643d1779511ea631d692dea0fa1da255ef18b1c4fd477a777c036ea2afe9c0ffb29101c09c608933455002f029
+%define sha512 %{name}=dd099160932258f7baf541e52ce7181565096f93f9311e4d3f6383c2035ab3d39765a7de03fb99b83e16a79db301558577fb14859ef24f3da548e8806ef95ea2
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -709,6 +709,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Oct 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-1
+- Upgrade to v253.12
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 253-9
 - Add kbd in Requires for systemd-udev
 * Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 253-8
