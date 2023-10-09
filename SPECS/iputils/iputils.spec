@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20221126
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -26,18 +26,22 @@ Requires:         systemd
 The Iputils package contains programs for basic networking.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-%meson -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
-%meson_build
+%{meson} \
+  -DUSE_IDN=false \
+  -DBUILD_MANS=false \
+  -DBUILD_HTML_MANS=false
+
+%{meson_build}
 
 %install
-%meson_install
+%{meson_install}
 
 %find_lang %{name}
-ln -sf %{_bindir}/ping %{buildroot}%{_bindir}/ping6
-ln -sf %{_bindir}/tracepath %{buildroot}%{_bindir}/tracepath6
+ln -sf ping %{buildroot}%{_bindir}/ping6
+ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 
 %files
 %defattr(-,root,root,-)
@@ -50,6 +54,8 @@ ln -sf %{_bindir}/tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
 %changelog
+* Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20221126-2
+- Use relative path for ping6 symlink
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221126-1
 - Automatic Version Bump
 * Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 20211215-1
