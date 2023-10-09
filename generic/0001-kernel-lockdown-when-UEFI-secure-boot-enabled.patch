@@ -1,19 +1,22 @@
-From 8a08912ba9e74b5dd3cf310c651eea547bbdaeef Mon Sep 17 00:00:00 2001
+From 9299b76d51a58f80971bb75a358a1bd19a26da54 Mon Sep 17 00:00:00 2001
 From: Kuntal Nayak <nkuntal@vmware.com>
 Date: Sat, 23 Sep 2023 05:16:13 +0000
-Subject: [PATCH] kernel: lockdown when UEFI secure boot enabled
+Subject: [PATCH 1/3] kernel: lockdown when UEFI secure boot enabled
 
 Implemented a Kernel config that determines whether to lockdown
 the kernel at boot time. During LSM initialization, UEFI Secure
 Boot status is checked and kernel is locked down.
+[AM: updated lockdown_lsm_init() logic to only go with secure boot
+lockdown if force (unconditional) config options are not set.]
 
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/kernel/Makefile     |  2 ++
  arch/x86/kernel/lockdown.c   | 21 +++++++++++++++++++++
  include/linux/lockdown.h     |  7 +++++++
  security/lockdown/Kconfig    |  8 ++++++++
- security/lockdown/lockdown.c |  9 +++++++++
- 5 files changed, 47 insertions(+)
+ security/lockdown/lockdown.c |  8 ++++++++
+ 5 files changed, 46 insertions(+)
  create mode 100644 arch/x86/kernel/lockdown.c
  create mode 100644 include/linux/lockdown.h
 
@@ -90,7 +93,7 @@ index e84ddf484..f2fa07773 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index a79b985e9..85753b943 100644
+index a79b985e9..8c36a94ad 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -13,6 +13,7 @@
@@ -110,12 +113,11 @@ index a79b985e9..85753b943 100644
  /*
   * Put the kernel into lock-down mode.
   */
-@@ -81,6 +84,12 @@ static int __init lockdown_lsm_init(void)
+@@ -81,6 +84,11 @@ static int __init lockdown_lsm_init(void)
  	lock_kernel_down("Kernel configuration", LOCKDOWN_INTEGRITY_MAX);
  #elif defined(CONFIG_LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY)
  	lock_kernel_down("Kernel configuration", LOCKDOWN_CONFIDENTIALITY_MAX);
-+#endif
-+#if defined(CONFIG_LOCK_DOWN_KERNEL_IN_SECUREBOOT)
++#elif defined(CONFIG_LOCK_DOWN_KERNEL_IN_SECUREBOOT)
 +        if (secureboot_enabled())
 +		lock_kernel_down("Kernel configuration", LOCKDOWN_INTEGRITY_MAX);
 +	else
