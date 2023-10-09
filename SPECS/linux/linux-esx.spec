@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.295
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -35,9 +35,9 @@ Source7: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_versi
 Source8: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha512 iavf=6a52b06373eda09824fc2674ce5a5ff488dc86331c9022faf2857c38a3002a969c6bb039271fc31e70310589701ac65d57d310d08459aa3402acbec9af1f7683
 
-%define ice_version 1.12.6
+%define ice_version 1.12.7
 Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=566d769f1691e725f1d381202a986966be4af9f4b4110dcfa15a5ba64df3cd2e4dd590510d1b181a37d79dd9ae45d3075b3bcaae0cd4888de55146aaa5c66486
+%define sha512 ice=71b08c90ee6c03242b0b11eef2425ec55fe089fa7735cc5ae9bae7469e14768b67505315a456e98b0b09ce0be71ffd35f119f2df211b927265f4d4eb8cbdf60b
 
 # common
 Patch1: double-tcp_mem-limits.patch
@@ -489,20 +489,17 @@ Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 Patch714: ipv4-fix-null-deref-in-ipv4_link_failure.patch
 
 # Patches for i40e driver
-Patch802: i40e-v2.23.17-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 Patch805: i40e-v2.23.17-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
-Patch811: iavf-v4.9.1-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
 Patch812: iavf-v4.9.1-no-aux-symvers.patch
 Patch813: iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for ice driver
-Patch821: ice-v1.12.6-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch822: ice-v1.12.6-Remove-inline-from-ethtool_sprintf.patch
-Patch823: ice-v1.12.6-don-t-install-auxiliary-module-on-modul.patch
+Patch822: ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
+Patch823: ice-v1.12.7-don-t-install-auxiliary-module-on-modul.patch
 
 # ptp_vmw
 Patch831: 0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
@@ -617,17 +614,17 @@ This Linux package contains hmac sha generator kernel module.
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m802 -M805
+%autopatch -p1 -m803 -M805
 popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m811 -M813
+%autopatch -p1 -m812 -M813
 popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-%autopatch -p1 -m821 -M823
+%autopatch -p1 -m822 -M823
 popd
 
 # Patches for ptp_vmw driver
@@ -847,6 +844,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.295-4
+- Remove patch to fix compilation issues in ice, iavf and i40e drivers
+- Replace ice-1.12.6 with ice-1.12.7
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.295-3
 - Fix for CVE-2023-42754
 * Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2

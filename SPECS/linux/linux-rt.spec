@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.295
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -70,9 +70,9 @@ Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_vers
 Source14: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version_4_2_7}/iavf-%{iavf_version_4_2_7}.tar.gz
 %define sha512 iavf-4.2.7=1f491d9ab76444db1d5f0edbd9477eb3b15fa75f73785715ff8af31288b0490c01b54cc50b6bac3fc36d9caf25bae94fb4ef4a7e73d4360c7031ece32d725e70
 
-%define ice_version_1_12_6 1.12.6
-Source15: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version_1_12_6}/ice-%{ice_version_1_12_6}.tar.gz
-%define sha512 ice-1.12.6=566d769f1691e725f1d381202a986966be4af9f4b4110dcfa15a5ba64df3cd2e4dd590510d1b181a37d79dd9ae45d3075b3bcaae0cd4888de55146aaa5c66486
+%define ice_version_1_12_7 1.12.7
+Source15: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version_1_12_7}/ice-%{ice_version_1_12_7}.tar.gz
+%define sha512 ice-1.12.7=71b08c90ee6c03242b0b11eef2425ec55fe089fa7735cc5ae9bae7469e14768b67505315a456e98b0b09ce0be71ffd35f119f2df211b927265f4d4eb8cbdf60b
 
 %define ice_version_1_11_14 1.11.14
 Source16: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version_1_11_14}/ice-%{ice_version_1_11_14}.tar.gz
@@ -708,85 +708,82 @@ Patch1000: fips-kat-tests.patch
 %endif
 
 # Patches for i40e v2.23.17 driver
-Patch1497: i40e-v2.23.17-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1498: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
-Patch1499: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1500: i40e-v2.23.17-don-t-install-auxiliary-module-on.patch
+Patch1497: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
+Patch1498: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1499: i40e-v2.23.17-don-t-install-auxiliary-module-on.patch
 
 # Patches for i40e v2.22.18 driver
-Patch1501: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1502: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
-Patch1503: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1504: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
+Patch1500: i40e-v2.22.18-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1501: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch1502: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1503: i40e-v2.22.18-don-t-install-auxiliary-module-on.patch
 
 # Patches for i40e v2.16.11 driver
-Patch1505: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1506: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1507: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
-Patch1508: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1509: i40e-v2.16.11-add-alias-to-modules_install_no_aux.patch
+Patch1504: i40e-v2.16.11-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1505: i40e-v2.16.11-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1506: i40e-v2.16.11-Add-support-for-gettimex64-interface.patch
+Patch1507: i40e-v2.16.11-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1508: i40e-v2.16.11-add-alias-to-modules_install_no_aux.patch
 
 # Patches for i40e v2.15.9 driver
-Patch1510: i40e-v2.15.9-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1511: i40e-v2.15.9-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1512: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
-Patch1513: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch1514: i40e-v2.15.9-add-alias-for-modules_install_no_aux.patch
+Patch1509: i40e-v2.15.9-i40e-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1510: i40e-v2.15.9-i40e-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1511: i40e-v2.15.9-Add-support-for-gettimex64-interface.patch
+Patch1512: i40e-v2.15.9-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+Patch1513: i40e-v2.15.9-add-alias-for-modules_install_no_aux.patch
 
 # Patches for iavf v4.9.1 driver
-Patch1515: iavf-v4.9.1-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1516: iavf-v4.9.1-no-aux-symvers.patch
-Patch1517: iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1514: iavf-v4.9.1-no-aux-symvers.patch
+Patch1515: iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for iavf v4.8.2 driver
-Patch1518: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1519: iavf-v4.8.2-no-aux-symvers.patch
-Patch1520: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1516: iavf-v4.8.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1517: iavf-v4.8.2-no-aux-symvers.patch
+Patch1518: iavf-v4.8.2-iavf-Makefile-added-alias-for-i40evf.patch
 
 # Patches for iavf v4.5.3 driver
-Patch1521: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1522: iavf-v4.5.3-no-aux-symvers.patch
-Patch1523: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1524: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
-Patch1525: iavf-fix-redefinition-of-eth_hw_addr_set.patch
+Patch1519: iavf-v4.5.3-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1520: iavf-v4.5.3-no-aux-symvers.patch
+Patch1521: iavf-v4.5.3-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1522: iavf-v4.5.3-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1523: iavf-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for iavf v4.4.2 driver
-Patch1526: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1527: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1528: iavf-v4.4.2-introduce-modules-install-no-aux.patch
+Patch1524: iavf-v4.4.2-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1525: iavf-v4.4.2-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1526: iavf-v4.4.2-introduce-modules-install-no-aux.patch
 
 # Patches for iavf v4.2.7 driver
-Patch1529: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
-Patch1530: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1531: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
-Patch1532: iavf-v4.2.7-add-alias-to-modules_install_no_aux.patch
+Patch1527: iavf-v4.2.7-iavf-Fix-skb_frag_off-usage-for-kernel-versions-4.19.patch
+Patch1528: iavf-v4.2.7-iavf-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1529: iavf-v4.2.7-iavf-Make-iavf-driver-honor-default-and-user-defined.patch
+Patch1530: iavf-v4.2.7-add-alias-to-modules_install_no_aux.patch
 
-# Patch for ice v1.12.6 driver
-Patch1533: ice-v1.12.6-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1534: ice-v1.12.6-Remove-inline-from-ethtool_sprintf.patch
-Patch1535: ice-v1.12.6-don-t-install-auxiliary-module-on-modul.patch
+# Patch for ice v1.12.7 driver
+Patch1531: ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
+Patch1532: ice-v1.12.7-don-t-install-auxiliary-module-on-modul.patch
 
 # Patch for ice v1.11.14 driver
-Patch1536: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1537: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
-Patch1538: ice-fix-redefinition-of-eth_hw_addr_set.patch
+Patch1533: ice-v1.11.14-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1534: ice-v1.11.14-don-t-install-auxiliary-module-on-modul.patch
+Patch1535: ice-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for ice v1.9.11 driver
-Patch1539: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1540: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1541: ice-v1.9.11-don-t-install-auxiliary-module-on-module.patch
-Patch1542: ice-fix-redefinition-of-eth_hw_addr_set.patch
+Patch1536: ice-v1.9.11-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1537: ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1538: ice-v1.9.11-don-t-install-auxiliary-module-on-module.patch
+Patch1539: ice-fix-redefinition-of-eth_hw_addr_set.patch
 
 # Patches for ice v1.8.3 driver
-Patch1543: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1544: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1545: ice-v1.8.3-introduce-modules_install_no_aux.patch
+Patch1540: ice-v1.8.3-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1541: ice-v1.8.3-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1542: ice-v1.8.3-introduce-modules_install_no_aux.patch
 
 # Patches for ice v1.6.4 driver
-Patch1546: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
-Patch1547: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
-Patch1548: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
-Patch1549: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
+Patch1543: ice-v1.6.4-ice-Fix-skb_frag_off-usage-for-kernel-versions-4.19..patch
+Patch1544: ice-v1.6.4-ice-kcompat.h-Add-support-for-Photon-OS-3.0.patch
+Patch1545: ice-v1.6.4-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch1546: ice-v1.6.4-add-alias-to-modules_install_no_aux.patch
 
 # Usermode helper patches
 Patch1550: 0001-umh-Add-command-line-to-user-mode-helpers.patch
@@ -948,8 +945,8 @@ Conflicts:      %{name}-drivers-intel-iavf-4.4.2 = %{version}-%{release}
 %description drivers-intel-iavf-4.2.7
 This Linux package contains the Intel iavf v4.2.7 driver.
 
-%package drivers-intel-ice-1.12.6
-Summary:        Intel ice driver v1.12.6
+%package drivers-intel-ice-1.12.7
+Summary:        Intel ice driver v1.12.7
 Group:          System Environment/Kernel
 # Add an alias so that the latest version of the ice driver can be
 # installed without having to know its specific version.
@@ -959,8 +956,8 @@ Conflicts:      %{name}-drivers-intel-ice-1.11.14 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.9.11 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.8.3 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.6.4 = %{version}-%{release}
-%description drivers-intel-ice-1.12.6
-This Linux package contains the Intel ice v1.12.6 driver.
+%description drivers-intel-ice-1.12.7
+This Linux package contains the Intel ice v1.12.7 driver.
 
 %package drivers-intel-ice-1.11.14
 Summary:        Intel ice driver v1.11.14
@@ -969,7 +966,7 @@ Group:          System Environment/Kernel
 # installed without having to know its specific version.
 Provides:       %{name}-drivers-intel-ice
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-drivers-intel-ice-1.12.6 = %{version}-%{release}
+Conflicts:      %{name}-drivers-intel-ice-1.12.7 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.9.11 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.8.3 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.6.4 = %{version}-%{release}
@@ -980,7 +977,7 @@ This Linux package contains the Intel ice v1.11.14 driver.
 Summary:        Intel ice driver v1.9.11
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-drivers-intel-ice-1.12.6 = %{version}-%{release}
+Conflicts:      %{name}-drivers-intel-ice-1.12.7 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.11.14 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.8.3 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.6.4 = %{version}-%{release}
@@ -991,7 +988,7 @@ This Linux package contains the Intel ice v1.9.11 driver.
 Summary:        Intel ice driver v1.8.3
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-drivers-intel-ice-1.12.6 = %{version}-%{release}
+Conflicts:      %{name}-drivers-intel-ice-1.12.7 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.11.14 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.9.11 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.6.4 = %{version}-%{release}
@@ -1002,7 +999,7 @@ This Linux package contains the Intel ice v1.8.3 driver.
 Summary:        Intel ice driver v1.6.4
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-drivers-intel-ice-1.12.6 = %{version}-%{release}
+Conflicts:      %{name}-drivers-intel-ice-1.12.7 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.11.14 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.9.11 = %{version}-%{release}
 Conflicts:      %{name}-drivers-intel-ice-1.8.3 = %{version}-%{release}
@@ -1061,72 +1058,72 @@ The Linux package contains the Linux kernel doc files
 
 # Patches for i40e v2.23.17 driver
 pushd ../i40e-%{i40e_version_2_23_17}
-%autopatch -p1 -m1497 -M1500
+%autopatch -p1 -m1497 -M1499
 popd
 
 # Patches for i40e v2.22.18 driver
 pushd ../i40e-%{i40e_version_2_22_18}
-%autopatch -p1 -m1501 -M1504
+%autopatch -p1 -m1500 -M1503
 popd
 
 # Patches for i40e v2.16.11 driver
 pushd ../i40e-%{i40e_version_2_16_11}
-%autopatch -p1 -m1505 -M1509
+%autopatch -p1 -m1504 -M1508
 popd
 
 # Patches for i40e v2.15.9 driver
 pushd ../i40e-%{i40e_version_2_15_9}
-%autopatch -p1 -m1510 -M1514
+%autopatch -p1 -m1509 -M1513
 popd
 
 # Patches for iavf v4.9.1 driver
 pushd ../iavf-%{iavf_version_4_9_1}
-%autopatch -p1 -m1515 -M1517
+%autopatch -p1 -m1514 -M1515
 popd
 
 # Patches for iavf v4.8.2 driver
 pushd ../iavf-%{iavf_version_4_8_2}
-%autopatch -p1 -m1518 -M1520
+%autopatch -p1 -m1516 -M1518
 popd
 
 # Patches for iavf v4.5.3 driver
 pushd ../iavf-%{iavf_version_4_5_3}
-%autopatch -p1 -m1521 -M1525
+%autopatch -p1 -m1519 -M1523
 popd
 
 # Patches for iavf v4.4.2 driver
 pushd ../iavf-%{iavf_version_4_4_2}
-%autopatch -p1 -m1526 -M1528
+%autopatch -p1 -m1524 -M1526
 popd
 
 # Patches for iavf v4.2.7 driver
 pushd ../iavf-%{iavf_version_4_2_7}
-%autopatch -p1 -m1529 -M1532
+%autopatch -p1 -m1527 -M1530
 popd
 
-# Patches for ice v1.12.6 driver
-pushd ../ice-%{ice_version_1_12_6}
-%autopatch -p1 -m1533 -M1535
+# Patches for ice v1.12.7 driver
+pushd ../ice-%{ice_version_1_12_7}
+%autopatch -p1 -m1531 -M1532
 popd
 
 # Patches for ice v1.11.14 driver
 pushd ../ice-%{ice_version_1_11_14}
-%autopatch -p1 -m1536 -M1538
+%autopatch -p1 -m1533 -M1535
 popd
 
 # Patches for ice v1.9.11 driver
 pushd ../ice-%{ice_version_1_9_11}
-%autopatch -p1 -m1539 -M1542
+%autopatch -p1 -m1536 -M1539
 popd
 
 # Patches for ice v1.8.3 driver
 pushd ../ice-%{ice_version_1_8_3}
-%autopatch -p1 -m1543 -M1545
+%autopatch -p1 -m1540 -M1542
 popd
 
 # Patches for ice v1.6.4 driver
 pushd ../ice-%{ice_version_1_6_4}
-%autopatch -p1 -m1546 -M1549
+%autopatch -p1 -m1543 -M1546
 popd
 
 # Usermode helper patches
@@ -1166,7 +1163,7 @@ build_drivers=(
     iavf-%{iavf_version_4_4_2} \
     iavf-%{iavf_version_4_2_7} \
     # ice driver versions
-    ice-%{ice_version_1_12_6} \
+    ice-%{ice_version_1_12_7} \
     ice-%{ice_version_1_11_14} \
     ice-%{ice_version_1_9_11} \
     ice-%{ice_version_1_8_3} \
@@ -1222,7 +1219,7 @@ bldroot="${PWD}"
 # |     ice-1.9.11  |   iavf-4.8.2       |  i40e-2.16.11    |
 # |     ice-1.8.3   |   iavf-4.9.1       |  i40e-2.15.9     |
 # |                 |   ice-1.11.14      |                  |
-# |                 |   ice-1.12.6       |                  |
+# |                 |   ice-1.12.7       |                  |
 # |_________________|____________________|__________________|
 #
 # auxiliary.ko/intel_auxiliary.ko are common dependencies, so
@@ -1288,7 +1285,7 @@ done
 
 # install ice drivers
 ice_versions=( \
-    %{ice_version_1_12_6} \
+    %{ice_version_1_12_7} \
     %{ice_version_1_11_14} \
     %{ice_version_1_9_11} \
     %{ice_version_1_8_3} \
@@ -1403,7 +1400,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %post drivers-intel-iavf-4.2.7
 /sbin/depmod -a %{uname_r}
 
-%post drivers-intel-ice-1.12.6
+%post drivers-intel-ice-1.12.7
 /sbin/depmod -a %{uname_r}
 
 %post drivers-intel-ice-1.11.14
@@ -1491,10 +1488,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %dir %{_modulesdir}/extra/iavf-4.2.7
 %{_modulesdir}/extra/iavf-4.2.7/iavf.ko.xz
 
-%files drivers-intel-ice-1.12.6
+%files drivers-intel-ice-1.12.7
 %defattr(-,root,root)
-%dir %{_modulesdir}/extra/ice-1.12.6
-%{_modulesdir}/extra/ice-1.12.6/ice.ko.xz
+%dir %{_modulesdir}/extra/ice-1.12.7
+%{_modulesdir}/extra/ice-1.12.7/ice.ko.xz
 
 %files drivers-intel-ice-1.11.14
 %defattr(-,root,root)
@@ -1522,6 +1519,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.295-4
+- Remove patch to fix compilation issues in ice, iavf and i40e drivers
+- Replace ice-1.12.6 with ice-1.12.7
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.295-3
 - Fix for CVE-2023-42754
 * Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
