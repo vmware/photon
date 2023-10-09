@@ -1,6 +1,9 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
 
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -23,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.56
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -71,6 +74,9 @@ Source19:       spec_install_post.inc
 Source20:       %{name}-dracut.conf
 
 %ifarch x86_64
+# Secure Boot
+Source25:       linux-sbat.csv.in
+
 %define jent_major_version 3.4.1
 %define jent_ph_version 3
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
@@ -113,10 +119,7 @@ Patch21: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 #TARFS
 Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
-Patch23: initramfs-support-for-page-aligned-format-newca.patch
-Patch24: initramfs-multiple-image-extraction-support.patch
-Patch25: initramfs-support-selective-freeing-of-initramfs-images.patch
-Patch26: initramfs-large-files-support-for-newca-format.patch
+Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -131,8 +134,12 @@ Patch53: 6.0-x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch54: 07-vmware-only.patch
 Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
-# Kernel lockdown
+# Secure Boot and Kernel Lockdown
 Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch57: 0002-Add-.sbat-section.patch
+# NOTE: linux-esx does not support kexec, omitting SBAT verify logic.
+# CONFIG_SECURITY_SBAT_VERIFY=y
+# Patch58: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 # linux-esx [60..89]
@@ -395,6 +402,13 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %endif
 
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE25} > linux-sbat.csv
+%endif
+
 %include %{SOURCE4}
 
 %build
@@ -544,6 +558,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 26 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.56-9
+- Add .sbat section for bzImage
+- newca: fixes and enhancements
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-8
 - Upgrade canister to 5.0.0-6.1.56-6
 * Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-7

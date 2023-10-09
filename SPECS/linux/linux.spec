@@ -1,6 +1,9 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
 
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -27,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.56
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -82,6 +85,9 @@ Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
 
 %ifarch x86_64
+# Secure Boot
+Source25:       linux-sbat.csv.in
+
 %define jent_major_version 3.4.1
 %define jent_ph_version 3
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
@@ -138,8 +144,10 @@ Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
-# Kernel lockdown
+# Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch59: 0002-Add-.sbat-section.patch
+Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 # CVE: [100..129]
@@ -394,7 +402,7 @@ manipulation of eBPF programs and maps.
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m50 -M59
+%autopatch -p1 -m50 -M60
 %endif
 
 # CVE
@@ -505,6 +513,13 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE25} > linux-sbat.csv
 %endif
 
 %include %{SOURCE7}
@@ -792,6 +807,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 26 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.56-9
+- Add .sbat section for bzImage
+- Introduce SBAT verificaion in addition to signature on kexec
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-8
 - Upgrade canister to 5.0.0-6.1.56-6
 * Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-7

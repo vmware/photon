@@ -1,6 +1,9 @@
 %global security_hardening none
 %global lkcm_version 5.0.0
 
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 # Set this flag to 0 to build without canister
 %global fips 1
 
@@ -16,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.56
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -33,6 +36,11 @@ Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
+
+%ifarch x86_64
+# Secure Boot
+Source5:        linux-sbat.csv.in
+%endif
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
@@ -105,8 +113,10 @@ Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 Patch40: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch41: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
-# Kernel lockdown
+# Secure Boot and Kernel Lockdown
 Patch42: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch43: 0002-Add-.sbat-section.patch
+Patch44: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 #Secure:
@@ -345,6 +355,13 @@ sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %endif
 
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE5} > linux-sbat.csv
+%endif
+
 %include %{SOURCE4}
 
 %build
@@ -458,6 +475,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 26 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.56-8
+- Add .sbat section for bzImage
+- Introduce SBAT verificaion in addition to signature on kexec
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-7
 - Upgrade canister to 5.0.0-6.1.56-6
 * Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-6
