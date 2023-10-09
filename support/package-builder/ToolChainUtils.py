@@ -179,7 +179,7 @@ class ToolChainUtils(object):
                 sandboxPath = "/publishrpms"
             rpmFile = self._findPublishedRPM(package, path)
             if rpmFile is None:
-                self.logger.error("Unable to find rpm package in current and previous versions")
+                self.logger.error(f"Unable to find rpm: {package} in current and previous versions")
                 raise Exception("Input Error")
             rpmFiles += " " + rpmFile.replace(path, sandboxPath)
             packages += f" {package}"
