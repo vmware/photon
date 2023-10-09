@@ -3,8 +3,8 @@
 PRGNAME=${0##*/}
 
 if [ $# -ne 3 ]; then
-  echo "${PRGNAME}: Invalid input args."
-  echo "Usage: ${PRGNAME} <rpms-path> <publish-cache> <input-file>"
+  echo "${PRGNAME}: Invalid input args." 1>&2
+  echo "Usage: ${PRGNAME} <rpms-path> <publish-cache> <input-file>" 1>&2
   exit 1
 fi
 
