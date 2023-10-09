@@ -1,20 +1,23 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20221126
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          %{name}-s%{version}.tar.gz
-%define sha512    iputils=7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
+
+Source0: %{name}-s%{version}.tar.gz
+%define sha512 %{name}=7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
+
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
 BuildRequires:    openssl-devel
 BuildRequires:    iproute2
+
 Requires:         libcap
 Requires:         libgcrypt
 Requires:         systemd
@@ -23,18 +26,22 @@ Requires:         systemd
 The Iputils package contains programs for basic networking.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
-%meson -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
-%meson_build
+%{meson} \
+  -DUSE_IDN=false \
+  -DBUILD_MANS=false \
+  -DBUILD_HTML_MANS=false
+
+%{meson_build}
 
 %install
-%meson_install
+%{meson_install}
 
 %find_lang %{name}
-ln -sf %{_bindir}/ping %{buildroot}%{_bindir}/ping6
-ln -sf %{_bindir}/tracepath %{buildroot}%{_bindir}/tracepath6
+ln -sf ping %{buildroot}%{_bindir}/ping6
+ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 
 %files
 %defattr(-,root,root,-)
@@ -47,6 +54,8 @@ ln -sf %{_bindir}/tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
 %changelog
+* Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20221126-2
+- Use relative path for ping6 symlink
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221126-1
 - Automatic Version Bump
 * Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 20211215-1
