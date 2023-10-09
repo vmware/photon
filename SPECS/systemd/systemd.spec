@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -28,6 +28,7 @@ Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
 Patch4:         systemd-ignore-DEVICE_FOUND_UDEV-bit-on-switching-root.patch
 Patch5:         network-attempt-to-trigger-kernel-IPv6LL-address-gen.patch
+Patch6:         sd-netlink-make-default-timeout-configurable.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -681,6 +682,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 09 2023 Susant Sahani <ssahani@vmware.com> 247.13-7
+- Backport sd-netlink: make the default timeout configurable
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 247.13-6
 - Add kbd in Requires for systemd-udev
 * Wed Aug 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-5
