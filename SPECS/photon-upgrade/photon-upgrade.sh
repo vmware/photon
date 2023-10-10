@@ -148,7 +148,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    ${TDNF} $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
+    ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."

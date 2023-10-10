@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Oct 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.0-10
+- Add REPOS_OPT to removal step of unsupported packages
 * Thu Sep 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-9
 - Handle epmgr, apache-tomcat upgrades
 * Mon Sep 04 2023 Dweep Advani <dadvani@vmware.com> 1.0-8
