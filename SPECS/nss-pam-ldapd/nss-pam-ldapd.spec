@@ -2,7 +2,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        nsswitch module which uses directory servers
 License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
@@ -40,7 +40,7 @@ nsswitch module.
 %autosetup -p1
 
 %build
-autoreconf -f -i
+autoreconf -vif
 %configure --libdir=%{_libdir} \
            --disable-utils \
            --with-pam-seclib-dir=%{pamdir}
@@ -63,10 +63,8 @@ sed -i -e 's,^uid.*,uid nslcd,g' -e 's,^gid.*,gid ldap,g' \
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-%if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %pre
 %sysusers_create_compat %{SOURCE3}
@@ -97,6 +95,8 @@ rm -rf %{buildroot}/*
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Tue Oct 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.12-8
+- Fix typo in group name
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.12-7
 - Bump version as a part of openldap v2.6.4 upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 0.9.12-6
