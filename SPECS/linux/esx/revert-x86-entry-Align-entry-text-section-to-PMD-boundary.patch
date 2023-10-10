@@ -67,7 +67,9 @@ index 4955cb5..6389de8 100644
  #define BSS_DECRYPTED
  
  #endif
-@@ -147,5 +145,4 @@ SECTIONS
+@@ -147,7 +145,6 @@ SECTIONS
+ 		. = srso_alias_untrain_ret | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
+ 		*(.text..__x86.rethunk_safe)
  #endif
 -		ALIGN_ENTRY_TEXT_END
  		SOFTIRQENTRY_TEXT

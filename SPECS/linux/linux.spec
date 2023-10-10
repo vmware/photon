@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.194
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.197
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=cb3f9de70c61d98287d766bd03e4055bad86aaad39dccc628da12bf461831fa9a4daa817689fdfa5d326a7fdcf584fef3b9ccc6ef875349cfbbcfff53cb855bd
+%define sha512 linux=5a8dcf7788e556b4a416bc7425e9684d1a6c40c483eb549dae975e3ff99cca9bfa2237106ba618c787b7d819940b90e29bad396108068ddc95aeb7d3529d9a38
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -94,6 +94,8 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 Patch6: hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 Patch8: Performance-over-security-model.patch
+# Revert crypto api workqueue
+Patch9: 0001-Revert-crypto-api-Use-work-queue-in-crypto_destroy_i.patch
 
 # ttyXRUSB support
 Patch10: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -197,9 +199,6 @@ Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2023-1989
-Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
-
 #Fix for CVE-2021-3699
 Patch135: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
@@ -212,12 +211,6 @@ Patch138: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch139: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
-
-#Fix CVE-2023-42753
-Patch140: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
-
-#Fix CVE-2023-42755
-Patch141: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch142: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
@@ -917,6 +910,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
+- Update to version 5.10.197
+- Undo commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c as it breaks canister usage.
 * Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
 - LKCM: jitterentropy fix
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5

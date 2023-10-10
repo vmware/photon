@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.194
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.10.197
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt92
+%define rt_version rt95
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=cb3f9de70c61d98287d766bd03e4055bad86aaad39dccc628da12bf461831fa9a4daa817689fdfa5d326a7fdcf584fef3b9ccc6ef875349cfbbcfff53cb855bd
+%define sha512 linux=5a8dcf7788e556b4a416bc7425e9684d1a6c40c483eb549dae975e3ff99cca9bfa2237106ba618c787b7d819940b90e29bad396108068ddc95aeb7d3529d9a38
 %ifarch x86_64
 Source1:    config-rt
 %endif
@@ -88,6 +88,9 @@ Patch12: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14: apparmor-af_unix-mediation.patch
+
+# Revert crypto api workqueue
+Patch15: 0001-Revert-crypto-api-Use-work-queue-in-crypto_destroy_i.patch
 
 #vmxnet3
 Patch20: 0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
@@ -166,9 +169,6 @@ Patch132: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 #Fix for CVE-2021-3699
 Patch133: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
-#Fix for CVE-2023-1989
-Patch134: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
-
 #Fix for CVE-2023-0597
 Patch135: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch136: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
@@ -178,12 +178,6 @@ Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
-
-#Fix CVE-2023-42753
-Patch139: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
-
-#Fix CVE-2023-42755
-Patch140: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch141: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
@@ -519,16 +513,17 @@ Patch609: 0309-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
 Patch610: 0310-eventfd-Make-signal-recursion-protection-a-task-bit.patch
 Patch611: 0311-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
 Patch612: 0312-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
-Patch614: 0313-rt-remove-extra-parameter-from-__trace_stack.patch
-Patch615: 0314-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
-Patch616: 0315-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
-Patch617: 0316-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
-Patch618: 0317-printk-ignore-consoles-without-write-callback.patch
-Patch619: 0318-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
-Patch620: 0319-Revert-mm-page_alloc-fix-potential-deadlock-on-zonel.patch
-Patch621: 0320-Revert-printk-declare-printk_deferred_-enter-safe-in.patch
+Patch613: 0313-rt-remove-extra-parameter-from-__trace_stack.patch
+Patch614: 0314-locking-rtmutex-switch-to-EXPORT_SYMBOL-for-ww_mutex.patch
+Patch615: 0315-ftrace-Fix-improper-usage-of-__trace_stack-function.patch
+Patch616: 0316-rt-arm64-make-_TIF_WORK_MASK-bits-contiguous.patch
+Patch617: 0317-printk-ignore-consoles-without-write-callback.patch
+Patch618: 0318-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
+Patch619: 0319-Revert-mm-page_alloc-fix-potential-deadlock-on-zonel.patch
+Patch620: 0320-Revert-printk-declare-printk_deferred_-enter-safe-in.patch
+Patch621: 0321-arm64-signal-Use-ARCH_RT_DELAYS_SIGNAL_SEND.patch
 # Keep rt_version matched up with this patch.
-Patch622: 0321-Linux-5.10.192-rt92-REBASE.patch
+Patch622: 0322-Linux-5.10.194-rt95-REBASE.patch
 
 #Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -967,6 +962,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
+- Update to version 5.10.197
+- Undo commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c as it breaks canister usage.
 * Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
 - LKCM: jitterentropy fix.
 - Enable and enhance sched isolation.

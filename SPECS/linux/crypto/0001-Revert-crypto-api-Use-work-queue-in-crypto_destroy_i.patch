@@ -1,0 +1,79 @@
+From c2acd273e59766f59467688ff0c106b86db111b2 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Thu, 28 Sep 2023 21:44:47 +0530
+Subject: [PATCH] Revert "crypto: api - Use work queue in
+ crypto_destroy_instance"
+
+This reverts commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ crypto/algapi.c         | 16 ++--------------
+ include/crypto/algapi.h |  3 ---
+ 2 files changed, 2 insertions(+), 17 deletions(-)
+
+diff --git a/crypto/algapi.c b/crypto/algapi.c
+index 5d422e725b26..42dca17dc2d9 100644
+--- a/crypto/algapi.c
++++ b/crypto/algapi.c
+@@ -16,7 +16,6 @@
+ #include <linux/rtnetlink.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+-#include <linux/workqueue.h>
+ 
+ #include "internal.h"
+ 
+@@ -69,26 +68,15 @@ static void crypto_free_instance(struct crypto_instance *inst)
+ 	inst->alg.cra_type->free(inst);
+ }
+ 
+-static void crypto_destroy_instance_workfn(struct work_struct *w)
++static void crypto_destroy_instance(struct crypto_alg *alg)
+ {
+-	struct crypto_instance *inst = container_of(w, struct crypto_instance,
+-						    free_work);
++	struct crypto_instance *inst = (void *)alg;
+ 	struct crypto_template *tmpl = inst->tmpl;
+ 
+ 	crypto_free_instance(inst);
+ 	crypto_tmpl_put(tmpl);
+ }
+ 
+-static void crypto_destroy_instance(struct crypto_alg *alg)
+-{
+-	struct crypto_instance *inst = container_of(alg,
+-						    struct crypto_instance,
+-						    alg);
+-
+-	INIT_WORK(&inst->free_work, crypto_destroy_instance_workfn);
+-	schedule_work(&inst->free_work);
+-}
+-
+ /*
+  * This function adds a spawn to the list secondary_spawns which
+  * will be used at the end of crypto_remove_spawns to unregister
+diff --git a/include/crypto/algapi.h b/include/crypto/algapi.h
+index 96dbd438cc70..18dd7a4aaf7d 100644
+--- a/include/crypto/algapi.h
++++ b/include/crypto/algapi.h
+@@ -10,7 +10,6 @@
+ #include <linux/crypto.h>
+ #include <linux/list.h>
+ #include <linux/kernel.h>
+-#include <linux/workqueue.h>
+ 
+ /*
+  * Maximum values for blocksize and alignmask, used to allocate
+@@ -56,8 +55,6 @@ struct crypto_instance {
+ 		struct crypto_spawn *spawns;
+ 	};
+ 
+-	struct work_struct free_work;
+-
+ 	void *__ctx[] CRYPTO_MINALIGN_ATTR;
+ };
+ 
+-- 
+2.41.0
+

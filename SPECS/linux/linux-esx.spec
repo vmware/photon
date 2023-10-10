@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.194
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.10.197
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=cb3f9de70c61d98287d766bd03e4055bad86aaad39dccc628da12bf461831fa9a4daa817689fdfa5d326a7fdcf584fef3b9ccc6ef875349cfbbcfff53cb855bd
+%define sha512 linux=5a8dcf7788e556b4a416bc7425e9684d1a6c40c483eb549dae975e3ff99cca9bfa2237106ba618c787b7d819940b90e29bad396108068ddc95aeb7d3529d9a38
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -82,7 +82,8 @@ Patch9: fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch10: apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch11: apparmor-af_unix-mediation.patch
 Patch12: Performance-over-security-model.patch
-
+# Revert crypto api workqueue
+Patch13: 0001-Revert-crypto-api-Use-work-queue-in-crypto_destroy_i.patch
 # floppy:
 Patch17: 0001-floppy-lower-printk-message-priority.patch
 Patch18: 0001-Control-MEMCG_KMEM-config.patch
@@ -215,9 +216,6 @@ Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
-#Fix for CVE-2023-1989
-Patch135: bluetooth-btsdio-fix-use-after-free-in-btsdio_remove.patch
-
 #Fix for CVE-2021-3699
 Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
@@ -230,12 +228,6 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
-
-#Fix CVE-2023-42753
-Patch141: 0001-netfilter-ipset-add-the-missing-IP_SET.patch
-
-#Fix CVE-2023-42755
-Patch142: net-sched-retire-rsvp-classifier.patch
 
 # Fix CVE-2023-42756
 Patch143: 0001-netfilter-ipset-Fix-race-between-IPSET_CMD_CREATE.patch
@@ -680,6 +672,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 03 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.197-1
+- Update to version 5.10.197
+- Undo commit 625bf86bf53eb7a8ee60fb9dc45b272b77e5ce1c as it breaks canister usage.
 * Mon Oct 02 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.194-6
 - LKCM: jitterentropy fix
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.194-5
