@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          8%{?dist}
+Release:          9%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -53,7 +53,7 @@ Library that handles mapping between names and ids for NFSv4.
 
 %package -n libnfsidmap-devel
 Summary:   Development files for the libnfsidmap library
-Requires:  libnfsidmap
+Requires:  libnfsidmap = %{version}-%{release}
 Conflicts: %{name} < 2.6.2-6
 
 %description -n libnfsidmap-devel
@@ -71,8 +71,8 @@ Requires: %{name} = %{version}-%{release}
 Development libraries and headers for %{name}
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
-#not prevent statd to start
+%autosetup -p1
+# not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 # fix --with-rpcgen=internal
@@ -84,19 +84,23 @@ sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
    --without-tcp-wrappers \
    --enable-gss \
    --enable-nfsv4 \
-   --disable-static
+   --disable-static \
+   --disable-sbin-override
+
 # fix building against new gcc
 sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -v -m644 utils/mount/nfsmount.conf %{_sysconfdir}/nfsmount.conf
 
 mkdir -p %{buildroot}%{_unitdir} \
-         %{buildroot}%{_sysconfdir}/default \
-         %{buildroot}%{_sysconfdir}/export.d \
+         %{buildroot}%{_sysconfdir}/{default,export.d} \
          %{buildroot}%{_sharedstatedir}/nfs/v4recovery
+
+install -v -m644 utils/mount/nfsmount.conf \
+            %{buildroot}%{_sysconfdir}/nfsmount.conf
 
 touch %{buildroot}%{_sysconfdir}/exports
 install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
@@ -106,24 +110,22 @@ install -m644 %{SOURCE4} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/default/%{name}
 install -m644 %{SOURCE6} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE7} %{buildroot}%{_unitdir}
+install -p -D -m 0644 %{SOURCE8} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
 install -m644 systemd/proc-fs-nfsd.mount %{buildroot}%{_unitdir}
 install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
-install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
-install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
+install -m644 systemd/rpc_pipefs.target %{buildroot}%{_unitdir}
+install -m644 systemd/var-lib-nfs-rpc_pipefs.mount %{buildroot}%{_unitdir}
 install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE8} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable nfs-server.service" > %{buildroot}%{_presetdir}/50-nfs-server.preset
 
-mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
-
-%if 0%{?with_check}
 %check
-#ignore test that might require additional setup
+# ignore test that might require additional setup
 sed -i '/check_root/i \
 exit 77' tests/t0001-statd-basic-mon-unmon.sh
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %pre
 %sysusers_create_compat %{SOURCE8}
@@ -144,12 +146,14 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/nfsmount.conf
 %config(noreplace) %{_sysconfdir}/default/%{name}
 %config(noreplace) %{_sysconfdir}/exports
 %{_sbindir}/*
 %{_sharedstatedir}/*
 %{_unitdir}/*.service
-%{_libdir}/systemd/system/*
+%{_unitdir}/*.mount
+%{_unitdir}/*.target
 %{_libexecdir}/nfsrahead
 %{_presetdir}/50-nfs-server.preset
 %{_udevrulesdir}/99-nfs.rules
@@ -176,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Tue Oct 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.2-9
+- Fix few spec issues
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 2.6.2-8
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.6.2-7
