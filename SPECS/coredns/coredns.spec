@@ -8,7 +8,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.10.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-4
+- Bump up version to compile with new go
 * Tue Sep 26 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-3
 - Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-2
