@@ -67,7 +67,6 @@ extern int fcw_sha512_base_do_update(struct shash_desc *desc,
 					const u8 *data,
 					unsigned int len,
 					sha512_block_fn *block_fn);
-extern size_t fcw_strlcpy(char *dest, const char *src, size_t size);
 extern void fcw_bug(void);
 extern void fcw_bug_on(int cond);
 extern int fcw_warn_on(int cond);

@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.56
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -746,6 +746,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-3
+- Add missing self-test vector for ecdh-nist-p384 with genkey
 * Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.56-2
 - Jitterentropy wrapper changes.
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-1
