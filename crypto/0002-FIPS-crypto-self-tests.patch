@@ -15,8 +15,8 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  crypto/Makefile           |    1 +
  crypto/crypto_self_test.c |  123 ++
  crypto/testmgr.c          |   84 +-
- crypto/testmgr.h          | 2294 ++++++++++++++++++++++++++++++++++++-
- 5 files changed, 2501 insertions(+), 16 deletions(-)
+ crypto/testmgr.h          | 2346 ++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 2553 insertions(+), 16 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
@@ -1945,7 +1945,66 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct kpp_testvec dh_tv_template[] = {
  	{
  	.secret =
-@@ -7640,6 +9199,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
+@@ -4399,6 +5958,58 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
+ 	.b_public_size = 96,
+ 	.expected_a_public_size = 96,
+ 	.expected_ss_size = 48
++	}, {
++	.secret =
++#ifdef __LITTLE_ENDIAN
++	"\x02\x00" /* type */
++	"\x36\x00" /* len */
++	"\x30\x00" /* key_size */
++#else
++	"\x00\x02" /* type */
++	"\x00\x36" /* len */
++	"\x00\x30" /* key_size */
++#endif
++	"\x09\x9F\x3C\x70\x34\xD4\xA2\xC6"
++	"\x99\x88\x4D\x73\xA3\x75\xA6\x7F"
++	"\x76\x24\xEF\x7C\x6B\x3C\x0F\x16"
++	"\x06\x47\xB6\x74\x14\xDC\xE6\x55"
++	"\xE3\x5B\x53\x80\x41\xE6\x49\xEE"
++	"\x3F\xAE\xF8\x96\x78\x3A\xB1\x94",
++	.b_secret =
++#ifdef __LITTLE_ENDIAN
++	"\x02\x00" /* type */
++	"\x36\x00" /* len */
++	"\x30\x00" /* key_size */
++#else
++	"\x00\x02" /* type */
++	"\x00\x36" /* len */
++	"\x00\x30" /* key_size */
++#endif
++	"\x41\xCB\x07\x79\xB4\xBD\xB8\x5D"
++	"\x47\x84\x67\x25\xFB\xEC\x3C\x94"
++	"\x30\xFA\xB4\x6C\xC8\xDC\x50\x60"
++	"\x85\x5C\xC9\xBD\xA0\xAA\x29\x42"
++	"\xE0\x30\x83\x12\x91\x6B\x8E\xD2"
++	"\x96\x0E\x4B\xD5\x5A\x74\x48\xFC",
++	.b_public =
++	"\xE5\x58\xDB\xEF\x53\xEE\xCD\xE3"
++	"\xD3\xFC\xCF\xC1\xAE\xA0\x8A\x89"
++	"\xA9\x87\x47\x5D\x12\xFD\x95\x0D"
++	"\x83\xCF\xA4\x17\x32\xBC\x50\x9D"
++	"\x0D\x1A\xC4\x3A\x03\x36\xDE\xF9"
++	"\x6F\xDA\x41\xD0\x77\x4A\x35\x71"
++	"\xDC\xFB\xEC\x7A\xAC\xF3\x19\x64"
++	"\x72\x16\x9E\x83\x84\x30\x36\x7F"
++	"\x66\xEE\xBE\x3C\x6E\x70\xC4\x16"
++	"\xDD\x5F\x0C\x68\x75\x9D\xD1\xFF"
++	"\xF8\x3F\xA4\x01\x42\x20\x9D\xFF"
++	"\x5E\xAA\xD9\x6D\xB9\xE6\x38\x6C",
++	.secret_size = 54,
++	.b_secret_size = 54,
++	.b_public_size = 96,
++	.expected_a_public_size = 96,
++	.expected_ss_size = 48,
++	.genkey = true,
+ 	}
+ };
+ 
+@@ -7640,6 +9251,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
  				  "\x69\x6a\x2c\x05\x6c\x31\x54\x10",
  		.psize		= 64,
  		.ksize		= 32,
@@ -2044,7 +2103,7 @@ index 2e6b280f9..b23d8f1d9 100644
  	}
  };
  
-@@ -22994,6 +24645,185 @@ static const struct cprng_testvec ansi_cprng_aes_tv_template[] = {
+@@ -22994,6 +24697,185 @@ static const struct cprng_testvec ansi_cprng_aes_tv_template[] = {
  	},
  };
  
@@ -2230,7 +2289,7 @@ index 2e6b280f9..b23d8f1d9 100644
  /*
   * SP800-90A DRBG Test vectors from
   * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -23318,6 +25148,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
+@@ -23318,6 +25200,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
  	},
  };
  
@@ -2271,7 +2330,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
  	{
  		.entropy = (unsigned char *)
-@@ -23434,6 +25298,283 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
+@@ -23434,6 +25350,283 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
  	},
  };
  
@@ -2555,7 +2614,7 @@ index 2e6b280f9..b23d8f1d9 100644
  /*
   * SP800-90A DRBG Test vectors from
   * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -23564,6 +25705,70 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
+@@ -23564,6 +25757,70 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
  	},
  };
  
@@ -2626,7 +2685,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct drbg_testvec drbg_nopr_hmac_sha256_tv_template[] = {
  	{
  		.entropy = (unsigned char *)
-@@ -34639,7 +36844,94 @@ static const struct cipher_testvec cts_mode_tv_template[] = {
+@@ -34639,7 +36896,94 @@ static const struct cipher_testvec cts_mode_tv_template[] = {
  			  "\x26\x73\x0d\xbc\x2f\x7b\xc8\x40"
  			  "\x9d\xad\x8b\xbb\x96\xc4\xcd\xc0"
  			  "\x3b\xc1\x03\xe1\xa1\x94\xbb\xd8",

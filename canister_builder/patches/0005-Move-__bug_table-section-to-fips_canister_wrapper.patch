@@ -4,6 +4,7 @@ Date: Wed, 17 May 2023 16:11:40 +0000
 Subject: [PATCH 5/8] Move __bug_table section to fips_canister_wrapper
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  16 +++--
  crypto/algboss.c                   |  10 +--
@@ -1286,7 +1287,7 @@ index 783c006d0..7899ab3cd 100644
  
  	sg_init_one(&src, xbuf[0], c_size);
  	sg_init_one(&dst, outbuf_dec, out_len_max);
-@@ -5814,13 +5814,13 @@ static void alg_check_test_descs_order(void)
+@@ -5829,13 +5829,13 @@ static void alg_check_test_descs_order(void)
  		int diff = strcmp(alg_test_descs[i - 1].alg,
  				  alg_test_descs[i].alg);
  
@@ -1302,7 +1303,7 @@ index 783c006d0..7899ab3cd 100644
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
-@@ -5832,12 +5832,12 @@ static void alg_check_testvec_configs(void)
+@@ -5847,12 +5847,12 @@ static void alg_check_testvec_configs(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
@@ -1319,7 +1320,7 @@ index 783c006d0..7899ab3cd 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5953,7 +5953,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5968,7 +5968,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
@@ -1328,19 +1329,6 @@ index 783c006d0..7899ab3cd 100644
  		     "alg: self-tests for %s using %s failed (rc=%d)",
  		     alg, driver, rc);
  	} else {
-diff --git a/crypto/xts.c b/crypto/xts.c
-index f548992c2..12edd6525 100644
---- a/crypto/xts.c
-+++ b/crypto/xts.c
-@@ -399,7 +399,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
- 	if (!strncmp(cipher_name, "ecb(", 4)) {
- 		unsigned len;
- 
--		len = strlcpy(ctx->name, cipher_name + 4, sizeof(ctx->name));
-+		len = fcw_strlcpy(ctx->name, cipher_name + 4, sizeof(ctx->name));
- 		if (len < 2 || len >= sizeof(ctx->name))
- 			goto err_free_inst;
- 
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
 index 72a4b0b1d..555ba2070 100644
 --- a/lib/crypto/sha256.c

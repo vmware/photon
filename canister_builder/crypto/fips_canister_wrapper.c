@@ -288,11 +288,6 @@ void *fcw_memcpy(void *dst, const void *src, size_t len)
 	return memcpy(dst, src, len);
 }
 
-size_t fcw_strlcpy(char *dest, const char *src, size_t size)
-{
-	return strlcpy(dest, src, size);
-}
-
 int fcw_sha1_base_do_update(struct shash_desc *desc,
 				      const u8 *data,
 				      unsigned int len,
@@ -391,9 +386,34 @@ static char *canister_algs[] = {
 	"ctr-aes-aesni",
 	"cryptd(__xts-aes-aesni)",
 	"xts-aes-aesni",
+	"cbcmac(aes-generic)",
+	"ccm_base(ctr(aes-generic),cbcmac(aes-generic))",
+	"cfb(aes-generic)",
+	"cmac(aes-generic)",
+	"sha3-224-generic",
+	"hmac(sha3-224-generic)",
+	"sha3-256-generic",
+	"hmac(sha3-256-generic)",
+	"sha3-384-generic",
+	"hmac(sha3-384-generic)",
+	"sha3-512-generic",
+	"hmac(sha3-512-generic)",
+	"pkcs1pad(rsa-generic,sha1)",
+	"pkcs1pad(rsa-generic,sha224)",
+	"pkcs1pad(rsa-generic,sha384)",
+	"ecdsa-nist-p384-generic",
+	"ecdsa-nist-p256-generic",
+	"ecdh-nist-p384-generic",
+	"ecdh-nist-p256-generic",
+	"__cts-cbc-aes-aesni",
+	"cts-cbc-aes-aesni",
+	"__generic-gcm-aesni",
+	"generic-gcm-aesni",
+	"cryptd(__generic-gcm-aesni)",
 	// no certification require
 	"crc32c-generic",
 	"crct10dif-generic",
+	"crc32c-intel",
 };
 
 int fcw_fips_not_allowed_alg(char *name)
