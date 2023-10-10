@@ -4,7 +4,7 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -177,6 +177,8 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-3
+- Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-2
 - Bump up version to compile with new go
 * Tue Jun 27 2023 Prashant S Chauhan <psingchauha@vmware.com> 4.5.1-1
