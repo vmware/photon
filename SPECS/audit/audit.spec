@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -171,6 +171,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-15
+- Bump up version to compile with new go
 * Tue Sep 26 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-14
 - Bump up version to compile with new go
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 3.0.9-13
