@@ -1,23 +1,22 @@
 %define _bind_user      named
 %define _bind_group     named
 %define _home_dir       %{_sharedstatedir}/bind
+
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.42
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
-Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=cf29e72c9c979f3cf8ba0b17357fb09c37f1436a7f3a518f49ce4b4c682fb367dd3d8e71de6603c166c95a7c535a77a9f2a1393a59723294626acefebbc95fd6
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
+%define sha512  bind=cf29e72c9c979f3cf8ba0b17357fb09c37f1436a7f3a518f49ce4b4c682fb367dd3d8e71de6603c166c95a7c535a77a9f2a1393a59723294626acefebbc95fd6
+
 Patch0:         bindutils-CVE-2023-3341.patch
 
-Requires:       openssl
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
 BuildRequires:  krb5-devel
@@ -28,6 +27,8 @@ Requires: krb5
 Requires: e2fsprogs-libs
 Requires: openssl
 Requires: libuv
+Requires: openssl
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -41,6 +42,7 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 %configure \
     --without-python \
     --disable-linux-caps
+
 %make_build -C lib/dns
 %make_build -C lib/isc
 %make_build -C lib/bind9
@@ -49,10 +51,12 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 %make_build -C bin/dig
 %make_build -C bin/nsupdate
 
+%make_build
+
 %install
 %make_install -C bin/dig %{?_smp_mflags}
 %make_install -C bin/nsupdate %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+
 mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir} %{buildroot}%{_home_dir}
 cat << EOF >> %{buildroot}/%{_sysconfdir}/named.conf
 zone "." in {
@@ -80,14 +84,6 @@ chmod 0770 %{_home_dir}
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-    if getent passwd named >/dev/null; then
-        userdel named
-    fi
-    if getent group named >/dev/null; then
-        groupdel named
-    fi
-fi
 
 %files
 %defattr(-,root,root)
@@ -97,6 +93,8 @@ fi
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.16.42-4
+- Don't delete user & group post uninstallation
 * Thu Sep 28 2023 Prashant S Chauhan <psinghchauha@vmware.com> 9.16.42-3
 - Change home directory permission & owner
 * Thu Sep 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 9.16.42-2
