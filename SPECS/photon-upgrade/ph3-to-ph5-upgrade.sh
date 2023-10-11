@@ -6,7 +6,7 @@ declare -a deprecated_packages_arr=(
   ca-certificates-nxtgn-openssl ca-certificates-nxtgn-openssl-pki
   cgroup-utils compat-gdbm debugmode dejavu-fonts ebtables-nft elasticsearch fcgi
   fcgi-devel fipsify glog-docs gmock-static gtest-static hawkey js json_spirit
-  json_spirit-devel kibana kube-controllers libdb-docs libgsystem libnss-ato
+  json_spirit-devel kaigen-gothic-cjk kibana kube-controllers libdb-docs libgsystem libnss-ato
   lightstep-tracer-cpp lightwave lightwave-client lightwave-client-libs
   lightwave-devel lightwave-post lightwave-samples lightwave-server
   likewise-open likewise-open-devel linux-aws linux-aws-docs
@@ -107,4 +107,42 @@ function relocate_rpmdb() {
     rc=$?
     abort $rc "Error: Relocated rpmdb is corrupt ($nnew RPMs found < expected $nold RPMs)"
   fi
+}
+
+# Usage: backup_configs backup_root_path pkg1 pkg2 ...
+# backs up the config of apache-tomcat, if it is being upgraded to apache-tomcat-9
+# Post upgrade this configuration will be restored in restore_configs()
+function backup_configs() {
+  local backup_root_path=$1
+  shift
+  local srcpath='/var/opt/apache-tomcat/conf'
+  local target_path="$backup_root_path/$srcpath"
+  local pkg
+  for pkg in $*; do
+    if [ "$pkg" = "apache-tomcat" ]; then
+      if [ -e "$srcpath" ]; then
+        echo "Backing up $pkg config to be restored after upgrade."
+        mkdir -p "$target_path"
+        ${CP} -ra $srcpath/* $target_path
+      fi
+    fi
+  done
+}
+
+# Usage: restore_configs backup_root_path pkg1 pkg2 ...
+# Restores the config of apache-tomcat to apache-tomcat-9 in 5.0
+function restore_configs() {
+  local backup_root_path=$1
+  shift
+  local srcpath="$backup_root_path/var/opt/apache-tomcat/conf"
+  local target_path="/var/opt/apache-tomcat-9/conf"
+  local pkg
+  for pkg in $*; do
+    if [ "$pkg" = "apache-tomcat-9" ]; then
+      if [ -e "$srcpath" ]; then
+        echo "Restoring config for $pkg."
+        ${CP} -ra $srcpath/* $target_path
+      fi
+    fi
+  done
 }

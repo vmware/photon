@@ -7,7 +7,7 @@ declare -a deprecated_packages_arr=(
     bzr ca-certificates-nxtgn-openssl ca-certificates-nxtgn-openssl-pki
     compat-gdbm debugmode dejavu-fonts elasticsearch ebtables-nft fipsify
     glog-docs haproxy-dataplaneapi hawkey
-    js kibana kube-controllers libgsystem linux-aws-hmacgen
+    js kaigen-gothic-cjk kibana kube-controllers libgsystem linux-aws-hmacgen
     linux-esx-hmacgen linux-hmacgen linux-rt-drivers-intel-i40e-2.15.9
     linux-rt-drivers-intel-i40e-2.16.11 linux-rt-drivers-intel-i40e-2.22.18
     linux-rt-drivers-intel-iavf-4.2.7 linux-rt-drivers-intel-iavf-4.4.2
@@ -57,3 +57,9 @@ function fix_post_upgrade_config() {
   echo "Setting $python_link."
   test -e $python_link || $LN -s python3 $python_link
 }
+
+# backup_configs() is No-op function in 3.0 to 4.0 upgrade
+function backup_configs() { :; }
+
+# restore_configs() is No-op function in 3.0 to 4.0 upgrade
+function restore_configs() { :; }

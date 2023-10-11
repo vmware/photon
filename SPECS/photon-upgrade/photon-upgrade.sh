@@ -34,7 +34,7 @@ function show_help() {
     rc=$1
   fi
 
-  echo -n "
+  builtin echo -n "
 Usage: $PROG [--repos=r1,...] [--upgrade-os] [--to-ver={4.0|5.0}] [--assume-yes] [--skip-update] [--install-all] [--rm-pkgs-pre=p1,p2,...] [--rm-pkgs-post=p1,p2,...]
 
 This script upgrades or updates Photon OS based upon the options provided.
@@ -106,14 +106,15 @@ function install_replacement_packages() {
   local rc=0
 
   if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
-    echo -ne "Installing following packages which are replacing removed" \
-             "packages -\n${installed_pkgs_map[@]}\n"
+    echo "Installing following packages which are replacing removed" \
+             "packages -\n${installed_pkgs_map[@]}"
     ${TDNF} $REPOS_OPT -y install ${installed_pkgs_map[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $rc "Error installing replacement packages '${installed_pkgs_map[@]}'."
     fi
     echo "Replacement packages '${installed_pkgs_map[@]}' are successfully installed"
+    restore_configs $TMP_BACKUP_LOC ${installed_pkgs_map[@]}
   fi
 }
 
@@ -130,8 +131,9 @@ function remove_replaced_packages() {
   done
 
   if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
-    echo -ne "Removing following packages which will be replaced by other "\
-             "packages -\n${!installed_pkgs_map[@]}\n"
+    backup_configs $TMP_BACKUP_LOC ${!installed_pkgs_map[@]}
+    echo "Removing following packages which will be replaced by other "\
+             "packages -\n${!installed_pkgs_map[@]}"
     ${TDNF} $REPOS_OPT -y erase ${!installed_pkgs_map[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
@@ -146,7 +148,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    ${TDNF} $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
+    ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
@@ -158,7 +160,7 @@ function remove_unsupported_packages() {
 
 function tdnf_makecache() {
   echo "Generating tdnf cache on Photon OS $(/usr/bin/lsb_release -s -r)"
-  ${TDNF} $REPOS_OPT $ASSUME_YES_OPT makecache
+  ${TDNF} $REPOS_OPT makecache
 }
 
 function distro_upgrade() {
@@ -174,10 +176,11 @@ function distro_upgrade() {
 
   if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh; then
       echo "All packages were upgraded to latest versions successfully."
-      [ "$ver" = "$TO_VERSION" ] && \
-      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT reinstall photon-release --releasever=$ver --refresh && \
-      tdnf_makecache && \
-      ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install systemd-udev
+      if [ "$ver" = "$TO_VERSION" ]; then
+        ${TDNF} $REPOS_OPT $ASSUME_YES_OPT reinstall photon-release --releasever=$ver --refresh
+        tdnf_makecache
+        ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install systemd-udev
+      fi
   else
     rc=$?
     if [ "$ver" = "$FROM_VERSION" ]; then
@@ -199,12 +202,12 @@ function remove_residual_pkgs() {
       if ! ${TDNF} -q --disablerepo=* -y erase $p; then
         rc=$?
         err_rm_pkg_list="$err_rm_pkg_list $p"
-        echo -e "Warning: Could not remove package '$p' post upgrade, error code: $rc."
+        echo "Warning: Could not remove package '$p' post upgrade, error code: $rc."
       fi
     fi
   done
   if [ -n "$err_rm_pkg_list" ]; then
-    echo -ne "Warning: following packages were not removed post upgrade-" \
+    echo "Warning: following packages were not removed post upgrade -" \
              "$err_rm_pkg_list"
   fi
 }
@@ -218,10 +221,10 @@ function install_all_from_repo()
         ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
   )"
   local rc=0
-  echo -n '--install-all option was passed, '
+  echo '--install-all option was passed.'
   if [ -n "$available_pkgs_for_install" ]; then
     echo "installing following packages from provided repos:" \
-      "$(echo $available_pkgs_for_install | ${SED} -E 's/ /, /g')"
+      "$(builtin echo $available_pkgs_for_install | ${SED} -E 's/ /, /g')"
     if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install $available_pkgs_for_install
     then
        echo "Found packages were installed successfully."
@@ -246,7 +249,7 @@ function pre_upgrade_rm_pkgs()
 
   echo "Removing following user specified packages before upgrade - $RM_PKGS_PRE"
 
-  for p in $(echo "$RM_PKGS_PRE" | ${TR} , ' '); do
+  for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
       if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
         echo "Successfully removed user named pacakge $p."
@@ -272,7 +275,7 @@ function post_upgrade_rm_pkgs()
 
   echo "Removing following user specified packages after upgrade - $RM_PKGS_POST"
 
-  for p in $(echo "$RM_PKGS_POST" | ${TR} , ' '); do
+  for p in $(builtin echo "$RM_PKGS_POST" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
       if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
         echo "Successfully removed user named pacakge $p."
@@ -313,7 +316,7 @@ function cleanup_and_exit() {
 function ask_for_reboot() {
   local yn=''
 
-  echo -n "Reboot is recommended after an upgrade. "
+  echo "Reboot is recommended after an upgrade. "
   if [ -n "$ASSUME_YES_OPT" ]; then
     # This is non-interactive invocation of the script
     echo "Please reboot the system."
@@ -362,6 +365,34 @@ function update_solv_to_support_complex_deps() {
   fi
 }
 
+# Checks whether tdnf repo configurations are as expected or not.  The method
+# aborts photon-upgrade if it finds photon-release package from other
+# OS releases than the one being updated or upgraded to.
+function is_repo_config_valid_for_release() {
+  local r=$1   # release number 3.0, 4.0 etc.
+  local -A tag_to_rel_map=(
+    [ph3]=3.0
+    [ph4]=4.0
+    [ph5]=5.0
+  )
+  local t
+  local phrel_pkgs_tags="$(
+           ${TDNF} $REPOS_OPT --releasever=$r --refresh list available photon-release | \
+           ${SED} -nE 's/^\S+\s+[^\-]+-[0-9]+\.(\S+)\s+.*$/\1/p' | ${SORT} | ${UNIQ}
+        )"
+  [ -z "$phrel_pkgs_tags" ] && \
+    abort $ERETRY_EINVAL "No photon-release package from $r release was found." \
+                         "Is photon-upgrade invoked properly? " \
+                         "Please recheck the tdnf repo configurations and rerun."
+  for t in $phrel_pkgs_tags; do
+    if [ "$r" != "${tag_to_rel_map[$t]}" ]; then
+      abort $ERETRY_EINVAL "Found unexpected photon-release package from ${tag_to_rel_map[$t]} release." \
+                           "Is photon-upgrade invoked properly? " \
+                           "Please recheck the tdnf repo configurations and rerun."
+    fi
+  done
+}
+
 function verify_version_and_upgrade() {
   local yn=''
 
@@ -372,7 +403,7 @@ function verify_version_and_upgrade() {
   if [ -z "$ASSUME_YES_OPT" ]; then
     # This is interactive invocation of the script
     echo "You are about to upgrade PhotonOS from $FROM_VERSION to $TO_VERSION."
-    echo -n "Please backup your data before proceeding. Continue (y/n)?"
+    echo "Please backup your data before proceeding. Continue (y/n)?"
     read yn
   else
     # -y or --assume-yes was given on command line; non-interactive invocation
@@ -381,9 +412,10 @@ function verify_version_and_upgrade() {
     yn=y    # script is run non-interactively to do upgrade
   fi
 
-  echo
+  builtin echo ''
   case "$yn" in
     [Yy]*)
+      is_repo_config_valid_for_release $TO_VERSION
       find_wrongly_enabled_services # Terminates upgrade on finding any regular
                                     # file in multi-user.target.wants under /etc
       backup_rpms_list_n_db $RPM_DB_LOC
@@ -408,11 +440,11 @@ function verify_version_and_upgrade() {
       else
         rebuilddb
       fi
+      fix_post_upgrade_config
       install_replacement_packages
       rebuilddb
       remove_residual_pkgs
       reset_enabled_disabled_services
-      fix_post_upgrade_config
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
       fi
@@ -450,7 +482,7 @@ while [ $# -gt 0 ]; do
         echoerr "--repos was specified more than once"
         show_help $ERETRY_EINVAL
       fi
-      for r in $(echo "$repos_csv" | ${TR} , ' '); do
+      for r in $(builtin echo "$repos_csv" | ${TR} , ' '); do
         REPOS_OPT="$REPOS_OPT --enablerepo=$r"
       done
       if [ -n "$repos_csv" ]; then
