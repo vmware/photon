@@ -1,23 +1,28 @@
+%define _bind_user      named
+%define _bind_group     named
+%define _home_dir       %{_sharedstatedir}/bind
+
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512    bind=7cafb7aeb6471d9b219db7a3fb3ce8a428bf661eb8fa532b16fa2a9054b67661c30eff97f6ff18fdef340e9b717c82b01d55bb0297ccca2388915d5ebfc188bb
+Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
+%define sha512 bind=7cafb7aeb6471d9b219db7a3fb3ce8a428bf661eb8fa532b16fa2a9054b67661c30eff97f6ff18fdef340e9b717c82b01d55bb0297ccca2388915d5ebfc188bb
 
 Source1:        %{name}.sysusers
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
-Requires:       openssl
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:       openssl-libs
+Requires:       libuv
 Requires:       userspace-rcu
+Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -60,13 +65,12 @@ Upstream no longer supports nor recommends bind libraries for third party applic
     --without-python \
     --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
+mkdir -p %{buildroot}{%{_sysconfdir},%{_tmpfilesdir},%{_home_dir}}
 
 cat << EOF >> %{buildroot}/%{_sysconfdir}/named.conf
 zone "." in {
@@ -84,6 +88,8 @@ fi
 
 %post
 /sbin/ldconfig
+chown -R root:%{_bind_user} %{_home_dir}
+chmod 0770 %{_home_dir}
 
 %postun
 /sbin/ldconfig
@@ -96,6 +102,7 @@ fi
 %{_tmpfilesdir}/named.conf
 %{_mandir}/man1/*
 %{_sysusersdir}/%{name}.sysusers
+%{_home_dir}
 
 %files libs
 %defattr(-,root,root)
@@ -124,6 +131,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-4
+- Change home directory permission & owner
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 9.19.14-3
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.19.14-2
