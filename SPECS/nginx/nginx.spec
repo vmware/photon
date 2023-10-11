@@ -1,10 +1,10 @@
-%define njs_ver     0.7.7
+%define njs_ver     0.8.0
 %define nginx_user  %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.23.1
-Release:        5%{?dist}
+Version:        1.25.2
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -12,20 +12,20 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=62d6b3d5282f4e4cc23adf23b3dc26e06fc4574cae3c18381c406d0cf0f8c68e7dfa86af0c3c1c1485214c548f3b45015eb219e62bfe04e0aaa5edaad82e6706
+%define sha512 %{name}=47da46d823f336432aca6c4cd54c76660af60620518d5c518504033a9fd6b411fd6d41e4aac2c8200311a53f96159aa3da8920145e8ed85596c9c2c14e20cb27
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=3fd9e9b84e416e95dbdffced78eabd76a519cccec7c386d8acaccd0d891dea5ceeb702408d4450107c7e3909586753e4eeb5e38c06657cd8f273180beb8fae74
+%define sha512 %{name}-njs=5e5fd3b0aba9d1a0b47207081e59d577cbd3db41e141cfa529526a778bbcd4fec1cd4dacaa1dc63ee07868ccf35f4d4cc465abff831bb03d128b0b1f1b04bb28
 
 Source2: %{name}.service
 Source3: %{name}.sysusers
-
-Patch0: WebCrypto-fixed-dangling-pointer-warning-by-gcc-12.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
 BuildRequires:  systemd-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
 
 Requires: openssl
 Requires: pcre
@@ -40,10 +40,6 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 %prep
 # Using autosetup is not feasible
 %setup -q -a0 -a1
-
-pushd njs-%{njs_ver}
-%{__patch} -p1 < %{PATCH0}
-popd
 
 %build
 sh ./configure \
@@ -118,6 +114,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Tue Oct 10 2023 Harinadh D <hdommaraju@vmware.com> 1.25.2-1
+- Version upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-5
 - Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-4
