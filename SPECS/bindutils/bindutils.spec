@@ -1,7 +1,11 @@
+%define _bind_user      named
+%define _bind_group     named
+%define _home_dir       %{_sharedstatedir}/bind
+
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -15,9 +19,10 @@ Source1:        %{name}.sysusers
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
-Requires:       openssl
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:       openssl-libs
+Requires:       libuv
 Requires:       userspace-rcu
+Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
@@ -64,9 +69,8 @@ Upstream no longer supports nor recommends bind libraries for third party applic
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
 
-mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_tmpfilesdir}
+mkdir -p %{buildroot}{%{_sysconfdir},%{_tmpfilesdir},%{_home_dir}}
 
 cat << EOF >> %{buildroot}/%{_sysconfdir}/named.conf
 zone "." in {
@@ -84,6 +88,8 @@ fi
 
 %post
 /sbin/ldconfig
+chown -R root:%{_bind_user} %{_home_dir}
+chmod 0770 %{_home_dir}
 
 %postun
 /sbin/ldconfig
@@ -96,6 +102,7 @@ fi
 %{_tmpfilesdir}/named.conf
 %{_mandir}/man1/*
 %{_sysusersdir}/%{name}.sysusers
+%{_home_dir}
 
 %files libs
 %defattr(-,root,root)
@@ -124,6 +131,8 @@ fi
 %{_mandir}/man8/*
 
 %changelog
+* Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-4
+- Change home directory permission & owner
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 9.19.14-3
 - Resolving systemd-rpm-macros for group creation
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.19.14-2
