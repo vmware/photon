@@ -1,23 +1,32 @@
+%define debug_package   %{nil}
+%define plugin_ver      1.4.0
+
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
-Version:          1.27.1
-Release:          5%{?dist}
+Version:          1.28.1
+Release:          1%{?dist}
 License:          MIT
 URL:              https://github.com/influxdata/telegraf
-Source0:          https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512    telegraf=0f28d5c6edb0b1d8ed6a3b223412bc5f7dc27fdb643c94bc0d8f03d03d05ec58d333c5e4a5fc269ea22f137f655ab9b1c8cadb1bc649d0856a48554f9185fb2c
-Source1:          https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
-%define sha512    telegraf-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
-Source2:          https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
-Source3:          %{name}.sysusers
-Patch0:           fix-compile-error.patch
 Group:            Development/Tools
 Vendor:           VMware, Inc.
 Distribution:     Photon
+
+Source0: https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ab5d84ed665c16e90fa0a5c97cc4e34580f6f2079007328cba9c0b579245e0dbdae712e5d4079221d7b1bbaf674ae2994b68a37567ea5f9a6600787a31ab0082
+
+Source1: https://github.com/wavefrontHQ/telegraf/archive/%{name}-plugin-%{plugin_ver}.zip
+%define sha512 %{name}-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
+
+Source2: %{name}.conf
+Source3: %{name}.sysusers
+
+Patch0: fix-compile-error.patch
+
 BuildRequires:    go
 BuildRequires:    git
 BuildRequires:    systemd-devel
 BuildRequires:    unzip
+
 Requires:         systemd
 Requires:         logrotate
 Requires(pre):    systemd-rpm-macros
@@ -30,38 +39,39 @@ the community can easily add support for collecting metrics from well known serv
 Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
 
 %prep
-%autosetup -p1
-cat << EOF >>%{SOURCE2}
-[[outputs.wavefront]]
-host = "localhost"
-port = 2878
-metric_separator = "."
-source_override = ["hostname", "snmp_host", "node_host"]
-convert_paths = true
-use_regex = false
-EOF
-
-pushd ..
-unzip %{SOURCE1}
-popd
+%autosetup -p1 -b1
 
 %build
-mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
-cp -r * ${GOPATH}/src/github.com/influxdata/telegraf
-mkdir -p ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront
-pushd ../telegraf-1.4.0
-cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
+mkdir -p ${GOPATH}/src/github.com/influxdata/%{name} \
+         ${GOPATH}/src/github.com/wavefronthq/%{name}/plugins/outputs/wavefront
+
+cp -r * ${GOPATH}/src/github.com/influxdata/%{name}
+rm -rf ./*
+
+pushd ../%{name}-%{plugin_ver}
+cp -r * ${GOPATH}/src/github.com/wavefronthq/%{name}/
 popd
-pushd ${GOPATH}/src/github.com/influxdata/telegraf
-make %{_smp_mflags}
+rm -rf ../%{name}-%{plugin_ver}
+
+pushd ${GOPATH}/src/github.com/influxdata/%{name}
+%make_build
 popd
 
 %install
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} %{buildroot}%{_bindir}/%{name}
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
-install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} \
+    %{buildroot}%{_bindir}/%{name}
+
+install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service \
+    %{buildroot}%{_unitdir}/%{name}.service
+
+install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} \
+    %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+install -m 640 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 %clean
 rm -rf %{buildroot}/*
@@ -70,7 +80,9 @@ rm -rf %{buildroot}/*
 %sysusers_create_compat %{SOURCE3}
 
 %post
-chown -R telegraf:telegraf /etc/telegraf
+chown -R root:%{name} %{_sharedstatedir}/%{name}
+chmod 0770 %{_sharedstatedir}/%{name}
+chown -R %{name}:%{name} %{_sysconfdir}/%{name}
 %systemd_post %{name}.service
 systemctl daemon-reload
 
@@ -82,13 +94,16 @@ systemctl daemon-reload
 
 %files
 %defattr(-,root,root)
-%{_bindir}/telegraf
-%{_unitdir}/telegraf.service
+%{_bindir}/%{name}
+%{_unitdir}/%{name}.service
 %{_sysconfdir}/logrotate.d/%{name}
 %{_sysusersdir}/%{name}.sysusers
-%config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.28.1-1
+- Upgrade to v1.28.1
+- Change homedir ownership
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-5
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-4
