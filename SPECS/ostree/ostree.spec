@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2023.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -73,6 +73,7 @@ Summary:    Development headers for %{name}
 Group:      Development/Libraries
 Requires:   %{name}-libs = %{version}-%{release}
 Requires:   %{name} = %{version}-%{release}
+Requires:   glib-devel
 
 %description devel
 The %{name}-devel package includes the header files for the %{name} library.
@@ -167,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Thu Oct 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-2
+- Fix devel package requires
 * Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-1
 - Upgrade to v2023.5
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-6
