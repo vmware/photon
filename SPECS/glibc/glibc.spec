@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        23%{?dist}
+Release:        24%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -49,6 +49,8 @@ Patch29:        CVE-2021-43396.patch
 Patch30:        nptl-Fix-pthread_rwlock-stalls.patch
 Patch31:        nptl-Fix_pthread_cond_broadcast_Fix_waiters-after-spinning_case.patch
 Patch32:        CVE-2021-3999.patch
+# CVE-2023-4813
+Patch33:        0001-Simplify-allocations-and-fix-merge-and-continue-acti.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -139,6 +141,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -350,6 +353,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 13 2023 Ajay Kaher <akaher@vmware.com> 2.28-24
+-   Fix CVE-2023-4813
 *   Wed Jul 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.28-23
 -   Added post for glibc-iconv, to have:
 -   fast-loading gconv module configuration cache file
