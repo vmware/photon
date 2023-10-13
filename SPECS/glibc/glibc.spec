@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -14,6 +14,7 @@ Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha512  glibc=8460c155b7003e04f18dabece4ed9ad77445fa2288a7dc08e80a8fc4c418828af29e0649951bd71a54ea2ad2d4da7570aafd9bdfe4a37e9951b772b442afe50b
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
+Source3:        nsswitch.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
 Patch2:         Fix_FMA4_detection_in_ifunc.patch
@@ -34,6 +35,8 @@ Patch16:        0006-glibc-fix-for-semctl-ltp.patch
 Patch17:        0001-socket_Add_the__sockaddr_un_set_function.patch
 Patch18:        CVE-2022-23218.patch
 Patch19:        CVE-2022-23219.patch
+# CVE-2023-4813
+Patch20:        0001-Simplify-allocations-and-fix-merge-and-continue-acti.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires bison, python3, python3-libs
@@ -109,6 +112,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -176,27 +180,13 @@ rm -rf %{buildroot}%{_infodir}
 # Spaces should not be used in nsswitch.conf in the begining of new line
 # Only tab should be used as it expects the same in source code.
 # Otherwise "altfiles" will not be added. which may cause dbus.service failure
-cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
-#       Begin /etc/nsswitch.conf
+cp -v %{SOURCE3} %{buildroot}%{_sysconfdir}
 
-	passwd: files
-	group: files
-	shadow: files
-
-	hosts: files dns
-	networks: files
-
-	protocols: files
-	services: files
-	ethers: files
-	rpc: files
-#       End /etc/nsswitch.conf
-EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 #       Begin /etc/ld.so.conf
-	/usr/local/lib
-	/opt/lib
-	include /etc/ld.so.conf.d/*.conf
+    /usr/local/lib
+    /opt/lib
+    include /etc/ld.so.conf.d/*.conf
 EOF
 # Create empty ld.so.cache
 :> %{buildroot}%{_sysconfdir}/ld.so.cache
@@ -338,6 +328,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 13 2023 Ajay Kaher <akaher@vmware.com> 2.32-12
+-   Fix CVE-2023-4813
 *   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.32-11
 -   Fix CVE-2022-23218, CVE-2022-23219
 *   Fri Aug 27 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.32-10
