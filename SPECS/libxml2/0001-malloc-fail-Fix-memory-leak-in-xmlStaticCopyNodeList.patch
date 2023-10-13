@@ -1,0 +1,45 @@
+From a22bd982bf10291deea8ba0c61bf75b898c604ce Mon Sep 17 00:00:00 2001
+From: Nick Wellnhofer <wellnhofer@aevum.de>
+Date: Wed, 2 Nov 2022 15:44:42 +0100
+Subject: [PATCH] malloc-fail: Fix memory leak in xmlStaticCopyNodeList
+
+Found with libFuzzer, see #344.
+---
+ tree.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/tree.c b/tree.c
+index 507869ef..647288ce 100644
+--- a/tree.c
++++ b/tree.c
+@@ -4461,7 +4461,7 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
+ 	    }
+ 	    if (doc->intSubset == NULL) {
+ 		q = (xmlNodePtr) xmlCopyDtd( (xmlDtdPtr) node );
+-		if (q == NULL) return(NULL);
++		if (q == NULL) goto error;
+ 		q->doc = doc;
+ 		q->parent = parent;
+ 		doc->intSubset = (xmlDtdPtr) q;
+@@ -4473,7 +4473,7 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
+ 	} else
+ #endif /* LIBXML_TREE_ENABLED */
+ 	    q = xmlStaticCopyNode(node, doc, parent, 1);
+-	if (q == NULL) return(NULL);
++	if (q == NULL) goto error;
+ 	if (ret == NULL) {
+ 	    q->prev = NULL;
+ 	    ret = p = q;
+@@ -4486,6 +4486,9 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
+ 	node = node->next;
+     }
+     return(ret);
++error:
++    xmlFreeNodeList(ret);
++    return(NULL);
+ }
+ 
+ /**
+-- 
+2.39.0
+
