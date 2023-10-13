@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.56
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -182,6 +182,18 @@ Patch206: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
 
+# 9p: [300..350]
+Patch300: 0001-fs-9p-Add-opt_metaonly-cache-option.patch
+Patch301: 0002-p9fs_dir_readdir-offset-support.patch
+Patch302: 0003-Add-9p-zero-copy-data-path-using-crossfd.patch
+Patch303: 0004-Enable-cache-loose-for-vdfs-9p.patch
+Patch304: 0005-Ensure-seekdir-take-effect-when-entries-in-readdir-b.patch
+Patch305: 0006-Initialize-fid-iounit-during-creation-of-p9_fid.patch
+Patch306: 0007-Don-t-use-writeback-fid-for-cache-when-enabled-for-V.patch
+Patch307: 0008-fscache-Only-fetch-attr-from-inode-cache-when-cache-.patch
+Patch308: 0009-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
+Patch309: 0010-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
+
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch500: 0002-FIPS-crypto-self-tests.patch
@@ -316,6 +328,9 @@ The Linux package contains the Linux kernel doc files
 # aarch64 patches
 %autopatch -p1 -m200 -M219
 %endif
+
+# 9P
+%autopatch -p1 -m300 -M309
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -529,6 +544,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Albert Guo <aguo@vmware.com> 6.1.56-6
+- Ported 11 9P patches (combined 2 of them) for VDFS from 4.19.y(photon3) to 6.1.y(photon5).
 * Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-5
 - Modified ecdh-nist-p384 vector to generate ECC keypair
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-4
