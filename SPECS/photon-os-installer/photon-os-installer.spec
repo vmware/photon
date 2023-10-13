@@ -2,15 +2,15 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.2
-Release:       3%{?dist}
+Version:       2.4
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=2f4408d0a57a7ed81760cad3c191628ce40d86eb3a048a46d9e8d55c66d6f6429ddf00c1a5852f023670157d861dc5ad32fed43506296c8d7aa3fc450f55a499
+%define sha512 %{name}=a361c22234ed467c0cf1a827d1a3a15553ebde6f68e48c8d32f4867d26ca9326029d7840791bed0186565e935670ebcc273a5fe77c84a90dc80f2a80d5972dda
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -20,6 +20,7 @@ BuildRequires: python3-curses
 BuildRequires: python3-PyYAML
 
 Requires: python3-pyinstaller
+Requires: python3-pyOpenSSL
 Requires: python3-requests
 Requires: python3-cracklib
 Requires: python3-curses
@@ -61,6 +62,9 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri Oct 13 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1
+- Upgrade to 2.4.
+- Add missing requires.
 * Mon May 15 2023 Oliver Kurth <okurth@vmware.com> 2.2-3
 - add all python requirements
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2-2
