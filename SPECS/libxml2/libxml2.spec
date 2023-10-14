@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.11.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -12,6 +12,7 @@ Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.x
 %define sha512 %{name}=c1df7441c729430bdd2de52e9da69b171afc4b776e4a2eb43acbc71ada7a3814a465247fb5fca4c83ecf1c281f7745069ec3d051a7964cb7cc119a3d983f93ba
 Patch0:        libxml2-CVE-2023-39615-1.patch
 Patch1:        libxml2-CVE-2023-39615-2.patch
+Patch2:        libxml2-CVE-2023-45322.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -91,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Oct 13 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-4
+- Fix for CVE-2023-45322
 * Fri Sep 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-3
 - Fix for CVE-2023-39615
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.11.4-2
