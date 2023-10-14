@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.56
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -166,6 +166,7 @@ Patch10006: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
 Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
 Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10009: 0008-Move-kernel-structures-usage.patch
+Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 %endif
 
 BuildArch:      x86_64
@@ -276,7 +277,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10009
+%autopatch -p1 -m10000 -M10010
 %endif
 
 %ifarch x86_64
@@ -459,6 +460,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-5
+- Add Pairwise Consistency Test for ECC generated keypairs
+- Modified ecdh-nist-p384 vector to generate ECC keypair
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-4
 - Upgrade canister to 5.0.0-6.1.56-3
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-3

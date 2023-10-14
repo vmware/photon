@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.56
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -529,6 +529,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-5
+- Modified ecdh-nist-p384 vector to generate ECC keypair
 * Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-4
 - Upgrade canister to 5.0.0-6.1.56-3
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-3
