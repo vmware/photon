@@ -1945,7 +1945,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct kpp_testvec dh_tv_template[] = {
  	{
  	.secret =
-@@ -4399,6 +5958,58 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
+@@ -4399,6 +5952,52 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
  	.b_public_size = 96,
  	.expected_a_public_size = 96,
  	.expected_ss_size = 48
@@ -1953,19 +1953,13 @@ index 2e6b280f9..b23d8f1d9 100644
 +	.secret =
 +#ifdef __LITTLE_ENDIAN
 +	"\x02\x00" /* type */
-+	"\x36\x00" /* len */
-+	"\x30\x00" /* key_size */
++	"\x06\x00" /* len */
++	"\x00\x00", /* key_size */
 +#else
 +	"\x00\x02" /* type */
-+	"\x00\x36" /* len */
-+	"\x00\x30" /* key_size */
++	"\x00\x06" /* len */
++	"\x00\x00", /* key_size */
 +#endif
-+	"\x09\x9F\x3C\x70\x34\xD4\xA2\xC6"
-+	"\x99\x88\x4D\x73\xA3\x75\xA6\x7F"
-+	"\x76\x24\xEF\x7C\x6B\x3C\x0F\x16"
-+	"\x06\x47\xB6\x74\x14\xDC\xE6\x55"
-+	"\xE3\x5B\x53\x80\x41\xE6\x49\xEE"
-+	"\x3F\xAE\xF8\x96\x78\x3A\xB1\x94",
 +	.b_secret =
 +#ifdef __LITTLE_ENDIAN
 +	"\x02\x00" /* type */
@@ -1995,7 +1989,7 @@ index 2e6b280f9..b23d8f1d9 100644
 +	"\xDD\x5F\x0C\x68\x75\x9D\xD1\xFF"
 +	"\xF8\x3F\xA4\x01\x42\x20\x9D\xFF"
 +	"\x5E\xAA\xD9\x6D\xB9\xE6\x38\x6C",
-+	.secret_size = 54,
++	.secret_size = 6,
 +	.b_secret_size = 54,
 +	.b_public_size = 96,
 +	.expected_a_public_size = 96,

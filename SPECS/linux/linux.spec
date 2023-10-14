@@ -27,7 +27,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.56
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -792,6 +792,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Oct 18 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-6
+- Modified ecdh-nist-p384 vector to generate ECC keypair
 * Tue Oct 17 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-5
 - Upgrade canister to 5.0.0-6.1.56-3
 * Fri Oct 13 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-4
