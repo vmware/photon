@@ -1,19 +1,21 @@
 Summary:        DejaGnu test framework
 Name:           dejagnu
 Version:        1.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
-Source0:         https://ftp.gnu.org/pub/gnu/dejagnu/%{name}-%{version}.tar.gz
-%define sha1    dejagnu=e8a28b8db857592f8f5d05a1c47bf2d2b823f1e9
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: https://ftp.gnu.org/pub/gnu/dejagnu/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ae527ce245871d49b84773d0d14b1ea6b2316c88097eeb84091a3aa885ff007eeaa1cd9c5b002d94a956d218451079b5e170561ffa43a291d9d82283aa834042
+
 BuildArch:      noarch
-Requires:       expect
+
 BuildRequires:  expect-devel
-Requires(post): texinfo
-Requires(postun): texinfo
+
+Requires:       expect
 
 %description
 DejaGnu is a framework for testing other programs. Its purpose is to provide
@@ -24,30 +26,23 @@ Each program can have multiple testsuites, all supported by a single test
 harness. DejaGnu is written in Expect, which in turn uses Tcl.
 
 %package devel
-Summary: Headers and development libraries for dejagnu
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
-Requires: expect-devel
+Summary:    Headers and development libraries for dejagnu
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Requires:   expect-devel
 
 %description devel
 Headers and development libraries for dejagnu
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure \
-    --prefix=%{_prefix}
-make %{?_smp_mflags}
+%configure
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-
-%post
-%{_bindir}/install-info --info-dir=%{_infodir} %{_infodir}/%{name}.info.gz
-
-%postun
-%{_bindir}/install-info --delete --info-dir=%{_infodir} %{_infodir}/%{name}.info.gz
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -62,9 +57,11 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 
 %changelog
-*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
--   Automatic Version Bump
-*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.6-1
--   Upgraded to version 1.6
-*   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.3-1
--   Initial build. First version
+* Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.2-2
+- Fix spec issues
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
+- Automatic Version Bump
+* Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.6-1
+- Upgraded to version 1.6
+* Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.3-1
+- Initial build. First version
