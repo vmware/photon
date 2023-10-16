@@ -1,7 +1,7 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           3%{?dist}
+Release:           4%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 License:           LGPLv2+
@@ -10,7 +10,8 @@ Distribution:      Photon
 
 Source0: https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
-Source1:           %{name}.sysusers
+
+Source1: %{name}.sysusers
 
 BuildRequires:     autoconf
 BuildRequires:     meson
@@ -35,10 +36,11 @@ polkit provides an authorization API intended to be used by privileged programs
 (“MECHANISMS”) offering service to unprivileged programs (“SUBJECTS”) often
 through some form of inter-process communication mechanism
 
-%package           devel
-Summary:           polkit development headers and libraries
-Group:             Development/Libraries
-Requires:          polkit = %{version}-%{release}
+%package        devel
+Summary:        polkit development headers and libraries
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+Requires:       glib-devel
 
 %description       devel
 header files and libraries for polkit
@@ -48,7 +50,7 @@ header files and libraries for polkit
 
 %build
 %meson \
-    -D js_engine=duktape \
+  -D js_engine=duktape \
   -D os_type=redhat \
   -D authfw=pam \
   -D examples=false \
@@ -56,13 +58,12 @@ header files and libraries for polkit
   -D session_tracking=libsystemd-login \
   -D tests=false
 
-%meson_build
+%{meson_build}
 
 %install
-%meson_install
-find %{buildroot} -name '*.la' -delete
-install -vdm 755 %{buildroot}/etc/pam.d
-cat > %{buildroot}/etc/pam.d/polkit-1 << "EOF"
+%{meson_install}
+install -vdm 755 %{buildroot}%{_sysconfdir}/pam.d
+cat > %{buildroot}%{_sysconfdir}/pam.d/%{name}-1 << "EOF"
 # Begin /etc/pam.d/polkit-1
 
 auth     include        system-auth
@@ -82,31 +83,31 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 # The implied (systemctl preset) will fail and complain, but the macro hides
 # and ignores the fact.  This is in fact what we want, polkit.service does not
 # have an [Install] section and it is always started on demand.
-%systemd_post polkit.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun polkit.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart polkit.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
 %{_bindir}/pk*
 %{_libdir}/lib%{name}-*.so.*
-%{_libdir}/polkit-1/polkit-agent-helper-1
-%{_libdir}/polkit-1/polkitd
-%{_unitdir}/polkit.service
+%{_libdir}/%{name}-1/%{name}-agent-helper-1
+%{_libdir}/%{name}-1/polkitd
+%{_unitdir}/%{name}.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.PolicyKit1.service
 %{_datadir}/locale/*
-%{_datadir}/polkit-1/actions/*.policy
+%{_datadir}/%{name}-1/actions/*.policy
 %{_datadir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
-%{_sysconfdir}/pam.d/polkit-1
-%{_sysconfdir}/polkit-1/rules.d/50-default.rules
+%{_sysconfdir}/pam.d/%{name}-1
+%{_sysconfdir}/%{name}-1/rules.d/50-default.rules
 %{_datadir}/gettext/its
 %{_libdir}/girepository-1.0/*.typelib
-%{_datadir}/polkit-1/policyconfig-1.dtd
+%{_datadir}/%{name}-1/policyconfig-1.dtd
 %{_sysusersdir}/%{name}.sysusers
 
 %files devel
@@ -117,6 +118,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Mon Oct 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 121-4
+- Fix devel package requires
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 121-3
 - Use systemd-rpm-macros for user creation
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 121-2
