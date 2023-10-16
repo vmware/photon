@@ -1,9 +1,11 @@
 %global ncursessubversion 20230603
+%define v6_so_ver   %{version}
+%define v5_so_ver   5.9
 
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
@@ -16,7 +18,8 @@ Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version
 Requires: ncurses-libs = %{version}-%{release}
 Requires: glibc
 
-BuildRequires: gcc glibc
+BuildRequires: gcc
+BuildRequires: glibc
 BuildRequires: pkg-config
 
 %description
@@ -55,39 +58,32 @@ Requires:       %{name} = %{version}-%{release}
 %description    terminfo
 It contains all terminfo files
 
+%define check_and_symlink() \
+  if ! test -f %{1}; then \
+    echo "ERROR: File not found: '%{1}'" 1>&2 ; \
+    exit 1; \
+  fi \
+  ln -sfrv %{1} %{2}
+
 %prep
 %autosetup -p1 -n %{name}-%{version}-%{ncursessubversion}
 
 %build
 if [ %{_host} != %{_build} ]; then
-    # configure adds incorrect includedir -I/usr/include for cross g++.
-    # In result, g++ compilation will fail and configure will not
-    # detect cross g++
-    sed -i '/cf_includedir/d' configure
+  # configure adds incorrect includedir -I/usr/include for cross g++.
+  # In result, g++ compilation will fail and configure will not
+  # detect cross g++
+  sed -i '/cf_includedir/d' configure
 fi
 
-mkdir v6
-pushd v6
-ln -s ../configure .
-%configure \
-    --with-shared \
-    --without-debug \
-    --enable-pc-files \
-    --with-pkg-config-libdir=%{_libdir}/pkgconfig \
-    --enable-widec \
-    --disable-lp64 \
-    --with-chtype='long' \
-    --with-mmask-t='long' \
-    --disable-silent-rules \
-    --with-termlib=tinfo
-make %{?_smp_mflags}
-popd
+mkdir -p v5 v6
 
-mkdir v5
-pushd v5
-ln -s ../configure .
+for ver in 5 6; do
+pushd v${ver}
+ln -sf ../configure .
 %configure \
     --with-shared \
+    --without-normal \
     --without-debug \
     --enable-pc-files \
     --with-pkg-config-libdir=%{_libdir}/pkgconfig \
@@ -97,46 +93,43 @@ ln -s ../configure .
     --with-mmask-t='long' \
     --disable-silent-rules \
     --with-termlib=tinfo \
-    --with-abi-version=5
-make %{?_smp_mflags}
+    --with-termlib=tinfo \
+    --with-abi-version=${ver}
+
+%make_build
 popd
+done
 
 %install
-make %{?_smp_mflags} -C v5 DESTDIR=%{buildroot} install.libs
-make %{?_smp_mflags} -C v6 DESTDIR=%{buildroot} install
-install -vdm 755 %{buildroot}/%{_lib}
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
+%make_install install.libs %{?_smp_mflags} -C v5
+%make_install install.libs %{?_smp_mflags} -C v6
+
+find %{buildroot} -name '*.a' -delete
+
+install -vdm 755 %{buildroot}%{_libdir}
 
 for lib in form panel menu; do
-    rm -vf %{buildroot}%{_libdir}/lib${lib}.so
-    echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so
-    ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a
-    ln -sfv %{_libdir}/pkgconfig/${lib}w.pc %{buildroot}%{_libdir}/pkgconfig/${lib}.pc
+  echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so
+  %check_and_symlink %{buildroot}%{_libdir}/pkgconfig/${lib}w.pc %{buildroot}%{_libdir}/pkgconfig/${lib}.pc
 done
 
-for lib in ncurses; do
-    rm -vf %{buildroot}%{_libdir}/lib${lib}.so
-    echo "INPUT(-l${lib}w -ltinfo)" > %{buildroot}%{_libdir}/lib${lib}.so
-    ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a
-done
-
-ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
-rm -vf %{buildroot}%{_libdir}/libcursesw.so
+echo "INPUT(-lncursesw -ltinfo)" > %{buildroot}%{_libdir}/libncurses.so
 echo "INPUT(-lncursesw)" > %{buildroot}%{_libdir}/libcursesw.so
-ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
-ln -sfv libncursesw.a %{buildroot}%{_libdir}/libcursesw.a
-ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
-install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-ln -sv libncursesw.so.6.2 %{buildroot}%{_libdir}/libncurses.so.6
-ln -sv libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
-cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+
+%check_and_symlink %{buildroot}%{_libdir}/libncurses.so %{buildroot}%{_libdir}/libcurses.so
+
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
+
+%check_and_symlink %{buildroot}%{_libdir}/libncursesw.so.%{v6_so_ver} %{buildroot}%{_libdir}/libncurses.so.6
+
+%check_and_symlink %{buildroot}%{_libdir}/libncursesw.so.%{v5_so_ver} %{buildroot}%{_libdir}/libncurses.so.5
+
+cp -R doc/* %{buildroot}%{_docdir}/%{name}-%{version}
 
 %check
-%if 0%{?with_check}
 cd test
-sh configure
-make %{?_smp_mflags}
-%endif
+sh ./configure
+%make_build
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -173,19 +166,6 @@ make %{?_smp_mflags}
 %files devel
 %{_bindir}/ncursesw6-config
 %{_includedir}/*.h
-%{_libdir}/libncurses.a
-%{_libdir}/libformw.a
-%{_libdir}/libpanel.a
-%{_libdir}/libmenuw.a
-%{_libdir}/libncursesw.a
-%{_libdir}/libcursesw.a
-%{_libdir}/libncurses++w.a
-%{_libdir}/libform.a
-%{_libdir}/libcurses.a
-%{_libdir}/libpanelw.a
-%{_libdir}/libncurses++.a
-%{_libdir}/libmenu.a
-%{_libdir}/libtinfo.a
 %{_libdir}/libpanelw.so
 %{_libdir}/libcurses.so
 %{_libdir}/libformw.so
@@ -217,6 +197,9 @@ make %{?_smp_mflags}
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+* Mon Oct 16 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.4-2
+- Avoid hard coded versioning
+- Check for source file existence before sym link creation.
 * Tue May 30 2023 Nitesh Kumar <kunitesh@vmware.com> 6.4-1
 - Version upgrade to 6.4 to fix CVE-2023-29491
 * Mon Oct 31 2022 Susant Sahani <ssahani@vmware.com> 6.3-1
