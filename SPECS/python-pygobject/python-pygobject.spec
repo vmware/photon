@@ -8,8 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 
-Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
-%define sha512  PyGObject=ba48ba470c78d76f4090460df286d926e15c4063374a1d3afa89dd374230a042aca53d864fc0efaf67efdba5723fe15440d34888a0b45c97d73c5c4cfe17559c
+Source0: https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
+%define sha512 PyGObject=ba48ba470c78d76f4090460df286d926e15c4063374a1d3afa89dd374230a042aca53d864fc0efaf67efdba5723fe15440d34888a0b45c97d73c5c4cfe17559c
 
 %if 0%{?with_check}
 Patch0:         pygobject-makecheck-fixes.patch
@@ -27,7 +27,8 @@ BuildRequires:  which
 
 %if 0%{?with_check}
 BuildRequires:  python3-gobject-introspection
-BuildRequires:  python3-test
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pip
 BuildRequires:  glib-schemas
 BuildRequires:  dbus
 BuildRequires:  curl-devel
@@ -40,7 +41,7 @@ Python bindings for GLib and GObject.
 
 %package        devel
 Summary:        Development files for embedding PyGObject introspection support
-Requires:       python3-pygobject = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 Development files for pygobject.
@@ -50,18 +51,15 @@ Development files for pygobject.
 
 %build
 export PYGOBJECT_WITHOUT_PYCAIRO='True'
-%py3_build
+%{py3_build}
 
 %install
 export PYGOBJECT_WITHOUT_PYCAIRO='True'
-%py3_install
+%{py3_install}
 
 %check
-%if 0%{?with_check}
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
+pip3 install tomli
 python3 setup.py test
-%endif
 
 %clean
 rm -rf %{buildroot}
