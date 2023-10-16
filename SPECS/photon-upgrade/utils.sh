@@ -1,7 +1,11 @@
 source ${PHOTON_UPGRADE_UTILS_DIR}/constants.sh
 
+function echo() {
+  builtin echo -e "$(date '+%FT%T%z') $*"
+}
+
 function echoerr() {
-  echo -ne "$*" 1>&2
+  echo "$*" 1>&2
 }
 
 # To be called on irrecoverable error. It provides a user with actionable items
@@ -14,7 +18,7 @@ function abort() {
           " please provide contents of that folder along with system journal "\
           " logs for analysis; these logs can be captured using command-\n"\
           "# /usr/bin/journalctl -xa > $TMP_BACKUP_LOC/journal.log\n" \
-          "Cannot continue. Aborting.\n"
+          "Cannot continue. Aborting."
   exit $rc
 }
 
@@ -36,7 +40,7 @@ function find_wrongly_enabled_services() {
     echoerr "Incorrect service configuratiion of following regular file(s) was found - " \
         "'$wes'.\nThese files must be removed for the upgrade to continue.\n" \
         "Those files may be removed and corresponding 'systemctl enable' command " \
-        "may be, subsequently, used for enabling those systemd units.\n"
+        "may be, subsequently, used for enabling those systemd units."
     exit $ERETRY_EINVAL
   fi
 }

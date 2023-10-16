@@ -15,7 +15,13 @@ declare -A replaced_pkgs_map=(
   [postgresql10-devel]=postgresql15-devel
   [repmgr]=repmgr14
   [repmgr10]=repmgr15
-  [apache-tomcat]=apache-tomcat-9
+  [apache-tomcat]=apache-tomcat10
+)
+
+# Hash keys are paths in source OS mapping to paths as values in target OS
+declare -A conf_path_map=(
+  # config of apache-tomcat in 4.0 will be restored for apache-tomcat-9 in 5.0
+  [/var/opt/apache-tomcat/conf]=/var/opt/apache-tomcat9/conf
 )
 
 # Residual pkgs to remove post upgrade

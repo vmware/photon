@@ -7,9 +7,11 @@ PRINTF=/usr/bin/printf
 RM=/usr/bin/rm
 RPM=/usr/bin/rpm
 SED=/usr/bin/sed
+SORT=/usr/bin/sort
 SYSTEMCTL=/usr/bin/systemctl
 TDNF='/usr/bin/tdnf --noautoremove'
 TR=/usr/bin/tr
+UNIQ=/usr/bin/uniq
 WC=/usr/bin/wc
 
 OLD_RPMDB_PATH=/var/lib/rpm
