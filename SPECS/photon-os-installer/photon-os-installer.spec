@@ -2,31 +2,15 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.3
-Release:       3%{?dist}
+Version:       2.4
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=69d428a5a15d36bcce886897dd4fc87cccc7644877ac5739f029176b0494fd6c13b2a506a68e3c6db4626c4ceadcd283a9421710211c9bca6cf68d2d34f32a9c
-
-Patch0: 0001-add-_mount-method-to-the-installer.patch
-Patch1: 0002-sample_ks_ostree_client_from_-default-server-.cfg-Al.patch
-Patch2: 0003-lvm-sample-kick-start-file.patch
-Patch3: 0004-shorten-stack-trace-output-for-better-visibility-in-.patch
-Patch4: 0005-use-tdnf-class-for-tdnf-calls.patch
-Patch5: 0006-Add-yaml-parser-for-ks-config.patch
-Patch6: 0007-add-disks-config-and-create-loop-disk-images.patch
-Patch7: 0008-run-fstrim-on-filesystems-just-before-unmounting.patch
-Patch8: 0009-fix-error-too-many-values-to-unpack-when-iterating-d.patch
-Patch9: 0010-make-generate_initrd.sh-less-verbose-when-deleting-f.patch
-Patch10: 0011-remove-install_linux_esx.patch
-Patch11: 0012-handle-LVM-on-the-host.patch
-Patch12: 0013-print-stderr-output-from-tdnf-for-easier-diagnosis.patch
-Patch13: 0014-Add-architecture-specific-settings-for-linux_flavor-.patch
-Patch14: 0001-When-using-docker-a-fallback-to-use-tdnf-file-reposi.patch
+%define sha512 %{name}=a361c22234ed467c0cf1a827d1a3a15553ebde6f68e48c8d32f4867d26ca9326029d7840791bed0186565e935670ebcc273a5fe77c84a90dc80f2a80d5972dda
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -47,6 +31,12 @@ Requires: lvm2
 Requires: zlib
 Requires: cdrkit
 Requires: findutils
+
+Requires: python3-pyOpenSSL
+Requires: python3-requests
+Requires: python3-cracklib
+Requires: python3-curses
+Requires: python3-PyYAML
 
 %description
 This is to create rpm for installer code
@@ -70,6 +60,9 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Oct 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1
+- Upgrade to v2.4.
+- Add missing requires.
 * Tue Jul 04 2023 Ankit Jain <ankitja@vmware.com> 2.3-3
 - Fix for file based repo in container
 * Fri Jun 30 2023 Ankit Jain <ankitja@vmware.com> 2.3-2
