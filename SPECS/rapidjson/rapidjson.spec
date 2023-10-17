@@ -3,7 +3,7 @@
 Summary:    A fast JSON parser/generator for C++ with both SAX/DOM style API
 Name:       rapidjson
 Version:    1.1.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    BSD, JSON, MIT
 URL:        https://github.com/gcc-mirror/gcc/blob/master/gcc/gcov.c
 Group:      Development/Tools
@@ -30,7 +30,7 @@ RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
 Summary:        Fast JSON parser and generator for C++
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
-Provides:       %{name} == %{version}
+Provides:       %{name} = %{version}-%{release}
 
 %description devel
 RapidJSON is a header-only JSON parser and generator for C++.
@@ -40,31 +40,31 @@ This package contains development headers and examples.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Debug
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
-%if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-make test %{?_smp_mflags}
-%endif
+%make_build test
 
 %files devel
 %defattr(-,root,root)
 %dir %{_libdir}/cmake/RapidJSON
 %{_libdir}/cmake/RapidJSON/*
 %{_libdir}/pkgconfig/*.pc
-%{_includedir}
-%{_datadir}
+%{_includedir}/*
+%{_datadir}/*
 
 %changelog
+* Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-7
+- Fix spec issues
 * Tue Jul 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-6
 - Use cmake macros for build
 * Tue Feb 09 2021 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-5
