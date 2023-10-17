@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.56
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,9 +37,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.53-4%{dist}-secure
+%define fips_canister_version 5.0.0-6.1.56-3%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=2192a68b4e6e2ea86966837771f604bd3b75689778e5322f50a3871835608e25e7106aa8503d3e3ac94c9d84d3017c71ac995df626dd2c6ecc41d9167401f1a6
+%define sha512 fips-canister=f4dd9b59482703d0844ad938407af496abe0a5e946c6a63fc130c0f392be95eeee3d6b1125b346699b92b513c140514b28e6ffe868cf9d0f608c56c01f8afcd8
 %endif
 
 %if 0%{?canister_build}
@@ -143,7 +143,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.53-4-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
@@ -156,7 +156,7 @@ Patch512: 0003-FIPS-broken-kattest.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.53-4-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -459,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.56-4
+- Upgrade canister to 5.0.0-6.1.56-3
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-3
 - Add missing self-test vector for ecdh-nist-p384 with genkey
 * Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.56-2
