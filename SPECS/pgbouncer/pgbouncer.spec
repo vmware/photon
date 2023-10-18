@@ -1,7 +1,7 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          BSD
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
@@ -15,7 +15,9 @@ BuildRequires:    libevent-devel
 BuildRequires:    openssl-devel
 BuildRequires:    systemd
 BuildRequires:    systemd-devel
+BuildRequires:    c-ares-devel
 BuildRequires:    pkg-config
+Requires:         c-ares
 Requires:         libevent
 Requires:         openssl
 Requires(pre):    systemd-rpm-macros
@@ -28,7 +30,7 @@ Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 %autosetup
 
 %build
-%configure
+%configure --with-cares
 make %{?_smp_mflags} V=1
 
 %install
@@ -66,14 +68,16 @@ fi
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-/etc/systemd/system/%{name}.service
+%{_sysconfdir}/systemd/system/%{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}.ini
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
-/usr/share/doc/pgbouncer/*
+%{_datadir}/doc/pgbouncer/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Oct 18 2023 Anmol Jain <anmolja@vmware.com> 1.17.0-4
+- Using system c-ares to fix CVE-2021-3672
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-3
 - Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2
