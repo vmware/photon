@@ -1,3 +1,4 @@
+%define debug_package   %{nil}
 %define plugin_ver      1.4.0
 %define golang_dep_ver  0.5.4
 
