@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -17,6 +17,7 @@ Patch2: openvswitch-CVE-2021-36980.patch
 Patch3: openvswitch-CVE-2021-3905.patch
 Patch4: openvswitch-CVE-2022-4337-CVE-2022-4338.patch
 Patch5: CVE-2023-1668.patch
+Patch6: CVE-2023-5366.patch
 
 BuildRequires: gcc
 BuildRequires: libcap-ng
@@ -173,6 +174,8 @@ sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}%{_sysconfdir}/%{name}/defau
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Thu Oct 19 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-14
+- Fix for CVE-2023-5366
 * Thu May 04 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-13
 - Fix for CVE-2023-1668
 * Tue Jan 17 2023 Dweep Advani <dadvani@vmware.com> 2.14.0-12
