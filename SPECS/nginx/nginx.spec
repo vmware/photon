@@ -1,41 +1,45 @@
-%define njs_ver     0.7.5
+%define njs_ver     0.8.0
 %define nginx_user  %{name}
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.22.0
-Release:        4%{?dist}
+Version:        1.25.2
+Release:        2%{?dist}
 License:        BSD-2-Clause
-URL:            https://nginx.org
+URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://nginx.org/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=074782dba9cd5f8f493fbb57e20bda6dc9171814d919a47ee9f825d93f12c9f9d496e25d063c983191b55ad6a236bcef252ce16ecc1d253dc8b23433557559b1
+Source0: http://nginx.org/download/nginx-%{version}.tar.gz
+%define sha512 %{name}=47da46d823f336432aca6c4cd54c76660af60620518d5c518504033a9fd6b411fd6d41e4aac2c8200311a53f96159aa3da8920145e8ed85596c9c2c14e20cb27
 
-Source1: https://github.com/nginx/njs/archive/refs/tags/nginx-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
+Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
+%define sha512 %{name}-njs=5e5fd3b0aba9d1a0b47207081e59d577cbd3db41e141cfa529526a778bbcd4fec1cd4dacaa1dc63ee07868ccf35f4d4cc465abff831bb03d128b0b1f1b04bb28
 
 Source2: %{name}.service
-Patch0:  CVE-2022-41741-41742.patch
+
+Patch0: CVE-2023-44487.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
 BuildRequires:  systemd-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
 
 Requires: openssl
 Requires: pcre
 Requires: systemd
 
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -a0 -a1 -p1
+%autosetup -p1 -a0 -a1
 
 %build
 sh ./configure \
@@ -66,8 +70,7 @@ sh ./configure \
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
-install -p -d -m 0700 %{buildroot}%{_sharedstatedir}/%{name}
-ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
+ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
 
 %clean
@@ -113,6 +116,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
+- Fix CVE-2023-44487
 * Mon Feb 20 2023 Harinadh D <hdommaraju@vmware.com> 1.22.0-4
 - Enable http_realip_module
 - Author: Brian Munro <bmunro-peralex>
