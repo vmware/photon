@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -642,68 +642,11 @@ libtool --finish %{buildroot}%{_libdir}/sssd
 %post
 /sbin/ldconfig
 
-# only execute auto configuration on first time installation
-if [ $1 -eq 1 ]; then
-    # make sure krb5.conf has correct permissions
-    touch %{_sysconfdir}/krb5.conf
-    chmod ao+r %{_sysconfdir}/krb5.conf
-
-    # configure nsswitch.conf
-    echo "Configuring nsswitch.conf"
-    services=( "passwd" "group" "shadow" "services" )
-    for service in "${services[@]}"; do
-        sed "/${service}/s/$/ sss/" -i %{_sysconfdir}/nsswitch.conf
-    done
-
-    # configure pam files
-    echo "Updating PAM configuration - check /etc/pam.d to verify settings are correct"
-    pushd %{_sysconfdir}/pam.d &> /dev/null
-
-    # system-account
-    sed -i '/pam_unix.so$/a account [default=bad success=ok user_unknown=ignore] pam_sss.so' system-account
-    sed -i -E '/pam_unix.so$/s/(required|requisite)/sufficient/' system-account
-
-    # system-auth
-    sed -i '/pam_unix.so$/a auth sufficient pam_sss.so use_first_pass' system-auth
-    sed -i -E '/pam_unix.so$/s/(required|requisite)/sufficient/' system-auth
-
-    # system-password
-    sed -i '/pam_unix.so$/a password sufficient pam_sss.so use_authtok' system-password
-    sed -i -E '/pam_unix.so$/s/(required|requisite)/sufficient/' system-password
-
-    # system-session
-    sed -i '/pam_unix.so$/a session optional pam_sss.so' system-session
-    popd &> /dev/null
-fi
-
 %postun
 /sbin/ldconfig
 
 %define common_service sssd.service sssd-autofs.socket sssd-nss.socket sssd-pam.socket sssd-pam-priv.socket sssd-ssh.socket sssd-sudo.socket
 %define other_services sssd-autofs.service sssd-nss.service sssd-pam.service sssd-ssh.service sssd-sudo.service
-
-# don't unconfigure on upgrade, only on uninstall
-if [[ $1 -eq 0 ]]; then
-    # remove sss reference in nsswitch.conf
-    sed -i "s/ sss//g" %{_sysconfdir}/nsswitch.conf
-
-    # unconfigure pam files
-    echo "Reconfiguring PAM without sssd - check /etc/pam.d to verify settings are correct."
-
-    pushd %{_sysconfdir}/pam.d &> /dev/null
-    files=( "system-account" "system-auth" "system-password" )
-    for file in ${files[@]}; do
-        sed -i '/pam_sss.so/d' "$file"
-        # only change to required if pam_unix.so is the only module
-        # otherwise we risk changing to required when it should be paired sufficient with another module, for example
-        # don't want to mess with existing user settings
-        if [[ $(grep -c 'pam.*so' "$file") -eq 1 ]]; then
-            sed -i '/pam_unix.so$/s/sufficient/required/' "$file"
-        fi
-    done
-    sed -i '/pam_sss.so/d' system-session
-    popd &> /dev/null
-fi
 
 %post common
 %systemd_post %common_service
@@ -1079,6 +1022,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Thu Nov 9 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-9
+- Remove autoconfiguration scripts
 * Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.8.2-8
 - Version bump as part of nghtttp2 upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.8.2-7
