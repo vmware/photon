@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -11,6 +11,7 @@ Source1:        gdbinit
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         CVE-2023-1972.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -102,6 +103,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+*   Fri Oct 20 2023 Anmol Jain <anmolja@vmware.com> 13.2-2
+-   Fix for CVE-2023-1972
 *   Tue Jul 25 2023 Anmol Jain <anmolja@vmware.com> 13.2-1
 -   Version upgrade
 *   Mon Feb 27 2023 Ajay Kaher <akaher@vmware.com> 10.1-3
