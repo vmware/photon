@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.25.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -19,6 +19,8 @@ Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.t
 
 Source2: %{name}.service
 Source3: %{name}.sysusers
+
+Patch0: CVE-2023-44487.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -38,18 +40,17 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -a0 -a1
+%autosetup -p1 -a0 -a1
 
 %build
 sh ./configure \
     --prefix=%{_sysconfdir}/%{name} \
     --sbin-path=%{_sbindir}/%{name} \
-    --conf-path=/etc/%{name}/%{name}.conf \
-    --pid-path=/var/run/%{name}.pid \
-    --lock-path=/var/run/%{name}.lock \
-    --error-log-path=/var/log/%{name}/error.log \
-    --http-log-path=/var/log/%{name}/access.log \
+    --conf-path=%{_sysconfdir}/%{name}/%{name}.conf \
+    --pid-path=%{_var}/run/%{name}.pid \
+    --lock-path=%{_var}/run/%{name}.lock \
+    --error-log-path=%{_var}/log/%{name}/error.log \
+    --http-log-path=%{_var}/log/%{name}/access.log \
     --add-module=njs-%{njs_ver}/%{name} \
     --with-http_ssl_module \
     --with-pcre \
@@ -70,7 +71,7 @@ sh ./configure \
 install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
-ln -sfv %{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
+ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
@@ -114,6 +115,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
+- Fix CVE-2023-44487
 * Tue Oct 10 2023 Harinadh D <hdommaraju@vmware.com> 1.25.2-1
 - Version upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-5
