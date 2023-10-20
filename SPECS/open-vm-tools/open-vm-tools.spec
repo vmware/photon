@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -29,6 +29,9 @@ Patch1: gosc-root-password-update.patch
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
 Patch3: ovt-unknown-ioctl.patch
 %endif
+
+Patch4: CVE-2023-34058.patch
+Patch5: CVE-2023-34059.patch
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -179,6 +182,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Fri Oct 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.3.0-2
+- Fix CVE-2023-34058, CVE-2023-34059
 * Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.0-1
 - Upgrade to v12.3.0
 * Tue Aug 29 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-2
