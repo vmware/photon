@@ -5,7 +5,7 @@
 Name:           rubygem-async-pool
 Version:        0.4.0
 Release:        1%{?dist}
-Summary:        An event loop.
+Summary:        A singleplex and multiplex resource pool for implementing robust clients.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,8 +23,7 @@ Requires: rubygem-async
 BuildArch: noarch
 
 %description
-Provides low level cross-platform primitives for constructing
-event loops, with support for select, kqueue, epoll and io_uring.
+A singleplex and multiplex resource pool for implementing robust clients.
 
 %prep
 %autosetup -p1 -n %{gem_name}-%{version}

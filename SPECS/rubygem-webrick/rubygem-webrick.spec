@@ -1,19 +1,19 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-%global gem_name traces
+%global gem_name webrick
 
-Name:           rubygem-traces
-Version:        0.11.1
+Name:           rubygem-webrick
+Version:        1.7.0
 Release:        1%{?dist}
-Summary:        Application instrumentation and tracing.
-Group:          Development/Libraries
+Summary:        HTTP server toolkit
+Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
+License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=1be8f690d6074b4f9c4f0df8465e9f1ebf059d89a9ba36579fa5e011d496244350f947d65d980a3b3d9f97b7f8eab069a97d24e6d4d67c6abad8d34c72b65b3c
+%define sha512 %{gem_name}=5f242b50300046fe7c22ecd1640a73e5815e05a72bedfebe6bc39c24c92bd61abdd180860de0d194c0eebbc640b507b6892de181d3b577c5372ace0ca6faf2a3
 
 BuildRequires:  ruby
 
@@ -22,7 +22,8 @@ Requires: ruby
 BuildArch: noarch
 
 %description
-%{summary}
+WEBrick is an HTTP server toolkit that can be configured as an HTTPS server,
+a proxy server, and a virtual-host server.
 
 %prep
 %autosetup -p1 -n %{gem_name}-%{version}
@@ -37,5 +38,5 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-* Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-1
-- Initial version. Needed by rubygem-async-http.
+* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-1
+- Initial version. Needed by rubygem-fluentd.

@@ -2,18 +2,20 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluentd
 
-Name: rubygem-fluentd
+Name:           rubygem-fluentd
 Version:        1.15.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
-Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha512    fluentd=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
-BuildRequires:  ruby >= 2.1
+
+Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
+%define sha512 %{gem_name}=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
+
+BuildRequires:  ruby
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -34,8 +36,13 @@ Requires: rubygem-tzinfo >= 1.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
 Requires: rubygem-bundler >= 1.14.0
+Requires: rubygem-webrick >= 1.4.2, rubygem-webrick < 1.8.0
+Requires: rubygem-concurrent-ruby
+Requires: ruby
+
 BuildArch: noarch
-Provides: rubygem(%{gem_name}) = %{version}
+
+Provides: rubygem(%{gem_name}) = %{version}-%{release}
 
 %description
 Fluentd is an open source data collector designed to scale and simplify log management.
@@ -54,19 +61,21 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1
--   Automatic Version Bump
-*   Mon Jul 12 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
--   Bump up to build with rubygem-bundler upgrade.
-*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
--   Automatic Version Bump
-*   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1
--   Update to version 1.6.3
-*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
--   Update to version 1.2.5
-*   Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
--   Added dependency on rubygem-bundler
-*   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
--   Initial build
+* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.2-2
+- Add webrick to requires
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1
+- Automatic Version Bump
+* Mon Jul 12 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
+- Bump up to build with rubygem-bundler upgrade.
+* Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
+- Automatic Version Bump
+* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1
+- Update to version 1.6.3
+* Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
+- Update to version 1.2.5
+* Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
+- Added dependency on rubygem-bundler
+* Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
+- Initial build

@@ -5,7 +5,7 @@
 Name:           rubygem-fiber-local
 Version:        1.0.0
 Release:        1%{?dist}
-Summary:        An event loop.
+Summary:        Provides a class-level mixin to make fiber local state easy.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,8 +23,7 @@ Requires: rubygem-io-event
 BuildArch: noarch
 
 %description
-Provides low level cross-platform primitives for constructing
-event loops, with support for select, kqueue, epoll and io_uring.
+%{summary}
 
 %prep
 %autosetup -p1 -n %{gem_name}-%{version}
