@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.22.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -18,7 +18,9 @@ Source1:        https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs
 %define sha512  %{name}-njs=e33dbb285ff6216acddcd213fdbd73ffadd5730680bcec742b1598fa57b4d100da32c913b1c2648b3e87867fc29bf11075d70fa5655f85c62e42eb0a48d177f1
 
 Source2:        %{name}.service
-Patch0:         CVE-2022-41741-41742.patch
+
+Patch0: CVE-2022-41741-41742.patch
+Patch1: CVE-2023-44487.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -67,7 +69,7 @@ install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/nginx/log
 install -p -d -m 0700 %{buildroot}%{_sharedstatedir}/%{name}
-ln -sfv %{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
+ln -sfrv %{buildroot}%{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
 install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
 
 %clean
@@ -113,6 +115,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/nginx
 
 %changelog
+* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.22.0-3
+- Fix CVE-2023-44487
 * Tue Feb 21 2023 Brian Munro <bmunro-peralex@github.com> 1.22.0-2
 - Enable http_realip_module
 * Wed Oct 26 2022 Keerthana K <keerthanak@vmware.com> 1.22.0-1
