@@ -1,10 +1,10 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-%global gem_name http
+%global gem_name llhttp-ffi
 
-Name:           rubygem-http
-Version:        5.1.0
-Release:        2%{?dist}
+Name:           rubygem-llhttp-ffi
+Version:        0.4.0
+Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,15 +13,17 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=b99da5318da54e7b64abd48df0b68cde9a02e1ae92b51fc43302e3dea28ba9672e2b7a25e31c342235835e16b2e1b98c94b6d4efa7916a0aa99258fc8290260f
+%define sha512 %{gem_name}=66ed073e435853f74fc936d8f90bf913fb5ec36e1db85ac5797248f8c4632a490f3bb3ca4efea7fb90941295bd732bb51c31e717281ce737f192b3a45d8778d5
 
-BuildRequires:  ruby
+BuildRequires: ruby
+BuildRequires: rubygem-ffi-compiler
 
 Requires: rubygem-addressable >= 2.3.0, rubygem-addressable < 3.0.0
 Requires: rubygem-http-cookie >= 1.0.0, rubygem-http-cookie < 2.0.0
 Requires: rubygem-http-form_data >= 2.2.0
 Requires: rubygem-http_parser.rb >= 0.6.0, rubygem-http_parser.rb < 0.8.1
-Requires: rubygem-llhttp-ffi
+Requires: rubygem-http-parser
+Requires: rubygem-ffi-compiler
 Requires: ruby
 
 BuildArch: noarch
@@ -43,13 +45,6 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.1.0-2
-- Fix requires
-* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
-- Automatic Version Bump
-* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 4.4.1-1
-- Automatic Version Bump
-* Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.9.8-2
-- rebuilt with ruby-2.7.1
-* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.9.8-1
-- Initial build
+* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.0-1
+- Initial version.
+- Needed by rubygem-fluent-plugin-kubernetes_metadata_filter.
