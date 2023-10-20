@@ -7,7 +7,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -34,6 +34,9 @@ Patch3: CVE-2023-20900.patch
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
 Patch4: ovt-unknown-ioctl.patch
 %endif
+
+Patch5: CVE-2023-34058.patch
+Patch6: CVE-2023-34059.patch
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -168,6 +171,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+* Fri Oct 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-4
+- Fix CVE-2023-34058, CVE-2023-34059
 * Tue Aug 29 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-3
 - Fix CVE-2023-20900
 * Thu Jun 8 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-2
