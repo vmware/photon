@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.197
+Version:        5.10.198
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=5a8dcf7788e556b4a416bc7425e9684d1a6c40c483eb549dae975e3ff99cca9bfa2237106ba618c787b7d819940b90e29bad396108068ddc95aeb7d3529d9a38
+%define sha512 linux=3ccfbaff9b45d3239024e6c29e3a33af05460997971d767293e45f22c4db66f99595285d5dac1071f19926f35cdd90d323bd6e57809b57954f4988152ebe6342
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -32,9 +32,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.53-4.ph5-secure
+%define fips_canister_version 5.0.0-6.1.56-3.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=2192a68b4e6e2ea86966837771f604bd3b75689778e5322f50a3871835608e25e7106aa8503d3e3ac94c9d84d3017c71ac995df626dd2c6ecc41d9167401f1a6
+%define sha512 fips-canister=f4dd9b59482703d0844ad938407af496abe0a5e946c6a63fc130c0f392be95eeee3d6b1125b346699b92b513c140514b28e6ffe868cf9d0f608c56c01f8afcd8
 %endif
 
 Source21:       spec_install_post.inc
@@ -441,6 +441,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
+- Update to version 5.10.198
+- Fix CVE-2023-4244
+- Update canister to 5.0.0-6.1.56-3
 * Tue Oct 03 2023 Keerthana K <keerthanak@vmware.com> 5.10.197-1
 - Update to version 5.10.197
 * Fri Sep 29 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.190-2
