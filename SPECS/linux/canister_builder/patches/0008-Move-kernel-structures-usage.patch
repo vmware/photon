@@ -2946,7 +2946,7 @@ index 94279afed..c2e52e4c3 100644
  			       i, driver);
  			err = -EINVAL;
  			break;
-@@ -3922,7 +3622,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3922,11 +3622,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	/* Compute party A's public key */
  	err = crypto_wait_req(crypto_kpp_generate_public_key(req), &wait);
  	if (err) {
@@ -2955,7 +2955,12 @@ index 94279afed..c2e52e4c3 100644
  		       alg, err);
  		goto free_output;
  	}
-@@ -3938,7 +3638,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+-	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
++	fcw_printk(KERN_INFO pr_fmt() "alg: %s: Party A: generate public key test passed.", alg);
+ 
+ 	if (vec->genkey) {
+ 		/* Save party A's public key */
+@@ -3939,12 +3639,12 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		/* Verify calculated public key */
  		if (memcmp(vec->expected_a_public, fcw_sg_virt(req->dst),
  			   vec->expected_a_public_size)) {
@@ -2964,6 +2969,12 @@ index 94279afed..c2e52e4c3 100644
  			       alg);
  			err = -EINVAL;
  			goto free_output;
+ 		}
+-		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
++		fcw_printk(KERN_INFO pr_fmt() "alg: %s: Party A: verify public key test passed.", alg);
+ 	}
+ 
+ 	/* Calculate shared secret key by using counter part (b) public key. */
 @@ -3960,7 +3660,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  				 crypto_req_done, &wait);
  	err = crypto_wait_req(crypto_kpp_compute_shared_secret(req), &wait);
