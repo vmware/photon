@@ -7,23 +7,26 @@ Subject: [PATCH] FIPS crypto self tests
 - Added testmgr test vectors for all the self test combinations
 - maintaining a single patch for crypto_self_test module and addition of missing testmgr vectors
 - extended test vector coverage for algorithms in LKCM 5.0
+- Added cts to crypto self-tests
+- Removed rsa(pkcs1pad, sha512), cbc, and ctr from crypto self-tests
+- Added ECC pubkey generation and verification success messages
 
 Alexey: add FIPS_NOT_ALLOWED macro
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/Kconfig            |   15 +
+ crypto/Kconfig            |   21 +
  crypto/Makefile           |    1 +
- crypto/crypto_self_test.c |  123 ++
- crypto/testmgr.c          |   84 +-
- crypto/testmgr.h          | 2346 ++++++++++++++++++++++++++++++++++++-
- 5 files changed, 2553 insertions(+), 16 deletions(-)
+ crypto/crypto_self_test.c |  119 ++
+ crypto/testmgr.c          |   86 +-
+ crypto/testmgr.h          | 2340 ++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 2551 insertions(+), 16 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
 index bb427a835..a3ad66111 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -229,6 +229,21 @@ config CRYPTO_TEST
+@@ -229,6 +229,27 @@ config CRYPTO_TEST
  	help
  	  Quick & dirty crypto test module.
  
@@ -32,13 +35,19 @@ index bb427a835..a3ad66111 100644
 +	select CRYPTO_MANAGER
 +	select CRYPTO_FIPS
 +	select CRYPTO_AES
-+	select CRYPTO_CBC
 +	select CRYPTO_ECB
-+	select CRYPTO_DES
 +	select CRYPTO_XTS
-+	select CRYPTO_RSA
++	select CRYPTO_GCM
++	select CRYPTO_CCM
++	select CRYPTO_CFB
++	select CRYPTO_CMAC
++	select CRYPTO_CTS
++	select CRYPTO_SHA1
 +	select CRYPTO_SHA256
 +	select CRYPTO_SHA512
++	select CRYPTO_SHA3
++	select CRYPTO_HMAC
++	select CRYPTO_RSA
 +	help
 +	  Crypto self test module for FIPS.
 +
@@ -46,7 +55,7 @@ index bb427a835..a3ad66111 100644
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index a6f94e04e..97f7d05df 100644
+index a6f94e04e..97f7d05df 10064
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -49,6 +49,7 @@ sm2_generic-y += sm2signature.asn1.o
@@ -62,7 +71,7 @@ new file mode 100644
 index 000000000..c2ffd20c9
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,123 @@
+@@ -0,0 +1,119 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -87,8 +96,12 @@ index 000000000..c2ffd20c9
 +static struct alg_self_test __initdata alg_self_test_tbl[]  =
 +{
 +	{
-+		.driver_name = "cbc(aes)",
-+		.alg_name = "cbc(aes)",
++		.driver_name = "cts(cbc(aes))",
++		.alg_name = "cts(cbc(aes))",
++	},
++	{
++		.driver_name = "gcm(aes)",
++		.alg_name = "gcm(aes)",
 +	},
 +	{
 +		.driver_name = "ccm(aes)",
@@ -101,10 +114,6 @@ index 000000000..c2ffd20c9
 +	{
 +		.driver_name = "cmac(aes)",
 +		.alg_name = "cmac(aes)",
-+	},
-+	{
-+		.driver_name = "ctr(aes)",
-+		.alg_name = "ctr(aes)",
 +	},
 +	{
 +		.driver_name = "ecb(aes)",
@@ -147,10 +156,6 @@ index 000000000..c2ffd20c9
 +		.alg_name = "pkcs1pad(rsa,sha384)",
 +	},
 +	{
-+		.driver_name = "pkcs1pad(rsa,sha512)",
-+		.alg_name = "pkcs1pad(rsa,sha512)",
-+	},
-+	{
 +		.driver_name = "xts(aes)",
 +		.alg_name = "xts(aes)",
 +	},
@@ -190,7 +195,23 @@ diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index 04be52a99..07523e76d 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -4837,7 +4837,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -3925,6 +3925,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 		       alg, err);
+ 		goto free_output;
+ 	}
++	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
+ 
+ 	if (vec->genkey) {
+ 		/* Save party A's public key */
+@@ -3942,6 +3943,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 			err = -EINVAL;
+ 			goto free_output;
+ 		}
++		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
+ 	}
+ 
+ 	/* Calculate shared secret key by using counter part (b) public key. */
+@@ -4837,7 +4839,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  		 */
  		.alg = "drbg_nopr_hmac_sha1",
  		.fips_allowed = 1,
@@ -202,7 +223,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "drbg_nopr_hmac_sha256",
  		.test = alg_test_drbg,
-@@ -4849,7 +4852,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4849,7 +4854,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_nopr_hmac_sha256 test */
  		.alg = "drbg_nopr_hmac_sha384",
  		.fips_allowed = 1,
@@ -214,7 +235,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "drbg_nopr_hmac_sha512",
  		.test = alg_test_drbg,
-@@ -4872,11 +4878,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4872,11 +4880,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_nopr_sha256 test */
  		.alg = "drbg_nopr_sha384",
  		.fips_allowed = 1,
@@ -234,7 +255,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "drbg_pr_ctr_aes128",
  		.test = alg_test_drbg,
-@@ -4888,15 +4900,24 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4888,15 +4902,24 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_ctr_aes128 test */
  		.alg = "drbg_pr_ctr_aes192",
  		.fips_allowed = 1,
@@ -262,7 +283,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "drbg_pr_hmac_sha256",
  		.test = alg_test_drbg,
-@@ -4908,15 +4929,24 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4908,15 +4931,24 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_hmac_sha256 test */
  		.alg = "drbg_pr_hmac_sha384",
  		.fips_allowed = 1,
@@ -290,7 +311,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "drbg_pr_sha256",
  		.test = alg_test_drbg,
-@@ -4928,11 +4958,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4928,11 +4960,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_sha256 test */
  		.alg = "drbg_pr_sha384",
  		.fips_allowed = 1,
@@ -310,7 +331,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "ecb(aes)",
  		.test = alg_test_skcipher,
-@@ -5101,12 +5137,14 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5101,12 +5139,14 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		.alg = "ecdsa-nist-p256",
  		.test = alg_test_akcipher,
@@ -325,7 +346,7 @@ index 04be52a99..07523e76d 100644
  		.suite = {
  			.akcipher = __VECS(ecdsa_nist_p384_tv_template)
  		}
-@@ -5433,10 +5471,20 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5433,10 +5473,20 @@ static const struct alg_test_desc alg_test_descs[] = {
  		.suite = {
  			.cipher = __VECS(fcrypt_pcbc_tv_template)
  		}
@@ -347,7 +368,7 @@ index 04be52a99..07523e76d 100644
  	}, {
  		.alg = "pkcs1pad(rsa,sha256)",
  		.test = alg_test_akcipher,
-@@ -5446,12 +5494,18 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5446,12 +5496,18 @@ static const struct alg_test_desc alg_test_descs[] = {
  		}
  	}, {
  		.alg = "pkcs1pad(rsa,sha384)",
@@ -1945,7 +1966,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct kpp_testvec dh_tv_template[] = {
  	{
  	.secret =
-@@ -4399,6 +5952,52 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
+@@ -4399,6 +5958,52 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
  	.b_public_size = 96,
  	.expected_a_public_size = 96,
  	.expected_ss_size = 48
@@ -1998,7 +2019,7 @@ index 2e6b280f9..b23d8f1d9 100644
  	}
  };
  
-@@ -7640,6 +9251,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
+@@ -7640,6 +9245,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
  				  "\x69\x6a\x2c\x05\x6c\x31\x54\x10",
  		.psize		= 64,
  		.ksize		= 32,
@@ -2097,7 +2118,7 @@ index 2e6b280f9..b23d8f1d9 100644
  	}
  };
  
-@@ -22994,6 +24697,185 @@ static const struct cprng_testvec ansi_cprng_aes_tv_template[] = {
+@@ -22994,6 +24691,185 @@ static const struct cprng_testvec ansi_cprng_aes_tv_template[] = {
  	},
  };
  
@@ -2283,7 +2304,7 @@ index 2e6b280f9..b23d8f1d9 100644
  /*
   * SP800-90A DRBG Test vectors from
   * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -23318,6 +25200,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
+@@ -23318,6 +25194,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
  	},
  };
  
@@ -2324,7 +2345,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
  	{
  		.entropy = (unsigned char *)
-@@ -23434,6 +25350,283 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
+@@ -23434,6 +25344,283 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
  	},
  };
  
@@ -2608,7 +2629,7 @@ index 2e6b280f9..b23d8f1d9 100644
  /*
   * SP800-90A DRBG Test vectors from
   * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -23564,6 +25757,70 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
+@@ -23564,6 +25751,70 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
  	},
  };
  
@@ -2679,7 +2700,7 @@ index 2e6b280f9..b23d8f1d9 100644
  static const struct drbg_testvec drbg_nopr_hmac_sha256_tv_template[] = {
  	{
  		.entropy = (unsigned char *)
-@@ -34639,7 +36896,94 @@ static const struct cipher_testvec cts_mode_tv_template[] = {
+@@ -34639,7 +36890,94 @@ static const struct cipher_testvec cts_mode_tv_template[] = {
  			  "\x26\x73\x0d\xbc\x2f\x7b\xc8\x40"
  			  "\x9d\xad\x8b\xbb\x96\xc4\xcd\xc0"
  			  "\x3b\xc1\x03\xe1\xa1\x94\xbb\xd8",
