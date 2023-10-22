@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.56
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -544,6 +544,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-7
+- Added cts to crypto self-tests
+- Removed rsa(pkcs1pad, sha256), rsa(pkcs1pad, sha512),
+  cbc, and ctr from crypto self-tests
+- Added ECC pubkey generation and verification success messages
 * Fri Oct 20 2023 Albert Guo <aguo@vmware.com> 6.1.56-6
 - Ported 11 9P patches (combined 2 of them) for VDFS from 4.19.y(photon3) to 6.1.y(photon5).
 * Wed Oct 18 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-5

@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.56
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -458,6 +458,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-6
+- Added cts to crypto self-tests
+- Removed rsa(pkcs1pad, sha256), rsa(pkcs1pad, sha512),
+  cbc, and ctr from crypto self-tests
+- Added ECC pubkey generation and verification success messages
 * Wed Oct 18 2023 Keerthana K <keerthanak@vmware.com> 6.1.56-5
 - Add Pairwise Consistency Test for ECC generated keypairs
 - Modified ecdh-nist-p384 vector to generate ECC keypair
