@@ -5,7 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.14
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -131,6 +131,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.19.14-5
+- Version bump as part of nghtttp2 upgrade
 * Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-4
 - Change home directory permission & owner
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 9.19.14-3
