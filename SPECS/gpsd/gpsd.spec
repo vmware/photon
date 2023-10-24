@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -63,6 +63,7 @@ Summary: Python libraries and modules for use with gpsd
 Requires: %{name}-libs = %{version}-%{release}
 Requires: python3
 Provides: python-%{name}
+
 BuildArch: noarch
 
 %description -n python3-%{name}
@@ -142,8 +143,8 @@ DESTDIR=%{buildroot} scons install systemd_install udev-install
 # use the old name for udev rules
 mv %{buildroot}%{_udevrulesdir}/{25,99}-%{name}.rules
 
-%{__install} -d -m 0755 %{buildroot}%{_sysconfdir}/sysconfig
-%{__install} -p -m 0644 packaging/rpm/%{name}.sysconfig \
+install -d -m 0755 %{buildroot}%{_sysconfdir}/sysconfig
+install -p -m 0644 packaging/rpm/%{name}.sysconfig \
     %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 # Delete the .desktop files (no GUI in Photon)
@@ -153,7 +154,7 @@ rm -f packaging/X11/xgpsspeed.desktop packaging/X11/xgps.desktop
 rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man*
 
 # Missed in scons install
-%{__install} -p -m 0755 gpsinit %{buildroot}%{_sbindir}
+install -p -m 0755 gpsinit %{buildroot}%{_sbindir}
 
 %post
 %systemd_post %{name}.service %{name}.socket
@@ -228,6 +229,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-3
+- Bump version as a part of scons upgrade
 * Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-2
 - Fix devel package requires
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.25-1

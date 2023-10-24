@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
-%define sha512 serf=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
+%define sha512 %{name}=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
 
 Patch0: 0001-openssl-3.0.0-compatibility.patch
 
@@ -30,7 +30,8 @@ kept to a minimum to provide high performance operation.
 
 %package        devel
 Summary:        Header and development files
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create serf applications.
 
@@ -48,10 +49,8 @@ scons PREFIX=%{_prefix}
 %install
 scons PREFIX=%{buildroot}%{_prefix} install
 
-%if 0%{?with_check}
 %check
 scons check
-%endif
 
 %files
 %defattr(-,root,root)
@@ -63,6 +62,8 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-10
+- Bump version as a part of scons upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-9
 - Bump version as a part of apr-util v1.6.3 upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-8
