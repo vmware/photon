@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -70,6 +70,10 @@ Summary: SELinux policy devel
 Requires: %{name} = %{version}-%{release}
 Requires: m4
 Requires: checkpolicy
+Requires: selinux-python
+Requires: semodule-utils
+Requires: rpm-build
+Requires: build-essential
 
 %description devel
 SELinux policy development
@@ -124,6 +128,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-5
+- Fix devel package requires
 * Fri Feb 17 2023 Shivani Agarwal <shivania2@vmware.com> 36.5-4
 - Added rpm macros and selinux policy for k8's watch denial message
 * Fri Sep 16 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-3
