@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.198
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -139,14 +139,11 @@ Patch66: 05-pv-ops-clocksource.patch
 # TODO: make it working for v5.9+
 #Patch67: 06-pv-ops-boot_clock.patch
 Patch68: 07-vmware-only.patch
-Patch69: initramfs-support-for-page-aligned-format-newca.patch
+Patch69: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch70: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch71: 0001-fs-VTAR-archive-to-TPMFS-extractor.patch
 Patch72: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch73: halt-on-panic.patch
-Patch74: initramfs-multiple-image-extraction-support.patch
-Patch75: initramfs-support-selective-freeing-of-initramfs-images.patch
-Patch76: initramfs-large-files-support-for-newca-format.patch
 Patch77: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 %if 0%{?vmxnet3_sw_timestamp}
@@ -666,6 +663,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 25 2023 Alexey Makhalov <amakhalov@vmware.com> 5.10.198-2
+- newca: fixes and enhancements
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
 - Update to version 5.10.198
 - Fix CVE-2023-4244
