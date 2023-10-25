@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    12%{?dist}
+Release:    13%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -26,6 +26,14 @@ Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 #grub2-emu
 Patch1501: 0001-grub2-emu-hide-menu-skip-retry.patch
 Patch1502: 0002-grub2-emu-fix-if-boot-as-partition.patch
+
+# CVE-2023-4692, CVE-2023-4693
+Patch1601: 0001-fs-ntfs-Fix-an-OOB-write-when-parsing-the-ATTRIBUTE_.patch
+Patch1602: 0002-fs-ntfs-Fix-an-OOB-read-when-reading-data-from-the-r.patch
+Patch1603: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
+Patch1604: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
+Patch1605: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
+Patch1606: 0006-fs-ntfs-Make-code-more-readable.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -240,6 +248,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-13
+- Fix for CVE-2023-4692, CVE-2023-4693
 * Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-12
 - Fix path issues if /boot is mounted to boot partition
 * Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
