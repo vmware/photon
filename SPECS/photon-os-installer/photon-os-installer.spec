@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -40,6 +40,8 @@ Requires: zlib
 Requires: cdrkit
 Requires: findutils
 
+Patch0: 0001-photon-os-installer-ostreeinstaller-Fix-tmp-mountpoi.patch
+
 %description
 Installer to build Photon images
 
@@ -62,6 +64,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
+- Fix tmpfs mount issue
 * Fri Oct 13 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1
 - Upgrade to 2.4.
 - Add missing requires.
