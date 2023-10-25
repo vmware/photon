@@ -1,6 +1,6 @@
 Summary:    advanced key-value store
 Name:       redis
-Version:    6.2.13
+Version:    6.2.14
 Release:    1%{?dist}
 License:    BSD
 URL:        http://redis.io
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=80db41ef910d268f1880b4941d7b3ee34423d0ae9132f9b870eb9a0f875a6863909eae9c6eecba9068f3b8684528d7a86dca854e51968624d53980438f5f0e95
+%define sha512 %{name}=140d4b23c20d459b65be8c61996e281222f978b51c52cb048039d741801e4027775ad89ed354dc0dce3d47703a08610adafaf6253fea2f973d5b9d20bc1e59ce
 
 Patch0: %{name}-conf.patch
 
@@ -87,6 +87,8 @@ getent passwd %{name} &> /dev/null || \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Wed Oct 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.14-1
+- Upgrade to v6.2.14
 * Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 6.2.13-1
 - Upgrade to v6.2.13 to fix CVE-2022-24834
 * Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.2.7-5
