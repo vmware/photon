@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.zlib.net
 License:        zlib
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: http://www.zlib.net/%{name}-%{version}.tar.xz
 %define sha512 %{name}=9e7ac71a1824855ae526506883e439456b74ac0b811d54e94f6908249ba8719bec4c8d7672903c5280658b26cb6b5e93ecaaafe5cdc2980c760fa196773f0725
+
+Patch0:       CVE-2023-45853.patch
 
 %description
 Compression and decompression routines
@@ -67,6 +69,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Wed Oct 25 2023 Harinadh D <hdommaraju@vmware.com> 1.2.13-2
+- fix CVE-2023-45853
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.13-1
 - Upgrade to v1.2.13
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.11-2
