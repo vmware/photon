@@ -1,0 +1,163 @@
+From b0c455ca32e43741df1f110b8cf7142c35e6bd1d Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Thu, 12 Oct 2023 06:36:46 +0000
+Subject: [PATCH] jitterentropy: Support for sample collection
+
+  -  Add support for collecting jitterentropy samples for testing.
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ crypto/jitterentropy-kcapi.c  | 112 ++++++++++++++++++++++++++++++++++
+ include/crypto/internal/rng.h |   3 +
+ 2 files changed, 115 insertions(+)
+
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index 72065d5c0..451485f75 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -44,11 +44,22 @@
+ #include <linux/time.h>
+ #include <crypto/internal/rng.h>
+ #include <crypto/internal/hash.h>
++#include <linux/string.h>
++#include <linux/fs.h>
++#include <asm/uaccess.h>
++#include <linux/vmalloc.h>
+ 
+ #include "jitterentropy-3.4.1/jitterentropy.h"
+ #include "jitterentropy-3.4.1/jitterentropy-timer.h"
+ #include "jitterentropy-3.4.1/jitterentropy-sha3.h"
+ 
++#ifndef TOTAL_SAMPLES
++#define TOTAL_SAMPLES 1000000
++#endif
++
++#define RESTART_ROUNDS 1
++#define TOTAL_ROUNDS 1000
++
+ /***************************************************************************
+  * Helper function
+  ***************************************************************************/
+@@ -229,6 +240,107 @@ static void __exit jent_mod_exit(void)
+ 	crypto_unregister_shashes(algs, ARRAY_SIZE(algs));
+ }
+ 
++EXPORT_SYMBOL(jent_entropy_collector_alloc);
++EXPORT_SYMBOL(jent_entropy_collector_free);
++EXPORT_SYMBOL(jent_entropy_init);
++EXPORT_SYMBOL(jent_measure_jitter);
++EXPORT_SYMBOL(jent_health_failure);
++EXPORT_SYMBOL(jent_get_nstime);
++
++void jitterentropy_kcapi_write_sample_file(const char *sample_file_name,
++							int rounds)
++{
++	struct file *fp = NULL;
++	char tmp_rdata[53] = {0};
++	loff_t ppos = 0;
++	int wr_siz = 0;
++	__u64 *duration = NULL;
++	__u64 *duration_min = NULL;
++	__u64 size = 0;
++
++	unsigned int health_test_result = 0, flags = 0;
++	int ret = 0;
++
++	struct rand_data *ec = NULL, *ec_min = NULL;
++
++	flags |= flags;
++
++	ret = jent_entropy_init();
++	if (ret) {
++		pr_err("\n Failed to initialize jitterentropy \n");
++		return;
++	}
++	ec = jent_entropy_collector_alloc(0, flags);
++	if (!ec) {
++		pr_err("Failed to allocate jitter entropy rng for sample\n");
++		return;
++	}
++	ec_min = jent_entropy_collector_alloc(0, flags);
++	if (!ec_min) {
++		pr_err("Failed to allocate jitter entropy rng for sample\n");
++		return;
++	}
++
++	duration = (__u64 *)vzalloc(sizeof(__u64)*rounds);
++	duration_min = (__u64 *)vzalloc(sizeof(__u64)*rounds);
++	if (IS_ERR_OR_NULL(duration) || IS_ERR_OR_NULL(duration_min)) {
++		pr_err("\n Failed to allocate memory for duration\n");
++		goto out;
++	}
++	/* Prime the test */
++	jent_measure_jitter(ec, 0, NULL);
++
++	for (size = 0; size < rounds; size++) {
++		/* Disregard stuck indicator*/
++		jent_measure_jitter(ec, 0, &duration[size]);
++	}
++	/* Prime the test */
++	jent_measure_jitter(ec_min, 0, NULL);
++	for (size = 0; size < rounds; size++) {
++		/* Disregard stuck indicator*/
++		jent_measure_jitter(ec_min, 1, &duration_min[size]);
++	}
++
++	fp = filp_open(sample_file_name,
++			O_CREAT | O_WRONLY | O_CLOEXEC, S_IRUSR | S_IWUSR);
++	if ( IS_ERR_OR_NULL(fp)) {
++		pr_err("JENT: Failed to open fp for writing\n");
++		return;
++	}
++	for (size = 0; size < rounds; size++) {
++		memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
++		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata), "%llu %llu",
++					duration[size], duration_min[size]);
++		kernel_write(fp, &tmp_rdata, wr_siz, &ppos);
++		ppos += wr_siz;
++		kernel_write(fp, "\n", sizeof(char), &ppos);
++		ppos++;
++	}
++	if ((health_test_result = jent_health_failure(ec))) {
++		printk(KERN_ERR"\nent collector health test failure(s):\n");
++		if(health_test_result & JENT_RCT_FAILURE)
++			printk(KERN_CONT" RCT ");
++		if(health_test_result & JENT_APT_FAILURE)
++			printk(KERN_CONT" APT ");
++		if(health_test_result & JENT_LAG_FAILURE)
++			printk(KERN_CONT" Lag ");
++		printk("\n");
++	}
++
++out:
++	if (fp)
++		filp_close(fp, NULL);
++	if (ec)
++		jent_entropy_collector_free(ec);
++	if (ec_min)
++		jent_entropy_collector_free(ec_min);
++	if (duration)
++		vfree(duration);
++	if (duration_min)
++		vfree(duration_min);
++}
++EXPORT_SYMBOL(jitterentropy_kcapi_write_sample_file);
++
+ /* Must be initialized before tcrypt */
+ subsys_initcall(jent_mod_init);
+ module_exit(jent_mod_exit);
+diff --git a/include/crypto/internal/rng.h b/include/crypto/internal/rng.h
+index e0711b6a5..74b515e87 100644
+--- a/include/crypto/internal/rng.h
++++ b/include/crypto/internal/rng.h
+@@ -37,4 +37,7 @@ static inline void crypto_rng_set_entropy(struct crypto_rng *tfm,
+ 	crypto_rng_alg(tfm)->set_ent(tfm, data, len);
+ }
+ 
++void jitterentropy_kcapi_write_sample_file(const char *sample_file_name,
++							int rounds);
++
+ #endif
+-- 
+2.23.3
+
