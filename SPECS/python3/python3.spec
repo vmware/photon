@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        31%{?dist}
+Release:        32%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -47,6 +47,7 @@ Patch27:        CVE-2022-48565.patch
 Patch28:        CVE-2022-48566.patch
 Patch29:        CVE-2007-4559.patch
 Patch30:        socket_getnameinfo_release_GIL.patch
+Patch31:        CVE-2023-40217.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -287,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Fri Oct 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-32
+- Fix CVE-2023-40217
 * Fri Sep 29 2023 Harinadh D <hdommaraju@vmware.com> 3.7.5-31
 - Fix Stateless AutoDeploy ESXi hosts take a long time
 - to reconnect to VCSA after reboot
