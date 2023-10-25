@@ -9,18 +9,20 @@
 %define _logsdir %{_prefix}/logs
 %define _tempdir %{_prefix}/temp
 
-Summary:        Apache Tomcat 9
-Name:           apache-tomcat-9
-Version:        9.0.80
+Summary:        Apache Tomcat 10.1
+Name:           apache-tomcat10
+Version:        10.1.15
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Obsoletes:      %{_origname} < 10.1.15-1%{?dist}
+Provides:       %{_origname} = %{version}-%{release}
 
-Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=a2fb298c1fd2615e1a69371b5f84eb569e897faad3cbe17e3626460f5ce311085c120dd3f62c255fde87e6517915365ab52ada613776d45185b8e53624935114
+Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_origname}-%{version}-src.tar.gz
+%define sha512 %{_origname}=7a0b8a584d7e801446f031415551ac943be21c5c4ed9e7ee1a66c43339f0625435a80465930121633eebaf5eae95c096684ee2d99ed70805ce52509a3aa7c67e
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -29,7 +31,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=a9af5a439100d05e0efd9246aaef59824fab9e9f453c513ccfc196a87058510d0d3f9974c16fe2aab81fa9f137f52b913ac4e353a32cbcf01f4e07551553110f
+%define sha512 base=7dab004b75e926581d06e95ccb6f7a98b1776bb2172db0c797ada05254448ea917b119e2a6479f6b0fe42670eb09cebfc129946487cacf726b61153f439955fd
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -38,9 +40,10 @@ BuildArch: noarch
 BuildRequires: openjdk11
 BuildRequires: apache-ant
 
-Requires: jre >= 8.0
-Requires: apache-ant
-Requires: chkconfig
+Requires:         (openjdk11-jre or openjdk17-jre)
+Requires:         apache-ant
+Requires:         chkconfig
+Requires(postun): chkconfig
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
@@ -49,6 +52,8 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 Summary:        Web application for Apache Tomcat
 Group:          Applications/System
 Requires:       %{name} = %{version}-%{release}
+Obsoletes:      %{_origname}-webapps < 10.1.15-1%{?dist}
+Provides:       %{_origname}-webapps = %{version}-%{release}
 
 %description    webapps
 The web application for Apache Tomcat.
@@ -60,8 +65,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
- -Dbase.path="../base-for-%{_origname}-%{version}" deploy dist-prepare dist-source
+ant -Dbase.path="../base-for-%{_origname}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -71,23 +75,23 @@ install -vdm 755 %{buildroot}%{_confdir}
 install -vdm 755 %{buildroot}%{_webappsdir}
 install -vdm 755 %{buildroot}%{_logsdir}
 install -vdm 755 %{buildroot}%{_tempdir}
-cp -r %{_builddir}/%{_origname}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
-cp -r %{_builddir}/%{_origname}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
-cp -r %{_builddir}/%{_origname}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
-cp -r %{_builddir}/%{_origname}-%{version}-src/output/build/webapps/* %{buildroot}%{_webappsdir}
+cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
+cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
+cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
+cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/webapps/* %{buildroot}%{_webappsdir}
 
-cp %{_builddir}/%{_origname}-%{version}-src/LICENSE %{buildroot}%{_prefix}
-cp %{_builddir}/%{_origname}-%{version}-src/NOTICE %{buildroot}%{_prefix}
+cp -a %{_builddir}/%{_origname}-%{version}-src/LICENSE %{buildroot}%{_prefix}
+cp -a %{_builddir}/%{_origname}-%{version}-src/NOTICE %{buildroot}%{_prefix}
 
 touch %{buildroot}%{_logsdir}/catalina.out
 rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
-install -vdm 644 %{buildroot}%{_datadir}/java/tomcat9
+install -vdm 644 %{buildroot}%{_datadir}/java/tomcat10
 
 for jar in %{buildroot}/%{_libdir}/*.jar
 do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat9/${jarname}.jar
+    jarname=$(basename $jar)
+    ln -sfv %{_libdir}/${jarname} %{buildroot}%{_datadir}/java/tomcat10/${jarname}
 done
 
 %clean
@@ -114,7 +118,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
-%{_datadir}/java/tomcat9/*.jar
+%{_datadir}/java/tomcat10/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
 %{_logsdir}/catalina.out
@@ -128,8 +132,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %post
-alternatives --install %{_origprefix} apache-tomcat %{_prefix} 10000 \
-  --slave %{_datadir}/java/tomcat tomcat %{_datadir}/java/tomcat9
+alternatives --install %{_origprefix} apache-tomcat %{_prefix} 20000 \
+  --slave %{_datadir}/java/tomcat tomcat %{_datadir}/java/tomcat10
 
 %postun
 # Do alternative remove only in case of uninstall
@@ -138,8 +142,24 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
-* Mon Sep 04 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 9.0.80-1
-- Upgrade to 9.0.80
+* Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.15-1
+- Upgrade to 10.1.15
+- Rename to apache-tomcat10
+* Wed Sep 06 2023 Prashant S Chauhan <psinghchauh@vmware.com> 10.1.13-1
+- Update to v10.1.13, Fixes CVE-2023-34981
+- Introduce alternatives
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.1.8-3
+- Require jdk11 or jdk17
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.1.8-2
+- Bump version as a part of openjdk11 upgrade
+* Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.8-1
+- Upgrade to v10.1.8 to address CVE-2023-28709
+* Tue May 16 2023 Nitesh Kumar <kunitesh@vmware.com> 10.1.6-1
+- Upgrade to v10.1.6 to address CVE-2023-28708
+* Thu Feb 16 2023 Prashant <psinghchauha@vmware.com> 10.1.1-2
+- Package webapps as a subpackage
+* Thu Nov 10 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.1-1
+- Upgrade to 10.1.1
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 8.5.78-2
 - Use openjdk11
 * Mon Apr 04 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.78-1
