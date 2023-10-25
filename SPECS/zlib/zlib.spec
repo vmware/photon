@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.zlib.net/
 License:        zlib
 Group:          Applications/System
@@ -14,6 +14,7 @@ Source0: http://www.zlib.net/%{name}-%{version}.tar.xz
 Patch0: CVE-2018-25032-1.patch
 Patch1: CVE-2018-25032-2.patch
 Patch2: CVE-2022-37434.patch
+Patch3: CVE-2023-45853.patch
 
 %description
 Compression and decompression routines
@@ -74,6 +75,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Wed Oct 25 2023 Harinadh D <hdommaraju@vmware.com> 1.2.11-6
+- Fix CVE-2023-45853
 * Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.11-5
 - Fix devel package requires
 * Tue Aug 16 2022 Shivani Agarwal <shivania2@vmware.com> 1.2.11-4
