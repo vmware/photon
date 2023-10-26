@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.56
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,9 +37,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.56-3%{dist}-secure
+%define fips_canister_version 5.0.0-6.1.56-6%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=f4dd9b59482703d0844ad938407af496abe0a5e946c6a63fc130c0f392be95eeee3d6b1125b346699b92b513c140514b28e6ffe868cf9d0f608c56c01f8afcd8
+%define sha512 fips-canister=7e1dc80c5eecf2a8cf5e5fc964b5fa56dbcaff9d11a97393d0d57ab8f63ea343f0d164a4354d011c2dc946abd3fd6f772905f1a8e355b22ee318adcdd2fe6b26
 %endif
 
 %if 0%{?canister_build}
@@ -458,6 +458,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-7
+- Upgrade canister to 5.0.0-6.1.56-6
 * Tue Oct 24 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.56-6
 - Added cts to crypto self-tests
 - Removed rsa(pkcs1pad, sha256), rsa(pkcs1pad, sha512),
