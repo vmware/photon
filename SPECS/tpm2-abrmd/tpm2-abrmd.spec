@@ -1,15 +1,15 @@
 Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:           tpm2-abrmd
 Version:        2.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/tpm2-software/tpm2-abrmd/releases/download/2.4.1/%{name}-%{version}.tar.gz
-%define sha512  tpm2=0335285678cfceca4f185981ded90d213ff796cadddc9b5d6dbf2db533f81023a0f1089bbd8a8017bccb95190889be23b24d38a176d3368d221479aff4ff7d6c
+Source0: https://github.com/tpm2-software/tpm2-abrmd/releases/download/2.4.1/%{name}-%{version}.tar.gz
+%define sha512 tpm2=0335285678cfceca4f185981ded90d213ff796cadddc9b5d6dbf2db533f81023a0f1089bbd8a8017bccb95190889be23b24d38a176d3368d221479aff4ff7d6c
 
 BuildRequires:  which
 BuildRequires:  dbus-devel
@@ -28,6 +28,7 @@ TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 %package        devel
 Summary:        The libraries and header files needed for TSS2 ABRMD development.
 Requires:       %{name} = %{version}-%{release}
+Requires:       glib-devel
 
 %description    devel
 The libraries and header files needed for TSS2 ABRMD development.
@@ -69,6 +70,8 @@ The libraries and header files needed for TSS2 ABRMD development.
 %{_mandir}/man7
 
 %changelog
+* Thu Oct 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.1-3
+- Fix devel package requires
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.1-2
 - Remove .la files
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
