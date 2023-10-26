@@ -114,7 +114,7 @@ function install_replacement_packages() {
       abort $rc "Error installing replacement packages '${installed_pkgs_map[@]}'."
     fi
     echo "Replacement packages '${installed_pkgs_map[@]}' are successfully installed"
-    restore_configs $TMP_BACKUP_LOC ${installed_pkgs_map[@]}
+    restore_configs $TMP_BACKUP_LOC ${installed_pkgs_map[@]} apache-tomcat9
   fi
 }
 

@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -50,6 +50,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.0-16
+- Change default tomcat upgrade target to apache-tomcat10
+- Rename apache-tomcat-9 to apache-tomcat9
 * Wed Oct 11 2023 Dweep Advani <dadvani@vmware.com> 1.0-15
 - Validates repo correctness, timestamp logs and restores config to apache-tomcat-9
 * Thu Sep 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-14

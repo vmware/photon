@@ -38,7 +38,7 @@ declare -A replaced_pkgs_map=(
   [ansible-posix]=ansible-posix   # This & next 2 lines handle ansible removal
   [ansible-community-general]=ansible-community-general  # handle ansible removal
   [stig-hardening]=stig-hardening                        # handle ansible removal
-  [apache-tomcat]=apache-tomcat-9
+  [apache-tomcat]=apache-tomcat10
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
   [openjdk8]=openjdk11
@@ -110,7 +110,7 @@ function relocate_rpmdb() {
 }
 
 # Usage: backup_configs backup_root_path pkg1 pkg2 ...
-# backs up the config of apache-tomcat, if it is being upgraded to apache-tomcat-9
+# backs up the config of apache-tomcat, if it is being upgraded to apache-tomcat9
 # Post upgrade this configuration will be restored in restore_configs()
 function backup_configs() {
   local backup_root_path=$1
@@ -130,18 +130,18 @@ function backup_configs() {
 }
 
 # Usage: restore_configs backup_root_path pkg1 pkg2 ...
-# Restores the config of apache-tomcat to apache-tomcat-9 in 5.0
+# Restores the config of apache-tomcat to apache-tomcat9 in 5.0
 function restore_configs() {
   local backup_root_path=$1
   shift
   local srcpath="$backup_root_path/var/opt/apache-tomcat/conf"
-  local target_path="/var/opt/apache-tomcat-9/conf"
+  local target_path="/var/opt/apache-tomcat9/conf"
   local pkg
   for pkg in $*; do
-    if [ "$pkg" = "apache-tomcat-9" ]; then
+    if [ "$pkg" = "apache-tomcat9" ]; then
       if [ -e "$srcpath" ]; then
         echo "Restoring config for $pkg."
-        ${CP} -ra $srcpath/* $target_path
+        ${RPM} -q --quiet $pkg && ${CP} -ra $srcpath/* $target_path
       fi
     fi
   done
