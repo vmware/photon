@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,20 +40,6 @@ Source5: check_for_config_applicability.inc
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 Source6: preempt_rt.patches
-
-%ifarch x86_64
-%define i40e_version 2.22.18
-Source7: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
-
-%define iavf_version 4.8.2
-Source8: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
-
-%define ice_version 1.11.14
-Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
-%endif
 
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
@@ -202,20 +188,6 @@ Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
-%ifarch x86_64
-# Patches for i40e v2.22.18 driver [1500..1509]
-Patch1500: i40e-v2.22.18-linux-rt-i40e-Fix-build-errors-on-kernel-6.1.y.patch
-Patch1501: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
-Patch1502: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-
-# Patches for iavf v4.8.2 driver [1510..1519]
-Patch1510: iavf-v4.8.2-linux-rt-iavf-Fix-build-errors-on-kernel-6.1.y.patch
-Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
-
-# Patches for ice v1.11.14 driver [1520..1529]
-Patch1520: ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
-%endif
-
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -275,14 +247,6 @@ The Linux package contains the Linux kernel doc files
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
-%ifarch x86_64
-# Using autosetup is not feasible
-%setup -q -T -D -b 7 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 8 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 9 -n linux-%{version}
-%endif
 %if 0%{?fips}
 # Using autosetup is not feasible
 %setup -q -T -D -b 16 -n linux-%{version}
@@ -318,21 +282,6 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1009
 %endif
-
-# Patches for i40e driver
-pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1509
-popd
-
-# Patches for iavf driver
-pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m1510 -M1519
-popd
-
-# Patches for ice driver
-pushd ../ice-%{ice_version}
-%autopatch -p1 -m1520 -M1529
-popd
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -379,27 +328,6 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="phot
 %include %{SOURCE10}
 %endif
 
-%ifarch x86_64
-# build i40e module
-bldroot="${PWD}"
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make %{?_smp_mflags} -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-%endif
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -409,25 +337,6 @@ install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-
-# install i40e module
-bldroot="${PWD}"
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -500,21 +409,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %defattr(0644,root,root)
 %{_modulesdir}/*
 %exclude %{_modulesdir}/build
-# iavf.conf is used to just blacklist the deprecated i40evf
-# and create alias of i40evf to iavf.
-# By default iavf is used for VF driver.
-# This file creates conflict with other flavour of linux
-# thus excluding this file from packaging
-%exclude %{_sysconfdir}/modprobe.d/iavf.conf
-# ICE driver firmware files are packaged in linux-firmware
-%exclude /lib/firmware/updates/intel/ice
-
 %config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
-%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -522,6 +421,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 08 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.70-2
+- Move Intel i40e, iavf and ice drivers for linux-rt to their own spec files.
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
 - Update to version 6.1.70
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-10
