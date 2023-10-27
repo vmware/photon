@@ -1,0 +1,20 @@
+From cec309372476ec20c3360f4689952a7a9bc63964 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Fri, 20 Oct 2023 15:00:29 -0500
+Subject: [PATCH 62/62] 'Linux 6.1.59-rt16 REBASE'
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 9f7d0bdbffb1..1199ebade17b 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt13
++-rt16
+-- 
+2.41.0
+

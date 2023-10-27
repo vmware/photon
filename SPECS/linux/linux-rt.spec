@@ -18,8 +18,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.56
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        6.1.60
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,12 +27,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt15
+%define rt_version rt16
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=4f03c0991f6d2985411885b6026b76ce0bdaccb94edf3a0352f8be31cc5056bee9729089af2be4e946b1405d922afc5d6fbda6b1117eef35fd4a0cac6dcb51ec
+%define sha512 linux=cef40235428a09e5f7807a8be83af9a5ab90e841049a04f9f851e69e602aeab5a50f523cae5d5928d345c11b728608eba7754b173be0c023c7ee564cfaf4b20a
 
 %ifarch x86_64
 Source1:    config-rt
@@ -198,15 +198,13 @@ Patch352: 0052-Linux-6.1.46-rt13-REBASE.patch
 Patch353: 0053-io-mapping-don-t-disable-preempt-on-RT-in-io_mapping.patch
 Patch354: 0054-locking-rwbase-Mitigate-indefinite-writer-starvation.patch
 Patch355: 0055-revert-softirq-Let-ksoftirqd-do-its-job.patch
-# skipped 0056-kernel-fork-beware-of-__put_task_struct-calling-cont.patch
 Patch356: 0056-debugobjects-locking-Annotate-debug_object_fill_pool.patch
 Patch357: 0057-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
-# skipped 0059-seqlock-Do-the-lockdep-annotation-before-locking-in-.patch
 Patch358: 0058-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
 Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
 Patch360: 0060-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
 Patch361: 0061-drm-i915-Do-not-disable-preemption-for-resets.patch
-Patch362: 0062-Linux-6.1.54-rt15-REBASE.patch
+Patch362: 0062-Linux-6.1.59-rt16-REBASE.patch
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -577,6 +575,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.60-1
+- Upgrade to 6.1.60
 * Thu Oct 26 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.56-8
 - Add .sbat section for bzImage
 - Introduce SBAT verificaion in addition to signature on kexec
