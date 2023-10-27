@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.60
-Release:        3%{?acvp_build:.acvp}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -151,6 +151,9 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+# Fix CVE-2023-0597
+Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -792,6 +795,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Oct 27 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4
+- Fix for CVE-2023-0597
 * Fri Oct 27 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
 - Remove kat_build and its associated spec changes
 * Fri Oct 27 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.60-2

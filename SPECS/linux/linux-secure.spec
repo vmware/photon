@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.60
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -130,6 +130,9 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+# Fix CVE-2023-0597
+Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -455,6 +458,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 02 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-5
+- Fix for CVE-2023-0597
 * Mon Oct 30 2023 Keerthana K <keerthanak@vmware.com> 6.1.60-4
 - Include seqiv and geniv into canister
 - Add missing rsa, drbg_nopr_sha1, rfc4106(gcm(aes)) self-test
