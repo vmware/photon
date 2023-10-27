@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.60
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -171,6 +171,9 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 #Fix CVE-2023-28464
 Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
+# Fix CVE-2023-0597
+Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
+Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -542,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4
+- Fix for CVE-2023-0597
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
 - Remove kat_build and its associated spec changes
 * Wed Nov 29 2023 Srinidhi Rao <srinidhir@vmware.com> 6.1.60-2
